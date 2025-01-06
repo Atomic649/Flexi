@@ -1,0 +1,60 @@
+x start 
+npx expo start
+
+x Create New Project
+npx create-expo-app@latest Flexi-React-Expo -t tabs
+
+
+x Change Icon Image
+Constants > icons 
+Edit URL
+
+
+x SetUp Backend
+mkdir backend 
+cd backend 
+! create backend folder
+
+npm init -y 
+! create package.json file
+
+npm install express 
+! install dependencies
+
+npm install --save-dev nodemon
+! install nodemon for auto server restart
+
+! Crete index.ts file
+
+npm install --save-dev @types/cors
+! install cors for cross origin resource sharing
+
+npm i @types/body-parser
+! install body-parser for parsing request body
+
+npm install --save @types/express
+! install express types for typescript
+
+npm install prisma --save-dev
+! install prisma for database
+
+npm install @prisma/client
+! install prisma client 
+
+npx prisma init
+! initialize prisma setup folder
+
+npm i joi
+! install joi for validation
+
+npm i bcrypt
+! install bcrypt for password hashing
+
+npm i jsonwebtoken
+! install jsonwebtoken for token generation
+
+npm i @types/jsonwebtoken
+npm i jsonwebtoken 
+
+
+
