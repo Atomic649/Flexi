@@ -1,0 +1,33 @@
+To create a feature inside the `dev` branch you just created, follow these steps:
+
+!  Switch to the `dev` Branch
+git checkout dev
+
+!  Switch to the `main` Branch
+git checkout main
+
+!  Check branch exists
+git branch
+
+!  create Branch and switch to it:
+git checkout -b dev
+
+! Create a Feature Branch from `dev`
+x Create a new branch for your feature based on the `dev` branch:
+git checkout -b feature/your-feature-name
+x Replace `your-feature-name` with a descriptive name for your feature.
+
+! Work on the Feature
+x Stage and Commit Your Changes
+git add .
+git commit -m "Add feature: your-feature-name"
+
+x Push the Feature Branch
+git push -u origin feature/your-feature-name
+
+! Merge Back to `dev` (Optional)
+git checkout dev
+git merge feature/your-feature-name
+
+x Push the updated `dev` branch to the remote repository:
+git push origin dev
