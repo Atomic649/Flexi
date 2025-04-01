@@ -11,6 +11,7 @@ import {
   Text,
   View,
   Image,
+  Platform,
 } from "react-native";
 import { ThemeProvider, useTheme } from "@/providers/ThemeProvider";
 import * as NavigationBar from "expo-navigation-bar";
@@ -46,11 +47,19 @@ function RootLayoutNav() {
     async function updateNavigationBar() {
       try {
         const navBarColor = theme === "dark" ? "#18181b" : "#ffffff";
-        await NavigationBar.setBackgroundColorAsync(navBarColor);
-        // Set button style based on theme
-        await NavigationBar.setButtonStyleAsync(
-          theme === "dark" ? "light" : "dark"
-        );
+
+        if (Platform.OS === "android") {
+          await NavigationBar.setBackgroundColorAsync(navBarColor);
+          // Set button style based on theme
+          await NavigationBar.setButtonStyleAsync(
+            theme === "dark" ? "light" : "dark"
+          );
+        } else {
+          console.warn(
+            "`setBackgroundColorAsync` and `setButtonStyleAsync` are only available on Android"
+          );
+          // iOS-specific logic can be added here if needed
+        }
       } catch (error) {
         console.error("Error setting navigation bar:", error);
       }
