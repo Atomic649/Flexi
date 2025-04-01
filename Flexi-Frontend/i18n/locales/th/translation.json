@@ -1,0 +1,545 @@
+{
+  "common": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "loading": "กำลังโหลด...",
+    "error": "ข้อผิดพลาด",
+    "success": "สำเร็จ",
+    "clear": "ล้าง",
+    "ok": "ตกลง",
+    "notfound": "ไม่พบ",
+    "delete": "ลบ",
+    "to": "ถึง",
+    "pcs": "ชิ้น",
+    "joinTeam": "เข้าร่วมทีมของเรา",
+    "advertise": "โฆษณากับเรา",
+    "contact": "ติดต่อเรา"
+  },
+  "auth": {
+    "login": {
+      "title": "เข้าสู่ระบบ",
+      "emailPlaceholder": "อีเมล",
+      "passwordPlaceholder": "รหัสผ่าน",
+      "button": "เข้าสู่ระบบ",
+      "noAccount": "ยังไม่มีบัญชี?",
+      "registerButton": "สมัครสมาชิก",
+      "validation": {
+        "incomplete": "ข้อมูลไม่ครบถ้วน",
+        "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+      },
+      "alerts": {
+        "error": "เข้าสู่ระบบล้มเหลว",
+        "success": "เข้าสู่ระบบสำเร็จ",
+        "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+        "ok": "ตกลง"
+      }
+    },
+    "register": {
+      "title": "สมัครสมาชิก",
+      "displayNamePlaceholder": "ชื่อที่แสดง",
+      "emailPlaceholder": "อีเมล",
+      "passwordPlaceholder": "รหัสผ่าน",
+      "button": "สมัครสมาชิก",
+      "hasAccount": "มีบัญชีอยู่แล้ว?",
+      "loginButton": "เข้าสู่ระบบ",
+      "validation": {
+        "incomplete": "ข้อมูลไม่ครบถ้วน",
+        "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+      },
+      "alerts": {
+        "success": "สมัครสมาชิกสำเร็จ",
+        "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+        "ok": "ตกลง"
+      },
+      "firstName": "ชื่อ",
+      "lastName": "นามสกุล",
+      "phoneTitle": "หมายเลขโทรศัพท์",
+      "phonePlaceholder": "กรอกหมายเลขโทรศัพท์"
+    },
+    "businessRegister": {
+      "title": "ลงทะเบียนธุรกิจ",
+      "button": "ลงทะเบียน",
+      "loginButton": "เข้าสู่ระบบ",
+      "validation": {
+        "incomplete": "ข้อมูลไม่ครบถ้วน",
+        "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+      },
+      "alerts": {
+        "success": "ลงทะเบียนสำเร็จ",
+        "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+        "ok": "ตกลง"
+      },
+      "businessName": "ชื่อธุรกิจ",
+      "taxType": "ประเภทภาษี",
+      "vatId": "หมายเลข VAT",
+      "businessType": "ประเภทธุรกิจ",
+      "taxTypeOption": {
+        "": "เลือกประเภทภาษี",
+        "Individual": "บุคคลธรรมดา",
+        "Juristic": "นิติบุคคล"
+      },
+      "chooseBusinessType": "เลือกประเภทธุรกิจ",
+      "businessTypeOption": {
+        "": "เลือกประเภทธุรกิจ",
+        "OnlineSale": "ขายออนไลน์",
+        "Massage": "นวด",
+        "Restaurant": "ร้านอาหาร",
+        "Bar": "บาร์",
+        "Cafe": "คาเฟ่",
+        "Hotel": "โรงแรม / รีสอร์ท",
+        "Tutor": "ติวเตอร์ / โค้ช",
+        "Influencer": "อินฟลูเอนเซอร์",
+        "Other": "อื่นๆ"
+      }
+    }
+  },
+  "product": {
+    "Products": "สินค้า",
+    "productName": "ชื่อสินค้า",
+    "barcode": "บาร์โค้ด",
+    "stock": "สต็อก",
+    "limit": "จำกัด 3 สินค้า",
+    "help": "ปลดล็อกจำกัด ",
+    "title": "ชื่อร้าน",
+    "price": "ราคา",
+    "detail": "รายละเอียดสินค้า",
+    "description": "คำอธิบาย",
+    "createbutton": "สร้างสินค้า",
+    "updatebutton": "อัปเดตสินค้า",
+    "deletebutton": "ลบสินค้า",
+    "category": "หมวดหมู่",
+    "condition": "สภาพ",
+    "createdAt": "สร้างเมื่อ",
+    "location": "สถานที่",
+    "notfound": "ไม่พบสินค้า",
+    "createProduct": "สร้างสินค้า",
+    "uploadImage": "อัปโหลดรูปภาพ",
+    "imageLimit": "คุณสามารถอัปโหลดได้สูงสุด {{count}} รูปภาพ",
+    "alerts": {
+      "error": "ข้อผิดพลาด",
+      "ok": "ตกลง",
+      "success": "สำเร็จ",
+      "successTitle": "สร้างสินค้าสำเร็จ",
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+      "imageLimit": {
+        "upload": "คุณสามารถอัปโหลดได้สูงสุด 5 รูปภาพ"
+      }
+    },
+    "validation": {
+      "incomplete": "ข้อมูลไม่ครบถ้วน",
+      "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+    },
+    "chooseProduct": "สินค้า ▼"
+  },
+  "profile": {
+    "Profile": "บัญชีธุรกิจ",
+    "editProfile": "แก้ไขโปรไฟล์",
+    "myProducts": "สินค้าของฉัน",
+    "settings": "การตั้งค่า",
+    "noName": "ไม่มีชื่อ",
+    "buttons": {
+      "saved": "รายการที่บันทึก",
+      "messages": "ข้อความ",
+      "reviews": "รีวิว",
+      "recent": "ดูล่าสุด"
+    },
+    "editName": {
+      "save": "บันทึก",
+      "cancel": "ยกเลิก",
+      "success": "อัปเดตชื่อสำเร็จ",
+      "error": "อัปเดตชื่อไม่สำเร็จ"
+    },
+    "avatar": {
+      "pickTitle": "เปลี่ยนรูปโปรไฟล์",
+      "pickMessage": "เลือกวิธีการเพิ่มรูปภาพ",
+      "camera": "ถ่ายรูป",
+      "gallery": "จากแกลเลอรี",
+      "error": "อัปเดตรูปโปรไฟล์ไม่สำเร็จ"
+    },
+    "sections": {
+      "selling": {
+        "title": "การขาย",
+        "products": "สินค้าของคุณ",
+        "quickActions": "การกระทำด่วน",
+        "followers": "ผู้ติดตามในตลาด",
+        "activities": "กิจกรรมการขายทั้งหมด"
+      },
+      "settings": {
+        "title": "การตั้งค่า",
+        "following": "กำลังติดตาม"
+      },
+      "account": {
+        "title": "บัญชี",
+        "location": "สถานที่",
+        "security": "ความปลอดภัย"
+      }
+    }
+  },
+  "settings": {
+    "management": "การจัดการการตั้งค่า",
+    "language": "ภาษา",
+    "notifications": "การแจ้งเตือน",
+    "userProfile": "โปรไฟล์ผู้ใช้",
+    "businessInfo": "ข้อมูลธุรกิจ",
+    "ads": "โฆษณา",
+    "organic": "ออร์แกนิก",
+    "privacy": {
+      "title": "ความเป็นส่วนตัว",
+      "settings": "การตั้งค่าความเป็นส่วนตัว",
+      "security": "ความปลอดภัย"
+    },
+    "marketing": {
+      "title": "กลยุทธ์การตลาด",
+      "ads": "โฆษณา",
+      "organic": "ออร์แกนิก"
+    },
+    "socialMedia": {
+      "title": "โซเชียลมีเดีย",
+      "facebook": "เฟซบุ๊ก",
+      "instagram": "อินสตาแกรม",
+      "twitter": "ทวิตเตอร์",
+      "line": "ไลน์",
+      "tiktok": "ติ๊กต๊อก",
+      "shopee": "ช้อปปี้",
+      "youtube": "ยูทูบ"
+    },
+    "logout": {
+      "logout": "ออกจากระบบ",
+      "confirmTitle": "ยืนยันการออกจากระบบ",
+      "confirmMessage": "คุณแน่ใจหรือว่าต้องการออกจากระบบ?",
+      "error": "ออกจากระบบไม่สำเร็จ กรุณาลองใหม่"
+    },
+    "appearance": {
+      "title": "ลักษณะ",
+      "light": "สว่าง",
+      "dark": "มืด",
+      "system": "ระบบ"
+    }
+  },
+  "create": {
+    "title": "สร้างสินค้า",
+    "fields": {
+      "title": "ชื่อสินค้า",
+      "price": "ราคา",
+      "description": "คำอธิบาย",
+      "location": "สถานที่",
+      "category": "หมวดหมู่",
+      "condition": "สภาพ"
+    },
+    "placeholders": {
+      "title": "กรอกชื่อสินค้า",
+      "price": "กรอกราคา",
+      "description": "กรอกคำอธิบาย",
+      "location": "กรอกสถานที่",
+      "category": "เลือกหมวดหมู่",
+      "condition": "เลือกสภาพ"
+    },
+    "validation": {
+      "title": "กรุณากรอกชื่อสินค้า",
+      "price": {
+        "required": "กรุณากรอกราคาสินค้า",
+        "invalid": "กรุณากรอกราคาที่ถูกต้อง"
+      },
+      "description": "กรุณากรอกคำอธิบายสินค้า",
+      "category": "กรุณาเลือกหมวดหมู่สินค้า",
+      "condition": "กรุณาเลือกสภาพสินค้า",
+      "location": "กรุณากรอกสถานที่",
+      "image": "กรุณาเลือกอย่างน้อยหนึ่งรูปภาพสินค้า",
+      "imageLimit": {
+        "upload": "คุณสามารถอัปโหลดได้สูงสุด 5 รูปภาพ",
+        "select": "คุณสามารถเลือกได้สูงสุด {{count}} รูปภาพ"
+      }
+    },
+    "buttons": {
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก..."
+    },
+    "messages": {
+      "loginRequired": "กรุณาเข้าสู่ระบบก่อนสร้างสินค้า",
+      "success": "บันทึกสินค้าสำเร็จ",
+      "error": "สร้างสินค้าไม่สำเร็จ"
+    },
+    "alerts": {
+      "error": {
+        "required": "กรุณากรอกข้อมูลที่จำเป็นทั้งหมด",
+        "update": "อัปเดตสินค้าไม่สำเร็จ",
+        "image": "เลือกภาพไม่สำเร็จ",
+        "imageDelete": "ลบภาพไม่สำเร็จ"
+      },
+      "success": {
+        "imageDelete": "ลบภาพสำเร็จ"
+      }
+    },
+    "modal": {
+      "category": {
+        "title": "เลือกหมวดหมู่"
+      },
+      "condition": {
+        "title": "เลือกสภาพ",
+        "options": {
+          "new": "ใหม่",
+          "likeNew": "เหมือนใหม่",
+          "good": "ดี",
+          "fair": "พอใช้"
+        }
+      }
+    },
+    "imagePicker": {
+      "title": "เพิ่มรูปภาพ",
+      "message": "เลือกวิธีการเพิ่มรูปภาพ",
+      "camera": "ถ่ายรูป",
+      "library": "เลือกจากแกลเลอรี",
+      "error": "เลือกภาพไม่สำเร็จ",
+      "limitReached": "คุณสามารถเพิ่มได้สูงสุด {{count}} รูปภาพ"
+    }
+  },
+  "bookmark": {
+    "title": "รายการสินค้าของคุณ",
+    "empty": "ไม่พบสินค้าของคุณ",
+    "product": {
+      "status": {
+        "available": "มีสินค้า"
+      }
+    },
+    "actions": {
+      "edit": "แก้ไข",
+      "delete": "ลบ"
+    },
+    "deleteAlert": {
+      "title": "ลบสินค้า",
+      "message": "คุณแน่ใจหรือไม่ที่จะลบสินค้านี้?",
+      "error": "ไม่สามารถลบสินค้าได้"
+    }
+  },
+  "home": {
+    "welcome": {
+      "title": "ยินดีต้อนรับ",
+      "guest": "บุคคลทั่วไป"
+    },
+    "search": {
+      "placeholder": "ค้นหาสินค้า..."
+    },
+    "sections": {
+      "recommended": "สินค้าแนะนำ"
+    },
+    "empty": {
+      "noProducts": "ไม่พบสินค้า",
+      "noSearchResults": "ไม่พบสินค้าที่ค้นหา"
+    }
+  },
+  "tabs": {
+    "home": "หน้าแรก",
+    "income": "รายได้",
+    "create": "เครื่องมือ",
+    "expense": "ค่าใช้จ่าย",
+    "shop": "ร้านค้า",
+    "profile": "โปรไฟล์",
+    "settings": "การตั้งค่า",
+    "product": "สินค้า",
+    "sell": "หน้าร้าน",
+    "ads": "โฆษณา"
+  },
+  "landing": {
+    "slogan": {
+      "line1": "ค้นพบประสบการณ์",
+      "line2": "ไม่จำกัดที่"
+    },
+    "description": "ค้นหาไอเดียสร้างสรรค์ใหม่ๆ ทุกวัน: เริ่มต้นการเดินทางของคุณด้วยความคิดสร้างสรรค์ที่ไม่มีขีดจำกัดกับ Aura",
+    "button": "เริ่มต้น"
+  },
+  "editProduct": {
+    "title": "แก้ไขสินค้า",
+    "titlePlaceholder": "ชื่อสินค้า",
+    "priceLabel": "ราคา",
+    "pricePlaceholder": "ระบุราคา",
+    "descriptionLabel": "รายละเอียด",
+    "descriptionPlaceholder": "ระบุรายละเอียดสินค้า",
+    "locationLabel": "ที่ตั้ง",
+    "locationPlaceholder": "ระบุที่ตั้ง",
+    "categoryLabel": "หมวดหมู่",
+    "selectCategory": "เลือกหมวดหมู่",
+    "conditionLabel": "สภาพสินค้า",
+    "selectCondition": "เลือกสภาพสินค้า",
+    "existingImages": "รูปภาพปัจจุบัน",
+    "newImages": "รูปภาพใหม่",
+    "addImages": "เพิ่มรูปภาพ",
+    "updateButton": "อัพเดทสินค้า",
+    "alerts": {
+      "success": "สำเร็จ",
+      "successMessage": "อัพเดทสินค้าเรียบร้อยแล้ว",
+      "error": "ผิดพลาด",
+      "errorMessage": "ไม่สามารถอัพเดทสินค้าได้",
+      "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบรูปภาพนี้?",
+      "imageDelete": {
+        "success": "ลบรูปภาพเรียบร้อยแล้ว",
+        "error": "ไม่สามารถลบรูปภาพได้"
+      },
+      "validation": {
+        "required": "กรุณากรอกข้อมูลให้ครบถ้วน"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "แดชบอร์ด",
+    "ads": "โฆษณา",
+    "selectDate": "เลือกวันที่",
+    "sale": "ยอด",
+    "profit": "กำไร",
+    "roi": "ROI",
+    "avr": "AVR"
+  },
+  "ads": {
+    "title": "การเชื่อมต่อโฆษณา",
+    "limit": "จำกัดการเชื่อมต่อโฆษณา 4 รายการ",
+    "help": "ปลดล็อกจำกัด ",
+    "createAd": "เชื่อมต่อบัญชีโฆษณา",
+    "editAd": "แก้ไขการเชื่อมต่อโฆษณา",
+    "delete": "ลบโฆษณา",
+    "notfound": "ไม่พบ",
+    "platform": "แพลตฟอร์ม",
+    "accName": "ชื่อบัญชี",
+    "accId": "รหัสบัญชี",
+    "createbutton": "เชื่อมต่อ",
+    "alerts": {
+      "error": "ข้อผิดพลาด",
+      "ok": "ตกลง",
+      "success": "สำเร็จ",
+      "successTitle": "เชื่อมต่อโฆษณาสำเร็จ",
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
+    },
+    "validation": {
+      "incomplete": "ข้อมูลไม่ครบถ้วน",
+      "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+    },
+    "choosePlatform": "เลือกแพลตฟอร์ม",
+    "platformOption": {
+      "": "เลือกแพลตฟอร์ม",
+      "Facebook": "เฟซบุ๊ก",
+      "Instagram": "อินสตาแกรม",
+      "Twitter": "ทวิตเตอร์",
+      "Line": "ไลน์",
+      "Tiktok": "ติ๊กต๊อก",
+      "Shopee": "ช้อปปี้",
+      "YouTube": "ยูทูบ"
+    },
+    "accNameRecommend": "ชื่อโฆษณา-ชื่อสินค้า-001"
+  },
+  "store": {
+    "title": "การเชื่อมต่อร้านค้า",
+    "limit": "จำกัดการเชื่อมต่อร้านค้า 4 รายการ",
+    "help": "ปลดล็อกจำกัด ",
+    "createStore": "เชื่อมต่อบัญชีร้านค้า",
+    "editStore": "แก้ไขการเชื่อมต่อร้านค้า",
+    "delete": "ลบร้านค้า",
+    "notfound": "ไม่พบร้านค้า",
+    "platform": "แพลตฟอร์ม",
+    "accName": "ชื่อบัญชี",
+    "accId": "รหัสบัญชี",
+    "createbutton": "เชื่อมต่อ",
+    "alerts": {
+      "error": "ข้อผิดพลาด",
+      "ok": "ตกลง",
+      "success": "สำเร็จ",
+      "successTitle": "เชื่อมต่อร้านค้าสำเร็จ",
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
+    },
+    "validation": {
+      "incomplete": "ข้อมูลไม่ครบถ้วน",
+      "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+    },
+    "choosePlatform": "เลือกแพลตฟอร์ม",
+    "platformOption": {
+      "": "เลือกแพลตฟอร์ม",
+      "Facebook": "เฟซบุ๊ก",
+      "Instagram": "อินสตาแกรม",
+      "Twitter": "ทวิตเตอร์",
+      "Line": "ไลน์",
+      "Tiktok": "ติ๊กต๊อก",
+      "Shopee": "ช้อปปี้",
+      "YouTube": "ยูทูบ",
+      "SCB": "SCB แม่มณี"
+    },
+    "accNameRecommend": "ชื่อร้าน-ชื่อสินค้า-001"
+  },
+  "income": {
+    "title": {
+      "byOrder": "รายการ",
+      "Daily": "รายวัน",
+      "Monthly": "รายเดือน",
+      "Yearly": "รายปี"
+    },
+    "table": {
+      "date": "วันที่",
+      "month": "เดือน",
+      "year": "ปี",
+      "amount": "จำนวน",
+      "sales": "ยอดขาย",
+      "profit": "กำไร",
+      "roi": "ROI",
+      "avr": "AVR",
+      "total": "รวม",
+      "adCost": "โฆษณา",
+      "percentAd": "%โฆษณา"
+    }
+  },
+  "expense": {
+    "title": {
+      "expenseList": "ค่าใช้จ่ายทั้งหมด",
+      "updateExpense": "อัพเดทค่าใช้จ่าย"
+    },
+    "buttons": {
+      "save": "บันทึก",
+      "pdf": "SCB เท่านั้น"
+    },
+    "table": {
+      "date": "วันที่",
+      "notedesc": "รายละเอียด",
+      "amount": "จำนวนเงิน",
+      "pdferror": "พบข้อมูลซ้ำกัน \n หรือ ไฟล์ไม่สามารถอัปโหลดได้"
+    },
+    "alerts": {
+      "successTitle": "สำเร็จ",
+      "successMessage": "ดูรายละเอียดในหน้าค่าใช้จ่ายทั้งหมด"
+    },
+    "create": {
+      "error": "กรุณากรอกข้อมูลให้ครบถ้วน",
+      "message": "จำเป็นต้องกรอกข้อมูล วันที่ โนํต และจำนวนเงิน ให้ครบถ้วน",
+      "success": "บันทึกค่าใช้จ่ายสำเร็จ",
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+      "ok": "ตกลง"
+    },
+    "detail": {
+      "description": "รายละเอียด(ไม่บังคับ)",
+      "amount": "จำนวนเงิน",
+      "note": "โน้ต",
+
+      "group": {
+        "marketing": "การตลาด",
+        "transport": "ค่าขนส่ง",
+        "taxation": "ภาษี",
+        "office": "สำนักงาน",
+        "employee": "พนักงาน",
+        "product": "สินค้า",
+        "packing": "บรรจุภัณฑ์",
+        "utility": "สาธารณูปโภค",
+        "other": "อื่นๆ",
+        "account": "บัญชี"
+      },
+      "attachBill": "แนบใบเสร็จ"
+    }
+  },
+  "roadmap": {
+    "title": "แผนการดำเนินงาน",
+    "users": "ผู้ใช้งาน",
+    "business": "บัญชีธุรกิจ",
+    "products": "สินค้า",
+    "ads": "บัญชีโฆษณา",
+    "store": "ร้านค้า",
+    "vision": "เล็ก ลีน เร็ว  \n งบการตลาด 0 \n โตด้วยกำไร",
+    "mission": "เรามาที่นี่เพื่อช่วยให้ธุรกิจของคุณเติบโต \n ด้วยเครื่องมือและบริการฟรีของเรา \n ไม่มีค่าธรรมเนียมการสมัครสมาชิกในอนาคต"
+  },
+  "shop":{"title": "เราโฟกัสกำไรของธุรกิจคุณก่อน \n ของเราทีหลัง :)"}
+  
+
+}

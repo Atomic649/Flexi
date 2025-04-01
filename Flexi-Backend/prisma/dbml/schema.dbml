@@ -1,0 +1,513 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  password String [not null]
+  firstName String [not null]
+  lastName String [not null]
+  avatar String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  phone String [unique, not null]
+  username String [unique]
+  bio String
+  business BusinessAcc [not null]
+  member Member [not null]
+  posts Post [not null]
+  comments Comment [not null]
+  reactions Reaction [not null]
+  sentMessages Inbox [not null]
+  receivedMessages Inbox [not null]
+  seller Shop [not null]
+  buyer Shop [not null]
+  Order Order [not null]
+  review Review [not null]
+  owner Credit [not null]
+  credit Credit [not null]
+}
+
+Table Member {
+  uniqueId String [pk]
+  role UserRole [not null, default: 'owner']
+  permission String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  userId Int [not null]
+  user User [not null]
+  businessId Int
+  business BusinessAcc
+  bill Bill [not null]
+  adsCost AdsCost [not null]
+  expense Expense [not null]
+  product Product [not null]
+  platform Platform [not null]
+  store Store [not null]
+}
+
+Table BusinessAcc {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  businessName String [unique, not null]
+  businessUserName String [unique]
+  businessAvatar String
+  businessAddress String
+  vatId String [unique, not null]
+  businessType BusinessType [not null, default: 'OnlineSale']
+  taxType taxType [not null, default: 'Individual']
+  userId Int [not null]
+  memberId String
+  user User [not null]
+  AllMember Member [not null]
+  billRecord Bill [not null]
+  expenseRecord Expense [not null]
+  adsCostRecord AdsCost [not null]
+  platform Platform [not null]
+  storefront Store [not null]
+  product Product [not null]
+}
+
+Table Bill {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  cName String [not null]
+  cLastName String
+  cPhone String
+  cGender Gender
+  cAddress String
+  cProvince String
+  cPostId String
+  product String [not null]
+  payment Payment [not null]
+  amount Int [not null]
+  purchaseAt DateTime [default: `now()`, not null]
+  platform IncomeChannel [not null]
+  cashStatus Boolean [not null, default: false]
+  price Int [not null]
+  image String
+  deleted Boolean [default: false]
+  productList Product [not null]
+  memberId String [unique, not null]
+  member Member [not null]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  storeId Int [not null]
+  store Store [not null]
+}
+
+Table AdsCost {
+  id Int [pk, increment]
+  date DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  adsCost Decimal [not null]
+  memberId String [not null]
+  platformId Int [not null]
+  product String [not null]
+  member Member [not null]
+  platform Platform [not null]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  productList Product [not null]
+}
+
+Table Expense {
+  date DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id Int [pk, increment]
+  amount Decimal [not null]
+  group String
+  image String
+  note String
+  desc String
+  deleted Boolean [default: false]
+  save Boolean [default: false]
+  channel Bank
+  code String
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  memberId String [not null]
+  member Member [not null]
+}
+
+Table Platform {
+  id Int [pk, increment]
+  platform SocialMedia [not null]
+  accName String [unique, not null]
+  accId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  platformId AdsCost [not null]
+  businessAcc Int [not null]
+  memberId String [not null]
+  businessId BusinessAcc [not null]
+  member Member [not null]
+  deleted Boolean [default: false]
+}
+
+Table Store {
+  id Int [pk, increment]
+  platform IncomeChannel [not null]
+  accName String [unique, not null]
+  accId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  storefrontId Bill [not null]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  memberId String [not null]
+  member Member [not null]
+  deleted Boolean [default: false]
+}
+
+Table Product {
+  id Int [pk, increment]
+  name String [unique, not null]
+  description String
+  barcode String [not null]
+  image String
+  stock Int [not null]
+  price Int [not null]
+  categoryId Int
+  memberId String [not null]
+  statusId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [default: false]
+  billRecord Bill [not null]
+  adsRecord AdsCost [not null]
+  member Member [not null]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+}
+
+Table Credit {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  ownerId Int [not null]
+  creditorId Int [not null]
+  owner User [not null]
+  creditor User [not null]
+}
+
+Table Post {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  hashtag String[] [not null]
+  content String
+  mediaUrl String
+  mediaType MediaType
+  published Boolean [not null, default: false]
+  authorId Int [not null]
+  author User [not null]
+  reactions Reaction [not null]
+  comments Comment [not null]
+  deleted Boolean [default: false]
+}
+
+Table Reaction {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  type ReactionType [not null]
+  postId Int [not null]
+  post Post [not null]
+  userId Int [not null]
+  user User [not null]
+}
+
+Table Comment {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  content String [not null]
+  postId Int [not null]
+  post Post [not null]
+  userId Int [not null]
+  user User [not null]
+  deleted Boolean [default: false]
+}
+
+Table Inbox {
+  id Int [pk, increment]
+  senderId Int [not null]
+  receiverId Int [not null]
+  message String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  read Boolean [not null, default: false]
+  unsent Boolean [not null, default: false]
+  deleted Boolean [default: false]
+  sender User [not null]
+  receiver User [not null]
+}
+
+Table Shop {
+  id Int [pk, increment]
+  name String [not null]
+  description String
+  productType ProductType [not null, default: 'Service']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  category Category [not null]
+  sellerId Int [not null]
+  buyerId Int [not null]
+  deleted Boolean [default: false]
+  seller User [not null]
+  buyer User [not null]
+  orders Order
+  options Option [not null]
+  review Review [not null]
+}
+
+Table Order {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  quantity Int [not null]
+  shopId Int [unique, not null]
+  buyerId Int [not null]
+  sellerId Int [not null]
+  deleted Boolean [default: false]
+  seller Shop [not null]
+  buyer User [not null]
+  review Review
+  cart Cart [not null]
+}
+
+Table Option {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name OptionName [not null]
+  shopId Int [not null]
+  shop Shop [not null]
+  values OptionValue [not null]
+}
+
+Table OptionValue {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  value String [not null]
+  price Float
+  interest Float
+  duration Int
+  optionId Int [not null]
+  option Option [not null]
+}
+
+Table Review {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  content String [not null]
+  rating Int [not null]
+  shopId Int [not null]
+  userId Int [not null]
+  orderId Int [unique, not null]
+  order Order [not null]
+  user User [not null]
+  shop Shop [not null]
+}
+
+Table Cart {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  orderId Int [unique, not null]
+  payment Payment [not null]
+  status String [not null]
+  total Int [not null]
+  order Order [not null]
+}
+
+Enum UserRole {
+  owner
+  marketing
+  accountant
+  sales
+}
+
+Enum taxType {
+  Juristic
+  Individual
+}
+
+Enum Gender {
+  Female
+  Male
+}
+
+Enum Payment {
+  COD
+  Transfer
+  CreditCard
+}
+
+Enum SocialMedia {
+  Facebook
+  Line
+  Tiktok
+  Shopee
+  Lazada
+  Instagram
+  X
+  Youtube
+  Google
+}
+
+Enum IncomeChannel {
+  Storefornt
+  Facebook
+  Line
+  Tiktok
+  Shopee
+  Lazada
+  Instagram
+  X
+  Youtube
+  Google
+  SCB
+  KBANK
+  KTB
+  BBL
+  TMB
+}
+
+Enum Bank {
+  SCB
+  KBANK
+  KTB
+  BBL
+  TMB
+}
+
+Enum BusinessType {
+  OnlineSale
+  Massage
+  Restaurant
+  Bar
+  Cafe
+  Hotel
+  Tutor
+  Influencer
+  Other
+}
+
+Enum MediaType {
+  VIDEO
+  IMAGE
+}
+
+Enum ReactionType {
+  CREDIT
+  SPARK
+  DISCREDIT
+}
+
+Enum Category {
+  Loan
+  Coaching
+  OEM
+  MarketingAgency
+  Packaging
+  accountant
+  Inventory
+}
+
+Enum ProductType {
+  Service
+  Product
+}
+
+Enum OptionName {
+  Size
+  Color
+  Material
+  Flavor
+  CreditLimit
+  QuantityLimit
+}
+
+Ref: Member.userId > User.id
+
+Ref: Member.businessId > BusinessAcc.id
+
+Ref: BusinessAcc.userId > User.id
+
+Ref: Bill.product > Product.name
+
+Ref: Bill.memberId > Member.uniqueId
+
+Ref: Bill.businessAcc > BusinessAcc.id
+
+Ref: Bill.storeId > Store.id
+
+Ref: AdsCost.memberId > Member.uniqueId
+
+Ref: AdsCost.platformId > Platform.id
+
+Ref: AdsCost.businessAcc > BusinessAcc.id
+
+Ref: AdsCost.product > Product.name
+
+Ref: Expense.businessAcc > BusinessAcc.id
+
+Ref: Expense.memberId > Member.uniqueId
+
+Ref: Platform.businessAcc > BusinessAcc.id
+
+Ref: Platform.memberId > Member.uniqueId
+
+Ref: Store.businessAcc > BusinessAcc.id
+
+Ref: Store.memberId > Member.uniqueId
+
+Ref: Product.memberId > Member.uniqueId
+
+Ref: Product.businessAcc > BusinessAcc.id
+
+Ref: Credit.ownerId > User.id
+
+Ref: Credit.creditorId > User.id
+
+Ref: Post.authorId > User.id
+
+Ref: Reaction.postId > Post.id
+
+Ref: Reaction.userId > User.id
+
+Ref: Comment.postId > Post.id
+
+Ref: Comment.userId > User.id
+
+Ref: Inbox.senderId > User.id
+
+Ref: Inbox.receiverId > User.id
+
+Ref: Shop.sellerId > User.id
+
+Ref: Shop.buyerId > User.id
+
+Ref: Order.shopId - Shop.id
+
+Ref: Order.sellerId > User.id
+
+Ref: Order.id > Cart.orderId
+
+Ref: Option.shopId > Shop.id
+
+Ref: OptionValue.optionId > Option.id
+
+Ref: Review.orderId - Order.id
+
+Ref: Review.userId > User.id
+
+Ref: Review.shopId > Shop.id
