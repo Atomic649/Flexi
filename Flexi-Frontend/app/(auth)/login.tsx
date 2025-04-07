@@ -69,14 +69,13 @@ export default function Login() {
       return;
     }
 
-    const { error, token ,user} = await CallAPIUser.loginAPI(form);
+    const { error, token, user } = await CallAPIUser.loginAPI(form);
 
-    // // Handle successful login (e.g., navigate to another screen)
     if (error) {
       setAlertConfig({
         visible: true,
         title: t("auth.login.alerts.error"),
-        message: error.message,
+        message: typeof error.message === "string" ? error.message : t("auth.login.alerts.genericError"), // Ensure message is a string
         buttons: [
           {
             text: t("common.ok"),
@@ -86,13 +85,10 @@ export default function Login() {
         ],
       });
     } else {
-      // บันทึก Token ลงใน AsyncStorage
+      // Save token and user details
       saveToken(token);
-      // บันทึกสถานะการเข้าสู่ระบบลงใน AsyncStorage
       await AsyncStorage.setItem("isLoggedIn", "true");
-      // save userId ลงใน AsyncStorage
       saveUserId(user.id);
-      // save memberId ลงใน AsyncStorage
       saveMemberId(user.memberId);
 
       setAlertConfig({

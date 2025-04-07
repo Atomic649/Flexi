@@ -199,6 +199,7 @@ export default function CreateExpense({
           <TouchableOpacity
             activeOpacity={1}
             style={{
+              flex: 0.10,
               justifyContent: "center",
               width: "90%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",

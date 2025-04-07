@@ -26,6 +26,7 @@
           "backgroundColor": "#ffffff"
         }
       },
+      "windowSoftInputMode": "adjustResize",
       "web": {
         "bundler": "metro",
         "output": "static",
