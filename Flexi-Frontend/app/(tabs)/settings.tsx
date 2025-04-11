@@ -192,184 +192,196 @@ export default function Setting() {
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView>
         <View className={`px-4 pt-5 pb-5`}>
-          {/* Settings Management */}
-          <Section title={t("settings.management")}>
-            <View>
-              <SectionItem
-              icon="language"
-              text={`${t("settings.language")} (${
-                i18n.language === "th" ? "ไทย" : "English"
-              })`}
-              onPress={showLanguageOptions}
-              />
-              <Divider />
-              <SectionItem
-              icon="user"
-              text={t("settings.userProfile")}
-              onPress={() => router.push("profile")}
-              />
-              <Divider />
-              <SectionItem
-              icon="building"
-              text={t("settings.businessInfo")}
-              onPress={() => router.push("business_info")}
-              />
-            </View>
-          </Section>
+         
 
           {/* Social Media Platform */}
-            <Section title={t("settings.socialMedia.title")}>
+          <Section
+            title={t("settings.socialMedia.title")}
+            router={() => router.push("store")}
+            subtitle={t("settings.socialMedia.seeAll")}
+          >
             <View>
               {/* Facebook */}
               <Pressable
-              className={`flex-row items-center justify-between p-4`}
-              onPress={toggleTheme}
+                className={`flex-row items-center justify-between p-4`}
+                onPress={toggleTheme}
               >
-              <View className="flex-row items-center !bg-transparent">
-                <FontAwesome
-                name="facebook"
-                size={24}
-                color={theme === "dark" ? "#fff" : "#75726a"}
-                style={{ marginRight: 16 }}
-                />
-                <CustomText className="text-base">{t("settings.socialMedia.facebook")}</CustomText>
-              </View>
-              <View
-                className={`w-14 h-8 rounded-full p-1 ${
-                theme === "dark" ? "bg-gray-500" : "bg-zinc-200"
-                }`}
-              >
-                <AnimatedToggle theme={theme} />
-              </View>
+                <View className="flex-row items-center !bg-transparent">
+                  <FontAwesome
+                    name="facebook"
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base">
+                    {t("settings.socialMedia.facebook")}
+                  </CustomText>
+                </View>
+                <View
+                  className={`w-14 h-8 rounded-full p-1 ${
+                    theme === "dark" ? "bg-gray-500" : "bg-zinc-200"
+                  }`}
+                >
+                  <AnimatedToggle theme={theme} />
+                </View>
               </Pressable>
 
               <Divider />
 
               {/* Tiktok */}
               <Pressable
-              className={`flex-row items-center justify-between p-4`}
-              onPress={toggleTheme}
+                className={`flex-row items-center justify-between p-4`}
+                onPress={toggleTheme}
               >
-              <View className="flex-row items-center !bg-transparent">
-                <FontAwesome
-                name="music"
-                size={24}
-                color={theme === "dark" ? "#fff" : "#75726a"}
-                style={{ marginRight: 16 }}
-                />
-                <CustomText className="text-base">{t("settings.socialMedia.tiktok")}</CustomText>
-              </View>
-              <View
-                className={`w-14 h-8 rounded-full p-1 ${
-                theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                }`}
-              >
-                <AnimatedToggle theme={theme} />
-              </View>
+                <View className="flex-row items-center !bg-transparent">
+                  <FontAwesome
+                    name="music"
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base">
+                    {t("settings.socialMedia.tiktok")}
+                  </CustomText>
+                </View>
+                <View
+                  className={`w-14 h-8 rounded-full p-1 ${
+                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
+                  }`}
+                >
+                  <AnimatedToggle theme={theme} />
+                </View>
               </Pressable>
 
               <Divider />
 
               {/* Shopee */}
               <Pressable
-              className={`flex-row items-center justify-between p-4`}
-              onPress={toggleTheme}
+                className={`flex-row items-center justify-between p-4`}
+                onPress={toggleTheme}
               >
-              <View className="flex-row items-center !bg-transparent">
-                <Ionicons
-                name="bag"
-                size={24}
-                color={theme === "dark" ? "#fff" : "#75726a"}
-                style={{ marginRight: 16 }}
-                />
-                <CustomText className="text-base">{t("settings.socialMedia.shopee")}</CustomText>
-              </View>
-              <View
-                className={`w-14 h-8 rounded-full p-1 ${
-                theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                }`}
-              >
-                <AnimatedToggle theme={theme} />
-              </View>
+                <View className="flex-row items-center !bg-transparent">
+                  <Ionicons
+                    name="bag"
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base">
+                    {t("settings.socialMedia.shopee")}
+                  </CustomText>
+                </View>
+                <View
+                  className={`w-14 h-8 rounded-full p-1 ${
+                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
+                  }`}
+                >
+                  <AnimatedToggle theme={theme} />
+                </View>
               </Pressable>
 
               <Divider />
 
               {/* Line */}
               <Pressable
-              className={`flex-row items-center justify-between p-4`}
-              onPress={toggleTheme}
+                className={`flex-row items-center justify-between p-4`}
+                onPress={toggleTheme}
               >
-              <View className="flex-row items-center !bg-transparent">
-                <Ionicons
-                name="chatbubble"
-                size={24}
-                color={theme === "dark" ? "#fff" : "#75726a"}
-                style={{ marginRight: 16 }}
-                />
-                <CustomText className="text-base">{t("settings.socialMedia.line")}</CustomText>
-              </View>
-              <View
-                className={`w-14 h-8 rounded-full p-1 ${
-                theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                }`}
-              >
-                <AnimatedToggle theme={theme} />
-              </View>
+                <View className="flex-row items-center !bg-transparent">
+                  <Ionicons
+                    name="chatbubble"
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base">
+                    {t("settings.socialMedia.line")}
+                  </CustomText>
+                </View>
+                <View
+                  className={`w-14 h-8 rounded-full p-1 ${
+                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
+                  }`}
+                >
+                  <AnimatedToggle theme={theme} />
+                </View>
               </Pressable>
             </View>
-            </Section>
+          </Section>
+
+           {/* Business Settings*/}
+           <Section title={t("settings.business")}>
+            <View>             
+              <SectionItem
+                icon="tags"
+                text={t("settings.businessSetting.product")}
+                onPress={() => router.push("product")}
+              />
+              <Divider />
+              <SectionItem
+                icon="building"
+                text={t("settings.businessInfo")}
+                onPress={() => router.push("business_info")}
+              />
+              <Divider />
+              <SectionItem
+                icon="users"
+                text={t("settings.businessSetting.team")}
+                onPress={() => {}}
+              />
+            </View>
+          </Section>
 
           {/* Marketing Strategies */}
-            <Section title={t("settings.marketing.title")}>
+          <Section title={t("settings.marketing.title")}>
             <View>
               <Pressable
-              className={`flex-row items-center justify-between p-4`}
-              onPress={toggleMarketing}
+                className={`flex-row items-center justify-between p-4`}
+                onPress={toggleMarketing}
               >
-              <View className="flex-row items-center !bg-transparent">
-                <FontAwesome
-                name={Marketing === "ads" ? "money" : "leaf"}
-                size={24}
-                color={theme === "dark" ? "#fff" : "#75726a"}
-                style={{ marginRight: 16 }}
-                />
-                <CustomText className="text-base">
-                {Marketing === "ads"
-                  ? t("settings.marketing.ads")
-                  : t("settings.marketing.organic")}
-                </CustomText>
-              </View>
-              <View
-                className={`w-14 h-8 rounded-full p-1 ${
-                Marketing === "ads" ? "bg-gray-700" : "bg-gray-200"
-                }`}
-              >
-                <Animated.View
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  backgroundColor: "#fff",
-                  transform: [
-                  {
-                    translateX: Marketing === "ads" ? 24 : 0,
-                  },
-                  ],
-                  shadowColor: "#000",
-                  shadowOffset: {
-                  width: 0,
-                  height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}
-                />
-              </View>
+                <View className="flex-row items-center !bg-transparent">
+                  <FontAwesome
+                    name={Marketing === "ads" ? "money" : "leaf"}
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base">
+                    {Marketing === "ads"
+                      ? t("settings.marketing.ads")
+                      : t("settings.marketing.organic")}
+                  </CustomText>
+                </View>
+                <View
+                  className={`w-14 h-8 rounded-full p-1 ${
+                    Marketing === "ads" ? "bg-gray-700" : "bg-gray-200"
+                  }`}
+                >
+                  <Animated.View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 12,
+                      backgroundColor: "#fff",
+                      transform: [
+                        {
+                          translateX: Marketing === "ads" ? 24 : 0,
+                        },
+                      ],
+                      shadowColor: "#000",
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.84,
+                      elevation: 5,
+                    }}
+                  />
+                </View>
               </Pressable>
             </View>
-            </Section>
+          </Section>
 
           {/* Privacy */}
           <Section title={t("settings.privacy.title")}>
@@ -385,7 +397,7 @@ export default function Setting() {
 
           {/* Theme Section */}
           <Section title={t("settings.appearance.title")}>
-            <View >
+            <View>
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
                 onPress={toggleTheme}
@@ -434,6 +446,26 @@ export default function Setting() {
             </View>
           </Section>
 
+           {/* Settings Management */}
+           <Section title={t("settings.management")}>
+            <View>
+              <SectionItem
+                icon="language"
+                text={`${t("settings.language")} (${
+                  i18n.language === "th" ? "ไทย" : "English"
+                })`}
+                onPress={showLanguageOptions}
+              />
+              <Divider />
+              <SectionItem
+                icon="user"
+                text={t("settings.userProfile")}
+                onPress={() => router.push("profile")}
+              />            
+             
+            </View>
+          </Section>
+
           {/* Logout */}
           <CustomButton
             title={t("settings.logout.logout")}
@@ -457,9 +489,15 @@ export default function Setting() {
 
 const Section = ({
   title,
+  subtitle,
+  description,
+  router,
   children,
 }: {
   title: string;
+  subtitle?: string;
+  description?: string;
+  router?: () => void;
   children: React.ReactNode;
 }) => {
   const { theme } = useTheme();
@@ -467,9 +505,33 @@ const Section = ({
 
   return (
     <View className="my-4">
-      <CustomText weight="medium" className={`text-lg mb-2 ${textColorClass}`}>
-        {title}
-      </CustomText>
+      <View className="flex-row items-center justify-between">
+        <CustomText
+          weight="medium"
+          className={`text-lg mb-2 ${textColorClass}`}
+        >
+          {title}{" "}
+        </CustomText>
+
+        {subtitle && (
+          <Pressable onPress={router}>
+            <CustomText
+              link={true}
+              className={`text-sm mb-2 ${textColorClass}`}
+            >
+              {subtitle}
+            </CustomText>
+            {subtitle}
+          </Pressable>
+        )}
+      </View>
+
+      {description && (
+        <CustomText className={`text-sm mb-2 ${textColorClass}`}>
+          {description}
+        </CustomText>
+      )}
+
       <View
         className={`rounded-xl overflow-hidden border ${
           theme === "dark" ? "border-zinc-500" : "border-zinc-200"
@@ -509,7 +571,10 @@ const SectionItem = ({
           color={theme === "dark" ? "#fff" : "#75726a"}
           style={{ marginRight: 16 }}
         />
-        <CustomText weight="regular" className={`text-base flex-1 ${textColorClass}`}>
+        <CustomText
+          weight="regular"
+          className={`text-base flex-1 ${textColorClass}`}
+        >
           {text}
         </CustomText>
         {onPress && (

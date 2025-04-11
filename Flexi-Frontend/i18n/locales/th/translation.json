@@ -35,6 +35,9 @@
         "ok": "ตกลง"
       }
     },
+    "update":{
+      "button" : "อัปเดต"
+    },
     "register": {
       "title": "สมัครสมาชิก",
       "displayNamePlaceholder": "ชื่อที่แสดง",
@@ -101,7 +104,7 @@
     "stock": "สต็อก",
     "limit": "จำกัด 3 สินค้า",
     "help": "ปลดล็อกจำกัด ",
-    "title": "ชื่อร้าน",
+    "title": "สินค้า",
     "price": "ราคา",
     "detail": "รายละเอียดสินค้า",
     "description": "คำอธิบาย",
@@ -178,6 +181,7 @@
   },
   "settings": {
     "management": "การจัดการการตั้งค่า",
+    "business": "ตั้งค่าธุรกิจ",
     "language": "ภาษา",
     "notifications": "การแจ้งเตือน",
     "userProfile": "โปรไฟล์ผู้ใช้",
@@ -194,8 +198,13 @@
       "ads": "โฆษณา",
       "organic": "ออร์แกนิก"
     },
+    "businessSetting":{
+      "product": "สินค้า",
+      "team": "ทีม"
+    },
     "socialMedia": {
       "title": "โซเชียลมีเดีย",
+      "seeAll": "ดูทั้งหมด",
       "facebook": "เฟซบุ๊ก",
       "instagram": "อินสตาแกรม",
       "twitter": "ทวิตเตอร์",

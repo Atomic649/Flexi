@@ -4,6 +4,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 
 interface CustomTextProps extends TextProps {
   weight?: 'thin' | 'extralight' | 'light' | 'regular' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
+  link?: boolean;
 }
 
 export function CustomText({ children, weight = 'regular', style, ...props }: CustomTextProps) {
@@ -20,11 +21,11 @@ export function CustomText({ children, weight = 'regular', style, ...props }: Cu
   return (
     <RNText
       style={[
-        { 
-          fontFamily: getFontFamily(),
-          color: theme === 'dark' ? '#b4b3b3' : '#2a2a2a'
-        }, 
-        style
+      { 
+        fontFamily: getFontFamily(),
+        color: props.link ? '#00dec1' : theme === 'dark' ? '#b4b3b3' : '#2a2a2a'
+      }, 
+      style
       ]}
       {...props}
     >

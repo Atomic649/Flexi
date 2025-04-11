@@ -123,7 +123,7 @@ export default function CreateProduct() {
             text: t("product.alerts.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("(tabs)/product");
+              router.replace("product");
             },
           },
         ],

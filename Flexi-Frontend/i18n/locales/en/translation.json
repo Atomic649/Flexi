@@ -35,6 +35,9 @@
         "ok": "OK"
       }
     },
+    "update":{
+      "button" : "Update"
+    },
     "register": {
       "title": "Register",
       "displayNamePlaceholder": "Display Name",
@@ -101,7 +104,7 @@
     "stock": "Stock",
     "limit": "Limit 3 Products",
     "help": "Unlock limit ",
-    "title": "Shop Name",
+    "title": "Product",
     "price": "Price",
     "detail": "Product Detail",
     "description": "Description",
@@ -178,6 +181,7 @@
   },
   "settings": {
     "management": "Settings Management",
+    "business": "Business Settings",
     "language": "Language",
     "notifications": "Notifications",
     "userProfile": "User Profile",
@@ -196,6 +200,7 @@
     },
     "socialMedia": {
       "title": "Social Media",
+      "seeAll": "See All Platforms",
       "facebook": "Facebook",
       "instagram": "Instagram",
       "twitter": "Twitter",
@@ -203,6 +208,10 @@
       "tiktok": "Tiktok",
       "shopee": "Shopee",
       "youtube": "YouTube"
+    },
+    "businessSetting":{
+      "product": "Product",
+      "team": "Team"    
     },
     "logout": {
       "logout": "Logout",

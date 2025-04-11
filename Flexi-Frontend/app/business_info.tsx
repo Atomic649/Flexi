@@ -4,14 +4,14 @@ import {
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import CustomButton from "@/components/CustomButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import CallAPIBusiness from "@/api/business_api";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTheme } from "@/providers/ThemeProvider";
-import { getUserId } from "@/utils/utility";
+import { getMemberId, getUserId } from "@/utils/utility";
 import Dropdown2 from "@/components/Dropdown2";
 import FormField2 from "@/components/FormField2";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,7 +43,35 @@ export default function Register() {
     buttons: [],
   });
 
-  // Handle register
+  // Handle exit business info CallAPI getBusinessDetailsAPI
+  const handleExit = async () => {
+    try {
+      const memberId = await getMemberId();
+      if (memberId === null) {
+        setError(t("auth.register.validation.invalidUserId"));
+        return;
+      }
+      const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+      console.log("data", data);
+
+      setbusinessName(data.businessName || "");
+      settaxType(data.taxType || "");
+      setvatId(data.vatId || "");
+      setbusinessType(data.businessType || "");    
+      
+      if (data.error) throw new Error(data.error);
+
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  // Call handleExit on component mount to pre-fill the form
+  useEffect(() => {
+    handleExit();
+  }, []);
+ 
+  // Handle register new business
   const handleRegister = async () => {
     setError("");
 
@@ -112,7 +140,7 @@ export default function Register() {
           <FormField2
             title={t("auth.businessRegister.businessName")}
             placeholder={t("auth.businessRegister.businessName")}
-            value={businessName}
+            value={businessName} // Pre-fill with existing data
             handleChangeText={setbusinessName}
             otherStyles="mt-0"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -134,7 +162,7 @@ export default function Register() {
             ]}
             placeholder={t("auth.businessRegister.taxType")}
             onValueChange={settaxType}
-            selectedValue={t(`auth.businessRegister.taxTypeOption.${taxType}`)}
+            selectedValue={taxType} // Pre-fill with existing data
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
@@ -144,7 +172,7 @@ export default function Register() {
           <FormField2
             title={t("auth.businessRegister.vatId")}
             placeholder={t("0000000000000")}
-            value={vatId}
+            value={vatId} // Pre-fill with existing data
             handleChangeText={setvatId}
             otherStyles="mt-7"
             keyboardType="number-pad"
@@ -194,9 +222,7 @@ export default function Register() {
               },
             ]}
             placeholder={t("auth.businessRegister.chooseBusinessType")}
-            selectedValue={t(
-              `auth.businessRegister.businessTypeOption.${businessType}`
-            )}
+            selectedValue={businessType} // Pre-fill with existing data
             onValueChange={setbusinessType}
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -207,7 +233,11 @@ export default function Register() {
           {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
 
           <CustomButton
-            title={t("auth.register.button")}
+            title={
+              businessName || taxType || vatId || businessType
+                ? t("auth.update.button") // Show "Update" if data exists
+                : t("auth.register.button") // Show "Register" if no data exists
+            }
             handlePress={handleRegister}
             containerStyles="mt-7"
             textStyles="!text-white"

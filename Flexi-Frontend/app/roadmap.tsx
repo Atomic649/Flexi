@@ -13,7 +13,6 @@ import i18n from "@/i18n";
 export default function RoadMap() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const [refreshing, setRefreshing] = useState(false);
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
   const animatedValue = useState(new Animated.Value(0))[0];
 
