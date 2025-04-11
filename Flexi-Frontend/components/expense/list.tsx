@@ -96,7 +96,7 @@ const List = () => {
                   theme === "dark" ? "text-white" : "text-zinc-600"
                 } p-4`}
               >
-                {date === today ? "Today" : date}
+                {date === today ? t("common.today") : date}
               </Text>
 
               {groupedExpense[date].map((expense) => (
