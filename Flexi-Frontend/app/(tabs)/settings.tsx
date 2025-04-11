@@ -14,8 +14,24 @@ import CallAPIUser from "@/api/auth_api";
 import { removeToken } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
 
+// Utility function to get switch colors
+const getSwitchPlatformColors = (theme: string, value: boolean) => ({
+  trackColor: {
+    false: theme === "dark" ? "#4B5563" : "#D1D5DB",
+    true: theme === "dark" ? "#0feac2" : "#0feac2",
+  },
+  thumbColor: value ? "#ffffff" : "#75726a",
+});
+
+// Utility constant for toggle scaling
+const toggleScaleStyle = { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] };
+
 export default function Setting() {
   const [Marketing, setMarketing] = useState("ads");
+  const [Facebook, setFacebook] = useState(false); // Default to false
+  const [Tiktok, setTiktok] = useState(false); // Default to false
+  const [Shopee, setShopee] = useState(false); // Default to false
+  const [Line, setLine] = useState(false); // Default to false
   const { t, i18n } = useTranslation(); // กำหนดตัวแปรใช้งานภาษา
   const { theme, toggleTheme } = useTheme(); // กำหนดตัวแปรใช้งานธีม
 
@@ -182,16 +198,45 @@ export default function Setting() {
     }
   };
 
-  // ฟังก์ชันเปลี่ยนการตลาด
+  //---------- ฟังก์ชันเปลี่ยนการตลาด------------
+
   const toggleMarketing = () => {
     setMarketing((prev) => (prev === "ads" ? "organic" : "ads"));
-    console.log(Marketing);
+  
   };
+
+  //---------Platform Toggle Handlers---------
+
+  // Handle Facebook toggle
+  const handleFacebookToggle = () => {
+    setFacebook((prev) => !prev); // Toggle between true and false
+    console.log("Facebook toggle:", !Facebook);
+  };
+
+  // Handle TikTok toggle
+  const handleTiktokToggle = () => {
+    setTiktok((prev) => !prev); // Toggle between true and false
+    console.log("TikTok toggle:", !Tiktok);
+  };
+
+  // Handle Shopee toggle
+  const handleShopeeToggle = () => {
+    setShopee((prev) => !prev); // Toggle between true and false
+    console.log("Shopee toggle:", !Shopee);
+  };
+
+  // Handle Line toggle
+  const handleLineToggle = () => {
+    setLine((prev) => !prev); // Toggle between true and false
+    console.log("Line toggle:", !Line);
+  };
+
+  //------------------------------------------
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView>
-        <View className={`px-4 pt-5 pb-5`}>
+        <View className={`px-4 pt-3 pb-5`}>
          
 
           {/* Social Media Platform */}
@@ -204,7 +249,7 @@ export default function Setting() {
               {/* Facebook */}
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
-                onPress={toggleTheme}
+                onPress={handleFacebookToggle}
               >
                 <View className="flex-row items-center !bg-transparent">
                   <FontAwesome
@@ -217,13 +262,12 @@ export default function Setting() {
                     {t("settings.socialMedia.facebook")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    theme === "dark" ? "bg-gray-500" : "bg-zinc-200"
-                  }`}
-                >
-                  <AnimatedToggle theme={theme} />
-                </View>
+                <Switch
+                  value={Facebook} // Bind to state
+                  onValueChange={handleFacebookToggle} // Toggle handler
+                  {...getSwitchPlatformColors(theme, Facebook)} // Use utility function
+                  style={toggleScaleStyle} // Use centralized style
+                />
               </Pressable>
 
               <Divider />
@@ -231,7 +275,7 @@ export default function Setting() {
               {/* Tiktok */}
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
-                onPress={toggleTheme}
+                onPress={handleTiktokToggle}
               >
                 <View className="flex-row items-center !bg-transparent">
                   <FontAwesome
@@ -244,13 +288,12 @@ export default function Setting() {
                     {t("settings.socialMedia.tiktok")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                  }`}
-                >
-                  <AnimatedToggle theme={theme} />
-                </View>
+                <Switch
+                  value={Tiktok} // Bind to state
+                  onValueChange={handleTiktokToggle} // Toggle handler
+                  {...getSwitchPlatformColors(theme, Tiktok)} // Use utility function
+                  style={toggleScaleStyle} // Use centralized style
+                />
               </Pressable>
 
               <Divider />
@@ -258,7 +301,7 @@ export default function Setting() {
               {/* Shopee */}
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
-                onPress={toggleTheme}
+                onPress={handleShopeeToggle}
               >
                 <View className="flex-row items-center !bg-transparent">
                   <Ionicons
@@ -271,13 +314,12 @@ export default function Setting() {
                     {t("settings.socialMedia.shopee")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                  }`}
-                >
-                  <AnimatedToggle theme={theme} />
-                </View>
+                <Switch
+                  value={Shopee} // Bind to state
+                  onValueChange={handleShopeeToggle} // Toggle handler
+                  {...getSwitchPlatformColors(theme, Shopee)} // Use utility function
+                  style={toggleScaleStyle} // Use centralized style
+                />
               </Pressable>
 
               <Divider />
@@ -285,7 +327,7 @@ export default function Setting() {
               {/* Line */}
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
-                onPress={toggleTheme}
+                onPress={handleLineToggle}
               >
                 <View className="flex-row items-center !bg-transparent">
                   <Ionicons
@@ -298,13 +340,12 @@ export default function Setting() {
                     {t("settings.socialMedia.line")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-zinc-200"
-                  }`}
-                >
-                  <AnimatedToggle theme={theme} />
-                </View>
+                <Switch
+                  value={Line} // Bind to state
+                  onValueChange={handleLineToggle} // Toggle handler
+                  {...getSwitchPlatformColors(theme, Line)} // Use utility function
+                  style={toggleScaleStyle} // Use centralized style
+                />
               </Pressable>
             </View>
           </Section>
@@ -589,30 +630,7 @@ const SectionItem = ({
   );
 };
 
-// Platform Toggle
-const AnimatedToggle = ({ theme }: { theme: string }) => (
-  <Animated.View
-    style={{
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: "#fff",
-      transform: [
-        {
-          translateX: theme === "dark" ? 24 : 0,
-        },
-      ],
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-    }}
-  />
-);
+
 
 const Divider = () => {
   const { theme } = useTheme();

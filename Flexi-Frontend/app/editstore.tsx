@@ -106,7 +106,8 @@ export default function EditStore() {
               onPress: () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
                 // go to store page
-                router.replace("store");
+                router.back();
+                router.back();
               },
             },
           ],
