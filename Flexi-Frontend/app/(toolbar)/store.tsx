@@ -10,7 +10,6 @@ import CallAPIStore from '@/api/store_api';
 import StoreCard from '@/components/StoreCard';
 import { router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import connection from '../../../backend/db';
 import { CustomText } from '@/components/CustomText';
 
 type Store = {

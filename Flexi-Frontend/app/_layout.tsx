@@ -86,6 +86,14 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
+          name="(toolbar)"
+          options={{
+            ...HideTopBar(),
+            title: "",
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        <Stack.Screen
           name="index"
           options={{
         ...HideTopBar(),
