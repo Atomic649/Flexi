@@ -10,9 +10,10 @@ export default function shop() {
   const { t } = useTranslation();
   useTheme();
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <SafeAreaView className={`h-full  ${useBackgroundColorClass()}`}>
       <ScrollView>
-        <View className="flex-1 items-center justify-center">
+        <View className="flex-1 items-center justify-center pt-20"          
+        >
             <CustomText style={{ textAlign: "center" }}>{t("shop.title")}</CustomText>
         </View>
       </ScrollView>

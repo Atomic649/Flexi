@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   Modal,
   TouchableOpacity,
-  Text,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -22,7 +21,7 @@ import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 
-const Dashboard = () => {
+export default function Dashboard() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -218,5 +217,3 @@ const Dashboard = () => {
     </LinearGradient>
   );
 };
-
-export default Dashboard;

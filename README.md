@@ -10,6 +10,6 @@
 #### cd Flexi-Backend
 #### npm i
 ### Create Container in Docker
-#### docker compose up -d
-#### Create Database 
-#### npx prisma migrate dev --name init
+docker compose up -d
+### Create Database 
+ npx prisma migrate dev --name init

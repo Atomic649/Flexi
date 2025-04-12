@@ -8,6 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "platforms": ["ios", "android"],
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -26,6 +27,7 @@
           "backgroundColor": "#ffffff"
         }
       },
+      "windowSoftInputMode": "adjustResize",
       "web": {
         "bundler": "metro",
         "output": "static",

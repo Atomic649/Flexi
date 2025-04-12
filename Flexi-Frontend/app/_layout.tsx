@@ -93,7 +93,7 @@ function RootLayoutNav() {
         title: t("auth.login.title"),
         headerTitleStyle: getHeaderTitleStyle(),
           }}
-        />
+        />       
         <Stack.Screen
           name="index"
           options={{
@@ -174,6 +174,25 @@ function RootLayoutNav() {
         headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        // store
+        <Stack.Screen
+          name="store"
+          options={{
+        ...showTopBarAndBackIcon(theme),
+        title: t("store.title"),
+        headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        //product
+        <Stack.Screen
+          name="product"
+          options={{
+        ...showTopBarAndBackIcon(theme),
+        title: t("product.title"),
+        headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+
       </Stack>
     </SafeAreaView>
   );
