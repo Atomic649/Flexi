@@ -2,7 +2,7 @@
 
 ## Project Structure
 ### Docker Structure Entire Project
-```
+
 Using Docker for productoin:
 ```
 ├── Flexi-Backend/
@@ -47,6 +47,7 @@ Flexi-Backend/
 └── tsconfig.json                # Typescrip Config
 
 
+```
 
 ### **How to Use**
 1. **Generate Prisma Clients**:
