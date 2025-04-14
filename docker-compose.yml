@@ -1,0 +1,114 @@
+#version: '3.8'
+
+# Define Network
+networks:
+  prosgres-docker-prisma:
+    name: prosgres-docker-prisma
+    driver: bridge
+
+# Define Services
+services:
+  # NodeJS Backend (API)
+  nodejs:
+    depends_on:
+      - postgresdb
+    build:
+      context: ./Flexi-Backend
+      dockerfile: Dockerfile
+    image: node:22-alpine
+    container_name: nodejsexpress
+    volumes:
+    - ./Flexi-Backend:/app
+     - /app/node_modules # Prevent overwriting node_modules in the container
+    working_dir: /app
+    command: sh -c "npm install && npx prisma migrate dev --schema=prisma/schema1.prisma && npm run start:dev"
+    #  && npx prisma migrate dev --schema=prisma/schema2.prisma # migrate the second schema 
+    ports:
+      - 4000:3000
+    environment:
+      - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - NODE_ENV=development
+    restart: always
+    networks:
+      - prosgres-docker-prisma
+
+
+  # Frontend Expo
+  frontend-expo:
+    build:
+      context: ./Flexi-Frontend
+      dockerfile: Dockerfile
+    container_name: flexi-react-expo
+    volumes:
+      - ./Flexi-Frontend:/app
+      - /app/node_modules
+    working_dir: /app
+    ports:
+      - 19000:19000
+      - 19001:19001
+      - 19002:19002
+    networks:
+      - prosgres-docker-prisma
+    command: sh -c "npm install && npm start"
+
+  # # Frontend NextJS
+  # frontend-nextjs:
+  #   build:
+  #     context: ./frontend-nextjs
+  #     dockerfile: Dockerfile
+  #   container_name: flexi-frontend-nextjs
+  #   volumes:
+  #     - ./frontend-nextjs:/app
+  #     - /app/node_modules
+  #   working_dir: /app
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - prosgres-docker-prisma
+  #   command: sh -c "npm install && npm run dev"
+
+  # Postgres Database
+  postgresdb:
+    image: postgres:15.6
+    container_name: flexidb
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: prismatypedb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - 9649:5432
+    restart: always
+    networks:
+      - prosgres-docker-prisma
+
+  # Second Postgres Database
+  postgresdb2:
+    image: postgres:15.6
+    container_name: flexiadsdb
+    volumes:
+      - ./postgres_data2:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: flexiadsdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - 8956:5432
+    restart: always
+    networks:
+      - prosgres-docker-prisma
+
+  # # Nginx Reverse Proxy
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: flexi-nginx
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - backend
+  #     - frontend-nextjs
+  #   networks:
+  #     - prosgres-docker-prisma

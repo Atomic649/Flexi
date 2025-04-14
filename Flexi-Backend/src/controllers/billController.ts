@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { Payment, PrismaClient, SocialMedia, Gender } from "@prisma/client";
+import { Gender, Payment, PrismaClient as PrismaClient1, SocialMedia } from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
-import multerConfig from "./multer_config";
+import multerConfig from "../middleware/multer_config";
 
 const upload = multer(multerConfig.multerConfigImage.config).single(multerConfig.multerConfigImage.keyUpload);
 
 // Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 //Interface for request body from client
 interface billInput {

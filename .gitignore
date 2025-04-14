@@ -1,4 +1,5 @@
 # Node.js dependencies
+/node_modules/
 Flexi-Backend/node_modules/
 Flexi-Backend/nodejs/
 Flexi-Frontend/node_modules/
@@ -63,3 +64,4 @@ expo-env.d.ts
 
 # postgres_data
 postgres_data/
+postgres_data2/

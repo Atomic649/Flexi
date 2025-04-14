@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Expense" ALTER COLUMN "group" DROP NOT NULL,
-ALTER COLUMN "image" DROP NOT NULL;

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { IncomeChannel, PrismaClient } from "@prisma/client";
+import { IncomeChannel,PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
 
 // Create an instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface Store {

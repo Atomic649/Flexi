@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import { Request, Response } from "express";
-import Joi from "joi";
 
 // Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 // get number of registered users - Get
 export const getNumberOfUsers = async (req: Request, res: Response) => {

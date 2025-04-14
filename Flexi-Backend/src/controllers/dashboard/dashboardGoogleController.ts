@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient as PrismaClient1 } from "../../generated/client1";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 //---------------------------Google-----------------------------
 // Sum of ads cost by date and product if platform is Google

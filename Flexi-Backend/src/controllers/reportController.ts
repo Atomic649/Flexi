@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClient1 } from "../generated/client1";
 
 
 //Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 const dailyReport = async (req: Request, res: Response) => {
   const { memberId } = req.params;

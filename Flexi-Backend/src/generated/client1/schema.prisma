@@ -1,0 +1,480 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./prisma/generated/client1"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL1")
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "./dbml/schema1.dbml"
+}
+
+enum UserRole {
+  owner
+  marketing
+  accountant
+  sales
+}
+
+enum taxType {
+  Juristic
+  Individual
+}
+
+enum Gender {
+  Female
+  Male
+}
+
+enum Payment {
+  COD
+  Transfer
+  CreditCard
+}
+
+enum SocialMedia {
+  Facebook
+  Line
+  Tiktok
+  Shopee
+  Lazada
+  Instagram
+  X
+  Youtube
+  Google
+}
+
+enum IncomeChannel {
+  Storefornt
+  Facebook
+  Line
+  Tiktok
+  Shopee
+  Lazada
+  Instagram
+  X
+  Youtube
+  Google
+  SCB
+  KBANK
+  KTB
+  BBL
+  TMB
+}
+
+enum Bank {
+  SCB
+  KBANK
+  KTB
+  BBL
+  TMB
+}
+
+enum BusinessType {
+  OnlineSale
+  Massage
+  Restaurant
+  Bar
+  Cafe
+  Hotel
+  Tutor
+  Influencer
+  Other
+}
+
+enum MediaType {
+  VIDEO
+  IMAGE
+}
+
+enum ReactionType {
+  CREDIT
+  SPARK
+  DISCREDIT
+}
+
+enum Category {
+  Loan
+  Coaching
+  OEM
+  MarketingAgency
+  Packaging
+  accountant
+  Inventory
+}
+
+enum ProductType {
+  Service
+  Product
+}
+
+enum OptionName {
+  Size
+  Color
+  Material
+  Flavor
+  CreditLimit
+  QuantityLimit
+}
+
+model User {
+  id               Int           @id @default(autoincrement())
+  email            String        @unique
+  password         String
+  firstName        String
+  lastName         String
+  avatar           String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  phone            String        @unique
+  username         String?       @unique
+  bio              String?
+  business         BusinessAcc[]
+  member           Member[]
+  posts            Post[]
+  comments         Comment[]
+  reactions        Reaction[]
+  sentMessages     Inbox[]       @relation("SentMessages")
+  receivedMessages Inbox[]       @relation("ReceivedMessages")
+  seller           Shop[]        @relation("Seller")
+  buyer            Shop[]        @relation("Buyer")
+  Order            Order[]
+  review           Review[]
+  owner            Credit[]      @relation("Owner")
+  credit           Credit[]      @relation("Creditor")
+}
+
+model Member {
+  uniqueId   String   @id @default(uuid())
+  role       UserRole @default(owner)
+  permission String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relation
+  userId     Int
+  user       User         @relation(fields: [userId], references: [id])
+  businessId Int?
+  business   BusinessAcc? @relation(fields: [businessId], references: [id])
+  bill       Bill[]
+  adsCost    AdsCost[]
+  expense    Expense[]
+  product    Product[]
+  platform   Platform[]
+  store      Store[]
+}
+
+model BusinessAcc {
+  id               Int          @id @default(autoincrement())
+  createdAt        DateTime?    @default(now())
+  updatedAt        DateTime?    @updatedAt
+  businessName     String       @unique
+  businessUserName String?      @unique
+  businessAvatar   String?
+  businessAddress  String?
+  vatId            String       @unique
+  businessType     BusinessType @default(OnlineSale)
+  taxType          taxType      @default(Individual)
+  userId           Int
+  memberId         String?
+  user             User         @relation(fields: [userId], references: [id])
+  AllMember        Member[]
+  billRecord       Bill[]
+  expenseRecord    Expense[]
+  adsCostRecord    AdsCost[]
+  platform         Platform[]
+  storefront       Store[]
+  product          Product[]
+}
+
+model Bill {
+  id         Int           @id @default(autoincrement())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  cName      String
+  cLastName  String?
+  cPhone     String?
+  cGender    Gender?
+  cAddress   String?
+  cProvince  String?
+  cPostId    String?
+  product    String
+  payment    Payment
+  amount     Int
+  purchaseAt DateTime      @default(now())
+  platform   IncomeChannel
+  cashStatus Boolean       @default(false)
+  price      Int
+  image      String?
+  deleted    Boolean?      @default(false)
+
+  // Relation 
+  productList Product     @relation(fields: [product], references: [name])
+  memberId    String      @unique
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  storeId     Int
+  store       Store       @relation(fields: [storeId], references: [id])
+}
+
+model AdsCost {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  adsCost   Decimal
+
+  // Relation
+  memberId    String
+  platformId  Int
+  product     String
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  platform    Platform    @relation(fields: [platformId], references: [id])
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  productList Product     @relation(fields: [product], references: [name])
+}
+
+model Expense {
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  amount    Decimal
+  group     String?
+  image     String?
+  note      String?
+  desc      String?
+  deleted   Boolean? @default(false)
+  save      Boolean? @default(false)
+  channel   Bank?
+  code      String?
+
+  // Relation
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  memberId    String
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+}
+
+model Platform {
+  id          Int         @id @default(autoincrement())
+  platform    SocialMedia
+  accName     String      @unique
+  accId       String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  platformId  AdsCost[]
+  businessAcc Int
+  memberId    String
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  deleted     Boolean?    @default(false)
+}
+
+model Store {
+  id           Int           @id @default(autoincrement())
+  platform     IncomeChannel
+  accName      String        @unique
+  accId        String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  storefrontId Bill[]
+  businessAcc  Int
+  businessId   BusinessAcc   @relation(fields: [businessAcc], references: [id])
+  memberId     String
+  member       Member        @relation(fields: [memberId], references: [uniqueId])
+  deleted      Boolean?      @default(false)
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  barcode     String
+  image       String?
+  stock       Int
+  price       Int
+  categoryId  Int?
+  memberId    String
+  statusId    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deleted     Boolean? @default(false)
+
+  // relation
+  billRecord  Bill[]
+  adsRecord   AdsCost[]
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+}
+
+model Credit {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  ownerId    Int
+  creditorId Int
+
+  // relations
+  owner    User @relation("Owner", fields: [ownerId], references: [id])
+  creditor User @relation("Creditor", fields: [creditorId], references: [id])
+}
+
+model Post {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  hashtag   String[]
+  content   String?
+  mediaUrl  String?
+  mediaType MediaType?
+  published Boolean    @default(false)
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  reactions Reaction[]
+  comments  Comment[]
+  deleted   Boolean?   @default(false)
+}
+
+model Reaction {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  type      ReactionType
+  postId    Int
+  post      Post         @relation(fields: [postId], references: [id])
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  deleted   Boolean? @default(false)
+}
+
+model Inbox {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  message    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  read       Boolean  @default(false)
+  unsent     Boolean  @default(false)
+  deleted    Boolean? @default(false)
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Shop {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  productType ProductType @default(Service)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  category    Category
+  sellerId    Int
+  buyerId     Int
+  deleted     Boolean?    @default(false)
+
+  // relation
+  seller User @relation("Seller", fields: [sellerId], references: [id])
+  buyer  User @relation("Buyer", fields: [buyerId], references: [id])
+
+  orders  Order?
+  options Option[]
+  review  Review[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quantity  Int
+  shopId    Int      @unique
+  buyerId   Int
+  sellerId  Int
+  deleted   Boolean? @default(false)
+
+  // relation
+  seller Shop    @relation(fields: [shopId], references: [id])
+  buyer  User    @relation(fields: [sellerId], references: [id])
+  review Review?
+  cart   Cart    @relation(fields: [id], references: [orderId])
+}
+
+model Option {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      OptionName
+  shopId    Int
+
+  // relation
+  shop   Shop          @relation(fields: [shopId], references: [id])
+  values OptionValue[]
+}
+
+model OptionValue {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  value     String
+  price     Float?
+  interest  Float?
+  duration  Int?
+  optionId  Int
+
+  // relation
+  option Option @relation(fields: [optionId], references: [id])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+  rating    Int
+  shopId    Int
+  userId    Int
+  orderId   Int      @unique
+
+  // relation
+
+  order Order @relation(fields: [orderId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  shop  Shop  @relation(fields: [shopId], references: [id])
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orderId   Int      @unique
+  payment   Payment
+  status    String
+  total     Int
+
+  // relation
+  order Order[]
+}

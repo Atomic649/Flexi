@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { Bank, PrismaClient } from "@prisma/client";
+import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
 const { zonedTimeToUtc } = require("date-fns-tz");
 
 
 //Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface userInput {

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
 
 // Ensure this file is also converted to TypeScript
@@ -16,7 +16,7 @@ interface UserInput {
 }
 
 
-const connection = new PrismaClient();
+const connection = new PrismaClient1();
 
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient as PrismaClient1 } from "../generated/client1";
 import multer from "multer";
 
 const upload: multer.Multer = multer();
 
 // Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface adsCostInput {

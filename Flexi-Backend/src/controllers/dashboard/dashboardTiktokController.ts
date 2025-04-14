@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { Prisma, PrismaClient as PrismaClient1 } from "../../generated/client1";
+const prisma = new PrismaClient1();
 
 //---------------------------Tiktok-----------------------------
 // Sum of ads cost by date and product if platform is Tiktok

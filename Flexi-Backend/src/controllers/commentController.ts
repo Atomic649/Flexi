@@ -1,9 +1,9 @@
-import { MediaType, PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
 import { Request, Response } from "express";
 
 //Create  instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 interface CommentInput {
   id?: number;

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { BusinessType, PrismaClient, taxType } from "@prisma/client";
+import { BusinessType, PrismaClient as PrismaClient1, taxType } from "../generated/client1";
 import Joi from "joi";
 
 // Create instance of PrismaClient
-const prisma = new PrismaClient();
+const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface businessAccInput {
