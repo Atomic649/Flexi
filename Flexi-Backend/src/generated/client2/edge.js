@@ -172,7 +172,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Volumes/LACIES/Flexi/Flexi-Backend/prisma/prisma/generated/client2",
+      "value": "/app/src/generated/client2",
       "fromEnvVar": null
     },
     "config": {
@@ -181,19 +181,19 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin",
+        "value": "linux-musl-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Volumes/LACIES/Flexi/Flexi-Backend/prisma/schema2.prisma",
+    "sourceFilePath": "/app/prisma/db2/schema2.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../../../.env"
+    "schemaEnvPath": "../../../.env"
   },
-  "relativePath": "../../..",
+  "relativePath": "../../../prisma/db2",
   "clientVersion": "6.6.0",
   "engineVersion": "f676762280b54cd07c770017ed3711ddde35f37a",
   "datasourceNames": [
@@ -204,12 +204,12 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL2",
-        "value": "postgresql://postgres:123456@localhost:8956/prismatypedb2?schema=flexiadsdb"
+        "value": "postgresql://postgres:123456@flexiadsdb:5432/prismatypedb2?schema=flexiadsdb"
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./prisma/generated/client2\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL2\")\n}\n\ngenerator dbml {\n  provider = \"prisma-dbml-generator\"\n  output   = \"./dbml/schema2.dbml\"\n}\n\nmodel User {\n  id              Int          @id @default(autoincrement())\n  email           String       @unique\n  password        String\n  firstName       String\n  lastName        String\n  avatar          String?\n  createdAt       DateTime     @default(now())\n  updatedAt       DateTime     @updatedAt\n  phone           String       @unique\n  username        String?      @unique\n  businessType    BusinessType @default(Other)\n  Ads             Ads[]\n  BusinessOwner   Account[]    @relation(name: \"BusinessOwner\")\n  BusinessMembers Account[]    @relation(name: \"BusinessMembers\")\n}\n\nmodel Account {\n  id        String    @id @default(uuid())\n  createdAt DateTime? @default(now())\n  updatedAt DateTime? @updatedAt\n  userId    Int\n  user      User      @relation(fields: [userId], references: [id], name: \"BusinessOwner\")\n  AllMember User[]    @relation(name: \"BusinessMembers\")\n  AllAds    Ads[]\n}\n\nmodel Ads {\n  id          Int       @id @default(autoincrement())\n  title       String\n  content     String\n  image       String?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  authorId    Int\n  author      User      @relation(fields: [authorId], references: [id])\n  businessId  Int\n  BusinessAcc Account[]\n}\n\nenum taxType {\n  Juristic\n  Individual\n}\n\nenum BusinessType {\n  Factory\n  Packaging\n  Bank\n  MarketingAgency\n  Accounting\n  Insurance\n  RealEstate\n  LuxuryGoods\n  Logistics\n  BusinessCoach\n  OnlineCourse\n  Construction\n  Other\n}\n",
-  "inlineSchemaHash": "bdf19cab2698035dffbe577bb738c4d65e6284bc8cc96d01a13b6195354b9d84",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../../src/generated/client2\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL2\")\n}\n\ngenerator dbml {\n  provider = \"prisma-dbml-generator\"\n  output   = \"../dbml/schema2.dbml\"\n}\n\nmodel User {\n  id              Int          @id @default(autoincrement())\n  email           String       @unique\n  password        String\n  firstName       String\n  lastName        String\n  avatar          String?\n  createdAt       DateTime     @default(now())\n  updatedAt       DateTime     @updatedAt\n  phone           String       @unique\n  username        String?      @unique\n  businessType    BusinessType @default(Other)\n  Ads             Ads[]\n  BusinessOwner   Account[]    @relation(name: \"BusinessOwner\")\n  BusinessMembers Account[]    @relation(name: \"BusinessMembers\")\n}\n\nmodel Account {\n  id        String    @id @default(uuid())\n  createdAt DateTime? @default(now())\n  updatedAt DateTime? @updatedAt\n  userId    Int\n  user      User      @relation(fields: [userId], references: [id], name: \"BusinessOwner\")\n  AllMember User[]    @relation(name: \"BusinessMembers\")\n  AllAds    Ads[]\n}\n\nmodel Ads {\n  id          Int       @id @default(autoincrement())\n  title       String\n  content     String\n  image       String?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  authorId    Int\n  author      User      @relation(fields: [authorId], references: [id])\n  businessId  Int\n  BusinessAcc Account[]\n}\n\nenum taxType {\n  Juristic\n  Individual\n}\n\nenum BusinessType {\n  Factory\n  Packaging\n  Bank\n  MarketingAgency\n  Accounting\n  Insurance\n  RealEstate\n  LuxuryGoods\n  Logistics\n  BusinessCoach\n  OnlineCourse\n  Construction\n  Other\n}\n",
+  "inlineSchemaHash": "984397a7f296f2310a347406138d8d805a33f89cf48d5c4796b1a28205cf2b21",
   "copyEngine": true
 }
 config.dirname = '/'

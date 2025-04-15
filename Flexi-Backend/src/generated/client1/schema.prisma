@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./prisma/generated/client1"
+  output   = "../../src/generated/client1"
 }
 
 datasource db {
@@ -16,7 +16,7 @@ datasource db {
 
 generator dbml {
   provider = "prisma-dbml-generator"
-  output   = "./dbml/schema1.dbml"
+  output   = "../dbml/schema1.dbml"
 }
 
 enum UserRole {

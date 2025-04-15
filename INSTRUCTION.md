@@ -76,28 +76,59 @@ Flexi-Backend/
    ```
 
 ---
+```bash
+npx prisma generate --schema=prisma/db1/schema1.prisma              
+npx prisma generate --schema=prisma/db2/schema2.prisma
+```
 
-npx prisma generate --schema=prisma/schema1.prisma              
-npx prisma generate --schema=prisma/schema2.prisma
+```bash
+npx prisma migrate reset --schema=prisma/db1/schema1.prisma
+npx prisma migrate reset --schema=prisma/db2/schema2.prisma
+```
+
+```bash
+npx prisma migrate dev --schema  prisma//db1/schema1.prisma --name initial                                                       
+npx prisma migrate dev --schema  prisma/db2/schema2.prisma --name initial
+```
 
 
-npx prisma migrate reset --schema=prisma/schema1.prisma          
-npx prisma migrate reset --schema=prisma/schema2.prisma
+# Get In Database
 
+## Postgres
 
-npx prisma migrate dev --schema  prisma/schema1.prisma --name initial                                                       
-npx prisma migrate dev --schema  prisma/schema2.prisma --name initial
+```bash
+psql -h localhost -p 9649 -U postgres -d prismatypedb #Database1 flexi App
+psql -h localhost -p 8956 -U postgres -d flexiadsdb #Database 2 Flexi Ad Manager
+```
 
+# ****Docker****
+## Get in postgresql database by Docker
+
+### Database 1 : Flexi App
+```bash
+docker exec -it flexidb psql -U postgres -d prismatypedb
+\dt flexidb.* # schema flexidb
+```
+
+### Database 2 : Flexi Ad Manager
+```bash
+docker exec -it flexiadsdb psql -U postgres -d flexiadsdb
+\dt flexiadsdb.* # schema flexiadsdb
+```
+
+### **Remove and Re-build all Containers**
+```bash
 docker-compose down --volumes                                   
 docker-compose up --build
+```
 
-psql -h localhost -p 9649 -U postgres -d prismatypedb
-psql -h localhost -p 8956 -U postgres -d flexiadsdb 
+### **Run Container on Background**
+```bash
+docker compose up -d
+```
+### **Docker Status**
+```bash
+ docker ps  
+ ```
 
-docker exec -it flexidb psql -U postgres -d prismatypedb
-\dt flexidb.*
-
-
-
-docker exec -it flexiadsdb psql -U postgres -d flexiadsdb
-\dt flexiadsdb.*
+ docker-compose run nodejs npx prisma generate --schema=prisma/db2/schema2.prisma

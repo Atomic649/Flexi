@@ -18,11 +18,10 @@ services:
     image: node:22-alpine
     container_name: nodejsexpress
     volumes:
-    - ./Flexi-Backend:/app
-     - /app/node_modules # Prevent overwriting node_modules in the container
+      - ./Flexi-Backend:/app 
+      - /app/node_modules # Prevent overwriting node_modules in the container
     working_dir: /app
-    command: sh -c "npm install && npx prisma migrate dev --schema=prisma/schema1.prisma && npm run start:dev"
-    #  && npx prisma migrate dev --schema=prisma/schema2.prisma # migrate the second schema 
+    command: sh -c "npm install && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run start" # migrate the second schema 
     ports:
       - 4000:3000
     environment:
@@ -31,7 +30,6 @@ services:
     restart: always
     networks:
       - prosgres-docker-prisma
-
 
   # Frontend Expo
   frontend-expo:
@@ -98,7 +96,6 @@ services:
     restart: always
     networks:
       - prosgres-docker-prisma
-
   # # Nginx Reverse Proxy
   # nginx:
   #   image: nginx:latest

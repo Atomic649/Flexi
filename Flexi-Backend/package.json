@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc", 
+    "build": "tsc",
     "start:dev": "nodemon src/index.ts",
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate",
@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=18.18.0 <20.16.0"
+    "node": ">=18.18.0 <=22.14.0"
   },
   "description": "",
   "dependencies": {
@@ -21,7 +21,7 @@
     "@tsed/multipartfiles": "^5.65.9",
     "@types/body-parser": "^1.19.5",
     "@types/pdf-parse": "^1.1.4",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^16.0.3",

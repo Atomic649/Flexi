@@ -8,7 +8,10 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -63,6 +66,9 @@
           "projectId": "02359cb3-514b-4410-8a59-6d3072668430"
         }
       }
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
