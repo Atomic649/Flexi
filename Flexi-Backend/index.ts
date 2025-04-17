@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import https from "https";
+import fs from "fs";
 
 // Initialize dotenv
 dotenv.config();
@@ -129,4 +131,13 @@ app.use("/store", storeRoutes);
 
 //---------- Start the server ----------------
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server started on port ${port}`));
+
+// Load SSL certificates
+const sslOptions = {
+  key: fs.readFileSync("/Volumes/LACIES/Flexi/key.pem"),
+  cert: fs.readFileSync("/Volumes/LACIES/Flexi/cert.pem"),
+};
+
+https.createServer(sslOptions, app).listen(port, () => {
+  console.log(`Server started on HTTPS port ${port}`);
+});
