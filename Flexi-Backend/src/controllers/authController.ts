@@ -15,8 +15,7 @@ interface UserInput {
   phone: string;
 }
 
-
-const connection = new PrismaClient1();
+const Prisma = new PrismaClient1();
 
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };
@@ -37,7 +36,7 @@ const register = async (req: Request, res: Response) => {
   }
   try {
     // check if user already exists
-    const existingUser = await connection.user.findUnique({
+    const existingUser = await Prisma.user.findUnique({
       where: {
         email: userInput.email,
       },
@@ -51,7 +50,7 @@ const register = async (req: Request, res: Response) => {
     //Check if password matches
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
-    const user = await connection.user.create({
+    const user = await Prisma.user.create({
       data: {
         email: userInput.email,
         password: hashedPassword,
@@ -94,7 +93,7 @@ const login = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   try {
-    const user = await connection.user.findUnique({
+    const user = await Prisma.user.findUnique({
       where: {
         email: userInput.email,
       },
@@ -112,7 +111,7 @@ const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);
 
     // find memberId by userId
-    const memberId = await connection.member.findFirst({
+    const memberId = await Prisma.member.findFirst({
       where: {
         userId: user.id,
       },
@@ -143,7 +142,7 @@ const login = async (req: Request, res: Response) => {
 // get all users
 const getUsers = async (_: Request, res: Response) => {
   try {
-    const users = await connection.user.findMany();
+    const users = await Prisma.user.findMany();
     res.json(users);
   } catch (e) {
     console.error(e);
@@ -155,7 +154,7 @@ const getUsers = async (_: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const user = await connection.user.delete({
+    const user = await Prisma.user.delete({
       where: {
         id: Number(id),
       },
@@ -186,7 +185,7 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
-    const user = await connection.user.update({
+    const user = await Prisma.user.update({
       where: {
         id: Number(id),
       },
@@ -241,7 +240,7 @@ const session = async (req: Request, res: Response) => {
 
   try {
     const decoded = jwt.verify(token, "secret") as { id: number };
-    const user = await connection.user.findUnique({
+    const user = await Prisma.user.findUnique({
       where: {
         id: decoded.id,
       },

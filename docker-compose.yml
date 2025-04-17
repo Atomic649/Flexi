@@ -21,7 +21,7 @@ services:
       - ./Flexi-Backend:/app 
       - /app/node_modules # Prevent overwriting node_modules in the container
     working_dir: /app
-    command: sh -c "npm install && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run start" # migrate the second schema 
+    command: sh -c "npm install && npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run start" # migrate the second schema 
     ports:
       - 4000:3000
     environment:
@@ -31,23 +31,23 @@ services:
     networks:
       - prosgres-docker-prisma
 
-  # Frontend Expo
-  frontend-expo:
-    build:
-      context: ./Flexi-Frontend
-      dockerfile: Dockerfile
-    container_name: flexi-react-expo
-    volumes:
-      - ./Flexi-Frontend:/app
-      - /app/node_modules
-    working_dir: /app
-    ports:
-      - 19000:19000
-      - 19001:19001
-      - 19002:19002
-    networks:
-      - prosgres-docker-prisma
-    command: sh -c "npm install && npm start"
+  # # Frontend Expo
+  # frontend-expo:
+  #   build:
+  #     context: ./Flexi-Frontend
+  #     dockerfile: Dockerfile
+  #   container_name: flexi-react-expo
+  #   volumes:
+  #     - ./Flexi-Frontend:/app
+  #     - /app/node_modules
+  #   working_dir: /app
+  #   ports:
+  #     - 19000:19000
+  #     - 19001:19001
+  #     - 19002:19002
+  #   networks:
+  #     - prosgres-docker-prisma
+  #   command: sh -c "npm install && npm start"
 
   # # Frontend NextJS
   # frontend-nextjs:
@@ -81,7 +81,7 @@ services:
     networks:
       - prosgres-docker-prisma
 
-  # Second Postgres Database
+  # # Second Postgres Database
   postgresdb2:
     image: postgres:15.6
     container_name: flexiadsdb
@@ -96,7 +96,7 @@ services:
     restart: always
     networks:
       - prosgres-docker-prisma
-  # # Nginx Reverse Proxy
+  # Nginx Reverse Proxy
   # nginx:
   #   image: nginx:latest
   #   container_name: flexi-nginx

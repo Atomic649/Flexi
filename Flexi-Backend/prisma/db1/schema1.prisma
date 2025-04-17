@@ -9,6 +9,11 @@ generator client {
   output   = "../../src/generated/client1"
 }
 
+generator clientDist {
+  provider = "prisma-client-js"
+  output   = "../../dist/src/generated/client1"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL1")

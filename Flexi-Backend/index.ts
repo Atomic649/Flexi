@@ -30,52 +30,52 @@ app.get(`/test`, (req, res) => {
 // --------------IMPORT ROUTES-----------------
 
 // Import User Routes
-import authRoutes from "./routes/authRoute";
+import authRoutes from "./src/routes/authRoute";
 
 // Import Bill Routes
-import billRoutes from "./routes/billRoute";
+import billRoutes from "./src/routes/billRoute";
 
 // Import Member Routes
-import memberRoutes from "./routes/memberRoute";
+import memberRoutes from "./src/routes/memberRoute";
 
 // Import Business Account Routes
-import businessAccRoutes from "./routes/businessAccRoute";
+import businessAccRoutes from "./src/routes/businessAccRoute";
 
 // Import Ads Cost Routes
-import adsCostRoutes from "./routes/adsCostRoute";
+import adsCostRoutes from "./src/routes/adsCostRoute";
 
 // Import platform Routes
-import platformRoutes from "./routes/platformRoute";
+import platformRoutes from "./src/routes/platformRoute";
 
 // Import Expense Routes
-import expenseRoutes from "./routes/expenseRoute";
+import expenseRoutes from "./src/routes/expenseRoute";
 
 // Import Product Routes
-import productRoutes from "./routes/productRoute";
+import productRoutes from "./src/routes/productRoute";
 
 // Import Dashboard Routes
-import dashboardRoutes from "./routes/dashboardRoute";
+import dashboardRoutes from "./src/routes/dashboardRoute";
 
 // Import Credit Routes
-import  creditRoutes from "./routes/creditRoute";
+import  creditRoutes from "./src/routes/creditRoute";
 
 // Import user Routes
-import userRoutes from "./routes/userRoute";
+import userRoutes from "./src/routes/userRoute";
 
 // Import Post Routes
-import postRoutes from "./routes/postRoute";
+import postRoutes from "./src/routes/postRoute";
 
 // Import Comment Routes
-import commentRoutes from "./routes/commentRoute";
+import commentRoutes from "./src/routes/commentRoute";
 
 // Import report Routes
-import  reportRoutes  from "./routes/reportRoute";
+import  reportRoutes  from "./src/routes/reportRoute";
 
 // Import pdf Rou
-import pdfRoutes from "./routes/pdfRoute";
+import pdfRoutes from "./src/routes/pdfRoute";
 
 // Import Store Routes
-import storeRoutes  from "./routes/storeRoute";
+import storeRoutes  from "./src/routes/storeRoute";
 
 // --------------USE ROUTES-----------------
 

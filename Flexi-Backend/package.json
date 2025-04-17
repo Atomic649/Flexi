@@ -4,10 +4,14 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start:dev": "nodemon src/index.ts",
+    "start:dev": "nodemon index.ts",
     "start": "node dist/index.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:generate": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
+    "prisma:generate:db1": "npx prisma generate --schema=prisma/db1/schema1.prisma",
+    "prisma:generate:db2": "npx prisma generate --schema=prisma/db2/schema2.prisma",
+    "prisma:migrate": "npx prisma migrate dev --schema=prisma/db1/schema1.prisma --name initial && npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial",
+    "prisma:migrate:db1": "npx prisma migrate dev --schema=prisma/db1/schema1.prisma --name initial",
+    "prisma:migrate:db2": "npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial"
   },
   "keywords": [],
   "author": "",
