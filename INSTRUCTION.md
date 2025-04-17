@@ -166,3 +166,6 @@ docker compose up -d
 ```bash
  docker ps
 ```
+
+
+scp -i flexibusinesshub.pem -r Flexi  ubuntu@54.66.141.26:/home/ubuntu/
