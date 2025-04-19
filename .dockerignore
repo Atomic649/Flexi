@@ -6,3 +6,7 @@ Flexi-Frontend/node_modules/
 
 
 Flexi-Backend/dist/
+
+#SSL
+cert.pem
+key.pem

@@ -167,5 +167,4 @@ docker compose up -d
  docker ps
 ```
 
-
-scp -i flexibusinesshub.pem -r Flexi  ubuntu@54.66.141.26:/home/ubuntu/
+ssh -i flexibusinesshub.pem ubuntu@<EC2_PUBLIC_IP>
