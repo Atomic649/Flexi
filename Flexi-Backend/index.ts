@@ -134,8 +134,8 @@ const port = process.env.PORT || 3000;
 
 // Load SSL certificates
 const sslOptions = {
-  key: fs.readFileSync("./key.pem"),
-  cert: fs.readFileSync("./cert.pem"),
+  key: fs.readFileSync(".ssl/key.pem"),
+  cert: fs.readFileSync(".ssl/cert.pem"),
 };
 
 https.createServer(sslOptions, app).listen(port, () => {
