@@ -2,8 +2,8 @@
 
 # Define Network
 networks:
-  flexi-network:
-    name: flexi-network
+  prosgres-docker-prisma:
+    name: prosgres-docker-prisma
     driver: bridge
 
 # Define Services
@@ -16,12 +16,12 @@ services:
       context: ./Flexi-Backend
       dockerfile: Dockerfile
     image: node:22-alpine
-    container_name: api-nodejs
+    container_name: nodejsexpress
     volumes:
       - ./Flexi-Backend:/app 
       - /app/node_modules # Prevent overwriting node_modules in the container
     working_dir: /app
-    command: sh -c "npm install && npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run build && npm run start" # migrate the second schema 
+    command: sh -c "npm install && npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run start" # migrate the second schema 
     ports:
       - 3000:3000
     environment:
@@ -29,7 +29,7 @@ services:
       - NODE_ENV=development
     restart: always
     networks:
-      - flexi-network
+      - prosgres-docker-prisma
 
   # # Frontend Expo
   # frontend-expo:
@@ -68,7 +68,7 @@ services:
   # Postgres Database
   postgresdb:
     image: postgres:15.6
-    container_name: db-flexidb
+    container_name: flexidb
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     environment:
@@ -79,12 +79,12 @@ services:
       - 9649:5432
     restart: always
     networks:
-      - flexi-network
+      - prosgres-docker-prisma
 
   # # Second Postgres Database
   postgresdb2:
     image: postgres:15.6
-    container_name: db-flexiadsdb
+    container_name: flexiadsdb
     volumes:
       - ./postgres_data2:/var/lib/postgresql/data
     environment:
@@ -95,8 +95,8 @@ services:
       - 8956:5432
     restart: always
     networks:
-      - flexi-network
-
+      - prosgres-docker-prisma
+  
   # Nginx Reverse Proxy
   nginx:
     image: nginx:latest
@@ -109,4 +109,4 @@ services:
     depends_on:
       - nodejs   
     networks:
-      - flexi-network
+      - prosgres-docker-prisma
