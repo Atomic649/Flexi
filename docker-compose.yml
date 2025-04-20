@@ -2,8 +2,8 @@
 
 # Define Network
 networks:
-  prosgres-docker-prisma:
-    name: prosgres-docker-prisma
+  flexi-network:
+    name: flexi-network
     driver: bridge
 
 # Define Services
@@ -16,20 +16,20 @@ services:
       context: ./Flexi-Backend
       dockerfile: Dockerfile
     image: node:22-alpine
-    container_name: nodejsexpress
+    container_name: api-nodejs
     volumes:
       - ./Flexi-Backend:/app 
       - /app/node_modules # Prevent overwriting node_modules in the container
     working_dir: /app
     command: sh -c "npm install && npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma && npx prisma migrate dev --schema=prisma/db1/schema1.prisma && npx prisma migrate dev --schema=prisma/db2/schema2.prisma && npm run build && npm run start" # migrate the second schema 
     ports:
-      - 4000:3000
+      - 3000:3000
     environment:
       - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
       - NODE_ENV=development
     restart: always
     networks:
-      - prosgres-docker-prisma
+      - flexi-network
 
   # # Frontend Expo
   # frontend-expo:
@@ -68,7 +68,7 @@ services:
   # Postgres Database
   postgresdb:
     image: postgres:15.6
-    container_name: flexidb
+    container_name: db-flexidb
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     environment:
@@ -79,12 +79,12 @@ services:
       - 9649:5432
     restart: always
     networks:
-      - prosgres-docker-prisma
+      - flexi-network
 
   # # Second Postgres Database
   postgresdb2:
     image: postgres:15.6
-    container_name: flexiadsdb
+    container_name: db-flexiadsdb
     volumes:
       - ./postgres_data2:/var/lib/postgresql/data
     environment:
@@ -95,17 +95,18 @@ services:
       - 8956:5432
     restart: always
     networks:
-      - prosgres-docker-prisma
+      - flexi-network
+
   # Nginx Reverse Proxy
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: flexi-nginx
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - 80:80
-  #   depends_on:
-  #     - backend
-  #     - frontend-nextjs
-  #   networks:
-  #     - prosgres-docker-prisma
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+      - 443:443    
+    depends_on:
+      - nodejs   
+    networks:
+      - flexi-network

@@ -25,9 +25,12 @@ app.use(cors());
 app.use("/uploads", express.static("uploads"));
 app.use("/uploads/images", express.static("uploads/images"));
 app.use("/uploads/pdf", express.static("uploads/pdf"));
-app.get(`/test`, (req, res) => {
-    res.send("Hello - API");
-  });
+app.get(`/test`, (_, res) => {
+  res.send("whatever it takes 🔥 ");
+});
+app.get(`/`, (_, res) => {
+  res.send("Hello - Flexi API 🚀");
+});
 
 // --------------IMPORT ROUTES-----------------
 
@@ -59,7 +62,7 @@ import productRoutes from "./src/routes/productRoute";
 import dashboardRoutes from "./src/routes/dashboardRoute";
 
 // Import Credit Routes
-import  creditRoutes from "./src/routes/creditRoute";
+import creditRoutes from "./src/routes/creditRoute";
 
 // Import user Routes
 import userRoutes from "./src/routes/userRoute";
@@ -71,13 +74,13 @@ import postRoutes from "./src/routes/postRoute";
 import commentRoutes from "./src/routes/commentRoute";
 
 // Import report Routes
-import  reportRoutes  from "./src/routes/reportRoute";
+import reportRoutes from "./src/routes/reportRoute";
 
 // Import pdf Rou
 import pdfRoutes from "./src/routes/pdfRoute";
 
 // Import Store Routes
-import storeRoutes  from "./src/routes/storeRoute";
+import storeRoutes from "./src/routes/storeRoute";
 
 // --------------USE ROUTES-----------------
 
