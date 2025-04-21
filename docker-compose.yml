@@ -16,12 +16,7 @@ services:
       context: ./Flexi-Backend
       dockerfile: Dockerfile
     image: node:22-alpine
-    container_name: nodejsexpress
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    container_name: nodejsexpress    
     volumes:
       - ./Flexi-Backend:/app 
       - /app/node_modules # Prevent overwriting node_modules in the container
@@ -107,16 +102,11 @@ services:
     image: nginx:latest
     container_name: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Ensure read-only mount
-      - ./ssl/cert.pem:/etc/ssl/certs/cert.pem:ro # Mount SSL certificate
-      - ./ssl/key.pem:/etc/ssl/private/key.pem:ro # Mount SSL key
-      - /dev/null:/etc/nginx/conf.d/default.conf # Disable default configuration
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - 80:80
       - 443:443    
     restart: always
-    depends_on:
-      nodejs:
-        condition: service_healthy
+    depends_on: nodejs      
     networks:
       - prosgres-docker-prisma

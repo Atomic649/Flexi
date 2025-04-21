@@ -11,5 +11,3 @@ Flexi-Backend/dist/
 cert.pem
 key.pem
 
-# Ensure nginx.conf is not ignored
-!nginx.conf
