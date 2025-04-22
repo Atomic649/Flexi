@@ -167,4 +167,8 @@ docker compose up -d
  docker ps
 ```
 
+
+### Get in Server
+```bash
 ssh -i flexibusinesshub.pem ubuntu@<EC2_PUBLIC_IP>
+```
