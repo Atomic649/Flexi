@@ -57,10 +57,9 @@ const TabIcon = ({
             // Color Icon of Middle Tab
             tintColor={size === "large" ? "#ffffff" : color}
             className={size === "large" ? "w-9 h-9  " : "w-9 h-7"}
-            style={{
-              marginEnd: Platform.OS === "web" ?  10:0,
-              width: Platform.OS === "web" ?  28:28,
-              height: Platform.OS === "web" ?  28:28,
+            style={{            
+              width: Platform.OS === "web" ?  18:28,
+              height: Platform.OS === "web" ?  18:28,
             }}
           />
         )}
@@ -105,8 +104,7 @@ export default function TabLayout() {
             borderTopWidth: Platform.OS === "web" ? 0 : 1, // Remove border for web
             borderBottomWidth: Platform.OS === "web" ? 1 : 0, // Add border for web
             borderColor: tabBarBorderColor,
-            height: Platform.OS === "web" ? 60 : 90, // Adjust height for 
-          
+            height: Platform.OS === "web" ? 60 : 90, // Adjust height for           
             paddingTop: Platform.OS === "web" ? 0 : 5,
             paddingBottom: Platform.OS === "web" ? 0 : 30,
             position: Platform.OS === "web" ? "absolute" : "relative", // Position at the top for web

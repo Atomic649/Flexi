@@ -2,7 +2,7 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState } from "react";
-import { router, Slot, Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import {
   SafeAreaView,
@@ -271,7 +271,8 @@ const mainTopBar = (
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
-    <View className="flex-row items-center justify-between gap-4 ">
+    <View className="flex-row items-center justify-between gap-4 "
+    style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0 }}>
       <TouchableOpacity onPress={() => router.push("profile")} className="mr-2">
         <View className="w-9 h-9 rounded-full overflow-hidden">
           <Image
@@ -290,7 +291,8 @@ const mainTopBar = (
   ),
 
   headerRight: () => (
-    <View className="flex-row items-center">
+    <View className="flex-row items-center"
+    style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 }}>
       <TouchableOpacity onPress={() => router.push("roadmap")} className="mr-5">
         <Image
           source={icons.businessman}
