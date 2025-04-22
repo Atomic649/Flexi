@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SafeAreaView, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { Dimensions } from "react-native";
@@ -24,7 +24,10 @@ const Expense = () => {
   });
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <SafeAreaView
+      className={`h-full ${useBackgroundColorClass()}`}
+      style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
+    >
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}

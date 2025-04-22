@@ -5,6 +5,7 @@ import {
   Modal,
   Text,
   TextInput,
+  Platform,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
@@ -194,14 +195,14 @@ export default function CreateExpense({
             justifyContent: "center",
             alignItems: "center",
           }}
-          style={{ width: "100%" }}
+          style={{ width: Platform.OS === "web" ?"50%" : "100%" }}
         >
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: 0.10,
+              flex: Platform.OS === "web" ? 0.4 :0.10,
               justifyContent: "center",
-              width: "90%",
+              width:  Platform.OS === "web" ?"100%" : "90%" ,            
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
               borderRadius: 10,
             }}

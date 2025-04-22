@@ -114,110 +114,126 @@ export default function Register() {
       >
         <ScrollView>
           <View
-            className="w-full flex justify-center h-full px-4 "
+            className="w-full flex justify-center h-full px-4"
             style={{
               minHeight: Dimensions.get("window").height,
+              alignItems: Platform.OS === "web" ? "center" : "stretch",
             }}
           >
-             <Text className={`text-lg font-bold mt-4 ${useTextColorClass()}`}>
-              {t("auth.businessRegister.title")}
-            </Text>
+            <View
+              style={{
+                width: Platform.OS === "web" ? "40%" : "100%",
+                maxWidth: 600,
+              }}
+            >
+              <Text className={`text-lg font-bold mt-4 ${useTextColorClass()}`}>
+                {t("auth.businessRegister.title")}
+              </Text>
 
-            <FormField
-              title={t("auth.businessRegister.businessName")}
-              placeholder={t("auth.businessRegister.businessName")}
-              value={businessName}
-              handleChangeText={setbusinessName}
-              otherStyles="mt-7"
-            />
+              <FormField
+                title={t("auth.businessRegister.businessName")}
+                placeholder={t("auth.businessRegister.businessName")}
+                value={businessName}
+                handleChangeText={setbusinessName}
+                otherStyles="mt-7"
+              />
 
-            <Dropdown
-              title={t("auth.businessRegister.taxType")}
-              options={[
-                {
-                  label: t("auth.businessRegister.taxTypeOption.Individual"),
-                  value: "Individual",
-                },
-                {
-                  label: t("auth.businessRegister.taxTypeOption.Juristic"),
-                  value: "Juristic",
-                },
-              ]}
-              placeholder={t("auth.businessRegister.taxType")}
-              onValueChange={settaxType}
-              selectedValue={t(`auth.businessRegister.taxTypeOption.${taxType}`)}
-              otherStyles="mt-7"
-            />
+              <Dropdown
+                title={t("auth.businessRegister.taxType")}
+                options={[
+                  {
+                    label: t("auth.businessRegister.taxTypeOption.Individual"),
+                    value: "Individual",
+                  },
+                  {
+                    label: t("auth.businessRegister.taxTypeOption.Juristic"),
+                    value: "Juristic",
+                  },
+                ]}
+                placeholder={t("auth.businessRegister.taxType")}
+                onValueChange={settaxType}
+                selectedValue={t(
+                  `auth.businessRegister.taxTypeOption.${taxType}`
+                )}
+                otherStyles="mt-7"
+              />
 
-            <FormField
-              title={t("auth.businessRegister.vatId")}
-              placeholder={t("0000000000000")}
-              value={vatId}
-              handleChangeText={setvatId}
-              otherStyles="mt-7"
-              keyboardType="number-pad"
-            />
+              <FormField
+                title={t("auth.businessRegister.vatId")}
+                placeholder={t("0000000000000")}
+                value={vatId}
+                handleChangeText={setvatId}
+                otherStyles="mt-7"
+                keyboardType="number-pad"
+              />
 
-            <Dropdown
-              title={t("auth.businessRegister.businessType")}
-              options={[
-                {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.OnlineSale"
-                  ),
-                  value: "OnlineSale",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Massage"),
-                  value: "Massage",
-                },
-                {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.Restaurant"
-                  ),
-                  value: "Restaurant",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Bar"),
-                  value: "Bar",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Cafe"),
-                  value: "Cafe",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Hotel"),
-                  value: "Hotel",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Tutor"),
-                  value: "Tutor",
-                },
-                {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.Influencer"
-                  ),
-                  value: "Influencer",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Other"),
-                  value: "Other",
-                },
-              ]}
-              placeholder={t("auth.businessRegister.chooseBusinessType")}
-              selectedValue={t(`auth.businessRegister.businessTypeOption.${businessType}`)}
-              onValueChange={setbusinessType}
-              otherStyles="mt-7"
-            />
+              <Dropdown
+                title={t("auth.businessRegister.businessType")}
+                options={[
+                  {
+                    label: t(
+                      "auth.businessRegister.businessTypeOption.OnlineSale"
+                    ),
+                    value: "OnlineSale",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Massage"),
+                    value: "Massage",
+                  },
+                  {
+                    label: t(
+                      "auth.businessRegister.businessTypeOption.Restaurant"
+                    ),
+                    value: "Restaurant",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Bar"),
+                    value: "Bar",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Cafe"),
+                    value: "Cafe",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Hotel"),
+                    value: "Hotel",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Tutor"),
+                    value: "Tutor",
+                  },
+                  {
+                    label: t(
+                      "auth.businessRegister.businessTypeOption.Influencer"
+                    ),
+                    value: "Influencer",
+                  },
+                  {
+                    label: t("auth.businessRegister.businessTypeOption.Other"),
+                    value: "Other",
+                  },
+                ]}
+                placeholder={t(
+                  "auth.businessRegister.chooseBusinessType"
+                )}
+                selectedValue={t(
+                  `auth.businessRegister.businessTypeOption.${businessType}`
+                )}
+                onValueChange={setbusinessType}
+                otherStyles="mt-7"
+              />
 
-            {error ? <Text className="text-red-500 mt-4">{error}</Text> : null}
+              {error ? (
+                <Text className="text-red-500 mt-4">{error}</Text>
+              ) : null}
 
-            <CustomButton
-              title={t("auth.register.button")}
-              handlePress={handleRegister}
-              containerStyles="mt-7"
-              textStyles="!text-white"
-            />
+              <CustomButton
+                title={t("auth.register.button")}
+                handlePress={handleRegister}
+                containerStyles="mt-7"
+                textStyles="!text-white"
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

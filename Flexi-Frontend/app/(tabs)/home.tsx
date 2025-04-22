@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   Modal,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -66,7 +67,8 @@ export default function Dashboard() {
       }
       style={{ flex: 1 }}
     >
-      <SafeAreaView className="h-full">
+      <SafeAreaView className="h-full"
+       style={Platform.OS === "web" ? { paddingTop: 60 } : {}}>
         <ScrollView>
           <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
             <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>

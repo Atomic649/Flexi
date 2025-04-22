@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Animated, Image, SafeAreaView ,Text} from "react-native";
+import { View, Animated, Image, SafeAreaView, Text, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
@@ -54,7 +54,10 @@ export default function RoadMap() {
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
-      <View className="flex-row items-center justify-center m-4">
+      <View
+        className="flex-row items-center justify-center m-4"
+        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+      >
         <Image
           source={images.logo}
           style={{ width: 100, height: 100, marginBottom: 20 }}
@@ -68,7 +71,10 @@ export default function RoadMap() {
           </Animated.Text>
         )}
       </View>
-      <View className="flex-col h-1/3 gap-4 px-2">
+      <View
+        className="flex-col h-1/3 gap-4 px-2"
+        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+      >
         {/* mission 1 */}
         <View className="flex-row items-center justify-between mx-2 px-8">
           <View className="flex-col items-start justify-center">
@@ -143,22 +149,28 @@ export default function RoadMap() {
       </View>
 
       {/* Vision */}
-      <View className="flex-col items-center mt-8">
+      <View
+        className="flex-col items-center mt-8"
+        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+      >
         <View
-          className=" w-full  py-5 m-2 items-center justify-center"
-          style={{ 
+          className="w-full py-5 m-2 items-center justify-center"
+          style={{
             backgroundColor: theme === "dark" ? "#242422" : "#f0f0f0",
             borderWidth: 1,
             borderColor: theme === "dark" ? "#03dcc7" : "#04ecd5",
             borderRadius: 10,
           }}
         >
-          <Text className="text-center justify-center text-lg font-bold"
-            style={{ color: theme === "dark" ? "#08ffe6" : "#04ecd5",
+          <Text
+            className="text-center justify-center text-lg font-bold"
+            style={{
+              color: theme === "dark" ? "#08ffe6" : "#04ecd5",
               fontFamily: i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
               fontSize: 18,
               fontWeight: "bold" as "bold",
-             }}>
+            }}
+          >
             {t("roadmap.vision")}
           </Text>
         </View>
@@ -169,7 +181,10 @@ export default function RoadMap() {
         </View>
       </View>
 
-      <View className="flex-row items-center justify-around mt-6 ">
+      <View
+        className="flex-row items-center justify-around mt-6"
+        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+      >
         <CustomButton
           title={t("common.joinTeam")}
           handlePress={() => {}}

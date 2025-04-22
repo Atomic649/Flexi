@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Pressable, SafeAreaView, Switch } from "react-native";
+import { ScrollView, Pressable, SafeAreaView, Switch, Platform } from "react-native";
 import { View } from "@/components/Themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -234,10 +234,11 @@ export default function Setting() {
   //------------------------------------------
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
+     style={Platform.OS === "web" ? { paddingTop: 60} : {}}>
       <ScrollView>
-        <View className={`px-4 pt-3 pb-5`}>
-         
+        <View className={`px-4 pt-3 pb-5`}
+         style={Platform.OS === "web" ? { alignSelf:"center" ,width: "60%" } : {}}>         
 
           {/* Social Media Platform */}
           <Section
@@ -374,7 +375,9 @@ export default function Setting() {
           </Section>
 
           {/* Marketing Strategies */}
-          <Section title={t("settings.marketing.title")}>
+          <Section title={t("settings.marketing.title")}
+          router={() => router.push("ads")}
+          subtitle={t("settings.socialMedia.seeAll")}>
             <View>
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
@@ -562,7 +565,7 @@ const Section = ({
             >
               {subtitle}
             </CustomText>
-            {subtitle}
+            
           </Pressable>
         )}
       </View>

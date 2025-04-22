@@ -2,7 +2,7 @@
 import "../global.css";
 import "@/i18n";
 import React, { useEffect, useState } from "react";
-import { router, Stack } from "expo-router";
+import { router, Slot, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import {
   SafeAreaView,

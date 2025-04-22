@@ -1,4 +1,11 @@
-import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from "react-native";
 import React from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
@@ -62,7 +69,12 @@ export default function AdsCard({
           className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
          bg-[#918b8b0d]
          border-s-8 `}
-          style={{ borderColor: getBorderColor(platform), backgroundColor: cardColor }}
+          style={{
+            alignSelf: Platform.OS === "web" ? "center" : "auto",
+            width: Platform.OS === "web" ? 500 : 350,
+            borderColor: getBorderColor(platform),
+            backgroundColor: cardColor,
+          }}
         >
           <View className="flex flex-row gap-3 items-start">
             <View className="flex justify-center items-center flex-row flex-1">

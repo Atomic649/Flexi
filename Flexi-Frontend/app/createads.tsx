@@ -88,9 +88,10 @@ export default function CreateAds() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () =>{
+            onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-            router.replace("/ads")}
+              router.replace("/ads");
+            },
           },
         ],
       });
@@ -100,36 +101,35 @@ export default function CreateAds() {
   };
 
   return (
-    <SafeAreaView className={`flex-1  ${useBackgroundColorClass()}`}>
-      <ScrollView>
-        <View className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
+    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()} items-center`}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}>
+        <View className="w-full max-w-2xl flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
           <Dropdown2
             title={t("ads.platform")}
             options={[
               {
-          label: t("ads.platformOption.Facebook"),
-          value: "Facebook",
+                label: t("ads.platformOption.Facebook"),
+                value: "Facebook",
               },
               {
-          label: t("ads.platformOption.Tiktok"),
-          value: "Tiktok",
+                label: t("ads.platformOption.Tiktok"),
+                value: "Tiktok",
               },
               {
-          label: t("ads.platformOption.Shopee"),
-          value: "Shopee",                
+                label: t("ads.platformOption.Shopee"),
+                value: "Shopee",
               },
               {
-          label: t("ads.platformOption.Line"),
-          value: "Line"
-              }
+                label: t("ads.platformOption.Line"),
+                value: "Line",
+              },
             ]}
             placeholder={t("ads.choosePlatform")}
             selectedValue={t(`ads.platformOption.${platform}`)}
-            onValueChange= {setPlatform}
+            onValueChange={setPlatform}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-
             otherStyles="mt-0 mb-2"
           />
           <FormField2
@@ -138,7 +138,7 @@ export default function CreateAds() {
             handleChangeText={setAccName}
             placeholder={t("ads.accNameRecommend")}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
           />
@@ -147,14 +147,16 @@ export default function CreateAds() {
             value={accId}
             handleChangeText={setAccId}
             otherStyles={fieldStyles}
-            placeholder= "00000000000000"
+            placeholder="00000000000000"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             keyboardType="numeric"
           />
 
-          {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
+          {error ? (
+            <CustomText className="text-red-500 mt-4">{error}</CustomText>
+          ) : null}
 
           <CustomButton
             title={t("ads.createbutton")}

@@ -19,7 +19,7 @@ import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { t } from "i18next";
 import { saveMemberId, saveToken, saveUserId } from "@/utils/utility";
-import { useTextColorClass } from "@/utils/themeUtils";
+import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 
 export default function Login() {
   // State variables for email and password
@@ -111,7 +111,7 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="h-full"
@@ -121,54 +121,67 @@ export default function Login() {
             className="w-full flex justify-center h-full px-4"
             style={{
               minHeight: Dimensions.get("window").height,
+              alignItems: Platform.OS === "web" ? "center" : "stretch",
             }}
           >
-            <View className="flex items-center">
-              <Image
-                source={images.logo}               
-                resizeMode="contain"
-                className="h-[190px]"
-              />
-            </View>
+            <View
+              style={{
+                width: Platform.OS === "web" ? "40%" : "100%",
+                maxWidth: 600,
+              }}
+            >
+              <View className="flex items-center">
+                <Image
+                  source={images.logo}
+                  resizeMode="contain"
+                  className="h-[190px]"
+                  style={{
+                    height: Platform.OS === "web" ? 100 : 190,
+                    width: Platform.OS === "web" ? 150 : undefined,
+                  }}
+                />
+              </View>
 
-            <CustomText className={`text-2xl font-bold mt-4 ${useTextColorClass()}`}>
-              {t("auth.login.title")}
-            </CustomText>
-
-            <FormField
-              title={t("auth.login.emailPlaceholder")}
-              placeholder={t("auth.login.emailPlaceholder")}
-              value={form.email}
-              handleChangeText={(e: any) => setForm({ ...form, email: e })}
-              otherStyles="mt-7 dark:text-white"
-              keyboardType="email-address"
-            />
-
-            <FormField
-              title={t("auth.login.passwordPlaceholder")}
-              placeholder={t("auth.login.passwordPlaceholder")}
-              value={form.password}
-              handleChangeText={(e: any) => setForm({ ...form, password: e })}
-              otherStyles="mt-7"
-             
-            />
-
-            <CustomButton
-              title={t("auth.login.button")}
-              handlePress={submit}
-              containerStyles="mt-7"
-              textStyles="!text-white"
-              isLoading={isSubmitting}
-            />
-
-            <View className="flex justify-center pt-5 flex-row gap-2">
-              <CustomText weight="regular" className="text-lg">
-                {t("auth.login.noAccount")}
+              <CustomText
+                className={`text-2xl font-bold mt-4 ${useTextColorClass()}`}
+              >
+                {t("auth.login.title")}
               </CustomText>
-              <Button
-                title={t("auth.login.registerButton")}
-                onPress={() => router.replace("/register")}
+
+              <FormField
+                title={t("auth.login.emailPlaceholder")}
+                placeholder={t("auth.login.emailPlaceholder")}
+                value={form.email}
+                handleChangeText={(e: any) => setForm({ ...form, email: e })}
+                otherStyles="mt-7 dark:text-white"
+                keyboardType="email-address"
               />
+
+              <FormField
+                title={t("auth.login.passwordPlaceholder")}
+                placeholder={t("auth.login.passwordPlaceholder")}
+                value={form.password}
+                handleChangeText={(e: any) => setForm({ ...form, password: e })}
+                otherStyles="mt-7"
+              />
+
+              <CustomButton
+                title={t("auth.login.button")}
+                handlePress={submit}
+                containerStyles="mt-7"
+                textStyles="!text-white"
+                isLoading={isSubmitting}
+              />
+
+              <View className="flex justify-center pt-5 flex-row gap-2">
+                <CustomText weight="regular" className="text-lg">
+                  {t("auth.login.noAccount")}
+                </CustomText>
+                <Button
+                  title={t("auth.login.registerButton")}
+                  onPress={() => router.replace("/register")}
+                />
+              </View>
             </View>
           </View>
         </ScrollView>

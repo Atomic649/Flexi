@@ -5,7 +5,7 @@ import { getMemberId } from "@/utils/utility";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import { ScrollView, View ,Text} from "react-native";
+import { ScrollView, View, Text, Platform } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import FormField2 from "@/components/FormField2";
@@ -76,9 +76,10 @@ export default function EditAds() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () =>{
-              setAlertConfig((prev) => ({ ...prev, visible: false }))
-            router.replace("/ads")}
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              router.replace("/ads");
+            },
           },
         ],
       });
@@ -119,30 +120,34 @@ export default function EditAds() {
   return (
     <SafeAreaView className={`flex-1  ${useBackgroundColorClass()}`}>
       <ScrollView>
-        <View className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
+        <View
+          className={`flex-1 justify-center mt-14 h-full px-4 py-5 pb-20 ${
+            Platform.OS === "web" ? "max-w-4xl mx-auto" : ""
+          }`}
+        >
           <Dropdown2
             title={t("ads.platform")}
             options={[
               {
-          label: t("ads.platformOption.Facebook"),
-          value: "Facebook",
+                label: t("ads.platformOption.Facebook"),
+                value: "Facebook",
               },
               {
-          label: t("ads.platformOption.Tiktok"),
-          value: "Tiktok",
+                label: t("ads.platformOption.Tiktok"),
+                value: "Tiktok",
               },
               {
-          label: t("ads.platformOption.Shopee"),
-          value: "Shopee",                
+                label: t("ads.platformOption.Shopee"),
+                value: "Shopee",
               },
               {
-          label: t("ads.platformOption.Line"),
-          value: "Line"
-              }
+                label: t("ads.platformOption.Line"),
+                value: "Line",
+              },
             ]}
             placeholder={t("ads.choosePlatform")}
             selectedValue={t(`ads.platformOption.${platform}`)}
-            onValueChange= {setPlatform}
+            onValueChange={setPlatform}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
@@ -154,7 +159,7 @@ export default function EditAds() {
             handleChangeText={setAccName}
             placeholder={t("ads.accNameRecommend")}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
           />
@@ -163,9 +168,9 @@ export default function EditAds() {
             value={accId}
             handleChangeText={setAccId}
             otherStyles={fieldStyles}
-            placeholder= "00000000000000"
+            placeholder="00000000000000"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             keyboardType="numeric"
           />

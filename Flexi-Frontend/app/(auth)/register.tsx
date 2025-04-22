@@ -124,72 +124,80 @@ export default function Register() {
             className="w-full flex justify-center h-full px-4 py-10"
             style={{
               minHeight: Dimensions.get("window").height,
+              alignItems: Platform.OS === "web" ? "center" : "stretch",
             }}
           >
-            <CustomText className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}>
-              {t("auth.register.title")}
-            </CustomText>
-
-            <FormField
-              title={t("auth.register.firstName")}
-              placeholder={t("auth.register.firstName")}
-              value={firstName}
-              handleChangeText={setfirstName}
-              otherStyles="mt-7"
-            />
-
-            <FormField
-              title={t("auth.register.lastName")}
-              placeholder={t("auth.register.lastName")}
-              value={lastName}
-              handleChangeText={setlastName}
-              otherStyles="mt-7"
-            />
-
-            <FormField
-              title={t("auth.register.phoneTitle")}
-              placeholder={t("auth.register.phonePlaceholder")}
-              value={phone}
-              handleChangeText={setPhone}
-              otherStyles="mt-7"
-              keyboardType="phone-pad"
-            />
-
-            <FormField
-              title={t("auth.register.emailPlaceholder")}
-              placeholder={t("auth.register.emailPlaceholder")}
-              value={email}
-              handleChangeText={setEmail}
-              otherStyles="mt-7"
-              keyboardType="email-address"
-            />
-
-            <FormField
-              title={t("auth.register.passwordPlaceholder")}
-              placeholder={t("auth.register.passwordPlaceholder")}
-              value={password}
-              handleChangeText={setPassword}
-              otherStyles="mt-7"
-              secureTextEntry
-            />
-
-            {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
-
-            <CustomButton
-              title={t("auth.register.button")}
-              handlePress={handleRegister}
-              containerStyles="mt-7"
-              textStyles="!text-white"
-            />
-
-            <View className="flex justify-center pt-5 flex-row gap-2">
-              <CustomText weight="regular" className="text-lg text-gray-100">
-                {t("auth.register.hasAccount")}
+            <View
+              style={{
+                width: Platform.OS === "web" ? "40%" : "100%",
+                maxWidth: 600,
+              }}
+            >
+              <CustomText className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}>
+                {t("auth.register.title")}
               </CustomText>
-              <Button
-                title={t("auth.register.loginButton")}
-                onPress={() => router.replace("/login")}
+
+              <FormField
+                title={t("auth.register.firstName")}
+                placeholder={t("auth.register.firstName")}
+                value={firstName}
+                handleChangeText={setfirstName}
+                otherStyles="mt-7"
               />
+
+              <FormField
+                title={t("auth.register.lastName")}
+                placeholder={t("auth.register.lastName")}
+                value={lastName}
+                handleChangeText={setlastName}
+                otherStyles="mt-7"
+              />
+
+              <FormField
+                title={t("auth.register.phoneTitle")}
+                placeholder={t("auth.register.phonePlaceholder")}
+                value={phone}
+                handleChangeText={setPhone}
+                otherStyles="mt-7"
+                keyboardType="phone-pad"
+              />
+
+              <FormField
+                title={t("auth.register.emailPlaceholder")}
+                placeholder={t("auth.register.emailPlaceholder")}
+                value={email}
+                handleChangeText={setEmail}
+                otherStyles="mt-7"
+                keyboardType="email-address"
+              />
+
+              <FormField
+                title={t("auth.register.passwordPlaceholder")}
+                placeholder={t("auth.register.passwordPlaceholder")}
+                value={password}
+                handleChangeText={setPassword}
+                otherStyles="mt-7"
+                secureTextEntry
+              />
+
+              {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
+
+              <CustomButton
+                title={t("auth.register.button")}
+                handlePress={handleRegister}
+                containerStyles="mt-7"
+                textStyles="!text-white"
+              />
+
+              <View className="flex justify-center pt-5 flex-row gap-2">
+                <CustomText weight="regular" className="text-lg text-gray-100">
+                  {t("auth.register.hasAccount")}
+                </CustomText>
+                <Button
+                  title={t("auth.register.loginButton")}
+                  onPress={() => router.replace("/login")}
+                />
+              </View>
             </View>
           </View>
         </ScrollView>

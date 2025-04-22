@@ -153,11 +153,18 @@ export default function EditProduct() {
   return (
     <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}`}>
       <ScrollView>
-        <View className="flex-1 justify-center h-full px-4 py-5 pb-20">
+        <View
+          className={`flex-1 justify-center h-full px-4 py-5 pb-20 ${
+            Platform.OS === "web" ? "max-w-4xl mx-auto" : ""
+          }`}
+        >
           {image && (
             <Image
               source={{ uri: getImageUri(image) || '' }}
-              style={{ width: 350, height: 350 }}
+              style={{
+                width: Platform.OS === "web" ? 500 : 350,
+                height: Platform.OS === "web" ? 500 : 350,
+              }}
               className="mt-4 mb-6 self-center rounded-md"
             />
           )}

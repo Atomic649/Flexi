@@ -1,5 +1,5 @@
 import React from "react";
-import { router, Tabs } from "expo-router";
+import { router, Slot, Tabs } from "expo-router";
 import { icons, images } from "@/constants";
 import {
   View,
@@ -57,6 +57,11 @@ const TabIcon = ({
             // Color Icon of Middle Tab
             tintColor={size === "large" ? "#ffffff" : color}
             className={size === "large" ? "w-9 h-9  " : "w-9 h-7"}
+            style={{
+              marginEnd: Platform.OS === "web" ?  10:0,
+              width: Platform.OS === "web" ?  28:28,
+              height: Platform.OS === "web" ?  28:28,
+            }}
           />
         )}
       </View>
@@ -64,12 +69,9 @@ const TabIcon = ({
   );
 };
 
-interface ToolbarProps {
-  visible: boolean;
-  onClose: () => void;
-}
 
 export default function TabLayout() {
+  if (process.env.NODE_ENV === "web") return <Slot />;
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
  
@@ -90,7 +92,7 @@ export default function TabLayout() {
           tabBarInactiveTintColor: tabBarInactiveTintColor,
           tabBarShowLabel: true,
           tabBarLabelStyle: {
-            fontSize: 12,
+            fontSize: Platform.OS === "web" ? 16 : 12,
             fontFamily:
               i18n.language === "th"
                 ? "NotoSansThai-Regular"
@@ -100,11 +102,16 @@ export default function TabLayout() {
 
           tabBarStyle: {
             backgroundColor: tabBarBackgroundColor,
-            borderTopWidth: 0,
-            borderTopColor: tabBarBorderColor,
-            height: Platform.OS === "ios" ? 90 : 90,
-            paddingTop: 5,
-            paddingBottom: Platform.OS === "ios" ? 30 : 30,
+            borderTopWidth: Platform.OS === "web" ? 0 : 1, // Remove border for web
+            borderBottomWidth: Platform.OS === "web" ? 1 : 0, // Add border for web
+            borderColor: tabBarBorderColor,
+            height: Platform.OS === "web" ? 60 : 90, // Adjust height for 
+          
+            paddingTop: Platform.OS === "web" ? 0 : 5,
+            paddingBottom: Platform.OS === "web" ? 0 : 30,
+            position: Platform.OS === "web" ? "absolute" : "relative", // Position at the top for web
+            top: Platform.OS === "web" ? 0 : undefined, // Set top position for web
+            zIndex: Platform.OS === "web" ? 5 : undefined, // Ensure it stays on top for web
             ...Platform.select({
               ios: {
                 height: 60,
@@ -116,10 +123,35 @@ export default function TabLayout() {
                 paddingBottom: 0,
                 safeAreaInsets: { bottom: 35 },
               },
+              web: {
+                safeAreaInsets: { top: 0 },
+                
+              },
             }),
           },
         }}
       >
+        {Platform.OS === "web" && (
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: t("tabs.settings"),
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (
+                <TouchableOpacity onPress={() => router.push("settings")}>
+                  <TabIcon
+                    icon={images.logo}
+                    color={color}
+                    focused={focused}
+                    size="large" // กำหนดให้เป็นขนาดใหญ่
+                    isImage={true} // กำหนดว่าเป็น image
+                  />
+                </TouchableOpacity>
+              ),
+              tabBarLabel: () => null, // ซ่อน label สำหรับปุ่มตรงกลาง
+            }}
+          />
+        )}
         <Tabs.Screen
           name="home"
           options={{
@@ -140,27 +172,26 @@ export default function TabLayout() {
             ),
           }}
         />
-
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: t("tabs.settings"),
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TouchableOpacity onPress={() => router.push("settings")}>
-                <TabIcon
-                  icon={images.logo}
-                  color={color}
-                  focused={focused}
-                  size="large" // กำหนดให้เป็นขนาดใหญ่
-                  isImage={true} // กำหนดว่าเป็น image
-                />
-              </TouchableOpacity>
-            ),
-            tabBarLabel: () => null, // ซ่อน label สำหรับปุ่มตรงกลาง
-          }}
-        />
-
+        {!(Platform.OS === "web") && (
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: t("tabs.settings"),
+              headerShown: false,
+              tabBarIcon: ({ color, focused }) => (                
+                  <TabIcon
+                    icon={images.logo}
+                    color={color}
+                    focused={focused}
+                    size="large" // กำหนดให้เป็นขนาดใหญ่
+                    isImage={true} // กำหนดว่าเป็น image
+                  />
+                
+              ),
+              tabBarLabel: () => null, // ซ่อน label สำหรับปุ่มตรงกลาง
+            }}
+          />
+        )}
         <Tabs.Screen
           name="expense"
           options={{
