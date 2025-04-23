@@ -85,12 +85,15 @@ const List = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+      <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
+        >
         <FlatList
           data={Object.keys(groupedExpense)}
           keyExtractor={(date) => date}
           renderItem={({ item: date }) => (
-            <View>
+            <View style={{
+              alignItems: "center",
+            }}>
               <Text
                 className={`text-base font-bold ${
                   theme === "dark" ? "text-white" : "text-zinc-600"
