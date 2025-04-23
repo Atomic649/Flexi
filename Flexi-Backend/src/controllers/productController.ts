@@ -29,7 +29,7 @@ const productSchema = Joi.object({
     name: Joi.string().required(),
     description: Joi.string().required(),
     barcode: Joi.string().required(),
-    image: Joi.string().optional(),
+    image: Joi.string().allow("").optional(), // Allow empty string for image
     stock: Joi.number().required(),
     price: Joi.number().required(),
     categoryId: Joi.number(),
@@ -49,7 +49,7 @@ const createProduct = async (req: Request, res: Response) => {
       // Merge the uploaded file name into the product object
       const product: Product = {
         ...req.body,
-        image: req.file?.filename ?? "",
+        image: req.file?.filename ?? "", // Default to an empty string if no image is uploaded
       };
   
       // Validate combined product fields
@@ -65,7 +65,7 @@ const createProduct = async (req: Request, res: Response) => {
         },
       });
 
-      // convert stock to integer
+      // Convert stock and price to integers
         product.stock = parseInt(product.stock.toString());
         product.price = parseInt(product.price.toString());
         
@@ -76,7 +76,7 @@ const createProduct = async (req: Request, res: Response) => {
             name: product.name,
             description: product.description,
             barcode: product.barcode,
-            image: product.image,
+            image: product.image || null, // Store null if no image is provided
             stock: product.stock,
             price: product.price,
             categoryId: product.categoryId,
