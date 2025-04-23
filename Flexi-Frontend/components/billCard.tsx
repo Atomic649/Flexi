@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert, Platform } from "react-native";
 import React from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
@@ -84,7 +84,12 @@ export default function BillCard({
   );
 
   return (
-    <View className="flex ">
+    <View className="flex "
+     style={{      
+            width: Platform.OS === "web" ? "40%" : "100%",
+            maxWidth: 600,
+            alignSelf: "center",
+          }}>
       {/* <Swipeable renderLeftActions={renderRightActions}> */}
         <View
           className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
@@ -94,9 +99,8 @@ export default function BillCard({
             backgroundColor: CardColor,
           }}
         >
-          <View className="flex flex-row gap-3 items-start">
-            <View className="flex justify-center items-center flex-row flex-1">
-              <View className="flex justify-center flex-1 ml-3 gap-y-1">
+          <View className="flex flex-row items-between w-full">            
+              <View className="flex  flex-1 ml-3 gap-y-1">
                 <Text
                   className="text-sm text-zinc-500 font-normal"
                   numberOfLines={1}
@@ -118,8 +122,7 @@ export default function BillCard({
                 >
                   {product} {amount} {t("common.pcs") }
                 </Text>
-              </View>
-            </View>
+              </View>          
             <View className="pt-2">
                 <Text
                 className="text-xl font-bold justify-end"

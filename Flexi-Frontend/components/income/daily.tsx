@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   FlatList,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -66,59 +67,69 @@ const Daily = () => {
     }
     setRefreshing(false);
   };
-// Adjust front size and color of Title Table
+  // Adjust front size and color of Title Table
   const textStyle = {
     fontSize: 13,
     color: theme === "dark" ? "#e5e7eb" : "#4b5563",
     fontWeight: "700" as "700", // or any other acceptable value
-    fontFamily: i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
+    fontFamily:
+      i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+      <SafeAreaView
+        className={`h-full ${useBackgroundColorClass()}`}
+        style={{
+          width: Platform.OS === "web" ? "95%" : "100%",
+          alignSelf: "center",
+          paddingTop: Platform.OS === "web" ? "1.5%":0,
+        }}
+      >
         <View
           className={`flex flex-col items-end `}
           style={{
             backgroundColor: theme === "dark" ? "#adacac" : "#d0cfcb",
           }}
         >
-            <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 "
-            style={{              
+          <View
+            className="flex flex-row m-2 items-start justify-evenly w-full pl-5 "
+            style={{
               marginHorizontal: 10,
-            }}>
+            }}
+          >
             <View className="flex flex-col items-start  w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-              {t("income.table.date")}
+                {t("income.table.date")}
               </Text>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-              {t("income.table.amount")}
+                {t("income.table.amount")}
               </Text>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={3}>
-              {t("income.table.sales")}
+                {t("income.table.sales")}
               </Text>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-              {t("income.table.adCost")}
+                {t("income.table.adCost")}
               </Text>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-              {t("income.table.profit")}
+                {t("income.table.profit")}
               </Text>
             </View>
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-              {t("income.table.percentAd")}
+                {t("income.table.percentAd")}
               </Text>
             </View>
           </View>
@@ -143,7 +154,9 @@ const Daily = () => {
             />
           )}
           ListEmptyComponent={() => (
-          <CustomText className="pt-10 text-center text-white">{t("common.notfound")}</CustomText>
+            <CustomText className="pt-10 text-center text-white">
+              {t("common.notfound")}
+            </CustomText>
           )}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -153,7 +166,5 @@ const Daily = () => {
     </GestureHandlerRootView>
   );
 };
-
-
 
 export default Daily;

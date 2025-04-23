@@ -28,8 +28,8 @@ export default function MonthlyCard({
         borderStyle: "solid",
         marginTop: 5,
        }}>
-        <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 px-5">
-          <View className="flex flex-col items-start w-1/5">
+        <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 ">
+          <View className="flex flex-col items-start w-1/6">
             <Text
               className="text-sm text-zinc-500 font-normal "
               numberOfLines={1}
