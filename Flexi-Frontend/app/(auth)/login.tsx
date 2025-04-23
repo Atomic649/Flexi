@@ -121,7 +121,7 @@ export default function Login() {
             className="w-full flex justify-center h-full px-4"
             style={{
               minHeight: Dimensions.get("window").height,
-              alignItems: Platform.OS === "web" ? "center" : "stretch",
+              alignItems: Platform.OS === "web" ? "center" : "center",
             }}
           >
             <View
@@ -137,7 +137,7 @@ export default function Login() {
                   className="h-[190px]"
                   style={{
                     height: Platform.OS === "web" ? 100 : 190,
-                    width: Platform.OS === "web" ? 150 : undefined,
+                    width: Platform.OS === "web" ? 150 : 190,
                   }}
                 />
               </View>

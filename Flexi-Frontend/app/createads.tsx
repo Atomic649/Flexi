@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native";
+import { Dimensions, Platform, ScrollView } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
 import { useEffect, useState } from "react";
@@ -101,9 +101,16 @@ export default function CreateAds() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()} items-center`}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}>
-        <View className="w-full max-w-2xl flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
+    <SafeAreaView className={`flex-1  ${useBackgroundColorClass()}`}
+    style={{
+      minHeight: Dimensions.get("window").height,
+      alignItems: Platform.OS === "web" ? "center" : "center",
+    }}>
+      <ScrollView>
+        <View
+          className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20"
+          
+        >
           <Dropdown2
             title={t("ads.platform")}
             options={[

@@ -42,41 +42,45 @@ export default function StoreCard({
   );
 
   return (
-    <View className="flex px-10">
+    <View className="flex px-10 items-center">
       <Swipeable renderRightActions={renderRightActions}>
         <View
           className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
       bg-[#918b8b0d]
       border-s-8 `}
           style={{
-            alignSelf: Platform.OS === "web" ? "center" : "auto",
             width: Platform.OS === "web" ? 500 : 350,
             borderColor: getBorderColor(platform),
             backgroundColor: cardColor,
           }}
         >
-          <View className="flex flex-row gap-3 items-start">
-            <View className="flex justify-center items-center flex-row flex-1">
-              <View className="flex justify-center flex-1 ml-3 gap-y-1">
-                <Text
-                  className="font-bold text-sm text-zinc-500"
-                  numberOfLines={3}
-                >
-                  {platform}
-                </Text>
-                <Text
-                  className="text-lg text-zinc-500 font-psemibold"
-                  numberOfLines={1}
-                >
-                  {accName}
-                </Text>
-                <Text
-                  className="text-base text-zinc-500 font-pregular"
-                  numberOfLines={1}
-                >
-                  {accId}
-                </Text>               
-              </View>
+          <View className="flex flex-row "
+            style={{
+              width: Platform.OS === "web" ? 500 : 350,
+              height: Platform.OS === "web" ? 100 : 80,
+              justifyContent: "space-between",
+              padding: 15,
+            
+            }}>
+            <View className="flex justify-center flex-1 ml-3 gap-y-1">
+              <Text
+                className="font-bold text-sm text-zinc-500"
+                numberOfLines={3}
+              >
+                {platform}
+              </Text>
+              <Text
+                className="text-lg text-zinc-500 font-psemibold"
+                numberOfLines={1}
+              >
+                {accName}
+              </Text>
+              <Text
+                className="text-base text-zinc-500 font-pregular"
+                numberOfLines={1}
+              >
+                {accId}
+              </Text>
             </View>
             <View className="pt-2">
               <TouchableOpacity

@@ -3,6 +3,8 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Dimensions,
+  Platform,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
@@ -134,9 +136,14 @@ export default function CreateProduct() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()} items-center`}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}>
-        <View className="w-full max-w-2xl flex-1 justify-center h-full px-4 py-5 pb-20">
+    <SafeAreaView
+      className={`flex-1 ${useBackgroundColorClass()}`}
+      style={{
+        alignItems: Platform.OS === "web" ? "center" : "stretch",
+      }}
+    >
+      <ScrollView>
+        <View className="flex-1 justify-center h-full px-4 py-5 pb-20">
           {image && (
             <Image
               source={{ uri: image }}
@@ -226,9 +233,7 @@ export default function CreateProduct() {
         title={alertConfig.title}
         message={alertConfig.message}
         buttons={alertConfig.buttons}
-        onClose={() =>
-          setAlertConfig((prev) => ({ ...prev, visible: false }))
-        }
+        onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
     </SafeAreaView>
   );

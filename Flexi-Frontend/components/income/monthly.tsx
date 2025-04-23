@@ -85,8 +85,8 @@ const monthly = () => {
             backgroundColor: theme === "dark" ? "#adacac" : "#d0cfcb",
           }}
         >
-          <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 px-5">
-            <View className="flex flex-col items-start w-1/5">
+          <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 ">
+            <View className="flex flex-col items-start w-1/6">
               <Text style={textStyle} numberOfLines={1}>
               {t("income.table.month")}
               </Text>
