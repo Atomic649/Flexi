@@ -1,10 +1,9 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, useWindowDimensions, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { useTextColorClass } from "@/utils/themeUtils";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import {CustomText} from "@/components/CustomText"; // Assuming you have a CustomText component
+import { CustomText } from "@/components/CustomText"; // Assuming you have a CustomText component
 
 const PlatformCard = ({
   sale,
@@ -19,6 +18,11 @@ const PlatformCard = ({
 }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+
+  const { width, height } = useWindowDimensions(); // Get screen dimensions
+  const isPortrait = height > width; // Determine orientation
+  const cardWidth = isPortrait ? width * 0.48 : width * 0.215; // Adjust width based on orientation
+  const cardHeight = cardWidth * (Platform.OS === "web" ? 0.5 : 0.7); // Adjust height based on platform
 
   const renderIcon = () => {
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
@@ -41,7 +45,7 @@ const PlatformCard = ({
 
   return (
     <View
-      className={`flex flex-col  items-center justify-center ${otherStyles}`}
+      className={`flex flex-col items-center justify-center ${otherStyles}`}
     >
       {/* Icon */}
       <View className="flex flex-col items-center justify-center mb-1">
@@ -56,27 +60,28 @@ const PlatformCard = ({
             right-16
             z-10
           `}
+          style={{ width: cardWidth * 0.23, height: cardWidth * 0.23 }} // Dynamically set width and height
         >
           {renderIcon()}
         </View>
       </View>
       <View className="relative">
         <View
+          style={{ width: cardWidth, height: cardHeight }} // Dynamically set width and height
           className={`${
             theme === "dark" ? "bg-[#27272a]" : "bg-white"
-          }  items-center
+          } items-center
            justify-center 
-           m-1 pt-2 w-52 h-36       
+           m-1 pt-2       
              rounded-2xl            
            border
           ${
             theme === "dark" ? "border-zinc-700" : "border-[#61fff2]"
           }                     
             `}
-            // m-1 pt-2 w-full h-0 pb-[75%]      
         >
           {/* Sales */}
-          <View className="flex-row justify-center w-full  ps-6">
+          <View className="flex-row justify-center w-full ps-6">
             <Text
               className={`text-lg ${
                 theme === "dark" ? "text-[#ffffff]" : "text-[#3c3c3c]"
@@ -86,12 +91,16 @@ const PlatformCard = ({
             >
               {sale}
             </Text>
-            <CustomText className={titleStyle}>{t("dashboard.sale")}</CustomText>
+            <CustomText className={titleStyle}>
+              {t("dashboard.sale")}
+            </CustomText>
           </View>
           <View className="flex-row justify-around w-full mt-1 px-0 ps-4">
             {/* ADS */}
             <View className="flex-col">
-              <CustomText className={titleStyle}>{t("dashboard.ads")}</CustomText>
+              <CustomText className={titleStyle}>
+                {t("dashboard.ads")}
+              </CustomText>
               <Text
                 className={`text-base ${
                   theme === "dark" ? "text-[#dddddd]" : "text-stone-500"
@@ -105,7 +114,9 @@ const PlatformCard = ({
 
             {/* Profit */}
             <View className="flex-col selection:items-center justify-items-center ">
-              <CustomText className={titleStyle}>{t("dashboard.profit")}</CustomText>
+              <CustomText className={titleStyle}>
+                {t("dashboard.profit")}
+              </CustomText>
               <Text
                 className={`text-base font-bold text-center ${
                   parseFloat(profit) >= 0
@@ -126,7 +137,9 @@ const PlatformCard = ({
           <View className="flex-row justify-around w-full mt-1 mb-1 px-0 ps-4">
             {/* %ADS */}
             <View className="flex-col">
-              <CustomText className={titleStyle}>{t("dashboard.roi")}</CustomText>
+              <CustomText className={titleStyle}>
+                {t("dashboard.roi")}
+              </CustomText>
               <Text
                 className={percentadsarv}
                 numberOfLines={1}
@@ -138,7 +151,9 @@ const PlatformCard = ({
 
             {/* Average */}
             <View className="flex-colum items-center justify-between ">
-              <CustomText className={titleStyle}>{t("dashboard.avr")}</CustomText>
+              <CustomText className={titleStyle}>
+                {t("dashboard.avr")}
+              </CustomText>
               <Text
                 className={percentadsarv}
                 numberOfLines={1}

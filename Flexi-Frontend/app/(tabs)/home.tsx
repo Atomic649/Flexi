@@ -55,7 +55,9 @@ export default function Dashboard() {
 
   const selectedDateRange =
     selectedDates.length > 1
-      ? `${selectedDates[0]} ${t('common.to')} ${selectedDates[selectedDates.length - 1]}`
+      ? `${selectedDates[0]} ${t("common.to")} ${
+          selectedDates[selectedDates.length - 1]
+        }`
       : selectedDates.length === 1
       ? `${selectedDates[0]}`
       : t("dashboard.selectDate");
@@ -63,65 +65,78 @@ export default function Dashboard() {
   return (
     <LinearGradient
       colors={
-        theme === "dark" ? ["#18181b", "#18181b"] : ["#f7f7f7","#a6efe4", "#ffffff"]
+        theme === "dark"
+          ? ["#18181b", "#18181b"]
+          : ["#f7f7f7", "#a6efe4", "#ffffff"]
       }
       style={{ flex: 1 }}
     >
-      <SafeAreaView className="h-full"
-       style={Platform.OS === "web" ? { paddingTop: 60 } : {}}>
+      <SafeAreaView
+        className="h-full"
+        style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
+      >
         <ScrollView>
-          <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
-            <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>
-              <View
-                className="flex-row items-center justify-center rounded-full w-36 px-2 p-3"
-                style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
-                }}
-              >
-                <CustomText
-                  className="text-sm font-bold"
+          <View
+            style={{
+              paddingTop: Platform.OS === "web" ? "3%" : 0,
+              width: Platform.OS === "web" ? "45%" : "100%",
+              alignSelf: "center",
+            }}
+          >
+            <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
+              <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>
+                <View
+                  className="flex-row items-center justify-center rounded-full w-36 px-2 p-3"
                   style={{
-                    color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                    backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
                   }}
                 >
-                  {selectedProduct || t("product.chooseProduct")}
+                  <CustomText
+                    className="text-sm font-bold"
+                    style={{
+                      color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                    }}
+                  >
+                    {selectedProduct || t("product.chooseProduct")}
+                  </CustomText>
+                </View>
+              </TouchableOpacity>
+              <View className="flex-row items-center bg-transparent  rounded-full p-2 ml-2">
+                <CustomText
+                  className={`text-sm mx-2 ${
+                    theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
+                  }`}
+                >
+                  {selectedDateRange}
                 </CustomText>
+                {/* icon Calendar */}
+                <Ionicons
+                  name="calendar"
+                  size={24}
+                  color={theme === "dark" ? "#ffffff" : "#444541"}
+                  onPress={() => setCalendarVisible(true)}
+                />
               </View>
-            </TouchableOpacity>
-            <View className="flex-row items-center bg-transparent  rounded-full p-2 ml-2">
-              <CustomText
-                className={`text-sm mx-2 ${
-                  theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                }`}
-              >
-                {selectedDateRange}
-              </CustomText>
-              {/* icon Calendar */}
-              <Ionicons
-                name="calendar"
-                size={24}
-                color={theme === "dark" ? "#ffffff" : "#444541"}
-                onPress={() => setCalendarVisible(true)}
-              />
             </View>
-          </View>
-          <TotalSale />
+            <TotalSale />
 
-          <View className="flex flex-wrap flex-row justify-around">
-            <View className="w-1/2 pl-3 ">
-              <FacebookCard />
-            </View>
-            <View className="w-1/2 p-0">
-              <TiktokCard />
-            </View>
-            <View className="w-1/2 pl-3">
-              <ShopeeCard />
-            </View>
-            <View className="w-1/2 p-0">
-              <LineCard />
+            <View className="flex-1 flex-wrap  flex-row justify-between">
+              <View className="w-1/2 pl-3 ">
+                <FacebookCard />
+              </View>
+              <View className="w-1/2 p-0">
+                <TiktokCard />
+              </View>
+              <View className="w-1/2 pl-3">
+                <ShopeeCard />
+              </View>
+              <View className="w-1/2 p-0">
+                <LineCard />
+              </View>
+
+              {/* <DashboardAds /> */}
             </View>
           </View>
-          <DashboardAds />
         </ScrollView>
 
         {/* Modal for MultiDateCalendar */}
@@ -184,33 +199,34 @@ export default function Dashboard() {
               }}
             >
               <ScrollView>
-                {Array.isArray(productChoice) && productChoice.map((product, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      setSelectedProduct(product.name);
-                      setProductChoiceVisible(false);
-                    }}
-                    style={{
-                      padding: 9,
-                      borderRadius: 20,
-                      width : "100%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor:
-                        theme === "dark" ? "#3f3f42" : "#4d4b46",
-                    }}
-                  >
-                    <CustomText
+                {Array.isArray(productChoice) &&
+                  productChoice.map((product, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        setSelectedProduct(product.name);
+                        setProductChoiceVisible(false);
+                      }}
                       style={{
-                        fontSize: 12,
-                        color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                        padding: 9,
+                        borderRadius: 20,
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor:
+                          theme === "dark" ? "#3f3f42" : "#4d4b46",
                       }}
                     >
-                      {product.name}
-                    </CustomText>
-                  </TouchableOpacity>
-                ))}
+                      <CustomText
+                        style={{
+                          fontSize: 12,
+                          color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                        }}
+                      >
+                        {product.name}
+                      </CustomText>
+                    </TouchableOpacity>
+                  ))}
               </ScrollView>
             </TouchableOpacity>
           </TouchableOpacity>
@@ -218,4 +234,4 @@ export default function Dashboard() {
       </SafeAreaView>
     </LinearGradient>
   );
-};
+}
