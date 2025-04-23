@@ -65,7 +65,7 @@ const schema = Joi.object({
   price: Joi.number().required(),
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
-  image: Joi.string(),
+  image: Joi.string().allow(""),
   storeId: Joi.number().required(),
 });
 
