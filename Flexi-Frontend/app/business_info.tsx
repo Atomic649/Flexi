@@ -135,7 +135,7 @@ export default function Register() {
   };
 
   return (
-    <SafeAreaView className={`flex-1   ${useBackgroundColorClass()}`}>
+    <SafeAreaView className={`flex-1 items-center  ${useBackgroundColorClass()}`}>
       <ScrollView>
         <View
           className="flex-1 justify-center h-full px-4 py-10"

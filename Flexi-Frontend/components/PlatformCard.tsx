@@ -24,9 +24,12 @@ const PlatformCard = ({
   const cardHeight = cardWidth * (Platform.OS === "web" ? 0.56 : 0.7); // Adjust height based on platform
 
   // Dynamic font sizes based on screen width
-  const baseFontSize = Platform.OS === "web" ? width * 0.0125 : width * 0.038; // Smaller size for web
-  const smallFontSize = baseFontSize * 0.8;
-  const largeFontSize = baseFontSize * 1.05;
+  const baseFontSize = Math.min(
+    Platform.OS === "web" ? width * 0.0125 : width * 0.038,
+    26
+  ); // Smaller size for web, max 18
+  const smallFontSize = Math.min(baseFontSize * 0.8, 14); // Max 14
+  const largeFontSize = Math.min(baseFontSize * 1.05,28); // Max 20
 
   const renderIcon = () => {
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
