@@ -12,8 +12,7 @@ const PlatformCard = ({
   percentAds,
   average,
   icon,
-  iconType,
-  iconSize,
+  iconType,  
   otherStyles,
 }: any) => {
   const { theme } = useTheme();
@@ -21,15 +20,20 @@ const PlatformCard = ({
 
   const { width, height } = useWindowDimensions(); // Get screen dimensions
   const isPortrait = height > width; // Determine orientation
-  const cardWidth = isPortrait ? width * 0.48 : width * 0.215; // Adjust width based on orientation
-  const cardHeight = cardWidth * (Platform.OS === "web" ? 0.5 : 0.7); // Adjust height based on platform
+  const cardWidth = isPortrait ? width * 0.48 : width * 0.19; // Adjust width based on orientation
+  const cardHeight = cardWidth * (Platform.OS === "web" ? 0.56 : 0.7); // Adjust height based on platform
+
+  // Dynamic font sizes based on screen width
+  const baseFontSize = Platform.OS === "web" ? width * 0.0125 : width * 0.038; // Smaller size for web
+  const smallFontSize = baseFontSize * 0.8;
+  const largeFontSize = baseFontSize * 1.05;
 
   const renderIcon = () => {
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
     return (
       <IconComponent
         name={icon}
-        size={iconSize}
+        size={cardWidth * (Platform.OS === "web" ? 0.08 : 0.115)}
         color={theme === "dark" ? "#27272a" : "#ffffff"}
       />
     );
@@ -45,66 +49,84 @@ const PlatformCard = ({
 
   return (
     <View
-      className={`flex flex-col items-center justify-center ${otherStyles}`}
+      className={`relative flex flex-col items-center justify-center ${otherStyles}`}
+      style={{ position: "relative", overflow: "visible",margin:Platform.OS === "web" ? "0.4%" :"0.1%" }} // Ensure stacking context and visibility
     >
       {/* Icon */}
-      <View className="flex flex-col items-center justify-center mb-1">
+      <View
+        className="flex flex-col items-center justify-center mb-1"
+        style={{ position: "relative", zIndex: 1 }} // Ensure stacking context for the icon container
+      >
         <View
-          className={`
-            w-12 h-12
+          className={`            
             ${theme === "dark" ? "bg-[#8d8c8b]" : "bg-[#48453e]"}
             rounded-full 
             items-center 
-            justify-center 
-            absolute -top-1        
-            right-16
-            z-10
+            justify-center          
           `}
-          style={{ width: cardWidth * 0.23, height: cardWidth * 0.23 }} // Dynamically set width and height
+          style={{
+            width: cardWidth * (Platform.OS === "web" ? 0.19 : 0.23),
+            height: cardWidth * (Platform.OS === "web" ? 0.19 : 0.23),
+            zIndex: 9999, // Ensure highest stacking order
+            position: "absolute", // Explicitly set position
+            top: -cardWidth * (Platform.OS === "web" ? 0.01 : 0.010), // Adjust position
+            right: cardWidth * (Platform.OS === "web" ? 0.32: 0.28), // Adjust position
+          }}
         >
           {renderIcon()}
         </View>
       </View>
-      <View className="relative">
+      <View className="relative" style={{ zIndex: 0 }}> {/* Ensure content is below the icon */}
         <View
-          style={{ width: cardWidth, height: cardHeight }} // Dynamically set width and height
+          style={{ width: cardWidth, height: cardHeight, gap: Platform.OS === "web" ? "4%" : 0}} // Dynamically set width and height
           className={`${
             theme === "dark" ? "bg-[#27272a]" : "bg-white"
           } items-center
-           justify-center 
-           m-1 pt-2       
-             rounded-2xl            
-           border
-          ${
-            theme === "dark" ? "border-zinc-700" : "border-[#61fff2]"
-          }                     
-            `}
+             justify-center 
+             m-1 pt-2 gap-0.5       
+               rounded-2xl            
+             border
+            ${
+              theme === "dark" ? "border-zinc-700" : "border-[#61fff2]"
+            }                     
+              `}
         >
           {/* Sales */}
           <View className="flex-row justify-center w-full ps-6">
             <Text
-              className={`text-lg ${
-                theme === "dark" ? "text-[#ffffff]" : "text-[#3c3c3c]"
-              } font-bold`}
+              className={`font-bold`}
+              style={{
+                fontSize: largeFontSize,
+                color: theme === "dark" ? "#ffffff" : "#3c3c3c",
+              }}
               numberOfLines={1}
               adjustsFontSizeToFit
             >
               {sale}
             </Text>
-            <CustomText className={titleStyle}>
+            <CustomText
+              className={titleStyle}
+              style={{ fontSize: smallFontSize }}
+            >
               {t("dashboard.sale")}
             </CustomText>
           </View>
-          <View className="flex-row justify-around w-full mt-1 px-0 ps-4">
+
+          <View className="flex-row justify-around w-full mt-1 px-0 ps-4 ">
             {/* ADS */}
             <View className="flex-col">
-              <CustomText className={titleStyle}>
+              <CustomText
+                className={titleStyle}
+                style={{ fontSize: smallFontSize }}
+              >
                 {t("dashboard.ads")}
               </CustomText>
               <Text
-                className={`text-base ${
-                  theme === "dark" ? "text-[#dddddd]" : "text-stone-500"
-                } font-bold text-center`}
+                className={`font-bold text-center`}
+                style={{
+                  fontSize: baseFontSize,
+                  color: theme === "dark" ? "#dddddd" : "#7f7765",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -114,17 +136,23 @@ const PlatformCard = ({
 
             {/* Profit */}
             <View className="flex-col selection:items-center justify-items-center ">
-              <CustomText className={titleStyle}>
+              <CustomText
+                className={titleStyle}
+                style={{ fontSize: smallFontSize }}
+              >
                 {t("dashboard.profit")}
               </CustomText>
               <Text
-                className={`text-base font-bold text-center ${
-                  parseFloat(profit) >= 0
-                    ? theme === "dark"
-                      ? "text-[#00fad9]"
-                      : "text-[#4400ff]"
-                    : "text-[#FF006E] "
-                }`}
+                className={`font-bold text-center`}
+                style={{
+                  fontSize: baseFontSize,
+                  color:
+                    parseFloat(profit) >= 0
+                      ? theme === "dark"
+                        ? "#00fad9"
+                        : "#4400ff"
+                      : "#FF006E",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.5}
@@ -134,14 +162,22 @@ const PlatformCard = ({
             </View>
           </View>
 
-          <View className="flex-row justify-around w-full mt-1 mb-1 px-0 ps-4">
-            {/* %ADS */}
+          <View className="flex-row justify-around w-full mt-1 mb-1 px-0 ps-4"
+          >
+            {/*ROI */}
             <View className="flex-col">
-              <CustomText className={titleStyle}>
+              <CustomText
+                className={titleStyle}
+                style={{ fontSize: smallFontSize }}
+              >
                 {t("dashboard.roi")}
               </CustomText>
               <Text
-                className={percentadsarv}
+                className={`font-bold text-center`}
+                style={{
+                  fontSize: baseFontSize,
+                  color: theme === "dark" ? "#c6c7c7" : "#7f7765",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -151,11 +187,18 @@ const PlatformCard = ({
 
             {/* Average */}
             <View className="flex-colum items-center justify-between ">
-              <CustomText className={titleStyle}>
+              <CustomText
+                className={titleStyle}
+                style={{ fontSize: smallFontSize }}
+              >
                 {t("dashboard.avr")}
               </CustomText>
               <Text
-                className={percentadsarv}
+                className={`font-bold text-center`}
+                style={{
+                  fontSize: baseFontSize,
+                  color: theme === "dark" ? "#c6c7c7" : "#7f7765",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >

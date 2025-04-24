@@ -72,14 +72,14 @@ export default function Dashboard() {
       style={{ flex: 1 }}
     >
       <SafeAreaView
-        className="h-full"
-        style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
+        className="h-full "
+        style={Platform.OS === "web" ? { paddingTop: 80 } : {}}
       >
         <ScrollView>
           <View
             style={{
-              paddingTop: Platform.OS === "web" ? "3%" : 0,
-              width: Platform.OS === "web" ? "45%" : "100%",
+              paddingTop: Platform.OS === "web" ? "1%" : 0,
+              width: Platform.OS === "web" ? "40%" : "100%",
               alignSelf: "center",
             }}
           >

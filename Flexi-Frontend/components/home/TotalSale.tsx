@@ -1,63 +1,123 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, useWindowDimensions, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import CircularChart from "@/components/CircularChart";
 import { useTranslation } from "react-i18next";
-import { CustomText } from "@/components/CustomText"; // Assuming you have a CustomText component
+import { CustomText } from "@/components/CustomText";
 
 const TotalSale = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation(); // กำหนดตัวแปรใช้งานภาษา
-  const titleStyle = `text-sm ${
-    theme === "dark" ? "text-[#ababab]" : "text-[#48453e]"
-  } text-center font-normal`;
-  const percentadsarv = `text-sm ${
-    theme === "dark" ? "text-[#c6c7c7]" : "text-[#7f7765]"
-  } text-center font-bold`;
+  const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isPortrait = height > width;
+
+  // Dynamic font sizes
+  const baseFontSize = Platform.OS === "web" ? width * 0.013 : width * 0.04;
+  const smallFontSize = baseFontSize * 0.8;
+  const largeFontSize = baseFontSize * 1.15;
+
   return (
-    <View className="flex flex-col pt-2 pb-2 px-2 items-center justify-center">
+    <View
+      style={{
+        flex: 0.6,
+        paddingTop: 8,
+        paddingBottom: Platform.OS === "web" ? 0 :4,
+        paddingHorizontal: 8,
+       }}
+    >
       <View
-        className={`flex-row ${
-          theme === "dark" ? "bg-zinc-800" : "bg-white"
-        } items-center w-full h-48 rounded-2xl border ${
-          theme === "dark" ? "border-zinc-700" : "border-[#61fff2]"
-        }`}
+        style={{
+          flexDirection: "row",
+          backgroundColor: theme === "dark" ? "#27272a" : "#ffffff",
+          alignItems: "center",
+          width: "100%",
+          height: isPortrait ? width * 0.45 : width * 0.13,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: theme === "dark" ? "#3f3f46" : "#61fff2",
+        }}
       >
-        <View className="flex-1 bg-transparent items-center justify-center">
-          {/* Center the circular percentage chart */}
-          <View className="items-center justify-center">
-            <CircularChart percentage={35} />
-          </View>
+        <View
+          style={{
+            flex: 0.9,
+            backgroundColor: "transparent",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularChart percentage={35} />
         </View>
 
-        {/* Total Sale */}
-        <View className="bg-transparent items-center ps-6 justify-center w-52 h-60 rounded-2xl">
-          <View className="flex-row justify-center w-full">
+        <View
+          style={{
+            flex: 1.1,
+            backgroundColor: "hsla(0, 31%, 93%, 0)",
+            alignItems: "center",
+            paddingStart: 24,
+            justifyContent: "center",
+            width: isPortrait ? width * 0.4 : width * 0.2,
+            height: isPortrait ? width * 0.5 : width * 0.25,
+            borderRadius: 16,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
             <Text
-              className={`text-xl font-bold ${
-                theme === "dark" ? "text-[#ffffff]" : "text-[#3c3c3c]"
-              }`}
+              style={{
+                fontSize: largeFontSize,
+                fontWeight: "bold",
+                color: theme === "dark" ? "#ffffff" : "#3c3c3c",
+              }}
               numberOfLines={1}
               adjustsFontSizeToFit
             >
               1,999,999
             </Text>
-
-            <CustomText className={titleStyle}>
+            <CustomText
+              style={{
+                fontSize: smallFontSize,
+                color: theme === "dark" ? "#ababab" : "#48453e",
+                textAlign: "center",
+                fontWeight: "normal",
+              }}
+            >
               {t("dashboard.sale")}
             </CustomText>
           </View>
-          {/* row Ads and Profit */}
-          <View className="flex-row justify-around  mt-2 px-6 ps-3">
-            {/* ADS */}
-            <View className="flex-colum ">
-              <CustomText className={titleStyle}>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: 8,
+              paddingHorizontal: 24,
+              gap: "15%"
+            }}
+          >
+            {/* Ads */}
+            <View>
+              <CustomText
+                style={{
+                  fontSize: smallFontSize,
+                  color: theme === "dark" ? "#ababab" : "#48453e",
+                  textAlign: "center",
+                  fontWeight: "normal",
+                }}
+              >
                 {t("dashboard.ads")}
               </CustomText>
               <Text
-                className={`text-lg ${
-                  theme === "dark" ? "text-[#ffb700] " : "text-orange-400 "
-                } font-bold text-center`}
+                style={{
+                  fontSize: baseFontSize,
+                  fontWeight: "bold",
+                  color: theme === "dark" ? "#ffb700" : "#ff8c00",
+                  textAlign: "center",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -66,18 +126,29 @@ const TotalSale = () => {
             </View>
 
             {/* Profit */}
-            <View className="flex-colum items-center justify-between w-full">
-              <CustomText className={titleStyle}>
+            <View>
+              <CustomText
+                style={{
+                  fontSize: smallFontSize,
+                  color: theme === "dark" ? "#ababab" : "#48453e",
+                  textAlign: "center",
+                  fontWeight: "normal",
+                }}
+              >
                 {t("dashboard.profit")}
               </CustomText>
               <Text
-                className={`text-lg font-bold ${
-                  parseFloat("-999.99") >= 0
-                    ? theme === "dark"
-                      ? "text-teal-400"
-                      : "text-teal-500"
-                    : "text-[#FF006E]"
-                }`}
+                style={{
+                  fontSize: baseFontSize,
+                  fontWeight: "bold",
+                  color:
+                    parseFloat("-999.99") >= 0
+                      ? theme === "dark"
+                        ? "#00fad9"
+                        : "#4400ff"
+                      : "#FF006E",
+                  textAlign: "center",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -86,14 +157,35 @@ const TotalSale = () => {
             </View>
           </View>
 
-          <View className="flex-row justify-around mt-3 px-0 ps-4">
-            {/* %ADS */}
-            <View className="flex-colum">
-              <CustomText className={titleStyle}>
+          {/* ROI and AVR */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: 12,
+              paddingHorizontal:2,
+              gap: "45%",
+            }}
+          >
+            {/* ROI */}
+            <View>
+              <CustomText
+                style={{
+                  fontSize: smallFontSize,
+                  color: theme === "dark" ? "#ababab" : "#48453e",
+                  textAlign: "center",
+                  fontWeight: "normal",
+                }}
+              >
                 {t("dashboard.roi")}
               </CustomText>
               <Text
-                className={percentadsarv}
+                style={{
+                  fontSize: smallFontSize,
+                  fontWeight: "bold",
+                  color: theme === "dark" ? "#c6c7c7" : "#7f7765",
+                  textAlign: "center",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -101,13 +193,24 @@ const TotalSale = () => {
               </Text>
             </View>
 
-            {/* Average */}
-            <View className="flex-colum items-center justify-between w-full">
-              <CustomText className={titleStyle}>
+            <View>
+              <CustomText
+                style={{
+                  fontSize: smallFontSize,
+                  color: theme === "dark" ? "#ababab" : "#48453e",
+                  textAlign: "center",
+                  fontWeight: "normal",
+                }}
+              >
                 {t("dashboard.avr")}
               </CustomText>
               <Text
-                className={percentadsarv}
+                style={{
+                  fontSize: smallFontSize,
+                  fontWeight: "bold",
+                  color: theme === "dark" ? "#c6c7c7" : "#7f7765",
+                  textAlign: "center",
+                }}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
