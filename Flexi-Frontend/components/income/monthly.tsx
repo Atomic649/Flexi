@@ -82,7 +82,7 @@ const monthly = () => {
       <SafeAreaView
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
-          width: Platform.OS === "web" ? "95%" : "100%",
+          width: Platform.OS === "web" ? "60%" : "100%",
           alignSelf: "center",
           paddingTop: Platform.OS === "web" ? "1.5%" : 0,
         }}

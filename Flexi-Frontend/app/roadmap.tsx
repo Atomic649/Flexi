@@ -73,7 +73,7 @@ export default function RoadMap() {
       </View>
       <View
         className="flex-col h-1/3 gap-4 px-2"
-        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+        style={Platform.OS === "web" ? { alignSelf: "center", width: "30%" } : {}}
       >
         {/* mission 1 */}
         <View className="flex-row items-center justify-between mx-2 px-8">
@@ -150,12 +150,13 @@ export default function RoadMap() {
 
       {/* Vision */}
       <View
-        className="flex-col items-center mt-8"
+        className="flex-col items-center mx-8"
         style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
       >
         <View
           className="w-full py-5 m-2 items-center justify-center"
           style={{
+            width: Platform.OS === "web" ? "50%" : "90%",
             backgroundColor: theme === "dark" ? "#242422" : "#f0f0f0",
             borderWidth: 1,
             borderColor: theme === "dark" ? "#03dcc7" : "#04ecd5",
@@ -182,7 +183,7 @@ export default function RoadMap() {
       </View>
 
       <View
-        className="flex-row items-center justify-around mt-6"
+        className="flex-row items-center justify-center m-6 gap-2 mt-6"
         style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
       >
         <CustomButton
