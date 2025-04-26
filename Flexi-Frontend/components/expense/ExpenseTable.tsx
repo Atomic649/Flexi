@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, RefreshControl } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, RefreshControl, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ExpenseDetail from "@/app/expenseDetail"; // Ensure correct import
@@ -88,16 +88,22 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
             theme === "dark" ? "border-zinc-700" : "border-gray-300"
           }`}
         >
-          <View className=" w-1/4">
+          <View 
+          style={{
+          width: "25%",
+          }}>
             <Text className={dateClass} numberOfLines={2}>
               {item.date.split("T")[0]}
               {"\n"}
               {item.date.split("T")[1].replace(/:\d{2}\.\d{3}Z$/, "")}
             </Text>
           </View>
-          <View className=" w-3/6">
+          <View  style={{
+          width: "45%",
+          }}>
+       
             <Text
-              className={`flex-2 text-end pt-3  ${
+              className={`flex-2 text-start pt-3  ${
                 theme === "dark" ? "text-white" : "text-zinc-900"
               }`}
               numberOfLines={1}
@@ -105,7 +111,7 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
               {item.desc}
             </Text>
             <Text
-              className={`flex-2 text-end p-3  ${
+              className={`flex-2 text-start p-3  ${
                 theme === "dark" ? "text-white" : "text-zinc-900"
               }`}
               numberOfLines={1}
@@ -113,7 +119,10 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
               {item.note}
             </Text>
           </View>
-          <View className=" w-1/5">
+          <View  style={{
+          width: "25%",
+          }}>
+       
             <Text className={cellClass} numberOfLines={1}>
               {item.amount}
             </Text>
@@ -157,14 +166,20 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
   );
 
   return (
-    <View className="flex-1 w-full ">
+    <View className="flex-1  "
+      style={{
+        width: Platform.OS === "web" ? "50%" : "100%",
+       // alignItems: "center",
+      }}>
       <View
-        className="flex-row w-full justify-between p-1 px-4 "
-        style={{ backgroundColor: theme === "dark" ? "#3f3e3b" : "#5e5953" }}
+        className="flex-row w-full justify-around p-1  "
+        style={{ backgroundColor: theme === "dark" ? "#3f3e3b" : "#5e5953",
+          alignItems: "center",
+         }}
       >
-        <Text className={`${headerClass} w-1/6`}>{t('expense.table.date')}</Text>
-        <Text className={`${headerClass} w-1/2`}>{t('expense.table.notedesc')}</Text>
-        <Text className={`${headerClass} w-1/4`}>{t('expense.table.amount')}</Text>
+        <Text className={`${headerClass} w-2/7`}>{t('expense.table.date')}</Text>
+        <Text className={`${headerClass} w-1/7`}>{t('expense.table.notedesc')}</Text>
+        <Text className={`${headerClass} w-1/7`}>{t('expense.table.amount')}</Text>
         {/* <Text className={`${headerClass} w-1/6`}>File</Text> */}
       </View>
       <FlatList

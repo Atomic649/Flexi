@@ -8,7 +8,6 @@ import {
   Platform,
 } from "react-native";
 import { View } from "@/components/Themed";
-import { useRouter, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -167,8 +166,7 @@ export default function ExpenseDetail({
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
-          paddingHorizontal: Platform.OS === "web" ? "20%" : 0,
+          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",        
         }}
         activeOpacity={1}
         onPressOut={onClose}
@@ -180,14 +178,14 @@ export default function ExpenseDetail({
             alignItems: "center",
           }}
           style={{
-            width: Platform.OS === "web" ? "60%" : "100%",
+            width: Platform.OS === "web" ? "50%" : "100%",
             alignSelf: "center",
           }}
         >
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: 0.1,
+              flex: Platform.OS === "web" ? 0.4 :0.10,
               justifyContent: "center",
               width: "100%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",

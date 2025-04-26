@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   FlatList,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -92,7 +93,7 @@ const List = () => {
           keyExtractor={(date) => date}
           renderItem={({ item: date }) => (
             <View style={{
-              alignItems: "center",
+              alignItems: Platform.OS ==="web"? "center" : "flex-start",
             }}>
               <Text
                 className={`text-base font-bold ${

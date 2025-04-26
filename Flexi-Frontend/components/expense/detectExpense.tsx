@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert,
   Dimensions,
+  Platform, // Import Platform for platform checks
 } from "react-native";
 
 import * as DocumentPicker from "expo-document-picker";
@@ -57,18 +58,20 @@ export default function DetectExpense() {
     });
     console.log("🔥result", result);
 
-    //get uri from result
     const uri =
       result.assets && result.assets.length > 0 ? result.assets[0].uri : null;
     if (!uri) {
       setError("No PDF selected or invalid file.");
       return;
-    }
-    else{
+    } else {
       try {
-        const fileInfo = await FileSystem.getInfoAsync(uri);
-        console.log("🔥fileInfo", fileInfo);
-  
+        if (Platform.OS !== "web") {
+          const fileInfo = await FileSystem.getInfoAsync(uri);
+          console.log("🔥fileInfo", fileInfo);
+        } else {
+          console.warn("File system operations are not supported on web.");
+        }
+
         setPdfUri(uri);
         setModalVisible(true);
         console.log("🔥pdfUriChoose", pdfUri);
@@ -76,15 +79,13 @@ export default function DetectExpense() {
         console.error("🚨pickAndProcessPdf", error);
         setError("Failed to process PDF");
       }
-
     }
-    
   };
 
   const confirmAndProcessPdf = async () => {
     setModalVisible(false);
-    setLoading(true);    
-    onRefresh();//refreshing the table
+    setLoading(true);
+    onRefresh(); // refreshing the table
     try {
       const memberId = await getMemberId();
       const filePath = pdfUri;
@@ -92,11 +93,21 @@ export default function DetectExpense() {
 
       if (memberId && filePath) {
         const formData = new FormData();
-        formData.append("filePath", {
-          uri: filePath,
-          name: "file.pdf",
-          type: "application/pdf",
-        } as unknown as Blob);
+
+        if (Platform.OS === "web") {
+          // Handle file upload for web
+          const response = await fetch(filePath);
+          const blob = await response.blob();
+          formData.append("filePath", blob, "file.pdf");
+        } else {
+          // Handle file upload for native platforms
+          formData.append("filePath", {
+            uri: filePath,
+            name: "file.pdf",
+            type: "application/pdf",
+          } as unknown as Blob);
+        }
+
         formData.append("memberId", memberId);
 
         const response = await CallAPIExpense.extractPDFExpenseAPI(formData);
@@ -124,25 +135,23 @@ export default function DetectExpense() {
 
   // refreshing table
   const onRefresh = useCallback(async () => {
-      setRefreshing(true);
-      console.log("🔥 Refreshing...");
-      
-      try {
-        const memberId = String(await getMemberId());
-        console.log("Member ID:", memberId);
-        if (memberId) {
-          const expenses = await CallAPIExpense.getAllExpensesAPI(memberId);
-          setExpenses(expenses);
-          setError(null);
-          setRefreshing(true);
-         
-        }
-      } catch (error) {
-        console.error("Error refreshing expenses", error);
+    setRefreshing(true);
+    console.log("🔥 Refreshing...");
+
+    try {
+      const memberId = String(await getMemberId());
+      console.log("Member ID:", memberId);
+      if (memberId) {
+        const expenses = await CallAPIExpense.getAllExpensesAPI(memberId);
+        setExpenses(expenses);
+        setError(null);
+        setRefreshing(true);
       }
-      setRefreshing(false);
-    }, []);
-  
+    } catch (error) {
+      console.error("Error refreshing expenses", error);
+    }
+    setRefreshing(false);
+  }, []);
 
   const handleSave = async () => {
     const allExpenseIds = expenses.map((expense) => expense.id);
@@ -165,7 +174,7 @@ export default function DetectExpense() {
             },
           ]
         );
-          router.push("(tabs)/expense");
+        router.push("(tabs)/expense");
       } catch (error) {
         console.error("Error saving expenses:", error);
       }
@@ -181,8 +190,6 @@ export default function DetectExpense() {
     }
   }, [isCreateSuccess]);
 
-  
-
   const handleAdd = () => {
     setIsCreateExpenseVisible(true);
   };
@@ -191,9 +198,8 @@ export default function DetectExpense() {
     setSelectedExpense(expense);
   };
 
-  
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()} items-center`}>
       <View className="flex-row items-center justify-between px-5 py-3">
         <TouchableOpacity
           className="items-center justify-center"
@@ -227,12 +233,12 @@ export default function DetectExpense() {
             size={24}
             color={theme === "dark" ? "primary" : "#3b3b3b"}
           />
-            <Text
+          <Text
             className="text-center text-xs font-bold"
             style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
-            >
+          >
             {t("expense.buttons.pdf")}
-            </Text>
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -297,22 +303,36 @@ export default function DetectExpense() {
           >
             {loading && <ActivityIndicator size="large" />}
             {pdfUri && (
-              <WebView
-                className="flex-1 w-full h-full"
-                originWhitelist={["*"]}
-                source={{ uri: pdfUri }}
-              />
+              Platform.OS !== "web" ? (
+                <WebView
+                  className="flex-1 w-full h-full"
+                  originWhitelist={["*"]}
+                  source={{ uri: pdfUri }}
+                />
+              ) : (
+                <View className="flex-1 justify-center items-center">
+                  <iframe
+                    src={pdfUri}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      border: "none",
+                    }}
+                    title="PDF Preview"
+                  />
+                </View>
+              )
             )}
             <View className="flex-row justify-between px-10 mt-4">
               <Button
-              title={t("common.cancel")}
-              onPress={() => setModalVisible(false)}
-              color="#006eff"
+                title={t("common.cancel")}
+                onPress={() => setModalVisible(false)}
+                color="#006eff"
               />
               <Button
-              title={t("common.confirm")}
-              onPress={confirmAndProcessPdf}
-              color="#ff1713"
+                title={t("common.confirm")}
+                onPress={confirmAndProcessPdf}
+                color="#ff1713"
               />
             </View>
           </View>
