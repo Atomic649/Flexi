@@ -7,7 +7,7 @@
 import { Redirect } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import CustomButton from '@/components/CustomButton'
-import { ScrollView, Image, TouchableOpacity, LogBox, SafeAreaView } from 'react-native'
+import { ScrollView, Image, TouchableOpacity, LogBox, SafeAreaView, Platform } from 'react-native'
 import { View } from "@/components/Themed"
 import { images } from "@/constants"
 import { router } from 'expo-router'
@@ -57,10 +57,12 @@ export default function Index() {
 
   return (
     <>
-      {/* ถ้า login แล้ว redirect ไปหน้า home */}
-      { isLoggedIn &&  <Redirect href="/(tabs)/home" /> }
-      
-      {/* ถ้ายังไม่ login แสดงหน้า Landing */}
+      /* ถ้า login แล้ว redirect ไปหน้า home หรือ expense ขึ้นอยู่กับ platform */
+        { isLoggedIn && (
+          Platform.OS === 'web' ? <Redirect href="/(tabs)/expense" /> : <Redirect href="/(tabs)/home" />
+        )}
+        
+        {/* ถ้ายังไม่ login แสดงหน้า Landing */}
       { !isLoggedIn && <SafeAreaView className="h-full">
           <ScrollView contentContainerStyle={{height: '100%'}}>
             {/* ปุ่มเปลี่ยนภาษา */}

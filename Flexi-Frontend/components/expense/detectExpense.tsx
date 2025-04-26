@@ -200,12 +200,15 @@ export default function DetectExpense() {
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()} items-center`}>
-      <View className="flex-row items-center justify-between px-5 py-3">
+      <View className="flex-row items-center justify-between  py-1"
+      style={{
+        width : Platform.OS === "web" ? "50%" : "100%",
+      }}>
         <TouchableOpacity
           className="items-center justify-center"
           style={{
             backgroundColor: theme === "dark" ? "#6efdd4" : "#6efdd4",
-            width: screenWidth / 3 - 10,
+            width: "33%",
             height: 50,
             alignSelf: "center",
           }}
@@ -222,7 +225,7 @@ export default function DetectExpense() {
           className="items-center justify-center "
           style={{
             backgroundColor: theme === "dark" ? "#0feac2" : "#0feac2",
-            width: screenWidth / 3 - 10,
+            width: "33%",
             height: 50,
             alignSelf: "center",
           }}
@@ -245,7 +248,7 @@ export default function DetectExpense() {
           className="items-center justify-center"
           style={{
             backgroundColor: theme === "dark" ? "#fbac03ff" : "#ffd000",
-            width: screenWidth / 3 - 10,
+            width: "33%",
             height: 50,
             alignSelf: "center",
           }}

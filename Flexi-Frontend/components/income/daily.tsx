@@ -70,8 +70,8 @@ const Daily = () => {
   // Adjust front size and color of Title Table
   const textStyle = {
     fontSize: 13,
-    color: theme === "dark" ? "#e5e7eb" : "#4b5563",
-    fontWeight: "700" as "700", // or any other acceptable value
+    color: theme === "dark" ? "#27272a" : "#4b5563",
+    fontWeight: "900" as "900", // or any other acceptable value
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
