@@ -24,22 +24,22 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to let you upload profile photos.",
         "NSPhotoLibraryUsageDescription": "This app uses the photo library to let you upload profile photos."
-      },
+    }},
       "android": {
         "adaptiveIcon": {
           "foregroundImage": "./assets/images/adaptive-icon.png",
           "backgroundColor": "#ffffff"
         }
       },
-      "windowSoftInputMode": "adjustResize",
+     // "windowSoftInputMode": "adjustResize",
       "web": {
         "bundler": "metro",
         "output": "static",
         "favicon": "./assets/images/favicon.png"
       },
       "plugins": [
-        "@config-plugins/react-native-blob-util",
-        "@config-plugins/react-native-pdf",
+       // "@config-plugins/react-native-blob-util",
+       // "@config-plugins/react-native-pdf",
         "expo-router",
         "expo-localization",
         [
@@ -67,9 +67,6 @@
           "projectId": "02359cb3-514b-4410-8a59-6d3072668430"
         }
       }
-    },
-    "plugins": [
-      "expo-router"
-    ]
+    }   
   }
-}
+

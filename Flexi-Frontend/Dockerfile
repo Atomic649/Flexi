@@ -1,16 +1,15 @@
-# Use an official Node.js LTS runtime as a parent image
-FROM node:20-alpine
-
-# Install Expo CLI globally
-RUN npm install -g expo-cli
+FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
+# Install dependencies, including expo locally
 RUN npm install
 
 COPY . .
 
+EXPOSE 8081
 
-CMD ["npm", "start"]
+# Use the new local Expo CLI
+CMD ["npx", "expo", "start", "--web"]
