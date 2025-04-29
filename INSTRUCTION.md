@@ -38,15 +38,19 @@ Flexi-Backend/
 │
 │
 ├── src/
-│    └──controllers/            
-│    └──generated/              # Prisma Client generate client to connect with multi database
-│      ├── client1
-│      └── client2
-│    └──middlewares/
-│       ├──authMiddleware.js    # Middleware for verifying JWT and protecting routes
-│       └──multer_config.ts.    # Multer cofig foe upload file
-│    └── routes/
-│       └── authRoutes.js        # Routes for user registration and login
+│    ├──controllers/            
+│    ├──generated/               # Prisma Client generate client to connect with multi database
+│    |   ├── client1
+│    |   └── client2
+│    ├──middlewares/
+│    |   ├──authMiddleware.js    # Middleware for verifying JWT and protecting routes
+│    |   └──multer_config.ts.    # Multer cofig foe upload file
+│    ├──libs/
+│    |   └── s3.ts               # สร้าง AWS S3 client
+|    ├──services/
+│    |   └── fileService.ts      # Logic บริการเช่น generateSignedUrl, deleteFromS3 
+|    └──routes/
+│        └── authRoutes.js       # Routes for user registration and 
 │
 │
 │

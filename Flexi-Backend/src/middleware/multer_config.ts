@@ -1,31 +1,12 @@
 import { Request } from "express"
 import multer, { FileFilterCallback } from "multer";
 import fs from "fs"
+import multerS3 from "multer-s3"
+import { s3 } from "../libs/s3" // AWS S3 Client ที่ตั้งไว้
+import { v4 as uuidv4 } from "uuid"
 
-const storage = multer.diskStorage({
-  destination: (
-    req: Request,
-    file: Express.Multer.File,
-    callback: (error: Error | null, destination: string) => void
-  ) => {
-    const folder = "./uploads/images/"
-    if (!fs.existsSync(folder)) {
-      fs.mkdirSync(folder)
-    }
-    callback(null, folder)
-  },
-  filename: (
-    req: Request,
-    file: Express.Multer.File,
-    callback: (error: Error | null, filename: string) => void
-  ) => {
-    const ext = file.mimetype.split("/")[1]
-    callback(null, `${file.fieldname}-${Date.now()}.${ext}`)
-  },
-})
-
-const fileFilter = (
-  req: Request,
+const imageFileFilter = (
+  _req: Request,
   file: Express.Multer.File,
   callback: FileFilterCallback
 ) => {
@@ -36,18 +17,32 @@ const fileFilter = (
   }
 }
 
-const multerConfigImage = {
-  config: {
-    storage,
-    limits: { fileSize: 1024 * 1024 * 10 }, 
-    fileFilter,
+const storageImageS3 = multerS3({
+  s3,
+  bucket: process.env.BUCKET_NAME!,
+  contentType: multerS3.AUTO_CONTENT_TYPE,
+  acl: 'private', // ถ้าอยาก public เปลี่ยนเป็น 'public-read'
+  key: (_req, file, cb) => {  
+    const filename = `${file.fieldname}-${Date.now()}-${uuidv4()}`
+    const ext = file.mimetype.split("/")[1]
+    cb(null, `uploads/${filename}.${ext}`)
   },
-  keyUpload: "image", // Ensure this matches the key used in the form data
-};
+})
+
+export const multerConfigImage = {
+  config: {
+    storage: storageImageS3,
+    limits: { fileSize: 1024 * 1024 * 10 }, 
+    fileFilter: imageFileFilter,
+  },
+  keyUpload: "image",
+}
 
 
 
-// PDF-specific storage
+// PDF-specific storage 
+// Not Store in Long Memory 
+// Not in AWS S3
 const folderPDF = "./uploads/pdf/"
 if (!fs.existsSync(folderPDF)) {
   fs.mkdirSync(folderPDF)

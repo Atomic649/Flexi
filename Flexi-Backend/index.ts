@@ -132,15 +132,39 @@ app.use("/pdf", pdfRoutes);
 // Store Routes
 app.use("/store", storeRoutes);
 
-//---------- Start the server ----------------
+
+// --------------START SERVER-----------------
+//-- Up to .env file "development" and "production" mode
 const port = process.env.PORT || 3000;
 
-// Load SSL certificates
-const sslOptions = {
-  key: fs.readFileSync("./ssl/key.pem"),
-  cert: fs.readFileSync("./ssl/cert.pem"),
-};
+if (process.env.NODE_ENV === "development") {
+  app.use(cors({ origin: "*" })); // Allow all origins in development
+} else {
+  app.use(cors()); // Use default CORS settings in production
+}
 
-https.createServer(sslOptions, app).listen(port, () => {
-  console.log(`Server started on HTTPS port ${port}`);
-});
+if (process.env.NODE_ENV === "production") {
+  // Load SSL certificates
+  const sslOptions = {
+    key: fs.readFileSync("./ssl/key.pem"),
+    cert: fs.readFileSync("./ssl/cert.pem"),
+  };
+
+  // Start HTTPS server in production
+  https.createServer(sslOptions, app).listen(port, (err?: Error) => {
+    if (err) {
+      console.error("Failed to start HTTPS server:", err);
+    } else {
+      console.log(`Server started on HTTPS port ${port}`);
+    }
+  });
+} else {
+  // Start HTTP server in development
+  app.listen(port, (err?: Error) => {
+    if (err) {
+      console.error("Failed to start HTTP server:", err);
+    } else {
+      console.log(`Server started on HTTP port ${port}`);
+    }
+  });
+}

@@ -10,9 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProductCard from "@/components/ProductCard";
 import CallAPIProduct from "@/api/product_api";
-import { IMAGE_URL } from "@/utils/config";
 import { useTheme } from "@/providers/ThemeProvider";
-import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
+import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { getMemberId } from "@/utils/utility";
@@ -72,8 +71,7 @@ export default function Home() {
 
   const getImageUri = (image: string | null) => {
     if (!image) return null;
-    return image.startsWith("file://") ? image : IMAGE_URL + image;
-    
+    return image.startsWith("http") ? image : `${process.env.IMAGE_URL}/${image}`;
   };
 
   const handleDeleteProduct = async (id: number) => {
@@ -123,7 +121,7 @@ export default function Home() {
                 >
                   {t("product.limit")}
                 </CustomText>
-                <TouchableOpacity onPress={() => router.push("roadmap")}>
+                <TouchableOpacity onPress={() => router.push("/roadmap")}>
                   <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
                     {t("product.help")}
                   </Text>
@@ -155,7 +153,7 @@ export default function Home() {
               elevation: 5,
             }}
             onPress={() => {
-              router.push("createproduct");
+              router.push("/createproduct");
             }}
           >
             <Ionicons

@@ -12,4 +12,4 @@ COPY . .
 EXPOSE 8081
 
 # Use the new local Expo CLI
-CMD ["npx", "expo", "start", "--web"]
+CMD ["npm", "start"]
