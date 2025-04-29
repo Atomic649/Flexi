@@ -69,10 +69,6 @@ export default function Home() {
     setRefreshing(false);
   };
 
-  const getImageUri = (image: string | null) => {
-    if (!image) return null;
-    return image.startsWith("http") ? image : `${process.env.IMAGE_URL}/${image}`;
-  };
 
   const handleDeleteProduct = async (id: number) => {
     Alert.alert("Delete", "Are you sure you want to delete this product?", [
@@ -107,7 +103,7 @@ export default function Home() {
               productprice={item.price}
               productstock={item.stock}
               id={item.id}
-              productimage={getImageUri(item.image)}
+              productimage={item.image}
               onDelete={() => handleDeleteProduct(item.id)}
             />
           )}

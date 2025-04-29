@@ -44,13 +44,10 @@ const createProduct = async (req: Request, res: Response) => {
       if (err) {
         return res.status(400).json({ message: err.message });
       }
-      console.log("image Buffer", req.file?.buffer);      
-      console.log("image", req.file?.path);
-  
-      // Merge the uploaded file name into the product object
+       // Merge the uploaded file name into the product object
       const product: Product = {
         ...req.body,
-        image: req.file?.path ?? "", // Default to an empty string if no image is uploaded
+        image: (req.file as any)?.location ?? "", // Use type assertion for custom property
       };
   
       // Validate combined product fields

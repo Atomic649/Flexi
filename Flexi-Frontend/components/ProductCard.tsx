@@ -79,7 +79,7 @@ export default function ProductCard({
 
           <View className="pt-2">
             <TouchableOpacity onPress={() => {
-              router.push(`editproduct?id=${id}`);
+              router.push(`/editproduct?id=${id}`);
             }}>
               <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
             </TouchableOpacity>
