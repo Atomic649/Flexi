@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
-const { zonedTimeToUtc } = require("date-fns-tz");
-
+import { format } from "date-fns-tz"; 
 
 //Create  instance of PrismaClient
 const prisma = new PrismaClient1();
@@ -60,15 +59,15 @@ const createExpense = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
+  // Convert date time to format Expected ISO-8601 DateTime
+  const formattedDate = format(new Date(expenseInput.date), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  console.log("Formatted Date", formattedDate);
   
-
-  // Parse the date string to preserve timezone information
-  expenseInput.date = zonedTimeToUtc(expenseInput.date.toString(), "UTC");
 
   try {
     const expense = await prisma.expense.create({
       data: {
-        date: expenseInput.date,
+        date: formattedDate,
         amount: expenseInput.amount,
         desc: expenseInput.desc,
         group: expenseInput.group,

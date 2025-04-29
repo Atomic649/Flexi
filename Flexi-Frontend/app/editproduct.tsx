@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
-import { IMAGE_URL } from "@/utils/config";
 
 export default function EditProduct() {
   const { t } = useTranslation();
@@ -85,11 +84,6 @@ export default function EditProduct() {
     buttons: [],
   });
 
-   const getImageUri = (image: string | null) => {
-      if (!image) return null;
-      return image.startsWith("file://") ? image : IMAGE_URL + image;
-      
-    };
 
   // Handle update
   const handleUpdateProduct = async () => {
@@ -140,7 +134,7 @@ export default function EditProduct() {
             text: t("product.alerts.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("product");
+              router.replace("/product");
             },
           },
         ],
@@ -160,7 +154,7 @@ export default function EditProduct() {
         >
           {image && (
             <Image
-              source={{ uri: getImageUri(image) || '' }}
+              source={{ uri: image|| '' }}
               style={{
                 width: Platform.OS === "web" ? 500 : 350,
                 height: Platform.OS === "web" ? 500 : 350,

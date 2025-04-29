@@ -3,6 +3,7 @@ import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
+import { deleteFromS3, extractS3Key } from "../services/imageService";
 
 const upload = multer(multerConfig.multerConfigImage.config).single(multerConfig.multerConfigImage.keyUpload);
 
@@ -130,11 +131,31 @@ const updateProduct = async (req: Request, res: Response) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
-    
+
+    // Fetch the existing product to get the current image URL
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Delete the old image from S3 if a new image is uploaded
+    if (req.file && existingProduct.image) {
+      const oldImageKey = extractS3Key(existingProduct.image);
+      try {
+        await deleteFromS3(oldImageKey);
+        console.log("Old image deleted from S3");
+      } catch (e) {
+        console.error("Failed to delete old image from S3:", e);
+      }
+    }
+
     // Merge the uploaded file name (if any) into the product object
     const product: Product = {
       ...req.body,
-      image: req.file?.filename ?? req.body.image ?? "",
+      image: (req.file as any)?.location ?? existingProduct.image, // Use new image or keep the old one
     };
 
     // validate the request body
@@ -184,23 +205,44 @@ const updateProduct = async (req: Request, res: Response) => {
 };
 
 
-// Delete product by ID set Delete status to true
+// Delete product by ID and delete image from S3
 const deleteProduct = async (req: Request, res: Response) => {
-    const { id } = req.params
-    try {
-        const deletedProduct = await prisma.product.update({
-            where: {
-                id: Number(id)
-            },
-            data: {
-               deleted: true
-            }
-        })
-        res.json({ message: "success", product: deletedProduct.deleted })
-    } catch (e) {
-        console.error(e)
-        res.status(500).json({ message: "failed to delete product" })
+  const { id } = req.params;
+  try {
+    // Fetch the existing product to get the current image URL
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" });
     }
+
+// // Delete the image from S3
+//     if (existingProduct.image) {
+//       const imageKey = extractS3Key(existingProduct.image);
+//       try {
+//         await deleteFromS3(imageKey);
+//       } catch (e) {
+//         console.error("Failed to delete image from S3:", e);
+//       }
+//     }
+
+    // Mark the product as deleted
+    const deletedProduct = await prisma.product.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        deleted: true,
+      },
+    });
+
+    res.json({ message: "success", product: deletedProduct.deleted });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to delete product" });
+  }
 }
 
 // Get Product Name by Member ID
@@ -222,9 +264,5 @@ const getProductChoice = async (req: Request, res: Response) => {
         res.status(500).json({ message: "failed to get products" })
     }
 }
-
-
-
-
 
 export { createProduct,  getProductById, updateProduct, deleteProduct, getProductByMemberId,getProductChoice  }
