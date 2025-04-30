@@ -1,9 +1,3 @@
-// ไฟล์นี้เป็นจุดเริ่มต้นของแอพ ทำหน้าที่:
-// - ตรวจสอบสถานะ login
-// - จัดการการ redirect
-// - แสดงหน้า Landing
-// - รองรับการเปลี่ยนภาษาและ theme
-
 import { Redirect } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import CustomButton from '@/components/CustomButton'
@@ -17,7 +11,7 @@ import { icons } from '@/constants'
 import { CustomText } from "@/components/CustomText"
 
 export default function Index() {
-  // Hooks สำหรับ theme และการแปลภาษา
+  //  Hooks สำหรับ theme และการแปลภาษา
   const { t, i18n } = useTranslation()
 
   // State สำหรับเก็บสถานะ login และการโหลดข้อมูล
@@ -57,7 +51,7 @@ export default function Index() {
 
   return (
     <>
-      /* ถ้า login แล้ว redirect ไปหน้า home หรือ expense ขึ้นอยู่กับ platform */
+       {/* ถ้า login แล้ว redirect ไปหน้า home หรือ expense ขึ้นอยู่กับ platform  */}
         { isLoggedIn && (
           Platform.OS === 'web' ? <Redirect href="/(tabs)/expense" /> : <Redirect href="/(tabs)/home" />
         )}

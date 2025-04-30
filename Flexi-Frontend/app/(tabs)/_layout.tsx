@@ -70,7 +70,6 @@ const TabIcon = ({
 
 
 export default function TabLayout() {
-  if (process.env.NODE_ENV === "web") return <Slot />;
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
  
@@ -136,7 +135,7 @@ export default function TabLayout() {
               title: t("tabs.settings"),
               headerShown: false,
               tabBarIcon: ({ color, focused }) => (
-                <TouchableOpacity onPress={() => router.push("settings")}>
+                <TouchableOpacity onPress={() => router.push("/settings")}>
                   <TabIcon
                     icon={images.logo}
                     color={color}

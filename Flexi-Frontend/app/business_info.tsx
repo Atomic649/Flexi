@@ -138,16 +138,14 @@ export default function Register() {
     <SafeAreaView className={`flex-1 items-center  ${useBackgroundColorClass()}`}>
       <ScrollView>
         <View
-          className="flex-1 justify-center h-full px-4 py-10"
+          className="flex-1 justify-center py-10 px-4"
           style={{
             alignItems: Platform.OS === "web" ? "center" : "stretch",
+            maxWidth: 600,
+            
           }}
         >
-          <View
-            style={{
-              width: Platform.OS === "web" ? "40%" : "100%",
-              maxWidth: 600,
-            }}
+          <View        
           >
             <FormField2
               title={t("auth.businessRegister.businessName")}

@@ -166,7 +166,7 @@ export default function ExpenseDetail({
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",        
+          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
         activeOpacity={1}
         onPressOut={onClose}
@@ -185,7 +185,7 @@ export default function ExpenseDetail({
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: Platform.OS === "web" ? 0.4 :0.10,
+              flex: Platform.OS === "web" ? 0.4 : 0.1,
               justifyContent: "center",
               width: "100%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
@@ -211,7 +211,11 @@ export default function ExpenseDetail({
               </CustomText>
 
               <TextInput
-                className="text-center text-base"
+                style={{
+                  textAlign: "center",
+                  fontSize: 16,
+                  color: theme === "dark" ? "#818181" : "#68655f",
+                }}
                 value={desc}
                 onChangeText={setDesc}
                 placeholder={t("expense.detail.description")}

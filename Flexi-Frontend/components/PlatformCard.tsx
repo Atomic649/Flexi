@@ -189,7 +189,7 @@ const PlatformCard = ({
             </View>
 
             {/* Average */}
-            <View className="flex-colum items-center justify-between ">
+            <View className="flex-col items-center justify-between ">
               <CustomText
                 className={titleStyle}
                 style={{ fontSize: smallFontSize }}

@@ -1,11 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Network from 'expo-network';
-import jwtDecode from 'jwt-decode';
 
-// Function to trigger a fetch operation
-const triggerFetch = () => {
-  console.log('Fetch operation triggered');
-};
 
 
 

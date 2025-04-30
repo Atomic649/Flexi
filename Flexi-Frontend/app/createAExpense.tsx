@@ -39,11 +39,11 @@ interface ExpenseDetailProps {
 
 export default function CreateExpense({
   success,
-  visible,  
+  visible,
   onClose,
 }: ExpenseDetailProps) {
   const { t } = useTranslation();
-  const { theme } = useTheme();  
+  const { theme } = useTheme();
   const [note, setNote] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
@@ -53,8 +53,9 @@ export default function CreateExpense({
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
-  const [SelectedDates, setSelectedDates] = useState<string[]>([new Date().toISOString()]);
-  
+  const [SelectedDates, setSelectedDates] = useState<string[]>([
+    new Date().toISOString(),
+  ]);
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -67,9 +68,7 @@ export default function CreateExpense({
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
- 
- }
- 
+  };
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -125,22 +124,24 @@ export default function CreateExpense({
     }
 
     try {
-    // convert date to string
+      // convert date to string
 
-    const memberId = await getMemberId(); // Assuming getMemberId is a function that fetches the memberId
+      const memberId = await getMemberId(); // Assuming getMemberId is a function that fetches the memberId
 
-    const formattedDate = format(new Date(date[0]), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+      const formattedDate = format(
+        new Date(date[0]),
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+      );
 
-    const Expense = {
-      date: formattedDate, // Use the formatted date
-      note,
-      amount: Number(amount),
-      desc,
-      image,
-      group,
-      memberId,
-      
-    };
+      const Expense = {
+        date: formattedDate, // Use the formatted date
+        note,
+        amount: Number(amount),
+        desc,
+        image,
+        group,
+        memberId,
+      };
 
       const data = await CallAPIExpense.createAExpenseAPI(Expense);
       if (data.error) throw new Error(data.error);
@@ -164,13 +165,12 @@ export default function CreateExpense({
         : "bg-zinc-200"
     }`;
 
-  const handleDatesChange =  (dates: string[]) => {
+  const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
     console.log("Selected Dates:", dates);
     setDate(dates); // Store the dates as an array
     setCalendarVisible(false);
-  };  // force to chose only one date
-  
+  }; // force to chose only one date
 
   return (
     <Modal
@@ -195,14 +195,14 @@ export default function CreateExpense({
             justifyContent: "center",
             alignItems: "center",
           }}
-          style={{ width: Platform.OS === "web" ?"50%" : "100%" }}
+          style={{ width: Platform.OS === "web" ? "50%" : "100%" }}
         >
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: Platform.OS === "web" ? 0.4 :0.10,
+              flex: Platform.OS === "web" ? 0.4 : 0.1,
               justifyContent: "center",
-              width:  Platform.OS === "web" ?"100%" : "90%" ,            
+              width: Platform.OS === "web" ? "100%" : "90%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
               borderRadius: 10,
             }}
@@ -226,7 +226,9 @@ export default function CreateExpense({
                   }`}
                 >
                   {SelectedDates.length > 0
-                    ? format(new Date(SelectedDates[0]), "dd-MM-yyyy HH:mm", { locale: th })
+                    ? format(new Date(SelectedDates[0]), "dd-MM-yyyy HH:mm", {
+                        locale: th,
+                      })
                     : t("dashboard.selectDate")}
                 </CustomText>
                 {/* icon Calendar */}
@@ -237,15 +239,19 @@ export default function CreateExpense({
                   onPress={() => setCalendarVisible(true)}
                 />
               </View>
-                <TextInput
-                className="text-center text-base"
+              <TextInput
+                style={{
+                  textAlign: "center",
+                  fontSize: 16,
+                  color: theme === "dark" ? "#818181" : "#68655f",
+                }}
                 value={desc}
                 onChangeText={setDesc}
                 placeholder={t("expense.detail.description")}
                 placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
-                />
+              />
 
-                <TextInput
+              <TextInput
                 className={`text-center text-2xl font-bold py-3 ${
                   theme === "dark" ? "text-secondary-100" : "text-secondary"
                 }`}
@@ -254,93 +260,101 @@ export default function CreateExpense({
                 placeholder="0.00"
                 placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
                 keyboardType="numeric"
-                />
+              />
 
-                <TextInput
+              <TextInput
                 className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
                   theme === "dark"
-                  ? "bg-primary-100 border-black-200"
-                  : "bg-white border-zinc-300"
+                    ? "bg-primary-100 border-black-200"
+                    : "bg-white border-zinc-300"
                 }`}
                 style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}
                 value={note}
                 onChangeText={setNote}
                 placeholder={t("expense.detail.note")}
                 placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
-                />
+              />
               <View className="flex-row justify-evenly items-center">
-                 <ScrollView
+                <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   className="flex-row m-1 "
                 >
                   <TouchableOpacity
-                  onPress={() => setGroup("Marketing")}
-                  className={groupButtonClass("Marketing")}
+                    onPress={() => setGroup("Marketing")}
+                    className={groupButtonClass("Marketing")}
                   >
-                  <CustomText>{t("expense.detail.group.marketing")}</CustomText>
+                    <CustomText>
+                      {t("expense.detail.group.marketing")}
+                    </CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Transport")}
-                  className={groupButtonClass("Transport")}
+                    onPress={() => setGroup("Transport")}
+                    className={groupButtonClass("Transport")}
                   >
-                  <CustomText>{t("expense.detail.group.transport")}</CustomText>
+                    <CustomText>
+                      {t("expense.detail.group.transport")}
+                    </CustomText>
                   </TouchableOpacity>
                   <TouchableOpacity
-                  onPress={() => setGroup("Taxation")}
-                  className={groupButtonClass("Taxation")}
+                    onPress={() => setGroup("Taxation")}
+                    className={groupButtonClass("Taxation")}
                   >
-                  <CustomText>{t("expense.detail.group.taxation")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                  onPress={() => setGroup("Office")}
-                  className={groupButtonClass("Office")}
-                  >
-                  <CustomText>{t("expense.detail.group.office")}</CustomText>
+                    <CustomText>
+                      {t("expense.detail.group.taxation")}
+                    </CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Employee")}
-                  className={groupButtonClass("Employee")}
+                    onPress={() => setGroup("Office")}
+                    className={groupButtonClass("Office")}
                   >
-                  <CustomText>{t("expense.detail.group.employee")}</CustomText>
+                    <CustomText>{t("expense.detail.group.office")}</CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Product")}
-                  className={groupButtonClass("Product")}
+                    onPress={() => setGroup("Employee")}
+                    className={groupButtonClass("Employee")}
                   >
-                  <CustomText>{t("expense.detail.group.product")}</CustomText>
+                    <CustomText>
+                      {t("expense.detail.group.employee")}
+                    </CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Packing")}
-                  className={groupButtonClass("Packing")}
+                    onPress={() => setGroup("Product")}
+                    className={groupButtonClass("Product")}
                   >
-                  <CustomText>{t("expense.detail.group.packing")}</CustomText>
+                    <CustomText>{t("expense.detail.group.product")}</CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Utilities")}
-                  className={groupButtonClass("Utilities")}
+                    onPress={() => setGroup("Packing")}
+                    className={groupButtonClass("Packing")}
                   >
-                  <CustomText>{t("expense.detail.group.utility")}</CustomText>
+                    <CustomText>{t("expense.detail.group.packing")}</CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Account")}
-                  className={groupButtonClass("Account")}
+                    onPress={() => setGroup("Utilities")}
+                    className={groupButtonClass("Utilities")}
                   >
-                  <CustomText>{t("expense.detail.group.account")}</CustomText>
+                    <CustomText>{t("expense.detail.group.utility")}</CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                  onPress={() => setGroup("Others")}
-                  className={groupButtonClass("Others")}
+                    onPress={() => setGroup("Account")}
+                    className={groupButtonClass("Account")}
                   >
-                  <CustomText>{t("expense.detail.group.other")}</CustomText>
+                    <CustomText>{t("expense.detail.group.account")}</CustomText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => setGroup("Others")}
+                    className={groupButtonClass("Others")}
+                  >
+                    <CustomText>{t("expense.detail.group.other")}</CustomText>
                   </TouchableOpacity>
                 </ScrollView>
               </View>
@@ -349,7 +363,7 @@ export default function CreateExpense({
                 <View className="items-center">
                   <Text className="text-secondary mt-3">{error}</Text>
                 </View>
-                ) : null}
+              ) : null}
 
               <View className="flex-row justify-evenly">
                 <TouchableOpacity
@@ -365,7 +379,6 @@ export default function CreateExpense({
                     {t("expense.detail.attachBill")}
                   </CustomText>
                 </TouchableOpacity>
-
 
                 <CustomButton
                   title={t("common.save")}
@@ -430,7 +443,7 @@ export default function CreateExpense({
                 borderRadius: 16,
               }}
             >
-              <MultiDateCalendar onDatesChange={handleDatesChange}  />
+              <MultiDateCalendar onDatesChange={handleDatesChange} />
             </TouchableOpacity>
           </TouchableOpacity>
         </Modal>

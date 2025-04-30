@@ -121,7 +121,7 @@ export default function ads() {
               >
                 {t("ads.limit")}
               </CustomText>
-              <TouchableOpacity onPress={() => router.push("roadmap")}>
+              <TouchableOpacity onPress={() => router.push("/roadmap")}>
                 <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
                   {t("ads.help")}
                 </Text>

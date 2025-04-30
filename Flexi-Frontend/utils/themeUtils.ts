@@ -1,5 +1,4 @@
 import { useTheme } from '@/providers/ThemeProvider';
-import i18n from '../i18n/index';
 
 export const useTextColorClass = () => {
   const { theme } = useTheme();

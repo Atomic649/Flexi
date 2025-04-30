@@ -3,6 +3,7 @@ import CallAPIUser from '@/api/auth_api';
 import { saveToken,  removeToken, removeMemberId } from '@/utils/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { View } from 'react-native';
 
 
 // Define the AuthContextType
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: () => {},
 });
+AuthContext.displayName = 'AuthContext'; // Explicitly set displayName
 
 // Provider Component
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -38,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
         await removeToken(); // Remove the token
         await removeMemberId(); // Remove the memberId        
-        router.navigate('login'); // Redirect to login page
+        router.navigate('/login'); // Redirect to login page
       } finally {
         setLoading(false);
       }

@@ -111,7 +111,7 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
               {item.desc}
             </Text>
             <Text
-              className={`flex-2 text-start p-3  ${
+              className={`flex-2 text-start py-3 ${
                 theme === "dark" ? "text-white" : "text-zinc-900"
               }`}
               numberOfLines={1}
