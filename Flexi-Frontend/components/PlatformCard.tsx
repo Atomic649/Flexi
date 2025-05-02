@@ -107,12 +107,12 @@ const PlatformCard = ({
             >
               {sale}
             </Text>
-            <CustomText
+            <Text
               className={titleStyle}
               style={{ fontSize: smallFontSize }}
             >
               {t("dashboard.sale")}
-            </CustomText>
+            </Text>
           </View>
 
           <View className="flex-row justify-around w-full mt-1 px-0 ps-4 ">

@@ -279,10 +279,10 @@ const mainTopBar = (
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
     <View
-      className="flex-row items-center justify-between gap-4 "
+      className="flex-row items-center justify-between gap-4 ml-8  "
       style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0 }}
     >
-      <TouchableOpacity onPress={() => router.push("/profile")} className="mr-2">
+      <TouchableOpacity onPress={() => router.push("/profile")} className="">
         <View className="w-9 h-9 rounded-full overflow-hidden">
           <Image
             source={{
@@ -293,7 +293,7 @@ const mainTopBar = (
           />
         </View>
       </TouchableOpacity>
-      <CustomText className="text-base font-bold text-zinc-500">
+      <CustomText className="text-base font-bold text-zinc-500 ">
         {businessName || ""}
       </CustomText>
     </View>

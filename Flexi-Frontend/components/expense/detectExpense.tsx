@@ -170,11 +170,11 @@ export default function DetectExpense() {
           [
             {
               text: t("common.ok"),
-              onPress: () => router.push("(tabs)/expense"),
+              onPress: () => router.push("/(tabs)/expense"),
             },
           ]
         );
-        router.push("(tabs)/expense");
+        router.push("/(tabs)/expense");
       } catch (error) {
         console.error("Error saving expenses:", error);
       }
