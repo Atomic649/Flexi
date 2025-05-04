@@ -120,21 +120,21 @@ export default function ExpenseDetail({
       });
       return;
     }
-
     try {
-      const updatedExpense = {
-        date,
-        note,
-        desc,
-        amount: Number(amount),
-        image,
-        group,
-      };
-
-      const data = await CallAPIExpense.updateExpenseAPI(
-        expense.id,
-        updatedExpense
-      );
+      const formData = new FormData();
+      formData.append("date", date);
+      formData.append("note", note);
+      formData.append("desc", desc);
+      formData.append("amount", amount);
+      formData.append("group", group);
+      if (image) {
+        formData.append("image", {
+          uri: image,
+          name: "image.jpg",
+          type: "image/jpeg",
+        } as unknown as Blob);
+      }
+      const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
       onClose();
 
       if (data.error) throw new Error(data.error);

@@ -215,6 +215,9 @@ const deleteProduct = async (req: Request, res: Response) => {
     // Fetch the existing product to get the current image URL
     const existingProduct = await prisma.product.findUnique({
       where: { id: Number(id) },
+      select:{
+        image: true,
+      }
     });
 
     if (!existingProduct) {

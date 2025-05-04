@@ -117,7 +117,7 @@ class CallAPIExpense {
   }
 
   //update expense by id
-  async updateExpenseAPI(id: number, data: any): Promise<any> {
+  async updateExpenseAPI(id: number, data: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.put(`/expense/${id}`, data);

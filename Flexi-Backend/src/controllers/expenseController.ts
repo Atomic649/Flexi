@@ -149,29 +149,60 @@ const getExpenseById = async (req: Request, res: Response) => {
 
 // Update a Expense by ID - Put
 const updateExpenseById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { memberId } = req.body;
-  const expenseInput: Expense = req.body;
-  try {
-    const expense = await prisma.expense.update({
-      where: {
-        id: Number(id),
-        memberId,
-      },
-      data: {
-        date: expenseInput.date,
-        amount: expenseInput.amount,
-        desc: expenseInput.desc,
-        group: expenseInput.group,
-        note: expenseInput.note,
-        image: expenseInput.image,
-        memberId: expenseInput.memberId,
-      },
+  upload(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+
+    // Fetch the existing product to get the current image URL
+    const existingExpense = await prisma.expense.findUnique({
+      where: { id: Number(req.params.id) },
     });
-    res.json(expense);
-  } catch (e) {
-    console.error(e);
-  }
+
+    if (!existingExpense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    // Delete the old image from S3 if a new image is uploaded
+    if (req.file && existingExpense.image) {
+      const oldImageKey = extractS3Key(existingExpense.image);
+      try {
+        await deleteFromS3(oldImageKey);
+        console.log("Old image deleted from S3");
+      } catch (e) {
+        console.error("Failed to delete old image from S3:", e);
+      }
+    }
+
+    // Merge the uploaded file S3 URL key into the expense object
+    const expenseInput: Expense = {
+      ...req.body,
+      image: (req.file as any)?.location ?? "", // Use type assertion for custom property
+    };
+    const { id } = req.params;
+    const { memberId } = req.body;
+
+    try {
+      const expense = await prisma.expense.update({
+        where: {
+          id: Number(id),
+          memberId,
+        },
+        data: {
+          date: expenseInput.date,
+          amount: expenseInput.amount,
+          desc: expenseInput.desc,
+          group: expenseInput.group,
+          note: expenseInput.note,
+          image: expenseInput.image,
+          memberId: expenseInput.memberId,
+        },
+      });
+      res.json(expense);
+    } catch (e) {
+      console.error(e);
+    }
+  });
 };
 
 // Delete a Expense by ID - Delete
@@ -180,16 +211,43 @@ const deleteExpenseById = async (req: Request, res: Response) => {
   const memberId = req.body.memberId;
 
   try {
-    const expense = await prisma.expense.delete({
+    // Fetch the existing expense to get the current image URL
+    const existingExpense = await prisma.expense.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        image: true,
+      },
+    });
+
+    if (!existingExpense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    // Delete the image from S3 if it exists
+    if (existingExpense.image) {
+      const imageKey = extractS3Key(existingExpense.image);
+      try {
+        await deleteFromS3(imageKey);
+        console.log("Image deleted from S3");
+      } catch (e) {
+        console.error("Failed to delete image from S3:", e);
+      }
+    }
+
+    // Delete the expense from the database
+    await prisma.expense.delete({
       where: {
         id: Number(id),
         memberId: memberId,
       },
     });
+
     res.json({ message: `Expense with ID ${id} deleted` });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "failed to delete expense" });
+    res.status(500).json({ message: "Failed to delete expense" });
   }
 };
 
