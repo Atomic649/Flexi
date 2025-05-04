@@ -510,7 +510,9 @@
     },
     "alerts": {
       "successTitle": "Success",
-      "successMessage": "View in the Expense List"
+      "successMessage": "View in the Expense List",
+      "enterPassword": "Re-enter password for security",
+      "password": "Enter PDF Password"      
     },
     "create": {
       "error": "Please fill in all required fields",
