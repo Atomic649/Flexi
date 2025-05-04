@@ -1,17 +1,24 @@
 import { Request, Response } from "express";
 import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
-import { format } from "date-fns-tz"; 
+import { format } from "date-fns-tz";
+import multer from "multer";
+import multerConfig from "../middleware/multer_config";
+import { deleteFromS3, extractS3Key } from "../services/imageService";
+
+const upload = multer(multerConfig.multerConfigImage.config).single(
+  multerConfig.multerConfigImage.keyUpload
+);
 
 //Create  instance of PrismaClient
 const prisma = new PrismaClient1();
 
 // Interface for request body from client
-interface userInput {
+interface Expense {
   date: Date;
   amount: number;
   group: string;
-  image: string;  
+  image: string;
   memberId: string;
   businessAcc: number;
   note: string;
@@ -34,58 +41,79 @@ const schema = Joi.object({
 
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
-  const memberId = req.body.memberId;
-  // find businessAcc by memberId
-  const businessAcc = await prisma.businessAcc.findFirst({
-    where: {
-      memberId: memberId,
-    },
-    select: {
-      id: true,
-    },
-  });
+  // Handle image upload with multer
+  upload(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    // Debugging: Log the uploaded file details
+    console.log("Uploaded file:", req.file);
 
-  if (!businessAcc) {
-    return res.status(400).json({ message: "Business account not found" });
-  }
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "File upload failed. No file received." });
+    }
+    // Merge the uploaded file S3 URL key into the expense object
+    const expenseInput: Expense = {
+      ...req.body,
+      image: (req.file as any)?.location ?? "", // Use type assertion for custom property
+    };
 
-  const expenseInput: userInput = req.body;
-  console.log("Input", expenseInput);
+    console.log("Input", expenseInput);
 
-  // validate the request body
-  const { error } = schema.validate(expenseInput);
+    // Validate the request body
+    const { error } = schema.validate(expenseInput);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
 
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
-
-  // Convert date time to format Expected ISO-8601 DateTime
-  const formattedDate = format(new Date(expenseInput.date), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-  console.log("Formatted Date", formattedDate);
-  
-
-  try {
-    const expense = await prisma.expense.create({
-      data: {
-        date: formattedDate,
-        amount: expenseInput.amount,
-        desc: expenseInput.desc,
-        group: expenseInput.group,
-        image: expenseInput.image,
-        memberId: expenseInput.memberId,
-        businessAcc: businessAcc.id,
-        note: expenseInput.note,
-        channel: expenseInput.channel,
-        save: false,
+    const memberId = req.body.memberId;
+    // Find businessAcc by memberId
+    const businessAcc = await prisma.businessAcc.findFirst({
+      where: {
+        memberId: memberId,
+      },
+      select: {
+        id: true,
       },
     });
-    res.json(expense);
-  } catch (e) {
-    console.error(e);
-  }
+
+    if (!businessAcc) {
+      return res.status(400).json({ message: "Business account not found" });
+    }
+
+    // Convert date time to format Expected ISO-8601 DateTime
+    const formattedDate = format(
+      new Date(expenseInput.date),
+      "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    );
+    console.log("Formatted Date", formattedDate);
+
+    try {
+      const expense = await prisma.expense.create({
+        data: {
+          date: formattedDate,
+          amount: expenseInput.amount,
+          desc: expenseInput.desc,
+          group: expenseInput.group,
+          image: expenseInput.image,
+          memberId: expenseInput.memberId,
+          businessAcc: businessAcc.id,
+          note: expenseInput.note,
+          channel: expenseInput.channel,
+          save: false,
+        },
+      });
+      res.json(expense);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Failed to create expense" });
+    }
+  });
 };
 
-// Get All Expenses - Get 
+// Get All Expenses - Get
 // use in DetectExpense
 const getExpenses = async (req: Request, res: Response) => {
   const { memberId } = req.params;
@@ -93,7 +121,7 @@ const getExpenses = async (req: Request, res: Response) => {
     const expenses = await prisma.expense.findMany({
       where: {
         memberId: memberId,
-        save: false
+        save: false,
       },
     });
     res.json(expenses);
@@ -123,7 +151,7 @@ const getExpenseById = async (req: Request, res: Response) => {
 const updateExpenseById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { memberId } = req.body;
-  const expenseInput: userInput = req.body;
+  const expenseInput: Expense = req.body;
   try {
     const expense = await prisma.expense.update({
       where: {

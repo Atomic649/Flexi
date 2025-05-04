@@ -124,8 +124,6 @@ export default function CreateExpense({
     }
 
     try {
-      // convert date to string
-
       const memberId = await getMemberId(); // Assuming getMemberId is a function that fetches the memberId
 
       const formattedDate = format(
@@ -133,17 +131,26 @@ export default function CreateExpense({
         "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
       );
 
-      const Expense = {
-        date: formattedDate, // Use the formatted date
-        note,
-        amount: Number(amount),
-        desc,
-        image,
-        group,
-        memberId,
-      };
+      const formData = new FormData();
+      formData.append("date", formattedDate); // Use the formatted date
+      formData.append("note", note);
+      formData.append("amount", amount);
+      formData.append("desc", desc);
+      if (image) {
+        formData.append("image", {
+          uri: image,
+          name: "image.jpg",
+          type: "image/jpeg",
+        } as unknown as Blob);
+      }
+      formData.append("group", group || "");
+      if (memberId) {
+        formData.append("memberId", memberId);
+      } else {
+        throw new Error("Member ID is null or undefined");
+      }
 
-      const data = await CallAPIExpense.createAExpenseAPI(Expense);
+      const data = await CallAPIExpense.createAExpenseAPI(formData);
       if (data.error) throw new Error(data.error);
 
       clearForm();

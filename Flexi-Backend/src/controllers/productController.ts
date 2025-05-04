@@ -45,7 +45,7 @@ const createProduct = async (req: Request, res: Response) => {
       if (err) {
         return res.status(400).json({ message: err.message });
       }
-       // Merge the uploaded file name into the product object
+       // Merge the uploaded file S3 key into the product object
       const product: Product = {
         ...req.body,
         image: (req.file as any)?.location ?? "", // Use type assertion for custom property
@@ -61,6 +61,9 @@ const createProduct = async (req: Request, res: Response) => {
       const businessAcc = await prisma.businessAcc.findFirst({
         where: {
           memberId: product.memberId,
+        },
+        select: {
+          id: true,
         },
       });
 

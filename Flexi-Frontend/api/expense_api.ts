@@ -163,11 +163,14 @@ class CallAPIExpense {
   }
 
   // create expense
-  async createAExpenseAPI(data: any): Promise<any> {
+  async createAExpenseAPI(formData: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.post(`/expense`, data);
-
+      const response = await axiosInstance.post(`/expense`,  formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log("🚀CreateExpenseAPI:", response.data);
 
       return response.data;
