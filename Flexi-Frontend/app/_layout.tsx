@@ -27,7 +27,7 @@ import i18n from "@/i18n";
 function RootLayoutNav() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { businessAvatar, businessName, fetchBusinessData } = useBusiness();
+  const { businessAvatar, businessName } = useBusiness();
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
 
   useEffect(() => {

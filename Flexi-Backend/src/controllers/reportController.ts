@@ -205,6 +205,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         amount: true,
         note: true,
         desc: true,
+        image: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -216,7 +217,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
           date: adsCost.date,
           expenses: adsCost.adsCost,
           type: "ads",
-          note: `${adsCost.platform.platform} ${adsCost.platform.accName}`,
+          note: `${adsCost.platform.platform} ${adsCost.platform.accName}`,          
         };
       })
       .concat(
@@ -227,6 +228,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
             type: "expense",
             note: expense.note || "",
             desc: expense.desc || "",
+            image: expense.image || "",
           };
         })
       )

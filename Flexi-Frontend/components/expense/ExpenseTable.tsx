@@ -155,7 +155,7 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
                   className="text-center"
                   name="trash-outline"
                   size={16}
-                  color={theme === "dark" ? "white" : "#d3d2d2"}
+                  color={theme === "dark" ? "#676767" : "#d3d2d2"}
                 />
               </TouchableOpacity>
             </View>

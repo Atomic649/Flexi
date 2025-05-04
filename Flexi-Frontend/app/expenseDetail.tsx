@@ -166,7 +166,7 @@ export default function ExpenseDetail({
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
+          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",         
         }}
         activeOpacity={1}
         onPressOut={onClose}
@@ -176,6 +176,7 @@ export default function ExpenseDetail({
             flexGrow: 1,
             justifyContent: "center",
             alignItems: "center",
+            padding: 20,
           }}
           style={{
             width: Platform.OS === "web" ? "50%" : "100%",

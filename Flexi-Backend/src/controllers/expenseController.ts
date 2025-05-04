@@ -7,7 +7,7 @@ import multerConfig from "../middleware/multer_config";
 import { deleteFromS3, extractS3Key } from "../services/imageService";
 
 const upload = multer(multerConfig.multerConfigImage.config).single(
-  multerConfig.multerConfigImage.keyUpload[0]
+  multerConfig.multerConfigImage.keyUpload
 );
 
 //Create  instance of PrismaClient

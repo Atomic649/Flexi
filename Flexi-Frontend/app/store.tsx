@@ -105,7 +105,7 @@ export default function Store() {
                <CustomText className={`text-sm font-normal ${theme === "dark" ? "text-white" : "text-[#5d5a54]"}`}>
                  {t('store.limit')}
                </CustomText>
-               <TouchableOpacity onPress={() => router.push("roadmap")}>
+               <TouchableOpacity onPress={() => router.push("/roadmap")}>
                  <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
                    {t('store.help')}
                  </Text>

@@ -1,6 +1,6 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity, Modal, RefreshControl } from "react-native";
+import { Text, TouchableOpacity, Modal, RefreshControl, Platform } from "react-native";
 import CallAPIUser from "@/api/user_api";
 import CallAPIBusiness from "@/api/business_api";
 import { getMemberId, getUserId, replaceMemberId } from "@/utils/utility";
@@ -127,6 +127,12 @@ export default function Profile() {
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
+      contentContainerStyle={{
+        alignItems: "center",
+        justifyContent: "center",
+        paddingTop: Platform.OS === "web" ? 20 : 0,
+      }}
+        
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
