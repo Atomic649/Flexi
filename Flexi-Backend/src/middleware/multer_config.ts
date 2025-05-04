@@ -38,6 +38,14 @@ export const multerConfigImage = {
   keyUpload: "image",
 }
 
+export const multerConfigAvatar = {
+  config: {
+    storage: storageImageS3,
+    limits: { fileSize: 1024 * 1024 * 10 },
+    fileFilter: imageFileFilter,
+  },
+  keyUpload: "businessAvatar",
+}
 
 
 // PDF-specific storage 
@@ -102,4 +110,4 @@ export const pdfMulterConfig = {
 
 
 
-export default { multerConfigImage, pdfMulterConfig }
+export default { multerConfigImage, pdfMulterConfig, multerConfigAvatar }

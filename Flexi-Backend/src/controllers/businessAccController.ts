@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { BusinessType, PrismaClient as PrismaClient1, taxType } from "../generated/client1";
 import Joi from "joi";
+import multer from "multer";
+import multerConfig from "../middleware/multer_config";
+import { deleteFromS3, extractS3Key } from "../services/imageService";
+
+const upload = multer(multerConfig.multerConfigAvatar.config).single(
+  multerConfig.multerConfigAvatar.keyUpload
+);
 
 // Create instance of PrismaClient
 const prisma = new PrismaClient1();
@@ -291,22 +298,58 @@ const searchBusinessAcc = async (req: Request, res: Response) => {
 
 //Update Business Avatar by id - Put
 const updateBusinessAvatar = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { businessAvatar } = req.body;
-  try {
-    const businessAcc = await prisma.businessAcc.update({
-      where: {
-        id: Number(id),
-      },
-      data: {
-        businessAvatar,
-      },
-    });
-    res.json(businessAcc);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to update business avatar" });
-  }
+    upload(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    const { id } = req.params;
+
+    try {
+      // Fetch the existing business account to get the current avatar URL
+      const existingBusinessAcc = await prisma.businessAcc.findUnique({
+        where: {
+          id: Number(id),
+        },
+        select: {
+          businessAvatar: true,
+        },
+      });
+
+      if (!existingBusinessAcc) {
+        return res.status(404).json({ message: "Business account not found" });
+      }
+
+      // Delete the old avatar from S3 if a new avatar is uploaded
+      if (req.file && existingBusinessAcc.businessAvatar) {
+        const oldAvatarKey = extractS3Key(existingBusinessAcc.businessAvatar);
+        try {
+          await deleteFromS3(oldAvatarKey);
+          console.log("Old avatar deleted from S3");
+        } catch (e) {
+          console.error("Failed to delete old avatar from S3:", e);
+        }
+      }
+
+      // Update the business account with the new avatar URL if a new file is uploaded
+      const updatedData = req.file
+        ? { businessAvatar: (req.file as any)?.location ?? "" }
+        : {};
+
+      const businessAcc = await prisma.businessAcc.update({
+        where: {
+          id: Number(id),
+        },
+        data: updatedData,
+      });
+
+      console.log("Updated business avatar:", businessAcc);
+
+      res.json(businessAcc);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Failed to update business avatar" });
+    }
+  });
 }
 
 // get business Avatar by memberId - Get

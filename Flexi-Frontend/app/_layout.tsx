@@ -279,7 +279,7 @@ const mainTopBar = (
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
     <View
-      className="flex-row items-center justify-between gap-4 ml-8  "
+      className="flex-row items-center justify-between gap-4 ml-6  "
       style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0 }}
     >
       <TouchableOpacity onPress={() => router.push("/profile")} className="">

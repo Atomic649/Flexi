@@ -3,23 +3,19 @@ import React, { useState, useEffect } from "react";
 import { Text, TouchableOpacity, Modal, RefreshControl } from "react-native";
 import CallAPIUser from "@/api/user_api";
 import CallAPIBusiness from "@/api/business_api";
-import { IMAGE_URL } from "@/utils/config";
 import { getMemberId, getUserId, replaceMemberId } from "@/utils/utility";
-import {  ScrollView, View, Image } from "react-native";
+import { ScrollView, View, Image } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/providers/AuthProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "@/components/CustomText";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
 export default function Profile() {
-  const { t, i18n } = useTranslation();
-  const { session } = useAuth();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { fetchBusinessData, triggerFetch } = useBusiness();
   const [businessData, setBusinessData] = useState<any>([]);
@@ -47,10 +43,19 @@ export default function Profile() {
 
     if (!result.canceled) {
       setBusinessAvatar(result.assets[0].uri);
+      console.log("Selected image URI:", result.assets[0].uri);
       try {
-        await CallAPIBusiness.UpdateBusinessAvatarAPI(businessData.id, {
-          businessAvatar: result.assets[0].uri,
-        });
+        const formData = new FormData();
+        formData.append(
+          "businessAvatar", // Ensure this matches the backend's expected field name
+          {
+            uri: result.assets[0].uri,
+            name: `${businessData.id}_avatar.jpg`,
+            type: "image/jpeg",
+          } as unknown as Blob
+        );
+
+        await CallAPIBusiness.UpdateBusinessAvatarAPI(businessData.id, formData);
         triggerFetch(); // Reload business data
       } catch (error) {
         console.error("Error updating business avatar:", error);
@@ -61,7 +66,7 @@ export default function Profile() {
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchBusinessData();
-    
+
     setRefreshing(false);
   };
 
@@ -84,11 +89,6 @@ export default function Profile() {
     };
     fetchUserData();
   }, []);
-
-  const getImageUri = (image: string | null) => {
-    if (!image) return null;
-    return image.startsWith("file://") ? image : IMAGE_URL + image;
-  };
 
   // get business data from API
   useEffect(() => {
@@ -124,8 +124,6 @@ export default function Profile() {
     fetchBusinessAccountChoice();
   }, []);
 
- 
-
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
@@ -138,12 +136,12 @@ export default function Profile() {
           <TouchableOpacity onPress={() => setImageModalVisible(true)}>
             <Image
               source={{
-                uri: getImageUri(businessAvatar || businessData.businessAvatar) || "",
+                uri: (businessAvatar || businessData.businessAvatar) || "",
               }}
               className="w-32 h-32 rounded-full"
             />
           </TouchableOpacity>
-         
+
           <TouchableOpacity
             onPress={pickImage}
             className=" ml-32 flex flex-row items-center"
@@ -151,7 +149,7 @@ export default function Profile() {
             <FontAwesome
               name="camera"
               size={20}
-              color={theme === "dark" ? "#c9c9c9" : "#48453e" }
+              color={theme === "dark" ? "#c9c9c9" : "#48453e"}
             />
           </TouchableOpacity>
         </View>
@@ -170,7 +168,7 @@ export default function Profile() {
             <View className="flex-1 justify-center items-center bg-black bg-opacity-90">
               <Image
                 source={{
-                  uri: getImageUri(businessAvatar || businessData.businessAvatar) || "",
+                  uri: (businessAvatar || businessData.businessAvatar) || "",
                 }}
                 className="w-full h-full"
                 resizeMode="contain"
@@ -222,15 +220,15 @@ export default function Profile() {
         </Text>
 
         <TouchableOpacity
-          onPress={ () => router.push("business_info") }
-           className=" justify-center mt-10 flex-row items-center"
-          >
-           <Ionicons
-              name="add-circle"
-              size={48}
-              color={theme === "dark" ? "#c9c9c9" : "#48453e" }
-            />
-          </TouchableOpacity>
+          onPress={() => router.push("/business_info")}
+          className=" justify-center mt-10 flex-row items-center"
+        >
+          <Ionicons
+            name="add-circle"
+            size={48}
+            color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+          />
+        </TouchableOpacity>
 
         {/* Modal for Business Account Choice */}
         <Modal

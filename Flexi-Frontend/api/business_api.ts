@@ -81,13 +81,18 @@ class CallAPIBusiness {
   // Update Business Avatar getAxiosWithAuth()
   async UpdateBusinessAvatarAPI(
     id: number,
-    data: { businessAvatar: string }
+    formdata: FormData
   ): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.put(
         `/businessacc/avatar/${id}`,
-        data
+        formdata,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure correct headers
+          },
+        }
       );
       console.log("📝Update Business Avatar API:", response.data);
       return response.data;
