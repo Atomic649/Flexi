@@ -201,6 +201,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         save: true,
       },
       select: {
+        id: true,
         date: true,
         amount: true,
         note: true,
@@ -223,6 +224,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
       .concat(
         expenses.map((expense) => {
           return {
+            id: expense.id,
             date: expense.date,
             expenses: expense.amount,
             type: "expense",

@@ -70,6 +70,12 @@ export default function ExpenseCard({
     ]);
   };
 
+  const handleEdit = () => {
+    Alert.alert("Not available", "Coming Soon, Please Delete and create new expense", [
+    
+    ]);
+  };
+
   return (
     <>
       <View
@@ -164,8 +170,8 @@ export default function ExpenseCard({
                 flex: 1,
                 backgroundColor: getCardColor(type),
                 borderRadius: 10,
-                width: Platform.OS === "web" ? "50%" : "80%",
-                maxHeight: "75%",
+                width: Platform.OS === "web" ? "50%" : "90%",
+                maxHeight: image? "75%": "23%",
                 justifyContent: "flex-start",
                 alignItems: "center",
               }}
@@ -199,7 +205,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                  -{expenses}
+                  {expenses}
                 </Text>
                 <Text
                   style={{
@@ -247,8 +253,8 @@ export default function ExpenseCard({
                   <TouchableOpacity onPress={handleDelete}>
                     <Ionicons name="trash" size={26} color="#999999" className="p-2" />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => {}}>
-                    <Ionicons name="pencil" size={26} color="#999999" className="p-2" />
+                  <TouchableOpacity onPress={handleEdit}>
+                    <Ionicons name="pencil" size={26} color="#999999" className="p-2"  />
                   </TouchableOpacity>
                 </View>
               </View>
