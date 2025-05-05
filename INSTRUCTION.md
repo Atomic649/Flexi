@@ -176,3 +176,6 @@ docker compose up -d
 ```bash
 ssh -i flexibusinesshub.pem ubuntu@<EC2_PUBLIC_IP>
 ```
+
+sudo apt-get update
+sudo apt-get install qpdf

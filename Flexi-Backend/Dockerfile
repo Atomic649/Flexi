@@ -1,6 +1,9 @@
 # Use an official Node.js LTS runtime as a parent image
 FROM node:22-alpine
 
+# Install qpdf
+RUN  apt-get install -y qpdf 
+
 # Set the working directory in the container
 WORKDIR /app
 

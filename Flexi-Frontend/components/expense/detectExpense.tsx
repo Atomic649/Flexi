@@ -137,6 +137,7 @@ export default function DetectExpense() {
         setError("Failed to process PDF");
       }
     } finally {
+      setPasswordPdf(""); // Clear the password after processing
       setLoading(false);
     }
   };

@@ -4,7 +4,7 @@ import fs from "fs";
 import pdfParse from "pdf-parse";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
-import Joi from "joi/lib";
+import { decrypt } from "node-qpdf2"; // Replace hummus-recipe with node-qpdf2
 
 const upload = multer(multerConfig.pdfMulterConfig.config).single(
   multerConfig.pdfMulterConfig.keyUpload
@@ -25,13 +25,6 @@ interface Expense {
   channel: Bank;
 }
 
-// Interface for request body from client
-interface DetectPDF {
-  filePath: string;
-  password: string;
-  memberId: string;
-}
-
 // Add this helper function at the top of the file
 const deleteUploadedFile = (filePath: string) => {
   fs.unlink(filePath, (err) => {
@@ -40,12 +33,19 @@ const deleteUploadedFile = (filePath: string) => {
     }
   });
 };
-// Validate the request body
-const schema = Joi.object({
-  filePath: Joi.string().required(),
-  password: Joi.string(),
-  memberId: Joi.string(),
-});
+
+// Function to decrypt the PDF file
+// Decrypt PDF and output to temporary file
+const decryptPdf = async (inputPath: string, password: string): Promise<string> => {
+  const outputPath = inputPath.replace(/\.pdf$/, '_unlocked.pdf');
+  await decrypt({
+    input: inputPath,
+    password,
+    output: outputPath,
+  });
+  return outputPath;
+};
+
 
 export const pdfExtract = async (
   req: Request,
@@ -56,7 +56,7 @@ export const pdfExtract = async (
     if (err) {
       return res.status(400).json({ message: err.message });
     }
-
+    
     // console.log("🎃req.body", req.body);
     const password = req.body.password;
     console.log("🎃 password:" ,password)
@@ -64,13 +64,25 @@ export const pdfExtract = async (
     console.log("🔥filePath", filePath);
 
     if (!filePath) {
-      res.status(400).json({ message: "File path not found" });
-      return;
+      return res.status(400).json({ message: "File path not found" });
+    }
+
+    let finalPath = filePath;
+
+    // Decrypt the PDF if a password is provided
+    if (password) {
+      try {
+        finalPath = await decryptPdf(filePath, password); // Use decryptPdfWithQpdf
+        console.log("✅ Decrypted PDF at", finalPath);
+      } catch (err) {
+        console.error("❌ Failed to decrypt PDF:", err);
+        return res.status(400).json({ message: "Incorrect password or failed to unlock PDF" });
+      }
     }
 
     try {
-      const buffer = fs.readFileSync(filePath);
-      const data = await pdfParse(buffer);
+      const buffer = fs.readFileSync(finalPath);
+      const data = await pdfParse(buffer); // 🔓 decrypted buffer
       let text = data.text;
       console.log("🔥text", text);
 
@@ -204,7 +216,7 @@ export const pdfExtract = async (
         console.error(e);
         res.status(500).json({ message: e.message });
       } finally {
-        deleteUploadedFile(filePath); // Delete the uploaded file after processing
+        deleteUploadedFile(finalPath); // Always delete the final file (decrypted or original)
       }
     } catch (e: any) {
       console.error(e);
