@@ -4,7 +4,7 @@ import fs from "fs";
 import pdfParse from "pdf-parse";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
-import Joi from "joi";
+import Joi from "joi/lib";
 
 const upload = multer(multerConfig.pdfMulterConfig.config).single(
   multerConfig.pdfMulterConfig.keyUpload
@@ -28,29 +28,38 @@ interface Expense {
 // Interface for request body from client
 interface DetectPDF {
   filePath: string;
-  fileName: string;
+  password: string;
   memberId: string;
-  businessAcc: number;
 }
 
 // Add this helper function at the top of the file
 const deleteUploadedFile = (filePath: string) => {
   fs.unlink(filePath, (err) => {
     if (err) {
-      console.error('Error deleting file:', err);
+      console.error("Error deleting file:", err);
     }
   });
 };
+// Validate the request body
+const schema = Joi.object({
+  filePath: Joi.string().required(),
+  password: Joi.string(),
+  memberId: Joi.string(),
+});
 
 export const pdfExtract = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  // Upload the file using multer
   upload(req, res, async (err: any) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
 
+    // console.log("🎃req.body", req.body);
+    const password = req.body.password;
+    console.log("🎃 password:" ,password)
     const filePath = req.file?.path;
     console.log("🔥filePath", filePath);
 

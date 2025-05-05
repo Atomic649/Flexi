@@ -41,7 +41,7 @@ export default function DetectExpense() {
   const [isCreateExpenseVisible, setIsCreateExpenseVisible] = useState(false);
   const [isCreateSuccess, setIsCreateSuccess] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [password, setPassword] = useState<string>(""); // State for password
+  const [passwordPdf, setPasswordPdf] = useState<string>(""); // State for password
   const [passwordModalVisible, setPasswordModalVisible] =
     useState<boolean>(false); // State for password modal
 
@@ -91,6 +91,7 @@ export default function DetectExpense() {
     onRefresh(); // refreshing the table
     try {
       const memberId = await getMemberId();
+      const password = passwordPdf; // Use the password from state
       const filePath = pdfUri;
       console.log("🔥filePath", filePath);
 
@@ -142,7 +143,7 @@ export default function DetectExpense() {
 
 
   const handlePasswordSubmit = () => {
-    if (password.trim() === "") {
+    if (passwordPdf.trim() === "") {
       Alert.alert(t("common.error"), t("expense.alerts.emptyPassword"));
       return;
     }
@@ -408,8 +409,8 @@ export default function DetectExpense() {
               placeholder={t("expense.alerts.password")}
               placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
               secureTextEntry={true}
-              value={password}
-              onChangeText={setPassword}
+              value={passwordPdf}
+              onChangeText={setPasswordPdf}
               keyboardType="numeric"
             />
             <View className="flex-row justify-between">
@@ -422,7 +423,7 @@ export default function DetectExpense() {
                 title={t("common.confirm")}
                 onPress={() => {
                   handlePasswordSubmit();
-                  console.log("🔑Password", password);
+                  console.log("🔑Password", passwordPdf);
                 }}                
                 color="#ff1713"
               />
