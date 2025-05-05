@@ -85,7 +85,7 @@ export default function DetectExpense() {
       }
     }
   };
-  const confirmAndProcessPdfwithPassword = async () => {
+  const confirmAndProcessPdf = async () => {
     setModalVisible(false);
     setLoading(true);
     onRefresh(); // refreshing the table
@@ -112,58 +112,8 @@ export default function DetectExpense() {
         }
 
         formData.append("memberId", memberId);
-
-        const response = await CallAPIExpense.extractPDFExpenseAPI(formData);
-        if (response.message === "Expenses created successfully") {
-          setError(null);
-          setExpenses(response.expenses);
-          console.log("🔥response", response);
-        } else {
-          console.error("No expenses found in the PDF.");
-        }
-      } else {
-        console.error("Member ID is null or filePath is null");
-      }
-    } catch (error: any) {
-      console.error("Error fetching expenses:", error);
-      if (error.message === "Duplicate data found") {
-        setError("Duplicate data found");
-      } else if (error.message === "No password given") {
-        setPasswordModalVisible(true);
-      } else {
-        setError("Failed to process PDF");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-  const confirmAndProcessPdf = async () => {
-    setModalVisible(false);
-    setLoading(true);
-    onRefresh(); // refreshing the table
-    try {
-      const memberId = await getMemberId();
-      const filePath = pdfUri;
-      console.log("🔥filePath", filePath);
-
-      if (memberId && filePath) {
-        const formData = new FormData();
-
-        if (Platform.OS === "web") {
-          // Handle file upload for web
-          const response = await fetch(filePath);
-          const blob = await response.blob();
-          formData.append("filePath", blob, "file.pdf");
-        } else {
-          // Handle file upload for native platforms
-          formData.append("filePath", {
-            uri: filePath,
-            name: "file.pdf",
-            type: "application/pdf",
-          } as unknown as Blob);
-        }
-
-        formData.append("memberId", memberId);
+        formData.append("password", password); // Append the password to the form data
+        console.log("💡formData", formData);
 
         const response = await CallAPIExpense.extractPDFExpenseAPI(formData);
         if (response.message === "Expenses created successfully") {
@@ -409,7 +359,7 @@ export default function DetectExpense() {
               <Button
                 title={t("common.confirm")}
                 onPress={() => {
-                  confirmAndProcessPdfwithPassword();       
+                  confirmAndProcessPdf();       
                                              }}
                 color="#ff1713"
               />
@@ -435,7 +385,7 @@ export default function DetectExpense() {
             style={{
               width: "90%",
               maxHeight: "30%",
-              backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
+              backgroundColor: theme === "dark" ? "#171717" : "#ffffff",
             }}
           >
             <CustomText className="text-center text-lg font-pmedium mb-4">
@@ -446,6 +396,8 @@ export default function DetectExpense() {
             </Text> */}
             <TextInput
               style={{
+                justifyContent: "center",
+                alignItems: "center",
                 borderWidth: 1,
                 borderColor: theme === "dark" ? "#6d6c67" : "#adaaa6",
                 borderRadius: 8,
@@ -458,6 +410,7 @@ export default function DetectExpense() {
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
+              keyboardType="numeric"
             />
             <View className="flex-row justify-between">
               <Button
@@ -469,7 +422,7 @@ export default function DetectExpense() {
                 title={t("common.confirm")}
                 onPress={() => {
                   handlePasswordSubmit();
-                  console.log("Password", password);
+                  console.log("🔑Password", password);
                 }}                
                 color="#ff1713"
               />

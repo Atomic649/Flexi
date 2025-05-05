@@ -115,6 +115,8 @@ log emoji
 🔌 - Plugi
 🔋 - Performance
 📦 - Package.json
+💡
+
 
 
 
