@@ -34,6 +34,12 @@ const deleteUploadedFile = (filePath: string) => {
   });
 };
 
+const deleteFileIfExists = (filePath: string) => {
+  if (fs.existsSync(filePath)) {
+    deleteUploadedFile(filePath);
+  }
+};
+
 // Function to decrypt the PDF file
 // Decrypt PDF and output to temporary file
 const decryptPdf = async (inputPath: string, password: string): Promise<string> => {
@@ -68,20 +74,17 @@ export const pdfExtract = async (
     }
 
     let finalPath = filePath;
-
-    // Decrypt the PDF if a password is provided
-    if (password) {
-      try {
-        finalPath = await decryptPdf(filePath, password); // Use decryptPdfWithQpdf
-        console.log("✅ Decrypted PDF at", finalPath);
-      } catch (err) {
-        console.error("❌ Failed to decrypt PDF:", err);
-        return res.status(400).json({ message: "Incorrect password or failed to unlock PDF" });
-      }
-    }
+    const tempFiles: string[] = [filePath]; // Track all created files
 
     try {
-      const buffer = fs.readFileSync(finalPath);
+      // Decrypt the PDF if a password is provided
+      if (password) {
+        finalPath = await decryptPdf(filePath, password);
+        tempFiles.push(finalPath); // Add decrypted file to tempFiles
+        console.log("✅ Decrypted PDF at", finalPath);
+      }
+
+      const buffer = fs.readFileSync(finalPath);      
       const data = await pdfParse(buffer); // 🔓 decrypted buffer
       let text = data.text;
       console.log("🔥text", text);
@@ -215,12 +218,13 @@ export const pdfExtract = async (
       } catch (e: any) {
         console.error(e);
         res.status(500).json({ message: e.message });
-      } finally {
-        deleteUploadedFile(finalPath); // Always delete the final file (decrypted or original)
       }
     } catch (e: any) {
       console.error(e);
       res.status(500).json({ message: e.message });
+    } finally {
+      // Ensure all temporary files are deleted
+      tempFiles.forEach(deleteFileIfExists);
     }
   });
 };
