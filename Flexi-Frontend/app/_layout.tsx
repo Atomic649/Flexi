@@ -31,12 +31,32 @@ function RootLayoutNav() {
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
 
   useEffect(() => {
+    // const fetchRegisteredUsers = async () => {
+    //   try {
+    //     const response = await CallAPIUser.getRegisteredUsersAPI();
+    //     setRegisteredUsers(response);
+    //   } catch (error) {
+    //     console.error("Error fetching registered users:", error);
+    //   }
+    // };
+
+    // Fix bug log error after login #10/5/2025 (witch)
     const fetchRegisteredUsers = async () => {
       try {
         const response = await CallAPIUser.getRegisteredUsersAPI();
-        setRegisteredUsers(response);
+        if (response && typeof response === 'object' && 'message' in response) {
+          const userCount = parseInt(response.message);
+          if (!isNaN(userCount)) {
+            setRegisteredUsers(userCount);
+          } else {
+            setRegisteredUsers(0);
+          }
+        } else {
+          setRegisteredUsers(response);
+        }
       } catch (error) {
         console.error("Error fetching registered users:", error);
+        setRegisteredUsers(0);
       }
     };
 
