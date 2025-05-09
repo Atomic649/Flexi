@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Install qpdf
-RUN  apt-get install -y qpdf 
+RUN apk add --no-cache qpdf
 
 # Set the working directory in the container
 WORKDIR /app
@@ -26,4 +26,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Define the command to run the application
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start"] 

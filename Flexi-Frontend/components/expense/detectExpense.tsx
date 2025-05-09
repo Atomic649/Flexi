@@ -134,7 +134,7 @@ export default function DetectExpense() {
       } else if (error.message === "No password given") {
         setPasswordModalVisible(true);
       } else {
-        setError("Failed to process PDF");
+        setError("Failed to process PDF or Invalid Password \n Please try again");
       }
     } finally {
       setPasswordPdf(""); // Clear the password after processing
@@ -301,7 +301,7 @@ export default function DetectExpense() {
             }}
           >
             <CustomText className="text-center ">
-              {t("expense.table.pdferror")}
+              {error}
             </CustomText>
           </View>
         </View>

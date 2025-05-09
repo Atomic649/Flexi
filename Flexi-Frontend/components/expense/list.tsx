@@ -96,7 +96,7 @@ const List = () => {
           renderItem={({ item: date }) => (
             <View
               style={{
-                alignItems: Platform.OS === "web" ? "center" : "flex-start",
+                alignItems: Platform.OS === "web" ? "center" : "center",
               }}
             >
               <Text
