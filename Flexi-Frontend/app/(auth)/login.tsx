@@ -23,10 +23,14 @@ import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 
 export default function Login() {
   // State variables for email and password
-  const [form, setForm] = useState({
-    email: "rukoontananya@gmail.com",
-    password: "123456",
-  });
+  const [form, setForm] = useState(
+    {
+      email: "",
+      password: "",
+    }
+    // email: "rukoontananya@gmail.com",
+    // password: "123456",
+  );
 
   // State variable for submission status
   const [isSubmitting, setIsSubmitting] = useState(false);

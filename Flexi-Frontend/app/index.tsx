@@ -80,23 +80,16 @@ export default function Index() {
               {/* Logo */}
               <Image
                 source={images.logo}
-                className="h-[84px]"
-                resizeMode="contain"
-              />
-
-              {/* รูปภาพประกอบ */}
-              <Image
-                source={images.cards}
-                className="max-w-[380px] w-full h-[298px]"
+                className="h-[20%]"
                 resizeMode="contain"
               />
 
               {/* Slogan */}
               <View className="relative mt-5">
-                <CustomText weight="bold" className="text-3xl text-center dark:text-white leading-10">
-                  {t('minimize your task')}{"\n"}
-                  {t('maximize your profit')}{" "}
-                  <CustomText weight="bold" className="text-secondary-200">Flexi Business Hub</CustomText>
+                <CustomText weight="bold" className="text-2xl text-center dark:text-white leading-10">
+                  {t('Minimize Your Task')}{"\n"}
+                  {t('Maximize Your Profit')}{" "}
+
                 </CustomText>
                
               </View>

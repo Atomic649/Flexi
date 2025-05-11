@@ -245,7 +245,7 @@ const session = async (req: Request, res: Response) => {
         id: decoded.id,
       },
     });
-    res.json({ session: user });
+    res.json({ session: user,message: "session found" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get session" });

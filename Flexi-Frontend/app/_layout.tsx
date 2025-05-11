@@ -35,6 +35,7 @@ function RootLayoutNav() {
       try {
         const response = await CallAPIUser.getRegisteredUsersAPI();
         setRegisteredUsers(response);
+        console.log("Registered Users:", response);  
       } catch (error) {
         console.error("Error fetching registered users:", error);
       }
