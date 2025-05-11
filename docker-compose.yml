@@ -31,21 +31,21 @@ services:
     networks:
       - prosgres-docker-prisma
 
-  # # Frontend Expo
-  # frontend-expo:
-  #   build:
-  #     context: ./Flexi-Frontend
-  #     dockerfile: Dockerfile
-  #   container_name: flexi-react-expo
-  #   volumes:
-  #     - ./Flexi-Frontend:/app
-  #     - /app/node_modules
-  #   working_dir: /app
-  #   ports:
-  #     - 8081:8081      
-  #   networks:
-  #     - prosgres-docker-prisma
-  #   command: sh -c "npm install && npx expo start" # run expo in web mode
+  # Frontend Expo
+  frontend-expo:
+    build:
+      context: ./Flexi-Frontend
+      dockerfile: Dockerfile
+    container_name: flexi-react-expo
+    volumes:
+      - ./Flexi-Frontend:/app
+      - /app/node_modules
+    working_dir: /app
+    ports:
+      - 8081:8081      
+    networks:
+      - prosgres-docker-prisma
+    command: sh -c "npm install && npx expo start" # run expo in web mode
 
   # # Frontend NextJS
   # frontend-nextjs:
