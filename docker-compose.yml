@@ -14,8 +14,7 @@ services:
       - postgresdb
     build:
       context: ./Flexi-Backend
-      dockerfile: Dockerfile
-    image: node:22-alpine
+      dockerfile: Dockerfile  
     container_name: nodejsexpress    
     volumes:
       - ./Flexi-Backend:/app 
@@ -31,21 +30,17 @@ services:
     networks:
       - prosgres-docker-prisma
 
-  # Frontend Expo
-  frontend-expo:
+  expo-web:
     build:
       context: ./Flexi-Frontend
-      dockerfile: Dockerfile
-    container_name: flexi-react-expo
-    volumes:
-      - ./Flexi-Frontend:/app
-      - /app/node_modules
-    working_dir: /app
+      dockerfile: Dockerfile  # The one you created for static Nginx
+    container_name: expo-web
     ports:
-      - 8081:8081      
+      - 8080:80
     networks:
       - prosgres-docker-prisma
-    command: sh -c "npm install && npx expo start" # run expo in web mode
+    restart: always
+
 
   # # Frontend NextJS
   # frontend-nextjs:
@@ -107,5 +102,6 @@ services:
     restart: always
     depends_on:
       - nodejs
+      - expo-web
     networks:
       - prosgres-docker-prisma
