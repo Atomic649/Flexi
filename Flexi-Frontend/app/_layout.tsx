@@ -320,10 +320,10 @@ const mainTopBar = (
         <Image
           source={icons.businessman}
           resizeMode="stretch"
+          tintColor={theme === "dark" ? "#ffffff" : "#4e4b47"}
           style={{
             width: 23,
             height: 20,
-            tintColor: theme === "dark" ? "#ffffff" : "#4e4b47",
           }}
         />
         <View
