@@ -29,7 +29,7 @@ export const saveToken = async (token: string) => {
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');
-    console.log('✅ Token Get :', token);
+   // console.log('✅ Token Get :', token);
     return token;
   } catch (error) {
     console.error('Error getting token:', error);
@@ -83,7 +83,7 @@ export const saveMemberId = async (memberId: string) => {
 export const getMemberId = async (): Promise<string | null> => {
   try {
     const memberId = await AsyncStorage.getItem('memberId');
-    console.log('✅ memberId Get :', memberId);
+   // console.log('✅ memberId Get :', memberId);
     return memberId;
   } catch (error) {
     console.error('Error getting memberId:', error);

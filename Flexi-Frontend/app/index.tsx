@@ -23,7 +23,7 @@ export default function Index() {
     const initialize = async () => {
       try {
         const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-        console.log('isLoggedIn:', isLoggedIn);
+       // console.log('isLoggedIn:', isLoggedIn);
         if (isLoggedIn === 'true') {
           setIsLoggedIn(true);
         }
@@ -51,11 +51,13 @@ export default function Index() {
 
   return (
     <>
-       {/* ถ้า login แล้ว redirect ไปหน้า home หรือ expense ขึ้นอยู่กับ platform  */}
-        { isLoggedIn && (
-          Platform.OS === 'web' ? <Redirect href="/(tabs)/expense" /> : <Redirect href="/(tabs)/home" />
-        )}
-        
+    {/* if Platform is wed go to /(tabs)/expense script login check */}
+     {/* if Platform is wed go to /(tabs)/expense script login check */}
+     {Platform.OS === 'web' && <Redirect href="/(tabs)/expense" />}
+
+      {/* ถ้า login แล้ว redirect ไปหน้า home */}
+      { isLoggedIn &&  <Redirect href="/(tabs)/home" /> }
+      
         {/* ถ้ายังไม่ login แสดงหน้า Landing */}
       { !isLoggedIn && <SafeAreaView className="h-full">
           <ScrollView contentContainerStyle={{height: '100%'}}>
@@ -86,7 +88,7 @@ export default function Index() {
 
               {/* Slogan */}
               <View className="relative mt-5">
-                <CustomText weight="bold" className="text-2xl text-center dark:text-white leading-10">
+                <CustomText weight="bold" className="text-2xl text-center text-white leading-10">
                   {t('Minimize Your Task')}{"\n"}
                   {t('Maximize Your Profit')}{" "}
 
@@ -95,7 +97,7 @@ export default function Index() {
               </View>
 
               {/* คำอธิบาย */}
-              <CustomText weight="regular" className="text-md mt-7 text-center dark:text-white">
+              <CustomText weight="regular" className="text-md mt-7 text-center text-white">
                 {t('landing.description')}
               </CustomText>
 

@@ -243,7 +243,7 @@ export default function Setting() {
           {/* Social Media Platform */}
           <Section
             title={t("settings.socialMedia.title")}
-            router={() => router.push("store")}
+            router={() => router.push("/store")}
             subtitle={t("settings.socialMedia.seeAll")}
           >
             <View>
@@ -357,13 +357,13 @@ export default function Setting() {
               <SectionItem
                 icon="tags"
                 text={t("settings.businessSetting.product")}
-                onPress={() => router.push("product")}
+                onPress={() => router.push("/product")}
               />
               <Divider />
               <SectionItem
                 icon="building"
                 text={t("settings.businessInfo")}
-                onPress={() => router.push("business_info")}
+                onPress={() => router.push("/business_info")}
               />
               <Divider />
               <SectionItem
@@ -376,7 +376,7 @@ export default function Setting() {
 
           {/* Marketing Strategies */}
           <Section title={t("settings.marketing.title")}
-          router={() => router.push("ads")}
+          router={() => router.push("/ads")}
           subtitle={t("settings.socialMedia.seeAll")}>
             <View>
               <Pressable
@@ -504,7 +504,7 @@ export default function Setting() {
               <SectionItem
                 icon="user"
                 text={t("settings.userProfile")}
-                onPress={() => router.push("profile")}
+                onPress={() => router.push("/profile")}
               />            
              
             </View>

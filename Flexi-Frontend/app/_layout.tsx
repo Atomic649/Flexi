@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/user_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
-import { icons } from "@/constants";
+import { icons, images } from "@/constants";
 import i18n from "@/i18n";
 
 function RootLayoutNav() {
@@ -30,19 +30,30 @@ function RootLayoutNav() {
   const { businessAvatar, businessName } = useBusiness();
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
 
+
   useEffect(() => {
     const fetchRegisteredUsers = async () => {
       try {
         const response = await CallAPIUser.getRegisteredUsersAPI();
-        setRegisteredUsers(response);
-        console.log("Registered Users:", response);  
+        if (response && typeof response === 'object' && 'message' in response) {
+          const userCount = parseInt(response.message);
+          if (!isNaN(userCount)) {
+            setRegisteredUsers(userCount);
+          } else {
+            setRegisteredUsers(parseInt(response.message));
+          }
+        } else {
+          setRegisteredUsers(response);
+        }
       } catch (error) {
         console.error("Error fetching registered users:", error);
+        setRegisteredUsers(0);
       }
     };
-
     fetchRegisteredUsers();
   }, []);
+
+
 
   useEffect(() => {
     async function updateNavigationBar() {
@@ -287,7 +298,7 @@ const mainTopBar = (
         <View className="w-9 h-9 rounded-full overflow-hidden">
           <Image
             source={{
-              uri: businessAvatar || "",
+              uri: businessAvatar || images.empty,
             }}
             className="w-full h-full"
             resizeMode="contain"
