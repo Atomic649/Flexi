@@ -1,15 +1,8 @@
-FROM node:22-alpine
+FROM nginx:alpine
 
-WORKDIR /usr/src/app
+# Copy exported static site from dist folder to nginx web root
+COPY ./dist /usr/share/nginx/html
 
-COPY package*.json ./
+EXPOSE 8080
 
-# Install dependencies, including expo locally
-RUN npm install
-
-COPY . .
-
-EXPOSE 8081
-
-# Use the new local Expo CLI
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]

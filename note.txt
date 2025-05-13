@@ -37,3 +37,16 @@ git merge feature/your-feature-name
 
 x Push the updated `dev` branch to the remote repository:
 git push origin dev
+
+! Rename a Branch
+# Rename the current branch:
+ 
+
+# Rename a branch from another branch:
+git branch -m old-branch-name new-branch-name
+
+# Push the renamed branch to the remote repository:
+git push origin -u new-branch-name
+
+# Delete the old branch from the remote repository:
+git push origin --delete old-branch-name

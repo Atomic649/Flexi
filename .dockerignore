@@ -11,3 +11,6 @@ Flexi-Backend/dist/
 cert.pem
 key.pem
 
+Flexi-Frontend/.expo
+
+.dockerignore
