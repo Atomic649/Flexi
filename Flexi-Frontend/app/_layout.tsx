@@ -20,28 +20,20 @@ import i18n from "@/i18n";
 import mainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
 
+// i18n  initialized for web
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     // Your i18next configuration
-    fallbackLng: 'en',
+    fallbackLng: 'en', 
     resources: {
-      en: {
-        translation: {
-          // Your English translations
-        },
-      },
-      th: {
-        translation: {
-          // Your Thai translations
-        },
-      },
+      en: { translation: require("@/i18n/locales/en/translation.json") },
+      th: { translation: require("@/i18n/locales/th/translation.json") },
     },
     interpolation: {
       escapeValue: false, // React already does escaping
     },
-  }).then(() => {
-    // i18n is now initialized
-    console.log("i18n initialized");
+  }).then(() => {    
+   // console.log("i18n initialized");
   }).catch((error) => {
     console.error("i18n initialization failed:", error);
   });

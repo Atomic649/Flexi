@@ -2,6 +2,7 @@
 import i18n from "i18next";                    // ไลบรารีหลักสำหรับ i18n
 import { initReactI18next } from "react-i18next"; // adapter สำหรับ React
 import AsyncStorage from '@react-native-async-storage/async-storage'; // เก็บค่าภาษาที่เลือก
+import { Platform } from 'react-native';
 
 // 2. Import ไฟล์แปลภาษา
 import translationEn from "./locales/en/translation.json"; // ไฟล์ภาษาอังกฤษ
@@ -49,6 +50,10 @@ const initI18n = async () => {
 };
 
 // 10. เริ่มต้นการทำงานทันทีที่ import
-initI18n();
+if (Platform.OS !== 'web') {
+  initI18n();
+}
+
+//initI18n();
 
 export default i18n;
