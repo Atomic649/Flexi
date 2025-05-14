@@ -3,7 +3,7 @@ import { View, Animated, Image, SafeAreaView, Text, Platform } from "react-nativ
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
-import CallAPIUser from "@/api/user_api";
+import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";

@@ -1,7 +1,7 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useState, useEffect } from "react";
 import { Text, TouchableOpacity, Modal, RefreshControl, Platform } from "react-native";
-import CallAPIUser from "@/api/user_api";
+import CallAPIUser from "@/api/auth_api";
 import CallAPIBusiness from "@/api/business_api";
 import { getMemberId, getUserId, replaceMemberId } from "@/utils/utility";
 import { ScrollView, View, Image } from "react-native";

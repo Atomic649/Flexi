@@ -51,7 +51,6 @@ export default function Index() {
 
   return (
     <>
-    {/* if Platform is wed go to /(tabs)/expense script login check */}
      {/* if Platform is wed go to /(tabs)/expense script login check */}
      {Platform.OS === 'web' && <Redirect href="/(tabs)/expense" />}
 

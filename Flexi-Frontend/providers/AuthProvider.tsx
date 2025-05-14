@@ -3,8 +3,6 @@ import CallAPIUser from '@/api/auth_api';
 import { saveToken,  removeToken, removeMemberId } from '@/utils/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { View } from 'react-native';
-
 
 // Define the AuthContextType
 type AuthContextType = {
@@ -98,4 +96,3 @@ export const useAuth = () => {
   return context;
 };
 
-// TODO : when token expired,it still no error message and still able to access the page
