@@ -18,6 +18,34 @@ import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import i18n from "@/i18n";
 import mainTopBar from "@/components/MainTopBar";
+import { initReactI18next } from 'react-i18next';
+
+if (!i18n.isInitialized) {
+  i18n.use(initReactI18next).init({
+    // Your i18next configuration
+    fallbackLng: 'en',
+    resources: {
+      en: {
+        translation: {
+          // Your English translations
+        },
+      },
+      th: {
+        translation: {
+          // Your Thai translations
+        },
+      },
+    },
+    interpolation: {
+      escapeValue: false, // React already does escaping
+    },
+  }).then(() => {
+    // i18n is now initialized
+    console.log("i18n initialized");
+  }).catch((error) => {
+    console.error("i18n initialization failed:", error);
+  });
+}
 
 function RootLayoutNav() {
   const { theme } = useTheme();
