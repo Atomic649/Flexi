@@ -42,34 +42,31 @@ export default function Profile() {
       input.accept = "image/*";
       input.style.display = "none";
       document.body.appendChild(input);
-  
+
       input.onchange = async (event: any) => {
         const file = event.target.files[0];
         if (file) {
           console.log("Selected file:", file);
-  
+
           const formData = new FormData();
           formData.append("businessAvatar", file); // Append the file directly
-  
+
           try {
             // Call the API to upload the file
             const response = await CallAPIBusiness.UpdateBusinessAvatarAPI(
               businessData.id,
               formData
             );
-  
-            if (response.success) {
-              console.log("File uploaded successfully:", response);
-              triggerFetch(); // Reload business data
-            } else {
-              console.error("File upload failed:", response.message);
-            }
+
+            triggerFetch(); // Reload business data
+            console.log("File uploaded successfully:", response);
+            setBusinessAvatar(URL.createObjectURL(file)); // Update the local state with the new image
           } catch (error) {
             console.error("Error uploading file:", error);
           }
         }
       };
-  
+
       input.click();
       document.body.removeChild(input);
     } else {
@@ -80,34 +77,37 @@ export default function Profile() {
         alert(t("profile.avatar.permission"));
         return;
       }
-  
+
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
       });
-  
-    if (!result.canceled) {
-      setBusinessAvatar(result.assets[0].uri);
-      console.log("Selected image URI:", result.assets[0].uri);
-      try {
-        const formData = new FormData();
-        formData.append(
-          "businessAvatar", // Ensure this matches the backend's expected field name
-          {
-            uri: result.assets[0].uri,
-            name: `${businessData.id}_avatar.jpg`,
-            type: "image/jpeg",
-          } as unknown as Blob
-        );
 
-        await CallAPIBusiness.UpdateBusinessAvatarAPI(businessData.id, formData);
-        triggerFetch(); // Reload business data
-      } catch (error) {
-        console.error("Error updating business avatar:", error);
+      if (!result.canceled) {
+        setBusinessAvatar(result.assets[0].uri);
+        console.log("Selected image URI:", result.assets[0].uri);
+        try {
+          const formData = new FormData();
+          formData.append(
+            "businessAvatar", // Ensure this matches the backend's expected field name
+            {
+              uri: result.assets[0].uri,
+              name: `${businessData.id}_avatar.jpg`,
+              type: "image/jpeg",
+            } as unknown as Blob
+          );
+
+          await CallAPIBusiness.UpdateBusinessAvatarAPI(
+            businessData.id,
+            formData
+          );
+          triggerFetch(); // Reload business data
+        } catch (error) {
+          console.error("Error updating business avatar:", error);
+        }
       }
-    }
     }
   };
 
@@ -193,7 +193,7 @@ export default function Profile() {
           <TouchableOpacity onPress={() => setImageModalVisible(true)}>
             <Image
               source={{
-                uri: (businessAvatar || businessData.businessAvatar) || "",
+                uri: businessAvatar || businessData.businessAvatar || "",
               }}
               className="w-32 h-32 rounded-full"
             />
