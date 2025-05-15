@@ -23,10 +23,16 @@
       "userInterfaceStyle": "automatic",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to let you upload profile photos.",
-        "NSPhotoLibraryUsageDescription": "This app uses the photo library to let you upload profile photos."
+        "NSPhotoLibraryUsageDescription": "This app uses the photo library to let you upload profile photos.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs access to save photos to your library."
       }
     },
     "android": {
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

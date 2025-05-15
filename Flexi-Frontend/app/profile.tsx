@@ -1,6 +1,13 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity, Modal, RefreshControl, Platform } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  Modal,
+  RefreshControl,
+  Platform,
+  Pressable,
+} from "react-native";
 import CallAPIUser from "@/api/auth_api";
 import CallAPIBusiness from "@/api/business_api";
 import { getMemberId, getUserId, replaceMemberId } from "@/utils/utility";
@@ -24,23 +31,63 @@ export default function Profile() {
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [businessAccChoice, setBusinessAccChoice] = useState<any[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
-  const [businessAccChoiceVisible, setBusinessAccChoiceVisible] = useState(false);
+  const [businessAccChoiceVisible, setBusinessAccChoiceVisible] =
+    useState(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert(t("profile.avatar.permission"));
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
+    if (Platform.OS === "web") {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.style.display = "none";
+      document.body.appendChild(input);
+  
+      input.onchange = async (event: any) => {
+        const file = event.target.files[0];
+        if (file) {
+          console.log("Selected file:", file);
+  
+          const formData = new FormData();
+          formData.append("businessAvatar", file); // Append the file directly
+  
+          try {
+            // Call the API to upload the file
+            const response = await CallAPIBusiness.UpdateBusinessAvatarAPI(
+              businessData.id,
+              formData
+            );
+  
+            if (response.success) {
+              console.log("File uploaded successfully:", response);
+              triggerFetch(); // Reload business data
+            } else {
+              console.error("File upload failed:", response.message);
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+          }
+        }
+      };
+  
+      input.click();
+      document.body.removeChild(input);
+    } else {
+      // Native platform logic
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert(t("profile.avatar.permission"));
+        return;
+      }
+  
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+  
     if (!result.canceled) {
       setBusinessAvatar(result.assets[0].uri);
       console.log("Selected image URI:", result.assets[0].uri);
@@ -60,6 +107,7 @@ export default function Profile() {
       } catch (error) {
         console.error("Error updating business avatar:", error);
       }
+    }
     }
   };
 
@@ -96,7 +144,9 @@ export default function Profile() {
       try {
         const memberId = await getMemberId();
         if (memberId !== null) {
-          const response = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+          const response = await CallAPIBusiness.getBusinessDetailsAPI(
+            memberId
+          );
           setBusinessData(response);
         }
         triggerFetch(); // Reload business data
@@ -113,7 +163,9 @@ export default function Profile() {
       try {
         const userId = await getUserId();
         if (userId) {
-          const response = await CallAPIBusiness.getBusinessAccountChoiceAPI(userId);
+          const response = await CallAPIBusiness.getBusinessAccountChoiceAPI(
+            userId
+          );
           setBusinessAccChoice(response);
         }
       } catch (error) {
@@ -127,12 +179,11 @@ export default function Profile() {
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
-      contentContainerStyle={{
-        alignItems: "center",
-        justifyContent: "center",
-        paddingTop: Platform.OS === "web" ? 20 : 0,
-      }}
-        
+        contentContainerStyle={{
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: Platform.OS === "web" ? 20 : 0,
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -174,7 +225,7 @@ export default function Profile() {
             <View className="flex-1 justify-center items-center bg-black bg-opacity-90">
               <Image
                 source={{
-                  uri: (businessAvatar || businessData.businessAvatar) || "",
+                  uri: businessAvatar || businessData.businessAvatar || "",
                 }}
                 className="w-full h-full"
                 resizeMode="contain"
