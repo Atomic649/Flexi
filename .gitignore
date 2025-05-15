@@ -22,7 +22,7 @@ Flexi-Backend/.env
 
 # Build output
 Flexi-Backend/dist/
-Flexi-Frontend/dist/
+
 
 # Temporary files
 Flexi-Backend/tmp/
