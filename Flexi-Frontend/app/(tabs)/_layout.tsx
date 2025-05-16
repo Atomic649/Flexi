@@ -6,6 +6,7 @@ import {
   Image,
   Platform,  
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -91,7 +92,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: tabBarInactiveTintColor,
         tabBarShowLabel: true,
         tabBarLabelStyle: {
-          fontSize: Platform.OS === "web" ? 16 : 12,
+          fontSize: Dimensions.get("window").width > 768  ? 16 : 12,
           fontFamily:
             i18n.language === "th"
               ? "NotoSansThai-Regular"
@@ -100,8 +101,8 @@ export default function TabLayout() {
         },
         tabBarStyle: {
           backgroundColor: tabBarBackgroundColor,
-          borderTopWidth: Platform.OS === "web" ? 0 : 1,
-          borderBottomWidth: Platform.OS === "web" ? 1 : 0,
+          borderTopWidth: Dimensions.get("window").width > 768  ? 0 : 1,
+          borderBottomWidth: Dimensions.get("window").width > 768  ? 1 : 0,
           borderColor: tabBarBorderColor,
           height: Platform.OS === "web" ? 60 : 90,
           paddingTop: Platform.OS === "web" ? 0 : 5,

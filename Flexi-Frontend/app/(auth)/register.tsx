@@ -129,7 +129,7 @@ export default function Register() {
           >
             <View
               style={{
-                width: Platform.OS === "web" ? "40%" : "100%",
+                width: Dimensions.get("window").width > 768  ? "40%" : "100%",
                 maxWidth: 600,
               }}
             >

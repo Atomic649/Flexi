@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Animated, Image, SafeAreaView, Text, Platform } from "react-native";
+import { View, Animated, Image, SafeAreaView, Text, Platform, Dimensions } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
@@ -56,7 +56,7 @@ export default function RoadMap() {
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <View
         className="flex-row items-center justify-center m-4"
-        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "60%" } : {}}
       >
         <Image
           source={images.logo}
@@ -73,7 +73,7 @@ export default function RoadMap() {
       </View>
       <View
         className="flex-col h-1/3 gap-4 px-2"
-        style={Platform.OS === "web" ? { alignSelf: "center", width: "30%" } : {}}
+        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "30%" } : {}}
       >
         {/* mission 1 */}
         <View className="flex-row items-center justify-between mx-2 px-8">
@@ -151,12 +151,12 @@ export default function RoadMap() {
       {/* Vision */}
       <View
         className="flex-col items-center mx-8"
-        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "60%" } : {}}
       >
         <View
           className="w-full py-5 m-2 items-center justify-center"
           style={{
-            width: Platform.OS === "web" ? "50%" : "90%",
+            width: Dimensions.get("window").width > 768  ? "50%" : "90%",
             backgroundColor: theme === "dark" ? "#242422" : "#f0f0f0",
             borderWidth: 1,
             borderColor: theme === "dark" ? "#03dcc7" : "#04ecd5",

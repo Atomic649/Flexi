@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, useWindowDimensions, Platform } from "react-native";
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -20,16 +26,14 @@ const PlatformCard = ({
 
   const { width, height } = useWindowDimensions(); // Get screen dimensions
   const isPortrait = height > width; // Determine orientation
-  const cardWidth = isPortrait ? width * 0.48 : width * 0.19; // Adjust width based on orientation
-  const cardHeight = cardWidth * (Platform.OS === "web" ? 0.56 : 0.7); // Adjust height based on platform
+  const cardWidth = Math.min(isPortrait ? width * 0.48 : width * 0.189); // Adjust width based on orientation with a max limit of 290
+  const cardHeight =
+    cardWidth * (Dimensions.get("window").width > 768 ? 0.6 : 0.7); // Adjust height based on platform
 
   // Dynamic font sizes based on screen width
-  const baseFontSize = Math.min(
-    Platform.OS === "web" ? width * 0.0125 : width * 0.038,
-    26
-  ); // Smaller size for web, max 18
+  const baseFontSize = Math.min(cardWidth * 0.080, 20); // Base size for mobile, max 20
   const smallFontSize = Math.min(baseFontSize * 0.8, 14); // Max 14
-  const largeFontSize = Math.min(baseFontSize * 1.05, 28); // Max 20
+  const largeFontSize = Math.min(baseFontSize * 1.05, 28); // Max 28
 
   const renderIcon = () => {
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
@@ -87,13 +91,16 @@ const PlatformCard = ({
         style={{
           width: cardWidth,
           height: cardHeight,
-          gap: Platform.OS === "web" ? "4%" : 0,
+
+          // paddingTop: cardWidth*0.2,
+          // paddingBottom: cardWidth*0.2,
+          //gap: Platform.OS === "web" ? "4%" : 0,
         }} // Dynamically set width and height
         className={`${
           theme === "dark" ? "bg-[#27272a]" : "bg-white"
         } items-center
              justify-center 
-             m-1 pt-2 gap-0.5       
+           
                rounded-2xl            
              border
             ${

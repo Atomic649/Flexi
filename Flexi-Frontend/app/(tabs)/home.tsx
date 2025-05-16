@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   Platform,
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -78,8 +79,7 @@ export default function Dashboard() {
         <ScrollView>
           <View
             style={{
-              paddingTop: Platform.OS === "web" ? "1%" : 0,
-              width: Platform.OS === "web" ? "40%" : "100%",
+              width: Dimensions.get("window").width > 768 ? "40%" : "100%",
               alignSelf: "center",
             }}
           >
@@ -120,7 +120,7 @@ export default function Dashboard() {
             </View>
             <TotalSale />
 
-            <View className="flex-1 flex-wrap  flex-row justify-between">
+            <View className="flex-1 flex-wrap  flex-row ">
               <View className="w-1/2 pl-3 ">
                 <FacebookCard />
               </View>

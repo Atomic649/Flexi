@@ -6,6 +6,7 @@ import {
   FlatList,
   RefreshControl,
   Platform,
+  Dimensions,
 } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -82,7 +83,7 @@ const monthly = () => {
       <SafeAreaView
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
-          width: Platform.OS === "web" ? "60%" : "100%",
+          width: Dimensions.get("window").width > 768  ? "60%" : "100%",
           alignSelf: "center",
           paddingTop: Platform.OS === "web" ? "1.5%" : 0,
         }}

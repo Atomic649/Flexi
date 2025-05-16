@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, useWindowDimensions, Platform } from "react-native";
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import CircularChart from "@/components/CircularChart";
 import { useTranslation } from "react-i18next";
@@ -12,18 +18,29 @@ const TotalSale = () => {
   const isPortrait = height > width;
 
   // Dynamic font sizes
-  const baseFontSize = Platform.OS === "web" ? width * 0.013 : width * 0.04;
-  const smallFontSize = baseFontSize * 0.8;
-  const largeFontSize = baseFontSize * 1.15;
+  const baseFontSize =
+    Platform.OS === "web"
+      ? Math.min(width * 0.085, 20)
+      : Math.min(width * 0.085, 16); // Base size for mobile, max 20
+  const smallFontSize =
+    Platform.OS === "web"
+      ? Math.min(baseFontSize * 0.8, 18)
+      : Math.min(baseFontSize * 0.8, 14); // Max 14
+  const largeFontSize =
+    Platform.OS === "web"
+      ? Math.min(baseFontSize * 1.05, 28)
+      : Math.min(baseFontSize * 1.05, 28); // Max 28
 
   return (
     <View
       style={{
-        flex: 0.6,
+        flex: 0.65,
         paddingTop: 8,
-        paddingBottom: Platform.OS === "web" ? 0 :4,
+        paddingBottom: Platform.OS === "web" ? 0 : 4,
         paddingHorizontal: 8,
-       }}
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       <View
         style={{
@@ -31,10 +48,11 @@ const TotalSale = () => {
           backgroundColor: theme === "dark" ? "#27272a" : "#ffffff",
           alignItems: "center",
           width: "100%",
-          height: isPortrait ? width * 0.45 : width * 0.13,
+          height: isPortrait ? width * 0.42 : width * 0.15,
           borderRadius: 16,
           borderWidth: 1,
           borderColor: theme === "dark" ? "#3f3f46" : "#61fff2",
+          //   maxWidth: 600,
         }}
       >
         <View
@@ -45,15 +63,20 @@ const TotalSale = () => {
             justifyContent: "center",
           }}
         >
-          <CircularChart percentage={35} />
+          <CircularChart
+            percentage={35}
+            size={
+              Dimensions.get("window").width > 1080 ? width * 0.086 : undefined
+            }
+          />
         </View>
 
         <View
           style={{
-            flex: 1.1,
+            flex: 1,
             backgroundColor: "hsla(0, 31%, 93%, 0)",
             alignItems: "center",
-            paddingStart: 24,
+            paddingStart: 5,
             justifyContent: "center",
             width: isPortrait ? width * 0.4 : width * 0.2,
             height: isPortrait ? width * 0.5 : width * 0.25,
@@ -96,7 +119,7 @@ const TotalSale = () => {
               justifyContent: "space-around",
               marginTop: 8,
               paddingHorizontal: 24,
-              gap: "15%"
+              gap: "15%",
             }}
           >
             {/* Ads */}
@@ -163,7 +186,7 @@ const TotalSale = () => {
               flexDirection: "row",
               justifyContent: "space-around",
               marginTop: 12,
-              paddingHorizontal:2,
+              paddingHorizontal: 2,
               gap: "45%",
             }}
           >

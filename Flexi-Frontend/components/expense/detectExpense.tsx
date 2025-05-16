@@ -224,7 +224,7 @@ export default function DetectExpense() {
       <View
         className="flex-row items-center justify-between  py-1"
         style={{
-          width: Platform.OS === "web" ? "50%" : "100%",
+          width: Dimensions.get("window").width > 768  ? "50%" : "100%",
         }}
       >
         <TouchableOpacity
