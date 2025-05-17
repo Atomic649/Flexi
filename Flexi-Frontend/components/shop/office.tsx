@@ -1,24 +1,28 @@
-import { View, Text, ScrollView, Platform } from "react-native";
+import { View, Text, ScrollView, Platform, SafeAreaView } from "react-native";
 import React from "react";
 import { useTheme } from "@/providers/ThemeProvider";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
-import { CustomText } from "@/components/CustomText";
+import DashboardAds from "../home/DashboardAds";
+import { CustomText } from "../CustomText";
 
 export default function Office() {
   const { t } = useTranslation();
   useTheme();
   return (
-    <SafeAreaView className={`h-full  ${useBackgroundColorClass()}`}
-     style={Platform.OS === "web" ? { paddingTop: 60 } : {}}>
+    <SafeAreaView
+      className={`h-full  ${useBackgroundColorClass()}`}
+    
+    >
       <ScrollView>
-        <View className="flex-1 items-center justify-center pt-20"          
-        >
-            <CustomText style={{ textAlign: "center" }}>{t("shop.tap.office")}</CustomText>
+        <View className="flex-1 items-center justify-center ">
+          <CustomText className="text-sm font-bold text-center py-5">
+            {t("shop.title")}
+          </CustomText>
+          <DashboardAds />
         </View>
       </ScrollView>
-
     </SafeAreaView>
   );
 }

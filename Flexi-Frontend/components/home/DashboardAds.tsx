@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { ScrollView, View, Image } from "react-native";
+import { ScrollView, View, Image, Dimensions, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
 import images from "@/constants/images";
@@ -8,26 +8,63 @@ const DashboardAds = () => {
   const { theme } = useTheme();
   const { t } = useTranslation(); // กำหนดตัวแปรใช้งานภาษา
   const scrollViewRef = useRef<ScrollView>(null);
+  const { width, height } = Dimensions.get("window");
 
   useEffect(() => {
-    scrollViewRef.current?.scrollTo({ x: 3.45 * 96, animated: true });
+    scrollViewRef.current?.scrollTo({ x: 0, animated: true });
   }, []);
 
   return (
-    <View className="flex flex-col pt-2  items-center justify-center">
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        margin: 0,
+        padding: 0,
+      }}
+    >
       <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "flex-start",
+          alignItems: "center",
+          paddingTop: Platform.OS === "web" ? 0 : 0, // Remove space on top for web
+        }}
+        showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
       >
-        {[images.adscoke, images.adsline, images.adsscb, ...Array(2)].map((image, index) => (
+        {[images.daikin, ...Array(2)].map((image, index) => (
           <View
             key={index}
-            className={`flex-row ${
-              theme === "dark" ? "bg-zinc-800" : "bg-white"
-            } items-center w-96 h-44 rounded-2xl mx-2`}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: theme === "dark" ? "#27272a" : "#ffffff",
+              marginVertical: 5,
+              width: Platform.OS === "web" ? width * 0.55 : width * 1,
+              height: Platform.OS === "web" ? width * 0.4 : width * 0.7,
+            //  borderRadius: 10,
+              overflow: "hidden",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 5, // For Android shadow
+            }}
           >
-            {index < 3 && <Image source={image} className="w-full h-full rounded-2xl" />}
+            {index < 3 && (
+              <Image
+                source={image}
+                style={{
+                  flex: 1,
+                  resizeMode: "cover",
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            )}
           </View>
         ))}
       </ScrollView>

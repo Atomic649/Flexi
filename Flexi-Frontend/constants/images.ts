@@ -6,6 +6,7 @@ import adscoke from "../assets/images/ads-coke.jpg"
 import adsline from "../assets/images/ads-line.jpg"
 import adsscb from "../assets/images/ads-scb.jpg"
 import empty from "../assets/images/empty.png"
+import daikin from "../assets/images/Daikin.jpg"
 
 
 export default { 
@@ -16,5 +17,6 @@ export default {
     adscoke,
     adsline,
     adsscb,
-    empty 
+    empty,
+    daikin
 }
