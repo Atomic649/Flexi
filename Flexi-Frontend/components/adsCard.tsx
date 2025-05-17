@@ -107,7 +107,7 @@ export default function AdsCard({
             <View className="pt-2">
               <TouchableOpacity
                 onPress={() => {
-                  router.push(`editads?id=${id}`);
+                  router.push(`/editads?id=${id}`);
                 }}
               >
                 <Ionicons

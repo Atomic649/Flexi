@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, RefreshControl, Platform } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, RefreshControl, Platform, Dimensions } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ExpenseDetail from "@/app/expenseDetail"; // Ensure correct import
@@ -168,7 +168,7 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
   return (
     <View className="flex-1  "
       style={{
-        width: Platform.OS === "web" ? "50%" : "100%",
+        width: Dimensions.get("window").width > 768  ? "50%" : "100%",
        // alignItems: "center",
       }}>
       <View

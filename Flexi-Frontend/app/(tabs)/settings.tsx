@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { ScrollView, Pressable, SafeAreaView, Switch, Platform } from "react-native";
+import {
+  ScrollView,
+  Pressable,
+  SafeAreaView,
+  Switch,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { View } from "@/components/Themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -202,7 +209,6 @@ export default function Setting() {
 
   const toggleMarketing = () => {
     setMarketing((prev) => (prev === "ads" ? "organic" : "ads"));
-  
   };
 
   //---------Platform Toggle Handlers---------
@@ -234,12 +240,17 @@ export default function Setting() {
   //------------------------------------------
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
-     style={Platform.OS === "web" ? { paddingTop: 60} : {}}>
+    <SafeAreaView
+      className={`h-full ${useBackgroundColorClass()}`}
+      style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
+    >
       <ScrollView>
-        <View className={`px-4 pt-3 pb-5`}
-         style={Platform.OS === "web" ? { alignSelf:"center" ,width: "60%" } : {}}>         
-
+        <View
+          className={`px-4 pt-3 pb-5`}
+          style={
+            Dimensions.get("window").width > 768 ? { alignSelf: "center", width: "60%" } : {}
+          }
+        >
           {/* Social Media Platform */}
           <Section
             title={t("settings.socialMedia.title")}
@@ -351,9 +362,9 @@ export default function Setting() {
             </View>
           </Section>
 
-           {/* Business Settings*/}
-           <Section title={t("settings.business")}>
-            <View>             
+          {/* Business Settings*/}
+          <Section title={t("settings.business")}>
+            <View>
               <SectionItem
                 icon="tags"
                 text={t("settings.businessSetting.product")}
@@ -375,9 +386,11 @@ export default function Setting() {
           </Section>
 
           {/* Marketing Strategies */}
-          <Section title={t("settings.marketing.title")}
-          router={() => router.push("/ads")}
-          subtitle={t("settings.socialMedia.seeAll")}>
+          <Section
+            title={t("settings.marketing.title")}
+            router={() => router.push("/ads")}
+            subtitle={t("settings.socialMedia.seeAll")}
+          >
             <View>
               <Pressable
                 className={`flex-row items-center justify-between p-4`}
@@ -476,8 +489,8 @@ export default function Setting() {
             </View>
           </Section>
 
-           {/* Settings Management */}
-           <Section title={t("settings.management")}>
+          {/* Settings Management */}
+          <Section title={t("settings.management")}>
             <View>
               <SectionItem
                 icon="language"
@@ -491,8 +504,7 @@ export default function Setting() {
                 icon="user"
                 text={t("settings.userProfile")}
                 onPress={() => router.push("/profile")}
-              />            
-             
+              />
             </View>
           </Section>
 
@@ -551,7 +563,6 @@ const Section = ({
             >
               {subtitle}
             </CustomText>
-            
           </Pressable>
         )}
       </View>
@@ -618,8 +629,6 @@ const SectionItem = ({
     </Pressable>
   );
 };
-
-
 
 const Divider = () => {
   const { theme } = useTheme();
