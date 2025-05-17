@@ -6,7 +6,6 @@ import {
   Modal,
   RefreshControl,
   Platform,
-  Pressable,
 } from "react-native";
 import CallAPIUser from "@/api/auth_api";
 import CallAPIBusiness from "@/api/business_api";
@@ -277,7 +276,7 @@ export default function Profile() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => router.push("/business_info")}
+          onPress={() => router.push("/createBusiness")}
           className=" justify-center mt-10 flex-row items-center"
         >
           <Ionicons

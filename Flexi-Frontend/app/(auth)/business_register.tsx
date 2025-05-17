@@ -11,11 +11,9 @@ import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/CustomButton";
-import { images } from "@/constants";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
-
 import Dropdown from "@/components/Dropdown";
 import CallAPIBusiness from "@/api/business_api";
 import { useTextColorClass } from "@/utils/themeUtils";

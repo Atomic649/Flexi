@@ -20,7 +20,7 @@ const TotalSale = () => {
   // Dynamic font sizes
   const baseFontSize =
     Platform.OS === "web"
-      ? Math.min(width * 0.085, 20)
+      ? Math.min(width * 0.085, 18)
       : Math.min(width * 0.085, 16); // Base size for mobile, max 20
   const smallFontSize =
     Platform.OS === "web"

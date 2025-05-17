@@ -218,6 +218,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* CreateBusiness */}
+        <Stack.Screen
+          name="createBusiness"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("auth.businessRegister.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* ads */}
         <Stack.Screen
           name="ads"

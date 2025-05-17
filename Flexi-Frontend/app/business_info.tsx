@@ -1,6 +1,4 @@
-import {
-  ScrollView
-} from "react-native";
+import { Dimensions, ScrollView } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import CustomButton from "@/components/CustomButton";
@@ -17,10 +15,10 @@ import FormField2 from "@/components/FormField2";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 
-export default function Register() {
+export default function BusinessInfo() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();  
+  const router = useRouter();
   const [businessName, setbusinessName] = useState("");
   const [taxType, settaxType] = useState("");
   const [vatId, setvatId] = useState("");
@@ -58,10 +56,9 @@ export default function Register() {
       setbusinessName(data.businessName || "");
       settaxType(data.taxType || "");
       setvatId(data.vatId || "");
-      setbusinessType(data.businessType || "");    
-      
-      if (data.error) throw new Error(data.error);
+      setbusinessType(data.businessType || "");
 
+      if (data.error) throw new Error(data.error);
     } catch (error: any) {
       setError(error.message);
     }
@@ -71,7 +68,7 @@ export default function Register() {
   useEffect(() => {
     handleExit();
   }, []);
- 
+
   // Handle register new business
   const handleRegister = async () => {
     setError("");
@@ -93,7 +90,6 @@ export default function Register() {
       return;
     }
 
-
     try {
       // Call the register API
       const userId = await getUserId();
@@ -107,7 +103,7 @@ export default function Register() {
         vatId,
         businessType,
         taxType,
-        userId
+        userId,
       });
 
       if (data.error) throw new Error(data.error);
@@ -135,124 +131,133 @@ export default function Register() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 items-center  ${useBackgroundColorClass()}`}>
-      <ScrollView>
+    <SafeAreaView
+      className={`h-full ${useBackgroundColorClass()}`}
+      style={{
+        width: "100%", // Ensure full width
+        alignSelf: "center", // Center the content on larger screens
+      }}
+    >
+      <ScrollView
+        style={{
+          width: Dimensions.get("window").width > 768 ? "40%" : "100%",
+          maxWidth: 600,
+          alignSelf: "center", // Center the content on larger screens
+        }}
+      >
         <View
-          className="flex-1 justify-center py-10 px-4"
+          className="flex-1 justify-center px-4 py-10"
           style={{
-            alignItems: Platform.OS === "web" ? "center" : "stretch",
-            maxWidth: 600,
-            
+            width: "100%", // Ensure the inner container takes full width
           }}
         >
-          <View        
-          >
-            <FormField2
-              title={t("auth.businessRegister.businessName")}
-              placeholder={t("auth.businessRegister.businessName")}
-              value={businessName} // Pre-fill with existing data
-              handleChangeText={setbusinessName}
-              otherStyles="mt-0"
-              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-              placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            />
+          <FormField2
+            title={t("auth.businessRegister.businessName")}
+            placeholder={t("auth.businessRegister.businessName")}
+            value={businessName} // Pre-fill with existing data
+            handleChangeText={setbusinessName}
+            otherStyles="mt-0"
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+          />
 
-            <Dropdown2
-              title={t("auth.businessRegister.taxType")}
-              options={[
-                {
-                  label: t("auth.businessRegister.taxTypeOption.Individual"),
-                  value: "Individual",
-                },
-                {
-                  label: t("auth.businessRegister.taxTypeOption.Juristic"),
-                  value: "Juristic",
-                },
-              ]}
-              placeholder={t("auth.businessRegister.taxType")}
-              onValueChange={settaxType}
-              selectedValue={taxType} // Pre-fill with existing data
-              otherStyles="mt-7"
-              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            />
+          <Dropdown2
+            title={t("auth.businessRegister.taxType")}
+            options={[
+              {
+                label: t("auth.businessRegister.taxTypeOption.Individual"),
+                value: "Individual",
+              },
+              {
+                label: t("auth.businessRegister.taxTypeOption.Juristic"),
+                value: "Juristic",
+              },
+            ]}
+            placeholder={t("auth.businessRegister.taxType")}
+            onValueChange={settaxType}
+            selectedValue={taxType} // Pre-fill with existing data
+            otherStyles="mt-7"
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+          />
 
-            <FormField2
-              title={t("auth.businessRegister.vatId")}
-              placeholder={t("0000000000000")}
-              value={vatId} // Pre-fill with existing data
-              handleChangeText={setvatId}
-              otherStyles="mt-7"
-              keyboardType="number-pad"
-              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-              placeholderTextColor = {theme === "dark" ? "#606060" : "#b1b1b1"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            />
+          <FormField2
+            title={t("auth.businessRegister.vatId")}
+            placeholder={t("0000000000000")}
+            value={vatId} // Pre-fill with existing data
+            handleChangeText={setvatId}
+            otherStyles="mt-7"
+            keyboardType="number-pad"
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+          />
 
-            <Dropdown2
-              title={t("auth.businessRegister.businessType")}
-              options={[
-                {
-                  label: t("auth.businessRegister.businessTypeOption.OnlineSale"),
-                  value: "OnlineSale",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Massage"),
-                  value: "Massage",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Restaurant"),
-                  value: "Restaurant",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Bar"),
-                  value: "Bar",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Cafe"),
-                  value: "Cafe",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Hotel"),
-                  value: "Hotel",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Tutor"),
-                  value: "Tutor",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Influencer"),
-                  value: "Influencer",
-                },
-                {
-                  label: t("auth.businessRegister.businessTypeOption.Other"),
-                  value: "Other",
-                },
-              ]}
-              placeholder={t("auth.businessRegister.chooseBusinessType")}
-              selectedValue={businessType} // Pre-fill with existing data
-              onValueChange={setbusinessType}
-              otherStyles="mt-7"
-              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            />
+          <Dropdown2
+            title={t("auth.businessRegister.businessType")}
+            options={[
+              {
+                label: t("auth.businessRegister.businessTypeOption.OnlineSale"),
+                value: "OnlineSale",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Massage"),
+                value: "Massage",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Restaurant"),
+                value: "Restaurant",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Bar"),
+                value: "Bar",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Cafe"),
+                value: "Cafe",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Hotel"),
+                value: "Hotel",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Tutor"),
+                value: "Tutor",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Influencer"),
+                value: "Influencer",
+              },
+              {
+                label: t("auth.businessRegister.businessTypeOption.Other"),
+                value: "Other",
+              },
+            ]}
+            placeholder={t("auth.businessRegister.chooseBusinessType")}
+            selectedValue={businessType} // Pre-fill with existing data
+            onValueChange={setbusinessType}
+            otherStyles="mt-7"
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+          />
 
-            {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
+          {error ? (
+            <CustomText className="text-red-500 mt-4">{error}</CustomText>
+          ) : null}
 
-            <CustomButton
-              title={
-                businessName || taxType || vatId || businessType
-                  ? t("auth.update.button") // Show "Update" if data exists
-                  : t("auth.register.button") // Show "Register" if no data exists
-              }
-              handlePress={handleRegister}
-              containerStyles="mt-7"
-              textStyles="!text-white"
-            />
-          </View>
+          <CustomButton
+            title={
+              businessName || taxType || vatId || businessType
+                ? t("auth.update.button") // Show "Update" if data exists
+                : t("auth.register.button") // Show "Register" if no data exists
+            }
+            handlePress={handleRegister}
+            containerStyles="mt-7"
+            textStyles="!text-white"
+          />
         </View>
       </ScrollView>
 
