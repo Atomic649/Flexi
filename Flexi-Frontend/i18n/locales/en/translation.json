@@ -343,7 +343,7 @@
     "income": "Income",
     "create": "Tools",
     "expense": "Expense",
-    "shop": "Shop",
+    "shop": "B2B",
     "profile": "Profile",
     "settings": "Settings",
     "product": "Product",
@@ -548,6 +548,14 @@
     
   },
   "shop": {
-    "title": "We focus on your business profit first \n ours later :)"
+    "title": "We focus on your business profit first \n ours later :)",
+    "tap":{
+      "account": "Account",
+      "agency": "Agency",
+      "bank" : "Bank",
+      "office": "Office",
+      "orm" : "ORM",
+      "coach": "Coach"
+    }
   }
 }
