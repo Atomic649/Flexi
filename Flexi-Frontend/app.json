@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Flexi-React-Expo",
-    "slug": "Flexi-React-Expo",
+    "slug": "flexi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -29,9 +29,10 @@
     },
     "android": {
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -70,8 +71,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "02359cb3-514b-4410-8a59-6d3072668430"
+        "projectId": "73629a42-babb-41d2-89a3-7cf683e4ba4f"
       }
-    }
+    },
+    "owner": "tananyar"
   }
 }
