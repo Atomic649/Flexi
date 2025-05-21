@@ -43,7 +43,12 @@ type Bill = {
 // Group bills by date
 const groupByDate = (items: Bill[]): { [key: string]: Bill[] } => {
   return items.reduce((groups, item) => {
-    const date = new Date(item.purchaseAt).toISOString().split("T")[0];
+    const purchaseDate = new Date(item.purchaseAt);
+    const day = purchaseDate.getDate().toString().padStart(2, '0');
+    const month = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = purchaseDate.getFullYear();
+    const date = `${day}/${month}/${year}`;
+    
     if (!groups[date]) {
       groups[date] = [];
     }

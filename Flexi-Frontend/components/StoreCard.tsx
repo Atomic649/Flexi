@@ -85,7 +85,7 @@ export default function StoreCard({
             <View className="pt-2">
               <TouchableOpacity
                 onPress={() => {
-                  router.push(`editstore?id=${id}`);
+                  router.push(`/editstore?id=${id}`);
                   console.log("id", id);
                 }}
               >

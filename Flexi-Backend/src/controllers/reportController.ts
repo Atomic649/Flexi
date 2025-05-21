@@ -62,7 +62,7 @@ const dailyReport = async (req: Request, res: Response) => {
 
     // Merge dailyBills and dailyAdsCost
     const result = Object.keys(dailyBills).map((date) => {
-      const adsCost = dailyAdsCost[date]?.adsCost || 0;
+      const adsCost = dailyAdsCost[date]?.adsCost ? Number(dailyAdsCost[date].adsCost) : 0;
       const price = dailyBills[date].price;
       const profit = price - adsCost;
       const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
@@ -77,7 +77,7 @@ const dailyReport = async (req: Request, res: Response) => {
         ROI: ROI,
       };
     });
-
+    console.log(" 🚀 result", result);
     res.json(result);
   } catch (e) {
     console.error(e);
@@ -133,25 +133,27 @@ const monthlyReport = async (req: Request, res: Response) => {
       return acc;
     }, {});
 
-    console.log(monthlyBills);
+    console.log("🔥bill",monthlyBills);
 
     // Group by month of date and sum adsCost
-    const monthlyAdsCost = adsCost.reduce((acc: any, adsCost) => {
-      const date = adsCost.date.toISOString().split("-").slice(0, 2).join("-");
+    const monthlyAdsCost = adsCost.reduce((acc: any, adsCostItem) => {
+      const date = adsCostItem.date.toISOString().split("-").slice(0, 2).join("-");
       if (!acc[date]) {
         acc[date] = {
           date: date,
           adsCost: 0,
         };
       }
-      acc[date].adsCost += adsCost.adsCost;
+      // Convert adsCost to number before adding
+      acc[date].adsCost += Number(adsCostItem.adsCost);
       return acc;
     }, {});
-    console.log(monthlyAdsCost);
+    console.log("🔥ads", monthlyAdsCost);
 
     // Merge monthlyBills and monthlyAdsCost
     const result = Object.keys(monthlyBills).map((date) => {
-      const adsCost = monthlyAdsCost[date]?.adsCost || 0;
+      // Ensure adsCost is a number
+      const adsCost = monthlyAdsCost[date]?.adsCost ? Number(monthlyAdsCost[date].adsCost) : 0;
       const price = monthlyBills[date].price;
       const profit = price - adsCost;
       const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;

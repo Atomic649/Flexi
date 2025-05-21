@@ -29,7 +29,12 @@ type Expense = {
 // Group expenses by date
 const groupByDate = (expenses: Expense[]) => {
   return expenses.reduce((acc, expense) => {
-    const date = expense.date.split("T")[0];
+    const expenseDate = new Date(expense.date);
+    const day = expenseDate.getDate().toString().padStart(2, "0");
+    const month = (expenseDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = expenseDate.getFullYear();
+    const date = `${day}/${month}/${year}`;
+
     if (!acc[date]) {
       acc[date] = [];
     }

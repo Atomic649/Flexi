@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import React from "react";
 
 const formatDate = (dateString: string) => {
@@ -6,7 +6,9 @@ const formatDate = (dateString: string) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  //return `${year}-${month}-${day}`;
+  return `${day}/${month}/${year}`;
+
 };
 
 export default function DailyCard({
@@ -30,7 +32,11 @@ export default function DailyCard({
         <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5">
           <View className="flex flex-col items-start w-1/6">
             <Text
-              className="text-sm text-zinc-500 font-normal "
+              className=" text-zinc-500 font-normal justify-center items-start"
+              style={{
+                fontSize: Dimensions.get("window").width > 500 ? 14 : 11,
+                
+              }}
               numberOfLines={1}
             >
               {formatDate(date)}

@@ -28746,7 +28746,6 @@ export namespace Prisma {
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    memberId?: string
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
@@ -28768,13 +28767,14 @@ export namespace Prisma {
     price?: IntFilter<"Bill"> | number
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
+    memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
     productList?: XOR<ProductScalarRelationFilter, ProductWhereInput>
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     store?: XOR<StoreScalarRelationFilter, StoreWhereInput>
-  }, "id" | "memberId">
+  }, "id">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder

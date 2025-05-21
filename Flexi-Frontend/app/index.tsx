@@ -51,14 +51,13 @@ export default function Index() {
 
   return (
     <>
-     {/* if Platform is wed go to /(tabs)/expense script login check */}
-     {Platform.OS === 'web' && <Redirect href="/(tabs)/expense" />}
-
+         
       {/* ถ้า login แล้ว redirect ไปหน้า home */}
       { isLoggedIn &&  <Redirect href="/(tabs)/home" /> }
       
         {/* ถ้ายังไม่ login แสดงหน้า Landing */}
-      { !isLoggedIn && <SafeAreaView className="h-full">
+      { !isLoggedIn && 
+      <SafeAreaView className="h-full">
           <ScrollView contentContainerStyle={{height: '100%'}}>
             {/* ปุ่มเปลี่ยนภาษา */}
             <TouchableOpacity 
@@ -68,7 +67,7 @@ export default function Index() {
               <View className="flex-row items-center gap-2 !bg-transparent px-2">
                 <Image
                   source={i18n.language === 'th' ? icons.flagen : icons.flagth}
-                  className="w-6 h-6"
+                  style={{ width: 20, height: 20 }}
                   resizeMode="contain"
                 />
                 <CustomText className="!text-white text-sm">
@@ -81,7 +80,7 @@ export default function Index() {
               {/* Logo */}
               <Image
                 source={images.logo}
-                className="h-[20%]"
+                style={{ width: 150, height: 150 }}
                 resizeMode="contain"
               />
 

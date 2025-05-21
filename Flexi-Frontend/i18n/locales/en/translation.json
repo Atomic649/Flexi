@@ -354,6 +354,15 @@
     "description": "Automate your business with our free tools \n Flexi Business Hub",
     "button": "Get Started"
   },
+  "automate": "🚀 Automated order synchronization\n🚀 Real-time advertising report and spending \n🚀 Inventory tracking",
+  "howto": {
+    "title": "🔧 How to Integrate Shopee",
+    "content1": "1. Setting > Social Media > Turn on Shopee",
+    "content2": "2. login Shopee Seller",
+    "content3": "3. Allow system using Shopee's API",
+    "content4": "4. Start syncing product ,advertising data and order data"
+
+  },
   "editProduct": {
     "title": "Edit Product",
     "titlePlaceholder": "Product Title",
@@ -545,7 +554,6 @@
     "store": "Stores",
     "vision": "Small Team, Big Impact \n 0 Marketing Budget \n Possible 0 Funding",
     "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future"
-    
   },
   "shop": {
     "title": "Installation Air condioner for Large System \n Factory, Office, Building , Hotel, Resort, Restaurant \n Tel : 065-4982496",

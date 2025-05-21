@@ -21,8 +21,7 @@ export default function Office() {
     <SafeAreaView className={`h-full  ${useBackgroundColorClass()}`}>
       <ScrollView
         style={{
-          width: Dimensions.get("window").width > 768 ? "40%" : "100%",
-          maxWidth: 600,
+          width: Dimensions.get("window").width > 768 ? "100%" : "100%",      
           alignSelf: "center", // Center the content on larger screens
         }}
       >
