@@ -24,7 +24,6 @@ Flexi-Backend/.env
 Flexi-Backend/dist/
 
 
-# Temporary files
 Flexi-Backend/tmp/
 Flexi-Frontend/tmp/
 *.swp

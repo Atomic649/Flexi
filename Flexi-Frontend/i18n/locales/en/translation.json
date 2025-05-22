@@ -17,6 +17,17 @@
     "contact": "Contact Us",
     "today": "Today"
   },
+  "copyright": "Copyright © 2025 Atomic Intergroup Co., Ltd. All rights reserved.",
+  "footer": {
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": {
+      "title": "Contact Us ",
+      "detail":"📧 support@flexibusinesshub.com \n📞 095-424-9649 "
+    
+      
+    }
+  },
   "auth": {
     "login": {
       "title": "Login",
@@ -36,8 +47,8 @@
         "ok": "OK"
       }
     },
-    "update":{
-      "button" : "Update"
+    "update": {
+      "button": "Update"
     },
     "register": {
       "title": "Register",
@@ -210,9 +221,9 @@
       "shopee": "Shopee",
       "youtube": "YouTube"
     },
-    "businessSetting":{
+    "businessSetting": {
       "product": "Product",
-      "team": "Team"    
+      "team": "Team"
     },
     "logout": {
       "logout": "Logout",
@@ -361,7 +372,6 @@
     "content2": "2. login Shopee Seller",
     "content3": "3. Allow system using Shopee's API",
     "content4": "4. Start syncing product ,advertising data and order data"
-
   },
   "editProduct": {
     "title": "Edit Product",
@@ -517,7 +527,7 @@
       "successTitle": "Success",
       "successMessage": "View in the Expense List",
       "enterPassword": "Re-enter password for security",
-      "password": "Enter PDF Password"      
+      "password": "Enter PDF Password"
     },
     "create": {
       "error": "Please fill in all required fields",
@@ -557,12 +567,12 @@
   },
   "shop": {
     "title": "Installation Air condioner for Large System \n Factory, Office, Building , Hotel, Resort, Restaurant \n Tel : 065-4982496",
-    "tap":{
+    "tap": {
       "account": "Account",
       "agency": "Agency",
-      "bank" : "Bank",
+      "bank": "Bank",
       "office": "Office",
-      "orm" : "ORM",
+      "orm": "ORM",
       "coach": "Coach"
     }
   }

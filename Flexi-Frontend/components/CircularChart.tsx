@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming } from 'react-native-reanimated';
 import { useTheme } from "@/providers/ThemeProvider";
@@ -14,7 +14,7 @@ interface CircularChartProps {
 
 const CircularChart = ({ 
   percentage, 
-  size = 136,
+  size = Dimensions.get("window").width > 768? Math.min(Dimensions.get("window").width * 0.1, 130): 136, // Default size for mobile with max size of 150
   strokeWidth = 28
 }: CircularChartProps) => {
   const { theme } = useTheme();
