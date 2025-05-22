@@ -82,7 +82,7 @@ export default function Dashboard() {
               width: Dimensions.get("window").width > 768 ? "40%" : "100%",
               maxWidth: 650,
               alignSelf: "center",
-              paddingTop: Dimensions.get("window").width ? Dimensions.get("window").width * 0.045:0,
+              paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.01:0,
             }}
           >
             <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
