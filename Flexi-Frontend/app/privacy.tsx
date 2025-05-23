@@ -12,92 +12,92 @@ export default function Privacy() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   
-  // Privacy Policy content sections
+  // Privacy Policy content sections using translation keys
   const privacyData = [
     {
-      title: "1. Information We Collect",
+      title: t("privacy.sections.infoCollect.title"),
       content: [
-        "We collect the following types of data:",
+        t("privacy.sections.infoCollect.description"),
         "",
-        "• Personal Information: Name, email address, login credentials",
-        "• Business Data: Sales, expenses, ad costs, financial documents",
-        "• Technical Data: IP address, browser type, device information",
-        "• Cookies: Used for analytics, functionality, and security",
-        "• Third-Party Data: Data from Facebook, TikTok, Shopee, LINE (after your consent)"
+        `• ${t("privacy.sections.infoCollect.personalInfo")}`,
+        `• ${t("privacy.sections.infoCollect.businessData")}`,
+        `• ${t("privacy.sections.infoCollect.technicalData")}`,
+        `• ${t("privacy.sections.infoCollect.cookies")}`,
+        `• ${t("privacy.sections.infoCollect.thirdPartyData")}`
       ]
     },
     {
-      title: "2. How We Use Your Data",
+      title: t("privacy.sections.dataUse.title"),
       content: [
-        "We use your data to:",
+        t("privacy.sections.dataUse.description"),
         "",
-        "• Operate and improve our platform",
-        "• Provide financial and performance insights",
-        "• Notify you of abnormal spending or performance trends",
-        "• Assist with tax preparation and compliance",
-        "• Respond to inquiries and provide customer support"
+        `• ${t("privacy.sections.dataUse.operate")}`,
+        `• ${t("privacy.sections.dataUse.insights")}`,
+        `• ${t("privacy.sections.dataUse.notify")}`,
+        `• ${t("privacy.sections.dataUse.assist")}`,
+        `• ${t("privacy.sections.dataUse.respond")}`
       ]
     },
     {
-      title: "3. Third-Party Data Access",
+      title: t("privacy.sections.thirdPartyAccess.title"),
       content: [
-        "We access data from third-party platforms only after you grant permission via secure OAuth APIs. This includes:",
+        t("privacy.sections.thirdPartyAccess.description"),
         "",
-        "• Advertising performance metrics",
-        "• Sales/order data",
-        "• Regional targeting information (non-personal)",
+        `• ${t("privacy.sections.thirdPartyAccess.adMetrics")}`,
+        `• ${t("privacy.sections.thirdPartyAccess.salesData")}`,
+        `• ${t("privacy.sections.thirdPartyAccess.targeting")}`,
         "",
-        "You may revoke this access through the third-party platform at any time."
+        t("privacy.sections.thirdPartyAccess.revoke")
       ]
     },
     {
-      title: "4. Data Sharing and Disclosure",
+      title: t("privacy.sections.dataSharing.title"),
       content: [
-        "We do not sell your personal data. We may share:",
+        t("privacy.sections.dataSharing.description"),
         "",
-        "• Non-personal geographic data for analytics",
-        "• Information with trusted service providers under strict confidentiality",
-        "• Data when required by law or to protect rights and safety"
+        `• ${t("privacy.sections.dataSharing.analytics")}`,
+        `• ${t("privacy.sections.dataSharing.providers")}`,
+        `• ${t("privacy.sections.dataSharing.legal")}`
       ]
     },
     {
-      title: "5. Data Retention",
+      title: t("privacy.sections.retention.title"),
       content: [
-        "We retain your data:",
+        t("privacy.sections.retention.description"),
         "",
-        "• As long as your account is active",
-        "• As needed to comply with legal obligations or resolve disputes"
+        `• ${t("privacy.sections.retention.active")}`,
+        `• ${t("privacy.sections.retention.legal")}`
       ]
     },
     {
-      title: "6. Your Rights",
+      title: t("privacy.sections.rights.title"),
       content: [
-        "You have the right to:",
+        t("privacy.sections.rights.description"),
         "",
-        "• Access your personal data",
-        "• Request correction or deletion",
-        "• Withdraw consent to data processing",
-        "• File a complaint with a regulatory authority",
+        `• ${t("privacy.sections.rights.access")}`,
+        `• ${t("privacy.sections.rights.correction")}`,
+        `• ${t("privacy.sections.rights.withdraw")}`,
+        `• ${t("privacy.sections.rights.complaint")}`,
         "",
-        "To exercise your rights, contact us at: support@flexibusinesshub.com"
+        t("privacy.sections.rights.contact")
       ]
     },
     {
-      title: "7. Children's Privacy",
+      title: t("privacy.sections.children.title"),
       content: [
-        "Our services are not intended for individuals under 18. We do not knowingly collect data from minors."
+        t("privacy.sections.children.description")
       ]
     },
     {
-      title: "8. Security Measures",
+      title: t("privacy.sections.security.title"),
       content: [
-        "We use encryption, access controls, and regular audits to protect your data. While we strive to secure your information, no system is completely secure."
+        t("privacy.sections.security.description")
       ]
     },
     {
-      title: "9. Changes to This Policy",
+      title: t("privacy.sections.changes.title"),
       content: [
-        "We may update this policy periodically. If changes are significant, we'll notify you by email or through the platform."
+        t("privacy.sections.changes.description")
       ]
     }
   ];
@@ -127,7 +127,7 @@ export default function Privacy() {
               weight="bold"
               className="text-2xl text-center"
             >
-              {t("Privacy Policy")}
+              {t("privacy.title")}
             </CustomText>
           </View>
           
@@ -135,11 +135,11 @@ export default function Privacy() {
             className="mb-4 text-center"
             weight="medium"
           >
-            Effective Date: May 23, 2025
+            {t("privacy.effectiveDate")}
           </CustomText>
           
           <CustomText className="mb-6">
-            At Flexi Business Hub, your privacy is important to us. This Privacy Policy explains what data we collect, how we use it, and your rights.
+            {t("privacy.introduction")}
           </CustomText>
           
           {privacyData.map((section, index) => (

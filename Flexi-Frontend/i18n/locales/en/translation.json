@@ -575,5 +575,72 @@
       "orm": "ORM",
       "coach": "Coach"
     }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "effectiveDate": "Effective Date: May 23, 2025",
+    "introduction": "At Flexi Business Hub, your privacy is important to us. This Privacy Policy explains what data we collect, how we use it, and your rights.",
+    "sections": {
+      "infoCollect": {
+        "title": "1. Information We Collect",
+        "description": "We collect the following types of data:",
+        "personalInfo": "Personal Information: Name, email address, login credentials",
+        "businessData": "Business Data: Sales, expenses, ad costs, financial documents",
+        "technicalData": "Technical Data: IP address, browser type, device information",
+        "cookies": "Cookies: Used for analytics, functionality, and security",
+        "thirdPartyData": "Third-Party Data: Data from Facebook, TikTok, Shopee, LINE (after your consent)"
+      },
+      "dataUse": {
+        "title": "2. How We Use Your Data",
+        "description": "We use your data to:",
+        "operate": "Operate and improve our platform",
+        "insights": "Provide financial and performance insights",
+        "notify": "Notify you of abnormal spending or performance trends",
+        "assist": "Assist with tax preparation and compliance",
+        "respond": "Respond to inquiries and provide customer support"
+      },
+      "thirdPartyAccess": {
+        "title": "3. Third-Party Data Access",
+        "description": "We access data from third-party platforms only after you grant permission via secure OAuth APIs. This includes:",
+        "adMetrics": "Advertising performance metrics",
+        "salesData": "Sales/order data",
+        "targeting": "Regional targeting information (non-personal)",
+        "revoke": "You may revoke this access through the third-party platform at any time."
+      },
+      "dataSharing": {
+        "title": "4. Data Sharing and Disclosure",
+        "description": "We do not sell your personal data. We may share:",
+        "analytics": "Non-personal geographic data for analytics",
+        "providers": "Information with trusted service providers under strict confidentiality",
+        "legal": "Data when required by law or to protect rights and safety"
+      },
+      "retention": {
+        "title": "5. Data Retention",
+        "description": "We retain your data:",
+        "active": "As long as your account is active",
+        "legal": "As needed to comply with legal obligations or resolve disputes"
+      },
+      "rights": {
+        "title": "6. Your Rights",
+        "description": "You have the right to:",
+        "access": "Access your personal data",
+        "correction": "Request correction or deletion",
+        "withdraw": "Withdraw consent to data processing",
+        "complaint": "File a complaint with a regulatory authority",
+        "contact": "To exercise your rights, contact us at: support@flexibusinesshub.com"
+      },
+      "children": {
+        "title": "7. Children's Privacy",
+        "description": "Our services are not intended for individuals under 18. We do not knowingly collect data from minors."
+      },
+      "security": {
+        "title": "8. Security Measures",
+        "description": "We use encryption, access controls, and regular audits to protect your data. While we strive to secure your information, no system is completely secure."
+      },
+      "changes": {
+        "title": "9. Changes to This Policy",
+        "description": "We may update this policy periodically. If changes are significant, we'll notify you by email or through the platform."
+      }
+    }
   }
 }
