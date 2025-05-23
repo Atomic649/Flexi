@@ -1,17 +1,33 @@
 // components/LegalSection.tsx
+import { View } from "react-native";
+import { CustomText } from "./CustomText";
+import { useTheme } from "@/providers/ThemeProvider";
+
 type LegalSectionProps = {
-    title: string;
-    content: string[];
-  };
+  title: string;
+  content: string[];
+};
+
+const LegalSection = ({ title, content }: LegalSectionProps) => {
+  const { theme } = useTheme();
   
-  const LegalSection = ({ title, content }: LegalSectionProps) => (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">{title}</h2>
+  return (
+    <View className="mb-8">
+      <CustomText 
+        weight="semibold"
+        className={`text-xl mb-2 ${theme === "dark" ? "text-gray-200" : "text-gray-800"}`}>
+        {title}
+      </CustomText>
+      
       {content.map((paragraph, i) => (
-        <p key={i} className="text-gray-700 leading-relaxed mb-2">{paragraph}</p>
+        <CustomText 
+          key={i} 
+          className={`leading-relaxed mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+          {paragraph}
+        </CustomText>
       ))}
-    </div>
+    </View>
   );
-  
-  export default LegalSection;
-  
+};
+
+export default LegalSection;
