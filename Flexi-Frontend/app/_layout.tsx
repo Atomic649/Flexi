@@ -240,7 +240,7 @@ function RootLayoutNav() {
         name="term"
         options={{
           ...showTopBarAndBackIcon(theme),
-          title: t("term of service"),
+          title: t("terms.title"),
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
@@ -249,7 +249,7 @@ function RootLayoutNav() {
         name="privacy"
         options={{
           ...showTopBarAndBackIcon(theme),
-          title: t("privacy policy"),
+          title: t("privacy.title"),
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />

@@ -438,21 +438,21 @@ export default function Setting() {
           {/* Privacy */}
           <Section title={t("settings.privacy.title")}>
             <View>
-              <SectionItem icon="lock" text={t("settings.privacy.settings")} />
-              <Divider />
+              {/* <SectionItem icon="lock" text={t("settings.privacy.settings")} />
+              <Divider /> */}
               <SectionItem
                 icon="shield"
                 text={t("settings.privacy.security")}
               />
               <Divider />
               <SectionItem
-                icon="file-text"
+                icon="lock"
                 text={t("settings.privacy.policy")}
                 onPress={() => router.push("/privacy")}
               />
               <Divider />
               <SectionItem
-                icon="list"
+                icon="file-text"
                 text={t("settings.privacy.terms")}
                 onPress={() => router.push("/term")}
               />

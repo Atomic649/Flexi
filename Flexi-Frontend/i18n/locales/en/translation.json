@@ -642,5 +642,67 @@
         "description": "We may update this policy periodically. If changes are significant, we'll notify you by email or through the platform."
       }
     }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "effectiveDate": "Effective Date: May 23, 2025",
+    "introduction": "Welcome to Flexi Business Hub! These Terms of Service (\"Terms\") govern your access to and use of our software-as-a-service (SaaS) platform and related services. By using our services, you agree to be bound by these Terms.",
+    "sections": {
+      "overview": {
+        "title": "1. Overview of Services",
+        "description": "Flexi Business Hub is a cloud-based platform that automates the collection and analysis of business data including:",
+        "salesTracking": "Sales and expenses tracking",
+        "adAnalysis": "Advertising spend analysis (Facebook, TikTok, Shopee, LINE)",
+        "reporting": "Profit/loss reporting (daily, monthly, yearly)",
+        "notifications": "Notifications for inefficient ad spend",
+        "recordkeeping": "Digital recordkeeping for financial data",
+        "taxTools": "Tools to assist with tax submission and optimization"
+      },
+      "registration": {
+        "title": "2. Account Registration",
+        "description": "You must create an account to access the service. You agree to:",
+        "accurate": "Provide accurate and complete information",
+        "secure": "Keep your login credentials secure",
+        "responsible": "Be responsible for all activity under your account"
+      },
+      "acceptableUse": {
+        "title": "3. Acceptable Use",
+        "description": "You may not:",
+        "lawful": "Violate applicable laws or regulations",
+        "interfere": "Interfere with the service or others' use of it",
+        "reverseEngineer": "Reverse engineer or attempt unauthorized access to our systems"
+      },
+      "dataOwnership": {
+        "title": "4. Your Data and Ownership",
+        "description": "You retain all rights to the data you provide or generate through our platform. You grant us a limited license to use this data only for the purposes of:",
+        "operating": "Operating and improving the service",
+        "insights": "Providing insights and analysis to you"
+      },
+      "thirdParty": {
+        "title": "5. Third-Party Integrations",
+        "description": "Our platform connects to third-party platforms (Facebook, TikTok, Shopee, LINE) via their official APIs, and only with your explicit authorization.",
+        "grantingAccess": "By granting access:",
+        "rightToAccess": "You confirm that you have the right to access and share that data",
+        "compliance": "You agree to comply with the respective platform's terms",
+        "revocation": "You understand you can revoke access at any time, though this may limit features",
+        "disclaimer": "We are not responsible for data accuracy or availability from third-party platforms."
+      },
+      "security": {
+        "title": "6. Data Security and Storage",
+        "description": "We implement security measures to protect your data. However, no system is foolproof. We encourage you to maintain your own backups."
+      },
+      "termination": {
+        "title": "7. Termination and Suspension",
+        "description": "We reserve the right to suspend or terminate accounts that violate these Terms. You may terminate your account at any time by contacting support."
+      },
+      "disclaimers": {
+        "title": "8. Disclaimers and Limitations of Liability",
+        "description": "Flexi Business Hub is provided \"as is.\" To the fullest extent permitted by law, we disclaim all warranties and are not liable for indirect or consequential damages, including data loss or lost profits."
+      },
+      "governingLaw": {
+        "title": "9. Governing Law",
+        "description": "These Terms are governed by the laws of the Kingdom of Thailand. Any disputes shall be resolved in Thai courts."
+      }
+    }
   }
 }
