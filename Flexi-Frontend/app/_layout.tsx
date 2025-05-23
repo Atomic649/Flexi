@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import i18n from "@/i18n";
-import mainTopBar from "@/components/MainTopBar";
+import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
 
 // i18n  initialized for web
@@ -108,7 +108,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="(tabs)"
           options={{
-            ...mainTopBar(theme, registeredUsers, businessAvatar, businessName),
+            ...MainTopBar.getTopBarConfig(theme, registeredUsers, businessAvatar, businessName),
             title: "",
           }}
         />

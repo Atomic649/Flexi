@@ -28,6 +28,11 @@ type Expense = {
 
 // Group expenses by date
 const groupByDate = (expenses: Expense[]) => {
+  // Check if expenses is an array and not empty
+  if (!Array.isArray(expenses) || expenses.length === 0) {
+    return {}; // Return empty object if expenses is not an array or is empty
+  }
+
   return expenses.reduce((acc, expense) => {
     const expenseDate = new Date(expense.date);
     const day = expenseDate.getDate().toString().padStart(2, "0");
@@ -58,12 +63,14 @@ const List = () => {
           const response = await CallAPIReport.getAdsExpenseReportsAPI(
             memberId
           );
-          setExpense(response);
+          // Ensure response is an array before setting state
+          setExpense(Array.isArray(response) ? response : []);
         } else {
           console.error("Member ID is null");
         }
       } catch (error) {
         console.error("Error fetching expenses:", error);
+        setExpense([]); // Set empty array on error
       }
     };
 
@@ -77,19 +84,22 @@ const List = () => {
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIReport.getAdsExpenseReportsAPI(memberId);
-        setExpense(response);
+        // Ensure response is an array before setting state
+        setExpense(Array.isArray(response) ? response : []);
       } else {
         console.error("Member ID is null");
       }
     } catch (error) {
       console.error("Error fetching expenses:", error);
+      setExpense([]); // Set empty array on error
     }
     setRefreshing(false);
   };
 
   const handleDelete = async (id: number) => {};
 
-  const groupedExpense = groupByDate(expense);
+  // Safely compute groupedExpense by ensuring expense is an array
+  const groupedExpense = groupByDate(expense || []);
   const today = new Date().toISOString().split("T")[0];
 
   return (
