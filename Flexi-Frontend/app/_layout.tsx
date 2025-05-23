@@ -236,7 +236,26 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        <Stack.Screen
+        name="term"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("term of service"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
+      {/* privacy */}
+      <Stack.Screen
+        name="privacy"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("privacy policy"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       </Stack>
+      {/* term */}
+      
     </SafeAreaView>
   );
 }

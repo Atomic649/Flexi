@@ -22,6 +22,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
+import { router } from "expo-router";
 
 export default function Dashboard() {
   const { theme } = useTheme();
@@ -233,7 +234,7 @@ export default function Dashboard() {
                   color: theme === "dark" ? "#c9c9c9" : "#48453e",
                 }}
                 onPress={() => {
-                  console.log("Policy");
+                  router.push("/term");
                 }}
                 >
                 {t("footer.terms")}
@@ -248,7 +249,7 @@ export default function Dashboard() {
                   color: theme === "dark" ? "#c9c9c9" : "#48453e",
                 }}
                 onPress={() => {
-                  console.log("Private Policy");
+                  router.push("/privacy");
                 }}
                 >
                 {t("footer.privacy")}

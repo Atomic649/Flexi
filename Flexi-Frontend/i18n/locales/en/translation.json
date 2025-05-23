@@ -199,9 +199,11 @@
     "ads": "Ads",
     "organic": "Organic",
     "privacy": {
-      "title": "Privacy",
+      "title": "Privacy&Security",
       "settings": "Privacy Settings",
-      "security": "Security"
+      "security": "Security",
+      "policy": "Privacy Policy",
+      "terms": "Terms of Service"
     },
     "marketing": {
       "title": "Marketing Strategies",
