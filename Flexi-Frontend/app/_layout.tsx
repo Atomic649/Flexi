@@ -104,7 +104,17 @@ function RootLayoutNav() {
         backgroundColor={theme === "dark" ? "#18181b" : "#ffffff"}
         animated={true}
       />
+
       <Stack>
+        {/* landing */}
+        <Stack.Screen
+          name="landing"
+          options={{
+            ...HideTopBar(),
+            title: t("landing.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         <Stack.Screen
           name="(tabs)"
           options={{

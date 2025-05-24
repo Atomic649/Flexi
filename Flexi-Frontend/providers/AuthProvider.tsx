@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
         await removeToken(); // Remove the token
         await removeMemberId(); // Remove the memberId        
-        router.navigate('/login'); // Redirect to login page
+        router.navigate('/landing'); // Redirect to login page
       } finally {
         setLoading(false);
       }
