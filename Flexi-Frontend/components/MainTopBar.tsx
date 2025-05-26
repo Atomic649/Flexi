@@ -55,42 +55,35 @@ const MainTopBar = {
       >
         {/* if web (Dimension of screen >786) show log in and register button and language setting */}
         <TouchableOpacity
+          onPress={() => 
+            // logic to handle sign out
+            AsyncStorage.removeItem("isLoggedIn").then(() => {
+              router.push("/landing");
+            }
+          )
+          }
+          className="mr-5"
+          style={{
+            display: Platform.OS === "web" ? "flex" : "none",
+          }}
+        >
+          <CustomText           
+            style={{
+              color: theme === "dark" ? "#a1a1a1" : "#4e4b47",
+            }}
+            className={`text-base  `}
+          >
+            {i18n.t("common.signOut")}
+          </CustomText>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => router.push("/login")}
           className="mr-5"
           style={{
             display: Platform.OS === "web" ? "flex" : "none",
           }}
         >
-          <CustomText
-            weight="semibold"
-            style={{
-              color: theme === "dark" ? "#a1a1a1" : "#4e4b47",
-            }}
-            className={`text-base font-bold `}
-          >
-            Sign In
-          </CustomText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.push("/register")}
-          className="mr-5"
-          style={{
-            display: Platform.OS === "web" ? "flex" : "none",
-          }}
-        >
-          <CustomText
-            weight="semibold"
-            style={{
-              color: theme === "dark" ? "#18181b" : "#ffffff",
-              backgroundColor: theme === "dark" ? "#07e5c0" : "#07e5c0",
-              paddingVertical: 8,
-              paddingHorizontal: 16,
-              borderRadius: 20,
-            }}
-            className={`text-base font-bold `}
-          >
-            Register
-          </CustomText>
+        
         </TouchableOpacity>
         {/* ปุ่มเปลี่ยนภาษา */}
         <TouchableOpacity

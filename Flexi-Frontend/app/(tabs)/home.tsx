@@ -82,7 +82,7 @@ export default function Dashboard() {
               width: Dimensions.get("window").width > 768 ? "40%" : "100%",
               maxWidth: 650,
               alignSelf: "center",
-              paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.01:0,
+              paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.005:0,
             }}
           >
             <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
@@ -138,128 +138,7 @@ export default function Dashboard() {
             </View>
           </View>
 
-          {/* contact box ending landing page of website */}
-            {Dimensions.get("window").width > 768 && (
-            <View
-              className=" mt-10 "
-              style={{              
-              width: "100%",
-              height: Dimensions.get("window").width > 768 ? Dimensions.get("window").width*0.1 : 150,
-              alignSelf: "center",
-              backgroundColor: theme === "dark" ? "#1c1c1d" : "#86f8df",
-              flexDirection:
-                Dimensions.get("window").width > 768 ? "row" : "column",
-              }}
-            >
-              <View
-              className="w-full  justify-center items-center px-8"
-              style={{
-                flex: 1,
-                paddingTop: 5,
-                height: Dimensions.get("window").width > 768 ? "auto" : "auto",
-                marginBottom: 0,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              >
-              {/* คำอธิบาย */}
-              <CustomText
-                weight="semibold"
-                className="mt-7 text-center text-white"
-                style={{
-                fontSize: Dimensions.get("window").width > 768 ? 14 : 12,
-                lineHeight: 24,
-                color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-              >
-                {t("landing.description")}
-              </CustomText>
-              {/* Slogan */}
-              <View className="relative m-5">
-                <CustomText
-                className=" text-start text-white leading-10"
-                style={{
-                  fontSize: Dimensions.get("window").width > 768 ? 14 : 12,
-                  lineHeight: 24,
-                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-                >
-                {t("automate")}
-                </CustomText>
-              </View>
-              </View>
-              <View className="flex-1 justify-center items-center">
-              {/* contact us*/}
-              <CustomText
-                weight="bold"
-                className="text-center text-white"
-                style={{
-                fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
-                lineHeight: 24,
-                color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-              >
-                {t("footer.contact.title")}
-              </CustomText>
-
-              <CustomText
-                className=" text-start text-white leading-10"
-                style={{
-                fontSize: Dimensions.get("window").width > 768 ? 14 : 13,
-                lineHeight: 24,
-                color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-              >
-                {t("footer.contact.detail")}
-              </CustomText>
-              <View
-                style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                paddingHorizontal: 110,
-                marginTop: 15,
-                marginBottom: 10,
-                gap: 30,
-                }}
-              >
-                <CustomText
-                weight="semibold"
-                className="text-center text-white"
-                style={{
-                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
-                  lineHeight: 24,
-                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-                onPress={() => {
-                  router.push("/term");
-                }}
-                >
-                {t("footer.terms")}
-                </CustomText>
-
-                <CustomText
-                weight="semibold"
-                className="text-center text-white"
-                style={{
-                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
-                  lineHeight: 24,
-                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                }}
-                onPress={() => {
-                  router.push("/privacy");
-                }}
-                >
-                {t("footer.privacy")}
-                </CustomText>
-              </View>
-              <CustomText className={`text-xs font-bold `}>
-                {t("copyright")}
-              </CustomText>
-              </View>
-            </View>
-            )}
+         
         </ScrollView>
 
         {/* Modal for MultiDateCalendar */}

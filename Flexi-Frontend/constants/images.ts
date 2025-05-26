@@ -9,7 +9,7 @@ import empty from "../assets/images/empty.png"
 import daikin from "../assets/images/Daikin.jpg"
 import start from "../assets/images/start.png"
 import loginshopee from "../assets/images/loginshopee.png"
-
+import bg from "../assets/images/bg-web.jpg"
 
 export default { 
     profile, 
@@ -22,5 +22,6 @@ export default {
     empty,
     daikin,
     start,
-    loginshopee
+    loginshopee,
+    bg
 }
