@@ -64,7 +64,7 @@
         "incomplete": "Incomplete data",
         "invalidData": "Please enter valid data",
         "readRequired": "Reading Required",
-        "readPrivacyFirst":"You have to read before accepting."
+        "readPrivacyFirst": "You have to read before accepting."
       },
       "readNow": "Read Now",
       "agree": "I agree to the",
@@ -371,17 +371,9 @@
     "sell": "Storefront",
     "ads": "Ads"
   },
-  "landing": {
-    "description": "Automate your business with our free tools \n Flexi Business Hub",
-    "button": "Get Started"
-  },
+
   "automate": "🚀 Automated order synchronization\n🚀 Real-time advertising report and spending \n🚀 Inventory tracking",
-  "howto": {
-    "title": "🔧 How to Integrate",
-    "content1": " > Social Media > Turn on platform",
-    "content2": "2. login your account and consent to access data for each platform",   
-    "content3": "3. Let's start to use Flexi Business Hub "
-  },
+
   "editProduct": {
     "title": "Edit Product",
     "titlePlaceholder": "Product Title",
@@ -638,14 +630,37 @@
     }
   },
   "roadmap": {
-    "title": "Roadmap",
+    "title": "Our Growth Roadmap",
+    "subtitle": "Join us on our journey as we build the future of business management in Southeast Asia",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "upcoming": "Q3 2025",
+    "future": "Q1 2026",
     "users": "Users",
     "business": "Business Accounts",
     "products": "Products",
-    "ads": "Ad Accounts",
+    "ads": "Ad Platforms",
     "store": "Stores",
     "vision": "Small Team, Big Impact \n 0 Marketing Budget \n Possible 0 Funding",
-    "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future"
+    "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future",
+    "userCounter": "Registered Users",
+    "growthRate": "Growing by 23% monthly",
+    "phase1": {
+      "title": "Phase 1: Foundation",
+      "description": "Core platform development, first 5 product categories, and 100+ active users milestone"
+    },
+    "phase2": {
+      "title": "Phase 2: Market Expansion",
+      "description": "Multi-business support, expanded platform integrations, and reaching 500 active users"
+    },
+    "phase3": {
+      "title": "Phase 3: Ecosystem Growth",
+      "description": "Multi-store management, advanced inventory systems, expanded payment options"
+    },
+    "phase4": {
+      "title": "Phase 4: Regional Leadership",
+      "description": "Advanced marketing suite, AI-powered analytics, cross-border payment solutions"
+    }
   },
   "shop": {
     "title": "Installation Air condioner for Large System \n Factory, Office, Building , Hotel, Resort, Restaurant \n Tel : 065-4982496",
@@ -785,6 +800,50 @@
         "title": "9. Governing Law",
         "description": "These Terms are governed by the laws of the Kingdom of Thailand. Any disputes shall be resolved in Thai courts."
       }
+    }
+  },
+  "landing": {
+    "title": "Minimize Your Task \nMaximize Your Profit ",
+    "subtitle": "The all-in-one business management solution for modern entrepreneurs and growing businesses",
+    "description": "Automate your business with our free tools \n Flexi Business Hub",
+    "button": "Get Started",
+    "feature1": {
+      "title": "Smart Financial Dashboard",
+      "description": "Get real-time insights into your business performance make data-driven decisions with our AI-powered dashboard. Track sales, expenses, and ad performance all platforms in one place."
+    },
+    "feature2": {
+      "title": "Ad Overspend Alerts",
+      "description": "Get notified when your ads aren't performing or when budgets exceed expectations"
+    },
+    "feature3": {
+      "title": "Secure and Reliable",
+      "description": "Your data security is our top priority. We use industry-leading encryption and security measures to protect your business information."
+    },
+    "feature4": {
+      "title": "Automated Expense Management",
+      "description": "Easily manage your business expenses with our automated tools. Upload bank statements, categorize expenses, and generate tax-ready reports."
+    },
+    "howto": {
+      "title": "🔧 How to Integrate",
+      "content1": " > Social Media > Turn on platform",
+      "description1": "Getting started with Flexi is simple. Register your account and connect your social media platforms.",
+      "content2": "2. login your account and consent to access data for each platform",
+      "description2": "Flexi will Integrate your e-commerce platforms, payment systems, and marketing tools. Our system automatically synchronizes your data across all channels.",
+      "content3": "3. Let's start to use Flexi Business Hub ",
+      "description3": "Monitor your business performance through comprehensive dashboards and detailed analytics.Make informed decisions by tracking key metrics, receiving intelligent insights, and utilizing our reporting tools."
+    },
+    "vision": {
+      "title": "Our Business Vision",
+      "subtitle": "To empower small businesses in Southeast Asia with the tools they need to thrive in the digital age. We believe in making advanced business management accessible to everyone, regardless of size or budget.",
+      "title1": "Data-Driven Growth",
+      "description1": "Empowering businesses with actionable insights to make informed decisions and achieve sustainable growth.",
+      "title2": "Global Reach, Local Touch",
+      "description2": "Adapting global best practices while understanding regional market nuances in Southeast Asia.",
+      "title3": "Business Integrity",
+      "description3": "Building trust through transparent business practices and reliable system performance."
+    },
+    "footer": {
+      "subtitle": "Transforming how small businesses manage their finances, track performance, and grow profitably in the digital economy."
     }
   }
 }

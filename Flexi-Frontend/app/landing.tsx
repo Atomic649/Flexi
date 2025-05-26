@@ -137,6 +137,7 @@ export default function Landing() {
           </View>
         </TouchableOpacity>        
         )}
+        {/* Welcome Content */}
         {!isDesktop && (
            <View
            className="flex justify-start items-center px-8"
@@ -191,7 +192,6 @@ export default function Landing() {
          </View>
           
         )}
-
 
 
 
@@ -311,9 +311,8 @@ export default function Landing() {
                       textShadowRadius: 10,
                     }}
                   >
-                    {t("Minimize Your Task")}
-                    {"\n"}
-                    {t("Maximize Your Profit")}{" "}
+                    {t("landing.title")}
+                    
                   </CustomText>
                 </View>
 
@@ -327,9 +326,7 @@ export default function Landing() {
                     maxWidth: 600,
                   }}
                 >
-                  {t(
-                    "The all-in-one business management solution for modern entrepreneurs and growing businesses"
-                  )}
+                  {t("landing.subtitle") }
                 </CustomText>
 
                 {/* Call to action buttons */}
@@ -383,7 +380,7 @@ export default function Landing() {
                         color: textPrimaryColor,
                       }}
                     >
-                      Smart Financial Dashboard
+                      {t("landing.feature1.title")}
                     </CustomText>
                     <CustomText
                       style={{
@@ -391,8 +388,8 @@ export default function Landing() {
                         lineHeight: 22,
                       }}
                     >
-                      Visualize daily, monthly, and yearly profit & loss with
-                      intuitive charts and summaries.
+                      {t("landing.feature1.description") ||
+                        "Track your sales performance across multiple platforms in real-time, ensuring you never miss a beat."}
                     </CustomText>
                   </CardContent>
                 </Card>
@@ -414,7 +411,7 @@ export default function Landing() {
                         color: textPrimaryColor,
                       }}
                     >
-                      Ad Overspend Alerts
+                      {t("landing.feature2.title") }
                     </CustomText>
                     <CustomText
                       style={{
@@ -422,8 +419,7 @@ export default function Landing() {
                         lineHeight: 22,
                       }}
                     >
-                      Get notified when your ads aren't performing or when
-                      budgets exceed expectations.
+                      {t("landing.feature2.description")}
                     </CustomText>
                   </CardContent>
                 </Card>
@@ -445,7 +441,7 @@ export default function Landing() {
                         color: textPrimaryColor,
                       }}
                     >
-                      Secure & Compliant
+                      {t("landing.feature3.title") }
                     </CustomText>
                     <CustomText
                       style={{
@@ -453,8 +449,7 @@ export default function Landing() {
                         lineHeight: 22,
                       }}
                     >
-                      We comply with Thai privacy laws and only access
-                      third-party data with your consent.
+                      {t("landing.feature3.description") }
                     </CustomText>
                   </CardContent>
                 </Card>
@@ -476,7 +471,7 @@ export default function Landing() {
                         color: textPrimaryColor,
                       }}
                     >
-                      Built for Southeast Asia
+                      {t("landing.feature4.title") }
                     </CustomText>
                     <CustomText
                       style={{
@@ -484,8 +479,7 @@ export default function Landing() {
                         lineHeight: 22,
                       }}
                     >
-                      Supports multiple platforms common in the region with
-                      local compliance in mind.
+                      {t("landing.feature4.description") }
                     </CustomText>
                   </CardContent>
                 </Card>
@@ -512,7 +506,7 @@ export default function Landing() {
                   color: textPrimaryColor,
                 }}
               >
-                {t("howto.title") || "How Flexi Works"}
+                {t("landing.howto.title") || "How Flexi Works"}
               </CustomText>
 
               <View
@@ -555,7 +549,7 @@ export default function Landing() {
                         marginBottom: 16,
                       }}
                     >
-                      {t(t("howto.content1"))}
+                      {t(t("landing.howto.content1"))}
                     </CustomText>
                   </View>
                   <CustomText
@@ -566,9 +560,7 @@ export default function Landing() {
                       lineHeight: 24,
                     }}
                   >
-                    {t(
-                      "Getting started with Flexi is simple. Register your account and connect your business platforms."
-                    )}
+                    {t("landing.howto.description1") }
                   </CustomText>
 
                   {/* How to 2 */}
@@ -580,7 +572,7 @@ export default function Landing() {
                       marginBottom: 16,
                     }}
                   >
-                    {t("howto.content2")}
+                    {t("landing.howto.content2")}
                   </CustomText>
 
                   <CustomText
@@ -592,7 +584,7 @@ export default function Landing() {
                     }}
                   >
                     {t(
-                      "Flexi will Integrate your e-commerce platforms, payment systems, and marketing tools. Our system automatically synchronizes your data across all channels."
+                      "landing.howto.description2",
                     )}
                   </CustomText>
 
@@ -604,7 +596,7 @@ export default function Landing() {
                       marginBottom: 16,
                     }}
                   >
-                    {t("howto.content3")}
+                    {t("landing.howto.content3")}
                   </CustomText>
                   <CustomText
                     style={{
@@ -614,9 +606,7 @@ export default function Landing() {
                       lineHeight: 24,
                     }}
                   >
-                    {t(
-                      "Monitor your business performance through comprehensive dashboards and detailed analytics.Make informed decisions by tracking key metrics, receiving intelligent insights, and utilizing our reporting tools."
-                    )}
+                    {t("landing.howto.description3") }
                   </CustomText>
                 </View>
 
@@ -641,7 +631,7 @@ export default function Landing() {
               </View>
             </View>
           </View>
-        )}{" "}
+        )}
         {/* Expense Section*/}
         {isDesktop && (
           <View
@@ -1607,7 +1597,7 @@ export default function Landing() {
                   color: textPrimaryColor,
                 }}
               >
-                {t("vision.title") || "Our Business Vision"}
+                {t("landing.vision.title") || "Our Business Vision"}
               </CustomText>
 
               <CustomText
@@ -1619,10 +1609,7 @@ export default function Landing() {
                   alignSelf: "center",
                 }}
               >
-                {t(
-                  "vision.subtitle",
-                  "Building innovative solutions for modern business challenges"
-                )}
+                {t("landing.vision.subtitle") || "Building innovative solutions for modern business challenges"}
               </CustomText>
 
               <View
@@ -1667,14 +1654,13 @@ export default function Landing() {
                         marginBottom: 12,
                       }}
                     >
-                      {t(
-                        `vision.title${item}`,
-                        item === 1
+                      {t(`landing.vision.title${item}`) || 
+                        (item === 1
                           ? "Data-Driven Growth"
                           : item === 2
                           ? "Global Reach, Local Touch"
-                          : "Business Integrity"
-                      )}
+                          : "Business Integrity")
+                      }
                     </CustomText>
 
                     <CustomText
@@ -1685,14 +1671,13 @@ export default function Landing() {
                         lineHeight: 22,
                       }}
                     >
-                      {t(
-                        `vision.description${item}`,
-                        item === 1
+                      {t(`landing.vision.description${item}`) || 
+                        (item === 1
                           ? "Empowering businesses with actionable insights to make informed decisions and achieve sustainable growth."
                           : item === 2
                           ? "Adapting global best practices while understanding regional market nuances in Southeast Asia."
-                          : "Building trust through transparent business practices and reliable system performance."
-                      )}
+                          : "Building trust through transparent business practices and reliable system performance.")
+                      }
                     </CustomText>
                   </View>
                 ))}
@@ -1757,8 +1742,7 @@ export default function Landing() {
                     lineHeight: 24,
                   }}
                 >
-                  The all-in-one business management solution for modern
-                  entrepreneurs and growing businesses
+                  {t("landing.footer.subtitle") }
                 </CustomText>
               </View>
 
@@ -1809,8 +1793,7 @@ export default function Landing() {
                     <CustomText
                       style={{ color: textSecondaryColor, lineHeight: 22 }}
                     >
-                      {t("footer.contact.address") ||
-                        "101 Business Tower, Sukhumvit Road, Bangkok 10110, Thailand"}
+                      {t("footer.contact.address") }
                     </CustomText>
                   </View>
                 </View>
