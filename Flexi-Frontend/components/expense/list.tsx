@@ -236,7 +236,7 @@ const List = () => {
                     } w-96`} // Increased width from w-64 to w-96 for Description
                     numberOfLines={1}
                   >
-                    {expense.desc}
+                    {expense.type === "ads" ? expense.note : expense.desc}
                   </Text>
                   <Text
                     className={`${
@@ -244,7 +244,7 @@ const List = () => {
                     } w-64`}
                     numberOfLines={1}
                   >
-                    {expense.note}
+                    {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา": expense.note}
                   </Text>
                   <Text
                     className={`w-36 font-semibold`}
@@ -310,7 +310,7 @@ const List = () => {
                 NoteColor={theme === "dark" ? "#868686" : "#656360"}
                 DescColor={theme === "dark" ? "#868686" : "#656360"}
                 onDelete={handleDelete}
-                bgExpenseDetail={theme === "dark" ? "#000000aa" : "#bfbfbfaa"}
+                bgExpenseDetail={theme === "dark" ? "#000000ff" : "#bfbfbfaa"}
                 titleColor={theme === "dark" ? "#818181" : "#68655f"}
               />
             ))}

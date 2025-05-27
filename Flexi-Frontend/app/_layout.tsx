@@ -263,8 +263,16 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* expense detail */}
+      <Stack.Screen
+        name="expenseDetailScreen"
+        options={{
+          headerShown: false, // Hide the header for this screen
+        }}
+      />
       </Stack>
-      {/* term */}
+     
+
       
     </SafeAreaView>
   );
