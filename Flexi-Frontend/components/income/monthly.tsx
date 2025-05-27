@@ -84,17 +84,25 @@ const monthly = () => {
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
           width: Dimensions.get("window").width > 768  ? "60%" : "100%",
+          maxWidth: 800,
           alignSelf: "center",
-          paddingTop: Platform.OS === "web" ? "1.5%" : 0,
+         // paddingTop: Platform.OS === "web" ? "1.5%" : 0,
         }}
       >
         <View
           className={`flex flex-col items-end `}
           style={{
-            backgroundColor: theme === "dark" ? "#adacac" : "#d0cfcb",
+            backgroundColor:
+              Platform.OS === "web"
+          ? "transparent"
+          : theme === "dark"
+          ? "#adacac"
+          : "#d0cfcb",
+          borderBottomWidth: 1,
+          borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
           }}
         >
-          <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 ">
+          <View className="flex flex-row m-3 items-start justify-evenly w-full pl-5 ">
             <View className="flex flex-col items-start w-1/6">
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.month")}

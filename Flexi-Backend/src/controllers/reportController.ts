@@ -48,15 +48,16 @@ const dailyReport = async (req: Request, res: Response) => {
     }, {});
 
     // Group by date and sum adsCost
-    const dailyAdsCost = adsCost.reduce((acc: any, adsCost) => {
-      const date = adsCost.date.toISOString().split("T")[0];
+    // Fix: Split the adsCost entries first and then sum them properly
+    const dailyAdsCost = adsCost.reduce((acc: any, ad) => {
+      const date = ad.date.toISOString().split("T")[0];
       if (!acc[date]) {
         acc[date] = {
           date: date,
           adsCost: 0,
         };
       }
-      acc[date].adsCost += adsCost.adsCost;
+      acc[date].adsCost += Number(ad.adsCost);
       return acc;
     }, {});
 

@@ -506,7 +506,12 @@
       "avr": "AVR",
       "total": "Total",
       "adCost": "AdCost",
-      "percentAd": "%Ad"
+      "percentAd": "%Ad",
+      "customer": "Customer",
+      "product": "Product",
+      "price": "Price",
+      "platform": "Platform",
+      "delete": "Delete"
     }
   },
   "expense": {
@@ -523,7 +528,11 @@
       "date": "Date",
       "notedesc": "Note/Description",
       "amount": "Amount",
-      "pdferror": "Duplicate data found \n or file cannot be uploaded"
+      "pdferror": "Duplicate data found \n or file cannot be uploaded",
+      "type": "Type",
+      "description": "Description",
+      "note": "Note",
+      "delete": "Delete"
     },
     "alerts": {
       "successTitle": "Success",

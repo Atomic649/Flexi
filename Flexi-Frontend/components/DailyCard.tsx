@@ -25,7 +25,7 @@ export default function DailyCard({
     <View className="flex ">
       <View className={`flex flex-col items-end `} style={{ backgroundColor: tableColor,
         borderBottomWidth: 1,
-        borderColor: "rgba(92, 91, 91, 0.45)",        
+        borderColor: "rgba(124, 113, 113, 0.126)",        
         borderStyle: "solid",
         marginTop: 5,
        }}>

@@ -97,9 +97,6 @@ const PlatformCard = ({
           maxWidth: 310,
           maxHeight: 200,
 
-          // paddingTop: cardWidth*0.2,
-          // paddingBottom: cardWidth*0.2,
-          //gap: Platform.OS === "web" ? "4%" : 0,
         }} // Dynamically set width and height
         className={`${
           theme === "dark" ? "bg-[#27272a]" : "bg-white"
