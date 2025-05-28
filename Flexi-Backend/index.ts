@@ -133,38 +133,48 @@ app.use("/pdf", pdfRoutes);
 app.use("/store", storeRoutes);
 
 
-// --------------START SERVER-----------------
-//-- Up to .env file "development" and "production" mode
+// start server with out SSL
 const port = process.env.PORT || 3000;
+app.listen(port, (err?: Error) => {
+  if (err) {
+    console.error("Failed to start server:", err);
+  } else {
+    console.log(`Server started on port ${port}`);
+  }
+});
 
-if (process.env.NODE_ENV === "development") {
-  app.use(cors({ origin: "*" })); // Allow all origins in development
-} else {
-  app.use(cors()); // Use default CORS settings in production
-}
+// // --------------START SERVER-----------------
+// //-- Up to .env file "development" and "production" mode
+// const port = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV === "production") {
-  // Load SSL certificates
-  const sslOptions = {
-    key: fs.readFileSync("./ssl/key.pem"),
-    cert: fs.readFileSync("./ssl/cert.pem"),
-  };
+// if (process.env.NODE_ENV === "development") {
+//   app.use(cors({ origin: "*" })); // Allow all origins in development
+// } else {
+//   app.use(cors()); // Use default CORS settings in production
+// }
 
-  // Start HTTPS server in production
-  https.createServer(sslOptions, app).listen(port, (err?: Error) => {
-    if (err) {
-      console.error("Failed to start HTTPS server:", err);
-    } else {
-      console.log(`Server started on HTTPS port ${port}`);
-    }
-  });
-} else {
-  // Start HTTP server in development
-  app.listen(port, (err?: Error) => {
-    if (err) {
-      console.error("Failed to start HTTP server:", err);
-    } else {
-      console.log(`Server started on HTTP port ${port}`);
-    }
-  });
-}
+// if (process.env.NODE_ENV === "production") {
+//   // Load SSL certificates
+//   const sslOptions = {
+//     key: fs.readFileSync("./ssl/key.pem"),
+//     cert: fs.readFileSync("./ssl/cert.pem"),
+//   };
+
+//   // Start HTTPS server in production
+//   https.createServer(sslOptions, app).listen(port, (err?: Error) => {
+//     if (err) {
+//       console.error("Failed to start HTTPS server:", err);
+//     } else {
+//       console.log(`Server started on HTTPS port ${port}`);
+//     }
+//   });
+// } else {
+//   // Start HTTP server in development
+//   app.listen(port, (err?: Error) => {
+//     if (err) {
+//       console.error("Failed to start HTTP server:", err);
+//     } else {
+//       console.log(`Server started on HTTP port ${port}`);
+//     }
+//   });
+// }
