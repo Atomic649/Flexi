@@ -104,7 +104,7 @@ export default function ExpenseCard({
                 }
               });
             } else {
-              setDetailVisible(true);
+              // setDetailVisible(true);
             }
           }}
         >

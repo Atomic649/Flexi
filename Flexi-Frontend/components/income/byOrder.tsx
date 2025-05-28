@@ -280,8 +280,10 @@ const ByOrder = () => {
                     {bill.amount} {t("common.pcs")}
                   </Text>
                   <Text
-                    className={`w-28 font-semibold`}
-                    style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
+                    className={`${
+                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                    } w-28 font-bold `}
+                    // style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
                   >
                     +{bill.price}
                   </Text>
@@ -339,7 +341,7 @@ const ByOrder = () => {
                 ProductNameColor = {theme === "dark" ? "#e98103" : "#ffa718"}
                 price={bill.price}
                 purchaseAt={bill.purchaseAt}
-                CardColor={theme === "dark" ? "#1d1d1d" : "#24232108"}
+                CardColor={theme === "dark" ? "#232425" : "#24232108"}
                 onDelete={handleDelete}
                 PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                 cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}

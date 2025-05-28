@@ -107,7 +107,7 @@ export default function EditAds() {
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
               // go to ads page
-              router.replace("(tabs)/ads");
+              router.replace("/ads");
             },
           },
         ],

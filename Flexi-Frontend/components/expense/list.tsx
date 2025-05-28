@@ -21,6 +21,7 @@ import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
+import { useRouter } from "expo-router";
 
 type Expense = {
   id: number;
@@ -65,6 +66,7 @@ const List = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [expense, setExpense] = useState<Expense[]>([]);
   const isDesktop = Platform.OS === "web";
+  const router = useRouter();
 
   // Table header text style
   const headerTextStyle: TextStyle = {
@@ -209,62 +211,85 @@ const List = () => {
               style={{ maxHeight: Dimensions.get("window").height * 0.8 }}
             >
               {allExpenses.map((expense) => (
-                <View
+                <TouchableOpacity
                   key={expense.id}
-                  className="flex flex-row border-b py-3"
-                  style={{
-                    borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
-                  }}
+                  onPress={() => {
+                    if (expense.type === "expense") {
+                      router.push({
+                        pathname: "/expenseDetailScreen",
+                        params: {
+                          id: expense.id,
+                          date: expense.date,
+                          expenses: expense.expenses,
+                          note: expense.note,
+                          desc: expense.desc,
+                          image: expense.image,
+                          type: expense.type
+                        }
+                      });
+                    } else {
+                      globalThis.console.warn("Edit functionality not available for ads expenses");
+                    }
+                  }} // Navigate to edit screen
                 >
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-36`}
+                  <View
+                    className="flex flex-row border-b py-3"
+                    style={{
+                      borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
+                    }}
                   >
-                    {formatDate(expense.date)}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-36`}
-                  >
-                    {expense.type}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-96`} // Increased width from w-64 to w-96 for Description
-                    numberOfLines={1}
-                  >
-                    {expense.type === "ads" ? expense.note : expense.desc}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-64`}
-                    numberOfLines={1}
-                  >
-                    {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา": expense.note}
-                  </Text>
-                  <Text
-                    className={`w-36 font-semibold`}
-                    style={{ color: getExpenseTextColor(expense.type) }}
-                  >
-                    -{expense.expenses}
-                  </Text>
-                  <View className="flex flex-row w-24">
-                    <TouchableOpacity
-                      onPress={() => handleDelete(expense.id)}
-                      className="mr-3"
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-36`}
                     >
-                      <Ionicons
-                        name="trash"
-                        size={20}
-                        color={theme === "dark" ? "#999999" : "#9e9d9d"}
-                      />
-                    </TouchableOpacity>
+                      {formatDate(expense.date)}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-36`}
+                    >
+                      {expense.type}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-96`} // Increased width from w-64 to w-96 for Description
+                      numberOfLines={1}
+                    >
+                      {expense.type === "ads" ? expense.note : expense.desc}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-64`}
+                      numberOfLines={1}
+                    >
+                      {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา": expense.note}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-36 font-bold`}
+                      //style={{ color: getExpenseTextColor(expense.type) }}
+                    >
+                      -{expense.expenses}
+                    </Text>
+                    <View className="flex flex-row w-24">
+                      <TouchableOpacity
+                        onPress={() => handleDelete(expense.id)}
+                        className="mr-3"
+                      >
+                        <Ionicons
+                          name="trash"
+                          size={20}
+                          color={theme === "dark" ? "#999999" : "#9e9d9d"}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
