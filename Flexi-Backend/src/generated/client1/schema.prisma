@@ -225,7 +225,7 @@ model Bill {
 
   // Relation 
   productList Product     @relation(fields: [product], references: [name])
-  memberId    String      @unique
+  memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])

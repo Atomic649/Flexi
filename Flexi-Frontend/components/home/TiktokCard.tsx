@@ -10,8 +10,8 @@ const TiktokCard = () => {
       percentAds="35"
       average="256"     
       otherStyles=""
-      iconType= "FontAwesome"
-      icon= "music"
+      iconType= "Ionicons"
+      icon= "logo-tiktok"
       iconSize= {22}
     />
   );

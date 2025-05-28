@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Dimensions,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -17,13 +18,14 @@ import LineCard from "@/components/home/LineCard";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import DashboardAds from "@/components/home/DashboardAds";
 import { LinearGradient } from "expo-linear-gradient";
 import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
-import { router } from "expo-router";
+import { images } from "@/constants";
 
-export default function Dashboard() {
+export default function Howto() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -68,23 +70,61 @@ export default function Dashboard() {
       colors={
         theme === "dark"
           ? ["#18181b", "#18181b"]
-          : ["#f7f7f7", "#a6efe4", "#ffffff"]
+          : ["#f7f7f7", "#d8f8f3", "#ffffff"]
       }
       style={{ flex: 1 }}
     >
       <SafeAreaView
         className="h-full "
-        style={Platform.OS === "web" ? { paddingTop: 80 } : {}}
+        
       >
         <ScrollView>
+          {/* Dashboard*/}
+          <View
+            className="w-full  justify-center items-center px-8"
+            style={{
+              flex: 1,
+              paddingTop: 10,
+              height: Dimensions.get("window").width > 768 ? "auto" : "auto",
+              marginBottom: 0,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {/* คำอธิบาย */}
+            <CustomText
+              weight="bold"
+              className="mt-7 text-center text-white"
+              style={{
+                fontSize: Dimensions.get("window").width > 768 ? 18 : 14,
+                lineHeight: 24,
+                color: theme === "dark" ? "#c9c9c9" : "#48453e",
+              }}
+            >
+              {t("landing.description")}
+            </CustomText>
+            {/* Slogan */}
+            <View className="relative m-5">
+              <CustomText
+                className=" text-start text-white leading-10"
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 18 : 13,
+                  lineHeight: 24,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("automate")}
+              </CustomText>
+            </View>
+          </View>
+
           <View
             style={{
               width: Dimensions.get("window").width > 768 ? "40%" : "100%",
-              maxWidth: 650,
               alignSelf: "center",
-              paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.005:0,
             }}
           >
+            {/* Filter */}
             <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
               <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>
                 <View
@@ -120,8 +160,9 @@ export default function Dashboard() {
                 />
               </View>
             </View>
+            {/* Totalsale */}
             <TotalSale />
-
+            {/* All Platform Card*/}
             <View className="flex-1 flex-wrap  flex-row ">
               <View className="w-1/2 pl-3 ">
                 <FacebookCard />
@@ -135,10 +176,96 @@ export default function Dashboard() {
               <View className="w-1/2 p-0">
                 <LineCard />
               </View>
+
+              {/* <DashboardAds /> */}
             </View>
           </View>
 
-         
+          <View
+            className=" pt-5 px-2"
+            style={{
+              flex: 1,
+              height: Dimensions.get("window").width > 768 ? "auto" : "auto",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              paddingBottom: 20,
+              marginBottom: Dimensions.get("window").width > 768 ? 30 : 10,
+            }}
+          >
+            <View className="relative">
+              <CustomText
+                weight="bold"
+                className=" text-center text-white leading-10"
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("howto.title")}
+              </CustomText>
+              <CustomText
+                weight="regular"
+                className=" text-start text-white  "
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("howto.content1")}
+              </CustomText>
+              {/* Image of get start */}
+              <Image
+                source={images.start}
+                style={{
+                  width: Dimensions.get("window").width > 768 ? 600 : 350,
+                  height: Dimensions.get("window").width > 768 ? 300 : 200,
+                  alignSelf: "center",
+                }}
+                resizeMode="contain"
+              />
+
+              <CustomText
+                weight="regular"
+                className=" text-start text-white leading-10  "
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("howto.content2")}
+              </CustomText>
+              <Image
+                source={images.loginshopee}
+                style={{
+                  width: Dimensions.get("window").width > 768 ? 600 : 350,
+                  height: Dimensions.get("window").width > 768 ? 500 : 200,
+                  marginTop: 10,
+                  marginBottom: 20,
+                }}
+                resizeMode="contain"
+              />
+               <CustomText
+                weight="regular"
+                className=" text-start text-white leading-10  "
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("howto.content3")}
+              </CustomText>
+              <CustomText
+                weight="regular"
+                className=" text-start text-white leading-10  "
+                style={{
+                  fontSize: Dimensions.get("window").width > 768 ? 16 : 14,
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                }}
+              >
+                {t("howto.content4")}
+              </CustomText>
+            </View>
+          </View>
         </ScrollView>
 
         {/* Modal for MultiDateCalendar */}

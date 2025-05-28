@@ -19,15 +19,15 @@ const TotalSale = () => {
 
   // Dynamic font sizes
   const baseFontSize =
-    Platform.OS === "web"
-      ? Math.min(width * 0.085, 18)
+    Dimensions.get("window").width > 768 
+      ? Math.min(width * 0.080, 21)
       : Math.min(width * 0.085, 16); // Base size for mobile, max 20
   const smallFontSize =
-    Platform.OS === "web"
+    Dimensions.get("window").width > 768 
       ? Math.min(baseFontSize * 0.8, 18)
       : Math.min(baseFontSize * 0.8, 14); // Max 14
   const largeFontSize =
-    Platform.OS === "web"
+    Dimensions.get("window").width > 768 
       ? Math.min(baseFontSize * 1.05, 28)
       : Math.min(baseFontSize * 1.05, 28); // Max 28
 
@@ -49,6 +49,7 @@ const TotalSale = () => {
           alignItems: "center",
           width: "100%",
           height: isPortrait ? width * 0.42 : width * 0.15,
+          maxHeight: 260,
           borderRadius: 16,
           borderWidth: 1,
           borderColor: theme === "dark" ? "#3f3f46" : "#61fff2",
@@ -65,9 +66,9 @@ const TotalSale = () => {
         >
           <CircularChart
             percentage={35}
-            size={
-              Dimensions.get("window").width > 1080 ? width * 0.086 : undefined
-            }
+            // size={
+            //   Dimensions.get("window").width > 1080 ? 50 : undefined
+            // }
           />
         </View>
 
@@ -184,10 +185,10 @@ const TotalSale = () => {
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               marginTop: 12,
               paddingHorizontal: 2,
-              gap: "45%",
+              gap: 50,
             }}
           >
             {/* ROI */}

@@ -179,3 +179,6 @@ ssh -i flexibusinesshub.pem ubuntu@<EC2_PUBLIC_IP>
 
 sudo apt-get update
 sudo apt-get install qpdf
+
+### migrate database
+docker exec -it nodejsexpress npm run prisma:migrate:db1

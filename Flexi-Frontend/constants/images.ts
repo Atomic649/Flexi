@@ -7,7 +7,9 @@ import adsline from "../assets/images/ads-line.jpg"
 import adsscb from "../assets/images/ads-scb.jpg"
 import empty from "../assets/images/empty.png"
 import daikin from "../assets/images/Daikin.jpg"
-
+import start from "../assets/images/start.png"
+import loginshopee from "../assets/images/loginshopee.png"
+import bg from "../assets/images/bg-web.jpg"
 
 export default { 
     profile, 
@@ -18,5 +20,8 @@ export default {
     adsline,
     adsscb,
     empty,
-    daikin
+    daikin,
+    start,
+    loginshopee,
+    bg
 }

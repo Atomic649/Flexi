@@ -248,7 +248,9 @@ export default function Setting() {
         <View
           className={`px-4 pt-3 pb-5`}
           style={
-            Dimensions.get("window").width > 768 ? { alignSelf: "center", width: "60%" } : {}
+            Dimensions.get("window").width > 768
+              ? { alignSelf: "center", width: "60%" }
+              : {}
           }
         >
           {/* Social Media Platform */}
@@ -436,11 +438,23 @@ export default function Setting() {
           {/* Privacy */}
           <Section title={t("settings.privacy.title")}>
             <View>
-              <SectionItem icon="lock" text={t("settings.privacy.settings")} />
-              <Divider />
+              {/* <SectionItem icon="lock" text={t("settings.privacy.settings")} />
+              <Divider /> */}
               <SectionItem
                 icon="shield"
                 text={t("settings.privacy.security")}
+              />
+              <Divider />
+              <SectionItem
+                icon="lock"
+                text={t("settings.privacy.policy")}
+                onPress={() => router.push("/privacy")}
+              />
+              <Divider />
+              <SectionItem
+                icon="file-text"
+                text={t("settings.privacy.terms")}
+                onPress={() => router.push("/term")}
               />
             </View>
           </Section>

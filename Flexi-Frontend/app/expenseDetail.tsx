@@ -158,7 +158,7 @@ export default function ExpenseDetail({
     <Modal
       visible={visible}
       transparent={true}
-      animationType="slide"
+      animationType="none"
       onRequestClose={onClose}
     >
       <TouchableOpacity

@@ -10,6 +10,7 @@ import {
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import icons from "@/constants/icons";
+import { useRouter } from "expo-router";
 
 const formatDate = (date: string) => {
   return date.replace("T", "   ").replace(/:\d{2}\.\d{3}Z$/, "");
@@ -33,6 +34,7 @@ export default function ExpenseCard({
   titleColor,
 }: any) {
   const [detailVisible, setDetailVisible] = useState(false);
+  const router = useRouter();
 
   const getExpenseTextColor = (type: string) => {
     switch (type) {
@@ -87,7 +89,24 @@ export default function ExpenseCard({
         key={id}
       >
         <TouchableOpacity
-          onPress={() => setDetailVisible(true)} // Open ExpenseDetail modal
+          onPress={() => {
+            if (type === "expense") {
+              router.push({
+                pathname: "/expenseDetailScreen",
+                params: {
+                  id,
+                  date,
+                  expenses,
+                  note,
+                  desc,
+                  image,
+                  type
+                }
+              });
+            } else {
+              // setDetailVisible(true);
+            }
+          }}
         >
           <View
             className={`flex flex-col pt-3 pb-4 px-4 pe-16 my-1 rounded-se-md`}
@@ -109,14 +128,14 @@ export default function ExpenseCard({
                     style={{ color: DescColor }}
                     numberOfLines={1}
                   >
-                    {desc}
+                    {type === "ads" ? note : desc}
                   </Text>
                   <Text
                     className="text-base font-psemibold"
                     style={{ color: NoteColor }}
                     numberOfLines={1}
                   >
-                    {note}
+                    {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
                   </Text>
                 </View>
               </View>
@@ -147,12 +166,12 @@ export default function ExpenseCard({
         </TouchableOpacity>
       </View>
 
-      {/* ExpenseDetail Modal */}
+      {/* ExpenseDetail Modal for ads */}
       {detailVisible && (
         <Modal
           visible={detailVisible}
           transparent={true}
-          animationType="slide"
+          animationType="none"
           onRequestClose={() => setDetailVisible(false)}
         >
           <TouchableOpacity
@@ -171,7 +190,7 @@ export default function ExpenseCard({
                 backgroundColor: getCardColor(type),
                 borderRadius: 10,
                 width: Platform.OS === "web" ? "50%" : "90%",
-                maxHeight: image? "75%": "23%",
+                maxHeight: image ? "75%" : "23%",
                 justifyContent: "flex-start",
                 alignItems: "center",
               }}
@@ -226,7 +245,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                  {desc}
+                    {type === "ads" ? note : desc}
                 </Text>
                 <Text
                   style={{
@@ -236,7 +255,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                  {note}
+                 {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
                 </Text>
                 <Text
                   style={{
@@ -251,10 +270,20 @@ export default function ExpenseCard({
                 {/* Icon Command */}
                 <View className="w-full flex-row  justify-between pt-2 px-6">
                   <TouchableOpacity onPress={handleDelete}>
-                    <Ionicons name="trash" size={26} color="#999999" className="p-2" />
+                    <Ionicons
+                      name="trash"
+                      size={26}
+                      color="#999999"
+                      className="p-2"
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleEdit}>
-                    <Ionicons name="pencil" size={26} color="#999999" className="p-2"  />
+                    <Ionicons
+                      name="pencil"
+                      size={26}
+                      color="#999999"
+                      className="p-2"
+                    />
                   </TouchableOpacity>
                 </View>
               </View>

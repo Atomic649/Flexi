@@ -39,9 +39,9 @@ const PlatformCard = ({
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
     return (
       <IconComponent
-        name={icon}
-        size={cardWidth * (Platform.OS === "web" ? 0.08 : 0.115)}
-        color={theme === "dark" ? "#27272a" : "#ffffff"}
+      name={icon}
+      size={Math.min(cardWidth * (Platform.OS === "web" ? 0.08 : 0.115), 24)} // Max size set to 24
+      color={theme === "dark" ? "#27272a" : "#ffffff"}
       />
     );
   };
@@ -76,12 +76,15 @@ const PlatformCard = ({
             justify-center          
           `}
           style={{
-            width: cardWidth * (Platform.OS === "web" ? 0.19 : 0.23),
+            width: cardWidth * (Platform.OS === "web" ? 0.19 : 0.23),      
             height: cardWidth * (Platform.OS === "web" ? 0.19 : 0.23),
+            maxWidth: 60,
+            maxHeight: 60,
             zIndex: 9999, // Ensure highest stacking order
             position: "absolute", // Explicitly set position
-            top: -cardWidth * (Platform.OS === "web" ? 0.01 : 0.01), // Adjust position
-            right: cardWidth * (Platform.OS === "web" ? 0.32 : 0.28), // Adjust position
+            top: Math.min(cardWidth * (Platform.OS === "web" ? 0.01 : 0.01), -5), // Limit max value
+            right: Math.min(cardWidth * (Platform.OS === "web" ? 0.32 : 0.28), 100), // Limit max value to 50
+           
           }}
         >
           {renderIcon()}
@@ -91,10 +94,9 @@ const PlatformCard = ({
         style={{
           width: cardWidth,
           height: cardHeight,
+          maxWidth: 310,
+          maxHeight: 200,
 
-          // paddingTop: cardWidth*0.2,
-          // paddingBottom: cardWidth*0.2,
-          //gap: Platform.OS === "web" ? "4%" : 0,
         }} // Dynamically set width and height
         className={`${
           theme === "dark" ? "bg-[#27272a]" : "bg-white"

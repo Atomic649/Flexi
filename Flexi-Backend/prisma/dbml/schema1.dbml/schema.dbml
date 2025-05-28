@@ -91,7 +91,7 @@ Table Bill {
   image String
   deleted Boolean [default: false]
   productList Product [not null]
-  memberId String [unique, not null]
+  memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]

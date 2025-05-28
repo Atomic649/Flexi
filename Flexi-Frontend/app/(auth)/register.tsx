@@ -5,6 +5,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  TouchableOpacity,
+  View as RNView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
@@ -12,13 +14,15 @@ import { router } from "expo-router";
 import Button from "@/components/Button";
 import CustomButton from "@/components/CustomButton";
 import { images } from "@/constants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import CallMemberAPI from "@/api/member_api";
 import { useTextColorClass } from "@/utils/themeUtils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -28,6 +32,27 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [termsVisited, setTermsVisited] = useState(false);
+  const [privacyVisited, setPrivacyVisited] = useState(false);
+
+  // Load visited status from AsyncStorage on mount
+  useEffect(() => {
+    const loadVisitedStatus = async () => {
+      try {
+        const termsStatus = await AsyncStorage.getItem('termsVisited');
+        const privacyStatus = await AsyncStorage.getItem('privacyVisited');
+        
+        if (termsStatus === 'true') setTermsVisited(true);
+        if (privacyStatus === 'true') setPrivacyVisited(true);
+      } catch (error) {
+        console.error('Error loading visited status:', error);
+      }
+    };
+
+    loadVisitedStatus();
+  }, []);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -46,6 +71,22 @@ export default function Register() {
     buttons: [],
   });
 
+  // Navigate to Terms and mark as visited
+  const handleViewTerms = () => {
+    AsyncStorage.setItem('termsVisited', 'true').then(() => {
+      setTermsVisited(true);
+      router.push("/term");
+    });
+  };
+
+  // Navigate to Privacy Policy and mark as visited
+  const handleViewPrivacy = () => {
+    AsyncStorage.setItem('privacyVisited', 'true').then(() => {
+      setPrivacyVisited(true);
+      router.push("/privacy");
+    });
+  };
+
   // Handle register
   const handleRegister = async () => {
     setError("");
@@ -56,6 +97,23 @@ export default function Register() {
         visible: true,
         title: t("auth.register.validation.incomplete"),
         message: t("auth.register.validation.invalidData"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
+    }
+
+    // Check if terms and privacy policy are accepted
+    if (!termsAccepted || !privacyAccepted) {
+      setAlertConfig({
+        visible: true,
+        title: t("auth.register.validation.incomplete"),
+        message: t("auth.register.validation.termsRequired", "You must accept the Terms of Service and Privacy Policy to continue"),
         buttons: [
           {
             text: t("common.ok"),
@@ -79,21 +137,6 @@ export default function Register() {
 
       if (data.error) throw new Error(data.error);
 
-      // setAlertConfig({
-      //   visible: true,
-      //   title: t("auth.register.alerts.success"),
-      //   message: t("auth.register.alerts.successMessage"),
-      //   buttons: [
-      //     {
-      //       text: t("auth.register.alerts.ok"),
-      //       onPress: () => {
-      //         setAlertConfig((prev) => ({ ...prev, visible: false }));
-      //         router.replace("/login");
-      //       },
-      //     },
-      //   ],
-      // });
-
       // Automatically create Unique ID in Member Table
       const data2 = await CallMemberAPI.createMemberAPI({
         permission: "user",
@@ -111,6 +154,103 @@ export default function Register() {
     } catch (error: any) {
       setError(error.message);
     }
+  };
+
+  // Attempt to toggle terms checkbox
+  const toggleTermsAccepted = () => {
+    if (!termsVisited) {
+      setAlertConfig({
+        visible: true,
+        title: t("auth.register.validation.readRequired", "Reading Required"),
+        message: t("auth.register.validation.readTermsFirst", "You must read the Terms of Service before accepting."),
+        buttons: [
+          {
+            text: t("auth.register.readNow", "Read Now"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              handleViewTerms();
+            },
+          },
+          {
+            text: t("common.cancel"),
+            style: "cancel",
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } else {
+      setTermsAccepted(!termsAccepted);
+    }
+  };
+
+  // Attempt to toggle privacy checkbox
+  const togglePrivacyAccepted = () => {
+    if (!privacyVisited) {
+      setAlertConfig({
+        visible: true,
+        title: t("auth.register.validation.readRequired"),
+        message: t("auth.register.validation.readPrivacyFirst"),
+        buttons: [
+          {
+            text: t("auth.register.readNow"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              handleViewPrivacy();
+            },
+          },
+          {
+            text: t("common.cancel"),
+            style: "cancel",
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } else {
+      setPrivacyAccepted(!privacyAccepted);
+    }
+  };
+
+  // Custom checkbox component
+  const Checkbox: React.FC<{
+    checked: boolean;
+    onPress: () => void;
+    label: string;
+    linkText: string;
+    linkRoute: string;
+    visited: boolean;
+  }> = ({ checked, onPress, label, linkText, linkRoute, visited }) => {
+    return (
+      <RNView className="flex-row items-start mb-3">
+        <TouchableOpacity 
+          onPress={onPress}
+          className={`w-5 h-5 mt-1 border rounded ${checked 
+            ? 'bg-[#0feac2] border-[#0feac2]' 
+            : visited 
+              ? 'border-gray-400' 
+              : 'border-gray-600 bg-gray-200'}`}
+        >
+          {checked && (
+            <RNView className="flex-1 items-center justify-center">
+              <CustomText weight="bold" className="text-white text-xs">✓</CustomText>
+            </RNView>
+          )}
+        </TouchableOpacity>
+        <RNView className="flex-row flex-wrap ml-2">
+          <CustomText className={`text-sm ${visited ? 'text-gray-500' : 'text-gray-600'}`}>{label}</CustomText>
+          <TouchableOpacity onPress={linkRoute === "/term" ? handleViewTerms : handleViewPrivacy}>
+            <RNView className="flex-row items-center">
+              <CustomText className="text-sm text-[#0feac2] ml-1">{linkText}</CustomText>
+              {!visited && <Ionicons name="arrow-forward" size={12} color="#0feac2" style={{ marginLeft: 4 }} />}
+            </RNView>
+          </TouchableOpacity>
+        </RNView>
+        {visited && (
+          <RNView className="ml-1 mt-1">
+            <Ionicons name="checkmark-circle" size={14} color="#0feac2" />
+          </RNView>
+        )}
+      </RNView>
+    );
   };
 
   return (
@@ -179,6 +319,26 @@ export default function Register() {
                 otherStyles="mt-7"
                 secureTextEntry
               />
+
+              <RNView className="mt-5">
+                <Checkbox
+                  checked={termsAccepted}
+                  onPress={toggleTermsAccepted}
+                  label={t("auth.register.agree")}
+                  linkText={t("auth.register.terms")}
+                  linkRoute="/term"
+                  visited={termsVisited}
+                />
+                
+                <Checkbox
+                  checked={privacyAccepted}
+                  onPress={togglePrivacyAccepted}
+                  label={t("auth.register.agree")}
+                  linkText={t("auth.register.privacy")}
+                  linkRoute="/privacy"
+                  visited={privacyVisited}
+                />
+              </RNView>
 
               {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
 

@@ -109,7 +109,7 @@ export default function BillCard({
                 </Text>
 
                 <Text
-                  className="text-lg  font-psemibold"
+                  className="text-base  "
                   style={{ color: cNameColor }}
                   numberOfLines={1}
                 >

@@ -6,6 +6,7 @@ import { getToken } from "./utility";
 export const getAxios = () => {
   return axios.create({
     baseURL: API_URL,
+    timeout: 30000, // 30 seconds timeout
   });
 };
 
@@ -16,6 +17,7 @@ export const getAxiosWithAuth = async () => {
   const token = await getToken();
   return axios.create({
     baseURL: API_URL,
+    timeout: 30000, // 30 seconds timeout
     headers: {
       Authorization: `Bearer ${token}`,
     },

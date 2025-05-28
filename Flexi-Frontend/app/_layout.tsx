@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import i18n from "@/i18n";
-import mainTopBar from "@/components/MainTopBar";
+import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
 
 // i18n  initialized for web
@@ -104,11 +104,21 @@ function RootLayoutNav() {
         backgroundColor={theme === "dark" ? "#18181b" : "#ffffff"}
         animated={true}
       />
+
       <Stack>
+        {/* landing */}
+        <Stack.Screen
+          name="landing"
+          options={{
+            ...HideTopBar(),
+            title: t("landing.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         <Stack.Screen
           name="(tabs)"
           options={{
-            ...mainTopBar(theme, registeredUsers, businessAvatar, businessName),
+            ...MainTopBar.getTopBarConfig(theme, registeredUsers, businessAvatar, businessName),
             title: "",
           }}
         />
@@ -236,7 +246,34 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        <Stack.Screen
+        name="term"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("terms.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
+      {/* privacy */}
+      <Stack.Screen
+        name="privacy"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("privacy.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
+      {/* expense detail */}
+      <Stack.Screen
+        name="expenseDetailScreen"
+        options={{
+          headerShown: false, // Hide the header for this screen
+        }}
+      />
       </Stack>
+     
+
+      
     </SafeAreaView>
   );
 }

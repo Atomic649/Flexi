@@ -18,6 +18,17 @@ import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
 
+// Function to format numbers for display, handling the large values properly
+const formatNumberDisplay = (num: number) => {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M`;
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  } else {
+    return num.toString();
+  }
+};
+
 type DailyCardProps = {
   date: string;
   amount: number;
@@ -77,24 +88,34 @@ const Daily = () => {
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
 
+  const tableColor = theme === "dark" ? "#29292a00" : "#fcfcfc00";
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
           width: Dimensions.get("window").width > 768  ? "60%" : "100%",
+          maxWidth: 800,
           alignSelf: "center",
-          paddingTop: Platform.OS === "web" ? "1.5%":0,
+         // paddingTop: Platform.OS === "web" ? "1.5%":0
         }}
       >
         <View
           className={`flex flex-col items-end `}
-          style={{
-            backgroundColor: theme === "dark" ? "#adacac" : "#d0cfcb",
-          }}
+         style={{
+                     backgroundColor:
+                       Platform.OS === "web"
+                   ? "transparent"
+                   : theme === "dark"
+                   ? "#adacac"
+                   : "#d0cfcb",
+                   borderBottomWidth: 1,
+                   borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+                   }}
         >
           <View
-            className="flex flex-row m-2 items-start justify-evenly w-full pl-5 "
+            className="flex flex-row m-3 items-start justify-evenly w-full pl-5 "
             style={{
               marginHorizontal: 10,
             }}
@@ -143,14 +164,14 @@ const Daily = () => {
             <DailyCard
               date={item.date}
               amount={item.amount}
-              sale={item.sale}
-              adsCost={item.adsCost}
-              profit={item.profit}
+              sale={formatNumberDisplay(item.sale)}
+              adsCost={formatNumberDisplay(item.adsCost)}
+              profit={formatNumberDisplay(item.profit)}
               percentageAds={item.percentageAds}
               ROI={item.ROI}
-              tableColor={theme === "dark" ? "bg-gray-800" : "bg-white"}
+              tableColor={tableColor}
               broaderColor={
-                theme === "dark" ? "border-teal-900" : "border-gray-300"
+                theme === "dark" ? "border-teal-900" : "border-gray-100"
               }
             />
           )}
