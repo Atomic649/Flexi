@@ -99,7 +99,7 @@ export default function Landing() {
 
   // Handle contact form submission
   const turquoiseColor = "#4edac0";
-  const bgColor = theme === "dark" ? "#121212" : "#ffffff";
+  const bgColor = theme === "dark" ? "zinc900" : "#ffffff";
   const accentColor = theme === "dark" ? "#08f9cd" : "#08f9cd";
   const textPrimaryColor = theme === "dark" ? "#e4e4e4" : "#3a3a32";
   const textSecondaryColor = theme === "dark" ? "#bab9b9" : "#5c5c5c";

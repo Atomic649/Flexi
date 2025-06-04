@@ -70,7 +70,9 @@ export default function Login() {
         ],
       });
       setIsSubmitting(false);
-      return;
+      return
+      
+      ;
     }
 
     const { error, token, user } = await CallAPIUser.loginAPI(form);

@@ -34,6 +34,9 @@ services:
     build:
       context: ./Flexi-Frontend
       dockerfile: Dockerfile  # The one you created for static Nginx
+    volumes:
+      - ./Flexi-Frontend/dist:/usr/share/nginx/html     
+    working_dir: /usr/share/nginx/html
     container_name: expo-web
     ports:
       - 8080:80
@@ -97,6 +100,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro     
       - ./Flexi-Backend/ssl:/etc/ssl
+      - ./Flexi-Frontend/dist:/var/www/dist      
     ports:
       - 80:80
       - 443:443    

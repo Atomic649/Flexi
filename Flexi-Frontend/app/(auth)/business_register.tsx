@@ -5,7 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  Text
+  Text,
 } from "react-native";
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
@@ -16,10 +16,13 @@ import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import Dropdown from "@/components/Dropdown";
 import CallAPIBusiness from "@/api/business_api";
-import { useTextColorClass } from "@/utils/themeUtils";
+import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
+import { useTheme } from "@/providers/ThemeProvider";
+import { CustomText } from "@/components/CustomText";
 
 export default function Register() {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const router = useRouter();
   const { userId, uniqueId } = useLocalSearchParams();
   const [businessName, setbusinessName] = useState("");
@@ -105,12 +108,12 @@ export default function Register() {
   };
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        className="h-full"
       >
-        <ScrollView>
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
           <View
             className="w-full flex justify-center h-full px-4"
             style={{
@@ -120,13 +123,13 @@ export default function Register() {
           >
             <View
               style={{
-                width: Dimensions.get("window").width > 768  ? "40%" : "100%",
+                width: Dimensions.get("window").width > 768 ? "40%" : "100%",
                 maxWidth: 600,
               }}
             >
-              <Text className={`text-lg font-bold mt-4 ${useTextColorClass()}`}>
+                <CustomText className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}>
                 {t("auth.businessRegister.title")}
-              </Text>
+                </CustomText>
 
               <FormField
                 title={t("auth.businessRegister.businessName")}
@@ -154,6 +157,9 @@ export default function Register() {
                   `auth.businessRegister.taxTypeOption.${taxType}`
                 )}
                 otherStyles="mt-7"
+                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                
               />
 
               <FormField
@@ -219,6 +225,9 @@ export default function Register() {
                 )}
                 onValueChange={setbusinessType}
                 otherStyles="mt-7"
+                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
               />
 
               {error ? (
