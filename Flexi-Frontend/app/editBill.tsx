@@ -88,11 +88,11 @@ export default function EditBill() {
   useEffect(() => {
     const fetchBillData = async () => {
       if (!id) return;
-      
+
       try {
         setIsLoading(true);
         const billData = await CallAPIBill.getBillByIdAPI(Number(id));
-        
+
         // Set all the bill data to the state
         setCName(billData.cName);
         setCLastName(billData.cLastName);
@@ -109,7 +109,7 @@ export default function EditBill() {
         setPrice(billData.price.toString());
         setStoreId(billData.storeId);
         setImage(billData.image);
-        
+
         // Set purchase date
         if (billData.purchaseAt) {
           const purchaseDate = new Date(billData.purchaseAt);
@@ -117,7 +117,7 @@ export default function EditBill() {
           setSelectedDates([purchaseDate.toISOString()]);
           setDate([purchaseDate.toISOString()]);
         }
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching bill data:", error);
@@ -138,7 +138,7 @@ export default function EditBill() {
       if (businessId) {
         setBusinessAcc(businessId);
       }
-      
+
       // Fetch stores for this member
       if (uniqueId) {
         try {
@@ -334,14 +334,12 @@ export default function EditBill() {
 
       <ScrollView
         style={{
-            width: Platform.OS === "web" ? "40%" : "100%",
-            maxWidth: 600,
-            alignSelf: "center",
-          }}>
-        <View
-          className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20"
-        
-        >
+          width: Platform.OS === "web" ? "40%" : "100%",
+          maxWidth: 600,
+          alignSelf: "center",
+        }}
+      >
+        <View className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20">
           {/* Date selector */}
           <View className="flex-row items-center justify-center bg-transparent rounded-full p-2 ml-2">
             <CustomText
@@ -427,10 +425,10 @@ export default function EditBill() {
             ]}
             placeholder={t("bill.selectGender")}
             selectedValue={
-              cGender === "Male" 
-                ? t("bill.gender.male") 
-                : cGender === "Female" 
-                ? t("bill.gender.female") 
+              cGender === "Male"
+                ? t("bill.gender.male")
+                : cGender === "Female"
+                ? t("bill.gender.female")
                 : t("bill.selectGender")
             }
             onValueChange={setCGender}
@@ -474,7 +472,7 @@ export default function EditBill() {
             otherStyles={fieldStyles}
             keyboardType="numeric"
           />
-          
+
           <Dropdown2
             title={t("bill.productName")}
             options={productChoice.map((product) => ({
@@ -561,12 +559,68 @@ export default function EditBill() {
             <CustomText className="text-red-500 mt-4">{error}</CustomText>
           ) : null}
 
-          <CustomButton
-            title={t("bill.updateButton")}
-            handlePress={handleUpdateBill}
-            containerStyles="mt-5"
-            textStyles="!text-white"
-          />
+          <View
+            className={"flex-row gap-3 justify-center items-left" } 
+                >
+           
+          <TouchableOpacity
+              onPress={async () => {
+                setAlertConfig({
+                  visible: true,
+                  title: t("bill.alerts.deleteTitle"),
+                  message: t("bill.alerts.deleteMessage"),
+                  buttons: [
+                   
+                    {
+                      text: t("common.delete"),
+                      onPress: async () => {
+                        try {
+                          await CallAPIBill.deleteBillAPI(Number(id));
+                          setAlertConfig((prev) => ({
+                            ...prev,
+                            visible: false,
+                          }));
+                          router.replace("/");
+                        } catch (error) {
+                          console.error("Error deleting bill:", error);
+                        }
+                      },
+                      style: "destructive",
+                    },
+                    {
+                        text: t("common.cancel"),
+                        onPress: () =>
+                          setAlertConfig((prev) => ({
+                            ...prev,
+                            visible: false,
+                          })),
+                        style: "cancel",
+                      },
+                  ],
+                });
+              }}
+              style={{
+                marginTop: 20,
+                marginEnd: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 20,
+                
+              }}
+              
+              activeOpacity={0.7}
+          >
+            <Ionicons name="trash" size={24} color="#9f9d9a" />
+          </TouchableOpacity>
+            
+
+            <CustomButton
+              title={t("bill.updateButton")}
+              handlePress={handleUpdateBill}
+              containerStyles="mt-5 w-2/3"
+              textStyles="!text-white"
+            />
+          </View>
         </View>
       </ScrollView>
       <CustomAlert
