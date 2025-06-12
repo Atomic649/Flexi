@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
+import { getMemberId } from "@/utils/utility";
 
 interface ExpenseDetailProps {
   visible: boolean;
@@ -80,6 +81,21 @@ export default function ExpenseDetail({
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+    }
+  };
+
+  // Function to delete expense
+  const deleteExpense = async () => {
+
+    // get memberId from local storage
+    const memberId = String(await getMemberId());
+    console.log("Member ID:", memberId);
+    try {
+      const data = await CallAPIExpense.deleteExpenseAPI(expense.id, memberId);
+      onClose();
+      if (data.error) throw new Error(data.error);
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
@@ -327,20 +343,36 @@ export default function ExpenseDetail({
                   </TouchableOpacity>
                 </ScrollView>
               </View>
-              <View className="flex-row justify-evenly">
+              <View className="flex-row justify-evenly mt-2">
+              <TouchableOpacity
+                  onPress={() => deleteExpense()}
+                  className=" items-center justify-center"
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={24}
+                    color="#999999"
+                  />
+                  <CustomText className="text-center mt-1">
+                    {t("common.delete")}
+                  </CustomText>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => pickImage()}
                   className=" items-center justify-center"
                 >
                   <Ionicons
                     name="document-text-outline"
-                    size={26}
+                    size={24}
                     color="#999999"
                   />
                   <CustomText className="text-center mt-1">
                     {t("expense.detail.attachBill")}
                   </CustomText>
                 </TouchableOpacity>
+
+              
 
                 {error ? (
                   <CustomText className="text-red-500 mt-4">{error}</CustomText>
