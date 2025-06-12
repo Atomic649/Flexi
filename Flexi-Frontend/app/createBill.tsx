@@ -333,7 +333,8 @@ export default function CreateBill() {
               </View>
             </View>
           </View>
-
+          <View className="flex flex-row justify-between">
+          <View className="w-1/2 pr-2">
           <FormField2
             title={t("bill.customerName")}
             value={cName}
@@ -344,7 +345,8 @@ export default function CreateBill() {
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
           />
-
+            </View>
+            <View className="w-1/2 pr-2">
           <FormField2
             title={t("bill.customerLastName")}
             value={cLastName}
@@ -355,6 +357,8 @@ export default function CreateBill() {
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
           />
+            </View>
+          </View>
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
               <FormField2
@@ -396,9 +400,11 @@ export default function CreateBill() {
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
+            otherStyles={fieldStyles + " min-h-[100px]"}
             maxLength={200}
             multiline={true}
+            textAlignVertical="top"
+            numberOfLines={4}
           />
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
