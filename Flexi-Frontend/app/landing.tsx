@@ -166,9 +166,7 @@ export default function Landing() {
                weight="bold"
                className="text-2xl text-center text-white leading-10"
              >
-               {t("Minimize Your Task")}
-               {"\n"}
-               {t("Maximize Your Profit")}{" "}
+              {t("landing.title")}
              </CustomText>
            </View>
  
@@ -177,7 +175,7 @@ export default function Landing() {
              weight="regular"
              className="text-md mt-7 text-center text-white"
            >
-             {t("landing.description")}
+            {t("landing.subtitle") }
            </CustomText>
  
            {/* ปุ่มไปหน้า Login */}
