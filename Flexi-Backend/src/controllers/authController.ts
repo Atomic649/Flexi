@@ -116,6 +116,15 @@ const login = async (req: Request, res: Response) => {
         userId: user.id,
       },
     });
+    // find businessAcc by userId
+    const businessAcc = await Prisma.businessAcc.findFirst({
+      where: {
+        memberId: memberId?.uniqueId,
+      },
+    });
+    if (!businessAcc) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
 
     res.json({
       status: "ok",
@@ -130,7 +139,8 @@ const login = async (req: Request, res: Response) => {
         phone: user.phone,
         bio: user.bio,
         username: user.username,
-        memberId: memberId?.uniqueId,        
+        memberId: memberId?.uniqueId,
+        businessId: businessAcc.id,        
       },
     });
   } catch (e) {

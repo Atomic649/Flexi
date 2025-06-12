@@ -4,6 +4,7 @@ import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 
+
 const upload = multer(multerConfig.multerConfigImage.config).single(multerConfig.multerConfigImage.keyUpload);
 
 // Create  instance of PrismaClient
@@ -50,17 +51,17 @@ const schema = Joi.object({
   product: Joi.string().required(),
   payment: Joi.string().valid("COD", "Transfer", "CreditCard").required(),
   amount: Joi.number().required(),
-  platform: Joi.string().valid(
-    "Facebook",
-    "Tiktok",
-    "Shopee",
-    "Instagram",
-    "Youtube",
-    "Lazada",
-    "Line",
-    "X",
-    "Google"
-  ),
+  // platform: Joi.string().valid(
+  //   "Facebook",
+  //   "Tiktok",
+  //   "Shopee",
+  //   "Instagram",
+  //   "Youtube",
+  //   "Lazada",
+  //   "Line",
+  //   "X",
+  //   "Google"
+  // ),
   cashStatus: Joi.boolean().required(),
   price: Joi.number().required(),
   memberId: Joi.string().required(),
@@ -98,6 +99,18 @@ const createBill = async (req: Request, res: Response) => {
 
     // convert string to date in purchaseAt
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+
+    // find platform from Store id
+    const store = await prisma.store.findUnique({
+      where: {
+        id: billInput.storeId,
+      },
+    });
+    if (!store) {
+      return res.status(404).json({ message: "Store not found" });
+    }
+    // Map or cast store.platform to a valid SocialMedia type
+        billInput.platform = store.platform as SocialMedia;
 
     // Create a new bill into the database
     try {

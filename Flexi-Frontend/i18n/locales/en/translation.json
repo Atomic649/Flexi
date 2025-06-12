@@ -854,5 +854,70 @@
     "footer": {
       "subtitle": "Transforming how small businesses manage their finances, track performance, and grow profitably in the digital economy."
     }
+  },
+  "bill": {
+    "title": "Bill Management",
+    "createNewBill": "Create New Bill",
+    "createBill": "Create Bill",
+    "editBill": "Edit Bill",
+    "delete": "Delete Bill",
+    "notfound": "Bill not found",
+    "billNumber": "Bill Number",
+    "customerInfo": "Customer Information",
+    "customerName": "Customer Name",
+    "enterName": "Enter name",
+    "customerLastName": "Last Name",
+    "enterLastName": "Enter last name",
+    "customerPhone": "Phone Number",
+    "customerGender": "Gender",
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "selectGender": "Select gender",
+    "selectProduct": "Select product",
+    "customerAddress": "Address",
+    "enterAddress": "Enter address",
+    "customerPostal": "Postal Code",
+    "customerProvince": "Province",
+    "enterProvince": "Enter province",
+    "orderInfo": "Order Information",
+    "purchaseDate": "Purchase Date",
+    "productName": "Product Name",
+    "enterProductName": "Enter product name",
+    "amount": "Quantity",
+    "price": "Price",
+    "platform": "Platform",
+    "selectPlatform": "Select platform",
+    "paymentMethod": "Payment Method",
+    "payment": {
+      "cod": "Cash on Delivery",
+      "transfer": "Bank Transfer",
+      "creditCard": "Credit Card"
+    },
+    "selectPayment": "Select payment method",
+    "paymentStatus": "Payment Status",
+    "status": {
+      "paid": "Paid",
+      "unpaid": "Unpaid"
+    },
+    "selectStatus": "Select status",
+    "store": "Store",
+    "selectStore": "Select store",
+    "createButton": "Create Bill",
+    "updateButton": "Update Bill",
+    "alerts": {
+      "error": "Error",
+      "ok": "OK",
+      "success": "Success",
+      "successTitle": "Bill Created Successfully",
+      "successMessage": "Please press OK to proceed"
+    },
+    "validation": {
+      "incomplete": "Incomplete Data",
+      "invalidData": "Please fill all required fields",
+      "invalidPhone": "Invalid Phone Number",
+      "phoneFormat": "Phone number must be 10 digits"
+    }
   }
 }

@@ -111,3 +111,35 @@ export const replaceMemberId = async (memberId: string) => {
     console.error('Error replacing memberId:', error);
   }
 }
+
+// Function to save businessId to AsyncStorage
+export const saveBusinessId = async (businessId: number) => {
+  try {
+    await AsyncStorage.setItem('businessId', businessId.toString());
+    console.log('💾 businessId saved:', businessId);
+  } catch (error) {
+    console.error('Error saving businessId:', error);
+  }
+}
+
+// Function to get businessId from AsyncStorage
+export const getBusinessId = async (): Promise<number | null> => {
+  try {
+    const businessId = await AsyncStorage.getItem('businessId');
+    console.log('✅ businessId Get :', businessId);
+    return businessId ? parseInt(businessId) : null;
+  } catch (error) {
+    console.error('Error getting businessId:', error);
+    return null;
+  }
+}
+
+// Function to remove businessId from AsyncStorage
+export const removeBusinessId = async () => {
+  try {
+    await AsyncStorage.removeItem('businessId');
+    console.log('🗑️ businessId removed');
+  } catch (error) {
+    console.error('Error removing businessId:', error);
+  }
+}

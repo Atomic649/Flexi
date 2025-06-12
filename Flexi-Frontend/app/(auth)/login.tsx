@@ -18,7 +18,7 @@ import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { t } from "i18next";
-import { saveMemberId, saveToken, saveUserId } from "@/utils/utility";
+import { saveBusinessId, saveMemberId, saveToken, saveUserId } from "@/utils/utility";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 
 export default function Login() {
@@ -96,6 +96,7 @@ export default function Login() {
       await AsyncStorage.setItem("isLoggedIn", "true");
       saveUserId(user.id);
       saveMemberId(user.memberId);
+      saveBusinessId(user.businessId);
 
       setAlertConfig({
         visible: true,

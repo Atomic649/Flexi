@@ -22,6 +22,7 @@ import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
+import { router } from "expo-router";
 
 type Bill = {
   id: number;
@@ -362,8 +363,32 @@ const ByOrder = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+      <TouchableOpacity
+          style={{
+            position: "static",                       
+            backgroundColor: theme === "dark" ? "#302f2f00" : "#ffffff",
+            borderRadius: 12,
+            padding: 10,
+            elevation: 5,
+          }}
+          onPress={() => {
+            router.push("/createBill");
+          }}
+        >
+          <Ionicons
+            name="add"
+            size={24}
+            style={{ 
+              alignSelf: "center",
+             }}             
+            color={theme === "dark" ? "#ffffff" : "#444541"}
+          />
+        
+        </TouchableOpacity>
         {isDesktop ? renderTableView() : renderCardView()}
+        
       </SafeAreaView>
+         
     </GestureHandlerRootView>
   );
 };

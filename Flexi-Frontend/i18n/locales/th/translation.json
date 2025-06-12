@@ -854,5 +854,71 @@
     "footer": {
       "subtitle": "มุ่งเปลี่ยนแปลงวิธีจัดการการเงินของธุรกิจขนาดเล็ก ช่วยติดตามประสิทธิภาพการทำการตลาด เพื่อการเติบโตบนผลกำไรในเศรษฐกิจดิจิทัล"
     }
+  },
+  "bill": {
+    "title": "การจัดการใบเสร็จ",
+    "createNewBill": "สร้างใบเสร็จใหม่",
+    "createBill": "สร้างใบเสร็จ",
+    "editBill": "แก้ไขใบเสร็จ",
+    "delete": "ลบใบเสร็จ",
+    "notfound": "ไม่พบใบเสร็จ",
+    "billNumber": "เลขที่ใบเสร็จ",
+    "customerInfo": "ข้อมูลลูกค้า",
+    "customerName": "ชื่อลูกค้า",
+    "enterName": "กรอกชื่อ",
+    "customerLastName": "นามสกุล",
+    "enterLastName": "กรอกนามสกุล",
+    "customerPhone": "เบอร์โทรศัพท์",
+    "customerGender": "เพศ",
+    "gender": {
+      "male": "ชาย",
+      "female": "หญิง"
+    },
+    "selectGender": "เลือกเพศ",
+    "selectProduct": "เลือกสินค้า",
+    "customerAddress": "ที่อยู่",
+    "enterAddress": "กรอกที่อยู่",
+    "customerPostal": "รหัสไปรษณีย์",
+    "customerProvince": "จังหวัด",
+    "enterProvince": "กรอกจังหวัด",
+    "orderInfo": "ข้อมูลการสั่งซื้อ",
+    "purchaseDate": "วันที่ซื้อ",
+    "productName": "ชื่อสินค้า",
+    "enterProductName": "กรอกชื่อสินค้า",
+    "amount": "จำนวน",
+    "price": "ราคา",
+    "platform": "แพลตฟอร์ม",
+    "selectPlatform": "เลือกแพลตฟอร์ม",
+    "paymentMethod": "วิธีการชำระเงิน",
+    "payment": {
+      "cod": "เก็บเงินปลายทาง",
+      "transfer": "โอนเงินผ่านธนาคาร",
+      "creditCard": "บัตรเครดิต"
+    },
+    "selectPayment": "เลือกวิธีการชำระเงิน",
+    "paymentStatus": "สถานะการชำระเงิน",
+    "status": {
+      "paid": "ชำระแล้ว",
+      "unpaid": "ยังไม่ชำระ"
+    },
+    "selectStatus": "เลือกสถานะ",
+    "store": "ร้านค้า",
+    "selectStore": "เลือกร้านค้า",
+    "createButton": "สร้างใบเสร็จ",
+    "updateButton": "อัพเดทใบเสร็จ",
+    "alerts": {
+      "error": "ข้อผิดพลาด",
+      "ok": "ตกลง",
+      "success": "สำเร็จ",
+      "successTitle": "สร้างใบเสร็จสำเร็จ",
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
+    },
+    "validation": {
+      "incomplete": "ข้อมูลไม่ครบถ้วน",
+      "invalidData": "กรุณากรอกข้อมูลที่จำเป็นทั้งหมด",
+      "invalidPhone": "เบอร์โทรศัพท์ไม่ถูกต้อง",
+      "phoneFormat": "เบอร์โทรศัพท์ต้องมี 10 หลัก",
+      "missingFields": "ข้อมูลที่ขาดหายไป"
+    }
   }
 }
