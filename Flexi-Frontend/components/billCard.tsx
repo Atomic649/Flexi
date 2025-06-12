@@ -3,6 +3,7 @@ import React from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
+import { router } from "expo-router";
 
 const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -38,7 +39,6 @@ export default function BillCard({
   CardColor,
   PriceColor,
   cNameColor,
-  ProductNameColor ,
   onDelete,
 }: any) {
   const getBorderColor = (platform: string) => {
@@ -90,7 +90,7 @@ export default function BillCard({
             maxWidth: 600,
             alignSelf: "center",
           }}>
-      {/* <Swipeable renderLeftActions={renderRightActions}> */}
+      
         <View
           className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
          border-r-4 `}
@@ -118,7 +118,7 @@ export default function BillCard({
                 <Text
                   className="font-bold text-sm text-zinc-400"
                   numberOfLines={3}
-                  style={{ color: ProductNameColor }}
+                  style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
                 >
                   {product} {amount} {t("common.pcs") }
                 </Text>
@@ -131,21 +131,12 @@ export default function BillCard({
                 >
                 + {price}
                 </Text>
-              {/* <TouchableOpacity
-          onPress={() => {
-            router.push(`editads?id=${id}`);
-          }}
-              >
-          <Ionicons
-            name="options"
-            color={color}
-            size={22}
-          ></Ionicons>
-              </TouchableOpacity> */}
+           
+        
             </View>
           </View>
         </View>
-      {/* </Swipeable> */}
+    
     </View>
   );
 }

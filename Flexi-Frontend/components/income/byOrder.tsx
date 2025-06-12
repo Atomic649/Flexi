@@ -242,68 +242,78 @@ const ByOrder = () => {
               style={{ maxHeight: Dimensions.get("window").height * 0.8 }}
             >
               {allBills.map((bill) => (
-                <View
+                <TouchableOpacity 
                   key={bill.id}
-                  className="flex flex-row border-b py-3"
-                  style={{
-                    borderColor: theme === "dark" ? "#444444" : "#e5e5e5"        
-                  }}
+                  onPress={() => router.push({
+                    pathname: "/editBill",
+                    params: { id: bill.id }
+                  })}
                 >
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-40`}
+                  <View
+                    className="flex flex-row border-b py-3"
+                    style={{
+                      borderColor: theme === "dark" ? "#444444" : "#e5e5e5"        
+                    }}
                   >
-                    {formatDate(bill.purchaseAt.toString())}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-48`}
-                    numberOfLines={1}
-                  >
-                    {bill.cName} {bill.cLastName}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-64`}
-                    numberOfLines={1}
-                  
-                  >
-                    {bill.product}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-28`}
-                  >
-                    {bill.amount} {t("common.pcs")}
-                  </Text>
-                  <Text
-                    className={`${
-                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                    } w-28 font-bold `}
-                    // style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
-                  >
-                    +{bill.price}
-                  </Text>
-                  <View className={`w-28 flex items-center justify-center`}>
-                    {getPlatformIcon(bill.platform)}
-                  </View>
-                  <View className="flex flex-row w-24 items-center justify-center">
-                    <TouchableOpacity
-                      onPress={() => handleDelete(bill.id)}
-                      className="mr-3"
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-40`}
                     >
-                      <Ionicons
-                        name="trash"
-                        size={20}
-                        color={theme === "dark" ? "#4d4d4d" : "#9e9d9d"}
-                      />
-                    </TouchableOpacity>
+                      {formatDate(bill.purchaseAt.toString())}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-48`}
+                      numberOfLines={1}
+                    >
+                      {bill.cName} {bill.cLastName}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-64`}
+                      numberOfLines={1}
+                    
+                    >
+                      {bill.product}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-28`}
+                    >
+                      {bill.amount} {t("common.pcs")}
+                    </Text>
+                    <Text
+                      className={`${
+                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      } w-28 font-bold `}
+                      // style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
+                    >
+                      +{bill.price}
+                    </Text>
+                    <View className={`w-28 flex items-center justify-center`}>
+                      {getPlatformIcon(bill.platform)}
+                    </View>
+                    <View className="flex flex-row w-24 items-center justify-center">
+                      <TouchableOpacity
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleDelete(bill.id);
+                        }}
+                        className="mr-3"
+                      >
+                        <Ionicons
+                          name="trash"
+                          size={20}
+                          color={theme === "dark" ? "#4d4d4d" : "#9e9d9d"}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -331,22 +341,29 @@ const ByOrder = () => {
             </Text>
 
             {groupedBills[date].map((bill) => (
-              <BillCard
+              <TouchableOpacity
                 key={bill.id}
-                id={bill.id}
-                platform={bill.platform}
-                product={bill.product}
-                amount={bill.amount}
-                cName={bill.cName}
-                cLastName={bill.cLastName}
-                ProductNameColor = {theme === "dark" ? "#e98103" : "#ffa718"}
-                price={bill.price}
-                purchaseAt={bill.purchaseAt}
-                CardColor={theme === "dark" ? "#232425" : "#24232108"}
-                onDelete={handleDelete}
-                PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
-                cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
-              />
+                onPress={() => router.push({
+                  pathname: "/editBill",
+                  params: { id: bill.id }
+                })}
+                style={{ width: '100%' }}
+              >
+                <BillCard
+                  id={bill.id}
+                  platform={bill.platform}
+                  product={bill.product}
+                  amount={bill.amount}
+                  cName={bill.cName}
+                  cLastName={bill.cLastName}               
+                  price={bill.price}
+                  purchaseAt={bill.purchaseAt}
+                  CardColor={theme === "dark" ? "#232425" : "#24232108"}
+                  onDelete={handleDelete}
+                  PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
+                  cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
+                />
+              </TouchableOpacity>
             ))}
           </View>
         )}

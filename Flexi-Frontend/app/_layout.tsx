@@ -246,6 +246,17 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        
+        {/* Edit Bill */}
+        <Stack.Screen
+          name="editBill"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("bill.editBill"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        
         {/* ads */}
         <Stack.Screen
           name="ads"
