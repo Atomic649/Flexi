@@ -88,9 +88,11 @@ export default function CreateStore() {
         message: t("store.alerts.successMessage"),
         buttons: [
           {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
+            text: t("product.alerts.ok"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              router.replace("/store");
+            },
           },
         ],
       });

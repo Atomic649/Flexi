@@ -18,8 +18,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Use Cors
-app.use(cors());
+// Use Cors only when not behind nginx proxy
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({ origin: "*" })); // Allow all origins in development
+}
 
 // Use Static Files
 app.use("/uploads", express.static("uploads"));

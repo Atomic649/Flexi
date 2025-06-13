@@ -218,7 +218,7 @@ export default function CreateBill() {
             text: t("common.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("/");
+              router.back();
             },
           },
         ],

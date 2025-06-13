@@ -214,7 +214,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="store"
           options={{
-            ...showTopBarAndBackIcon(theme),
+            ...showTopBarAndBackToSetting(theme),
             title: t("store.title"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
@@ -223,7 +223,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="product"
           options={{
-            ...showTopBarAndBackIcon(theme),
+            ...showTopBarAndBackToSetting(theme),
             title: t("product.title"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
@@ -261,7 +261,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="ads"
           options={{
-            ...showTopBarAndBackIcon(theme),
+            ...showTopBarAndBackToSetting(theme),
             title: t("ads.title"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
@@ -352,6 +352,25 @@ const showTopBarAndBackIcon = (theme: string) => ({
     />
   ),
 });
+
+// Reuseable functions for showing Top bar
+const showTopBarAndBackToSetting = (theme: string) => ({
+  headerShown: true,
+  headerStyle: {
+    backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+  },
+  headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
+  headerLeft: () => (
+    // Back button
+    <Ionicons
+      name="chevron-back"
+      size={24}
+      color={theme === "dark" ? "#ffffff" : "#18181b"}
+      onPress={() => router.back()}
+    />
+  ),
+});
+
 
 // Reuseable functions for hiding Top bar
 const HideTopBar = () => ({
