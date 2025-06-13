@@ -8,7 +8,20 @@ const formatDate = (dateString: string) => {
   const day = String(date.getDate()).padStart(2, '0');
   //return `${year}-${month}-${day}`;
   return `${day}/${month}/${year}`;
+};
 
+// Helper function to determine if a profit value is positive
+const isPositiveProfit = (profit: string | number): boolean => {
+  if (typeof profit === 'number') return profit >= 0;
+  
+  // If it's a string, handle potential suffixes like 'K'
+  const profitStr = String(profit).trim();
+  
+  // Check if it starts with a negative sign
+  if (profitStr.startsWith('-')) return false;
+  
+  // If it starts with a number or positive sign, it's positive
+  return true;
 };
 
 export default function DailyCard({
@@ -73,7 +86,7 @@ export default function DailyCard({
 
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className={`text-base font-bold justify-end ${profit >= 0 ? 'text-teal-500' : 'text-[#FF006E]'}`}
+              className={`text-base font-bold justify-end ${isPositiveProfit(profit) ? 'text-teal-500' : 'text-[#FF006E]'}`}
               numberOfLines={1}
             >
               {profit}
