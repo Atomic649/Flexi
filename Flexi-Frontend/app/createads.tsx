@@ -101,16 +101,15 @@ export default function CreateAds() {
   };
 
   return (
-    <SafeAreaView className={`flex-1  ${useBackgroundColorClass()}`}
-    style={{
-      minHeight: Dimensions.get("window").height,
-      alignItems: Platform.OS === "web" ? "center" : "center",
-    }}>
+    <SafeAreaView
+      className={`flex-1  ${useBackgroundColorClass()}`}
+      style={{
+        minHeight: Dimensions.get("window").height,
+        alignItems: Platform.OS === "web" ? "center" : "center",
+      }}
+    >
       <ScrollView>
-        <View
-          className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20"
-          
-        >
+        <View className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
           <Dropdown2
             title={t("ads.platform")}
             options={[

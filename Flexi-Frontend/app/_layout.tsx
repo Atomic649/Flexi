@@ -19,6 +19,7 @@ import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
@@ -266,6 +267,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* create ads cost */}
+      <Stack.Screen
+        name="createadscost"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("adsCost.createAdsCost"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
         <Stack.Screen
         name="term"
         options={{
@@ -325,13 +335,15 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <BusinessProvider>
-          <RootLayoutNav />
-        </BusinessProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <ThemeProvider>
+          <BusinessProvider>
+            <RootLayoutNav />
+          </BusinessProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
 

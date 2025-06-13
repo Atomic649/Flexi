@@ -129,12 +129,35 @@ export default function ads() {
             </View>
           )}
           ListEmptyComponent={() => (
-            <CustomText className="pt-10 text-center text-white">{t("common.notfound")}</CustomText>
+            <CustomText className="pt-10 text-center text-white">
+              {t("common.notfound")}
+            </CustomText>
           )}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            bottom: 2,
+            right: 30,
+            backgroundColor: "#fac400",
+            borderRadius: 50,
+            padding: 15,
+            elevation: 5,
+          }}
+          onPress={() => {
+            router.push("/createadscost");
+          }}
+        >
+          <Ionicons
+            name="add"
+            size={24}
+            color={theme === "dark" ? "#ffffff" : "#444541"}
+          />
+        </TouchableOpacity>
+
         {/* Setting Limit Ads Connection Acc "4" */}
         {platforms.length < 4 && (
           <TouchableOpacity
