@@ -70,33 +70,18 @@ export default function Login() {
         ],
       });
       setIsSubmitting(false);
-      return
-      
-      ;
+      return;
     }
 
-    const { error, token, user } = await CallAPIUser.loginAPI(form);
-
-    if (error) {
-      setAlertConfig({
-        visible: true,
-        title: t("auth.login.alerts.error"),
-        message: typeof error.message === "string" ? error.message : t("auth.login.alerts.genericError"), // Ensure message is a string
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
-      });
-    } else {
+    try {
+      const response = await CallAPIUser.loginAPI(form);
+      
       // Save token and user details
-      saveToken(token);
+      saveToken(response.token);
       await AsyncStorage.setItem("isLoggedIn", "true");
-      saveUserId(user.id);
-      saveMemberId(user.memberId);
-      saveBusinessId(user.businessId);
+      saveUserId(response.user.id);
+      saveMemberId(response.user.memberId);
+      saveBusinessId(response.user.businessId);
 
       setAlertConfig({
         visible: true,
@@ -112,9 +97,36 @@ export default function Login() {
           },
         ],
       });
+    } catch (error: any) {
+      // Handle login error properly
+      console.error("Login error:", error);
+      
+      let errorMessage = t("auth.login.alerts.genericError");
+      
+      // Extract meaningful error message
+      if (error && typeof error === 'object') {
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        }
+      }
+      
+      setAlertConfig({
+        visible: true,
+        title: t("auth.login.alerts.error"),
+        message: errorMessage,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
