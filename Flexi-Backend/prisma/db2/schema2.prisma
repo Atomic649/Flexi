@@ -52,6 +52,7 @@ model Member {
   bank       Bank[]
   agency     Agency[]
   orm        Orm[]
+  account    Account[]
 }
 
 model BusinessAcc {
@@ -68,6 +69,7 @@ model BusinessAcc {
   Bank         Bank[]
   Agency       Agency[]
   Orm          Orm[]
+  Account      Account[]
 }
 
 model Office {
@@ -145,6 +147,20 @@ model Orm {
   author       Member      @relation(fields: [authorId], references: [uniqueId])
 }
 
+model Account {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Category     Category    @default(Account)
+  title        String
+  description  String
+  image        String?
+  callToAction String?
+  businessId   Int
+  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
+  authorId     String
+  author       Member      @relation(fields: [authorId], references: [uniqueId])
+}
 enum Category {
   Office
   Coach

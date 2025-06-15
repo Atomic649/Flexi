@@ -212,6 +212,19 @@ exports.Prisma.OrmScalarFieldEnum = {
   authorId: 'authorId'
 };
 
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -243,7 +256,8 @@ exports.Prisma.ModelName = {
   Coach: 'Coach',
   Bank: 'Bank',
   Agency: 'Agency',
-  Orm: 'Orm'
+  Orm: 'Orm',
+  Account: 'Account'
 };
 
 /**

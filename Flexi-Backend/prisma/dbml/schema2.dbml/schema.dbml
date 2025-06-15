@@ -30,6 +30,7 @@ Table Member {
   bank Bank [not null]
   agency Agency [not null]
   orm Orm [not null]
+  account Account [not null]
 }
 
 Table BusinessAcc {
@@ -46,6 +47,7 @@ Table BusinessAcc {
   Bank Bank [not null]
   Agency Agency [not null]
   Orm Orm [not null]
+  Account Account [not null]
 }
 
 Table Office {
@@ -123,6 +125,21 @@ Table Orm {
   author Member [not null]
 }
 
+Table Account {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Account']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
+  businessId Int [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
+}
+
 Enum Category {
   Office
   Coach
@@ -157,3 +174,7 @@ Ref: Agency.authorId > Member.uniqueId
 Ref: Orm.businessId > BusinessAcc.id
 
 Ref: Orm.authorId > Member.uniqueId
+
+Ref: Account.businessId > BusinessAcc.id
+
+Ref: Account.authorId > Member.uniqueId
