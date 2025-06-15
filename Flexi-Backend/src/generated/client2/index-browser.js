@@ -127,26 +127,89 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   phone: 'phone',
-  username: 'username',
-  businessType: 'businessType'
+  username: 'username'
 };
 
-exports.Prisma.AccountScalarFieldEnum = {
+exports.Prisma.MemberScalarFieldEnum = {
+  uniqueId: 'uniqueId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  businessId: 'businessId'
+};
+
+exports.Prisma.BusinessAccScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  name: 'name',
+  businessType: 'businessType',
   userId: 'userId'
 };
 
-exports.Prisma.AdsScalarFieldEnum = {
+exports.Prisma.OfficeScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  content: 'content',
-  image: 'image',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  authorId: 'authorId',
-  businessId: 'businessId'
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
+};
+
+exports.Prisma.CoachScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
+};
+
+exports.Prisma.BankScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
+};
+
+exports.Prisma.AgencyScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
+};
+
+exports.Prisma.OrmScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  Category: 'Category',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  callToAction: 'callToAction',
+  businessId: 'businessId',
+  authorId: 'authorId'
 };
 
 exports.Prisma.SortOrder = {
@@ -163,26 +226,24 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.BusinessType = exports.$Enums.BusinessType = {
-  Factory: 'Factory',
-  Packaging: 'Packaging',
+exports.Category = exports.$Enums.Category = {
+  Office: 'Office',
+  Coach: 'Coach',
   Bank: 'Bank',
-  MarketingAgency: 'MarketingAgency',
-  Accounting: 'Accounting',
-  Insurance: 'Insurance',
-  RealEstate: 'RealEstate',
-  LuxuryGoods: 'LuxuryGoods',
-  Logistics: 'Logistics',
-  BusinessCoach: 'BusinessCoach',
-  OnlineCourse: 'OnlineCourse',
-  Construction: 'Construction',
-  Other: 'Other'
+  Agency: 'Agency',
+  Account: 'Account',
+  Orm: 'Orm'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Account: 'Account',
-  Ads: 'Ads'
+  Member: 'Member',
+  BusinessAcc: 'BusinessAcc',
+  Office: 'Office',
+  Coach: 'Coach',
+  Bank: 'Bank',
+  Agency: 'Agency',
+  Orm: 'Orm'
 };
 
 /**

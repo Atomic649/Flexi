@@ -13,66 +13,147 @@ Table User {
   updatedAt DateTime [not null]
   phone String [unique, not null]
   username String [unique]
-  businessType BusinessType [not null, default: 'Other']
-  Ads Ads [not null]
-  BusinessOwner Account [not null]
-  BusinessMembers Account [not null]
+  Business BusinessAcc [not null]
+  member Member [not null]
 }
 
-Table Account {
-  id String [pk]
-  createdAt DateTime [default: `now()`]
-  updatedAt DateTime
-  userId Int [not null]
-  user User [not null]
-  AllMember User [not null]
-  AllAds Ads [not null]
-}
-
-Table Ads {
-  id Int [pk, increment]
-  title String [not null]
-  content String [not null]
-  image String
+Table Member {
+  uniqueId String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  authorId Int [not null]
-  author User [not null]
+  userId Int [not null]
+  user User [not null]
+  businessId Int
+  business BusinessAcc
+  office Office [not null]
+  coach Coach [not null]
+  bank Bank [not null]
+  agency Agency [not null]
+  orm Orm [not null]
+}
+
+Table BusinessAcc {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  name String [not null]
+  businessType Category [not null]
+  userId Int [not null]
+  user User [not null]
+  AllMember Member [not null]
+  Office Office [not null]
+  Coach Coach [not null]
+  Bank Bank [not null]
+  Agency Agency [not null]
+  Orm Orm [not null]
+}
+
+Table Office {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Office']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
   businessId Int [not null]
-  BusinessAcc Account [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
 }
 
-Table BusinessMembers {
-  businessmembersId String [ref: > Account.id]
-  allmemberId Int [ref: > User.id]
+Table Coach {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Coach']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
+  businessId Int [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
 }
 
-Table AccountToAds {
-  alladsId Int [ref: > Ads.id]
-  businessaccId String [ref: > Account.id]
+Table Bank {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Bank']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
+  businessId Int [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
 }
 
-Enum taxType {
-  Juristic
-  Individual
+Table Agency {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Agency']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
+  businessId Int [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
 }
 
-Enum BusinessType {
-  Factory
-  Packaging
+Table Orm {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Category Category [not null, default: 'Orm']
+  title String [not null]
+  description String [not null]
+  image String
+  callToAction String
+  businessId Int [not null]
+  businessAcc BusinessAcc [not null]
+  authorId String [not null]
+  author Member [not null]
+}
+
+Enum Category {
+  Office
+  Coach
   Bank
-  MarketingAgency
-  Accounting
-  Insurance
-  RealEstate
-  LuxuryGoods
-  Logistics
-  BusinessCoach
-  OnlineCourse
-  Construction
-  Other
+  Agency
+  Account
+  Orm
 }
 
-Ref: Account.userId > User.id
+Ref: Member.userId > User.id
 
-Ref: Ads.authorId > User.id
+Ref: Member.businessId > BusinessAcc.id
+
+Ref: BusinessAcc.userId > User.id
+
+Ref: Office.businessId > BusinessAcc.id
+
+Ref: Office.authorId > Member.uniqueId
+
+Ref: Coach.businessId > BusinessAcc.id
+
+Ref: Coach.authorId > Member.uniqueId
+
+Ref: Bank.businessId > BusinessAcc.id
+
+Ref: Bank.authorId > Member.uniqueId
+
+Ref: Agency.businessId > BusinessAcc.id
+
+Ref: Agency.authorId > Member.uniqueId
+
+Ref: Orm.businessId > BusinessAcc.id
+
+Ref: Orm.authorId > Member.uniqueId
