@@ -162,7 +162,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
             style={[
               styles.button,
               {
-                backgroundColor: theme === "dark" ? "#4a5568" : "#e2e8f0",
+                backgroundColor: theme === "dark" ? "#424242" : "#ecebea",
                 padding: isSmallScreen ? 8 : 10,
                 marginTop: isSmallScreen ? 12 : 16,
               },
