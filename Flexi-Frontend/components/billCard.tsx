@@ -74,20 +74,13 @@ export default function BillCard({
     );
   };
 
-  const renderRightActions = () => (
-    <TouchableOpacity
-      onPress={handleDelete}
-      className="bg-[#ff2a00] justify-center items-center w-20 m-1 rounded-lg"
-    >
-      <Ionicons name="trash" size={24} color="white" />
-    </TouchableOpacity>
-  );
 
   return (
     <View className="flex "
      style={{      
-            width: Platform.OS === "web" ? "40%" : "100%",
-            maxWidth: 600,
+            width: Platform.OS === "web" ? "100%" : "100%",
+            maxWidth: 500,
+            minWidth: 350,
             alignSelf: "center",
           }}>
       

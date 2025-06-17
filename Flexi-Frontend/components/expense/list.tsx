@@ -22,6 +22,7 @@ import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { useRouter } from "expo-router";
+import { getScreenWidth, isDesktop, isMobile } from "@/utils/responsive";
 
 type Expense = {
   id: number;
@@ -65,7 +66,6 @@ const List = () => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [expense, setExpense] = useState<Expense[]>([]);
-  const isDesktop = Platform.OS === "web";
   const router = useRouter();
 
   // Table header text style
@@ -126,16 +126,6 @@ const List = () => {
   const today = new Date().toISOString().split("T")[0];
 
   // Function to get expense text color
-  const getExpenseTextColor = (type: string) => {
-    switch (type) {
-      case "ads":
-        return "#ffab02";
-      case "expense":
-        return "#ff2a00";
-      default:
-        return "#61fff2";
-    }
-  };
 
   // Render table view for desktop
   const renderTableView = () => {
@@ -151,56 +141,56 @@ const List = () => {
     }
 
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
-        <ScrollView horizontal={true}>
-          <View style={{ paddingTop: 16, width: "100%" }}>
+    
+        <ScrollView
+          horizontal={true}
+          contentContainerStyle={{
+            width: "100%",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            maxWidth: 1200,
+            
+            
+          }}
+          style={{
+            width: "100%",
+            backgroundColor: theme === "dark" ? "#000000" : "#ffffff",
+            alignSelf: "center",
+        
+         
+          }}
+     
+        >
+          <View style={{  width: "100%" 
+
+          }}>
             <View
               className="flex flex-row border-b  pb-2 mb-2"
               style={{
                 borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
+                paddingHorizontal: 16,
+                borderBottomWidth: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                marginStart: 22,
               }}
             >
-              <Text
-                style={headerTextStyle}
-                className={`w-36`}
-              >
+              <Text style={headerTextStyle} className={`w-1/6`}>
                 {t("expense.table.date")}
               </Text>
-              <Text
-                style={headerTextStyle}
-                className={`w-36`}
-              >
+              <Text style={headerTextStyle} className={`w-1/6`}>
                 {t("expense.table.type")}
               </Text>
-              <Text
-                style={headerTextStyle}
-                className={`w-96`}
-              >
+              <Text style={headerTextStyle} className={`w-2/6`}>
                 {t("expense.table.description")}
               </Text>
-              <Text
-                style={headerTextStyle}
-                className={`w-64`}
-              >
+              <Text style={headerTextStyle} className={`w-2/6`}>
                 {t("expense.table.note")}
               </Text>
-              <Text
-                style={headerTextStyle}
-                className={`w-36`}
-              >
+              <Text style={headerTextStyle} className={`w-1/6`}>
                 {t("expense.table.amount")}
               </Text>
-              <Text
-                style={headerTextStyle}
-                className={`w-24`}
-              >
+              <Text style={headerTextStyle} className={`w-1/6`}>
                 {t("expense.table.delete")}
               </Text>
             </View>
@@ -208,7 +198,6 @@ const List = () => {
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
-              style={{ maxHeight: Dimensions.get("window").height * 0.8 }}
             >
               {allExpenses.map((expense) => (
                 <TouchableOpacity
@@ -224,11 +213,13 @@ const List = () => {
                           note: expense.note,
                           desc: expense.desc,
                           image: expense.image,
-                          type: expense.type
-                        }
+                          type: expense.type,
+                        },
                       });
                     } else {
-                      globalThis.console.warn("Edit functionality not available for ads expenses");
+                      globalThis.console.warn(
+                        "Edit functionality not available for ads expenses"
+                      );
                     }
                   }} // Navigate to edit screen
                 >
@@ -236,26 +227,29 @@ const List = () => {
                     className="flex flex-row border-b py-3"
                     style={{
                       borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      alignItems: "flex-start",
                     }}
                   >
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-36`}
+                      } w-1/6`}
                     >
                       {formatDate(expense.date)}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-36`}
+                      } w-1/6`}
                     >
                       {expense.type}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-96`} // Increased width from w-64 to w-96 for Description
+                      } w-2/6`} // Increased width from w-64 to w-96 for Description
                       numberOfLines={1}
                     >
                       {expense.type === "ads" ? expense.note : expense.desc}
@@ -263,15 +257,17 @@ const List = () => {
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-64`}
+                      } w-2/6`}
                       numberOfLines={1}
                     >
-                      {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา": expense.note}
+                      {expense.type === "ads"
+                        ? "คาดการณ์ค่าโฆษณา"
+                        : expense.note}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-36 font-bold`}
+                      } w-1/6 font-bold`}
                       //style={{ color: getExpenseTextColor(expense.type) }}
                     >
                       -{expense.expenses}
@@ -294,7 +290,7 @@ const List = () => {
             </ScrollView>
           </View>
         </ScrollView>
-      </View>
+      
     );
   };
 
@@ -355,8 +351,8 @@ const List = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full  ${useBackgroundColorClass()}`}>
-        {isDesktop ? renderTableView() : renderCardView()}
+      <SafeAreaView className={`h-full  ${useBackgroundColorClass()} `}>
+        {isDesktop() ? renderTableView() : renderCardView()}
       </SafeAreaView>
     </GestureHandlerRootView>
   );

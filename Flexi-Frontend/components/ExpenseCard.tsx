@@ -39,7 +39,7 @@ export default function ExpenseCard({
   const getExpenseTextColor = (type: string) => {
     switch (type) {
       case "ads":
-        return "#ffab02";
+        return "#ff2a0085";
       case "expense":
         return "#ff2a00";
       default:
@@ -83,8 +83,9 @@ export default function ExpenseCard({
       <View
         className="flex"
         style={{
-          width: Platform.OS === "web" ? "40%" : "100%",
-          maxWidth: 600,
+          width: Platform.OS === "web" ? "100%" : "100%",
+          maxWidth: 500,
+          minWidth: 350,
         }}
         key={id}
       >
@@ -147,19 +148,7 @@ export default function ExpenseCard({
                 >
                   -{expenses}
                 </Text>
-                {type === "expense" && (
-                  <Image
-                    className="absolute top-1 left-14 opacity-20"
-                    resizeMode="contain"
-                    source={icons.paid}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      marginLeft: -10,
-                      opacity: Opacity,
-                    }}
-                  />
-                )}
+              
               </View>
             </View>
           </View>

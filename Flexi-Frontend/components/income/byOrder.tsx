@@ -23,6 +23,7 @@ import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { router } from "expo-router";
+import { isDesktop, isMobileWeb } from "@/utils/responsive";
 
 type Bill = {
   id: number;
@@ -82,7 +83,7 @@ const ByOrder = () => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [bills, setBills] = useState<Bill[]>([]);
-  const isDesktop = Platform.OS === "web";
+ 
 
   // Table header text style
   const headerTextStyle: TextStyle = {
@@ -402,7 +403,7 @@ const ByOrder = () => {
           />
         
         </TouchableOpacity>
-        {isDesktop ? renderTableView() : renderCardView()}
+        {isDesktop() ? renderTableView() : renderCardView()}
         
       </SafeAreaView>
          
