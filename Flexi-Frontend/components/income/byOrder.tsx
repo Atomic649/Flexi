@@ -89,7 +89,7 @@ const ByOrder = () => {
   const headerTextStyle: TextStyle = {
     fontWeight: "900" as "900", // or any other acceptable value
     fontSize: 13,
-    color: theme === "dark" ? "#f5f5f8" : "#4b5563",      
+    color: theme === "dark" ? "#b4b4b5" : "#4b5563",      
     fontFamily:
     i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
 };
@@ -258,8 +258,9 @@ const ByOrder = () => {
                   >
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-40`}
+                      style={{ color: theme === "dark" ? "#b4b4b5" : undefined }}
                     >
                       {formatDate(bill.purchaseAt.toString())}
                     </Text>
@@ -267,6 +268,7 @@ const ByOrder = () => {
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-48`}
+                      style={{ color: theme === "dark" ? "#b4b4b5" : undefined }}
                       numberOfLines={1}
                     >
                       {bill.cName} {bill.cLastName}
@@ -275,6 +277,7 @@ const ByOrder = () => {
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-64`}
+                      style={{ color: theme === "dark" ? "#b4b4b5" : undefined }}
                       numberOfLines={1}
                     
                     >
@@ -284,6 +287,7 @@ const ByOrder = () => {
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-28`}
+                      style={{ color: theme === "dark" ? "#b4b4b5" : undefined }}
                     >
                       {bill.amount} {t("common.pcs")}
                     </Text>
@@ -291,6 +295,7 @@ const ByOrder = () => {
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-28 font-bold `}
+                      style={{ color: theme === "dark" ? "#b4b4b5" : undefined }}
                       // style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
                     >
                       +{bill.price}
