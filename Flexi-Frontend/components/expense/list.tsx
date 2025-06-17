@@ -22,7 +22,7 @@ import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { useRouter } from "expo-router";
-import { getScreenWidth, isDesktop, isMobile } from "@/utils/responsive";
+import { getScreenWidth, isDesktop, isMobile, getDeviceType } from "@/utils/responsive";
 
 type Expense = {
   id: number;
@@ -132,6 +132,10 @@ const List = () => {
     // Flatten grouped expenses for table view
     const allExpenses = Object.values(groupedExpense).flat();
 
+    // Get device info for responsive design
+    const { width, height } = Dimensions.get("window");
+    const deviceType = getDeviceType();
+
     if (allExpenses.length === 0) {
       return (
         <CustomText className="pt-10 text-center text-white">
@@ -141,63 +145,76 @@ const List = () => {
     }
 
     return (
-    
+      <View
+        style={{
+          flex: 1,
+          width: "100%",
+          height: "100%",
+          backgroundColor: theme === "dark" ? "#000000" : "#ffffff",
+        }}
+      >
         <ScrollView
-          horizontal={true}
           contentContainerStyle={{
+            flexGrow: 1,
             width: "100%",
             paddingHorizontal: 16,
             paddingVertical: 16,
-            maxWidth: 1200,
-            
-            
           }}
           style={{
             width: "100%",
-            backgroundColor: theme === "dark" ? "#000000" : "#ffffff",
-            alignSelf: "center",
-        
-         
           }}
-     
         >
-          <View style={{  width: "100%" 
-
-          }}>
+          <View
+            style={{
+              width: "100%",
+              maxWidth:
+                deviceType === "mobile"
+                  ? "100%"
+                  : deviceType === "tablet"
+                  ? 900
+                  : 1200,
+              alignSelf: "center",
+            }}
+          >
+            {/* Table Header Row - Fixed Styling */}
             <View
-              className="flex flex-row border-b  pb-2 mb-2"
+              className="flex flex-row border-b pb-2 mb-2"
               style={{
                 borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
                 paddingHorizontal: 16,
                 borderBottomWidth: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                marginStart: 22,
+                width: "100%",
+                flexDirection: "row",
+                display: "flex"
               }}
             >
-              <Text style={headerTextStyle} className={`w-1/6`}>
+              <Text style={[headerTextStyle, { width: "16.66%" }]}>
                 {t("expense.table.date")}
               </Text>
-              <Text style={headerTextStyle} className={`w-1/6`}>
+              <Text style={[headerTextStyle, { width: "16.66%" }]}>
                 {t("expense.table.type")}
               </Text>
-              <Text style={headerTextStyle} className={`w-2/6`}>
+              <Text style={[headerTextStyle, { width: "33.33%" }]}>
                 {t("expense.table.description")}
               </Text>
-              <Text style={headerTextStyle} className={`w-2/6`}>
+              <Text style={[headerTextStyle, { width: "16.66%" }]}>
                 {t("expense.table.note")}
               </Text>
-              <Text style={headerTextStyle} className={`w-1/6`}>
+              <Text style={[headerTextStyle, { width: "8.33%" }]}>
                 {t("expense.table.amount")}
               </Text>
-              <Text style={headerTextStyle} className={`w-1/6`}>
+              <Text style={[headerTextStyle, { width: "8.33%" }]}>
                 {t("expense.table.delete")}
               </Text>
             </View>
+
+            {/* Table Content */}
             <ScrollView
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
+              style={{ maxHeight: height * 0.8 }}
+              contentContainerStyle={{ flexGrow: 1 }}
             >
               {allExpenses.map((expense) => (
                 <TouchableOpacity
@@ -235,21 +252,24 @@ const List = () => {
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-1/6`}
+                      } `}
+                      style={{ width: "16.66%" }}
                     >
                       {formatDate(expense.date)}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-1/6`}
+                      } `}
+                      style={{ width: "16.66%" }}
                     >
                       {expense.type}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-2/6`} // Increased width from w-64 to w-96 for Description
+                      } `}
+                      style={{ width: "33.33%" }}
                       numberOfLines={1}
                     >
                       {expense.type === "ads" ? expense.note : expense.desc}
@@ -257,22 +277,22 @@ const List = () => {
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-2/6`}
+                      } `}
                       numberOfLines={1}
+                      style={{ width: "16.66%" }}
                     >
-                      {expense.type === "ads"
-                        ? "คาดการณ์ค่าโฆษณา"
-                        : expense.note}
+                      {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา" : expense.note}
                     </Text>
                     <Text
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
-                      } w-1/6 font-bold`}
-                      //style={{ color: getExpenseTextColor(expense.type) }}
+                      }  font-bold`}
+                      style={{ width: "8.33%", textAlign: "center" } as TextStyle}
                     >
                       -{expense.expenses}
                     </Text>
-                    <View className="flex flex-row w-24">
+                    <View className="flex flex-row w-24"
+                      style={{ width: "8.33%", justifyContent: "center" }}>
                       <TouchableOpacity
                         onPress={() => handleDelete(expense.id)}
                         className="mr-3"
@@ -290,7 +310,7 @@ const List = () => {
             </ScrollView>
           </View>
         </ScrollView>
-      
+      </View>
     );
   };
 
