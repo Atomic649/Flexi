@@ -144,6 +144,7 @@ model User {
   phone            String        @unique
   username         String?       @unique
   bio              String?
+  facebookId       String?       @unique
   business         BusinessAcc[]
   member           Member[]
   posts            Post[]

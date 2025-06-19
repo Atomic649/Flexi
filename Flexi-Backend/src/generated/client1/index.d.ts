@@ -3377,6 +3377,7 @@ export namespace Prisma {
     phone: string | null
     username: string | null
     bio: string | null
+    facebookId: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3391,6 +3392,7 @@ export namespace Prisma {
     phone: string | null
     username: string | null
     bio: string | null
+    facebookId: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3405,6 +3407,7 @@ export namespace Prisma {
     phone: number
     username: number
     bio: number
+    facebookId: number
     _all: number
   }
 
@@ -3429,6 +3432,7 @@ export namespace Prisma {
     phone?: true
     username?: true
     bio?: true
+    facebookId?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3443,6 +3447,7 @@ export namespace Prisma {
     phone?: true
     username?: true
     bio?: true
+    facebookId?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -3457,6 +3462,7 @@ export namespace Prisma {
     phone?: true
     username?: true
     bio?: true
+    facebookId?: true
     _all?: true
   }
 
@@ -3558,6 +3564,7 @@ export namespace Prisma {
     phone: string
     username: string | null
     bio: string | null
+    facebookId: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -3591,6 +3598,7 @@ export namespace Prisma {
     phone?: boolean
     username?: boolean
     bio?: boolean
+    facebookId?: boolean
     business?: boolean | User$businessArgs<ExtArgs>
     member?: boolean | User$memberArgs<ExtArgs>
     posts?: boolean | User$postsArgs<ExtArgs>
@@ -3619,6 +3627,7 @@ export namespace Prisma {
     phone?: boolean
     username?: boolean
     bio?: boolean
+    facebookId?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3633,6 +3642,7 @@ export namespace Prisma {
     phone?: boolean
     username?: boolean
     bio?: boolean
+    facebookId?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3647,9 +3657,10 @@ export namespace Prisma {
     phone?: boolean
     username?: boolean
     bio?: boolean
+    facebookId?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "firstName" | "lastName" | "avatar" | "createdAt" | "updatedAt" | "phone" | "username" | "bio", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "firstName" | "lastName" | "avatar" | "createdAt" | "updatedAt" | "phone" | "username" | "bio" | "facebookId", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     business?: boolean | User$businessArgs<ExtArgs>
     member?: boolean | User$memberArgs<ExtArgs>
@@ -3698,6 +3709,7 @@ export namespace Prisma {
       phone: string
       username: string | null
       bio: string | null
+      facebookId: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4145,6 +4157,7 @@ export namespace Prisma {
     readonly phone: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
     readonly bio: FieldRef<"User", 'String'>
+    readonly facebookId: FieldRef<"User", 'String'>
   }
     
 
@@ -27769,7 +27782,8 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     phone: 'phone',
     username: 'username',
-    bio: 'bio'
+    bio: 'bio',
+    facebookId: 'facebookId'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -28374,6 +28388,7 @@ export namespace Prisma {
     phone?: StringFilter<"User"> | string
     username?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
+    facebookId?: StringNullableFilter<"User"> | string | null
     business?: BusinessAccListRelationFilter
     member?: MemberListRelationFilter
     posts?: PostListRelationFilter
@@ -28401,6 +28416,7 @@ export namespace Prisma {
     phone?: SortOrder
     username?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    facebookId?: SortOrderInput | SortOrder
     business?: BusinessAccOrderByRelationAggregateInput
     member?: MemberOrderByRelationAggregateInput
     posts?: PostOrderByRelationAggregateInput
@@ -28421,6 +28437,7 @@ export namespace Prisma {
     email?: string
     phone?: string
     username?: string
+    facebookId?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -28444,7 +28461,7 @@ export namespace Prisma {
     review?: ReviewListRelationFilter
     owner?: CreditListRelationFilter
     credit?: CreditListRelationFilter
-  }, "id" | "email" | "phone" | "username">
+  }, "id" | "email" | "phone" | "username" | "facebookId">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28458,6 +28475,7 @@ export namespace Prisma {
     phone?: SortOrder
     username?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    facebookId?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -28480,6 +28498,7 @@ export namespace Prisma {
     phone?: StringWithAggregatesFilter<"User"> | string
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    facebookId?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type MemberWhereInput = {
@@ -30128,6 +30147,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -30155,6 +30175,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -30181,6 +30202,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -30208,6 +30230,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -30235,6 +30258,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -30248,6 +30272,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -30262,6 +30287,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MemberCreateInput = {
@@ -32096,6 +32122,7 @@ export namespace Prisma {
     phone?: SortOrder
     username?: SortOrder
     bio?: SortOrder
+    facebookId?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -32114,6 +32141,7 @@ export namespace Prisma {
     phone?: SortOrder
     username?: SortOrder
     bio?: SortOrder
+    facebookId?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -32128,6 +32156,7 @@ export namespace Prisma {
     phone?: SortOrder
     username?: SortOrder
     bio?: SortOrder
+    facebookId?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -37145,6 +37174,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutUserInput
@@ -37171,6 +37201,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
@@ -37500,6 +37531,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutUserNestedInput
@@ -37526,6 +37558,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
@@ -37813,6 +37846,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutUserInput
@@ -37839,6 +37873,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
@@ -38162,6 +38197,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutUserNestedInput
@@ -38188,6 +38224,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
@@ -39905,6 +39942,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -39931,6 +39969,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -39961,6 +40000,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -39987,6 +40027,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -40028,6 +40069,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40054,6 +40096,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40090,6 +40133,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40116,6 +40160,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40141,6 +40186,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     comments?: CommentCreateNestedManyWithoutUserInput
@@ -40167,6 +40213,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
@@ -40260,6 +40307,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     comments?: CommentUpdateManyWithoutUserNestedInput
@@ -40286,6 +40334,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
@@ -40375,6 +40424,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -40401,6 +40451,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -40480,6 +40531,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40506,6 +40558,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40563,6 +40616,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -40589,6 +40643,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -40668,6 +40723,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40694,6 +40750,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40719,6 +40776,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -40745,6 +40803,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -40775,6 +40834,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -40801,6 +40861,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -40842,6 +40903,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40868,6 +40930,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40904,6 +40967,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -40930,6 +40994,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -40955,6 +41020,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -40981,6 +41047,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -41011,6 +41078,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -41037,6 +41105,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -41159,6 +41228,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -41185,6 +41255,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -41221,6 +41292,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -41247,6 +41319,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -41382,6 +41455,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -41408,6 +41482,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -41537,6 +41612,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -41563,6 +41639,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -41854,6 +41931,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccCreateNestedManyWithoutUserInput
     member?: MemberCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutAuthorInput
@@ -41880,6 +41958,7 @@ export namespace Prisma {
     phone: string
     username?: string | null
     bio?: string | null
+    facebookId?: string | null
     business?: BusinessAccUncheckedCreateNestedManyWithoutUserInput
     member?: MemberUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutAuthorInput
@@ -41988,6 +42067,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUpdateManyWithoutUserNestedInput
     member?: MemberUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutAuthorNestedInput
@@ -42014,6 +42094,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     business?: BusinessAccUncheckedUpdateManyWithoutUserNestedInput
     member?: MemberUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutAuthorNestedInput

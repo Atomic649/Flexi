@@ -14,6 +14,7 @@ Table User {
   phone String [unique, not null]
   username String [unique]
   bio String
+  facebookId String [unique]
   business BusinessAcc [not null]
   member Member [not null]
   posts Post [not null]

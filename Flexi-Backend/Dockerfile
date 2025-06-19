@@ -22,6 +22,12 @@ COPY . .
 # Build the application (transpile TypeScript to JavaScript)
 RUN npm run build
 
+# Generate Prisma client
+RUN npm run prisma:generate
+
+# Run database migrations
+#RUN npm run prisma:migrate
+
 # Expose the port that the app runs on
 EXPOSE 3000
 
