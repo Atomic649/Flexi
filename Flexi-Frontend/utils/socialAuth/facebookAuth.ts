@@ -52,7 +52,7 @@ export const loginWithFacebook = async (): Promise<{
     }
     
     // Start a new Facebook authentication flow
-    console.log('🔵 Configuring Facebook auth request with redirect URI:', REDIRECT_URI);
+   // console.log('🔵 Configuring Facebook auth request with redirect URI:', REDIRECT_URI);
     const authRequestConfig: AuthSession.AuthRequestConfig = {
       responseType: AuthSession.ResponseType.Token,
       clientId: FB_APP_ID,
@@ -65,9 +65,9 @@ export const loginWithFacebook = async (): Promise<{
       tokenEndpoint: 'https://graph.facebook.com/v15.0/oauth/access_token',
     };
 
-    console.log('🔵 Creating Facebook auth request with config:', JSON.stringify(authRequestConfig));
+   // console.log('🔵 Creating Facebook auth request with config:', JSON.stringify(authRequestConfig));
     const authRequest = new AuthSession.AuthRequest(authRequestConfig);
-    console.log('🔵 Prompting user for Facebook login');
+   // console.log('🔵 Prompting user for Facebook login');
     const authResult = await authRequest.promptAsync(discovery);
 
     console.log('💙 Facebook Auth Result:', JSON.stringify(authResult, null, 2));
@@ -75,11 +75,11 @@ export const loginWithFacebook = async (): Promise<{
 
     
     if (authResult.type === 'success') {
-      console.log('🔵 Facebook auth successful, got access token');
+    //  console.log('🔵 Facebook auth successful, got access token');
       const { access_token, expires_in } = authResult.params;
       
       // Save token for future use
-      console.log('🔵 Saving Facebook token with expiration in', expires_in, 'seconds');
+    //  console.log('🔵 Saving Facebook token with expiration in', expires_in, 'seconds');
       const expirationDate = Date.now() + (Number(expires_in) * 1000);
       await AsyncStorage.setItem('@facebook_auth_token', JSON.stringify({
         accessToken: access_token,
@@ -87,8 +87,20 @@ export const loginWithFacebook = async (): Promise<{
       }));
       
       // Login with the token
-      console.log('🔵 Verifying Facebook token with backend');
-      return await verifyAndLoginWithFacebookToken(access_token);
+      // console.log('🔵 Verifying Facebook token with backend');
+      // return await verifyAndLoginWithFacebookToken(access_token);
+
+      // return success response  to toggle facebook
+     // console.log(' Facebook login successful, returning success response')
+      return {
+        success: true,
+        data: {
+          accessToken: access_token,
+          expirationDate
+        }
+      };
+
+
     } else {
       console.log('🔴 Facebook login was cancelled or failed:', authResult.type);
       return {
@@ -110,8 +122,7 @@ export const loginWithFacebook = async (): Promise<{
  */
 const verifyAndLoginWithFacebookToken = async (token: string) => {
   try {
-    // Get user data from Facebook using the token
-    console.log('🔵 Fetching user data from Facebook Graph API');
+    // Get user data from Facebook using the token  
     const fbUserResponse = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${token}`);
     const fbUserData = await fbUserResponse.json();
     
@@ -121,58 +132,19 @@ const verifyAndLoginWithFacebookToken = async (token: string) => {
       console.log('🔴 Facebook Graph API error:', fbUserData.error);
       throw new Error(fbUserData.error.message);
     }
-    
-    // Get firstName and lastName from the name
-    const nameParts = fbUserData.name ? fbUserData.name.split(' ') : ['', ''];
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-    
-    // Now authenticate with your backend using the Facebook data
-    const requestData = {
-      facebookId: fbUserData.id,
-      email: fbUserData.email || `${fbUserData.id}@facebook.com`, // Fallback if email not provided
-      firstName,
-      lastName,
-      avatar: fbUserData.picture?.data?.url
-    };
-    
-    console.log('🔵 Sending data to backend for authentication:', JSON.stringify(requestData, null, 2));
-    
-    const axios = getAxios();
-    const response = await axios.post('/auth/facebook-login', requestData);
-    
-    console.log('🔵 Backend Facebook Auth Response:', JSON.stringify(response.data, null, 2));
-    
-    // Store user session/token from your backend
-    if (response.data.token) {
-      console.log('🔵 Storing authentication token from backend');
-      await AsyncStorage.setItem('@user_token', response.data.token);
-      
-      // If your backend provides user data
-      if (response.data.user) {
-        console.log('🔵 Storing user data from backend');
-        await AsyncStorage.setItem('@user_data', JSON.stringify(response.data.user));
-      }
-      
+      console.log('🔵 Facebook user data retrieved successfully:', fbUserData);
       return {
         success: true,
-        data: response.data
+        data: fbUserData
       };
-    } else {
-      console.log('🔴 Backend did not return authentication token');
+    } catch (error) {
+      console.error('🔴 Facebook verification error:', error);
       return {
         success: false,
-        error: 'Backend authentication failed'
+        error: 'Failed to verify Facebook credentials'
       };
-    }
-  } catch (error) {
-    console.error('🔴 Facebook verification error:', error);
-    return {
-      success: false,
-      error: 'Failed to verify Facebook credentials'
-    };
-  }
-};
+    }}
+      
 
 /**
  * Logs out from Facebook

@@ -159,6 +159,31 @@ class CallAPIUser {
     }
   }
 
+  // Facebook Login API
+  async facebookLoginAPI(data: {
+    facebookId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+  }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { error: { message: "No Network Connection" } };
+    }
+    try {
+      const response = await getAxios().post("/auth/facebook-login", data);
+      console.log("🚀facebookLoginAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Facebook Login API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        return { error: error.response.data };
+      } else {
+        return { error: { message: "Network Error" } };
+      }
+    }
+  }
+
   // onAuthStateChange
   onAuthStateChange(_callback: (session: any) => void) {
     // Implement this method to listen to authentication state changes

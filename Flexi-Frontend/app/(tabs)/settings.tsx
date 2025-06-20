@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   Pressable,
@@ -20,6 +20,11 @@ import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import { removeToken } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
+import {
+  loginWithFacebook,
+  logoutFromFacebook,
+  isFacebookAuthenticated,
+} from "@/utils/socialAuth/facebookAuth";
 
 // Utility function to get switch colors
 const getSwitchPlatformColors = (theme: string, value: boolean) => ({
@@ -41,6 +46,7 @@ export default function Setting() {
   const [Line, setLine] = useState(false); // Default to false
   const { t, i18n } = useTranslation(); // กำหนดตัวแปรใช้งานภาษา
   const { theme, toggleTheme } = useTheme(); // กำหนดตัวแปรใช้งานธีม
+  const [isProcessingFacebook, setIsProcessingFacebook] = useState(false);
 
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -57,6 +63,16 @@ export default function Setting() {
     message: "",
     buttons: [],
   });
+
+  // Check Facebook authentication status on component mount
+  useEffect(() => {
+    const checkFacebookAuth = async () => {
+      const isAuthenticated = await isFacebookAuthenticated();
+      setFacebook(isAuthenticated);
+    };
+
+    checkFacebookAuth();
+  }, []);
 
   // ฟังก์ชันออกจากระบบ
   const handleLogout = async () => {
@@ -213,12 +229,6 @@ export default function Setting() {
 
   //---------Platform Toggle Handlers---------
 
-  // Handle Facebook toggle
-  const handleFacebookToggle = () => {
-    setFacebook((prev) => !prev); // Toggle between true and false
-    console.log("Facebook toggle:", !Facebook);
-  };
-
   // Handle TikTok toggle
   const handleTiktokToggle = () => {
     setTiktok((prev) => !prev); // Toggle between true and false
@@ -235,6 +245,102 @@ export default function Setting() {
   const handleLineToggle = () => {
     setLine((prev) => !prev); // Toggle between true and false
     console.log("Line toggle:", !Line);
+  };
+
+  // Handle Facebook authentication
+  const handleFacebookToggle = async () => {
+    // Prevent multiple rapid clicks
+    if (isProcessingFacebook) return;
+    
+    try {
+      setIsProcessingFacebook(true);
+      console.log('🔄 Facebook toggle pressed, current state:', Facebook);
+      
+      if (Facebook) {
+        // Logging out from Facebook
+        console.log('🔄 Starting Facebook logout process');
+        const success = await logoutFromFacebook();
+        console.log('🔄 Facebook logout result:', success);
+        
+        if (success) {
+          setFacebook(false);
+          console.log('🔄 Facebook state updated to false after logout');
+          setAlertConfig({
+            visible: true,
+            title: t("common.success"),
+            message: t("settings.socialMedia.disconnected", {
+              platform: "Facebook",
+            }),
+            buttons: [
+              {
+                text: t("common.ok"),
+                onPress: () =>
+                  setAlertConfig((prev) => ({ ...prev, visible: false })),
+              },
+            ],
+          });
+        }
+      } else {
+        // Logging in with Facebook
+        console.log('🔄 Starting Facebook login process');
+        const result = await loginWithFacebook();
+        console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
+
+        if (result.success) {
+          setFacebook(true);
+          console.log('🔄 Facebook state updated to true after successful login');
+          setAlertConfig({
+            visible: true,
+            title: t("common.success"),
+            message: t("settings.socialMedia.connected", {
+              platform: "Facebook",
+            }),
+            buttons: [
+              {
+                text: t("common.ok"),
+                onPress: () =>
+                  setAlertConfig((prev) => ({ ...prev, visible: false })),
+              },
+            ],
+          });
+        } else {
+          console.log('🔄 Facebook login failed:', result.error);
+          setAlertConfig({
+            visible: true,
+            title: t("common.error"),
+            message:
+              result.error ||
+              t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
+            buttons: [
+              {
+                text: t("common.ok"),
+                onPress: () =>
+                  setAlertConfig((prev) => ({ ...prev, visible: false })),
+              },
+            ],
+          });
+        }
+      }
+    } catch (error) {
+      console.error('🔄 Facebook auth error:', error);
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: t("settings.socialMedia.connectionFailed", {
+          platform: "Facebook",
+        }),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } finally {
+      console.log('🔄 Facebook authentication process completed');
+      setIsProcessingFacebook(false);
+    }
   };
 
   //------------------------------------------
