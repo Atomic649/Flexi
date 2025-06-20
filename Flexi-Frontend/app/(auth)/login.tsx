@@ -20,6 +20,7 @@ import images from "@/constants/images";
 import { t } from "i18next";
 import { saveBusinessId, saveMemberId, saveToken, saveUserId } from "@/utils/utility";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
+import ForgotPassword from './forgot_password';
 
 export default function Login() {
   // State variables for email and password
@@ -196,6 +197,14 @@ export default function Login() {
                 <CustomText weight="regular" className="text-lg">
                   {t("auth.login.noAccount")}
                 </CustomText>
+                <Button
+                  title={t("auth.login.ForgotPasswordButton")}
+                  onPress={() => router.replace("/forgot_password")}
+                />
+                {/* <Button
+                  title={t("RESET")}
+                  onPress={() => router.replace("/reset_password")}
+                /> */}
                 <Button
                   title={t("auth.login.registerButton")}
                   onPress={() => router.replace("/register")}

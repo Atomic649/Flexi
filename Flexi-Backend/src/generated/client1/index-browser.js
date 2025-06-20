@@ -129,7 +129,8 @@ exports.Prisma.UserScalarFieldEnum = {
   phone: 'phone',
   username: 'username',
   bio: 'bio',
-  facebookId: 'facebookId'
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry'
 };
 
 exports.Prisma.MemberScalarFieldEnum = {

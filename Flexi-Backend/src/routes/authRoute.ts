@@ -10,6 +10,8 @@ import {
   logout,
   session,
   changePassword,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/authController";
 
 // Create express router
@@ -43,5 +45,11 @@ router.get("/logout", logout);
 
 // session
 router.get("/session/", session);
+
+// Forgot password
+router.post("/forgot-password", forgotPassword);
+
+// Reset password
+router.post("/reset-password", resetPassword);
 
 export default router;

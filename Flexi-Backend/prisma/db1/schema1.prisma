@@ -144,6 +144,8 @@ model User {
   phone            String        @unique
   username         String?       @unique
   bio              String?
+  resetToken       String? // Optional field for reset token
+  resetTokenExpiry DateTime? // Optional field for token expiry
   business         BusinessAcc[]
   member           Member[]
   posts            Post[]
@@ -167,17 +169,16 @@ model Member {
   updatedAt  DateTime @updatedAt
 
   // Relation
-  userId   Int
-  user     User          @relation(fields: [userId], references: [id])
+  userId     Int
+  user       User         @relation(fields: [userId], references: [id])
   businessId Int?
-  business BusinessAcc?  @relation(fields: [businessId], references: [id])
-  bill     Bill[]
-  adsCost  AdsCost[]
-  expense  Expense[]
-  product  Product[]
-  platform Platform[]
-  store    Store[]
-  
+  business   BusinessAcc? @relation(fields: [businessId], references: [id])
+  bill       Bill[]
+  adsCost    AdsCost[]
+  expense    Expense[]
+  product    Product[]
+  platform   Platform[]
+  store      Store[]
 }
 
 model BusinessAcc {
@@ -192,22 +193,21 @@ model BusinessAcc {
   businessType     BusinessType @default(OnlineSale)
   taxType          taxType      @default(Individual)
   userId           Int
-  memberId         String? 
-  user             User         @relation(fields: [userId], references: [id]) 
-  AllMember       Member[]
+  memberId         String?
+  user             User         @relation(fields: [userId], references: [id])
+  AllMember        Member[]
   billRecord       Bill[]
   expenseRecord    Expense[]
   adsCostRecord    AdsCost[]
   platform         Platform[]
   storefront       Store[]
   product          Product[]
- 
 }
 
 model Bill {
-  id         Int         @id @default(autoincrement())
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id         Int           @id @default(autoincrement())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
   cName      String
   cLastName  String?
   cPhone     String?
@@ -218,21 +218,21 @@ model Bill {
   product    String
   payment    Payment
   amount     Int
-  purchaseAt DateTime    @default(now())
+  purchaseAt DateTime      @default(now())
   platform   IncomeChannel
-  cashStatus Boolean     @default(false)
+  cashStatus Boolean       @default(false)
   price      Int
-  image  String?
-  deleted    Boolean?     @default(false)
+  image      String?
+  deleted    Boolean?      @default(false)
 
   // Relation 
   productList Product     @relation(fields: [product], references: [name])
-  memberId    String     
+  memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   storeId     Int
-  store       Store @relation(fields: [storeId], references: [id])
+  store       Store       @relation(fields: [storeId], references: [id])
 }
 
 model AdsCost {
@@ -263,10 +263,10 @@ model Expense {
   image     String?
   note      String?
   desc      String?
-  deleted   Boolean?  @default(false)
-  save      Boolean?  @default(false)
+  deleted   Boolean? @default(false)
+  save      Boolean? @default(false)
   channel   Bank?
-  code     String?
+  code      String?
 
   // Relation
   businessAcc Int
@@ -279,30 +279,30 @@ model Platform {
   id          Int         @id @default(autoincrement())
   platform    SocialMedia
   accName     String      @unique
-  accId       String      
+  accId       String
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   platformId  AdsCost[]
   businessAcc Int
   memberId    String
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  member    Member      @relation(fields: [memberId], references: [uniqueId])
-  deleted     Boolean?     @default(false)
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  deleted     Boolean?    @default(false)
 }
 
 model Store {
-  id          Int           @id @default(autoincrement())
-  platform    IncomeChannel
-  accName     String        @unique
-  accId       String        
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           Int           @id @default(autoincrement())
+  platform     IncomeChannel
+  accName      String        @unique
+  accId        String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   storefrontId Bill[]
-  businessAcc Int
-  businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])
-  memberId    String
-  member      Member        @relation(fields: [memberId], references: [uniqueId])
-  deleted     Boolean?      @default(false)
+  businessAcc  Int
+  businessId   BusinessAcc   @relation(fields: [businessAcc], references: [id])
+  memberId     String
+  member       Member        @relation(fields: [memberId], references: [uniqueId])
+  deleted      Boolean?      @default(false)
 }
 
 model Product {
@@ -318,12 +318,12 @@ model Product {
   statusId    Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  deleted     Boolean?  @default(false)
+  deleted     Boolean? @default(false)
 
   // relation
-  billRecord Bill[]
-  adsRecord  AdsCost[]
-  member     Member    @relation(fields: [memberId], references: [uniqueId])
+  billRecord  Bill[]
+  adsRecord   AdsCost[]
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
 }
@@ -352,7 +352,7 @@ model Post {
   author    User       @relation(fields: [authorId], references: [id])
   reactions Reaction[]
   comments  Comment[]
-  deleted   Boolean?    @default(false)
+  deleted   Boolean?   @default(false)
 }
 
 model Reaction {
@@ -375,7 +375,7 @@ model Comment {
   post      Post     @relation(fields: [postId], references: [id])
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
-  deleted   Boolean?    @default(false)
+  deleted   Boolean? @default(false)
 }
 
 model Inbox {
@@ -387,7 +387,7 @@ model Inbox {
   updatedAt  DateTime @updatedAt
   read       Boolean  @default(false)
   unsent     Boolean  @default(false)
-  deleted    Boolean?  @default(false)
+  deleted    Boolean? @default(false)
   sender     User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
@@ -402,7 +402,7 @@ model Shop {
   category    Category
   sellerId    Int
   buyerId     Int
-  deleted     Boolean?     @default(false)
+  deleted     Boolean?    @default(false)
 
   // relation
   seller User @relation("Seller", fields: [sellerId], references: [id])
@@ -421,7 +421,7 @@ model Order {
   shopId    Int      @unique
   buyerId   Int
   sellerId  Int
-  deleted   Boolean?  @default(false)
+  deleted   Boolean? @default(false)
 
   // relation
   seller Shop    @relation(fields: [shopId], references: [id])

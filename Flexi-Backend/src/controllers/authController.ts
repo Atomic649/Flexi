@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
+
 
 // Ensure this file is also converted to TypeScript
 // Define types for the user inputs
@@ -19,6 +22,63 @@ const Prisma = new PrismaClient1();
 
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };
+const resetTokenConfig = { expiresIn: "1h" };
+
+// Email configuration for password reset - Updated with better security options
+let transporter: nodemailer.Transporter;
+
+// Initialize the email transporter based on environment
+async function initializeTransporter() {
+  // Check if we're in a production environment
+  if (process.env.NODE_ENV === 'production') {
+    // For production, use the actual email service
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        // Use OAuth2 or App Password
+        user: process.env.EMAIL_USER,
+        // For App Password setup: https://support.google.com/accounts/answer/185833
+        pass: process.env.EMAIL_APP_PASSWORD, 
+      },
+    });
+  } else {
+    // For development/testing, create a test account with Ethereal
+    console.log('Development mode: Creating Ethereal test account');
+    
+    try {
+      // Create a testing account with Ethereal
+      const testAccount = await nodemailer.createTestAccount();
+      
+      // Create a transporter with the test account
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+      
+      console.log('Ethereal test account created successfully');
+      console.log('Ethereal credentials - User:', testAccount.user);
+    } catch (error) {
+      console.error('Failed to create Ethereal test account:', error);
+      
+      // Fallback to a nodemailer development transport that just logs messages
+      transporter = nodemailer.createTransport({
+        streamTransport: true,
+        newline: 'unix',
+        buffer: true
+      });
+    }
+  }
+}
+
+// Initialize the transporter
+(async () => {
+  await initializeTransporter();
+})();
 
 const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
@@ -412,7 +472,162 @@ const changePassword = async (req: Request, res: Response) => {
   }
 };
 
+// Forgot Password - Sends reset token email
+const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  
+  // Validate input
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+  
+  const { error } = schema.validate({ email });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
 
+  try {
+    // Check if user exists
+    const user = await Prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      // For security reasons, don't reveal that the user doesn't exist
+      return res.status(200).json({ 
+        status: "ok",
+        message: "If your email is registered, you will receive a password reset link" 
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    // Store token in database
+    await Prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        resetToken: resetToken,
+        resetTokenExpiry: resetTokenExpiry,
+      },
+    });
+
+    // Generate JWT reset token
+    const jwtResetToken = jwt.sign(
+      { id: user.id, token: resetToken },
+      "reset-secret",
+      resetTokenConfig
+    );
+
+    // Email content
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${jwtResetToken}`;
+    const mailOptions = {
+      from: process.env.NODE_ENV === 'production' ? process.env.EMAIL_USER : 'dev@example.com',
+      to: user.email,
+      subject: 'Password Reset Request',
+      html: `
+        <h1>Password Reset</h1>
+        <p>You requested a password reset. Please click the link below to reset your password:</p>
+        <a href="${resetUrl}">Reset Password</a>
+        <p>This link is valid for 1 hour.</p>
+        <p>If you did not request a password reset, please ignore this email.</p>
+      `
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+
+    // In development mode, log the test email URL
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Password reset email sent in development mode');
+      
+      // Check if we have a preview URL from Ethereal
+      if (nodemailer.getTestMessageUrl(info)) {
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      }
+      
+      // If using stream transport, show the message content
+      if (info.message) {
+        console.log('Email content:', info.message.toString());
+      }
+      
+      console.log('Reset URL (for development testing):', resetUrl);
+    }
+
+    res.status(200).json({
+      status: "ok",
+      message: "If your email is registered, you will receive a password reset link",
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to process password reset request" });
+  }
+};
+
+// Reset Password - Validates token and updates password
+const resetPassword = async (req: Request, res: Response) => {
+  const { token, newPassword } = req.body;
+
+  // Validate input
+  const schema = Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string().required().min(6),
+  });
+  
+  const { error } = schema.validate({ token, newPassword });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    // Verify JWT token
+    const decoded = jwt.verify(token, "reset-secret") as { id: number, token: string };
+    
+    // Find user with valid token
+    const user = await Prisma.user.findFirst({
+      where: {
+        id: decoded.id,
+        resetToken: decoded.token,
+        resetTokenExpiry: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user password and clear reset token
+    await Prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    res.status(200).json({
+      status: "ok",
+      message: "Password has been reset successfully",
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to reset password" });
+  }
+};
 
 export {
   register,
@@ -424,5 +639,7 @@ export {
   getAvatar,
   logout,
   session,
-  changePassword
+  changePassword,
+  forgotPassword,
+  resetPassword
 };

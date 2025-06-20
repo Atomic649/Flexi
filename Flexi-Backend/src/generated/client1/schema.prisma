@@ -144,7 +144,8 @@ model User {
   phone            String        @unique
   username         String?       @unique
   bio              String?
-  facebookId       String?       @unique
+  resetToken       String? // Optional field for reset token
+  resetTokenExpiry DateTime? // Optional field for token expiry
   business         BusinessAcc[]
   member           Member[]
   posts            Post[]

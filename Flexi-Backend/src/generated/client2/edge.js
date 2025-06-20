@@ -242,7 +242,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/app/src/generated/client2",
+      "value": "/Users/tananyarukoon/Flexi/Flexi-Backend/src/generated/client2",
       "fromEnvVar": null
     },
     "config": {
@@ -251,16 +251,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "linux-musl-openssl-3.0.x",
+        "value": "darwin",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/app/prisma/db2/schema2.prisma",
+    "sourceFilePath": "/Users/tananyarukoon/Flexi/Flexi-Backend/prisma/db2/schema2.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
+    "rootEnvPath": "../../../.env",
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma/db2",
@@ -270,11 +270,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL2",
-        "value": "postgresql://postgres:123456@flexiadsdb:5432/prismatypedb2?schema=flexiadsdb"
+        "value": null
       }
     }
   },

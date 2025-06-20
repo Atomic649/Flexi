@@ -246,6 +246,47 @@ class CallAPIUser {
     }
   }
 
+  // Forgot Password API
+  async forgotPasswordAPI(data: { email: string }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const response = await getAxios().post("/auth/forgot-password", data);
+      console.log("🚀forgotPasswordAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Forgot Password API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Reset Password API
+  async resetPasswordAPI(data: { 
+    token: string; 
+    newPassword: string 
+  }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const response = await getAxios().post("/auth/reset-password", data);
+      console.log("🚀resetPasswordAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Reset Password API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
   // onAuthStateChange
   onAuthStateChange(_callback: (session: any) => void) {
     // Implement this method to listen to authentication state changes
