@@ -15,6 +15,9 @@ export default function AuthLayout() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="business_register" options={{ headerShown: false }} />
+        <Stack.Screen name="forgot_password" options={{ headerShown: false }} />
+        <Stack.Screen name="change_password" options={{ headerShown: false }} />
+        <Stack.Screen name="delete_account" options={{ headerShown: false }} />
        
 
       </Stack>

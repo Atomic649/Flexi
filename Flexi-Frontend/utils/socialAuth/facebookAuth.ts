@@ -3,6 +3,8 @@ import * as AuthSession from 'expo-auth-session';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAxios } from '../axiosInstance';
+import  CallAPIPlatform  from '@/api/platform_api';
+import { getMemberId } from '../utility';
 
 // Register with the Facebook Developer Portal and get your app ID
 // Then replace this with your Facebook App ID
@@ -28,13 +30,12 @@ export const loginWithFacebook = async (): Promise<{
   error?: string;
 }> => {
   try {
-    console.log('🔵 Starting Facebook login flow');
-    
-    // Check if already authenticated with Facebook
+
+        // Check if already authenticated with Facebook
     const fbTokenData = await AsyncStorage.getItem('@facebook_auth_token');
     
     if (fbTokenData) {
-      console.log('🔵 Found existing Facebook token, validating...');
+      //console.log('🔵 Found existing Facebook token, validating...');
       
       // If we already have a token, verify it's still valid
       const tokenInfo = JSON.parse(fbTokenData);
@@ -42,12 +43,12 @@ export const loginWithFacebook = async (): Promise<{
       
       // If token is still valid and not expired
       if (tokenInfo.expirationDate > now) {
-        console.log('🔵 Token is still valid, using existing token');
+        console.log('🔵 FB Token is still valid, using existing token');
         return await verifyAndLoginWithFacebookToken(tokenInfo.accessToken);
       }
       
       // Token expired, clear it
-      console.log('🔵 Token expired, clearing and requesting new token');
+      console.log('⚠️FB Token expired, clearing and requesting new token');
       await AsyncStorage.removeItem('@facebook_auth_token');
     }
     
@@ -65,9 +66,9 @@ export const loginWithFacebook = async (): Promise<{
       tokenEndpoint: 'https://graph.facebook.com/v15.0/oauth/access_token',
     };
 
-   // console.log('🔵 Creating Facebook auth request with config:', JSON.stringify(authRequestConfig));
-    const authRequest = new AuthSession.AuthRequest(authRequestConfig);
-   // console.log('🔵 Prompting user for Facebook login');
+   
+    const authRequest = new AuthSession.AuthRequest(authRequestConfig);  
+    console.log('🦋 Starting Facebook auth request with config:', JSON.stringify(authRequestConfig, null, 2));
     const authResult = await authRequest.promptAsync(discovery);
 
     console.log('💙 Facebook Auth Result:', JSON.stringify(authResult, null, 2));
@@ -78,20 +79,26 @@ export const loginWithFacebook = async (): Promise<{
     //  console.log('🔵 Facebook auth successful, got access token');
       const { access_token, expires_in } = authResult.params;
       
-      // Save token for future use
-    //  console.log('🔵 Saving Facebook token with expiration in', expires_in, 'seconds');
+      // Save Facebook token 
+      //  console.log('🔵 Saving Facebook token with expiration in', expires_in, 'seconds');
       const expirationDate = Date.now() + (Number(expires_in) * 1000);
       await AsyncStorage.setItem('@facebook_auth_token', JSON.stringify({
         accessToken: access_token,
         expirationDate
       }));
-      
-      // Login with the token
-      // console.log('🔵 Verifying Facebook token with backend');
-      // return await verifyAndLoginWithFacebookToken(access_token);
 
-      // return success response  to toggle facebook
-     // console.log(' Facebook login successful, returning success response')
+      // const memberId = (await getMemberId()) || 'unknown';
+
+      // // add FB ID to platforms API
+      // const AddFacebookIdToPlatform = CallAPIPlatform.createPlatformAPI({
+      //   platform: 'Facebook',
+      //   accName: authResult.params.name || 'Facebook User',
+      //   accId: authResult.params.id || 'unknown',
+      //   memberId: memberId  // Replace with actual member ID if available, fallback to 'unknown'
+      // });
+
+      // console.log('🔵 Adding Facebook ID to platforms API:', AddFacebookIdToPlatform);
+      
       return {
         success: true,
         data: {
@@ -102,10 +109,10 @@ export const loginWithFacebook = async (): Promise<{
 
 
     } else {
-      console.log('🔴 Facebook login was cancelled or failed:', authResult.type);
+     //console.log('🔴 Facebook login was cancelled or failed:', authResult.type);
       return {
         success: false,
-        error: 'Facebook login was cancelled or failed'
+        error: 'Please Login with Facebook \n in pop up window'
       };
     }
   } catch (error) {
@@ -151,7 +158,6 @@ const verifyAndLoginWithFacebookToken = async (token: string) => {
  */
 export const logoutFromFacebook = async (): Promise<boolean> => {
   try {
-    console.log('🔵 Logging out from Facebook');
     // Clear stored Facebook token
     await AsyncStorage.removeItem('@facebook_auth_token');
     console.log('🔵 Facebook logout successful');

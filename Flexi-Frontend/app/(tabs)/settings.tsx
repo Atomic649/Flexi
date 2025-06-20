@@ -221,6 +221,40 @@ export default function Setting() {
     }
   };
 
+  // ---------- ฟังก์ชัน security ------------
+  const showSecurityOptions = () => {
+    if (!alertConfig.visible) {
+      setAlertConfig({
+        visible: true,
+        title: t("settings.security.title"),
+        message: t("settings.security.message"),
+        buttons: [
+          {
+            text: t("settings.security.changePassword"),
+            onPress: () => {
+              // Navigate to change password screen
+              router.replace("/change_password");
+            },
+          },
+          {
+            text: t("settings.security.DeleyteAccount"),
+            onPress: () => {
+              // Navigate to enable 2FA screen
+             // router.push("/delete_account");
+              router.replace("/delete_account");
+            },
+          },
+          
+          {
+            text: t("common.cancel"),
+            style: "cancel",
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }}
+
   //---------- ฟังก์ชันเปลี่ยนการตลาด------------
 
   const toggleMarketing = () => {
@@ -254,17 +288,15 @@ export default function Setting() {
     
     try {
       setIsProcessingFacebook(true);
-      console.log('🔄 Facebook toggle pressed, current state:', Facebook);
+      //console.log('🔄 Facebook toggle pressed, current state:', Facebook);
       
       if (Facebook) {
-        // Logging out from Facebook
-        console.log('🔄 Starting Facebook logout process');
+        // Logging out from Facebook        
         const success = await logoutFromFacebook();
-        console.log('🔄 Facebook logout result:', success);
+       // console.log('🔄 Facebook logout result:', success);
         
         if (success) {
-          setFacebook(false);
-          console.log('🔄 Facebook state updated to false after logout');
+          setFacebook(false);          
           setAlertConfig({
             visible: true,
             title: t("common.success"),
@@ -282,13 +314,11 @@ export default function Setting() {
         }
       } else {
         // Logging in with Facebook
-        console.log('🔄 Starting Facebook login process');
         const result = await loginWithFacebook();
-        console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
+       // console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
 
         if (result.success) {
-          setFacebook(true);
-          console.log('🔄 Facebook state updated to true after successful login');
+          setFacebook(true);         
           setAlertConfig({
             visible: true,
             title: t("common.success"),
@@ -304,7 +334,7 @@ export default function Setting() {
             ],
           });
         } else {
-          console.log('🔄 Facebook login failed:', result.error);
+         // console.log('🔄 Facebook login failed:', result.error);
           setAlertConfig({
             visible: true,
             title: t("common.error"),
@@ -338,7 +368,7 @@ export default function Setting() {
         ],
       });
     } finally {
-      console.log('🔄 Facebook authentication process completed');
+     // console.log('🔄 Facebook authentication process completed');
       setIsProcessingFacebook(false);
     }
   };
@@ -549,6 +579,7 @@ export default function Setting() {
               <SectionItem
                 icon="shield"
                 text={t("settings.privacy.security")}
+                onPress={showSecurityOptions}
               />
               <Divider />
               <SectionItem

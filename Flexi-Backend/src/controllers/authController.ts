@@ -20,7 +20,6 @@ const Prisma = new PrismaClient1();
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };
 
-
 const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
@@ -140,7 +139,7 @@ const login = async (req: Request, res: Response) => {
         bio: user.bio,
         username: user.username,
         memberId: memberId?.uniqueId,
-        businessId: businessAcc.id,        
+        businessId: businessAcc.id,
       },
     });
   } catch (e) {
@@ -176,6 +175,98 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+// Permanently delete  business account by memberId with password verification
+const permanentlyDelete = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  const { password } = req.body;
+
+  // Validate input
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  try {
+    // Find business account by memberId
+    const businessAcc = await Prisma.businessAcc.findFirst({
+      where: {
+        memberId: memberId,
+      },
+    });
+    if (!businessAcc) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
+
+    // Delete all related data in BusinessAcc
+
+    //Bill
+    await Prisma.bill.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //Expense
+    await Prisma.expense.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //adsCost
+    await Prisma.adsCost.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //Platform
+    await Prisma.platform.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //Store
+    await Prisma.store.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //Product
+    await Prisma.product.deleteMany({
+      where: {
+        businessAcc: businessAcc.id,
+      },
+    });
+
+    //BusinessAcc
+    await Prisma.businessAcc.delete({
+      where: {
+        id: businessAcc.id,
+      },
+    });
+
+    // Member
+    await Prisma.member.delete({
+      where: {
+        uniqueId: memberId,
+      },
+    });
+
+    res
+      .status(200)
+      .json({
+        message: "Business account and all related data deleted successfully",
+      });
+  } catch (e) {
+    console.error(e);
+    res
+      .status(500)
+      .json({ message: "failed to permanently delete business account" });
+  }
+};
+
 // Update user by id by prisma validation by joi and bcrypt and jwt
 const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -204,7 +295,7 @@ const updateUser = async (req: Request, res: Response) => {
         password: hashedPassword,
         firstName: userInput.firstName,
         lastName: userInput.lastName,
-        avatar: userInput.avatar, 
+        avatar: userInput.avatar,
         phone: userInput.phone,
       },
     });
@@ -255,20 +346,83 @@ const session = async (req: Request, res: Response) => {
         id: decoded.id,
       },
     });
-    res.json({ session: user,message: "session found" });
+    res.json({ session: user, message: "session found" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get session" });
   }
 };
 
+// Change User Password
+const changePassword = async (req: Request, res: Response) => {
+  const { id, currentPassword, newPassword } = req.body;
+
+  const schema = Joi.object({
+    id: Joi.number().required(),
+    currentPassword: Joi.string().required(),
+    newPassword: Joi.string().required(),
+  });
+  const { error } = schema.validate({ id, currentPassword, newPassword });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+
+  try {
+    const user = await Prisma.user.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) {
+      return res.status(401).json({ message: "Old password is incorrect" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    const updatedUser = await Prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        password: hashedNewPassword,
+      },
+    });
+
+    res.json({
+      status: "ok",
+      message: "Password changed successfully",
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        phone: updatedUser.phone,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to change password" });
+  }
+};
+
+
+
 export {
   register,
   login,
   getUsers,
   deleteUser,
+  permanentlyDelete,
   updateUser,
   getAvatar,
   logout,
   session,
+  changePassword
 };

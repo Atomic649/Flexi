@@ -139,6 +139,68 @@ class CallAPIUser {
     }
   }
 
+  // Delete User API
+  async deleteUserAPI(memberId: string, data: { password: string }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.delete(
+        `/auth/permanently-delete/${memberId}`,
+        {
+          data: { password: data.password },
+        }
+      );
+      console.log("🚀deleteUserAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Delete User API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Change Password API
+  async changePasswordAPI(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      // Get user ID from session
+      const session = await this.getSessionAPI();
+      if (!session || !session.session || !session.session.id) {
+        throw new Error("User session not found");
+      }
+      
+      // Add user ID to request data instead of in URL
+      const requestData = {
+        ...data,
+        id: session.session.id
+      };
+      
+      // Use POST method to match backend route
+      const response = await axiosInstance.post(`/auth/change-password`, requestData);
+      console.log("🚀changePasswordAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Change Password API Error:", error)
+      
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
   // Logout API
   async logoutAPI(): Promise<any> {
     if (!(await checkNetwork())) {
