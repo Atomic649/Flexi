@@ -38,6 +38,7 @@
       "button": "Login",
       "noAccount": "Don't have an account?",
       "registerButton": "Register",
+      "ForgotPasswordButton": "Forgot Password",
       "validation": {
         "incomplete": "Incomplete data",
         "invalidData": "Please enter valid data"
@@ -919,5 +920,36 @@
       "invalidPhone": "Invalid Phone Number",
       "phoneFormat": "Phone number must be 10 digits"
     }
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "sendButton": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "emailSent": "Email Sent",
+    "emailSentMessage": "If your email is registered, you will receive a reset link",
+    "enterEmail": "Please enter your email address",
+    "ok": "OK"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Enter your new password below.",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "resetButton": "Reset Password",
+    "backToLogin": "Back to Login",
+    "invalidLink": "Invalid Link",
+    "invalidLinkMessage": "The password reset link appears to be invalid. Please request a new link.",
+    "success": "Success",
+    "successMessage": "Your password has been reset successfully.",
+    "login": "Login",
+    "error": "Error",
+    "passwordRequired": "Please enter a new password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordLength": "Password must be at least 6 characters"
   }
 }

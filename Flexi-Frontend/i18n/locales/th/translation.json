@@ -38,6 +38,7 @@
       "button": "เข้าสู่ระบบ",
       "noAccount": "ยังไม่มีบัญชี?",
       "registerButton": "สมัครสมาชิก",
+      "ForgotPasswordButton": "ลืมรหัสผ่าน",
       "validation": {
         "incomplete": "ข้อมูลไม่ครบถ้วน",
         "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
@@ -920,5 +921,36 @@
       "phoneFormat": "เบอร์โทรศัพท์ต้องมี 10 หลัก",
       "missingFields": "ข้อมูลที่ขาดหายไป"
     }
+  },
+  "forgotPassword": {
+    "title": "ลืมรหัสผ่าน",
+    "subtitle": "กรอกอีเมลของคุณและเราจะส่งลิงก์รีเซ็ตรหัสผ่านให้คุณ",
+    "emailLabel": "อีเมล",
+    "emailPlaceholder": "กรอกอีเมลของคุณ",
+    "sendButton": "ส่งลิงก์รีเซ็ต",
+    "backToLogin": "กลับไปยังหน้าเข้าสู่ระบบ",
+    "emailSent": "ส่งอีเมลแล้ว",
+    "emailSentMessage": "หากอีเมลของคุณลงทะเบียนแล้ว คุณจะได้รับลิงก์รีเซ็ต",
+    "enterEmail": "กรุณากรอกที่อยู่อีเมลของคุณ",
+    "ok": "ตกลง"
+  },
+  "resetPassword": {
+    "title": "รีเซ็ตรหัสผ่าน",
+    "subtitle": "กรอกรหัสผ่านใหม่ของคุณด้านล่าง",
+    "newPasswordLabel": "รหัสผ่านใหม่",
+    "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่",
+    "confirmPasswordLabel": "ยืนยันรหัสผ่าน",
+    "confirmPasswordPlaceholder": "ยืนยันรหัสผ่านใหม่",
+    "resetButton": "รีเซ็ตรหัสผ่าน",
+    "backToLogin": "กลับไปยังหน้าเข้าสู่ระบบ",
+    "invalidLink": "ลิงก์ไม่ถูกต้อง",
+    "invalidLinkMessage": "ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้อง กรุณาขอลิงก์ใหม่",
+    "success": "สำเร็จ",
+    "successMessage": "รีเซ็ตรหัสผ่านของคุณเรียบร้อยแล้ว",
+    "login": "เข้าสู่ระบบ",
+    "error": "ข้อผิดพลาด",
+    "passwordRequired": "กรุณากรอกรหัสผ่านใหม่",
+    "passwordsDoNotMatch": "รหัสผ่านไม่ตรงกัน",
+    "passwordLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"
   }
 }

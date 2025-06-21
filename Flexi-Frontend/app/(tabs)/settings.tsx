@@ -32,7 +32,7 @@ const getSwitchPlatformColors = (theme: string, value: boolean) => ({
     false: theme === "dark" ? "#4B5563" : "#D1D5DB",
     true: theme === "dark" ? "#0feac2" : "#0feac2",
   },
-  thumbColor: value ? "#ffffff" : "#75726a",
+  thumbColor: value ? "#ffffff" : "#71717a",
 });
 
 // Utility constant for toggle scaling
@@ -405,7 +405,7 @@ export default function Setting() {
                   <FontAwesome
                     name="facebook"
                     size={24}
-                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
                   <CustomText className="text-base">
@@ -787,7 +787,7 @@ const Divider = () => {
     <View
       style={{
         height: 1,
-        backgroundColor: theme === "dark" ? "#4B5563" : "#D1D5DB",
+        backgroundColor: theme === "dark" ? "#71717a" : "#D1D5DB",
       }}
     />
   );

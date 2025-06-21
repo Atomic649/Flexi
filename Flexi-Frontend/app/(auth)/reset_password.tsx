@@ -6,6 +6,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import CallAPIUser from '@/api/auth_api';
+import { useTranslation } from 'react-i18next';
 
 
 export default function ResetPassword() {
@@ -15,31 +16,32 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { token } = useLocalSearchParams();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!token) {
       Alert.alert(
-        'Invalid Link',
-        'The password reset link appears to be invalid. Please request a new link.',
+        t('resetPassword.invalidLink'),
+        t('resetPassword.invalidLinkMessage'),
         [{ text: 'OK', onPress: () => router.push('/forgot_password') }]
       );
     }
-  }, [token]);
+  }, [token, t, router]);
 
   const handleResetPassword = async () => {
     // Validate inputs
     if (!newPassword.trim()) {
-      Alert.alert('Error', 'Please enter a new password');
+      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordRequired'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordsDoNotMatch'));
       return;
     }
 
     if (newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordLength'));
       return;
     }
 
@@ -54,14 +56,14 @@ export default function ResetPassword() {
       
       // Show success message and navigate to login
       Alert.alert(
-        'Success', 
-        'Your password has been reset successfully.', 
-        [{ text: 'Login', onPress: () => router.push('/login') }]
+        t('resetPassword.success'), 
+        t('resetPassword.successMessage'), 
+        [{ text: t('resetPassword.login'), onPress: () => router.push('/login') }]
       );
     } catch (error) {
       setIsLoading(false);
       Alert.alert(
-        'Error', 
+        t('resetPassword.error'), 
         error instanceof Error ? error.message : 'Failed to reset password. The link may have expired.'
       );
     }
@@ -74,15 +76,15 @@ export default function ResetPassword() {
 
       <View style={styles.content}>
         <Text style={styles.subtitle}>
-          Enter your new password below.
+          {t('resetPassword.subtitle')}
         </Text>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>New Password</Text>
+          <Text style={styles.label}>{t('resetPassword.newPasswordLabel')}</Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
-              placeholder="Enter new password"
+              placeholder={t('resetPassword.newPasswordPlaceholder')}
               secureTextEntry={!showPassword}
               value={newPassword}
               onChangeText={setNewPassword}
@@ -101,10 +103,10 @@ export default function ResetPassword() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Confirm Password</Text>
+          <Text style={styles.label}>{t('resetPassword.confirmPasswordLabel')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Confirm new password"
+            placeholder={t('resetPassword.confirmPasswordPlaceholder')}
             secureTextEntry={!showPassword}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -122,7 +124,7 @@ export default function ResetPassword() {
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Reset Password</Text>
+            <Text style={styles.buttonText}>{t('resetPassword.resetButton')}</Text>
           )}
         </TouchableOpacity>
 
@@ -130,7 +132,7 @@ export default function ResetPassword() {
           style={styles.linkButton} 
           onPress={() => router.push('/login')}
         >
-          <Text style={styles.linkText}>Back to Login</Text>
+          <Text style={styles.linkText}>{t('resetPassword.backToLogin')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   buttonDisabled: {
-    backgroundColor: '#cccccc',
+    backgroundColor: '#5e5d59',
   },
   buttonText: {
     color: '#fff',
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   linkText: {
-    color: '#fff',
+    color: '#5e5d59',
     fontSize: 16,
   },
 });

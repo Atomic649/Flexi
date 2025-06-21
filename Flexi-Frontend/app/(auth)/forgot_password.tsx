@@ -6,16 +6,18 @@ import { TextInput } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import CallAPIUser from '@/api/auth_api';
-
+import { useTranslation } from 'react-i18next';
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
+
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email address');
+      Alert.alert(t('common.error'), t('forgotPassword.enterEmail'));
       return;
     }
 
@@ -28,13 +30,13 @@ export default function ForgotPassword() {
 
       // Show success message
       Alert.alert(
-        'Email Sent', 
-        'If your email is registered, you will receive a password reset link.',
-        [{ text: 'OK', onPress: () => router.push('/login') }]
+        t('forgotPassword.emailSent'), 
+        t('forgotPassword.emailSentMessage'),
+        [{ text: t('forgotPassword.ok'), onPress: () => router.push('/login') }]
       );
     } catch (error) {
       setIsLoading(false);
-      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to process request');
+      Alert.alert(t('common.error'), error instanceof Error ? error.message : 'Failed to process request');
     }
   };
 
@@ -42,22 +44,20 @@ export default function ForgotPassword() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={'#050505'} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Forgot Password</Text>
+       
+        <Text style={styles.headerTitle}>{t('forgotPassword.title')}</Text>
       </View>
 
       <View style={styles.content}>
         <Text style={styles.subtitle}>
-          Enter your email address and we'll send you a link to reset your password.
+          {t('forgotPassword.subtitle')}
         </Text>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t('forgotPassword.emailLabel')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your email"
+            placeholder={t('forgotPassword.emailPlaceholder')}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Send Reset Link</Text>
+            <Text style={styles.buttonText}>{t("forgotPassword.sendButton")}</Text>
           )}
         </TouchableOpacity>
 
@@ -81,7 +81,7 @@ export default function ForgotPassword() {
           style={styles.linkButton} 
           onPress={() => router.push('/login')}
         >
-          <Text style={styles.linkText}>Back to Login</Text>
+          <Text style={styles.linkText}>{t('forgotPassword.backToLogin')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: 'bold',   
     marginLeft: 16,
     color: '#333',
   },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   linkText: {
-    color: '#fff',
+    color: '#5e5d59',
     fontSize: 16,
   },
 });

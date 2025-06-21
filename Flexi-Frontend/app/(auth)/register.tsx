@@ -20,7 +20,7 @@ import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import CallMemberAPI from "@/api/member_api";
-import { useTextColorClass } from "@/utils/themeUtils";
+import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -254,7 +254,7 @@ export default function Register() {
   };
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -349,7 +349,7 @@ export default function Register() {
                 textStyles="!text-white"
               />
 
-              <View className="flex justify-center pt-5 flex-row gap-2">
+              <View className="flex justify-center items-center pt-5 flex-row gap-2">
                 <CustomText weight="regular" className="text-lg text-gray-100">
                   {t("auth.register.hasAccount")}
                 </CustomText>

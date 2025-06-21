@@ -193,22 +193,20 @@ export default function Login() {
                 isLoading={isSubmitting}
               />
 
-              <View className="flex justify-center pt-5 flex-row gap-2">
+              <View className="flex justify-center  items-center pt-5 flex-row gap-2">
                 <CustomText weight="regular" className="text-lg">
                   {t("auth.login.noAccount")}
                 </CustomText>
-                <Button
-                  title={t("auth.login.ForgotPasswordButton")}
-                  onPress={() => router.replace("/forgot_password")}
-                />
-                {/* <Button
-                  title={t("RESET")}
-                  onPress={() => router.replace("/reset_password")}
-                /> */}
+
                 <Button
                   title={t("auth.login.registerButton")}
                   onPress={() => router.replace("/register")}
                 />
+                <Button
+                  title={t("auth.login.ForgotPasswordButton")}
+                  onPress={() => router.replace("/forgot_password")}
+                />
+                
               </View>
             </View>
           </View>

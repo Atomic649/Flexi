@@ -17,6 +17,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MonthlyCard from "../MonthlyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
+import { isMobile } from "@/utils/responsive";
 
 type MonthlyCardProps = {
   month: string;
@@ -72,7 +73,7 @@ const monthly = () => {
   // Adjust font size and color of Title Table
   const textStyle = {
     fontSize: 13,
-    color: theme === "dark" ? "#b4b4b5" : "#4b5563",
+       color: isMobile() ? theme === "dark" ? "#27272a" : "#4b5563": theme === "dark" ? "#b4b4b5" : "#4b5563",
     fontWeight: "900" as "900", // or any other acceptable value
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
