@@ -181,6 +181,31 @@
       "gallery": "From Gallery",
       "error": "Failed to update profile picture"
     },
+    "password": {
+      "title": "Change Password",
+      "subtitle": "Keep your account secure with a strong password",
+      "currentPassword": "Current Password",
+      "enterCurrentPassword": "Enter your current password",
+      "newPassword": "New Password",
+      "enterNewPassword": "Enter new password",
+      "confirmPassword": "Confirm New Password",
+      "confirmNewPassword": "Confirm new password",
+      "changeButton": "Change Password",
+      "validation": {
+        "allFields": "Please fill in all password fields",
+        "passwordsDoNotMatch": "New passwords don't match",
+        "passwordTooShort": "Password must be at least 6 characters long"
+      },
+      "success": {
+        "title": "Success",
+        "message": "Your password has been changed successfully"
+      },
+      "error": {
+        "incorrectPassword": "Current password is incorrect",
+        "generalError": "Failed to change password",
+        "serverError": "Server error occurred. Please try again later."
+      }
+    },
     "sections": {
       "selling": {
         "title": "Selling",
@@ -197,6 +222,30 @@
         "title": "Account",
         "location": "Location",
         "security": "Security"
+      }
+    },
+    "delete": {
+      "title": "Delete Your Account",
+      "warning": "Warning: This action is irreversible. Once you delete your account, all your data will be permanently removed and cannot be recovered.",
+      "confirmPassword": "Please enter your password to confirm deletion:",
+      "deleteButton": "Delete Account",
+      "validation": {
+        "incomplete": "Validation Error",
+        "passwordRequired": "Password is required to delete your account"
+      },
+      "confirmation": {
+        "title": "Delete Account",
+        "message": "This action will permanently delete your account and all associated data. This cannot be undone. Are you sure?",
+        "deleteButton": "Delete"
+      },
+      "success": {
+        "title": "Account Deleted",
+        "message": "Your account has been successfully deleted."
+      },
+      "errors": {
+        "userNotFound": "User ID not found",
+        "generic": "An error occurred while deleting your account",
+        "incorrectPassword": "Incorrect password"
       }
     }
   },
@@ -247,6 +296,12 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System"
+    },
+    "security":{
+      "title": "Security",
+      "message": "Manage your account data and security settings",
+      "changePassword": "Change Password",
+      "deleteAccount": "Delete Account"
     }
   },
   "create": {

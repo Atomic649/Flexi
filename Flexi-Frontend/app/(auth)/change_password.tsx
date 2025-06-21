@@ -110,7 +110,12 @@ export default function ChangePassword() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView>
+        <ScrollView
+         contentContainerStyle={{
+          padding: 20,
+  
+          flexGrow: 1,
+        }}>
           <View
             className="flex-1 px-4 py-10"
             style={{

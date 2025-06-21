@@ -237,7 +237,7 @@ export default function Setting() {
             },
           },
           {
-            text: t("settings.security.DeleyteAccount"),
+            text: t("settings.security.deleteAccount"),
             onPress: () => {
               // Navigate to enable 2FA screen
              // router.push("/delete_account");

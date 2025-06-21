@@ -143,11 +143,13 @@ export default function DeleteAccount() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}`}>
+    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}` }>
       <ScrollView
         contentContainerStyle={{
           padding: 20,
           alignItems: "center",
+          justifyContent: "center",
+          flexGrow: 1,
         }}
       >
         <View
@@ -209,7 +211,7 @@ export default function DeleteAccount() {
             </CustomText>
           ) : null}
 
-          <View className="flex-row justify-center mt-4 space-x-4">
+          <View className="flex-row justify-evenly gap-2 items-center mt-4 space-x-4 m-2">
             <CustomButton
               title={t("common.cancel") || "Cancel"}
               handlePress={() => router.push("/settings")}
