@@ -15,7 +15,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
 import images from "@/constants/images";
 import { CustomText } from "./CustomText";
-import { API_URL, IMAGE_URL } from "@/utils/config";
+import { API_URL, IMAGE_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
 
 interface B2BAdsProps {
   officeData?: any[];
@@ -48,7 +48,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
     }
 
     // If it's a relative path, prepend the IMAGE_URL
-    return { uri: `${IMAGE_URL}${imageUrl}` };
+    return { uri: `${MOCKUP_IMAGE_URL}${imageUrl}` };
   };
 
   // Recalculate layout dimensions when screen size changes

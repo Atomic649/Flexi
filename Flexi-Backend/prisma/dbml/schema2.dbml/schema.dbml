@@ -63,6 +63,7 @@ Table Office {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Table Coach {
@@ -78,6 +79,7 @@ Table Coach {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Table Bank {
@@ -93,6 +95,7 @@ Table Bank {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Table Agency {
@@ -108,6 +111,7 @@ Table Agency {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Table Orm {
@@ -123,6 +127,7 @@ Table Orm {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Table Account {
@@ -138,6 +143,7 @@ Table Account {
   businessAcc BusinessAcc [not null]
   authorId String [not null]
   author Member [not null]
+  delete Boolean [not null, default: false]
 }
 
 Enum Category {

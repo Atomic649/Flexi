@@ -5648,6 +5648,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type OfficeMaxAggregateOutputType = {
@@ -5661,6 +5662,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type OfficeCountAggregateOutputType = {
@@ -5674,6 +5676,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -5699,6 +5702,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type OfficeMaxAggregateInputType = {
@@ -5712,6 +5716,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type OfficeCountAggregateInputType = {
@@ -5725,6 +5730,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -5825,6 +5831,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: OfficeCountAggregateOutputType | null
     _avg: OfficeAvgAggregateOutputType | null
     _sum: OfficeSumAggregateOutputType | null
@@ -5857,6 +5864,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["office"]>
@@ -5872,6 +5880,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["office"]>
@@ -5887,6 +5896,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["office"]>
@@ -5902,9 +5912,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type OfficeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["office"]>
+  export type OfficeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["office"]>
   export type OfficeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -5935,6 +5946,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["office"]>
     composites: {}
   }
@@ -6370,6 +6382,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Office", 'String'>
     readonly businessId: FieldRef<"Office", 'Int'>
     readonly authorId: FieldRef<"Office", 'String'>
+    readonly delete: FieldRef<"Office", 'Boolean'>
   }
     
 
@@ -6817,6 +6830,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type CoachMaxAggregateOutputType = {
@@ -6830,6 +6844,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type CoachCountAggregateOutputType = {
@@ -6843,6 +6858,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -6868,6 +6884,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type CoachMaxAggregateInputType = {
@@ -6881,6 +6898,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type CoachCountAggregateInputType = {
@@ -6894,6 +6912,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -6994,6 +7013,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: CoachCountAggregateOutputType | null
     _avg: CoachAvgAggregateOutputType | null
     _sum: CoachSumAggregateOutputType | null
@@ -7026,6 +7046,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["coach"]>
@@ -7041,6 +7062,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["coach"]>
@@ -7056,6 +7078,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["coach"]>
@@ -7071,9 +7094,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type CoachOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["coach"]>
+  export type CoachOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["coach"]>
   export type CoachInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -7104,6 +7128,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["coach"]>
     composites: {}
   }
@@ -7539,6 +7564,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Coach", 'String'>
     readonly businessId: FieldRef<"Coach", 'Int'>
     readonly authorId: FieldRef<"Coach", 'String'>
+    readonly delete: FieldRef<"Coach", 'Boolean'>
   }
     
 
@@ -7986,6 +8012,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type BankMaxAggregateOutputType = {
@@ -7999,6 +8026,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type BankCountAggregateOutputType = {
@@ -8012,6 +8040,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -8037,6 +8066,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type BankMaxAggregateInputType = {
@@ -8050,6 +8080,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type BankCountAggregateInputType = {
@@ -8063,6 +8094,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -8163,6 +8195,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: BankCountAggregateOutputType | null
     _avg: BankAvgAggregateOutputType | null
     _sum: BankSumAggregateOutputType | null
@@ -8195,6 +8228,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bank"]>
@@ -8210,6 +8244,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bank"]>
@@ -8225,6 +8260,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bank"]>
@@ -8240,9 +8276,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type BankOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["bank"]>
+  export type BankOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["bank"]>
   export type BankInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8273,6 +8310,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["bank"]>
     composites: {}
   }
@@ -8708,6 +8746,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Bank", 'String'>
     readonly businessId: FieldRef<"Bank", 'Int'>
     readonly authorId: FieldRef<"Bank", 'String'>
+    readonly delete: FieldRef<"Bank", 'Boolean'>
   }
     
 
@@ -9155,6 +9194,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type AgencyMaxAggregateOutputType = {
@@ -9168,6 +9208,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type AgencyCountAggregateOutputType = {
@@ -9181,6 +9222,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -9206,6 +9248,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type AgencyMaxAggregateInputType = {
@@ -9219,6 +9262,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type AgencyCountAggregateInputType = {
@@ -9232,6 +9276,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -9332,6 +9377,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: AgencyCountAggregateOutputType | null
     _avg: AgencyAvgAggregateOutputType | null
     _sum: AgencySumAggregateOutputType | null
@@ -9364,6 +9410,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["agency"]>
@@ -9379,6 +9426,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["agency"]>
@@ -9394,6 +9442,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["agency"]>
@@ -9409,9 +9458,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type AgencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["agency"]>
+  export type AgencyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["agency"]>
   export type AgencyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -9442,6 +9492,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["agency"]>
     composites: {}
   }
@@ -9877,6 +9928,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Agency", 'String'>
     readonly businessId: FieldRef<"Agency", 'Int'>
     readonly authorId: FieldRef<"Agency", 'String'>
+    readonly delete: FieldRef<"Agency", 'Boolean'>
   }
     
 
@@ -10324,6 +10376,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type OrmMaxAggregateOutputType = {
@@ -10337,6 +10390,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type OrmCountAggregateOutputType = {
@@ -10350,6 +10404,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -10375,6 +10430,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type OrmMaxAggregateInputType = {
@@ -10388,6 +10444,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type OrmCountAggregateInputType = {
@@ -10401,6 +10458,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -10501,6 +10559,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: OrmCountAggregateOutputType | null
     _avg: OrmAvgAggregateOutputType | null
     _sum: OrmSumAggregateOutputType | null
@@ -10533,6 +10592,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orm"]>
@@ -10548,6 +10608,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orm"]>
@@ -10563,6 +10624,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orm"]>
@@ -10578,9 +10640,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type OrmOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["orm"]>
+  export type OrmOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["orm"]>
   export type OrmInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -10611,6 +10674,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["orm"]>
     composites: {}
   }
@@ -11046,6 +11110,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Orm", 'String'>
     readonly businessId: FieldRef<"Orm", 'Int'>
     readonly authorId: FieldRef<"Orm", 'String'>
+    readonly delete: FieldRef<"Orm", 'Boolean'>
   }
     
 
@@ -11493,6 +11558,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type AccountMaxAggregateOutputType = {
@@ -11506,6 +11572,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number | null
     authorId: string | null
+    delete: boolean | null
   }
 
   export type AccountCountAggregateOutputType = {
@@ -11519,6 +11586,7 @@ export namespace Prisma {
     callToAction: number
     businessId: number
     authorId: number
+    delete: number
     _all: number
   }
 
@@ -11544,6 +11612,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type AccountMaxAggregateInputType = {
@@ -11557,6 +11626,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
   }
 
   export type AccountCountAggregateInputType = {
@@ -11570,6 +11640,7 @@ export namespace Prisma {
     callToAction?: true
     businessId?: true
     authorId?: true
+    delete?: true
     _all?: true
   }
 
@@ -11670,6 +11741,7 @@ export namespace Prisma {
     callToAction: string | null
     businessId: number
     authorId: string
+    delete: boolean
     _count: AccountCountAggregateOutputType | null
     _avg: AccountAvgAggregateOutputType | null
     _sum: AccountSumAggregateOutputType | null
@@ -11702,6 +11774,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
@@ -11717,6 +11790,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
@@ -11732,6 +11806,7 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
@@ -11747,9 +11822,10 @@ export namespace Prisma {
     callToAction?: boolean
     businessId?: boolean
     authorId?: boolean
+    delete?: boolean
   }
 
-  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId", ExtArgs["result"]["account"]>
+  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "Category" | "title" | "description" | "image" | "callToAction" | "businessId" | "authorId" | "delete", ExtArgs["result"]["account"]>
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessAcc?: boolean | BusinessAccDefaultArgs<ExtArgs>
     author?: boolean | MemberDefaultArgs<ExtArgs>
@@ -11780,6 +11856,7 @@ export namespace Prisma {
       callToAction: string | null
       businessId: number
       authorId: string
+      delete: boolean
     }, ExtArgs["result"]["account"]>
     composites: {}
   }
@@ -12215,6 +12292,7 @@ export namespace Prisma {
     readonly callToAction: FieldRef<"Account", 'String'>
     readonly businessId: FieldRef<"Account", 'Int'>
     readonly authorId: FieldRef<"Account", 'String'>
+    readonly delete: FieldRef<"Account", 'Boolean'>
   }
     
 
@@ -12692,7 +12770,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type OfficeScalarFieldEnum = (typeof OfficeScalarFieldEnum)[keyof typeof OfficeScalarFieldEnum]
@@ -12708,7 +12787,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type CoachScalarFieldEnum = (typeof CoachScalarFieldEnum)[keyof typeof CoachScalarFieldEnum]
@@ -12724,7 +12804,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type BankScalarFieldEnum = (typeof BankScalarFieldEnum)[keyof typeof BankScalarFieldEnum]
@@ -12740,7 +12821,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type AgencyScalarFieldEnum = (typeof AgencyScalarFieldEnum)[keyof typeof AgencyScalarFieldEnum]
@@ -12756,7 +12838,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type OrmScalarFieldEnum = (typeof OrmScalarFieldEnum)[keyof typeof OrmScalarFieldEnum]
@@ -12772,7 +12855,8 @@ export namespace Prisma {
     image: 'image',
     callToAction: 'callToAction',
     businessId: 'businessId',
-    authorId: 'authorId'
+    authorId: 'authorId',
+    delete: 'delete'
   };
 
   export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
@@ -12860,6 +12944,13 @@ export namespace Prisma {
    * Reference to a field of type 'Category[]'
    */
   export type ListEnumCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Category[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -13140,6 +13231,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Office"> | string | null
     businessId?: IntFilter<"Office"> | number
     authorId?: StringFilter<"Office"> | string
+    delete?: BoolFilter<"Office"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13155,6 +13247,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13173,6 +13266,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Office"> | string | null
     businessId?: IntFilter<"Office"> | number
     authorId?: StringFilter<"Office"> | string
+    delete?: BoolFilter<"Office"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13188,6 +13282,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: OfficeCountOrderByAggregateInput
     _avg?: OfficeAvgOrderByAggregateInput
     _max?: OfficeMaxOrderByAggregateInput
@@ -13209,6 +13304,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Office"> | string | null
     businessId?: IntWithAggregatesFilter<"Office"> | number
     authorId?: StringWithAggregatesFilter<"Office"> | string
+    delete?: BoolWithAggregatesFilter<"Office"> | boolean
   }
 
   export type CoachWhereInput = {
@@ -13225,6 +13321,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Coach"> | string | null
     businessId?: IntFilter<"Coach"> | number
     authorId?: StringFilter<"Coach"> | string
+    delete?: BoolFilter<"Coach"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13240,6 +13337,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13258,6 +13356,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Coach"> | string | null
     businessId?: IntFilter<"Coach"> | number
     authorId?: StringFilter<"Coach"> | string
+    delete?: BoolFilter<"Coach"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13273,6 +13372,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: CoachCountOrderByAggregateInput
     _avg?: CoachAvgOrderByAggregateInput
     _max?: CoachMaxOrderByAggregateInput
@@ -13294,6 +13394,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Coach"> | string | null
     businessId?: IntWithAggregatesFilter<"Coach"> | number
     authorId?: StringWithAggregatesFilter<"Coach"> | string
+    delete?: BoolWithAggregatesFilter<"Coach"> | boolean
   }
 
   export type BankWhereInput = {
@@ -13310,6 +13411,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Bank"> | string | null
     businessId?: IntFilter<"Bank"> | number
     authorId?: StringFilter<"Bank"> | string
+    delete?: BoolFilter<"Bank"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13325,6 +13427,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13343,6 +13446,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Bank"> | string | null
     businessId?: IntFilter<"Bank"> | number
     authorId?: StringFilter<"Bank"> | string
+    delete?: BoolFilter<"Bank"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13358,6 +13462,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: BankCountOrderByAggregateInput
     _avg?: BankAvgOrderByAggregateInput
     _max?: BankMaxOrderByAggregateInput
@@ -13379,6 +13484,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Bank"> | string | null
     businessId?: IntWithAggregatesFilter<"Bank"> | number
     authorId?: StringWithAggregatesFilter<"Bank"> | string
+    delete?: BoolWithAggregatesFilter<"Bank"> | boolean
   }
 
   export type AgencyWhereInput = {
@@ -13395,6 +13501,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Agency"> | string | null
     businessId?: IntFilter<"Agency"> | number
     authorId?: StringFilter<"Agency"> | string
+    delete?: BoolFilter<"Agency"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13410,6 +13517,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13428,6 +13536,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Agency"> | string | null
     businessId?: IntFilter<"Agency"> | number
     authorId?: StringFilter<"Agency"> | string
+    delete?: BoolFilter<"Agency"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13443,6 +13552,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: AgencyCountOrderByAggregateInput
     _avg?: AgencyAvgOrderByAggregateInput
     _max?: AgencyMaxOrderByAggregateInput
@@ -13464,6 +13574,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Agency"> | string | null
     businessId?: IntWithAggregatesFilter<"Agency"> | number
     authorId?: StringWithAggregatesFilter<"Agency"> | string
+    delete?: BoolWithAggregatesFilter<"Agency"> | boolean
   }
 
   export type OrmWhereInput = {
@@ -13480,6 +13591,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Orm"> | string | null
     businessId?: IntFilter<"Orm"> | number
     authorId?: StringFilter<"Orm"> | string
+    delete?: BoolFilter<"Orm"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13495,6 +13607,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13513,6 +13626,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Orm"> | string | null
     businessId?: IntFilter<"Orm"> | number
     authorId?: StringFilter<"Orm"> | string
+    delete?: BoolFilter<"Orm"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13528,6 +13642,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: OrmCountOrderByAggregateInput
     _avg?: OrmAvgOrderByAggregateInput
     _max?: OrmMaxOrderByAggregateInput
@@ -13549,6 +13664,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Orm"> | string | null
     businessId?: IntWithAggregatesFilter<"Orm"> | number
     authorId?: StringWithAggregatesFilter<"Orm"> | string
+    delete?: BoolWithAggregatesFilter<"Orm"> | boolean
   }
 
   export type AccountWhereInput = {
@@ -13565,6 +13681,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Account"> | string | null
     businessId?: IntFilter<"Account"> | number
     authorId?: StringFilter<"Account"> | string
+    delete?: BoolFilter<"Account"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }
@@ -13580,6 +13697,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     businessAcc?: BusinessAccOrderByWithRelationInput
     author?: MemberOrderByWithRelationInput
   }
@@ -13598,6 +13716,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Account"> | string | null
     businessId?: IntFilter<"Account"> | number
     authorId?: StringFilter<"Account"> | string
+    delete?: BoolFilter<"Account"> | boolean
     businessAcc?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     author?: XOR<MemberScalarRelationFilter, MemberWhereInput>
   }, "id">
@@ -13613,6 +13732,7 @@ export namespace Prisma {
     callToAction?: SortOrderInput | SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
     _count?: AccountCountOrderByAggregateInput
     _avg?: AccountAvgOrderByAggregateInput
     _max?: AccountMaxOrderByAggregateInput
@@ -13634,6 +13754,7 @@ export namespace Prisma {
     callToAction?: StringNullableWithAggregatesFilter<"Account"> | string | null
     businessId?: IntWithAggregatesFilter<"Account"> | number
     authorId?: StringWithAggregatesFilter<"Account"> | string
+    delete?: BoolWithAggregatesFilter<"Account"> | boolean
   }
 
   export type UserCreateInput = {
@@ -13905,6 +14026,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutOfficeInput
     author: MemberCreateNestedOneWithoutOfficeInput
   }
@@ -13920,6 +14042,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type OfficeUpdateInput = {
@@ -13930,6 +14053,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutOfficeNestedInput
     author?: MemberUpdateOneRequiredWithoutOfficeNestedInput
   }
@@ -13945,6 +14069,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OfficeCreateManyInput = {
@@ -13958,6 +14083,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type OfficeUpdateManyMutationInput = {
@@ -13968,6 +14094,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OfficeUncheckedUpdateManyInput = {
@@ -13981,6 +14108,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachCreateInput = {
@@ -13991,6 +14119,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutCoachInput
     author: MemberCreateNestedOneWithoutCoachInput
   }
@@ -14006,6 +14135,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type CoachUpdateInput = {
@@ -14016,6 +14146,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutCoachNestedInput
     author?: MemberUpdateOneRequiredWithoutCoachNestedInput
   }
@@ -14031,6 +14162,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachCreateManyInput = {
@@ -14044,6 +14176,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type CoachUpdateManyMutationInput = {
@@ -14054,6 +14187,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachUncheckedUpdateManyInput = {
@@ -14067,6 +14201,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankCreateInput = {
@@ -14077,6 +14212,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutBankInput
     author: MemberCreateNestedOneWithoutBankInput
   }
@@ -14092,6 +14228,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type BankUpdateInput = {
@@ -14102,6 +14239,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutBankNestedInput
     author?: MemberUpdateOneRequiredWithoutBankNestedInput
   }
@@ -14117,6 +14255,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankCreateManyInput = {
@@ -14130,6 +14269,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type BankUpdateManyMutationInput = {
@@ -14140,6 +14280,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankUncheckedUpdateManyInput = {
@@ -14153,6 +14294,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyCreateInput = {
@@ -14163,6 +14305,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutAgencyInput
     author: MemberCreateNestedOneWithoutAgencyInput
   }
@@ -14178,6 +14321,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type AgencyUpdateInput = {
@@ -14188,6 +14332,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutAgencyNestedInput
     author?: MemberUpdateOneRequiredWithoutAgencyNestedInput
   }
@@ -14203,6 +14348,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyCreateManyInput = {
@@ -14216,6 +14362,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type AgencyUpdateManyMutationInput = {
@@ -14226,6 +14373,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyUncheckedUpdateManyInput = {
@@ -14239,6 +14387,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmCreateInput = {
@@ -14249,6 +14398,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutOrmInput
     author: MemberCreateNestedOneWithoutOrmInput
   }
@@ -14264,6 +14414,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type OrmUpdateInput = {
@@ -14274,6 +14425,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutOrmNestedInput
     author?: MemberUpdateOneRequiredWithoutOrmNestedInput
   }
@@ -14289,6 +14441,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmCreateManyInput = {
@@ -14302,6 +14455,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type OrmUpdateManyMutationInput = {
@@ -14312,6 +14466,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmUncheckedUpdateManyInput = {
@@ -14325,6 +14480,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountCreateInput = {
@@ -14335,6 +14491,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutAccountInput
     author: MemberCreateNestedOneWithoutAccountInput
   }
@@ -14350,6 +14507,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type AccountUpdateInput = {
@@ -14360,6 +14518,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutAccountNestedInput
     author?: MemberUpdateOneRequiredWithoutAccountNestedInput
   }
@@ -14375,6 +14534,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountCreateManyInput = {
@@ -14388,6 +14548,7 @@ export namespace Prisma {
     callToAction?: string | null
     businessId: number
     authorId: string
+    delete?: boolean
   }
 
   export type AccountUpdateManyMutationInput = {
@@ -14398,6 +14559,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountUncheckedUpdateManyInput = {
@@ -14411,6 +14573,7 @@ export namespace Prisma {
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -14813,6 +14976,11 @@ export namespace Prisma {
     _max?: NestedEnumCategoryFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type BusinessAccScalarRelationFilter = {
     is?: BusinessAccWhereInput
     isNot?: BusinessAccWhereInput
@@ -14834,6 +15002,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OfficeAvgOrderByAggregateInput = {
@@ -14852,6 +15021,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OfficeMinOrderByAggregateInput = {
@@ -14865,11 +15035,20 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OfficeSumOrderByAggregateInput = {
     id?: SortOrder
     businessId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type CoachCountOrderByAggregateInput = {
@@ -14883,6 +15062,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type CoachAvgOrderByAggregateInput = {
@@ -14901,6 +15081,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type CoachMinOrderByAggregateInput = {
@@ -14914,6 +15095,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type CoachSumOrderByAggregateInput = {
@@ -14932,6 +15114,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type BankAvgOrderByAggregateInput = {
@@ -14950,6 +15133,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type BankMinOrderByAggregateInput = {
@@ -14963,6 +15147,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type BankSumOrderByAggregateInput = {
@@ -14981,6 +15166,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AgencyAvgOrderByAggregateInput = {
@@ -14999,6 +15185,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AgencyMinOrderByAggregateInput = {
@@ -15012,6 +15199,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AgencySumOrderByAggregateInput = {
@@ -15030,6 +15218,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OrmAvgOrderByAggregateInput = {
@@ -15048,6 +15237,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OrmMinOrderByAggregateInput = {
@@ -15061,6 +15251,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type OrmSumOrderByAggregateInput = {
@@ -15079,6 +15270,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AccountAvgOrderByAggregateInput = {
@@ -15097,6 +15289,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AccountMinOrderByAggregateInput = {
@@ -15110,6 +15303,7 @@ export namespace Prisma {
     callToAction?: SortOrder
     businessId?: SortOrder
     authorId?: SortOrder
+    delete?: SortOrder
   }
 
   export type AccountSumOrderByAggregateInput = {
@@ -15839,6 +16033,10 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type BusinessAccUpdateOneRequiredWithoutOfficeNestedInput = {
     create?: XOR<BusinessAccCreateWithoutOfficeInput, BusinessAccUncheckedCreateWithoutOfficeInput>
     connectOrCreate?: BusinessAccCreateOrConnectWithoutOfficeInput
@@ -16200,6 +16398,19 @@ export namespace Prisma {
     _max?: NestedEnumCategoryFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type BusinessAccCreateWithoutUserInput = {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -16404,6 +16615,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutOfficeInput
   }
 
@@ -16417,6 +16629,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type OfficeCreateOrConnectWithoutAuthorInput = {
@@ -16437,6 +16650,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutCoachInput
   }
 
@@ -16450,6 +16664,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type CoachCreateOrConnectWithoutAuthorInput = {
@@ -16470,6 +16685,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutBankInput
   }
 
@@ -16483,6 +16699,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type BankCreateOrConnectWithoutAuthorInput = {
@@ -16503,6 +16720,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutAgencyInput
   }
 
@@ -16516,6 +16734,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type AgencyCreateOrConnectWithoutAuthorInput = {
@@ -16536,6 +16755,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutOrmInput
   }
 
@@ -16549,6 +16769,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type OrmCreateOrConnectWithoutAuthorInput = {
@@ -16569,6 +16790,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     businessAcc: BusinessAccCreateNestedOneWithoutAccountInput
   }
 
@@ -16582,6 +16804,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type AccountCreateOrConnectWithoutAuthorInput = {
@@ -16702,6 +16925,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Office"> | string | null
     businessId?: IntFilter<"Office"> | number
     authorId?: StringFilter<"Office"> | string
+    delete?: BoolFilter<"Office"> | boolean
   }
 
   export type CoachUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -16734,6 +16958,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Coach"> | string | null
     businessId?: IntFilter<"Coach"> | number
     authorId?: StringFilter<"Coach"> | string
+    delete?: BoolFilter<"Coach"> | boolean
   }
 
   export type BankUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -16766,6 +16991,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Bank"> | string | null
     businessId?: IntFilter<"Bank"> | number
     authorId?: StringFilter<"Bank"> | string
+    delete?: BoolFilter<"Bank"> | boolean
   }
 
   export type AgencyUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -16798,6 +17024,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Agency"> | string | null
     businessId?: IntFilter<"Agency"> | number
     authorId?: StringFilter<"Agency"> | string
+    delete?: BoolFilter<"Agency"> | boolean
   }
 
   export type OrmUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -16830,6 +17057,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Orm"> | string | null
     businessId?: IntFilter<"Orm"> | number
     authorId?: StringFilter<"Orm"> | string
+    delete?: BoolFilter<"Orm"> | boolean
   }
 
   export type AccountUpsertWithWhereUniqueWithoutAuthorInput = {
@@ -16862,6 +17090,7 @@ export namespace Prisma {
     callToAction?: StringNullableFilter<"Account"> | string | null
     businessId?: IntFilter<"Account"> | number
     authorId?: StringFilter<"Account"> | string
+    delete?: BoolFilter<"Account"> | boolean
   }
 
   export type UserCreateWithoutBusinessInput = {
@@ -16940,6 +17169,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutOfficeInput
   }
 
@@ -16953,6 +17183,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type OfficeCreateOrConnectWithoutBusinessAccInput = {
@@ -16973,6 +17204,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutCoachInput
   }
 
@@ -16986,6 +17218,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type CoachCreateOrConnectWithoutBusinessAccInput = {
@@ -17006,6 +17239,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutBankInput
   }
 
@@ -17019,6 +17253,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type BankCreateOrConnectWithoutBusinessAccInput = {
@@ -17039,6 +17274,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutAgencyInput
   }
 
@@ -17052,6 +17288,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type AgencyCreateOrConnectWithoutBusinessAccInput = {
@@ -17072,6 +17309,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutOrmInput
   }
 
@@ -17085,6 +17323,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type OrmCreateOrConnectWithoutBusinessAccInput = {
@@ -17105,6 +17344,7 @@ export namespace Prisma {
     description: string
     image?: string | null
     callToAction?: string | null
+    delete?: boolean
     author: MemberCreateNestedOneWithoutAccountInput
   }
 
@@ -17118,6 +17358,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type AccountCreateOrConnectWithoutBusinessAccInput = {
@@ -18227,6 +18468,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type CoachCreateManyAuthorInput = {
@@ -18239,6 +18481,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type BankCreateManyAuthorInput = {
@@ -18251,6 +18494,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type AgencyCreateManyAuthorInput = {
@@ -18263,6 +18507,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type OrmCreateManyAuthorInput = {
@@ -18275,6 +18520,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type AccountCreateManyAuthorInput = {
@@ -18287,6 +18533,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     businessId: number
+    delete?: boolean
   }
 
   export type OfficeUpdateWithoutAuthorInput = {
@@ -18297,6 +18544,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutOfficeNestedInput
   }
 
@@ -18310,6 +18558,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OfficeUncheckedUpdateManyWithoutAuthorInput = {
@@ -18322,6 +18571,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachUpdateWithoutAuthorInput = {
@@ -18332,6 +18582,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutCoachNestedInput
   }
 
@@ -18345,6 +18596,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachUncheckedUpdateManyWithoutAuthorInput = {
@@ -18357,6 +18609,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankUpdateWithoutAuthorInput = {
@@ -18367,6 +18620,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutBankNestedInput
   }
 
@@ -18380,6 +18634,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankUncheckedUpdateManyWithoutAuthorInput = {
@@ -18392,6 +18647,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyUpdateWithoutAuthorInput = {
@@ -18402,6 +18658,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutAgencyNestedInput
   }
 
@@ -18415,6 +18672,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyUncheckedUpdateManyWithoutAuthorInput = {
@@ -18427,6 +18685,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmUpdateWithoutAuthorInput = {
@@ -18437,6 +18696,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutOrmNestedInput
   }
 
@@ -18450,6 +18710,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmUncheckedUpdateManyWithoutAuthorInput = {
@@ -18462,6 +18723,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountUpdateWithoutAuthorInput = {
@@ -18472,6 +18734,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     businessAcc?: BusinessAccUpdateOneRequiredWithoutAccountNestedInput
   }
 
@@ -18485,6 +18748,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountUncheckedUpdateManyWithoutAuthorInput = {
@@ -18497,6 +18761,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: IntFieldUpdateOperationsInput | number
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MemberCreateManyBusinessInput = {
@@ -18516,6 +18781,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type CoachCreateManyBusinessAccInput = {
@@ -18528,6 +18794,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type BankCreateManyBusinessAccInput = {
@@ -18540,6 +18807,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type AgencyCreateManyBusinessAccInput = {
@@ -18552,6 +18820,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type OrmCreateManyBusinessAccInput = {
@@ -18564,6 +18833,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type AccountCreateManyBusinessAccInput = {
@@ -18576,6 +18846,7 @@ export namespace Prisma {
     image?: string | null
     callToAction?: string | null
     authorId: string
+    delete?: boolean
   }
 
   export type MemberUpdateWithoutBusinessInput = {
@@ -18619,6 +18890,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutOfficeNestedInput
   }
 
@@ -18632,6 +18904,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OfficeUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18644,6 +18917,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachUpdateWithoutBusinessAccInput = {
@@ -18654,6 +18928,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutCoachNestedInput
   }
 
@@ -18667,6 +18942,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CoachUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18679,6 +18955,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankUpdateWithoutBusinessAccInput = {
@@ -18689,6 +18966,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutBankNestedInput
   }
 
@@ -18702,6 +18980,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type BankUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18714,6 +18993,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyUpdateWithoutBusinessAccInput = {
@@ -18724,6 +19004,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutAgencyNestedInput
   }
 
@@ -18737,6 +19018,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AgencyUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18749,6 +19031,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmUpdateWithoutBusinessAccInput = {
@@ -18759,6 +19042,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutOrmNestedInput
   }
 
@@ -18772,6 +19056,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrmUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18784,6 +19069,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountUpdateWithoutBusinessAccInput = {
@@ -18794,6 +19080,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
+    delete?: BoolFieldUpdateOperationsInput | boolean
     author?: MemberUpdateOneRequiredWithoutAccountNestedInput
   }
 
@@ -18807,6 +19094,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountUncheckedUpdateManyWithoutBusinessAccInput = {
@@ -18819,6 +19107,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     callToAction?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
+    delete?: BoolFieldUpdateOperationsInput | boolean
   }
 
 

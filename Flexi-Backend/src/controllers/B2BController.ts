@@ -4,11 +4,13 @@ import { Prisma, PrismaClient as PrismaClient2 } from "../generated/client2";
 // Create  instance of PrismaClient
 const prisma = new PrismaClient2();
 
-
 // get all office
 const getAllOffices = async (req: Request, res: Response) => {
   try {
     const offices = await prisma.office.findMany({
+      where: {
+        delete: false,
+      },
       select: {
         id: true,
         title: true,
@@ -17,31 +19,32 @@ const getAllOffices = async (req: Request, res: Response) => {
         callToAction: true,
       },
       //take: 12
-
-        });
+    });
     res.json(offices);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get offices" });
   }
-}
+};
 
 // get all coach
 const getAllCoaches = async (req: Request, res: Response) => {
   try {
     const coaches = await prisma.coach.findMany({
-     select: {
-  id: true,
-  title: true,
-  description: true,
-  image: true,
-  callToAction: true,
-},
-      take: 12
+      where: {
+        delete: false,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        image: true,
+        callToAction: true,
+      },
+      take: 12,
     });
     res.json(coaches);
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get coaches" });
   }
@@ -51,6 +54,9 @@ const getAllCoaches = async (req: Request, res: Response) => {
 const getAllBanks = async (req: Request, res: Response) => {
   try {
     const banks = await prisma.bank.findMany({
+      where:{
+        delete:false
+      },     
       select: {
         id: true,
         title: true,
@@ -58,7 +64,7 @@ const getAllBanks = async (req: Request, res: Response) => {
         image: true,
         callToAction: true,
       },
-      take: 12
+      take: 12,
     });
     res.json(banks);
   } catch (e) {
@@ -71,6 +77,9 @@ const getAllBanks = async (req: Request, res: Response) => {
 const getAllAgencies = async (req: Request, res: Response) => {
   try {
     const agencies = await prisma.agency.findMany({
+      where:{
+        delete:false
+      },     
       select: {
         id: true,
         title: true,
@@ -78,7 +87,7 @@ const getAllAgencies = async (req: Request, res: Response) => {
         image: true,
         callToAction: true,
       },
-      take: 12
+      take: 12,
     });
     res.json(agencies);
   } catch (e) {
@@ -91,6 +100,9 @@ const getAllAgencies = async (req: Request, res: Response) => {
 const getAllAccounts = async (req: Request, res: Response) => {
   try {
     const accounts = await prisma.account.findMany({
+      where:{
+        delete:false
+      },     
       select: {
         id: true,
         title: true,
@@ -98,7 +110,7 @@ const getAllAccounts = async (req: Request, res: Response) => {
         image: true,
         callToAction: true,
       },
-      take: 12
+      take: 12,
     });
     res.json(accounts);
   } catch (e) {
@@ -111,6 +123,9 @@ const getAllAccounts = async (req: Request, res: Response) => {
 const getAllOrms = async (req: Request, res: Response) => {
   try {
     const orms = await prisma.orm.findMany({
+      where:{
+        delete:false
+      },     
       select: {
         id: true,
         title: true,
@@ -118,7 +133,7 @@ const getAllOrms = async (req: Request, res: Response) => {
         image: true,
         callToAction: true,
       },
-      take: 12
+      take: 12,
     });
     res.json(orms);
   } catch (e) {
@@ -133,5 +148,5 @@ export {
   getAllBanks,
   getAllAgencies,
   getAllAccounts,
-  getAllOrms
-}
+  getAllOrms,
+};

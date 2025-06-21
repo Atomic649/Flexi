@@ -85,6 +85,8 @@ model Office {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
+  
 }
 
 model Coach {
@@ -100,6 +102,7 @@ model Coach {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
 }
 
 model Bank {
@@ -115,6 +118,7 @@ model Bank {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
 }
 
 model Agency {
@@ -130,6 +134,7 @@ model Agency {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
 }
 
 model Orm {
@@ -145,6 +150,7 @@ model Orm {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
 }
 
 model Account {
@@ -160,6 +166,7 @@ model Account {
   businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
   authorId     String
   author       Member      @relation(fields: [authorId], references: [uniqueId])
+  delete       Boolean     @default(false)
 }
 enum Category {
   Office

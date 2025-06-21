@@ -22,12 +22,12 @@ const shop = () => {
     { key: "coach", title2: t("shop.tap.coach") },   
     { key: "bank", title3: t("shop.tap.bank") },
     { key: "agency", title4: t("shop.tap.agency") },
-    { key: "account", title5: t("shop.tap.account") },
+    //{ key: "account", title5: t("shop.tap.account") },
     { key: "orm", title6: t("shop.tap.orm") },
   ]);
 
   const renderScene = SceneMap({
-    account: Account,
+   // account: Account,
     agency: Agency,
     bank: Bank,
     coach: Coach,
@@ -61,7 +61,9 @@ const shop = () => {
               <View
                 className="flex-row items-center my-5 "
                 style={{
-                  width: Dimensions.get("window").width / 6,
+                  width: Dimensions.get("window").width / 
+                  
+                  5,
                   justifyContent: "center",
                 }}
               >
@@ -166,7 +168,7 @@ const shop = () => {
                     </TouchableOpacity>
                   </View>
                 )}
-                {route.title5 && (
+                {/* {route.title5 && (
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
@@ -190,7 +192,7 @@ const shop = () => {
                       </CustomText>
                     </TouchableOpacity>
                   </View>
-                )}
+                )} */}
                 {route.title6 && (
                   <View className="justify-center items-center">
                     <TouchableOpacity

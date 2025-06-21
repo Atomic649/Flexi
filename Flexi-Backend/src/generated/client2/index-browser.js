@@ -157,7 +157,8 @@ exports.Prisma.OfficeScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.CoachScalarFieldEnum = {
@@ -170,7 +171,8 @@ exports.Prisma.CoachScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.BankScalarFieldEnum = {
@@ -183,7 +185,8 @@ exports.Prisma.BankScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.AgencyScalarFieldEnum = {
@@ -196,7 +199,8 @@ exports.Prisma.AgencyScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.OrmScalarFieldEnum = {
@@ -209,7 +213,8 @@ exports.Prisma.OrmScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.AccountScalarFieldEnum = {
@@ -222,7 +227,8 @@ exports.Prisma.AccountScalarFieldEnum = {
   image: 'image',
   callToAction: 'callToAction',
   businessId: 'businessId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  delete: 'delete'
 };
 
 exports.Prisma.SortOrder = {
