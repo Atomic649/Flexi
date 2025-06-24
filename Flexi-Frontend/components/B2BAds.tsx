@@ -15,7 +15,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
 import images from "@/constants/images";
 import { CustomText } from "./CustomText";
-import { API_URL, IMAGE_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
+import { API_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
 
 interface B2BAdsProps {
   officeData?: any[];
