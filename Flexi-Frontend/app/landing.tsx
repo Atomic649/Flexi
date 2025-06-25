@@ -1072,7 +1072,7 @@ export default function Landing() {
               weight="bold"
               className="text-center mb-4"
               style={{
-                fontSize: isDesktop ? 32 : 28,
+                fontSize: getResponsiveStyles().fontSize * 1.8,
                 color: textPrimaryColor,
               }}
             >
@@ -1082,11 +1082,11 @@ export default function Landing() {
             <CustomText
               className="text-center mb-12"
               style={{
-                fontSize: 16,
+                fontSize: getResponsiveStyles().fontSize,
                 color: textSecondaryColor,
                 maxWidth: 700,
                 alignSelf: "center",
-                lineHeight: 24,
+                lineHeight: getResponsiveStyles().fontSize * 1.4,
               }}
             >
               {t(
@@ -1097,26 +1097,93 @@ export default function Landing() {
 
             <View
               style={{
-                flexDirection: isDesktop ? "row" : "column",
+                flexDirection: isMobileWeb() ? "column-reverse" : "row",
                 justifyContent: "space-between",
                 alignItems: "stretch",
               }}
             >
+              {/* Mobile Web: Big Number User Display (moved to top for mobile) */}
+              {isMobileWeb() && (
+                <View
+                  style={{
+                    width: "100%",
+                    backgroundColor: theme === "dark" ? "#1a1a1a" : "#f3f4f6",
+                    borderRadius: 16,
+                    justifyContent: "center",
+                    marginBottom: getResponsiveStyles().padding * 2,
+                  }}
+                >
+                  <View
+                    className="flex-row items-center justify-center mb-10"
+                    style={{
+                      width: "100%",
+                      alignItems: "center",
+                      marginBottom: getResponsiveStyles().padding * 2,
+                    }}
+                  >
+                    <View
+                      style={{
+                        borderRadius: 16,
+                        padding: getResponsiveStyles().padding * 1.2,
+                        alignItems: "center",
+                        borderColor: turquoiseColor,
+                        width: "90%",
+                      }}
+                    >
+                      <CustomText
+                        weight="bold"
+                        className="text-center"
+                        style={{
+                          fontSize: getResponsiveStyles().fontSize * 4,
+                          color: turquoiseColor,
+                          marginBottom: 8,
+                        }}
+                      >
+                        0
+                      </CustomText>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Ionicons
+                          name="trending-up"
+                          size={18}
+                          color={accentColor}
+                          style={{ marginRight: 8 }}
+                        />
+                        <CustomText
+                          style={{
+                            fontSize: getResponsiveStyles().fontSize,
+                            color: accentColor,
+                          }}
+                        >
+                          {t("roadmap.growthRate") || "Growing by % monthly"}
+                        </CustomText>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              )}
+
               {/* Left side: Roadmap timeline */}
               <View
                 style={{
-                  width: isDesktop ? "45%" : "100%",
-                  marginBottom: isDesktop ? 0 : 40,
+                  width: isMobileWeb() ? "100%" : "45%",
+                  marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 2 : 0,
                 }}
               >
                 <View
                   style={{
-                    marginBottom: 40,
+                    marginBottom: getResponsiveStyles().padding * 2,
                     position: "relative",
                   }}
                 >
                   {/* Vertical timeline line */}
-                  {isDesktop && (
+                  {!isMobileWeb() && (
                     <View
                       style={{
                         position: "absolute",
@@ -1130,7 +1197,7 @@ export default function Landing() {
                   )}
 
                   {/* Phase 1 - Completed */}
-                  <View style={{ marginBottom: 30, flexDirection: "row" }}>
+                  <View style={{ marginBottom: getResponsiveStyles().padding * 1.5, flexDirection: "row" }}>
                     <View
                       style={{
                         width: 40,
@@ -1151,17 +1218,23 @@ export default function Landing() {
                           alignItems: "center",
                           justifyContent: "space-between",
                           marginBottom: 4,
+                          flexWrap: isMobileWeb() ? "wrap" : "nowrap",
                         }}
                       >
                         <CustomText
                           weight="bold"
-                          style={{ fontSize: 18, color: textPrimaryColor }}
+                          style={{ 
+                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
+                            width: isMobileWeb() ? "100%" : "auto"
+                          }}
                         >
                           {t("roadmap.phase1.title") || "Phase 1: Foundation"}
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: 14,
+                            fontSize: getResponsiveStyles().fontSize * 0.9,
                             color: turquoiseColor,
                             fontWeight: "500",
                           }}
@@ -1172,8 +1245,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: 22,
-                          marginBottom: 8,
+                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          marginBottom: getResponsiveStyles().padding * 0.4,
+                          fontSize: getResponsiveStyles().fontSize,
                         }}
                       >
                         {t(
@@ -1204,7 +1278,7 @@ export default function Landing() {
                   </View>
 
                   {/* Phase 2 - In Progress */}
-                  <View style={{ marginBottom: 30, flexDirection: "row" }}>
+                  <View style={{ marginBottom: getResponsiveStyles().padding * 1.5, flexDirection: "row" }}>
                     <View
                       style={{
                         width: 40,
@@ -1225,18 +1299,24 @@ export default function Landing() {
                           alignItems: "center",
                           justifyContent: "space-between",
                           marginBottom: 4,
+                          flexWrap: isMobileWeb() ? "wrap" : "nowrap",
                         }}
                       >
                         <CustomText
                           weight="bold"
-                          style={{ fontSize: 18, color: textPrimaryColor }}
+                          style={{ 
+                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
+                            width: isMobileWeb() ? "100%" : "auto"
+                          }}
                         >
                           {t("roadmap.phase2.title") ||
                             "Phase 2: Market Expansion"}
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: 14,
+                            fontSize: getResponsiveStyles().fontSize * 0.9,
                             color: accentColor,
                             fontWeight: "500",
                           }}
@@ -1247,8 +1327,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: 22,
-                          marginBottom: 8,
+                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          marginBottom: getResponsiveStyles().padding * 0.4,
+                          fontSize: getResponsiveStyles().fontSize,
                         }}
                       >
                         {t(
@@ -1302,7 +1383,7 @@ export default function Landing() {
                   </View>
 
                   {/* Phase 3 - Upcoming */}
-                  <View style={{ marginBottom: 30, flexDirection: "row" }}>
+                  <View style={{ marginBottom: getResponsiveStyles().padding * 1.5, flexDirection: "row" }}>
                     <View
                       style={{
                         width: 40,
@@ -1327,18 +1408,24 @@ export default function Landing() {
                           alignItems: "center",
                           justifyContent: "space-between",
                           marginBottom: 4,
+                          flexWrap: isMobileWeb() ? "wrap" : "nowrap",
                         }}
                       >
                         <CustomText
                           weight="bold"
-                          style={{ fontSize: 18, color: textPrimaryColor }}
+                          style={{ 
+                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
+                            width: isMobileWeb() ? "100%" : "auto"
+                          }}
                         >
                           {t("roadmap.phase3.title") ||
                             "Phase 3: Ecosystem Growth"}
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: 14,
+                            fontSize: getResponsiveStyles().fontSize * 0.9,
                             color: theme === "dark" ? "#666" : "#9ca3af",
                             fontWeight: "500",
                           }}
@@ -1349,8 +1436,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: 22,
-                          marginBottom: 8,
+                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          marginBottom: getResponsiveStyles().padding * 0.4,
+                          fontSize: getResponsiveStyles().fontSize,
                         }}
                       >
                         {t(
@@ -1429,18 +1517,24 @@ export default function Landing() {
                           alignItems: "center",
                           justifyContent: "space-between",
                           marginBottom: 4,
+                          flexWrap: isMobileWeb() ? "wrap" : "nowrap",
                         }}
                       >
                         <CustomText
                           weight="bold"
-                          style={{ fontSize: 18, color: textPrimaryColor }}
+                          style={{ 
+                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
+                            width: isMobileWeb() ? "100%" : "auto"
+                          }}
                         >
                           {t("roadmap.phase4.title") ||
                             "Phase 4: Regional Leadership"}
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: 14,
+                            fontSize: getResponsiveStyles().fontSize * 0.9,
                             color: theme === "dark" ? "#666" : "#9ca3af",
                             fontWeight: "500",
                           }}
@@ -1451,8 +1545,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: 22,
-                          marginBottom: 8,
+                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          marginBottom: getResponsiveStyles().padding * 0.4,
+                          fontSize: getResponsiveStyles().fontSize,
                         }}
                       >
                         {t(
@@ -1460,138 +1555,98 @@ export default function Landing() {
                           "Advanced marketing suite, AI-powered analytics, cross-border payment solutions"
                         )}
                       </CustomText>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* Right side: Big Number User Display - Only shown on desktop/tablet */}
+              {!isMobileWeb() && (
+                <View
+                  style={{
+                    width: "50%",
+                    backgroundColor: theme === "dark" ? "#1a1a1a" : "#f3f4f6",
+                    borderRadius: 16,
+                    justifyContent: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: isDesktop ? "row" : "column",
+                      justifyContent: "center",
+                      gap: 16,
+                      marginTop: 40,
+                    }}
+                  >
+                    {/* Big Number User Display */}
+                    <View
+                      className="flex-row items-center justify-center mb-10"
+                      style={{
+                        width: "100%",
+                        alignItems: "center",
+                        marginBottom: 40,
+                      }}
+                    >
                       <View
                         style={{
-                          flexDirection: "row",
+                          // backgroundColor:
+                          //   theme === "dark" ? "#1e1e1e" : "#f3f4f6",
+                          borderRadius: 16,
+                          padding: 24,
                           alignItems: "center",
-                          marginTop: 4,
+                          borderColor: turquoiseColor,
+                          width: isDesktop ? "60%" : "90%",
                         }}
                       >
+                        {/* <CustomText
+                          className="text-center mb-4"
+                          style={{
+                            fontSize: 18,
+                            color: textSecondaryColor,
+                          }}
+                        >
+                          {t("roadmap.userCounter") || "Registered Users"}
+                        </CustomText> */}
+
+                        <CustomText
+                          weight="bold"
+                          className="text-center"
+                          style={{
+                            fontSize: 72,
+                            color: turquoiseColor,
+                            marginBottom: 8,
+                          }}
+                        >
+                          0
+                        </CustomText>
+
                         <View
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginRight: 16,
+                            justifyContent: "center",
                           }}
                         >
                           <Ionicons
-                            name="megaphone"
-                            size={14}
-                            color={textSecondaryColor}
-                            style={{ marginRight: 6 }}
+                            name="trending-up"
+                            size={18}
+                            color={accentColor}
+                            style={{ marginRight: 8 }}
                           />
                           <CustomText
-                            style={{ fontSize: 14, color: textSecondaryColor }}
+                            style={{
+                              fontSize: 16,
+                              color: accentColor,
+                            }}
                           >
-                            5 {t("roadmap.ads") || "Ad Platforms"}
-                          </CustomText>
-                        </View>
-                        <View
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                        >
-                          <Ionicons
-                            name="people"
-                            size={14}
-                            color={textSecondaryColor}
-                            style={{ marginRight: 6 }}
-                          />
-                          <CustomText
-                            style={{ fontSize: 14, color: textSecondaryColor }}
-                          >
-                            2,000+ {t("roadmap.users") || "Users"}
+                            {t("roadmap.growthRate") || "Growing by % monthly"}
                           </CustomText>
                         </View>
                       </View>
                     </View>
                   </View>
                 </View>
-              </View>
-
-              {/* Right side: Big Number User Display */}
-              <View
-                style={{
-                  width: isDesktop ? "50%" : "100%",
-                  backgroundColor: theme === "dark" ? "#1a1a1a" : "#f3f4f6",
-                  borderRadius: 16,
-                  justifyContent: "center",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: isDesktop ? "row" : "column",
-                    justifyContent: "center",
-                    gap: 16,
-                    marginTop: 40,
-                  }}
-                >
-                  {/* Big Number User Display */}
-                  <View
-                    className="flex-row items-center justify-center mb-10"
-                    style={{
-                      width: "100%",
-                      alignItems: "center",
-                      marginBottom: 40,
-                    }}
-                  >
-                    <View
-                      style={{
-                        // backgroundColor:
-                        //   theme === "dark" ? "#1e1e1e" : "#f3f4f6",
-                        borderRadius: 16,
-                        padding: 24,
-                        alignItems: "center",
-                        borderColor: turquoiseColor,
-                        width: isDesktop ? "60%" : "90%",
-                      }}
-                    >
-                      {/* <CustomText
-                        className="text-center mb-4"
-                        style={{
-                          fontSize: 18,
-                          color: textSecondaryColor,
-                        }}
-                      >
-                        {t("roadmap.userCounter") || "Registered Users"}
-                      </CustomText> */}
-
-                      <CustomText
-                        weight="bold"
-                        className="text-center"
-                        style={{
-                          fontSize: 72,
-                          color: turquoiseColor,
-                          marginBottom: 8,
-                        }}
-                      >
-                        0
-                      </CustomText>
-
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Ionicons
-                          name="trending-up"
-                          size={18}
-                          color={accentColor}
-                          style={{ marginRight: 8 }}
-                        />
-                        <CustomText
-                          style={{
-                            fontSize: 16,
-                            color: accentColor,
-                          }}
-                        >
-                          {t("roadmap.growthRate") || "Growing by % monthly"}
-                        </CustomText>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
+              )}
             </View>
           </View>
         </View>)}
