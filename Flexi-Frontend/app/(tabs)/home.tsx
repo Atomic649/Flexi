@@ -80,7 +80,7 @@ export default function Dashboard() {
         <ScrollView>
           <View
             style={{
-              width:"100%",
+              width:isDesktop()? "40%":"100%",
               maxWidth: 650,
               alignSelf: "center",
               paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.005:0,

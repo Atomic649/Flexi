@@ -18,7 +18,8 @@ export const isMobileWeb = () => {
 }
 export const isTablet = () => {
   const { width } = Dimensions.get('window');
-  return width >= 768 && width < 1024; // Tablets typically have a width between 768px and 1024px
+  const notWeb = Platform.OS !== 'web';
+  return notWeb && width >= 768 && width < 1024; // Tablets typically have a width between 768px and 1024px
 }
 
 export const isDesktop = () => {
@@ -60,7 +61,8 @@ export const getScreenSize = () => {
 
 export const getAspectRatio = () => {
   const { width, height } = Dimensions.get('window');
-  return width / height; // Returns the aspect ratio of the screen
+  return width / height; // Returns the aspect ratio of the 
+  
 }
 
 export const getOrientation = () => {

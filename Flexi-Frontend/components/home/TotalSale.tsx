@@ -10,6 +10,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import CircularChart from "@/components/CircularChart";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
+import { isMobileApp } from "@/utils/responsive";
 
 const TotalSale = () => {
   const { theme } = useTheme();
@@ -66,9 +67,8 @@ const TotalSale = () => {
         >
           <CircularChart
             percentage={35}
-            // size={
-            //   Dimensions.get("window").width > 1080 ? 50 : undefined
-            // }
+             size={   !isMobileApp()? 135 : undefined
+             }
           />
         </View>
 

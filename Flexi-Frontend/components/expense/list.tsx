@@ -22,7 +22,12 @@ import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { useRouter } from "expo-router";
-import { getScreenWidth, isDesktop, isMobile, getDeviceType } from "@/utils/responsive";
+import {
+  getScreenWidth,
+  isDesktop,
+  isMobile,
+  getDeviceType,
+} from "@/utils/responsive";
 
 type Expense = {
   id: number;
@@ -72,7 +77,13 @@ const List = () => {
   const headerTextStyle: TextStyle = {
     fontWeight: "900" as "900", // or any other acceptable value
     fontSize: 13,
-    color: theme === "dark" ? "#27272a" : "#4b5563",
+    color: isMobile()
+      ? theme === "dark"
+        ? "#27272a"
+        : "#4b5563"
+      : theme === "dark"
+      ? "#b4b4b5"
+      : "#4b5563",
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
@@ -138,7 +149,7 @@ const List = () => {
 
     if (allExpenses.length === 0) {
       return (
-        <CustomText className="pt-10 text-center text-white">
+        <CustomText className="pt-10 text-center text-zinc-500">
           {t("common.notfound")}
         </CustomText>
       );
@@ -150,7 +161,6 @@ const List = () => {
           flex: 1,
           width: "100%",
           height: "100%",
-          backgroundColor: theme === "dark" ? "#000000" : "#ffffff",
         }}
       >
         <ScrollView
@@ -185,7 +195,7 @@ const List = () => {
                 borderBottomWidth: 1,
                 width: "100%",
                 flexDirection: "row",
-                display: "flex"
+                display: "flex",
               }}
             >
               <Text style={[headerTextStyle, { width: "16.66%" }]}>
@@ -251,7 +261,7 @@ const List = () => {
                   >
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
                       } `}
                       style={{ width: "16.66%" }}
                     >
@@ -259,7 +269,7 @@ const List = () => {
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
                       } `}
                       style={{ width: "16.66%" }}
                     >
@@ -267,7 +277,7 @@ const List = () => {
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
                       } `}
                       style={{ width: "33.33%" }}
                       numberOfLines={1}
@@ -276,23 +286,29 @@ const List = () => {
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-500" : "text-zinc-600"
                       } `}
                       numberOfLines={1}
                       style={{ width: "16.66%" }}
                     >
-                      {expense.type === "ads" ? "คาดการณ์ค่าโฆษณา" : expense.note}
+                      {expense.type === "ads"
+                        ? "คาดการณ์ค่าโฆษณา"
+                        : expense.note}
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
                       }  font-bold`}
-                      style={{ width: "8.33%", textAlign: "center" } as TextStyle}
+                      style={
+                        { width: "8.33%", textAlign: "center" } as TextStyle
+                      }
                     >
                       -{expense.expenses}
                     </Text>
-                    <View className="flex flex-row w-24"
-                      style={{ width: "8.33%", justifyContent: "center" }}>
+                    <View
+                      className="flex flex-row w-24"
+                      style={{ width: "8.33%", justifyContent: "center" }}
+                    >
                       <TouchableOpacity
                         onPress={() => handleDelete(expense.id)}
                         className="mr-3"
