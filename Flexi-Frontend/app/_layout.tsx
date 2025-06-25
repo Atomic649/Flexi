@@ -284,6 +284,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* mobileWeb */}
+      <Stack.Screen
+        name="mobileWeb"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("mobileWeb.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* privacy */}
       <Stack.Screen
         name="privacy"
@@ -301,6 +310,8 @@ function RootLayoutNav() {
         }}
       />
       </Stack>
+
+
      
 
       

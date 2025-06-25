@@ -5,6 +5,12 @@ export const isMobile =() => {
   return width < 768; // Mobile devices typically have a width less than 768px
 }
 
+export const isMobileApp = () => {
+  const { width } = Dimensions.get('window');
+  const isWeb = Platform.OS === 'web';
+  return !isWeb && width < 768; // Mobile app devices typically have a width less than 768px
+}
+
 export const isMobileWeb = () => {
   const { width } = Dimensions.get('window');
   const isWeb = Platform.OS === 'web';

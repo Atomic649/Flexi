@@ -1006,5 +1006,25 @@
     "passwordRequired": "Please enter a new password",
     "passwordsDoNotMatch": "Passwords do not match",
     "passwordLength": "Password must be at least 6 characters"
+  },
+  "mobileWeb": {
+    "title": "",
+    "businessName": "Flexi Business Hub",
+    "notOptimized": "This application is not optimized for mobile web browsers.",
+    "forBestExperience": "For the best experience, please download our mobile app:",
+    "appStore": {
+      "download": "Download on the",
+      "title": "App Store",
+      "comingSoon": "(Coming Soon)"
+    },
+    "playStore": {
+      "download": "Get it on",
+      "title": "Google Play",
+      "comingSoon": "(Coming Soon)"
+    },
+    "alerts": {
+      "appStore": "Coming soon to App Store!",
+      "playStore": "Coming soon to Play Store!"
+    }
   }
 }

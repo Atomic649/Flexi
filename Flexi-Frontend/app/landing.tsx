@@ -26,13 +26,14 @@ import {
   LineChart,
   ShieldCheck,
 } from "@/components/ui/lucide-react";
+import { isMobileApp, isMobileWeb } from "@/utils/responsive";
 
 export default function Landing() {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const windowWidth = Dimensions.get("window").width;
-  const isDesktop = windowWidth > 768;
+  const isDesktop = !isMobileApp();
 
   // Business features based on terms.tsx
   const features = [
@@ -120,7 +121,7 @@ export default function Landing() {
       >
         {/* --------------Mobile -------------- */}
         {/* Floating header with language switcher */}
-        {!isDesktop && (
+        {isMobileApp() && (
           <TouchableOpacity
           onPress={toggleLanguage}
           className="absolute top-4 right-4 z-10 bg-gray-700 p-2 rounded-full"
@@ -138,7 +139,7 @@ export default function Landing() {
         </TouchableOpacity>        
         )}
         {/* Welcome Content */}
-        {!isDesktop && (
+        {isMobileApp() && (
            <View
            className="flex justify-start items-center px-8"
            style={{
@@ -182,7 +183,11 @@ export default function Landing() {
            <CustomButton
              title={t("landing.button")}
              handlePress={() => {
-               router.push("/login");
+                 if (isMobileWeb()) {
+                 router.push("/mobileweb");
+                 } else {
+                 router.push("/login");
+                 }
              }}
              containerStyles="w-full mt-7"
              textStyles="!text-white"
@@ -332,8 +337,12 @@ export default function Landing() {
                   <CustomButton
                     title={t("landing.button") || "Get Started"}
                     handlePress={() => {
+                      if (isMobileWeb()) {
+                      router.push("/mobileweb");
+                      } else {
                       router.push("/login");
-                    }}
+                      }
+                  }}                 
                     containerStyles={`py-3 px-6 ${
                       isDesktop ? "min-w-[360px]" : ""
                     }`}
@@ -619,11 +628,11 @@ export default function Landing() {
                     source={images.start || images.logo}
                     style={{
                       width: "100%",
-                      height: 300,
+                      height: isDesktop ? 300 : Math.min(250, windowWidth * 0.6),
                       borderRadius: 12,
                       marginBottom: 20,
                     }}
-                    resizeMode="cover"
+                    resizeMode= "contain"
                   />
                 </View>
               </View>
@@ -1544,7 +1553,7 @@ export default function Landing() {
                           marginBottom: 8,
                         }}
                       >
-                        567
+                        0
                       </CustomText>
 
                       <View
@@ -1566,7 +1575,7 @@ export default function Landing() {
                             color: accentColor,
                           }}
                         >
-                          {t("roadmap.growthRate") || "Growing by 23% monthly"}
+                          {t("roadmap.growthRate") || "Growing by % monthly"}
                         </CustomText>
                       </View>
                     </View>
@@ -1686,7 +1695,7 @@ export default function Landing() {
         {/* Footer */}
         {isDesktop && (
         <View
-          className="w-full py-16 px-4"
+          className="w-full py-12 px-4 md:py-16"
           style={{
             backgroundColor: theme === "dark" ? "#252527" : "#b3fdee",
           }}
@@ -1709,7 +1718,7 @@ export default function Landing() {
               {/* Brand Column */}
               <View
                 style={{
-                  width: isDesktop ? "28%" : "100%",
+                  width: isDesktop ? "48%" : "100%",
                   marginBottom: isDesktop ? 0 : 40,
                 }}
               >
@@ -1738,16 +1747,17 @@ export default function Landing() {
                     color: textSecondaryColor,
                     marginBottom: 24,
                     lineHeight: 24,
+                    fontSize: isDesktop ? 16 : 14,
                   }}
                 >
-                  {t("landing.footer.subtitle") }
+                  {t("landing.footer.subtitle")}
                 </CustomText>
               </View>
 
               {/* Contact Info */}
               <View
                 style={{
-                  width: isDesktop ? "28%" : "100%",
+                  width: isDesktop ? "48%" : "100%",
                 }}
               >
                 <CustomText
@@ -1787,11 +1797,15 @@ export default function Landing() {
                       color={textSecondaryColor}
                     />
                   </View>
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <CustomText
-                      style={{ color: textSecondaryColor, lineHeight: 22 }}
+                      style={{ 
+                        color: textSecondaryColor, 
+                        lineHeight: 22,
+                        fontSize: isDesktop ? 16 : 14,
+                      }}
                     >
-                      {t("footer.contact.address") }
+                      {t("footer.contact.address")}
                     </CustomText>
                   </View>
                 </View>
@@ -1820,8 +1834,13 @@ export default function Landing() {
                       color={textSecondaryColor}
                     />
                   </View>
-                  <View>
-                    <CustomText style={{ color: textSecondaryColor }}>
+                  <View style={{ flex: 1 }}>
+                    <CustomText 
+                      style={{ 
+                        color: textSecondaryColor,
+                        fontSize: isDesktop ? 16 : 14,
+                      }}
+                    >
                       {t("footer.contact.email") || "support@flexibusiness.com"}
                     </CustomText>
                   </View>
@@ -1850,8 +1869,13 @@ export default function Landing() {
                       color={textSecondaryColor}
                     />
                   </View>
-                  <View>
-                    <CustomText style={{ color: textSecondaryColor }}>
+                  <View style={{ flex: 1 }}>
+                    <CustomText 
+                      style={{ 
+                        color: textSecondaryColor,
+                        fontSize: isDesktop ? 16 : 14,
+                      }}
+                    >
                       {t("footer.contact.phone") || "+66 2 123 4567"}
                     </CustomText>
                   </View>
@@ -1885,8 +1909,10 @@ export default function Landing() {
               <View
                 style={{
                   flexDirection: "row",
-                  gap: 24,
+                  gap: isDesktop ? 24 : 16,
                   marginBottom: isDesktop ? 0 : 8,
+                  flexWrap: "wrap",
+                  justifyContent: "center",
                 }}
               >
                 <TouchableOpacity onPress={() => router.push("/term")}>
@@ -1894,6 +1920,7 @@ export default function Landing() {
                     style={{
                       fontSize: 14,
                       color: textSecondaryColor,
+                      padding: isDesktop ? 0 : 4,
                     }}
                   >
                     {t("footer.terms") || "Terms of Service"}
@@ -1905,6 +1932,7 @@ export default function Landing() {
                     style={{
                       fontSize: 14,
                       color: textSecondaryColor,
+                      padding: isDesktop ? 0 : 4,
                     }}
                   >
                     {t("footer.privacy") || "Privacy Policy"}
@@ -1913,7 +1941,8 @@ export default function Landing() {
               </View>
             </View>
           </View>
-        </View>)}
+        </View>
+        )}
         
       </ScrollView>
     </SafeAreaView>
