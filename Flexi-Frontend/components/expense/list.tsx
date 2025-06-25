@@ -286,7 +286,7 @@ const List = () => {
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-500" : "text-zinc-600"
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
                       } `}
                       numberOfLines={1}
                       style={{ width: "16.66%" }}

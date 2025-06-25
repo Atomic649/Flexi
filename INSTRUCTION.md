@@ -176,9 +176,39 @@ docker compose up -d
 ```bash
 ssh -i flexibusinesshub.pem ubuntu@<EC2_PUBLIC_IP>
 ```
-
+```bash
 sudo apt-get update
 sudo apt-get install qpdf
+```
 
 ### migrate database
+```bash
 docker exec -it nodejsexpress npm run prisma:migrate:db1
+```
+
+
+### HOW TO DEPLOY EXPO-WEB
+**export dist**
+```bash
+npx expo export -p web
+```
+**delete exited dist on cloud**
+```bash
+rm -rf dist
+```
+**Copy dist folder for localhost to cloud**
+```bash
+ scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Frontend/dist ubuntu@52.63.120.114:~/Flexi/Flexi-Frontend
+ ```
+**Docker compose down volumes** 
+```bash
+docker compose down --volumes expo-web nginx
+```
+**Docker Up 
+```bash
+docker compose up --build  expo-web nginx
+````
+
+
+
+

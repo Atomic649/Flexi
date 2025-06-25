@@ -202,9 +202,9 @@ export default function ExpenseDetail({
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: Platform.OS === "web" ? 0.4 : 0.1,
+              flex: Platform.OS === "web" ? (image ? 0.8 : 0.4) : (image ? 0.2 : 0.1),
               justifyContent: "center",
-              width: "100%",
+              width: "100%",             
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
               borderRadius: 10,
               padding: Platform.OS === "web" ? 20 : 0,

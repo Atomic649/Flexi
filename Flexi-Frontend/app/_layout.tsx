@@ -286,7 +286,7 @@ function RootLayoutNav() {
       />
       {/* mobileWeb */}
       <Stack.Screen
-        name="mobileWeb"
+        name="mobileweb"
         options={{
           ...showTopBarAndBackIcon(theme),
           title: t("mobileWeb.title"),
@@ -393,7 +393,6 @@ const showTopBarAndBackToSetting = (theme: string) => ({
     />
   ),
 });
-
 
 // Reuseable functions for hiding Top bar
 const HideTopBar = () => ({

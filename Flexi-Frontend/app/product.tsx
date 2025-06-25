@@ -6,6 +6,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProductCard from "@/components/ProductCard";
@@ -69,7 +70,6 @@ export default function Home() {
     setRefreshing(false);
   };
 
-
   const handleDeleteProduct = async (id: number) => {
     Alert.alert("Delete", "Are you sure you want to delete this product?", [
       {
@@ -93,49 +93,68 @@ export default function Home() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <ProductCard
-              productname={item.name}
-              productprice={item.price}
-              productstock={item.stock}
-              id={item.id}
-              productimage={item.image}
-              onDelete={() => handleDeleteProduct(item.id)}
-            />
-          )}
-          ListHeaderComponent={() => (
-            <View className="my-6 px-4 ">
-              <View className="flex flex-col  mb-5 items-center">
-                <CustomText
-                  className={`text-sm font-normal ${
-                    theme === "dark" ? "text-white" : "text-[#5d5a54]"
-                  }`}
-                >
-                  {t("product.limit")}
-                </CustomText>
-                <TouchableOpacity onPress={() => router.push("/roadmap")}>
-                  <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
-                    {t("product.help")}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+      <SafeAreaView
+        className={`h-full ${useBackgroundColorClass()}`}
+        style={{
+          flex: 1,
+          paddingHorizontal: 16,
+          alignItems: "center", // Center horizontally
+        }}
+      >
+        <View
+          style={{
+            width: "100%",
+            maxWidth: Dimensions.get("window").width > 768 ? "50%" : "100%",
+            alignSelf: "center", // Ensure centering
+          }}
+        >
+          <FlatList
+            data={products}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <ProductCard
+                productname={item.name}
+                productprice={item.price}
+                productstock={item.stock}
+                id={item.id}
+                productimage={item.image}
+                onDelete={() => handleDeleteProduct(item.id)}
+              />
+            )}
+            ListHeaderComponent={() => (
+              <View className="my-6 px-4 ">
+                <View className="flex flex-col  mb-5 items-center">
+                  <CustomText
+                    className={`text-sm font-normal ${
+                      theme === "dark" ? "text-white" : "text-[#5d5a54]"
+                    }`}
+                  >
+                    {t("product.limit")}
+                  </CustomText>
+                  <TouchableOpacity onPress={() => router.push("/roadmap")}>
+                    <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
+                      {t("product.help")}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
-               {/* <CustomText className={`text-xl font-semibold ${textColorClass}`}>
+                {/* <CustomText className={`text-xl font-semibold ${textColorClass}`}>
                 {t("product.Products")}
               </CustomText> */}
-            </View>
-          )}
-          ListEmptyComponent={() => (
-            <CustomText className="pt-10 text-center text-white">{t("common.notfound")}</CustomText>
-          )}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
+              </View>
+            )}
+            ListEmptyComponent={() => (
+              <CustomText className="pt-10 text-center text-white">
+                {t("common.notfound")}
+              </CustomText>
+            )}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        </View>
+
+        {/* Footer */}
         {/* Setting Limit Product "3" */}
         {products.length < 3 && (
           <TouchableOpacity
