@@ -213,8 +213,8 @@ export default function Landing() {
           <Image
             source={images.logo}
             style={{
-              width:  isMobileWeb() ? Dimensions.get("window").width * 0.05 : 40,
-              height: isMobileWeb()  ? Dimensions.get("window").width * 0.05 : 40,
+              width:  isMobileWeb() ? Dimensions.get("window").width * 0.08 : 40,
+              height: isMobileWeb()  ? Dimensions.get("window").width * 0.08 : 40,
             }}
             resizeMode="contain"
           />
@@ -222,14 +222,16 @@ export default function Landing() {
           {/* Desktop Navigation */}
           
             <View className="flex-row items-center gap-8">
-              <TouchableOpacity onPress={() => router.push("/register")}>
-                <CustomText
-                  className=" text-base font-medium"
-                  style={{ color: accentColor }}
-                >
-                  {t("auth.login.registerButton")}
-                </CustomText>
-              </TouchableOpacity>
+              {!isMobileWeb() && (
+                <TouchableOpacity onPress={() => router.push("/register")}>
+                  <CustomText
+                    className=" text-base font-medium"
+                    style={{ color: accentColor }}
+                  >
+                    {t("auth.login.registerButton")}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
 
               <TouchableOpacity
                 onPress={toggleLanguage}
@@ -312,7 +314,7 @@ export default function Landing() {
                     weight="bold"
                     className="text-center"
                     style={{
-                      fontSize: getResponsiveStyles().fontSize * 1.6, // Scale the font size based on responsive style
+                      fontSize: getResponsiveStyles().fontSize * 1.2, // Scale the font size based on responsive style
                       color: "#ffffff",
                       textShadowColor: "rgba(0, 0, 0, 0.75)",
                       textShadowOffset: { width: -1, height: 1 },
@@ -330,7 +332,7 @@ export default function Landing() {
                   //weight="medium"
                   className="text-center mb-8"
                   style={{
-                    fontSize: getResponsiveStyles().fontSize * 1.1, // Scale the font size based on responsive style
+                    fontSize: getResponsiveStyles().fontSize * 0.9, // Scale the font size based on responsive style
                     color: "#e2e8f0",
                     maxWidth: 600,
                   }}
@@ -1665,7 +1667,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: 32,
+                  fontSize: getResponsiveStyles().fontSize * 1.8,
                   color: textPrimaryColor,
                 }}
               >
@@ -1675,7 +1677,7 @@ export default function Landing() {
               <CustomText
                 className="text-center mb-10"
                 style={{
-                  fontSize: 16,
+                  fontSize: getResponsiveStyles().fontSize,
                   color: textSecondaryColor,
                   maxWidth: 700,
                   alignSelf: "center",
