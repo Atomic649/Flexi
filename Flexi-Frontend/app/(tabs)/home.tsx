@@ -22,6 +22,7 @@ import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import { router } from "expo-router";
+import { isDesktop, isMobile } from "@/utils/responsive";
 
 export default function Dashboard() {
   const { theme } = useTheme();
@@ -79,7 +80,7 @@ export default function Dashboard() {
         <ScrollView>
           <View
             style={{
-              width: Dimensions.get("window").width > 768 ? "40%" : "100%",
+              width:"100%",
               maxWidth: 650,
               alignSelf: "center",
               paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.005:0,
