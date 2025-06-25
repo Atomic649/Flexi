@@ -27,6 +27,7 @@ import {
   ShieldCheck,
 } from "@/components/ui/lucide-react";
 import { isMobileApp, isMobileWeb } from "@/utils/responsive";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 export default function Landing() {
   const { t, i18n } = useTranslation();
@@ -211,7 +212,10 @@ export default function Landing() {
         >
           <Image
             source={images.logo}
-            style={{ width: 40, height: 40 }}
+            style={{
+              width:  isMobileWeb() ? Dimensions.get("window").width * 0.05 : 40,
+              height: isMobileWeb()  ? Dimensions.get("window").width * 0.05 : 40,
+            }}
             resizeMode="contain"
           />
 
@@ -295,9 +299,10 @@ export default function Landing() {
                 <Image
                   source={images.logo}
                   style={{
-                    width: isDesktop ? 180 : 120,
-                    height: isDesktop ? 180 : 120,
+                    width:  isMobileWeb() ? Dimensions.get("window").width * 0.25 : 180,
+                    height: isMobileWeb()  ? Dimensions.get("window").width * 0.25 :180,
                   }}
+                  
                   resizeMode="contain"
                 />
 
@@ -307,11 +312,12 @@ export default function Landing() {
                     weight="bold"
                     className="text-center"
                     style={{
-                      fontSize: isDesktop ? 42 : 28,
+                      fontSize: getResponsiveStyles().fontSize * 1.6, // Scale the font size based on responsive style
                       color: "#ffffff",
                       textShadowColor: "rgba(0, 0, 0, 0.75)",
                       textShadowOffset: { width: -1, height: 1 },
                       textShadowRadius: 10,
+                      padding: getResponsiveStyles().padding / 2, // Apply responsive padding
                     }}
                   >
                     {t("landing.title")}
@@ -324,7 +330,7 @@ export default function Landing() {
                   //weight="medium"
                   className="text-center mb-8"
                   style={{
-                    fontSize: isDesktop ? 18 : 16,
+                    fontSize: getResponsiveStyles().fontSize * 1.1, // Scale the font size based on responsive style
                     color: "#e2e8f0",
                     maxWidth: 600,
                   }}
@@ -368,11 +374,11 @@ export default function Landing() {
                 flexDirection: isDesktop ? "row" : "column",
                 flexWrap: "wrap",
                 justifyContent: "space-between",
-                gap: 20,
+               // gap: 20,
               }}
             >
               <View
-                style={{ width: isDesktop ? "48%" : "100%", marginBottom: 20 }}
+                style={{ width: isMobileWeb() ? "100%" : isDesktop ? "48%" : "100%", marginBottom: 20 }}
               >
                 <Card className="rounded-2xl h-full" bgColor={cardBgColor}>
                   <CardContent className="p-6">
@@ -403,7 +409,7 @@ export default function Landing() {
               </View>
 
               <View
-                style={{ width: isDesktop ? "48%" : "100%", marginBottom: 20 }}
+                style={{ width: isMobileWeb() ? "100%" : isDesktop ? "48%" : "100%", marginBottom: 20 }}
               >
                 <Card className="rounded-2xl h-full" bgColor={cardBgColor}>
                   <CardContent className="p-6">
@@ -433,7 +439,7 @@ export default function Landing() {
               </View>
 
               <View
-                style={{ width: isDesktop ? "48%" : "100%", marginBottom: 20 }}
+                style={{ width: isMobileWeb() ? "100%" : isDesktop ? "48%" : "100%", marginBottom: 20 }}
               >
                 <Card className="rounded-2xl h-full" bgColor={cardBgColor}>
                   <CardContent className="p-6">
@@ -463,7 +469,7 @@ export default function Landing() {
               </View>
 
               <View
-                style={{ width: isDesktop ? "48%" : "100%", marginBottom: 20 }}
+                style={{ width: isMobileWeb() ? "100%" : isDesktop ? "48%" : "100%", marginBottom: 20 }}
               >
                 <Card className="rounded-2xl h-full" bgColor={cardBgColor}>
                   <CardContent className="p-6">
@@ -509,7 +515,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: 32,
+                  fontSize: getResponsiveStyles().fontSize * 1.8,
                   color: textPrimaryColor,
                 }}
               >
@@ -524,7 +530,7 @@ export default function Landing() {
                   marginTop: 20,
                 }}
               >
-                <View style={{ width: "48%", padding: 10 }}>
+                <View style={{ width: isMobileWeb() ? "100%" : "48%", padding: 10 }}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -617,24 +623,26 @@ export default function Landing() {
                   </CustomText>
                 </View>
 
-                <View
-                  style={{
-                    width: "48%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image
-                    source={images.start || images.logo}
+                {!isMobileWeb() && (
+                  <View
                     style={{
-                      width: "100%",
-                      height: isDesktop ? 300 : Math.min(250, windowWidth * 0.6),
-                      borderRadius: 12,
-                      marginBottom: 20,
+                      width: "48%",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                    resizeMode= "contain"
-                  />
-                </View>
+                  >
+                    <Image
+                      source={images.start || images.logo}
+                      style={{
+                        width: "100%",
+                        height: isDesktop ? 300 : Math.min(250, windowWidth * 0.6),
+                        borderRadius: 12,
+                        marginBottom: 20,
+                      }}
+                      resizeMode= "contain"
+                    />
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -654,7 +662,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: 32,
+                  fontSize: getResponsiveStyles().fontSize * 1.8,
                   color: textPrimaryColor,
                 }}
               >
@@ -664,11 +672,11 @@ export default function Landing() {
               <CustomText
                 className="text-center mb-10"
                 style={{
-                  fontSize: 18,
+                  fontSize: getResponsiveStyles().fontSize,
                   color: textSecondaryColor,
                   maxWidth: 700,
                   alignSelf: "center",
-                  lineHeight: 26,
+                  lineHeight: getResponsiveStyles().fontSize * 1.4,
                 }}
               >
                 {t("expense.subtitle") ||
@@ -716,7 +724,7 @@ export default function Landing() {
                 {/* Feature 1: Auto-detect expenses */}
                 <View
                   style={{
-                    width: Math.min(350, (windowWidth - 72) / 3),
+                    width: isMobileWeb() ? "100%" : Math.min(350, (windowWidth - 72) / 3),
                     backgroundColor: cardBgColor,
                     borderRadius: 16,
                     padding: 28,
@@ -727,6 +735,7 @@ export default function Landing() {
                     elevation: 4,
                     borderLeftWidth: 3,
                     borderLeftColor: turquoiseColor,
+                    marginBottom: isMobileWeb() ? 24 : 0,
                   }}
                 >
                   <View
@@ -825,7 +834,7 @@ export default function Landing() {
                 {/* Feature 2: Expense Categories */}
                 <View
                   style={{
-                    width: Math.min(350, (windowWidth - 72) / 3),
+                    width: isMobileWeb() ? "100%" : Math.min(350, (windowWidth - 72) / 3),
                     backgroundColor: cardBgColor,
                     borderRadius: 16,
                     padding: 28,
@@ -836,6 +845,7 @@ export default function Landing() {
                     elevation: 4,
                     borderLeftWidth: 3,
                     borderLeftColor: turquoiseColor,
+                    marginBottom: isMobileWeb() ? 24 : 0,
                   }}
                 >
                   <View
@@ -934,7 +944,7 @@ export default function Landing() {
                 {/* Feature 3: Analytics */}
                 <View
                   style={{
-                    width: Math.min(350, (windowWidth - 72) / 3),
+                    width: isMobileWeb() ? "100%" : Math.min(350, (windowWidth - 72) / 3),
                     backgroundColor: cardBgColor,
                     borderRadius: 16,
                     padding: 28,
@@ -1631,12 +1641,13 @@ export default function Landing() {
                   <View
                     key={item}
                     style={{
-                      width: Math.min(350, (windowWidth - 60) / 3),
+                      width: isMobileWeb() ? "100%" : Math.min(350, (windowWidth - 60) / 3),
                       padding: 24,
                       backgroundColor: cardBgColor,
                       borderRadius: 12,
                       borderWidth: 1,
                       borderColor: theme === "dark" ? "#333" : "#e5e7eb",
+                      marginBottom: isMobileWeb() ? 20 : 0,
                     }}
                   >
                     <View style={{ marginBottom: 16 }}>
@@ -1698,6 +1709,7 @@ export default function Landing() {
           className="w-full py-12 px-4 md:py-16"
           style={{
             backgroundColor: theme === "dark" ? "#252527" : "#b3fdee",
+            padding: getResponsiveStyles().padding,
           }}
         >
           <View
@@ -1712,21 +1724,22 @@ export default function Landing() {
               style={{
                 flexDirection: isDesktop ? "row" : "column",
                 justifyContent: "space-between",
-                marginBottom: 48,
+                marginBottom: getResponsiveStyles().padding * 4,
+                padding: getResponsiveStyles().padding,
               }}
             >
               {/* Brand Column */}
               <View
                 style={{
                   width: isDesktop ? "48%" : "100%",
-                  marginBottom: isDesktop ? 0 : 40,
+                  marginBottom: isDesktop ? 0 : getResponsiveStyles().padding * 2,
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginBottom: 20,
+                    marginBottom: getResponsiveStyles().padding,
                   }}
                 >
                   <Image
@@ -1736,7 +1749,10 @@ export default function Landing() {
                   />
                   <CustomText
                     weight="semibold"
-                    style={{ color: textSecondaryColor, fontSize: 18 }}
+                    style={{ 
+                      color: textSecondaryColor, 
+                      fontSize: getResponsiveStyles().fontSize * 1.1
+                    }}
                   >
                     FLEXI BUSINESS HUB
                   </CustomText>
@@ -1745,9 +1761,9 @@ export default function Landing() {
                 <CustomText
                   style={{
                     color: textSecondaryColor,
-                    marginBottom: 24,
-                    lineHeight: 24,
-                    fontSize: isDesktop ? 16 : 14,
+                    marginBottom: getResponsiveStyles().padding * 1.2,
+                    lineHeight: getResponsiveStyles().fontSize * 1.5,
+                    fontSize: getResponsiveStyles().fontSize*0.9,
                   }}
                 >
                   {t("landing.footer.subtitle")}
@@ -1758,14 +1774,15 @@ export default function Landing() {
               <View
                 style={{
                   width: isDesktop ? "48%" : "100%",
+                  padding: getResponsiveStyles().padding,
                 }}
               >
                 <CustomText
                   weight="bold"
                   style={{
                     color: textSecondaryColor,
-                    marginBottom: 20,
-                    fontSize: 16,
+                    marginBottom: getResponsiveStyles().padding,
+                    fontSize: getResponsiveStyles().fontSize,
                     textTransform: "uppercase",
                     letterSpacing: 1,
                   }}
@@ -1777,7 +1794,7 @@ export default function Landing() {
                   style={{
                     flexDirection: "row",
                     alignItems: "flex-start",
-                    marginBottom: 16,
+                    marginBottom: getResponsiveStyles().padding * 0.8,
                   }}
                 >
                   <View
@@ -1801,8 +1818,8 @@ export default function Landing() {
                     <CustomText
                       style={{ 
                         color: textSecondaryColor, 
-                        lineHeight: 22,
-                        fontSize: isDesktop ? 16 : 14,
+                        lineHeight: getResponsiveStyles().fontSize * 1.3,
+                        fontSize: getResponsiveStyles().fontSize*0.9,
                       }}
                     >
                       {t("footer.contact.address")}
@@ -1814,7 +1831,7 @@ export default function Landing() {
                   style={{
                     flexDirection: "row",
                     alignItems: "flex-start",
-                    marginBottom: 16,
+                    marginBottom: getResponsiveStyles().padding * 0.8,
                   }}
                 >
                   <View
@@ -1838,7 +1855,7 @@ export default function Landing() {
                     <CustomText 
                       style={{ 
                         color: textSecondaryColor,
-                        fontSize: isDesktop ? 16 : 14,
+                        fontSize: getResponsiveStyles().fontSize*0.9,
                       }}
                     >
                       {t("footer.contact.email") || "support@flexibusiness.com"}
@@ -1873,7 +1890,7 @@ export default function Landing() {
                     <CustomText 
                       style={{ 
                         color: textSecondaryColor,
-                        fontSize: isDesktop ? 16 : 14,
+                        fontSize: getResponsiveStyles().fontSize*0.9,
                       }}
                     >
                       {t("footer.contact.phone") || "+66 2 123 4567"}
@@ -1888,7 +1905,7 @@ export default function Landing() {
               style={{
                 borderTopWidth: 1,
                 borderTopColor: "rgba(148, 163, 184, 0.2)",
-                paddingTop: 24,
+                paddingTop: getResponsiveStyles().padding * 1.2,
                 flexDirection: isDesktop ? "row" : "column-reverse",
                 justifyContent: "space-between",
                 alignItems: isDesktop ? "center" : "center",
@@ -1897,8 +1914,8 @@ export default function Landing() {
               <CustomText
                 style={{
                   color: textSecondaryColor,
-                  fontSize: 14,
-                  marginTop: isDesktop ? 0 : 24,
+                  fontSize: getResponsiveStyles().fontSize * 0.8,
+                  marginTop: isDesktop ? 0 : getResponsiveStyles().padding,
                   textAlign: isDesktop ? "left" : "center",
                 }}
               >
@@ -1909,8 +1926,8 @@ export default function Landing() {
               <View
                 style={{
                   flexDirection: "row",
-                  gap: isDesktop ? 24 : 16,
-                  marginBottom: isDesktop ? 0 : 8,
+                  gap: isDesktop ? getResponsiveStyles().padding * 1.2 : getResponsiveStyles().padding * 0.8,
+                  marginBottom: isDesktop ? 0 : getResponsiveStyles().padding * 0.4,
                   flexWrap: "wrap",
                   justifyContent: "center",
                 }}
@@ -1918,7 +1935,7 @@ export default function Landing() {
                 <TouchableOpacity onPress={() => router.push("/term")}>
                   <CustomText
                     style={{
-                      fontSize: 14,
+                      fontSize: getResponsiveStyles().fontSize * 0.8,
                       color: textSecondaryColor,
                       padding: isDesktop ? 0 : 4,
                     }}
@@ -1930,7 +1947,7 @@ export default function Landing() {
                 <TouchableOpacity onPress={() => router.push("/privacy")}>
                   <CustomText
                     style={{
-                      fontSize: 14,
+                      fontSize: getResponsiveStyles().fontSize * 0.8,
                       color: textSecondaryColor,
                       padding: isDesktop ? 0 : 4,
                     }}
@@ -1943,7 +1960,7 @@ export default function Landing() {
           </View>
         </View>
         )}
-        
+        {/* --------------END WEBSITE LANDING PAGE-------------- */}
       </ScrollView>
     </SafeAreaView>
   );
