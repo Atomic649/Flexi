@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Linking,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
@@ -25,6 +26,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { getBusinessId, getMemberId } from "@/utils/utility";
+import { icons } from '@/constants';
+import { Link } from "@react-navigation/native";
+import { isMobile } from "@/utils/responsive";
 
 export default function EditBill() {
   const { t } = useTranslation();
@@ -336,7 +340,9 @@ export default function EditBill() {
         >
           <View
             style={{
-              width: "40%",
+              width: isMobile()?"90%":"40%",
+              minWidth: 300,
+              maxWidth: 500,
               backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
               borderRadius: 10,
               padding: 20,
@@ -442,6 +448,10 @@ export default function EditBill() {
                 otherStyles={fieldStyles}
                 keyboardType="numeric"
                 maxLength={10}
+                icons={"call"} // Use the phone icon from constants
+                handlePress={() => {
+                 Linking.openURL(`tel:${cPhone}`); // Open phone dialer with the number
+                }}
               />
             </View>
             <View className="w-1/3 pr-2">

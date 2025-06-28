@@ -193,10 +193,7 @@ export default function Login() {
                 isLoading={isSubmitting}
               />
 
-              <View className="flex justify-center  items-center pt-5 flex-row gap-2">
-                <CustomText weight="regular" className="text-lg">
-                  {t("auth.login.noAccount")}
-                </CustomText>
+              <View className="flex justify-center  items-center pt-5 flex-row gap-6">
 
                 <Button
                   title={t("auth.login.registerButton")}

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert, Platform } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert, Platform, Linking } from "react-native";
 import React from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
@@ -116,7 +116,7 @@ export default function BillCard({
                   {product} {amount} {t("common.pcs") }
                 </Text>
               </View>          
-            <View className="pt-2">
+            <View className="pt-2 flex flex-col items-end">
                 <Text
                 className="text-xl font-bold justify-end"
                 style={{ color: PriceColor }}
