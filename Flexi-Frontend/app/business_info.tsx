@@ -98,12 +98,18 @@ export default function BusinessInfo() {
         return;
       }
 
-      const data = await CallAPIBusiness.CreateMoreBusinessAPI({
+      const memberId = await getMemberId();
+      if (memberId === null) {
+        setError(t("auth.register.validation.invalidUserId"));
+        return;
+      }
+
+      // Use memberId directly for the update API call
+      const data = await CallAPIBusiness.UpdateBusinessDetailsAPI(memberId, {
         businessName,
         vatId,
         businessType,
         taxType,
-        userId,
       });
 
       if (data.error) throw new Error(data.error);
@@ -117,16 +123,16 @@ export default function BusinessInfo() {
             text: t("auth.register.alerts.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("/login");
+              router.back();
             },
           },
         ],
       });
 
-      // go to login page
-      router.back();
+      // No need to navigate away again
     } catch (error: any) {
-      setError(error.message);
+      console.error("Update business details error:", error);
+      setError(error.message || "Failed to update business details");
     }
   };
 

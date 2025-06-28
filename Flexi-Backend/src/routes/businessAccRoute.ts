@@ -35,7 +35,7 @@ router.get("/userId/:userId", getBusinessAccByUserId);
 router.get("/detail/:memberId", getBusinessDetail);
 
 // Updating a Business Account by ID
-router.put("/:id", authenticateToken, updateBusinessAcc);
+router.put("/:memberId", authenticateToken, updateBusinessAcc);
 
 // Deleting a Business Account by ID 
 router.delete("/:id", authenticateToken, deleteBusinessAcc);

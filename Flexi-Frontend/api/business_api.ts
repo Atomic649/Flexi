@@ -106,6 +106,35 @@ class CallAPIBusiness {
     }
   }
 
+  // Update Business Details  
+  async UpdateBusinessDetailsAPI(
+    memberId: string,
+    data: {
+      businessName: string;
+      vatId: string;
+      businessType: string;
+      taxType: string;
+    }
+  ): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.put(
+        `/businessacc/${memberId}`,
+        data
+      );
+      console.log("📝Update Business Details API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Update Business Details API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+
   // get business account choice
   async getBusinessAccountChoiceAPI(userId: number): Promise<any> {
     try {

@@ -228,22 +228,37 @@ const getBusinessDetail = async (req: Request, res: Response) => {
   }
 };
 
-
-// Update a Business Account by ID - Put
+// Update Business Details by MemberId - Put
 const updateBusinessAcc = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const businessAccInput: businessAccInput = req.body;
+  const { memberId } = req.params;
+  const { businessName, vatId, businessType, taxType } = req.body;
+
+  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType });
+
   try {
-    const businessAcc = await prisma.businessAcc.update({
+    const businessAcc = await prisma.businessAcc.updateMany({
       where: {
-        id: Number(id),
+        memberId: memberId,
       },
-      data: businessAccInput,
+      data: {
+        businessName,
+        vatId,
+        businessType,
+        taxType,
+      },
     });
-    res.json(businessAcc);
+
+    if (businessAcc.count === 0) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
+
+    res.json({
+      status: "ok",
+      message: "Business details updated successfully",
+    });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to update business account" });
+    console.error("Failed to update business details:", e);
+    res.status(500).json({ message: "Failed to update business details" });
   }
 };
 
