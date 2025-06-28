@@ -147,7 +147,8 @@ export type Gender = (typeof Gender)[keyof typeof Gender]
 export const Payment: {
   COD: 'COD',
   Transfer: 'Transfer',
-  CreditCard: 'CreditCard'
+  CreditCard: 'CreditCard',
+  Cash: 'Cash'
 };
 
 export type Payment = (typeof Payment)[keyof typeof Payment]

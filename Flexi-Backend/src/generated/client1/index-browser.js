@@ -415,7 +415,8 @@ exports.Gender = exports.$Enums.Gender = {
 exports.Payment = exports.$Enums.Payment = {
   COD: 'COD',
   Transfer: 'Transfer',
-  CreditCard: 'CreditCard'
+  CreditCard: 'CreditCard',
+  Cash: 'Cash'
 };
 
 exports.IncomeChannel = exports.$Enums.IncomeChannel = {

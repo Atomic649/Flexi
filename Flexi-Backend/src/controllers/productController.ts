@@ -271,4 +271,25 @@ const getProductChoice = async (req: Request, res: Response) => {
     }
 }
 
-export { createProduct,  getProductById, updateProduct, deleteProduct, getProductByMemberId,getProductChoice  }
+// Get ProductChoice with price
+const getProductChoiceWithPrice = async (req: Request, res: Response) => {
+    const { memberId } = req.params
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                memberId: memberId,
+                deleted: false
+            },
+            select:{               
+                name: true,
+                price: true
+            }
+        })
+        res.json(products)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ message: "failed to get products" })
+    }
+}
+
+export { createProduct,  getProductById, updateProduct, deleteProduct, getProductByMemberId,getProductChoice, getProductChoiceWithPrice };

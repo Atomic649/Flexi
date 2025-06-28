@@ -45,6 +45,7 @@ enum Payment {
   COD
   Transfer
   CreditCard
+  Cash
 }
 
 enum SocialMedia {

@@ -46,10 +46,10 @@ const schema = Joi.object({
   cPhone: Joi.string().min(10).max(10).required(),
   cGender: Joi.string().valid("Female", "Male").required(),
   cAddress: Joi.string().required(),
-  cPostId: Joi.string().required(),
   cProvince: Joi.string().required(),
+  cPostId: Joi.string().required(),
   product: Joi.string().required(),
-  payment: Joi.string().valid("COD", "Transfer", "CreditCard").required(),
+  payment: Joi.string().valid("COD", "Transfer", "CreditCard", "Cash").required(),
   amount: Joi.number().required(),
   // platform: Joi.string().valid(
   //   "Facebook",
