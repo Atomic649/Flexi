@@ -949,7 +949,8 @@
     "payment": {
       "cod": "Cash on Delivery",
       "transfer": "Bank Transfer",
-      "creditCard": "Credit Card"
+      "creditCard": "Credit Card",
+      "cash": "Cash"
     },
     "selectPayment": "Select payment method",
     "paymentStatus": "Payment Status",

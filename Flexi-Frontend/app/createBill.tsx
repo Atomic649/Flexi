@@ -47,7 +47,7 @@ export default function CreateBill() {
   // Product information
   const [product, setProduct] = useState("");
   const [payment, setPayment] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState("1");
   const [platform, setPlatform] = useState("");
   const [cashStatus, setCashStatus] = useState(false);
   const [price, setPrice] = useState("");
@@ -91,14 +91,14 @@ export default function CreateBill() {
 
     fetchMemberId();
 
-    // Call Api Produt list
+    // Call Api Product list with price
     const fetchProductChoice = async () => {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceAPI(memberId);
+          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(memberId);
           setProductChoice(response || []);
-          console.log("Product choice fetched:", response);
+          console.log("Product choice with price fetched:", response);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -108,6 +108,22 @@ export default function CreateBill() {
 
     fetchProductChoice();
   }, []);
+
+  // Handle product selection to auto-fill price
+  const handleProductSelect = (selectedProductName: string) => {
+    setProduct(selectedProductName);
+    
+    // Find the product with matching name and set its price
+    const selectedProduct = productChoice.find(
+      (p) => p.name === selectedProductName
+    );
+    
+    if (selectedProduct && selectedProduct.price) {
+      setPrice(selectedProduct.price.toString());
+    } else {
+      setPrice("");  // Clear price if product not found or has no price
+    }
+  };
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -443,7 +459,7 @@ export default function CreateBill() {
                 }))}
                 placeholder={t("bill.selectProduct")}
                 selectedValue={product || t("bill.selectProduct")}
-                onValueChange={setProduct}
+                onValueChange={handleProductSelect}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
@@ -473,6 +489,7 @@ export default function CreateBill() {
                   { label: t("bill.payment.cod"), value: "COD" },
                   { label: t("bill.payment.transfer"), value: "Transfer" },
                   { label: t("bill.payment.creditCard"), value: "CreditCard" },
+                  { label: t("bill.payment.cash"), value: "Cash" },
                 ]}
                 placeholder={t("bill.selectPayment")}
                 selectedValue={
@@ -483,6 +500,8 @@ export default function CreateBill() {
                       ? t("bill.payment.transfer")
                       : payment === "CreditCard"
                       ? t("bill.payment.creditCard")
+                      : payment === "Cash"
+                      ? t("bill.payment.cash")
                       : t("bill.selectPayment")
                     : t("bill.selectPayment")
                 }

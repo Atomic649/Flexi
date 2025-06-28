@@ -152,12 +152,12 @@ export default function EditBill() {
 
     fetchMemberId();
 
-    // Call Api Product list
+    // Call Api Product list with price
     const fetchProductChoice = async () => {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceAPI(memberId);
+          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(memberId);
           setProductChoice(response || []);
         }
       } catch (error) {
@@ -283,6 +283,21 @@ export default function EditBill() {
 
     setCalendarVisible(false);
   }; // force to chose only one date
+
+  // Handle product selection to auto-fill price
+  const handleProductSelect = (selectedProductName: string) => {
+    setProduct(selectedProductName);
+    
+    // Find the product with matching name and set its price
+    const selectedProduct = productChoice.find(
+      (p) => p.name === selectedProductName
+    );
+    
+    if (selectedProduct && selectedProduct.price) {
+      setPrice(selectedProduct.price.toString());
+    }
+    // Don't clear the price if product not found, as this might be an existing bill
+  };
 
   if (isLoading) {
     return (
@@ -503,7 +518,7 @@ export default function EditBill() {
                 }))}
                 placeholder={t("bill.selectProduct")}
                 selectedValue={product || t("bill.selectProduct")}
-                onValueChange={setProduct}
+                onValueChange={handleProductSelect}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
@@ -533,6 +548,7 @@ export default function EditBill() {
                   { label: t("bill.payment.cod"), value: "COD" },
                   { label: t("bill.payment.transfer"), value: "Transfer" },
                   { label: t("bill.payment.creditCard"), value: "CreditCard" },
+                  { label: t("bill.payment.cash"), value: "Cash" },
                 ]}
                 placeholder={t("bill.selectPayment")}
                 selectedValue={
@@ -540,9 +556,11 @@ export default function EditBill() {
                     ? payment === "COD"
                       ? t("bill.payment.cod")
                       : payment === "Transfer"
-                      ? t("bill.payment.transfer")
+                      ? t("bill.payment.transfer") 
                       : payment === "CreditCard"
                       ? t("bill.payment.creditCard")
+                      : payment === "Cash"
+                      ? t("bill.payment.cash")
                       : t("bill.selectPayment")
                     : t("bill.selectPayment")
                 }
