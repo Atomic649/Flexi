@@ -95,11 +95,38 @@ export const getDeviceInfo = () => {
 export const getResponsiveStyles = () => {
   const { width } = Dimensions.get('window');
   if (width < 640) {
-    return { fontSize: 14, padding: 10 }; // Mobile styles
+    return { 
+      fontSize: 14, 
+      padding: 10,
+      headerFontSize: 22,
+      titleFontSize: 18,
+      subtitleFontSize: 16,
+      bodyFontSize: 14,
+      smallFontSize: 12,
+      lineHeight: 1.4
+    }; // Mobile styles
   } else if (width >= 640 && width < 1024) {
-    return { fontSize: 16, padding: 15 }; // Tablet styles
+    return { 
+      fontSize: 16, 
+      padding: 15,
+      headerFontSize: 28,
+      titleFontSize: 22,
+      subtitleFontSize: 18,
+      bodyFontSize: 16, 
+      smallFontSize: 14,
+      lineHeight: 1.5
+    }; // Tablet styles
   } else {
-    return { fontSize: 18, padding: 20 }; // Desktop styles
+    return { 
+      fontSize: 18, 
+      padding: 20,
+      headerFontSize: 32,
+      titleFontSize: 24,
+      subtitleFontSize: 20,
+      bodyFontSize: 18,
+      smallFontSize: 16,
+      lineHeight: 1.6
+    }; // Desktop styles
   }
 }
 

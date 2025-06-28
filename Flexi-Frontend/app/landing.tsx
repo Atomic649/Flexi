@@ -225,8 +225,11 @@ export default function Landing() {
               {!isMobileWeb() && (
                 <TouchableOpacity onPress={() => router.push("/register")}>
                   <CustomText
-                    className=" text-base font-medium"
-                    style={{ color: accentColor }}
+                    className="font-medium"
+                    style={{ 
+                      color: accentColor,
+                      fontSize: getResponsiveStyles().fontSize * 1, 
+                    }}
                   >
                     {t("auth.login.registerButton")}
                   </CustomText>
@@ -245,15 +248,15 @@ export default function Landing() {
                     style={{ width: 20, height: 20 }}
                     resizeMode="contain"
                   />
-                  <CustomText className="!text-white text-sm">
+                  <CustomText style={{ 
+                    color: "#ffffff",
+                    fontSize: getResponsiveStyles().fontSize * 0.8,
+                  }}>
                     {i18n.language === "th" ? "EN" : "ไทย"}
                   </CustomText>
                 </View>
               </TouchableOpacity>
             </View>
-         
-
-        
         </View> )}
                
         {/* Hero Section with gradient overlay */}
@@ -286,7 +289,7 @@ export default function Landing() {
                 backgroundColor: "rgba(0,0,0,0.7)",
                 justifyContent: "center",
                 alignItems: "center",
-                padding: 20,
+                padding: getResponsiveStyles().padding,
               }}
             >
               <View
@@ -314,12 +317,12 @@ export default function Landing() {
                     weight="bold"
                     className="text-center"
                     style={{
-                      fontSize: getResponsiveStyles().fontSize * 1.2, // Scale the font size based on responsive style
+                      fontSize: getResponsiveStyles().headerFontSize,
                       color: "#ffffff",
                       textShadowColor: "rgba(0, 0, 0, 0.75)",
                       textShadowOffset: { width: -1, height: 1 },
                       textShadowRadius: 10,
-                      padding: getResponsiveStyles().padding / 2, // Apply responsive padding
+                      padding: getResponsiveStyles().padding / 2,
                     }}
                   >
                     {t("landing.title")}
@@ -329,10 +332,9 @@ export default function Landing() {
 
                 {/* Tagline */}
                 <CustomText
-                  //weight="medium"
                   className="text-center mb-8"
                   style={{
-                    fontSize: getResponsiveStyles().fontSize * 0.9, // Scale the font size based on responsive style
+                    fontSize: getResponsiveStyles().subtitleFontSize,
                     color: "#e2e8f0",
                     maxWidth: 600,
                   }}
@@ -354,7 +356,7 @@ export default function Landing() {
                     containerStyles={`py-3 px-6 ${
                       isDesktop ? "min-w-[360px]" : ""
                     }`}
-                    textStyles="!text-white font-bold text-base"
+                    textStyles={`!text-white font-bold text-[${getResponsiveStyles().bodyFontSize}px]`}
                   />
                 </View>
               </View>
@@ -376,7 +378,6 @@ export default function Landing() {
                 flexDirection: isDesktop ? "row" : "column",
                 flexWrap: "wrap",
                 justifyContent: "space-between",
-               // gap: 20,
               }}
             >
               <View
@@ -390,7 +391,7 @@ export default function Landing() {
                     <CustomText
                       weight="bold"
                       style={{
-                        fontSize: 20,
+                        fontSize: getResponsiveStyles().titleFontSize,
                         marginBottom: 12,
                         color: textPrimaryColor,
                       }}
@@ -400,7 +401,8 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        lineHeight: 22,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("landing.feature1.description") ||
@@ -421,7 +423,7 @@ export default function Landing() {
                     <CustomText
                       weight="bold"
                       style={{
-                        fontSize: 20,
+                        fontSize: getResponsiveStyles().titleFontSize,
                         marginBottom: 12,
                         color: textPrimaryColor,
                       }}
@@ -431,7 +433,8 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        lineHeight: 22,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("landing.feature2.description")}
@@ -451,7 +454,7 @@ export default function Landing() {
                     <CustomText
                       weight="bold"
                       style={{
-                        fontSize: 20,
+                        fontSize: getResponsiveStyles().titleFontSize,
                         marginBottom: 12,
                         color: textPrimaryColor,
                       }}
@@ -461,7 +464,8 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        lineHeight: 22,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("landing.feature3.description") }
@@ -481,7 +485,7 @@ export default function Landing() {
                     <CustomText
                       weight="bold"
                       style={{
-                        fontSize: 20,
+                        fontSize: getResponsiveStyles().titleFontSize,
                         marginBottom: 12,
                         color: textPrimaryColor,
                       }}
@@ -491,7 +495,8 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        lineHeight: 22,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("landing.feature4.description") }
@@ -517,7 +522,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: getResponsiveStyles().fontSize * 1.8,
+                  fontSize: getResponsiveStyles().headerFontSize,
                   color: textPrimaryColor,
                 }}
               >
@@ -544,7 +549,7 @@ export default function Landing() {
                     <CustomText
                       weight="medium"
                       style={{
-                        fontSize: 18,
+                        fontSize: getResponsiveStyles().subtitleFontSize,
                         color: textPrimaryColor,
                         marginBottom: 16,
                       }}
@@ -559,7 +564,7 @@ export default function Landing() {
                     <CustomText
                       weight="medium"
                       style={{
-                        fontSize: 18,
+                        fontSize: getResponsiveStyles().subtitleFontSize,
                         color: textPrimaryColor,
                         marginBottom: 16,
                       }}
@@ -569,10 +574,10 @@ export default function Landing() {
                   </View>
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
                       marginBottom: 24,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                     }}
                   >
                     {t("landing.howto.description1") }
@@ -582,7 +587,7 @@ export default function Landing() {
                   <CustomText
                     weight="medium"
                     style={{
-                      fontSize: 18,
+                      fontSize: getResponsiveStyles().subtitleFontSize,
                       color: textPrimaryColor,
                       marginBottom: 16,
                     }}
@@ -592,10 +597,10 @@ export default function Landing() {
 
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
                       marginBottom: 24,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                     }}
                   >
                     {t(
@@ -606,7 +611,7 @@ export default function Landing() {
                   <CustomText
                     weight="medium"
                     style={{
-                      fontSize: 18,
+                      fontSize: getResponsiveStyles().subtitleFontSize,
                       color: textPrimaryColor,
                       marginBottom: 16,
                     }}
@@ -615,10 +620,10 @@ export default function Landing() {
                   </CustomText>
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
                       marginBottom: 24,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                     }}
                   >
                     {t("landing.howto.description3") }
@@ -664,7 +669,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: getResponsiveStyles().fontSize * 1.8,
+                  fontSize: getResponsiveStyles().headerFontSize,
                   color: textPrimaryColor,
                 }}
               >
@@ -674,11 +679,11 @@ export default function Landing() {
               <CustomText
                 className="text-center mb-10"
                 style={{
-                  fontSize: getResponsiveStyles().fontSize,
+                  fontSize: getResponsiveStyles().bodyFontSize,
                   color: textSecondaryColor,
                   maxWidth: 700,
                   alignSelf: "center",
-                  lineHeight: getResponsiveStyles().fontSize * 1.4,
+                  lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                 }}
               >
                 {t("expense.subtitle") ||
@@ -764,7 +769,7 @@ export default function Landing() {
                   <CustomText
                     weight="bold"
                     style={{
-                      fontSize: 20,
+                      fontSize: getResponsiveStyles().titleFontSize,
                       color: textPrimaryColor,
                       marginBottom: 14,
                     }}
@@ -774,9 +779,9 @@ export default function Landing() {
 
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                       marginBottom: 20,
                     }}
                   >
@@ -800,7 +805,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature1.benefit1") ||
@@ -824,7 +829,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature1.benefit2") ||
@@ -874,7 +879,7 @@ export default function Landing() {
                   <CustomText
                     weight="bold"
                     style={{
-                      fontSize: 20,
+                      fontSize: getResponsiveStyles().titleFontSize,
                       color: textPrimaryColor,
                       marginBottom: 14,
                     }}
@@ -884,9 +889,9 @@ export default function Landing() {
 
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                       marginBottom: 20,
                     }}
                   >
@@ -910,7 +915,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature2.benefit1") ||
@@ -934,7 +939,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature2.benefit2") ||
@@ -983,7 +988,7 @@ export default function Landing() {
                   <CustomText
                     weight="bold"
                     style={{
-                      fontSize: 20,
+                      fontSize: getResponsiveStyles().titleFontSize,
                       color: textPrimaryColor,
                       marginBottom: 14,
                     }}
@@ -993,9 +998,9 @@ export default function Landing() {
 
                   <CustomText
                     style={{
-                      fontSize: 16,
+                      fontSize: getResponsiveStyles().bodyFontSize,
                       color: textSecondaryColor,
-                      lineHeight: 24,
+                      lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                       marginBottom: 20,
                     }}
                   >
@@ -1019,7 +1024,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature3.benefit1") ||
@@ -1043,7 +1048,7 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().smallFontSize,
                       }}
                     >
                       {t("expense.feature3.benefit2") ||
@@ -1074,7 +1079,7 @@ export default function Landing() {
               weight="bold"
               className="text-center mb-4"
               style={{
-                fontSize: getResponsiveStyles().fontSize * 1.8,
+                fontSize: getResponsiveStyles().headerFontSize,
                 color: textPrimaryColor,
               }}
             >
@@ -1084,11 +1089,11 @@ export default function Landing() {
             <CustomText
               className="text-center mb-12"
               style={{
-                fontSize: getResponsiveStyles().fontSize,
+                fontSize: getResponsiveStyles().bodyFontSize,
                 color: textSecondaryColor,
                 maxWidth: 700,
                 alignSelf: "center",
-                lineHeight: getResponsiveStyles().fontSize * 1.4,
+                lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
               }}
             >
               {t(
@@ -1136,7 +1141,7 @@ export default function Landing() {
                         weight="bold"
                         className="text-center"
                         style={{
-                          fontSize: getResponsiveStyles().fontSize * 4,
+                          fontSize: getResponsiveStyles().headerFontSize * 2,
                           color: turquoiseColor,
                           marginBottom: 8,
                         }}
@@ -1159,11 +1164,10 @@ export default function Landing() {
                         />
                         <CustomText
                           style={{
-                            fontSize: getResponsiveStyles().fontSize,
+                            fontSize: getResponsiveStyles().bodyFontSize,
                             color: accentColor,
                           }}
                         >
-                          {t("roadmap.growthRate") || "Growing by % monthly"}
                         </CustomText>
                       </View>
                     </View>
@@ -1226,30 +1230,28 @@ export default function Landing() {
                         <CustomText
                           weight="bold"
                           style={{ 
-                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            fontSize: getResponsiveStyles().subtitleFontSize, 
                             color: textPrimaryColor,
                             marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
                             width: isMobileWeb() ? "100%" : "auto"
                           }}
                         >
-                          {t("roadmap.phase1.title") || "Phase 1: Foundation"}
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: getResponsiveStyles().fontSize * 0.9,
+                            fontSize: getResponsiveStyles().smallFontSize,
                             color: turquoiseColor,
                             fontWeight: "500",
                           }}
                         >
-                          {t("roadmap.completed") || "Completed"}
                         </CustomText>
                       </View>
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                           marginBottom: getResponsiveStyles().padding * 0.4,
-                          fontSize: getResponsiveStyles().fontSize,
+                          fontSize: getResponsiveStyles().bodyFontSize,
                         }}
                       >
                         {t(
@@ -1307,7 +1309,7 @@ export default function Landing() {
                         <CustomText
                           weight="bold"
                           style={{ 
-                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            fontSize: getResponsiveStyles().subtitleFontSize, 
                             color: textPrimaryColor,
                             marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
                             width: isMobileWeb() ? "100%" : "auto"
@@ -1318,7 +1320,7 @@ export default function Landing() {
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: getResponsiveStyles().fontSize * 0.9,
+                            fontSize: getResponsiveStyles().smallFontSize,
                             color: accentColor,
                             fontWeight: "500",
                           }}
@@ -1329,9 +1331,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                           marginBottom: getResponsiveStyles().padding * 0.4,
-                          fontSize: getResponsiveStyles().fontSize,
+                          fontSize: getResponsiveStyles().bodyFontSize,
                         }}
                       >
                         {t(
@@ -1416,7 +1418,7 @@ export default function Landing() {
                         <CustomText
                           weight="bold"
                           style={{ 
-                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            fontSize: getResponsiveStyles().subtitleFontSize, 
                             color: textPrimaryColor,
                             marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
                             width: isMobileWeb() ? "100%" : "auto"
@@ -1427,7 +1429,7 @@ export default function Landing() {
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: getResponsiveStyles().fontSize * 0.9,
+                            fontSize: getResponsiveStyles().smallFontSize,
                             color: theme === "dark" ? "#666" : "#9ca3af",
                             fontWeight: "500",
                           }}
@@ -1438,9 +1440,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                           marginBottom: getResponsiveStyles().padding * 0.4,
-                          fontSize: getResponsiveStyles().fontSize,
+                          fontSize: getResponsiveStyles().bodyFontSize,
                         }}
                       >
                         {t(
@@ -1525,7 +1527,7 @@ export default function Landing() {
                         <CustomText
                           weight="bold"
                           style={{ 
-                            fontSize: getResponsiveStyles().fontSize * 1.1, 
+                            fontSize: getResponsiveStyles().subtitleFontSize, 
                             color: textPrimaryColor,
                             marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
                             width: isMobileWeb() ? "100%" : "auto"
@@ -1536,7 +1538,7 @@ export default function Landing() {
                         </CustomText>
                         <CustomText
                           style={{
-                            fontSize: getResponsiveStyles().fontSize * 0.9,
+                            fontSize: getResponsiveStyles().smallFontSize,
                             color: theme === "dark" ? "#666" : "#9ca3af",
                             fontWeight: "500",
                           }}
@@ -1547,9 +1549,9 @@ export default function Landing() {
                       <CustomText
                         style={{
                           color: textSecondaryColor,
-                          lineHeight: getResponsiveStyles().fontSize * 1.3,
+                          lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                           marginBottom: getResponsiveStyles().padding * 0.4,
-                          fontSize: getResponsiveStyles().fontSize,
+                          fontSize: getResponsiveStyles().bodyFontSize,
                         }}
                       >
                         {t(
@@ -1614,7 +1616,7 @@ export default function Landing() {
                           weight="bold"
                           className="text-center"
                           style={{
-                            fontSize: 72,
+                            fontSize: getResponsiveStyles().headerFontSize * 2,
                             color: turquoiseColor,
                             marginBottom: 8,
                           }}
@@ -1637,7 +1639,7 @@ export default function Landing() {
                           />
                           <CustomText
                             style={{
-                              fontSize: 16,
+                              fontSize: getResponsiveStyles().bodyFontSize,
                               color: accentColor,
                             }}
                           >
@@ -1667,7 +1669,7 @@ export default function Landing() {
                 weight="bold"
                 className="text-center mb-2"
                 style={{
-                  fontSize: getResponsiveStyles().fontSize * 1.8,
+                  fontSize: getResponsiveStyles().headerFontSize,
                   color: textPrimaryColor,
                 }}
               >
@@ -1677,7 +1679,7 @@ export default function Landing() {
               <CustomText
                 className="text-center mb-10"
                 style={{
-                  fontSize: getResponsiveStyles().fontSize,
+                  fontSize: getResponsiveStyles().bodyFontSize,
                   color: textSecondaryColor,
                   maxWidth: 700,
                   alignSelf: "center",
@@ -1725,7 +1727,7 @@ export default function Landing() {
                       weight="bold"
                       style={{
                         color: textPrimaryColor,
-                        fontSize: 18,
+                        fontSize: getResponsiveStyles().subtitleFontSize,
                         marginBottom: 12,
                       }}
                     >
@@ -1741,9 +1743,9 @@ export default function Landing() {
                     <CustomText
                       style={{
                         color: textSecondaryColor,
-                        fontSize: 14,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                         marginBottom: 16,
-                        lineHeight: 22,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t(`landing.vision.description${item}`) || 
@@ -1808,7 +1810,7 @@ export default function Landing() {
                     weight="semibold"
                     style={{ 
                       color: textSecondaryColor, 
-                      fontSize: getResponsiveStyles().fontSize * 1.1
+                      fontSize: getResponsiveStyles().subtitleFontSize
                     }}
                   >
                     FLEXI BUSINESS HUB
@@ -1819,8 +1821,8 @@ export default function Landing() {
                   style={{
                     color: textSecondaryColor,
                     marginBottom: getResponsiveStyles().padding * 1.2,
-                    lineHeight: getResponsiveStyles().fontSize * 1.5,
-                    fontSize: getResponsiveStyles().fontSize*0.9,
+                    lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                    fontSize: getResponsiveStyles().bodyFontSize,
                   }}
                 >
                   {t("landing.footer.subtitle")}
@@ -1839,7 +1841,7 @@ export default function Landing() {
                   style={{
                     color: textSecondaryColor,
                     marginBottom: getResponsiveStyles().padding,
-                    fontSize: getResponsiveStyles().fontSize,
+                    fontSize: getResponsiveStyles().bodyFontSize,
                     textTransform: "uppercase",
                     letterSpacing: 1,
                   }}
@@ -1875,8 +1877,8 @@ export default function Landing() {
                     <CustomText
                       style={{ 
                         color: textSecondaryColor, 
-                        lineHeight: getResponsiveStyles().fontSize * 1.3,
-                        fontSize: getResponsiveStyles().fontSize*0.9,
+                        lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("footer.contact.address")}
@@ -1912,7 +1914,7 @@ export default function Landing() {
                     <CustomText 
                       style={{ 
                         color: textSecondaryColor,
-                        fontSize: getResponsiveStyles().fontSize*0.9,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("footer.contact.email") || "support@flexibusiness.com"}
@@ -1947,7 +1949,7 @@ export default function Landing() {
                     <CustomText 
                       style={{ 
                         color: textSecondaryColor,
-                        fontSize: getResponsiveStyles().fontSize*0.9,
+                        fontSize: getResponsiveStyles().bodyFontSize,
                       }}
                     >
                       {t("footer.contact.phone") || "+66 2 123 4567"}
@@ -1971,7 +1973,7 @@ export default function Landing() {
               <CustomText
                 style={{
                   color: textSecondaryColor,
-                  fontSize: getResponsiveStyles().fontSize * 0.8,
+                  fontSize: getResponsiveStyles().smallFontSize,
                   marginTop: isDesktop ? 0 : getResponsiveStyles().padding,
                   textAlign: isDesktop ? "left" : "center",
                 }}
@@ -1992,7 +1994,7 @@ export default function Landing() {
                 <TouchableOpacity onPress={() => router.push("/term")}>
                   <CustomText
                     style={{
-                      fontSize: getResponsiveStyles().fontSize * 0.8,
+                      fontSize: getResponsiveStyles().smallFontSize,
                       color: textSecondaryColor,
                       padding: isDesktop ? 0 : 4,
                     }}
@@ -2004,7 +2006,7 @@ export default function Landing() {
                 <TouchableOpacity onPress={() => router.push("/privacy")}>
                   <CustomText
                     style={{
-                      fontSize: getResponsiveStyles().fontSize * 0.8,
+                      fontSize: getResponsiveStyles().smallFontSize,
                       color: textSecondaryColor,
                       padding: isDesktop ? 0 : 4,
                     }}
