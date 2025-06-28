@@ -13,6 +13,7 @@ const FormField = ({
     placeholderTextColor,
     textcolor,    
     theme,
+    boxheight,
     ...props
 }: any) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +22,9 @@ const FormField = ({
         <View className={`space-y-2 ${otherStyles}`}>
             <CustomText className="text-base text-zinc-500 font-pmedium mb-3">{title}</CustomText>
             <View className="w-full h-16 px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
-            style={{ backgroundColor: bgColor }}>
+            style={{ backgroundColor: bgColor,
+                height: boxheight ? boxheight : 64,
+             }}>
                 <TextInput
                     className="flex-1 font-psemibold text-base"
                     value={value}

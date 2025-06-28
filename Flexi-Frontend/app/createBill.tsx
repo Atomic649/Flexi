@@ -416,11 +416,11 @@ export default function CreateBill() {
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles + " min-h-[100px]"}
+            otherStyles={fieldStyles }
             maxLength={200}
-            multiline={true}
-            textAlignVertical="top"
+            multiline={true}       
             numberOfLines={4}
+            boxheight={110}
           />
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
