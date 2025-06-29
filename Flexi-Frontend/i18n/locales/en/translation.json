@@ -471,7 +471,22 @@
     "sale": "Sale",
     "profit": "Profit",
     "roi": "ROI",
-    "avr": "AVR"
+    "avr": "AVR",
+    "start": {
+      "title": "Start Your Business Journey",
+      "subtitle": "Please do the following steps to get started",
+      "noProduct": "Create your first product",
+      "noStore": "Sign in to connect your store",
+      "createProduct": "Create Product",
+      "connectStore": "Connect Store"
+    },
+    "rule":{
+      "title": "Rules of using Flexi Business Hub",
+      "subtitle": "Follow these rules to ensure a smooth experience",
+      "rule1" : "Make sure to use separate bank accounts from individual's personal bank account.",
+      "rule2" : "Set amount and date to pay your own salary that will help you avoid confusion , spending over your budget, and tax issues."
+
+    }
   },
   "ads": {
     "title": "Ads Connections",

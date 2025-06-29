@@ -23,13 +23,14 @@ import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import { router } from "expo-router";
 import { isDesktop, isMobile } from "@/utils/responsive";
-
+import CallAPIStore from "@/api/store_api";
 export default function Dashboard() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [productChoice, setProductChoice] = useState<any[]>([]);
+  const [store, setStore] = useState<any[]>([]);
   const [productChoiceVisible, setProductChoiceVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
@@ -47,7 +48,20 @@ export default function Dashboard() {
       }
     };
 
+    const fetchStore = async () => {
+      try {
+        const memberId = await getMemberId();
+        if (memberId) {
+          const response = await CallAPIStore.getStoresAPI(memberId);
+          setStore(response);
+        }
+      } catch (error) {
+        console.error("Error fetching store:", error);
+      }
+    };
+
     fetchProductChoice();
+    fetchStore();
   }, []);
 
   const handleDatesChange = (dates: string[]) => {
@@ -78,68 +92,221 @@ export default function Dashboard() {
         style={Platform.OS === "web" ? { paddingTop: 80 } : {}}
       >
         <ScrollView>
-          <View
-            style={{
-              width:isDesktop()? "40%":"100%",
-              maxWidth: 650,
-              alignSelf: "center",
-              paddingTop: Dimensions.get("window").height ? Dimensions.get("window").width * 0.005:0,
-            }}
-          >
-            <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
-              <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>
-                <View
-                  className="flex-row items-center justify-center rounded-full w-36 px-2 p-3"
-                  style={{
-                    backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
-                  }}
+          {/* Add Condition force user to setting Product and Store fist then will appear Dashboard */}
+          {productChoice.length === 0 && store.length === 0 && (
+            <View
+              style={{
+                width: isDesktop() ? "40%" : "100%",
+                maxWidth: 650,
+                alignSelf: "center",
+                padding: 20,
+                marginTop: 20,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: theme === "dark" ? "#27272a" : "#f0f9ff",
+                  borderRadius: 16,
+                  padding: 24,
+                  alignItems: "flex-start",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                  marginBottom: 20,
+                }}
+              >
+                <CustomText className="text-lg  mt-4 text-center ">
+                  {t("dashboard.start.title")}
+                </CustomText>
+                <CustomText
+                  className="text-sm mt-2 mb-4 text-center"
+                  
                 >
+                  {t("dashboard.start.subtitle")}
+                </CustomText>
+
+                {/* Product */}
+                <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={20}
+                    color={theme === "dark" ? "#a1a1aa" : "#02c796"}
+                  />
+                  {/* Product request massage */}
                   <CustomText
-                    className="text-sm font-bold"
+                    className="text-sm text-center"
                     style={{
-                      color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
                     }}
                   >
-                    {selectedProduct || t("product.chooseProduct")}
+                    {t("dashboard.start.noProduct")}
+                  </CustomText>
+                  {/* Route to product */}
+                  <CustomText
+                    className="text-sm underline"
+                    onPress={() => router.push("/createproduct")}
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#02c796",
+                    }}
+                  >
+                    {t("dashboard.start.createProduct")}
                   </CustomText>
                 </View>
-              </TouchableOpacity>
-              <View className="flex-row items-center bg-transparent  rounded-full p-2 ml-2">
-                <CustomText
-                  className={`text-sm mx-2 ${
-                    theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                  }`}
-                >
-                  {selectedDateRange}
+
+                {/*Store */}
+                <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={20}
+                    color={theme === "dark" ? "#a1a1aa" : "#02c796"}
+                  />
+                  {/* Store request massage */}
+                  <CustomText
+                    className="text-sm text-center"
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
+                    }}
+                  >
+                    {t("dashboard.start.noStore")}
+                  </CustomText>
+                  {/* Route to store */}
+                  <CustomText
+                    className="text-sm underline"
+                    onPress={() => router.push("/settings")}
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#02c796",
+                    }}
+                  >
+                    {t("dashboard.start.connectStore")}
+                  </CustomText>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: theme === "dark" ? "#27272a" : "#f0f9ff",
+                  borderRadius: 16,
+                  padding: 24,
+                  alignItems: "flex-start",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
+                <CustomText className="text-lg font-bold mt-4 text-center">
+                  {t("dashboard.rule.title")}
                 </CustomText>
-                {/* icon Calendar */}
-                <Ionicons
-                  name="calendar"
-                  size={24}
-                  color={theme === "dark" ? "#ffffff" : "#444541"}
-                  onPress={() => setCalendarVisible(true)}
-                />
+                <CustomText className="text-sm mt-2 mb-6 text-center">
+                  {t("dashboard.rule.subtitle")}
+                </CustomText>
+                {/* Rule1*/}
+                <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
+                  <Ionicons
+                    name="alert-circle-outline"
+                    size={20}
+                    color={theme === "dark" ? "#a1a1aa" : "#ff3a03"}
+                  />
+                  {/* Product request massage */}
+                  <CustomText
+                    className="text-sm text-start"
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
+                    }}
+                  >
+                    {t("dashboard.rule.rule1")}
+                  </CustomText>
+                </View>
+                {/* Rule2*/}
+                <View className="flex-row space-x-4 items-start justify-start gap-2 m-2 ">
+                  <Ionicons
+                    name="alert-circle-outline"
+                    size={20}
+                    color={theme === "dark" ? "#a1a1aa" : "#ff3a03"}
+                  />
+                  {/* Product request massage */}
+                  <CustomText
+                    className="text-sm text-start "
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
+                    }}
+                  >
+                    {t("dashboard.rule.rule2")}
+                  </CustomText>
+                </View>
               </View>
             </View>
-            <TotalSale />
+          )}
 
-            <View className="flex-1 flex-wrap  flex-row ">
-              <View className="w-1/2 pl-3 ">
-                <FacebookCard />
+          {productChoice.length >= 1 && (
+            <View
+              style={{
+                width: isDesktop() ? "40%" : "100%",
+                maxWidth: 650,
+                alignSelf: "center",
+                paddingTop: Dimensions.get("window").height
+                  ? Dimensions.get("window").width * 0.005
+                  : 0,
+              }}
+            >
+              <View className="flex-row items-center justify-between  mt-2 px-3 font-bold">
+                <TouchableOpacity onPress={() => setProductChoiceVisible(true)}>
+                  <View
+                    className="flex-row items-center justify-center rounded-full w-36 px-2 p-3"
+                    style={{
+                      backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
+                    }}
+                  >
+                    <CustomText
+                      className="text-sm font-bold"
+                      style={{
+                        color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+                      }}
+                    >
+                      {selectedProduct || t("product.chooseProduct")}
+                    </CustomText>
+                  </View>
+                </TouchableOpacity>
+                <View className="flex-row items-center bg-transparent  rounded-full p-2 ml-2">
+                  <CustomText
+                    className={`text-sm mx-2 ${
+                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
+                    }`}
+                  >
+                    {selectedDateRange}
+                  </CustomText>
+                  {/* icon Calendar */}
+                  <Ionicons
+                    name="calendar"
+                    size={24}
+                    color={theme === "dark" ? "#ffffff" : "#444541"}
+                    onPress={() => setCalendarVisible(true)}
+                  />
+                </View>
               </View>
-              <View className="w-1/2 p-0">
-                <TiktokCard />
-              </View>
-              <View className="w-1/2 pl-3">
-                <ShopeeCard />
-              </View>
-              <View className="w-1/2 p-0">
-                <LineCard />
+              <TotalSale />
+
+              <View className="flex-1 flex-wrap  flex-row ">
+                <View className="w-1/2 pl-3 ">
+                  <FacebookCard />
+                </View>
+                <View className="w-1/2 p-0">
+                  <TiktokCard />
+                </View>
+                <View className="w-1/2 pl-3">
+                  <ShopeeCard />
+                </View>
+                <View className="w-1/2 p-0">
+                  <LineCard />
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
-         
+          {/* If no product is selected, show a message */}
         </ScrollView>
 
         {/* Modal for MultiDateCalendar */}
