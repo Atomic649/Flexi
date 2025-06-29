@@ -13,10 +13,10 @@ const FormField = ({
   bgColor,
   placeholderTextColor,
   textcolor,
-
   boxheight,
   icons,
   handlePress,
+  editable = true,
   ...props
 }: any) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,21 +27,27 @@ const FormField = ({
         <CustomText className="text-base text-zinc-500 font-pmedium mb-3">
           {title}
         </CustomText>
-        <Ionicons
-          name={icons}
-          size={18}
-          color={"#71717a"}
-          onPress={() => {
-            if (handlePress) {
-              handlePress();
-            }
-          }}
-          style={{ marginLeft: 8, marginBottom: 8, alignSelf: "center" }}
-        />
+        {icons && (
+          <Ionicons
+            name={icons}
+            size={18}
+            color={"#71717a"}
+            onPress={() => {
+              if (handlePress) {
+                handlePress();
+              }
+            }}
+            style={{ marginLeft: 8, marginBottom: 8, alignSelf: "center" }}
+          />
+        )}
       </View>
       <View
         className="w-full h-16 px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
-        style={{ backgroundColor: bgColor, height: boxheight ? boxheight : 56 }}
+        style={{
+          backgroundColor: bgColor,
+          height: boxheight ? boxheight : 56,
+          opacity: editable ? 1 : 0.8,
+        }}
       >
         <TextInput
           className="flex-1 font-psemibold text-base"
@@ -51,15 +57,20 @@ const FormField = ({
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showPassword}
           style={{ color: textcolor }}
+          editable={editable}
           {...props}
         />
 
         {title === "Password" && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            disabled={!editable}
+          >
             <Image
               source={!showPassword ? icons.eye : icons.eyeHide}
               className="w-6 h-6"
               resizeMode="contain"
+              style={{ opacity: editable ? 1 : 0.5 }}
             />
           </TouchableOpacity>
         )}

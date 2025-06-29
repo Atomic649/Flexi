@@ -165,7 +165,7 @@ const ByOrder = () => {
       case "Shopee":
         return <Ionicons name="bag" size={24} color="#ee4d2d" />;
       default:
-        return <Ionicons name="globe-outline" size={24} color="#61fff2" />;
+        return <Ionicons name="storefront" size={24} color="#61fff2" />;
     }
   };
 

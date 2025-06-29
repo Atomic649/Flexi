@@ -26,7 +26,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { icons } from '@/constants';
+import { icons } from "@/constants";
 import { Link } from "@react-navigation/native";
 import { isMobile } from "@/utils/responsive";
 
@@ -40,6 +40,7 @@ export default function EditBill() {
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // Customer information
   const [cName, setCName] = useState("");
@@ -161,7 +162,9 @@ export default function EditBill() {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(memberId);
+          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(
+            memberId
+          );
           setProductChoice(response || []);
         }
       } catch (error) {
@@ -291,12 +294,12 @@ export default function EditBill() {
   // Handle product selection to auto-fill price
   const handleProductSelect = (selectedProductName: string) => {
     setProduct(selectedProductName);
-    
+
     // Find the product with matching name and set its price
     const selectedProduct = productChoice.find(
       (p) => p.name === selectedProductName
     );
-    
+
     if (selectedProduct && selectedProduct.price) {
       setPrice(selectedProduct.price.toString());
     }
@@ -340,7 +343,7 @@ export default function EditBill() {
         >
           <View
             style={{
-              width: isMobile()?"90%":"40%",
+              width: isMobile() ? "90%" : "40%",
               minWidth: 300,
               maxWidth: 500,
               backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
@@ -375,11 +378,12 @@ export default function EditBill() {
                     stores.find((store) => store.id === storeId)?.accName ||
                     t("bill.selectStore")
                   }
-                  onValueChange={(value: any) => setStoreId(Number(value))}
+                  onValueChange={(value: any) => isEditMode ? setStoreId(Number(value)) : null}
                   bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-2 mb-2"
+                  disabled={!isEditMode}
                 />
               ) : null}
             </View>
@@ -402,39 +406,41 @@ export default function EditBill() {
                   name="calendar"
                   size={24}
                   color={theme === "dark" ? "#ffffff" : "#444541"}
-                  onPress={() => setCalendarVisible(true)}
+                  onPress={() => isEditMode ? setCalendarVisible(true) : null}
+                  style={{ opacity: isEditMode ? 1 : 0.5 }}
                 />
               </View>
             </View>
           </View>
           <View className="flex flex-row justify-between">
-          <View className="w-1/2 pr-2">
-          <FormField2
-            title={t("bill.customerName")}
-            value={cName}
-            handleChangeText={setCName}
-            placeholder={t("bill.enterName")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-          />
+            <View className="w-1/2 pr-2">
+              <FormField2
+                title={t("bill.customerName")}
+                value={cName}
+                handleChangeText={setCName}
+                placeholder={t("bill.enterName")}
+                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+                editable={isEditMode}
+              />
             </View>
             <View className="w-1/2 pr-2">
-
-          <FormField2
-            title={t("bill.customerLastName")}
-            value={cLastName}
-            handleChangeText={setCLastName}
-            placeholder={t("bill.enterLastName")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-          />
-          </View>
+              <FormField2
+                title={t("bill.customerLastName")}
+                value={cLastName}
+                handleChangeText={setCLastName}
+                placeholder={t("bill.enterLastName")}
+                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+                editable={isEditMode}
+              />
             </View>
-          
+          </View>
+
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
               <FormField2
@@ -450,8 +456,9 @@ export default function EditBill() {
                 maxLength={10}
                 icons={"call"} // Use the phone icon from constants
                 handlePress={() => {
-                 Linking.openURL(`tel:${cPhone}`); // Open phone dialer with the number
+                  Linking.openURL(`tel:${cPhone}`); // Open phone dialer with the number
                 }}
+                editable={isEditMode}
               />
             </View>
             <View className="w-1/3 pr-2">
@@ -474,6 +481,7 @@ export default function EditBill() {
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
+                disabled={!isEditMode}
               />
             </View>
           </View>
@@ -487,9 +495,13 @@ export default function EditBill() {
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
-            multiline
+            maxLength={200}
+            multiline={true}
+            numberOfLines={4}
+            boxheight={110}
+            editable={isEditMode}
           />
-          
+
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
               <FormField2
@@ -501,6 +513,7 @@ export default function EditBill() {
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
+                editable={isEditMode}
               />
             </View>
             <View className="w-1/3 pr-2">
@@ -514,13 +527,14 @@ export default function EditBill() {
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
                 keyboardType="numeric"
+                editable={isEditMode}
               />
             </View>
           </View>
-          
+
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-            <Dropdown2
+              <Dropdown2
                 title={t("bill.productName")}
                 options={productChoice.map((product) => ({
                   label: product.name,
@@ -533,6 +547,7 @@ export default function EditBill() {
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
+                disabled={!isEditMode}
               />
             </View>
             <View className="w-1/3 pr-2">
@@ -546,10 +561,11 @@ export default function EditBill() {
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
                 keyboardType="numeric"
+                editable={isEditMode}
               />
             </View>
           </View>
-          
+
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
               <Dropdown2
@@ -566,7 +582,7 @@ export default function EditBill() {
                     ? payment === "COD"
                       ? t("bill.payment.cod")
                       : payment === "Transfer"
-                      ? t("bill.payment.transfer") 
+                      ? t("bill.payment.transfer")
                       : payment === "CreditCard"
                       ? t("bill.payment.creditCard")
                       : payment === "Cash"
@@ -579,6 +595,7 @@ export default function EditBill() {
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
+                disabled={!isEditMode}
               />
             </View>
             <View className="w-1/3 pr-2">
@@ -592,6 +609,7 @@ export default function EditBill() {
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
                 keyboardType="numeric"
+                editable={isEditMode}
               />
             </View>
           </View>
@@ -611,6 +629,7 @@ export default function EditBill() {
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles="mt-2 mb-2"
+            disabled={!isEditMode}
           />
 
           {error ? (
@@ -665,12 +684,56 @@ export default function EditBill() {
               <Ionicons name="trash" size={24} color="#9f9d9a" />
             </TouchableOpacity>
 
-            <CustomButton
-              title={t("bill.updateButton")}
-              handlePress={handleUpdateBill}
-              containerStyles="mt-5 w-2/3"
-              textStyles="!text-white"
-            />
+            {isEditMode && (
+              <CustomButton
+                title={t("bill.updateButton")}
+                handlePress={handleUpdateBill}
+                containerStyles="mt-5 w-2/3"
+                textStyles="!text-white"
+              />
+            )}
+          </View>
+
+          {/* Edit mode toggle button */}
+          <View className="absolute top-0 right-0">
+            <TouchableOpacity
+              onPress={() => setIsEditMode((prev) => !prev)}
+              style={{
+                backgroundColor: isEditMode ? "#ff8c00" : "#10f0d2",
+                borderRadius: 20,
+                marginRight: 20,
+                marginBottom: 10,
+                padding: 10,
+                paddingHorizontal: 15,
+                flexDirection: "row",
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+              }}
+            >
+              <Ionicons
+                name={isEditMode ? "lock-open" : "lock-closed"}
+                size={16}
+                color="#404040"
+                style={{ marginRight: 5 }}
+              />
+              <CustomText
+                className="text-bas"
+                style={{
+                  color: "#404040",
+                  fontWeight: "bold",
+                }}
+              >
+                {isEditMode
+                  ? t("common.editMode")
+                  : t("common.readOnly")}
+              </CustomText>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

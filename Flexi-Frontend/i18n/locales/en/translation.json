@@ -17,7 +17,9 @@
     "invest": "Invest in Us",
     "contact": "Contact Us",
     "today": "Today",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "readOnly": "Read Only",
+    "editMode": "Edit Mode"
   },
   "copyright": "Atomic Intergroup Co., Ltd. All rights reserved.",
   "footer": {
