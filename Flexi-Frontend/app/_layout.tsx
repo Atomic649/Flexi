@@ -389,7 +389,7 @@ const showTopBarAndBackToSetting = (theme: string) => ({
       name="chevron-back"
       size={24}
       color={theme === "dark" ? "#ffffff" : "#18181b"}
-      onPress={() => router.back()}
+      onPress={() => router.push("/settings")}
     />
   ),
 });

@@ -93,7 +93,7 @@ export default function Dashboard() {
       >
         <ScrollView>
           {/* Add Condition force user to setting Product and Store fist then will appear Dashboard */}
-          {productChoice.length === 0 && store.length === 0 && (
+          {productChoice.length === 0 || store.length === 0 && (
             <View
               style={{
                 width: isDesktop() ? "40%" : "100%",
@@ -130,39 +130,65 @@ export default function Dashboard() {
                 {/* Product */}
                 <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
                   <Ionicons
-                    name="checkmark-circle-outline"
-                    size={20}
-                    color={theme === "dark" ? "#a1a1aa" : "#02c796"}
+                  name={
+                    productChoice.length > 0
+                    ? "checkmark-circle-outline"
+                    : "close-circle-outline"
+                  }
+                  size={20}
+                  color={
+                    productChoice.length > 0
+                    ? theme === "dark"
+                      ? "#a1a1aa"
+                      : "#02c796"
+                    : theme === "dark"
+                    ? "#a1a1aa"
+                    : "#ff3a03"
+                  }
                   />
-                  {/* Product request massage */}
+                  {/* Product request message */}
                   <CustomText
-                    className="text-sm text-center"
-                    style={{
-                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
-                    }}
+                  className="text-sm text-center"
+                  style={{
+                    color: theme === "dark" ? "#a1a1aa" : "#48453e",
+                  }}
                   >
                     {t("dashboard.start.noProduct")}
                   </CustomText>
                   {/* Route to product */}
+                  {productChoice.length === 0 && (
                   <CustomText
                     className="text-sm underline"
                     onPress={() => router.push("/createproduct")}
                     style={{
-                      color: theme === "dark" ? "#a1a1aa" : "#02c796",
+                    color: theme === "dark" ? "#a1a1aa" : "#02c796",
                     }}
                   >
                     {t("dashboard.start.createProduct")}
                   </CustomText>
+                  )}
                 </View>
 
                 {/*Store */}
                 <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
                   <Ionicons
-                    name="checkmark-circle-outline"
+                    name={
+                      store.length > 0
+                        ? "checkmark-circle-outline"
+                        : "close-circle-outline"
+                    }
                     size={20}
-                    color={theme === "dark" ? "#a1a1aa" : "#02c796"}
+                    color={
+                      store.length > 0
+                        ? theme === "dark"
+                          ? "#a1a1aa"
+                          : "#02c796"
+                        : theme === "dark"
+                        ? "#a1a1aa"
+                        : "#ff3a03"
+                    }
                   />
-                  {/* Store request massage */}
+                  {/* Store request message */}
                   <CustomText
                     className="text-sm text-center"
                     style={{
@@ -172,16 +198,18 @@ export default function Dashboard() {
                     {t("dashboard.start.noStore")}
                   </CustomText>
                   {/* Route to store */}
-                  <CustomText
-                    className="text-sm underline"
-                    onPress={() => router.push("/settings")}
-                    style={{
-                      color: theme === "dark" ? "#a1a1aa" : "#02c796",
-                    }}
-                  >
-                    {t("dashboard.start.connectStore")}
-                  </CustomText>
-                </View>
+                  {store.length === 0 && (
+                    <CustomText
+                      className="text-sm underline"
+                      onPress={() => router.push("/createstore")}
+                      style={{
+                        color: theme === "dark" ? "#a1a1aa" : "#02c796",
+                      }}
+                    >
+                      {t("dashboard.start.connectStore")}
+                    </CustomText>
+                  )}
+                  </View>
               </View>
 
               <View
@@ -241,7 +269,7 @@ export default function Dashboard() {
             </View>
           )}
 
-          {productChoice.length >= 1 && (
+          {productChoice.length >= 1 && store.length>=1 && (
             <View
               style={{
                 width: isDesktop() ? "40%" : "100%",

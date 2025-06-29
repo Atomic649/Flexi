@@ -475,7 +475,7 @@
     "start": {
       "title": "Start Your Business Journey",
       "subtitle": "Please do the following steps to get started",
-      "noProduct": "Create your first product",
+      "noProduct": "Create atleast one product or more",
       "noStore": "Sign in to connect your store",
       "createProduct": "Create Product",
       "connectStore": "Connect Store"

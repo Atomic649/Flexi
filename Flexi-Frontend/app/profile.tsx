@@ -6,6 +6,7 @@ import {
   Modal,
   RefreshControl,
   Platform,
+  Alert,
 } from "react-native";
 import CallAPIUser from "@/api/auth_api";
 import CallAPIBusiness from "@/api/business_api";
@@ -175,6 +176,40 @@ export default function Profile() {
     fetchBusinessAccountChoice();
   }, []);
 
+  // Function to handle business account selection and reload app
+  const handleBusinessSelection = async (business: any) => {
+    try {
+      setSelectedBusiness(business.businessName);
+      setBusinessAccChoiceVisible(false);
+
+      // Store the selected business memberId
+      await replaceMemberId(business.memberId);
+
+      // // Show loading message
+      // Alert.alert(
+      //   t("profile.businessSwitch.title") || "Switching Business Account",
+      //   t("profile.businessSwitch.message") || "Please wait while we reload your data...",
+      //   [],
+      //   { cancelable: false }
+      // );
+
+      // Trigger business data refresh
+      triggerFetch();
+
+      // Small delay to ensure memberId is saved before reload
+      setTimeout(() => {
+        // Use router.replace to reload the app by navigating to the tabs screen
+        router.replace("/(tabs)/home");
+      }, 1000);
+    } catch (error) {
+      console.error("Error switching business account:", error);
+      Alert.alert(
+        t("common.error") || "Error",
+        t("profile.businessSwitch.error") || "Failed to switch business account"
+      );
+    }
+  };
+
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
@@ -317,14 +352,7 @@ export default function Profile() {
                 {businessAccChoice.map((business, index) => (
                   <TouchableOpacity
                     key={index}
-                    onPress={() => {
-                      setSelectedBusiness(business.businessName);
-                      setBusinessAccChoiceVisible(false);
-                      triggerFetch(); // Reload business data
-                      // Send value business.memberId
-                      console.log(business.memberId);
-                      replaceMemberId(business.memberId);
-                    }}
+                    onPress={() => handleBusinessSelection(business)}
                     style={{
                       padding: 10,
                       borderBottomWidth: 1,
