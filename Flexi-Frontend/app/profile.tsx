@@ -1,5 +1,6 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useState, useEffect } from "react";
+
 import {
   Text,
   TouchableOpacity,
@@ -309,17 +310,19 @@ export default function Profile() {
         >
           {businessData.role}
         </Text>
-
-        <TouchableOpacity
-          onPress={() => router.push("/createBusiness")}
-          className=" justify-center mt-10 flex-row items-center"
-        >
-          <Ionicons
-            name="add-circle"
-            size={48}
-            color={theme === "dark" ? "#c9c9c9" : "#48453e"}
-          />
-        </TouchableOpacity>
+        {businessAccChoice.length < 3 && (
+          <TouchableOpacity
+            onPress={() => router.push("/createBusiness")}
+            className=" justify-center mt-10 flex-row items-center"
+          >
+            <Ionicons
+              name="add-circle"
+              size={48}
+              color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+            />
+          </TouchableOpacity>
+        )}
+vc9
 
         {/* Modal for Business Account Choice */}
         <Modal
