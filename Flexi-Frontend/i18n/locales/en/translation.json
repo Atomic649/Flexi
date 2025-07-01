@@ -493,6 +493,7 @@
     "limit": "Limit 4 ad connections",
     "help": "Unlock limit ",
     "createAd": "Connect Ad Account",
+    "createAdCost": "Create Ad Cost",
     "editAd": "Edit Ad Connections",
     "delete": "Delete Ad",
     "notfound": "Not found",

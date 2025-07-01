@@ -278,7 +278,7 @@ function RootLayoutNav() {
         name="createadscost"
         options={{
           ...showTopBarAndBackIcon(theme),
-          title: t("adsCost.createAdsCost"),
+          title: t("ads.createAdCost"),
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
