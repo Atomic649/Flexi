@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
+import { router } from "expo-router";
 
 interface ExpenseDetailProps {
   visible: boolean;
@@ -48,15 +49,16 @@ export default function ExpenseDetail({
   const [group, setGroup] = useState(expense.group);
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchExpense = async () => {
       try {
-        console.log("Fetching expense with ID:", expense.id); // Add logging
+        console.log("Fetching expense with ID:", expense.id);
         const fetchedExpense = await CallAPIExpense.getExpenseByIdAPI(
           expense.id
-        ); // Use the id from the expense object
-        console.log("Fetched expense:", fetchedExpense); // Add logging
+        );
+        console.log("Fetched expense:", fetchedExpense);
         setDate(fetchedExpense.date);
         setNote(fetchedExpense.note);
         setDesc(fetchedExpense.desc);
@@ -69,7 +71,26 @@ export default function ExpenseDetail({
     };
 
     fetchExpense();
-  }, [expense.id]); // Use the id from the expense object
+  }, [expense.id]);
+
+  // Track changes to expense data
+  useEffect(() => {
+    const checkChanges = () => {
+      if (
+        note !== expense.note ||
+        desc !== expense.desc ||
+        amount !== expense.amount ||
+        group !== expense.group ||
+        image !== expense.image
+      ) {
+        setHasChanges(true);
+      } else {
+        setHasChanges(false);
+      }
+    };
+
+    checkChanges();
+  }, [note, desc, amount, group, image]);
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -81,18 +102,19 @@ export default function ExpenseDetail({
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setHasChanges(true);
     }
   };
 
   // Function to delete expense
   const deleteExpense = async () => {
-
     // get memberId from local storage
     const memberId = String(await getMemberId());
     console.log("Member ID:", memberId);
     try {
       const data = await CallAPIExpense.deleteExpenseAPI(expense.id, memberId);
-      onClose();
+      // Use setTimeout to ensure router navigates after modal closes
+      handleCloseAfterChanges();
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
       setError(error.message);
@@ -115,6 +137,18 @@ export default function ExpenseDetail({
     message: "",
     buttons: [],
   });
+
+  // Function to handle closing after changes
+  const handleCloseAfterChanges = () => {
+    setIsVisible(false);
+    const timer = setTimeout(() => {
+      onClose();
+      // Navigate directly to expense tab instead of going back
+      router.replace("/(tabs)/expense");
+    }, 100);
+
+    return () => clearTimeout(timer);
+  };
 
   // Handle update
   const handleUpdateExpense = async () => {
@@ -151,13 +185,14 @@ export default function ExpenseDetail({
         } as unknown as Blob);
       }
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
-      onClose();
+      handleCloseAfterChanges();
 
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
       setError(error.message);
     }
   };
+
   // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
     `px-4 py-2 rounded-lg mx-1 ${
@@ -170,19 +205,26 @@ export default function ExpenseDetail({
         : "bg-zinc-200"
     }`;
 
+  // Control visibility to ensure proper transitions
+  const [isVisible, setIsVisible] = useState(visible);
+
+  useEffect(() => {
+    setIsVisible(visible);
+  }, [visible]);
+
   return (
     <Modal
-      visible={visible}
+      visible={isVisible}
       transparent={true}
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={() => onClose()}
     >
       <TouchableOpacity
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",         
+          backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
         activeOpacity={1}
         onPressOut={onClose}
@@ -204,7 +246,7 @@ export default function ExpenseDetail({
             style={{
               flex: Platform.OS === "web" ? (image ? 0.8 : 0.4) : (image ? 0.2 : 0.1),
               justifyContent: "center",
-              width: "100%",             
+              width: "100%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
               borderRadius: 10,
               padding: Platform.OS === "web" ? 20 : 0,
@@ -344,7 +386,7 @@ export default function ExpenseDetail({
                 </ScrollView>
               </View>
               <View className="flex-row justify-evenly mt-2">
-              <TouchableOpacity
+                <TouchableOpacity
                   onPress={() => deleteExpense()}
                   className=" items-center justify-center"
                 >
@@ -371,8 +413,6 @@ export default function ExpenseDetail({
                     {t("expense.detail.attachBill")}
                   </CustomText>
                 </TouchableOpacity>
-
-              
 
                 {error ? (
                   <CustomText className="text-red-500 mt-4">{error}</CustomText>

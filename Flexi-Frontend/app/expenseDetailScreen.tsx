@@ -41,11 +41,11 @@ export default function ExpenseDetailScreen() {
     }
   }, [isInvalid]);
 
-  // Function to close the modal and navigate back
+  // Function to close the modal and navigate to expense list
   const handleClose = () => {
     setIsVisible(false);
     const timer = setTimeout(() => {
-      router.back();
+      router.replace("/(tabs)/expense");
     }, 100);
     
     return () => clearTimeout(timer);

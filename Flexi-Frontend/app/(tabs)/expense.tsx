@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
@@ -8,20 +8,36 @@ import detectExpense from "../../components/expense/detectExpense";
 import list from "../../components/expense/list";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
+import { useFocusEffect } from "expo-router";
+//import { useFocusEffect } from '@expo/navigation-ex/src/useFocusEffect';
 
 const Expense = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [routes] = useState([
     { key: "list", title1: t("expense.title.expenseList") },
     { key: "detectExpense", title2: t("expense.title.updateExpense") },
   ]);
 
-  const renderScene = SceneMap({
-    list: list,
-    detectExpense: detectExpense,
-  });
+  // Refresh expense list when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Increment refresh trigger to force list to reload
+      setRefreshTrigger(prev => prev + 1);
+    }, [])
+  );
+
+  // Create scene map with access to refresh trigger
+  const renderSceneWithProps = () => {
+    return {
+      list: () => list({ refreshTrigger }),
+      detectExpense: detectExpense,
+    };
+  };
+
+  const renderScene = SceneMap(renderSceneWithProps());
 
   return (
     <SafeAreaView

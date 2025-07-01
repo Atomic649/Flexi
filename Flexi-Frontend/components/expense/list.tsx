@@ -66,7 +66,11 @@ const formatDate = (date: string) => {
   return date.replace("T", " ").replace(/:\d{2}\.\d{3}Z$/, "");
 };
 
-const List = () => {
+interface ListProps {
+  refreshTrigger?: number;
+}
+
+const List = ({ refreshTrigger = 0 }: ListProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
@@ -88,36 +92,14 @@ const List = () => {
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
 
-  // Call API to get expenses
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIReport.getAdsExpenseReportsAPI(
-            memberId
-          );
-          // Ensure response is an array before setting state
-          setExpense(Array.isArray(response) ? response : []);
-        } else {
-          console.error("Member ID is null");
-        }
-      } catch (error) {
-        console.error("Error fetching expenses:", error);
-        setExpense([]); // Set empty array on error
-      }
-    };
-
-    fetchExpenses();
-  }, []);
-
-  // Refresh expenses
-  const onRefresh = async () => {
+  // Fetch expenses function
+  const fetchExpenses = async () => {
     try {
-      setRefreshing(true);
       const memberId = await getMemberId();
       if (memberId) {
-        const response = await CallAPIReport.getAdsExpenseReportsAPI(memberId);
+        const response = await CallAPIReport.getAdsExpenseReportsAPI(
+          memberId
+        );
         // Ensure response is an array before setting state
         setExpense(Array.isArray(response) ? response : []);
       } else {
@@ -126,6 +108,28 @@ const List = () => {
     } catch (error) {
       console.error("Error fetching expenses:", error);
       setExpense([]); // Set empty array on error
+    }
+  };
+
+  // Call API to get expenses initially
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  // Reload expenses when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      fetchExpenses();
+    }
+  }, [refreshTrigger]);
+
+  // Refresh expenses
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await fetchExpenses();
+    } catch (error) {
+      console.error("Error refreshing expenses:", error);
     }
     setRefreshing(false);
   };
