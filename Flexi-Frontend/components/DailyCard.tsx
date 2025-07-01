@@ -1,5 +1,6 @@
 import { View, Text, Dimensions } from "react-native";
 import React from "react";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -34,6 +35,10 @@ export default function DailyCard({
   ROI,
   tableColor,
 }: any) {
+  // Use responsive styles from utility
+  const styles = getResponsiveStyles();
+  const { bodyFontSize, smallFontSize } = styles;
+
   return (
     <View className="flex ">
       <View className={`flex flex-col items-end `} style={{ backgroundColor: tableColor,
@@ -47,8 +52,7 @@ export default function DailyCard({
             <Text
               className=" text-zinc-500 font-normal justify-center items-start"
               style={{
-                fontSize: Dimensions.get("window").width > 500 ? 14 : 11,
-                
+                fontSize: smallFontSize,
               }}
               numberOfLines={1}
             >
@@ -58,7 +62,8 @@ export default function DailyCard({
           
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className="text-sm text-zinc-500 font-normal justify-center"
+              className="text-zinc-500 font-normal justify-center"
+              style={{ fontSize: smallFontSize }}
               numberOfLines={1}
             >
               {amount}
@@ -67,7 +72,8 @@ export default function DailyCard({
 
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className="font-normal text-sm text-zinc-500 items-end justify-end"
+              className="font-normal text-zinc-500 items-end justify-end"
+              style={{ fontSize: smallFontSize }}
               numberOfLines={3}
             >
               {sale}
@@ -76,8 +82,8 @@ export default function DailyCard({
         
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className="text-sm text-zinc-500  font-normal justify-end"
-              style={{}}
+              className="text-zinc-500 font-normal justify-end"
+              style={{ fontSize: smallFontSize }}
               numberOfLines={1}
             >
               {adsCost}
@@ -86,7 +92,8 @@ export default function DailyCard({
 
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className={`text-base font-bold justify-end ${isPositiveProfit(profit) ? 'text-teal-500' : 'text-[#FF006E]'}`}
+              className={`font-bold justify-end ${isPositiveProfit(profit) ? 'text-teal-500' : 'text-[#FF006E]'}`}
+              style={{ fontSize: bodyFontSize }}
               numberOfLines={1}
             >
               {profit}
@@ -94,7 +101,8 @@ export default function DailyCard({
           </View>
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className={`text-sm font-normal justify-end text-zinc-500   `}
+              className={`font-normal justify-end text-zinc-500`}
+              style={{ fontSize: smallFontSize }}
               numberOfLines={1}
             >
               {percentageAds}%

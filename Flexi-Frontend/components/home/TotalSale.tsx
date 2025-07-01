@@ -10,7 +10,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import CircularChart from "@/components/CircularChart";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
-import { isMobileApp } from "@/utils/responsive";
+import { isMobileApp, getResponsiveStyles } from "@/utils/responsive";
 
 const TotalSale = () => {
   const { theme } = useTheme();
@@ -18,19 +18,9 @@ const TotalSale = () => {
   const { width, height } = useWindowDimensions();
   const isPortrait = height > width;
 
-  // Dynamic font sizes
-  const baseFontSize =
-    Dimensions.get("window").width > 768 
-      ? Math.min(width * 0.080, 21)
-      : Math.min(width * 0.085, 16); // Base size for mobile, max 20
-  const smallFontSize =
-    Dimensions.get("window").width > 768 
-      ? Math.min(baseFontSize * 0.8, 18)
-      : Math.min(baseFontSize * 0.8, 14); // Max 14
-  const largeFontSize =
-    Dimensions.get("window").width > 768 
-      ? Math.min(baseFontSize * 1.05, 28)
-      : Math.min(baseFontSize * 1.05, 28); // Max 28
+  // Use responsive styles from utility
+  const styles = getResponsiveStyles();
+  const { headerFontSize,bodyFontSize, titleFontSize, smallFontSize,subtitleFontSize } = styles;
 
   return (
     <View
@@ -67,8 +57,7 @@ const TotalSale = () => {
         >
           <CircularChart
             percentage={35}
-             size={   !isMobileApp()? 135 : undefined
-             }
+            size={!isMobileApp() ? 135 : undefined}
           />
         </View>
 
@@ -93,7 +82,7 @@ const TotalSale = () => {
           >
             <Text
               style={{
-                fontSize: largeFontSize,
+                fontSize: headerFontSize,
                 fontWeight: "bold",
                 color: theme === "dark" ? "#ffffff" : "#3c3c3c",
               }}
@@ -137,7 +126,7 @@ const TotalSale = () => {
               </CustomText>
               <Text
                 style={{
-                  fontSize: baseFontSize,
+                  fontSize: subtitleFontSize,
                   fontWeight: "bold",
                   color: theme === "dark" ? "#ffb700" : "#ff8c00",
                   textAlign: "center",
@@ -163,7 +152,7 @@ const TotalSale = () => {
               </CustomText>
               <Text
                 style={{
-                  fontSize: baseFontSize,
+                  fontSize: subtitleFontSize,
                   fontWeight: "bold",
                   color:
                     parseFloat("-999.99") >= 0
@@ -205,7 +194,7 @@ const TotalSale = () => {
               </CustomText>
               <Text
                 style={{
-                  fontSize: smallFontSize,
+                  fontSize: bodyFontSize,
                   fontWeight: "bold",
                   color: theme === "dark" ? "#c6c7c7" : "#7f7765",
                   textAlign: "center",
@@ -230,7 +219,7 @@ const TotalSale = () => {
               </CustomText>
               <Text
                 style={{
-                  fontSize: smallFontSize,
+                  fontSize: bodyFontSize,
                   fontWeight: "bold",
                   color: theme === "dark" ? "#c6c7c7" : "#7f7765",
                   textAlign: "center",

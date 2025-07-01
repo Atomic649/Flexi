@@ -98,7 +98,7 @@ export const getResponsiveStyles = () => {
     return { 
       fontSize: 14, 
       padding: 10,
-      headerFontSize: 22,
+      headerFontSize: 20,
       titleFontSize: 18,
       subtitleFontSize: 16,
       bodyFontSize: 14,
@@ -109,7 +109,7 @@ export const getResponsiveStyles = () => {
     return { 
       fontSize: 16, 
       padding: 15,
-      headerFontSize: 28,
+      headerFontSize: 26,
       titleFontSize: 22,
       subtitleFontSize: 18,
       bodyFontSize: 16, 
@@ -120,7 +120,7 @@ export const getResponsiveStyles = () => {
     return { 
       fontSize: 18, 
       padding: 20,
-      headerFontSize: 32,
+      headerFontSize: 28,
       titleFontSize: 24,
       subtitleFontSize: 20,
       bodyFontSize: 18,

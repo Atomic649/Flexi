@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import images from "@/constants/images";
 import { CustomText } from "./CustomText";
 import { API_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 interface B2BAdsProps {
   officeData?: any[];
@@ -28,6 +29,10 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
   const { width, height } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isIOS = Platform.OS === "ios";
+
+  // Use responsive styles from utility
+  const responsiveStyles = getResponsiveStyles();
+  const { bodyFontSize, titleFontSize, smallFontSize } = responsiveStyles;
 
   // Responsive breakpoints
   const isSmallScreen = width < 640;
@@ -90,7 +95,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
         <CustomText
           style={{
             color: theme === "dark" ? "#ffffff" : "#000000",
-            fontSize: isSmallScreen ? 14 : 16,
+            fontSize: bodyFontSize,
           }}
         >
           {t("common.noDataAvailable")}
@@ -136,7 +141,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
             styles.title,
             {
               color: theme === "dark" ? "#ffffff" : "#000000",
-              fontSize: isSmallScreen ? 16 : isMediumScreen ? 18 : 18,
+              fontSize: titleFontSize,
             },
           ]}
         >
@@ -148,8 +153,8 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
             styles.description,
             {
               color: theme === "dark" ? "#cccccc" : "#555555",
-              fontSize: isSmallScreen ? 13 : 14,
-              lineHeight: isSmallScreen ? 18 : 20,
+              fontSize: bodyFontSize,
+              lineHeight: responsiveStyles.lineHeight * bodyFontSize,
             },
           ]}
           numberOfLines={isSmallScreen ? 3 : 4}
@@ -174,7 +179,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
                 styles.buttonText,
                 {
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                  fontSize: isSmallScreen ? 13 : 14,
+                  fontSize: smallFontSize,
                 },
               ]}
             >

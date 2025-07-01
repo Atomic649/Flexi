@@ -9,7 +9,8 @@ import {
 import { useTheme } from "@/providers/ThemeProvider";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { CustomText } from "@/components/CustomText"; // Assuming you have a CustomText component
+import { CustomText } from "@/components/CustomText";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 const PlatformCard = ({
   sale,
@@ -23,17 +24,16 @@ const PlatformCard = ({
 }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isPortrait = height > width;
 
-  const { width, height } = useWindowDimensions(); // Get screen dimensions
-  const isPortrait = height > width; // Determine orientation
-  const cardWidth = Math.min(isPortrait ? width * 0.48 : width * 0.189); // Adjust width based on orientation with a max limit of 290
+  // Use responsive styles from utility
+  const styles = getResponsiveStyles();
+  const { bodyFontSize, titleFontSize, smallFontSize } = styles;
+
+  const cardWidth = Math.min(isPortrait ? width * 0.48 : width * 0.189);
   const cardHeight =
-    cardWidth * (Dimensions.get("window").width > 768 ? 0.6 : 0.7); // Adjust height based on platform
-
-  // Dynamic font sizes based on screen width
-  const baseFontSize = Math.min(cardWidth * 0.080, 20); // Base size for mobile, max 20
-  const smallFontSize = Math.min(baseFontSize * 0.8, 14); // Max 14
-  const largeFontSize = Math.min(baseFontSize * 1.05, 28); // Max 28
+    cardWidth * (Dimensions.get("window").width > 768 ? 0.6 : 0.7);
 
   const renderIcon = () => {
     const IconComponent = iconType === "FontAwesome" ? FontAwesome : Ionicons;
@@ -96,13 +96,11 @@ const PlatformCard = ({
           height: cardHeight,
           maxWidth: 310,
           maxHeight: 200,
-
         }} // Dynamically set width and height
         className={`${
           theme === "dark" ? "bg-[#27272a]" : "bg-white"
         } items-center
              justify-center 
-           
                rounded-2xl            
              border
             ${
@@ -115,7 +113,7 @@ const PlatformCard = ({
           <Text
             className={`font-bold`}
             style={{
-              fontSize: largeFontSize,
+              fontSize: titleFontSize,
               color: theme === "dark" ? "#ffffff" : "#3c3c3c",
             }}
             numberOfLines={1}
@@ -140,7 +138,7 @@ const PlatformCard = ({
             <Text
               className={`font-bold text-center`}
               style={{
-                fontSize: baseFontSize,
+                fontSize: bodyFontSize,
                 color: theme === "dark" ? "#dddddd" : "#7f7765",
               }}
               numberOfLines={1}
@@ -161,7 +159,7 @@ const PlatformCard = ({
             <Text
               className={`font-bold text-center`}
               style={{
-                fontSize: baseFontSize,
+                fontSize: bodyFontSize,
                 color:
                   parseFloat(profit) >= 0
                     ? theme === "dark"
@@ -190,7 +188,7 @@ const PlatformCard = ({
             <Text
               className={`font-bold text-center`}
               style={{
-                fontSize: baseFontSize,
+                fontSize: bodyFontSize,
                 color: theme === "dark" ? "#c6c7c7" : "#7f7765",
               }}
               numberOfLines={1}
@@ -211,7 +209,7 @@ const PlatformCard = ({
             <Text
               className={`font-bold text-center`}
               style={{
-                fontSize: baseFontSize,
+                fontSize: bodyFontSize,
                 color: theme === "dark" ? "#c6c7c7" : "#7f7765",
               }}
               numberOfLines={1}
