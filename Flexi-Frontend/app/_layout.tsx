@@ -45,10 +45,11 @@ function RootLayoutNav() {
   const { t } = useTranslation();
   const { businessAvatar, businessName } = useBusiness();
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchRegisteredUsers = async () => {
+      setIsLoading(true);
       try {
         const response = await CallAPIUser.getRegisteredUsersAPI();
         if (response && typeof response === 'object' && 'message' in response) {
@@ -64,12 +65,15 @@ function RootLayoutNav() {
       } catch (error) {
         console.error("Error fetching registered users:", error);
         setRegisteredUsers(0);
+      } finally {
+        // Add a small delay to ensure UI transitions smoothly
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
       }
     };
     fetchRegisteredUsers();
   }, []);
-
-
 
   useEffect(() => {
     async function updateNavigationBar() {
@@ -119,7 +123,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="(tabs)"
           options={{
-            ...MainTopBar.getTopBarConfig(theme, registeredUsers, businessAvatar, businessName),
+            ...MainTopBar.getTopBarConfig(theme, registeredUsers, businessAvatar, businessName, isLoading),
             title: "",
           }}
         />

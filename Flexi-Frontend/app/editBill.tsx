@@ -269,7 +269,7 @@ export default function EditBill() {
             text: t("common.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("/");
+              router.replace("/(tabs)/income");
             },
           },
         ],

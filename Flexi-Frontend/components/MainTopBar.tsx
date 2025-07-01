@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Image, Text, Platform } from "react-native";
+import { View, TouchableOpacity, Image, Text, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { CustomText } from "@/components/CustomText";
 import { icons, images } from "@/constants";
@@ -19,7 +19,8 @@ const MainTopBar = {
     theme: string,
     registeredUsers: number | null,
     businessAvatar: string | null,
-    businessName: string | null
+    businessName: string | null,
+    isLoading: boolean = false
   ) => ({
     headerShown: true,
     headerStyle: {
@@ -28,23 +29,33 @@ const MainTopBar = {
     headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
     headerLeft: () => (
       <View
-        className="flex-row items-center justify-between gap-4 ml-6  "
+        className="flex-row items-center justify-between gap-4 ml-6"
         style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0 }}
       >
         <TouchableOpacity onPress={() => router.push("/profile")} className="">
-          <View className="w-9 h-9 rounded-full overflow-hidden">
-            <Image
-              source={{
-                uri: businessAvatar || images.empty,
-              }}
-              className="w-full h-full"
-              resizeMode="contain"
-            />
+          <View className="w-9 h-9 rounded-full overflow-hidden justify-center items-center">
+            {isLoading ? (
+              <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
+            ) : (
+              <Image
+                source={{
+                  uri: businessAvatar || images.empty,
+                }}
+                className="w-full h-full"
+                resizeMode="contain"
+              />
+            )}
           </View>
         </TouchableOpacity>
-        <CustomText className="text-base font-bold text-zinc-500 ">
-          {businessName || ""}
-        </CustomText>
+        <View className="min-w-[100] max-w-[150]">
+          {isLoading ? (
+            <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
+          ) : (
+            <CustomText className="text-base font-bold text-zinc-500 " numberOfLines={1}>
+              {businessName || ""}
+            </CustomText>
+          )}
+        </View>
       </View>
     ),
 
@@ -118,31 +129,49 @@ const MainTopBar = {
               height: 20,
             }}
           />
-          <View
-            style={{
-              position: "absolute",
-              top: -6,
-              right: -13,
-              height: 18,
-              width: 18,
-              borderRadius: 10,
-              backgroundColor: "#07e5c0",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              className={`text-xs font-bold ${
-                theme === "dark" ? "text-[#18181b]" : "text-white"
-              }`}
-              numberOfLines={1}
-              adjustsFontSizeToFit
+          {isLoading ? (
+            <View
+              style={{
+                position: "absolute",
+                top: -6,
+                right: -13,
+                height: 18,
+                width: 18,
+                borderRadius: 10,
+                backgroundColor: "#07e5c0",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              {registeredUsers && registeredUsers > 1000
-                ? `${(registeredUsers / 1000).toFixed(1)}k`
-                : registeredUsers || 0}
-            </Text>
-          </View>
+              <ActivityIndicator size="small" color={theme === "dark" ? "#18181b" : "#ffffff"} />
+            </View>
+          ) : (
+            <View
+              style={{
+                position: "absolute",
+                top: -6,
+                right: -13,
+                height: 18,
+                width: 18,
+                borderRadius: 10,
+                backgroundColor: "#07e5c0",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                className={`text-xs font-bold ${
+                  theme === "dark" ? "text-[#18181b]" : "text-white"
+                }`}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {registeredUsers && registeredUsers > 1000
+                  ? `${(registeredUsers / 1000).toFixed(1)}k`
+                  : registeredUsers || 0}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     ),
