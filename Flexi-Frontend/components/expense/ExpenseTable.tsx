@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, RefreshControl, Platform, Dimensions } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -20,9 +20,10 @@ interface Expense {
 interface ExpenseTableProps {
   expenses: Expense[];
   onRowPress: (expense: Expense) => void;
+  refreshTrigger?: number; // Add refresh trigger prop
 }
 
-const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
+const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTableProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
@@ -58,22 +59,45 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
     }
   };
 
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
+  // Fetch expenses function
+  const fetchExpenses = useCallback(async () => {
     try {
+      setRefreshing(true);
       const memberId = String(await getMemberId());
-      console.log("Member ID:", memberId);
+      console.log("Fetching expenses for Member ID:", memberId);
       if (memberId) {
         const expenses = await CallAPIExpense.getAllExpensesAPI(memberId);
+        console.log("Fetched expenses:", expenses);
         setExpenseList(expenses);
       }
     } catch (error) {
       console.error("Error refreshing expenses", error);
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
-  }
-  , []);
+  }, []);
+
+  // Initial load of expenses
+  useEffect(() => {
+    setExpenseList(expenses);
+  }, [expenses]);
+
+  // Refresh expenses when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      fetchExpenses();
+    }
+  }, [refreshTrigger, fetchExpenses]);
+
+  const onRefresh = useCallback(async () => {
+    await fetchExpenses();
+  }, [fetchExpenses]);
+
+  const handleExpenseEdit = useCallback(() => {
+    setIsModalVisible(false);
+    setSelectedExpense(null);
+    fetchExpenses(); // Refresh the expense list after edit
+  }, [fetchExpenses]);
 
   const renderItem = ({ item }: { item: Expense }) => (
     <TouchableOpacity onPress={() => onRowPress(item)}>
@@ -169,7 +193,6 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
     <View className="flex-1  "
       style={{
         width: Dimensions.get("window").width > 768  ? "50%" : "100%",
-       // alignItems: "center",
       }}>
       <View
         className="flex-row w-full justify-around p-1  "
@@ -180,10 +203,9 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
         <Text className={`${headerClass} w-2/7`}>{t('expense.table.date')}</Text>
         <Text className={`${headerClass} w-1/7`}>{t('expense.table.notedesc')}</Text>
         <Text className={`${headerClass} w-1/7`}>{t('expense.table.amount')}</Text>
-        {/* <Text className={`${headerClass} w-1/6`}>File</Text> */}
       </View>
       <FlatList
-        data={sortedExpenses} // Use sorted expenses
+        data={sortedExpenses}
         renderItem={renderItem}
         keyExtractor={(_item, index) => index.toString()}
         refreshControl={
@@ -193,9 +215,8 @@ const ExpenseTable = ({ expenses, onRowPress }: ExpenseTableProps) => {
       {selectedExpense && (
         <ExpenseDetail
           visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}         
-          expense={selectedExpense} // Pass the selected expense with 
-          
+          onClose={handleExpenseEdit}
+          expense={selectedExpense}
         />
       )}
     </View>

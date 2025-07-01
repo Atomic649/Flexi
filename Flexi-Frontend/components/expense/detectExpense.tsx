@@ -44,6 +44,7 @@ export default function DetectExpense() {
   const [passwordPdf, setPasswordPdf] = useState<string>(""); // State for password
   const [passwordModalVisible, setPasswordModalVisible] =
     useState<boolean>(false); // State for password modal
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Added refresh trigger
 
   // auto delete if save is false
   const autoDelete = async () => {
@@ -164,12 +165,14 @@ export default function DetectExpense() {
         const expenses = await CallAPIExpense.getAllExpensesAPI(memberId);
         setExpenses(expenses);
         setError(null);
-        setRefreshing(true);
+        // Increment refresh trigger to force reload of table
+        setRefreshTrigger(prev => prev + 1);
       }
     } catch (error) {
-      console.error("Error refreshing expenses", error);
+      console.error("Error fetching expenses:", error);
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
   }, []);
 
   const handleSave = async () => {
@@ -215,6 +218,13 @@ export default function DetectExpense() {
 
   const toggleExpenseDetail = (expense: any) => {
     setSelectedExpense(expense);
+    setRefreshTrigger(prev => prev + 1); // Increment refresh trigger when viewing an expense
+  };
+
+  // Handle expense edit closure
+  const handleExpenseDetailClose = () => {
+    setSelectedExpense(null);
+    onRefresh(); // Refresh the list when detail view is closed
   };
 
   return (
@@ -290,6 +300,7 @@ export default function DetectExpense() {
         <ExpenseTable
           expenses={expenses}
           onRowPress={toggleExpenseDetail} // Pass the toggle function to the table
+          refreshTrigger={refreshTrigger} // Pass the refresh trigger
         />
       )}
       {error && (
@@ -310,7 +321,7 @@ export default function DetectExpense() {
       {selectedExpense && (
         <ExpenseDetail
           visible={!!selectedExpense}
-          onClose={() => setSelectedExpense(null)}
+          onClose={handleExpenseDetailClose}
           expense={selectedExpense}
         />
       )}

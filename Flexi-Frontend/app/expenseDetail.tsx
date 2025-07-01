@@ -50,6 +50,7 @@ export default function ExpenseDetail({
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isVisible, setIsVisible] = useState(visible);
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -92,6 +93,11 @@ export default function ExpenseDetail({
     checkChanges();
   }, [note, desc, amount, group, image]);
 
+  // Update modal visibility when prop changes
+  useEffect(() => {
+    setIsVisible(visible);
+  }, [visible]);
+
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -113,8 +119,7 @@ export default function ExpenseDetail({
     console.log("Member ID:", memberId);
     try {
       const data = await CallAPIExpense.deleteExpenseAPI(expense.id, memberId);
-      // Use setTimeout to ensure router navigates after modal closes
-      handleCloseAfterChanges();
+      handleCloseAfterChanges(); // Close modal after successful delete
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
       setError(error.message);
@@ -138,16 +143,12 @@ export default function ExpenseDetail({
     buttons: [],
   });
 
-  // Function to handle closing after changes
+  // Close the modal and navigate back to the expense table
   const handleCloseAfterChanges = () => {
     setIsVisible(false);
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       onClose();
-      // Navigate directly to expense tab instead of going back
-      router.replace("/(tabs)/expense");
     }, 100);
-
-    return () => clearTimeout(timer);
   };
 
   // Handle update
@@ -185,7 +186,7 @@ export default function ExpenseDetail({
         } as unknown as Blob);
       }
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
-      handleCloseAfterChanges();
+      handleCloseAfterChanges(); // Close modal after successful update
 
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
@@ -204,13 +205,6 @@ export default function ExpenseDetail({
         ? "bg-zinc-800"
         : "bg-zinc-200"
     }`;
-
-  // Control visibility to ensure proper transitions
-  const [isVisible, setIsVisible] = useState(visible);
-
-  useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
 
   return (
     <Modal
