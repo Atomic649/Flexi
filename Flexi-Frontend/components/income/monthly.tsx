@@ -62,7 +62,7 @@ const monthly = () => {
       }
     };
     fetchReport();
-  }, []);
+  }, [marketingPreference]); // Add marketingPreference to dependency array
 
   // Refetch data when refreshing
   const onRefresh = async () => {

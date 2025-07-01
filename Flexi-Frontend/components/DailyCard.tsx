@@ -1,4 +1,4 @@
-import { View, Text, Dimensions } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 import { getResponsiveStyles } from "@/utils/responsive";
 
@@ -34,6 +34,7 @@ export default function DailyCard({
   percentageAds,
   ROI,
   tableColor,
+  marketingPreference, // Add this prop
 }: any) {
   // Use responsive styles from utility
   const styles = getResponsiveStyles();
@@ -80,15 +81,18 @@ export default function DailyCard({
             </Text>
           </View>
         
-          <View className="flex flex-col items-center w-1/6">
-            <Text
-              className="text-zinc-500 font-normal justify-end"
-              style={{ fontSize: smallFontSize }}
-              numberOfLines={1}
-            >
-              {adsCost}
-            </Text>
-          </View>
+          {/* Only show ads cost if marketingPreference is not "organic" */}
+          {marketingPreference !== "organic" && (
+            <View className="flex flex-col items-center w-1/6">
+              <Text
+                className="text-zinc-500 font-normal justify-end"
+                style={{ fontSize: smallFontSize }}
+                numberOfLines={1}
+              >
+                {adsCost}
+              </Text>
+            </View>
+          )}
 
           <View className="flex flex-col items-center w-1/6">
             <Text
