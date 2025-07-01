@@ -18,6 +18,7 @@ import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
 import { isMobile } from "@/utils/responsive";
+import { useMarketing } from "@/providers/marketingProvider";
 
 // Function to format numbers for display, handling the large values properly
 const formatNumberDisplay = (num: number) => {
@@ -45,6 +46,7 @@ const Daily = () => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [dailyReport, setDailyReport] = useState<DailyCardProps[]>([]);
+  const { marketingPreference } = useMarketing();
 
   // Call API to get daily data
   useEffect(() => {
@@ -139,11 +141,13 @@ const Daily = () => {
               </Text>
             </View>
 
-            <View className="flex flex-col items-center w-1/6">
-              <Text style={textStyle} numberOfLines={1}>
-                {t("income.table.adCost")}
-              </Text>
-            </View>
+            {marketingPreference !== "organic" && (
+              <View className="flex flex-col items-center w-1/6">
+                <Text style={textStyle} numberOfLines={1}>
+                  {t("income.table.adCost")}
+                </Text>
+              </View>
+            )}
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
@@ -174,6 +178,7 @@ const Daily = () => {
               broaderColor={
                 theme === "dark" ? "border-teal-900" : "border-gray-100"
               }
+              marketingPreference={marketingPreference}
             />
           )}
           ListEmptyComponent={() => (

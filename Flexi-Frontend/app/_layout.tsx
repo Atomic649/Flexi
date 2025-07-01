@@ -16,10 +16,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
+import { MarketingProvider } from "@/providers/marketingProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
@@ -354,7 +356,9 @@ export default function RootLayout() {
       <AuthProvider>
         <ThemeProvider>
           <BusinessProvider>
-            <RootLayoutNav />
+            <MarketingProvider>
+              <RootLayoutNav />
+            </MarketingProvider>
           </BusinessProvider>
         </ThemeProvider>
       </AuthProvider>

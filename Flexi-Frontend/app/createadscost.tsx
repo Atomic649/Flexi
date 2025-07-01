@@ -27,6 +27,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { th } from "date-fns/locale"; // Import Thai locale if needed
 
+// Format date in DD/MM/YYYY H:MM AM/PM format
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  const parsedDate = new Date(dateString);
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const year = parsedDate.getFullYear();
+
+  // Get hours in 12-hour format
+  let hours = parsedDate.getHours();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  // Get minutes
+  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+};
+
 export default function createAdsCost() {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -188,7 +208,6 @@ export default function createAdsCost() {
     setCalendarVisible(false);
   }; // force to chose only one date
 
-
   return (
     <SafeAreaView
       className={`flex-1 ${useBackgroundColorClass()}`}
@@ -229,37 +248,34 @@ export default function createAdsCost() {
         </Modal>
 
         <View className="flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
-       
           {/* Date selector */}
-                        <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
-                          <CustomText
-                            className={`text-base mx-2 ${
-                              theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                            }`}
-                          >
-                            {SelectedDates.length > 0
-                              ? format(new Date(SelectedDates[0]), "dd-MM-yyyy HH:mm", {
-                                  locale: th,
-                                })
-                              : t("dashboard.selectDate")}
-                          </CustomText>
-                          {/* icon Calendar */}
-                          <Ionicons
-                            name="calendar"
-                            size={24}
-                            color={theme === "dark" ? "#ffffff" : "#444541"}
-                            onPress={() => setCalendarVisible(true)}
-                          />
-                        </View>
+          <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
+            <CustomText
+              className={`text-base mx-2 ${
+                theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
+              }`}
+            >
+              {SelectedDates.length > 0
+                ? formatDate(SelectedDates[0])
+                : t("dashboard.selectDate")}
+            </CustomText>
+            {/* icon Calendar */}
+            <Ionicons
+              name="calendar"
+              size={24}
+              color={theme === "dark" ? "#ffffff" : "#444541"}
+              onPress={() => setCalendarVisible(true)}
+            />
+          </View>
 
           {/* Platform Dropdown */}
           <Dropdown2
-            title={t("adsCost.platform")}
+            title={t("ads.platform")}
             options={platforms.map((p) => ({
               label: p.platform,
               value: p.id.toString(),
             }))}
-            placeholder={t("adsCost.choosePlatform")}
+            placeholder={t("ads.choosePlatform")}
             selectedValue={platformId?.toString() || ""}
             onValueChange={(value: string) => {
               console.log("Platform selected:", value);
@@ -288,7 +304,7 @@ export default function createAdsCost() {
 
           {/* Cost Amount Field */}
           <FormField2
-            title={t("adsCost.amount")}
+            title={t("ads.amount")}
             value={adsCost}
             handleChangeText={setAdsCost}
             otherStyles={fieldStyles}

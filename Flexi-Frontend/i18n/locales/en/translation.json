@@ -522,6 +522,7 @@
       "Shopee": "Shopee",
       "YouTube": "YouTube"
     },
+    "amount": "Amount",
     "accNameRecommend": "Ad Name-Product Name-001"
   },
   "store": {
@@ -575,11 +576,15 @@
       "amount": "Amount",
       "sales": "Sales",
       "profit": "Profit",
+      "profitInfo": "(Sales - Expenses) = Profit",
+      "roiInfo": "Return on Investment (ROI) = (Profit / Ad Cost) * 100%",
       "roi": "ROI",
       "avr": "AVR",
       "total": "Total",
       "adCost": "AdCost",
-      "expenses": "Expenses",
+      "adCostInfo": "Estimated advertising cost: This advertising expense has already been incurred from advertising credits or credit card, but has not yet been paid from the cash in your business wallet.",
+      "expense": "Expenses",
+      "expenseInfo": "Actual expenses from cash in your business wallet, such as employee wages, transportation costs, packaging costs, and others, including advertising expenses that have already been paid from cash in your business wallet",
       "percentAd": "%Ad",
       "customer": "Customer",
       "product": "Product",

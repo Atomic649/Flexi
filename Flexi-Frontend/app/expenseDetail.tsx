@@ -20,6 +20,26 @@ import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import { router } from "expo-router";
 
+// Format date in DD/MM/YYYY H:MM AM/PM format
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  const parsedDate = new Date(dateString);
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const year = parsedDate.getFullYear();
+  
+  // Get hours in 12-hour format
+  let hours = parsedDate.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  
+  // Get minutes
+  const minutes = String(parsedDate.getMinutes()).padStart(2, '0');
+  
+  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+};
+
 interface ExpenseDetailProps {
   visible: boolean;
   onClose: () => void;
@@ -258,9 +278,7 @@ export default function ExpenseDetail({
                 )}
               </TouchableOpacity>
               <CustomText className="text-center font-bold">
-                {date
-                  ? date.replace("T", "  ").replace(/:\d{2}\.\d{3}Z$/, "")
-                  : ""}
+                {formatDate(date)}
               </CustomText>
 
               <TextInput

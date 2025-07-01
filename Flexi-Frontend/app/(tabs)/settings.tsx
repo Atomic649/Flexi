@@ -6,6 +6,7 @@ import {
   Switch,
   Platform,
   Dimensions,
+  DeviceEventEmitter,
 } from "react-native";
 import { View } from "@/components/Themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +21,7 @@ import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import { removeToken } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
+import { useMarketing } from "@/providers/marketingProvider";
 import {
   loginWithFacebook,
   logoutFromFacebook,
@@ -39,7 +41,7 @@ const getSwitchPlatformColors = (theme: string, value: boolean) => ({
 const toggleScaleStyle = { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] };
 
 export default function Setting() {
-  const [Marketing, setMarketing] = useState("ads");
+  const { marketingPreference, setMarketingPreference } = useMarketing();
   const [Facebook, setFacebook] = useState(false); // Default to false
   const [Tiktok, setTiktok] = useState(false); // Default to false
   const [Shopee, setShopee] = useState(false); // Default to false
@@ -72,25 +74,6 @@ export default function Setting() {
     };
 
     checkFacebookAuth();
-  }, []);
-
-  // Load saved preferences on component mount
-  useEffect(() => {
-    const loadPreferences = async () => {
-      try {
-        // Load marketing preference
-        const savedMarketing = await AsyncStorage.getItem("marketingPreference");
-        if (savedMarketing) {
-          setMarketing(savedMarketing);
-        }
-
-        // We could also load other platform preferences here
-      } catch (error) {
-        console.error("Error loading preferences:", error);
-      }
-    };
-
-    loadPreferences();
   }, []);
 
   // ฟังก์ชันออกจากระบบ
@@ -277,12 +260,13 @@ export default function Setting() {
   //---------- ฟังก์ชันเปลี่ยนการตลาด------------
 
   const toggleMarketing = async () => {
-    const newValue = Marketing === "ads" ? "organic" : "ads";
-    setMarketing(newValue);
+    const newValue = marketingPreference === "ads" ? "organic" : "ads";
     
     try {
-      await AsyncStorage.setItem('marketingPreference', newValue);
-      console.log("Marketing preference saved:", newValue);
+      await setMarketingPreference(newValue);
+      console.log("Marketing preference changed to:", newValue);
+      
+      // The DeviceEventEmitter.emit is now handled inside the provider
     } catch (error) {
       console.error("Error saving marketing preference:", error);
       // Optionally show an error message to the user
@@ -564,21 +548,21 @@ export default function Setting() {
               >
                 <View className="flex-row items-center !bg-transparent">
                   <FontAwesome
-                    name={Marketing === "ads" ? "money" : "leaf"}
+                    name={marketingPreference === "ads" ? "money" : "leaf"}
                     size={24}
                     color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
                   <CustomText className="text-base">
-                    {Marketing === "ads"
+                    {marketingPreference === "ads"
                       ? t("settings.marketing.ads")
                       : t("settings.marketing.organic")}
                   </CustomText>
                 </View>
                 <Switch
-                  value={Marketing === "ads"}
+                  value={marketingPreference === "ads"}
                   onValueChange={() => toggleMarketing()}
-                  {...getSwitchPlatformColors(theme, Marketing === "ads")}
+                  {...getSwitchPlatformColors(theme, marketingPreference === "ads")}
                   style={toggleScaleStyle}
                 />
               </Pressable>
