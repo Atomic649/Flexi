@@ -74,6 +74,25 @@ export default function Setting() {
     checkFacebookAuth();
   }, []);
 
+  // Load saved preferences on component mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        // Load marketing preference
+        const savedMarketing = await AsyncStorage.getItem("marketingPreference");
+        if (savedMarketing) {
+          setMarketing(savedMarketing);
+        }
+
+        // We could also load other platform preferences here
+      } catch (error) {
+        console.error("Error loading preferences:", error);
+      }
+    };
+
+    loadPreferences();
+  }, []);
+
   // ฟังก์ชันออกจากระบบ
   const handleLogout = async () => {
     setAlertConfig({
@@ -257,8 +276,17 @@ export default function Setting() {
 
   //---------- ฟังก์ชันเปลี่ยนการตลาด------------
 
-  const toggleMarketing = () => {
-    setMarketing((prev) => (prev === "ads" ? "organic" : "ads"));
+  const toggleMarketing = async () => {
+    const newValue = Marketing === "ads" ? "organic" : "ads";
+    setMarketing(newValue);
+    
+    try {
+      await AsyncStorage.setItem('marketingPreference', newValue);
+      console.log("Marketing preference saved:", newValue);
+    } catch (error) {
+      console.error("Error saving marketing preference:", error);
+      // Optionally show an error message to the user
+    }
   };
 
   //---------Platform Toggle Handlers---------
@@ -538,7 +566,7 @@ export default function Setting() {
                   <FontAwesome
                     name={Marketing === "ads" ? "money" : "leaf"}
                     size={24}
-                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
                   <CustomText className="text-base">
@@ -547,26 +575,12 @@ export default function Setting() {
                       : t("settings.marketing.organic")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    Marketing === "ads" ? "bg-gray-700" : "bg-gray-200"
-                  }`}
-                >
-                  <Animated.View
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      backgroundColor: "#fff",
-                      transform: [
-                        {
-                          translateX: Marketing === "ads" ? 24 : 0,
-                        },
-                      ],
-                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
-                    }}
-                  />
-                </View>
+                <Switch
+                  value={Marketing === "ads"}
+                  onValueChange={() => toggleMarketing()}
+                  {...getSwitchPlatformColors(theme, Marketing === "ads")}
+                  style={toggleScaleStyle}
+                />
               </Pressable>
             </View>
           </Section>
@@ -607,7 +621,7 @@ export default function Setting() {
                   <FontAwesome
                     name={theme === "dark" ? "moon-o" : "sun-o"}
                     size={24}
-                    color={theme === "dark" ? "#fff" : "#75726a"}
+                    color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
                   <CustomText className="text-base">
@@ -616,26 +630,12 @@ export default function Setting() {
                       : t("settings.appearance.light")}
                   </CustomText>
                 </View>
-                <View
-                  className={`w-14 h-8 rounded-full p-1 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                  }`}
-                >
-                  <Animated.View
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      backgroundColor: "#fff",
-                      transform: [
-                        {
-                          translateX: theme === "dark" ? 24 : 0,
-                        },
-                      ],
-                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
-                    }}
-                  />
-                </View>
+                <Switch
+                  value={theme === "dark"}
+                  onValueChange={toggleTheme}
+                  {...getSwitchPlatformColors(theme, theme === "dark")}
+                  style={toggleScaleStyle}
+                />
               </Pressable>
             </View>
           </Section>
