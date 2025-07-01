@@ -478,7 +478,9 @@
       "noProduct": "Create atleast one product or more",
       "noStore": "Sign in to connect your store",
       "createProduct": "Create Product",
-      "connectStore": "Connect Store"
+      "connectStore": "Connect Store",
+      "marketing": "Check your marketing strategies ,Choose organic or ads",
+      "marketingStrategies": "Marketing Strategies"
     },
     "rule":{
       "title": "Rules of using Flexi Business Hub",

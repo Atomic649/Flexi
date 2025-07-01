@@ -322,7 +322,6 @@ export default function Profile() {
             />
           </TouchableOpacity>
         )}
-vc9
 
         {/* Modal for Business Account Choice */}
         <Modal

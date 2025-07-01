@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [store, setStore] = useState<any[]>([]);
   const [productChoiceVisible, setProductChoiceVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [marketingChecked, setMarketingChecked] = useState(false);
 
   useEffect(() => {
     const fetchProductChoice = async () => {
@@ -211,6 +212,48 @@ export default function Dashboard() {
                     </CustomText>
                   )}
                 </View>
+                {/* Marketing Strategies  */}
+                <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
+                  <Ionicons
+                    name={
+                      marketingChecked === true
+                        ? "checkmark-circle-outline"
+                        : "close-circle-outline"
+                    }
+                    size={20}
+                    color={
+                      marketingChecked === true
+                        ? theme === "dark"
+                          ? "#a1a1aa"
+                          : "#02c796"
+                        : theme === "dark"
+                        ? "#a1a1aa"
+                        : "#ff3a03"
+                    }
+                  />
+                  {/* Marketing Strategies message */}
+                  <CustomText
+                    className="text-sm text-start"
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#48453e",
+                    }}
+                  >
+                    {t("dashboard.start.marketing")}
+                  </CustomText>
+                  {/* Route to marketing */}
+                  <CustomText
+                    className="text-sm underline"
+                    onPress={() => {
+                      router.push("/settings");
+                      setMarketingChecked(true);
+                    }}
+                    style={{
+                      color: theme === "dark" ? "#a1a1aa" : "#02c796",
+                    }}
+                  >
+                    {t("dashboard.start.marketingStrategies")}
+                  </CustomText>
+                </View>
               </View>
 
               <View
@@ -270,7 +313,7 @@ export default function Dashboard() {
             </View>
           )}
 
-          {productChoice.length >= 1 && store.length>=1 && (
+          {productChoice.length >= 1 && store.length >= 1 && (
             <View
               style={{
                 width: isDesktop() ? "40%" : "100%",
