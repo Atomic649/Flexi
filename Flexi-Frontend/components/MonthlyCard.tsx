@@ -17,6 +17,7 @@ export default function MonthlyCard({
   adsCost,
   profit,
   percentageAds,
+  expenses,
   ROI,
   tableColor,
 }: any) {
@@ -29,7 +30,7 @@ export default function MonthlyCard({
         marginTop: 5,
        }}>
         <View className="flex flex-row m-2 items-start justify-evenly w-full pl-5 ">
-          <View className="flex flex-col items-start w-1/6">
+          <View style={{ width: "15%" }} className="flex flex-col items-start">
             <Text
               className="text-sm text-zinc-500 font-normal "
               numberOfLines={1}
@@ -38,7 +39,7 @@ export default function MonthlyCard({
             </Text>
           </View>
           
-          <View className="flex flex-col items-center w-1/6">
+          <View style={{ width: "12%" }} className="flex flex-col items-center">
             <Text
               className="text-sm text-zinc-500 font-normal justify-center"
               numberOfLines={1}
@@ -47,7 +48,7 @@ export default function MonthlyCard({
             </Text>
           </View>
 
-          <View className="flex flex-col items-center w-1/6">
+          <View style={{ width: "15%" }} className="flex flex-col items-center">
             <Text
               className="font-normal text-sm text-zinc-500 items-end justify-end"
               numberOfLines={1}
@@ -56,7 +57,7 @@ export default function MonthlyCard({
             </Text>
           </View>
         
-          <View className="flex flex-col items-center w-1/6">
+          <View style={{ width: "15%" }} className="flex flex-col items-center">
             <Text
               className="text-sm text-zinc-500  font-normal justify-end"
               style={{}}
@@ -66,7 +67,16 @@ export default function MonthlyCard({
             </Text>
           </View>
 
-          <View className="flex flex-col items-center w-1/6">
+          <View style={{ width: "15%" }} className="flex flex-col items-center">
+            <Text
+              className="text-sm text-zinc-500 font-normal justify-end"
+              numberOfLines={1}
+            >
+              {expenses}
+            </Text>
+          </View>
+
+          <View style={{ width: "15%" }} className="flex flex-col items-center">
             <Text
               className={`text-base font-bold justify-end ${profit >= 0 ? 'text-teal-500' : 'text-[#FF006E]'}`}
               numberOfLines={1}
@@ -74,7 +84,7 @@ export default function MonthlyCard({
               {profit}
             </Text>
           </View>
-          <View className="flex flex-col items-center w-1/6">
+          <View style={{ width: "13%" }} className="flex flex-col items-center">
             <Text
               className={`text-sm font-normal justify-end text-zinc-500   `}
               numberOfLines={1}

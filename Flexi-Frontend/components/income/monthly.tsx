@@ -24,6 +24,7 @@ type MonthlyCardProps = {
   amount: number;
   sale: number;
   adsCost: number;
+  expenses: number;
   profit: number;
   percentageAds: number;
   ROI: number;
@@ -104,36 +105,43 @@ const monthly = () => {
           }}
         >
           <View className="flex flex-row m-3 items-start justify-evenly w-full pl-5 ">
-            <View className="flex flex-col items-start w-1/6">
+            <View className="flex flex-col items-start" style={{ width: "15%" }}>
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.month")}
               </Text>
             </View>
 
-            <View className="flex flex-col items-center w-1/6">
+            <View className="flex flex-col items-center" style={{ width: "12%" }}>
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.amount")}
               </Text>
             </View>
 
-            <View className="flex flex-col items-center w-1/6">
+            <View className="flex flex-col items-center" style={{ width: "15%" }}>
               <Text style={textStyle} numberOfLines={3}>
                 {t("income.table.sales")}
               </Text>
             </View>
 
-            <View className="flex flex-col items-center w-1/6">
+            <View className="flex flex-col items-center" style={{ width: "15%" }}>
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.adCost")}
               </Text>
             </View>
 
-            <View className="flex flex-col items-center w-1/6">
+            <View className="flex flex-col items-center" style={{ width: "15%" }}>
+              <Text style={textStyle} numberOfLines={1}>
+                {t("income.table.expenses")}
+              </Text>
+            </View>
+
+            <View className="flex flex-col items-center" style={{ width: "15%" }}>
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.profit")}
               </Text>
             </View>
-            <View className="flex flex-col items-center w-1/6">
+            
+            <View className="flex flex-col items-center" style={{ width: "13%" }}>
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.percentAd")}
               </Text>
@@ -150,6 +158,7 @@ const monthly = () => {
               amount={item.amount}
               sale={item.sale}
               adsCost={item.adsCost}
+              expenses={item.expenses}
               profit={item.profit}
               percentageAds={item.percentageAds}
               ROI={item.ROI}

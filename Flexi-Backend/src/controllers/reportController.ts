@@ -119,6 +119,21 @@ const monthlyReport = async (req: Request, res: Response) => {
 
     console.log(adsCost);
 
+    // Group by mounth and sum expenses
+    const expenses = await prisma.expense.findMany({
+      where: {
+        memberId: memberId,
+        save: true,
+      },
+      select: {
+        date: true,
+        amount: true,
+      },
+      take: 100, // Limit to 100 records
+    });
+
+    console.log(expenses);
+
     // Group by mounth of purchaseAt and sum amount and price
     const monthlyBills = bills.reduce((acc: any, bill) => {
       const date = bill.purchaseAt.toISOString().split("-").slice(0, 2).join("-");
@@ -151,12 +166,31 @@ const monthlyReport = async (req: Request, res: Response) => {
     }, {});
     console.log("🔥ads", monthlyAdsCost);
 
-    // Merge monthlyBills and monthlyAdsCost
+    // Group by month of date and sum expenses
+    const monthlyExpenses = expenses.reduce((acc: any, expense) => {
+      const date = expense.date.toISOString().split("-").slice(0, 2).
+        join("-");
+      if (!acc[date]) {
+        acc[date] = {
+          date: date,
+          amount: 0,
+        };
+      }
+      // Convert amount to number before adding
+      acc[date].amount += Number(expense.amount);
+      return acc;
+    }, {});
+    console.log("🔥expenses", monthlyExpenses)
+    
+    ;
+
+    // Merge monthlyBills , monthlyAdsCost and monthlyExpenses
     const result = Object.keys(monthlyBills).map((date) => {
       // Ensure adsCost is a number
       const adsCost = monthlyAdsCost[date]?.adsCost ? Number(monthlyAdsCost[date].adsCost) : 0;
+      const expenses = monthlyExpenses[date]?.amount ? Number(monthlyExpenses[date].amount) : 0;
       const price = monthlyBills[date].price;
-      const profit = price - adsCost;
+      const profit = price - expenses;
       const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
       const ROI = adsCost ? parseFloat(((profit / adsCost) ).toFixed(1)) : 0.00;
       return {
@@ -164,6 +198,7 @@ const monthlyReport = async (req: Request, res: Response) => {
         amount: monthlyBills[date].amount,
         sale: price,
         adsCost: adsCost,
+        expenses: expenses,
         profit: profit,
         percentageAds: percentageAds,
         ROI: ROI,
