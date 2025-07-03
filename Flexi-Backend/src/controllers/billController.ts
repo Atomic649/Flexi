@@ -161,7 +161,28 @@ const getBills = async (req: Request, res: Response) => {
       },
       take: 100, // Limit to 100 records
     });
-    res.json(bills);
+    
+    // Find product units
+    const productUnits = await prisma.product.findMany({
+      where: {
+        memberId: memberId,
+      },
+      select: {
+        name: true,
+        unit: true,
+      },
+    });
+    
+    // Map units to bills based on product name
+    const billsWithUnits = bills.map(bill => {
+      const matchingProduct = productUnits.find(product => product.name === bill.product);
+      return {
+        ...bill,
+        unit: matchingProduct?.unit || ""
+      };
+    });
+    
+    res.json(billsWithUnits);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get bills" });

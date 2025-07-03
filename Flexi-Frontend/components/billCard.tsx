@@ -47,7 +47,8 @@ export default function BillCard({
   PriceColor,
   cNameColor,
   onDelete,
-  getBorderColor
+  getBorderColor,
+  unit
 }: any) {
 
   const handleDelete = () => {
@@ -107,7 +108,7 @@ export default function BillCard({
                   numberOfLines={3}
                   style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
                 >
-                  {product} {amount} {t("common.pcs") }
+                  {product} {amount} {t(`product.units.${unit.toLowerCase()}`) || unit}
                 </Text>
               </View>          
             <View className="pt-2 flex flex-col items-end">

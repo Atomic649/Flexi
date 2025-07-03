@@ -49,6 +49,7 @@ type Bill = {
   businessAcc: number;
   image: string;
   storeId: number;
+  unit: string; 
 };
 
 // Group bills by date
@@ -301,7 +302,7 @@ const ByOrder = () => {
                         color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
                     >
-                      {bill.amount} {t("common.pcs")}
+                      {bill.amount} {bill.unit ? bill.unit : t("common.pcs")}
                     </Text>
                     <Text
                       className={`${
@@ -387,6 +388,7 @@ const ByOrder = () => {
                   PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                   cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
                   getBorderColor={getBorderColor(bill.platform)}
+                  unit={bill.unit}
                 />
               </TouchableOpacity>
             ))}
