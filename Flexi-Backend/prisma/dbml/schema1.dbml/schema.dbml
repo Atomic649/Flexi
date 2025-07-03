@@ -170,8 +170,10 @@ Table Store {
 Table Product {
   id Int [pk, increment]
   name String [unique, not null]
+  unit Unit [default: 'Piece']
+  productType ProductType [default: 'Product']
   description String
-  barcode String [not null]
+  barcode String
   image String
   stock Int [not null]
   price Int [not null]
@@ -328,6 +330,17 @@ Table Cart {
   status String [not null]
   total Int [not null]
   order Order [not null]
+}
+
+Enum Unit {
+  Piece
+  Hour
+  Course
+  List
+  Box
+  Pack
+  Set
+  Dozen
 }
 
 Enum UserRole {

@@ -33,6 +33,8 @@ type Product = {
   memberId: string;
   createAt: string;
   updateAt: string;
+  unit: string;
+  productType: string; // Assuming productType is a string, adjust if it's an enum
 };
 
 export default function Home() {
@@ -116,6 +118,8 @@ export default function Home() {
                 productname={item.name}
                 productprice={item.price}
                 productstock={item.stock}
+                unit={item.unit}
+                producttype={item.productType}
                 id={item.id}
                 productimage={item.image}
                 onDelete={() => handleDeleteProduct(item.id)}

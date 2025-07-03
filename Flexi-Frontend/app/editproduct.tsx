@@ -9,6 +9,7 @@ import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import CallAPIProduct from "@/api/product_api";
 import FormField2 from "@/components/FormField2";
+import Dropdown2 from "@/components/Dropdown2";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,6 +28,12 @@ export default function EditProduct() {
   const [price, setprice] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState("");
+  
+  const [unit, setUnit] = useState("");
+  const [productType, setProductType] = useState("");
+
+  const [units, setUnits] = useState<Array<{ label: string; value: string }>>([]);
+  const [productTypes, setProductTypes] = useState<Array<{ label: string; value: string }>>([]);
 
   const fieldStyles = "mt-2 mb-2";
 
@@ -45,8 +52,10 @@ export default function EditProduct() {
         setstock(product.stock.toString());
         setprice(product.price.toString());
         setImage(product.image);
+        setUnit(product.unit);
+        setProductType(product.productType);
       } catch (error) {
-        console.error("Error fetching product:", error);
+        console.error("Error fetching units or product types:", error);
       }
     };
 
@@ -55,15 +64,51 @@ export default function EditProduct() {
   }, [id]);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    if (Platform.OS === "web") {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.style.display = "none";
+      document.body.appendChild(input);
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      input.onchange = async (event: any) => {
+        const file = event.target.files[0];
+        if (file) {
+          console.log("Selected file:", file);
+          setImage(URL.createObjectURL(file));
+        }
+      };
+
+      input.click();
+      document.body.removeChild(input);
+    } else {
+      // Native platform logic
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        setAlertConfig({
+          visible: true,
+          title: t("product.avatar.permission"),
+          message: t("product.avatar.permissionDenied"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+        return;
+      }
+
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+      }
     }
   };
 
@@ -84,35 +129,91 @@ export default function EditProduct() {
     buttons: [],
   });
 
+  // Clear barcode and set stock to 1 when product type is set to Service
+  useEffect(() => {
+    if (productType === "Service") {
+      setbarcode("");
+      setstock("1");
+    }
+  }, [productType]);
+
+  useEffect(() => {
+    // Use the translated unit and product type options
+    const fetchData = () => {
+      setUnits([
+        { label: t("product.units.piece"), value: "Piece" },
+        { label: t("product.units.hour"), value: "Hour" },
+        { label: t("product.units.course"), value: "Course" },
+        { label: t("product.units.list"), value: "List" },
+        { label: t("product.units.box"), value: "Box" },
+        { label: t("product.units.pack"), value: "Pack" },
+        { label: t("product.units.set"), value: "Set" },
+        { label: t("product.units.dozen"), value: "Dozen" },
+      ]);
+
+      setProductTypes([
+        { label: t("product.productTypes.service"), value: "Service" },
+        { label: t("product.productTypes.product"), value: "Product" },
+      ]);
+    };
+
+    fetchData();
+  }, [t]); // Add t as dependency to refresh translations when language changes
 
   // Handle update
   const handleUpdateProduct = async () => {
     setError("");
 
-    if (!name || !description || !barcode || !stock || !price) {
-      setAlertConfig({
-        visible: true,
-        title: t("product.validation.incomplete"),
-        message: t("product.validation.invalidData"),
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
-      });
-      return;
+    // Different validation logic based on product type
+    if (productType === "Service") {
+      if (!name || !description || !price) {
+        setAlertConfig({
+          visible: true,
+          title: t("product.validation.incomplete"),
+          message: t("product.validation.invalidData"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+        return;
+      }
+    } else {
+      if (!name || !description || !barcode || !stock || !price) {
+        setAlertConfig({
+          visible: true,
+          title: t("product.validation.incomplete"),
+          message: t("product.validation.invalidData"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+        return;
+      }
     }
 
     try {
       const formData = new FormData();
 
       if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
+        if (Platform.OS === "web") {
+          // Convert data URL to blob for web
+          const response = await fetch(image);
+          const blob = await response.blob();
+          formData.append("image", blob);
+        } else { 
+          // For native platforms
+          formData.append("image", {
+            uri: image,
+            name: "image.jpg",
+            type: "image/jpeg",
+          } as unknown as Blob);
+        }
       }
 
       formData.append('name', name);
@@ -120,6 +221,8 @@ export default function EditProduct() {
       formData.append('barcode', barcode);
       formData.append('stock', stock.toString());
       formData.append('price', price.toString());
+      formData.append('unit', unit);
+      formData.append('productType', productType);
 
       const data = await CallAPIProduct.updateProductAPI(Number(id), formData);
 
@@ -162,55 +265,96 @@ export default function EditProduct() {
               className="mt-4 mb-6 self-center rounded-md"
             />
           )}
-          <FormField2
-            title={t("product.productName")}
-            value={name}
-            handleChangeText={setproductname}
+
+          <Dropdown2
+            title={t("product.type")}
+            options={productTypes}
+            selectedValue={
+              productType
+                ? productTypes.find((t) => t.value === productType)?.label
+                : ""
+            }
+            onValueChange={(value: string) => setProductType(value)}
+            placeholder={t("product.selectType")}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            bgChoiceColor={theme === "dark" ? "#3D3D3D" : "#f1f1f1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles="mt-0 mb-2"
-          />
-
-          <FormField2
-            title={t("product.barcode")}
-            value={description}
-            handleChangeText={setdescription}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-            keyboardType="number-pad"
-          />
-
-          <FormField2
-            title={t("product.description")}
-            value={barcode}
-            handleChangeText={setbarcode}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-            placeholder={t("product.description")}
           />
 
           <View className="flex flex-row justify-between">
             <View className="w-1/2 pr-2">
               <FormField2
-                title={t("product.stock")}
-                value={stock}
-                handleChangeText={setstock}
+                title={t("product.productName")}
+                value={name}
+                handleChangeText={setproductname}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
-                keyboardType="number-pad"
               />
             </View>
             <View className="w-1/2 pl-2">
+              {/* Unit dropdown moved beside product name */}
+              <Dropdown2
+                title={t("product.unit")}
+                options={units}
+                selectedValue={
+                  unit ? units.find((u) => u.value === unit)?.label : ""
+                }
+                onValueChange={(value: string) => setUnit(value)}
+                placeholder={t("product.selectUnit")}
+                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                bgChoiceColor={theme === "dark" ? "#3D3D3D" : "#f1f1f1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+              />
+            </View>
+          </View>
+
+          {/* Barcode field is conditionally rendered based on product type */}
+          {productType !== "Service" && (
+            <FormField2
+              title={t("product.barcode")}
+              value={barcode}
+              handleChangeText={setbarcode}
+              otherStyles={fieldStyles}
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              keyboardType="number-pad"
+            />
+          )}
+
+          <FormField2
+            title={t("product.description")}
+            value={description}
+            handleChangeText={setdescription}
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+          />
+
+          <View className="flex flex-row justify-between">
+            {productType !== "Service" && (
+              <View className="w-1/2 pr-2">
+                <FormField2
+                  title={t("product.stock")}
+                  value={stock}
+                  handleChangeText={setstock}
+                  otherStyles={fieldStyles}
+                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  keyboardType="number-pad"
+                />
+              </View>
+            )}
+            <View className={productType === "Service" ? "w-full" : "w-1/2 pl-2"}>
               <FormField2
                 title={t("product.price")}
                 value={price}
                 handleChangeText={setprice}
+                otherStyles={fieldStyles}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
                 keyboardType="number-pad"
               />
             </View>

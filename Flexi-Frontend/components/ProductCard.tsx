@@ -11,6 +11,8 @@ export default function ProductCard({
   productprice,
   productimage,
   productstock,
+  unit,
+  producttype,
   onDelete,
 }: any) {
   const { width } = useWindowDimensions();
@@ -71,12 +73,12 @@ export default function ProductCard({
                 {productprice}
               </Text>
 
-              {productstock !== undefined && (
+              {producttype === "product" && (
                 <Text
                   className="text-sm text-zinc-500 font-pregular"
                   numberOfLines={1}
                 >
-                  Stock: {productstock} pcs
+                  Stock: {productstock} {unit ? `${unit}` : ''}
                 </Text>
               )}
             </View>

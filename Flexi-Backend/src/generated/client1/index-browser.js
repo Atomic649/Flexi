@@ -240,6 +240,8 @@ exports.Prisma.StoreScalarFieldEnum = {
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  unit: 'unit',
+  productType: 'productType',
   description: 'description',
   barcode: 'barcode',
   image: 'image',
@@ -457,6 +459,22 @@ exports.SocialMedia = exports.$Enums.SocialMedia = {
   Google: 'Google'
 };
 
+exports.Unit = exports.$Enums.Unit = {
+  Piece: 'Piece',
+  Hour: 'Hour',
+  Course: 'Course',
+  List: 'List',
+  Box: 'Box',
+  Pack: 'Pack',
+  Set: 'Set',
+  Dozen: 'Dozen'
+};
+
+exports.ProductType = exports.$Enums.ProductType = {
+  Service: 'Service',
+  Product: 'Product'
+};
+
 exports.MediaType = exports.$Enums.MediaType = {
   VIDEO: 'VIDEO',
   IMAGE: 'IMAGE'
@@ -466,11 +484,6 @@ exports.ReactionType = exports.$Enums.ReactionType = {
   CREDIT: 'CREDIT',
   SPARK: 'SPARK',
   DISCREDIT: 'DISCREDIT'
-};
-
-exports.ProductType = exports.$Enums.ProductType = {
-  Service: 'Service',
-  Product: 'Product'
 };
 
 exports.Category = exports.$Enums.Category = {

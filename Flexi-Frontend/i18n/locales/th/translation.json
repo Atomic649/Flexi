@@ -142,6 +142,24 @@
     "createProduct": "สร้างสินค้า",
     "uploadImage": "อัปโหลดรูปภาพ",
     "imageLimit": "คุณสามารถอัปโหลดได้สูงสุด {{count}} รูปภาพ",
+    "unit": "หน่วย",
+    "selectUnit": "เลือกหน่วย",
+    "type": "ประเภทสินค้า",
+    "selectType": "เลือกประเภทสินค้า",
+    "units": {
+      "piece": "ชิ้น",
+      "hour": "ชั่วโมง",
+      "course": "คอร์ส",
+      "list": "รายการ",
+      "box": "กล่อง",
+      "pack": "แพ็ค",
+      "set": "ชุด",
+      "dozen": "โหล"
+    },
+    "productTypes": {
+      "service": "บริการ",
+      "product": "สินค้า"
+    },
     "alerts": {
       "error": "ข้อผิดพลาด",
       "ok": "ตกลง",

@@ -24,6 +24,17 @@ generator dbml {
   output   = "../dbml/schema1.dbml"
 }
 
+enum Unit{
+  Piece
+  Hour
+  Course  
+  List
+  Box
+  Pack
+  Set
+  Dozen  
+}
+
 enum UserRole {
   owner
   marketing
@@ -309,8 +320,10 @@ model Store {
 model Product {
   id          Int      @id @default(autoincrement())
   name        String   @unique
+  unit        Unit?     @default(Piece)
+  productType ProductType? @default(Product)
   description String?
-  barcode     String
+  barcode     String?
   image       String?
   stock       Int
   price       Int

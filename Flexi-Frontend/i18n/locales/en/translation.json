@@ -142,6 +142,24 @@
     "createProduct": "Create Product",
     "uploadImage": "Upload Image",
     "imageLimit": "You can upload up to {{count}} images",
+    "unit": "Unit",
+    "selectUnit": "Select unit",
+    "type": "Product Type",
+    "selectType": "Select product type",
+    "units": {
+      "piece": "Piece",
+      "hour": "Hour",
+      "course": "Course",
+      "list": "List",
+      "box": "Box",
+      "pack": "Pack",
+      "set": "Set",
+      "dozen": "Dozen"
+    },
+    "productTypes": {
+      "service": "Service",
+      "product": "Product"
+    },
     "alerts": {
       "error": "Error",
       "ok": "OK",
