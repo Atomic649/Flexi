@@ -21,7 +21,7 @@ import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import { removeToken } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
-import { useMarketing } from "@/providers/marketingProvider";
+import { useMarketing } from "@/providers/MarketingProvider";
 import {
   loginWithFacebook,
   logoutFromFacebook,

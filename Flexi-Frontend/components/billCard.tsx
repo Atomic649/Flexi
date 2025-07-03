@@ -47,21 +47,8 @@ export default function BillCard({
   PriceColor,
   cNameColor,
   onDelete,
+  getBorderColor
 }: any) {
-  const getBorderColor = (platform: string) => {
-    switch (platform) {
-      case "Facebook":
-        return "#3c22ff";
-      case "Tiktok":
-        return "#424040";
-      case "Line":
-        return "#56ff56"; // Lemon green
-      case "Shopee":
-        return "#ff4000"; // Orange red
-      default:
-        return "#61fff2"; // Default color
-    }
-  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -95,7 +82,7 @@ export default function BillCard({
           className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
          border-r-4 `}
           style={{
-            borderColor: getBorderColor(platform),
+            borderColor: getBorderColor,
             backgroundColor: CardColor,
           }}
         >

@@ -398,7 +398,12 @@ export default function EditBill() {
                     stores.find((store) => store.id === storeId)?.accName ||
                     t("bill.selectStore")
                   }
-                  onValueChange={(value: any) => isEditMode ? setStoreId(Number(value)) : null}
+                  onValueChange={(value:any) => {
+                    if (isEditMode) {
+                      console.log("Setting store ID to:", value);
+                      setStoreId(Number(value));
+                    }
+                  }}
                   bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
@@ -735,12 +740,12 @@ export default function EditBill() {
               }}
             >
               <Ionicons
-                name={isEditMode ? "lock-open" : "lock-closed"}
+                name={isEditMode ? "lock-closed" : "pencil-sharp"}
                 size={16}
                 color="#404040"
                 style={{ marginRight: 5 }}
               />
-              <CustomText
+              {/* <CustomText
                 className="text-bas"
                 style={{
                   color: "#404040",
@@ -750,7 +755,7 @@ export default function EditBill() {
                 {isEditMode
                   ? t("common.editMode")
                   : t("common.readOnly")}
-              </CustomText>
+              </CustomText> */}
             </TouchableOpacity>
           </View>
         </View>

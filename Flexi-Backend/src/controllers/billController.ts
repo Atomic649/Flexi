@@ -207,6 +207,7 @@ const updateBill = async (req: Request, res: Response) => {
     billInput.amount = Number(billInput.amount);
     billInput.price = Number(billInput.price);
     billInput.businessAcc = Number(billInput.businessAcc);
+    billInput.storeId = Number(billInput.storeId);
 
     //  convert string to boolean in cashStatus
     billInput.cashStatus = ["true", "1", "yes"].includes(
@@ -235,6 +236,7 @@ const updateBill = async (req: Request, res: Response) => {
           payment: billInput.payment,
           amount: billInput.amount,
           platform: billInput.platform,
+          storeId: billInput.storeId,
           cashStatus: billInput.cashStatus,
           price: billInput.price,
           memberId: billInput.memberId,

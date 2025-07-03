@@ -11,7 +11,8 @@
     "prisma:generate:db2": "npx prisma generate --schema=prisma/db2/schema2.prisma",
     "prisma:migrate": "npx prisma migrate dev --schema=prisma/db1/schema1.prisma --name initial && npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial",
     "prisma:migrate:db1": "npx prisma migrate dev --schema=prisma/db1/schema1.prisma --name initial",
-    "prisma:migrate:db2": "npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial"
+    "prisma:migrate:db2": "npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial",
+    "prisma:reset": "npx prisma migrate reset --force --schema=prisma/db1/schema1.prisma && npx prisma migrate reset --force --schema=prisma/db2/schema2.prisma"
   },
   "keywords": [],
   "author": "",

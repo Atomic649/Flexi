@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
-import { MarketingProvider } from "@/providers/marketingProvider";
+import { MarketingProvider } from "@/providers/MarketingProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';

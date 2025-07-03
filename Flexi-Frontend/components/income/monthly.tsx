@@ -24,7 +24,7 @@ import {
   getDeviceType,
 } from "@/utils/responsive";
 import { Ionicons } from "@expo/vector-icons";
-import { useMarketing } from "@/providers/marketingProvider";
+import { useMarketing } from "@/providers/MarketingProvider";
 
 type MonthlyCardProps = {
   month: string;

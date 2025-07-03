@@ -18,7 +18,8 @@ import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
 import { isMobile } from "@/utils/responsive";
-import { useMarketing } from "@/providers/marketingProvider";
+import { useMarketing } from "@/providers/MarketingProvider";
+
 
 // Function to format numbers for display, handling the large values properly
 const formatNumberDisplay = (num: number) => {
