@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -133,11 +133,12 @@ const ByOrder = () => {
 
   const handleDelete = async (id: number) => {};
 
-  const groupedBills = groupByDate(bills);
+  // Create memoized grouped bills to ensure data is always fresh
+  const groupedBills = useMemo(() => groupByDate(bills), [bills]);
   const today = new Date().toISOString().split("T")[0];
 
-  // Get border color based on platform
-  const getBorderColor = (platform: string) => {
+  // Get border color based on platform - memoized but updates when bills change
+  const getBorderColor = useCallback((platform: string) => {
     switch (platform) {
       case "Facebook":
         return "#3c22ff";
@@ -150,36 +151,39 @@ const ByOrder = () => {
       default:
         return "#c5c7c7"; // Default color
     }
-  };
+  }, []);
 
-  // Get platform icon
-  const getPlatformIcon = (platform: string) => {
-    switch (platform) {
-      case "Facebook":
-        return <Ionicons name="logo-facebook" size={24} color="#1877f2" />;
-      case "Tiktok":
-        return (
-          <Ionicons
-            name="logo-tiktok"
-            size={24}
-            color={theme === "dark" ? "#ffffff" : "#000000"}
-          />
-        );
-      case "Line":
-        return (
-          <Ionicons name="chatbubble-ellipses" size={24} color="#06c755" />
-        );
-      case "Shopee":
-        return <Ionicons name="bag" size={24} color="#ee4d2d" />;
-      default:
-        return (
-          <Image
-            source={icons.shop}
-            style={{ width: 20, height: 20, tintColor: "#8d8e8e" }}
-          />
-        ); // Default icon
-    }
-  };
+  // Get platform icon - memoized but updates when bills or theme changes
+  const getPlatformIcon = useCallback(
+    (platform: string) => {
+      switch (platform) {
+        case "Facebook":
+          return <Ionicons name="logo-facebook" size={24} color="#1877f2" />;
+        case "Tiktok":
+          return (
+            <Ionicons
+              name="logo-tiktok"
+              size={24}
+              color={theme === "dark" ? "#ffffff" : "#000000"}
+            />
+          );
+        case "Line":
+          return (
+            <Ionicons name="chatbubble-ellipses" size={24} color="#06c755" />
+          );
+        case "Shopee":
+          return <Ionicons name="bag" size={24} color="#ee4d2d" />;
+        default:
+          return (
+            <Image
+              source={icons.shop}
+              style={{ width: 20, height: 20, tintColor: "#8d8e8e" }}
+            />
+          ); // Default icon
+      }
+    },
+    [theme]
+  );
 
   // Render table view for desktop
   const renderTableView = () => {

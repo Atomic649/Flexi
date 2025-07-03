@@ -217,6 +217,18 @@ const updateBill = async (req: Request, res: Response) => {
     // convert string to date in purchaseAt
     billInput.purchaseAt = new Date(billInput.purchaseAt);
 
+    // find platform from Store id
+    const platform = await prisma.store.findUnique({
+      where: {
+        id: billInput.storeId,
+      },
+    });
+    if (!platform) {
+      return res.status(404).json({ message: "Store not found" });
+    }
+    // Map or cast store.platform to a valid SocialMedia type
+    billInput.platform = platform.platform as SocialMedia;
+
     // Create a new bill into the database
     try {
       const bill = await prisma.bill.update({
