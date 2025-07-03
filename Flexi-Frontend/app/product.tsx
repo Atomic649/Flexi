@@ -19,6 +19,7 @@ import { getMemberId } from "@/utils/utility";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
+import CustomAlert from "@/components/CustomAlert";
 
 type Product = {
   id: number;
@@ -42,6 +43,23 @@ export default function Home() {
   const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Add alert config state
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    buttons: Array<{
+      text: string;
+      onPress: () => void;
+      style?: "default" | "cancel" | "destructive";
+    }>;
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    buttons: [],
+  });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -73,24 +91,42 @@ export default function Home() {
   };
 
   const handleDeleteProduct = async (id: number) => {
-    Alert.alert("Delete", "Are you sure you want to delete this product?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await CallAPIProduct.deleteProductAPI(id);
-            setProducts(products.filter((product) => product.id !== id));
-          } catch (error) {
-            console.error("Error deleting product:", error);
-          }
+    setAlertConfig({
+      visible: true,
+      title: t("product.deleteAlert.title") || "Delete",
+      message: t("product.deleteAlert.message") || "Are you sure you want to delete this product?",
+      buttons: [
+        {
+          text: t("common.cancel") || "Cancel",
+          style: "cancel",
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
         },
-      },
-    ]);
+        {
+          text: t("common.delete") || "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await CallAPIProduct.deleteProductAPI(id);
+              setProducts(products.filter((product) => product.id !== id));
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+            } catch (error) {
+              console.error("Error deleting product:", error);
+              setAlertConfig({
+                visible: true,
+                title: t("product.deleteAlert.error") || "Error",
+                message: String(error),
+                buttons: [
+                  {
+                    text: t("common.ok") || "OK",
+                    onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+                  },
+                ],
+              });
+            }
+          },
+        },
+      ],
+    });
   };
 
   return (
@@ -182,6 +218,15 @@ export default function Home() {
             />
           </TouchableOpacity>
         )}
+
+        {/* Add CustomAlert component */}
+        <CustomAlert
+          visible={alertConfig.visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );

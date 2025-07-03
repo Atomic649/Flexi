@@ -174,7 +174,12 @@
       "incomplete": "Incomplete data",
       "invalidData": "Please enter valid data"
     },
-    "chooseProduct": "Product ▼"
+    "chooseProduct": "Product ▼",
+    "deleteAlert": {
+      "title": "Delete Product",
+      "message": "Are you sure you want to delete this product?",
+      "error": "Failed to delete product"
+    }
   },
   "profile": {
     "Profile": "Business Account",
