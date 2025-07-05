@@ -108,7 +108,7 @@ export default function BillCard({
                   numberOfLines={3}
                   style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
                 >
-                  {product} {amount} {t(`product.units.${unit.toLowerCase()}`) || unit}
+                  {product} {amount} {t(`product.unit.${unit}`) || unit}
                 </Text>
               </View>          
             <View className="pt-2 flex flex-col items-end">
