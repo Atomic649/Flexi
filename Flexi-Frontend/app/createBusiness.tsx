@@ -16,11 +16,13 @@ import {
   import Dropdown2 from "@/components/Dropdown2";
   import FormField2 from "@/components/FormField2";
   import { SafeAreaView } from "react-native-safe-area-context";
+  import { useBusiness } from "@/providers/BusinessProvider";
   
   export default function CreateBusiness() {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const router = useRouter();
+    const { triggerFetch } = useBusiness();
     const [businessName, setbusinessName] = useState("");
     const [taxType, settaxType] = useState("");
     const [vatId, setvatId] = useState("");
@@ -82,6 +84,9 @@ import {
         });
   
         if (data.error) throw new Error(data.error);
+
+        // Trigger business data refresh
+        triggerFetch();
   
         setAlertConfig({
           visible: true,
@@ -92,14 +97,14 @@ import {
               text: t("auth.register.alerts.ok"),
               onPress: () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
-                router.replace("/login");
+                // Navigate back to profile page with a slight delay to ensure data refresh
+                setTimeout(() => {
+                  router.replace("/profile");
+                }, 500);
               },
             },
           ],
         });
-  
-        // go to login page
-        router.back();
       } catch (error: any) {
         setError(error.message);
       }
@@ -225,7 +230,7 @@ import {
             {error ? (
               <CustomText className="text-red-500 mt-4">{error}</CustomText>
             ) : null}
-  
+            {/* create business account */}
             <CustomButton
               title={t("auth.register.button")}
               handlePress={handleRegister}

@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "@/components/CustomText";
 import { useBusiness } from "@/providers/BusinessProvider";
-import { router } from "expo-router";
+import { router, useNavigation, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
@@ -35,6 +35,20 @@ export default function Profile() {
   const [businessAccChoiceVisible, setBusinessAccChoiceVisible] =
     useState(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  // Use focus effect to refresh data when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadData = async () => {
+        await fetchBusinessData();
+        await fetchBusinessAccountChoice();
+        await fetchBusinessDataDetails();
+      };
+
+      loadData();
+      return () => {};
+    }, [])
+  );
 
   const pickImage = async () => {
     if (Platform.OS === "web") {
@@ -115,7 +129,8 @@ export default function Profile() {
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchBusinessData();
-
+    await fetchBusinessAccountChoice();
+    await fetchBusinessDataDetails();
     setRefreshing(false);
   };
 
@@ -140,40 +155,40 @@ export default function Profile() {
   }, []);
 
   // get business data from API
-  useEffect(() => {
-    const fetchBusinessData = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId !== null) {
-          const response = await CallAPIBusiness.getBusinessDetailsAPI(
-            memberId
-          );
-          setBusinessData(response);
-        }
-        triggerFetch(); // Reload business data
-      } catch (error) {
-        console.error("Error fetching business data:", error);
+  const fetchBusinessDataDetails = async () => {
+    try {
+      const memberId = await getMemberId();
+      if (memberId !== null) {
+        const response = await CallAPIBusiness.getBusinessDetailsAPI(
+          memberId
+        );
+        setBusinessData(response);
       }
-    };
-    fetchBusinessData();
+    } catch (error) {
+      console.error("Error fetching business data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBusinessDataDetails();
   }, []);
 
   // get business account choice
-  useEffect(() => {
-    const fetchBusinessAccountChoice = async () => {
-      try {
-        const userId = await getUserId();
-        if (userId) {
-          const response = await CallAPIBusiness.getBusinessAccountChoiceAPI(
-            userId
-          );
-          setBusinessAccChoice(response);
-        }
-      } catch (error) {
-        console.error("Error fetching business account choice:", error);
+  const fetchBusinessAccountChoice = async () => {
+    try {
+      const userId = await getUserId();
+      if (userId) {
+        const response = await CallAPIBusiness.getBusinessAccountChoiceAPI(
+          userId
+        );
+        setBusinessAccChoice(response);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching business account choice:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBusinessAccountChoice();
   }, []);
 
@@ -185,14 +200,6 @@ export default function Profile() {
 
       // Store the selected business memberId
       await replaceMemberId(business.memberId);
-
-      // // Show loading message
-      // Alert.alert(
-      //   t("profile.businessSwitch.title") || "Switching Business Account",
-      //   t("profile.businessSwitch.message") || "Please wait while we reload your data...",
-      //   [],
-      //   { cancelable: false }
-      // );
 
       // Trigger business data refresh
       triggerFetch();
