@@ -9,6 +9,7 @@ import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "@/components/CustomButton";
 import i18n from "@/i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RoadMap() {
   const { theme } = useTheme();
@@ -19,9 +20,21 @@ export default function RoadMap() {
   useEffect(() => {
     const fetchRegisteredUsers = async () => {
       try {
+        // Check cache first
+        const cachedData = await AsyncStorage.getItem("registeredUsers");
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          setRegisteredUsers(parsedData);
+          animateCounter(parsedData);
+        }
+
+        // Fetch fresh data
         const response = await CallAPIUser.getRegisteredUsersAPI();
         setRegisteredUsers(response);
         animateCounter(response);
+        
+        // Update cache
+        await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
       } catch (error) {
         console.error("Error fetching registered users:", error);
       }

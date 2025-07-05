@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   ImageBackground,
+  Animated,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -28,11 +29,13 @@ import {
 } from "@/components/ui/lucide-react";
 import { isMobileApp, isMobileWeb } from "@/utils/responsive";
 import { getResponsiveStyles } from "@/utils/responsive";
+import CallAPIUser from "@/api/auth_api";
 
 export default function Landing() {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+  const [registeredUsers, setRegisteredUsers] = useState(0);
   const windowWidth = Dimensions.get("window").width;
   const isDesktop = !isMobileApp();
 
@@ -106,6 +109,30 @@ export default function Landing() {
   const textPrimaryColor = theme === "dark" ? "#e4e4e4" : "#3a3a32";
   const textSecondaryColor = theme === "dark" ? "#bab9b9" : "#5c5c5c";
   const cardBgColor = theme === "dark" ? "#1e1e1e" : "#f8fafc";
+
+  // Fetch registered users count
+  useEffect(() => {
+    const fetchRegisteredUsers = async () => {
+      try {
+        // Check cache first
+        const cachedData = await AsyncStorage.getItem("registeredUsers");
+        if (cachedData) {
+          setRegisteredUsers(JSON.parse(cachedData));
+        }
+
+        const response = await CallAPIUser.getRegisteredUsersAPI();
+        if (response.status === 200) {
+          setRegisteredUsers(response);
+          // Update cache
+          await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
+        }
+      } catch (error) {
+        console.error("Failed to fetch registered users:", error);
+      }
+    };
+
+    fetchRegisteredUsers();
+  }, []);
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
@@ -1621,7 +1648,7 @@ export default function Landing() {
                             marginBottom: 8,
                           }}
                         >
-                          0
+                          {registeredUsers}
                         </CustomText>
 
                         <View

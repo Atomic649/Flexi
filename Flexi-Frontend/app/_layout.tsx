@@ -50,22 +50,14 @@ function RootLayoutNav() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchRegisteredUsers = async () => {
+    const loadRegisteredUsers = async () => {
       setIsLoading(true);
       try {
-        const response = await CallAPIUser.getRegisteredUsersAPI();
-        if (response && typeof response === 'object' && 'message' in response) {
-          const userCount = parseInt(response.message);
-          if (!isNaN(userCount)) {
-            setRegisteredUsers(userCount);
-          } else {
-            setRegisteredUsers(parseInt(response.message));
-          }
-        } else {
-          setRegisteredUsers(response);
-        }
+        // Use the cached function from MainTopBar
+        const cachedUsers = await MainTopBar.getCachedRegisteredUsers();
+        setRegisteredUsers(cachedUsers);
       } catch (error) {
-        console.error("Error fetching registered users:", error);
+        console.error("Error loading registered users:", error);
         setRegisteredUsers(0);
       } finally {
         // Add a small delay to ensure UI transitions smoothly
@@ -74,7 +66,24 @@ function RootLayoutNav() {
         }, 500);
       }
     };
-    fetchRegisteredUsers();
+
+    loadRegisteredUsers();
+
+    // Set up periodic refresh (every 5 minutes) without showing loading indicator
+    const refreshInterval = setInterval(async () => {
+      try {
+        const response = await CallAPIUser.getRegisteredUsersAPI();
+        if (response) {
+          setRegisteredUsers(response);
+          // Update cache
+          await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
+        }
+      } catch (error) {
+        console.error("Error refreshing registered users:", error);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(refreshInterval);
   }, []);
 
   useEffect(() => {

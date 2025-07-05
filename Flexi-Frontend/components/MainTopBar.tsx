@@ -1,16 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, Image, Text, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { CustomText } from "@/components/CustomText";
 import { icons, images } from "@/constants";
 import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CallAPIUser from "@/api/auth_api";
 
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
   const newLang = i18n.language === "th" ? "en" : "th";
   AsyncStorage.setItem("language", newLang);
   i18n.changeLanguage(newLang);
+};
+
+// Function to get cached registered users or fetch from API
+const getCachedRegisteredUsers = async (): Promise<number | null> => {
+  try {
+    // Try to get from cache first
+    const cachedData = await AsyncStorage.getItem("registeredUsers");
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
+    
+    // If no cache, fetch from API
+    const response = await CallAPIUser.getRegisteredUsersAPI();
+    if (response) {
+      // Store in cache for future use
+      await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
+      return response;
+    }
+    return 0;
+  } catch (error) {
+    console.error("Error fetching registered users:", error);
+    return 0;
+  }
 };
 
 // Export as a function that returns configuration object
@@ -176,6 +200,7 @@ const MainTopBar = {
       </View>
     ),
   }),
+  getCachedRegisteredUsers // Export the function to get cached users
 };
 
 export default MainTopBar;
