@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexi Application Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .legend {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .legend h2 {
+            margin-top: 0;
+            color: #555;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flexi Application Architecture</h1>
+        
+        <div class="mermaid">
+            %%{init: {'theme': 'neutral', 'flowchart': { 'curve': 'basis' } } }%%
+            flowchart TB
+                subgraph User["User Interaction Layer"]
+                    Browser["User Web/Mobile Browser"]
+                end
+
+                subgraph Network["Network Layer"]
+                    Nginx["NGINX Proxy<br>(Port 80/443)"]
+                end
+                
+                subgraph Frontend["Frontend Layer"]
+                    ExpoWeb["Expo Web Container<br>(Port 8080)"]
+                    subgraph FrontendComponents["Components"]
+                        direction TB
+                        Routes["App Routes<br>(screens, navigation)"]
+                        ApiClients["API Clients"]
+                        Providers["State Providers<br>(Auth, Theme, Business)"]
+                        i18n["i18n Internationalization<br>(EN/TH)"]
+                    end
+                end
+                
+                subgraph Backend["Backend Layer"]
+                    NodeJS["Node.js/Express API Server<br>(Port 3000)"]
+                    subgraph BackendComponents["Components"]
+                        direction TB
+                        Controllers["Controllers"]
+                        Routes["API Routes"]
+                        Services["Services"]
+                        Middleware["Middleware<br>(Auth, Validation)"]
+                    end
+                end
+                
+                subgraph Database["Database Layer"]
+                    Prisma["Prisma ORM"]
+                    DB1["PostgreSQL Primary DB<br>(flexidb - Port 9649)"]
+                    DB2["PostgreSQL Secondary DB<br>(flexiadsdb - Port 8956)"]
+                end
+                
+                Browser <--> Nginx
+                Nginx <--> ExpoWeb
+                Nginx <--> NodeJS
+                
+                ExpoWeb <--> FrontendComponents
+                FrontendComponents <--> NodeJS
+                
+                NodeJS <--> BackendComponents
+                BackendComponents <--> Prisma
+                
+                Prisma <--> DB1
+                Prisma <--> DB2
+                
+                classDef userLayer fill:#f9d6d6,stroke:#d88383,stroke-width:1px
+                classDef networkLayer fill:#d6e5f9,stroke:#83a2d8,stroke-width:1px
+                classDef frontendLayer fill:#d6f9e0,stroke:#83d8a0,stroke-width:1px
+                classDef frontendComponentsLayer fill:#e0f9d6,stroke:#a0d883,stroke-width:1px
+                classDef backendLayer fill:#f9f0d6,stroke:#d8c283,stroke-width:1px
+                classDef backendComponentsLayer fill:#f9e8d6,stroke:#d8a983,stroke-width:1px
+                classDef databaseLayer fill:#ead6f9,stroke:#b683d8,stroke-width:1px
+                
+                class User userLayer
+                class Network networkLayer
+                class Frontend,ExpoWeb,FrontendComponents frontendLayer
+                class Routes,ApiClients,Providers,i18n frontendComponentsLayer
+                class Backend,NodeJS,BackendComponents backendLayer
+                class Controllers,Routes,Services,Middleware backendComponentsLayer
+                class Database,Prisma,DB1,DB2 databaseLayer
+        </div>
+        
+        <div class="mermaid">
+            %%{init: {'theme': 'neutral' } }%%
+            flowchart LR
+                User["User"] -->|"1. Requests"| Nginx
+                Nginx -->|"2. Routes"| ExpoWeb["Expo Frontend"]
+                Nginx -->|"2. API calls"| Backend["Backend API"]
+                ExpoWeb -->|"3. API calls"| Backend
+                Backend -->|"4. Database queries"| Prisma["Prisma ORM"]
+                Prisma -->|"5. Data operations"| DB["PostgreSQL DBs"]
+                DB -->|"6. Results"| Prisma
+                Prisma -->|"7. Data"| Backend
+                Backend -->|"8. Response"| ExpoWeb
+                ExpoWeb -->|"9. Render UI"| Nginx
+                Nginx -->|"10. Response"| User
+        </div>
+        
+        <div class="legend">
+            <h2>Architecture Components Description</h2>
+            <ul>
+                <li><strong>User Interaction Layer</strong> - Web browsers and mobile devices where users interact with the application</li>
+                <li><strong>Network Layer</strong> - NGINX reverse proxy handling routing and SSL termination</li>
+                <li><strong>Frontend Layer</strong> - React Native/Expo application with multiple UI routes/screens</li>
+                <li><strong>Backend Layer</strong> - Node.js/Express API server with controllers and services</li>
+                <li><strong>Database Layer</strong> - Two PostgreSQL databases managed through Prisma ORM</li>
+            </ul>
+            
+            <h2>Key Features</h2>
+            <ul>
+                <li><strong>Security:</strong> HTTPS traffic through Nginx</li>
+                <li><strong>Scalability:</strong> Containerized services that can be scaled independently</li>
+                <li><strong>Modularity:</strong> Clear separation between frontend, backend, and database layers</li>
+                <li><strong>Multiple Databases:</strong> Specialized databases for different domains (core app vs ads)</li>
+                <li><strong>Modern Frontend:</strong> React Native/Expo app with provider-based state management</li>
+                <li><strong>API-First Design:</strong> Well-structured API clients for different domains</li>
+                <li><strong>Internationalization:</strong> Support for multiple languages (English and Thai)</li>
+            </ul>
+        </div>
+        
+        <div class="no-print" style="text-align: center; margin-top: 30px;">
+            <p><strong>To save as PDF:</strong> Use your browser's print function (Cmd+P or Ctrl+P) and select "Save as PDF"</p>
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+    </script>
+</body>
+</html>

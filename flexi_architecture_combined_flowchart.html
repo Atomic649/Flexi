@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flexi Frontend - Combined Architecture Flowchart</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis',
+        rankSpacing: 80,
+        nodeSpacing: 50
+      }
+    });
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .mermaid {
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: auto;
+      max-width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    p.description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      color: #555;
+    }
+    .legend {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .legend h3 {
+      margin-top: 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border-radius: 3px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    .controls {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Flexi Frontend - Comprehensive Architecture Flowchart</h1>
+    
+    <p class="description">
+      This flowchart provides a complete view of the Flexi Frontend React Expo application architecture,
+      including authentication flow, business management, product and store management, dashboard functionality,
+      and more.
+    </p>
+
+    <div class="controls">
+      <button id="zoomIn">Zoom In (+)</button>
+      <button id="zoomOut">Zoom Out (-)</button>
+      <button id="resetZoom">Reset Zoom</button>
+      <span id="zoomLevel" style="margin-left: 10px; color: #555;">100%</span>
+    </div>
+
+    <div class="mermaid" id="flowchart">
+      graph TD
+        %% Main Application Flow
+        Start[Start App] --> CheckAuth{Authenticated?}
+        CheckAuth -- No --> Land[Landing Page]
+        CheckAuth -- Yes --> Home[Dashboard Home]
+        
+        %% Landing Page Flow
+        Land --> LandingFeatures[Show Features & Benefits]
+        Land --> LoginOption[Login Option]
+        Land --> RegisterOption[Register Option]
+        Land --> MobileWebCheck{Mobile Web?}
+        
+        MobileWebCheck -- Yes --> AppStores[Show App Store Links]
+        MobileWebCheck -- No --> LoginOption
+        
+        %% Authentication Flow
+        LoginOption --> Login[Login Screen]
+        RegisterOption --> Register[Register Screen]
+        
+        Login --> ValidateCredentials{Validate Credentials}
+        Login -- Register --> Register
+        Login -- Forgot Password --> ForgotPassword[Forgot Password Screen]
+        
+        ValidateCredentials -- Valid --> FetchUserData[Fetch User Data]
+        ValidateCredentials -- Invalid --> ShowError[Show Error]
+        ShowError --> Login
+        
+        Register --> SubmitRegister[Submit Registration]
+        SubmitRegister --> ValidateRegistration{Validate Registration}
+        ValidateRegistration -- Valid --> BusinessRegister[Business Registration]
+        ValidateRegistration -- Invalid --> ShowRegError[Show Registration Error]
+        ShowRegError --> Register
+        
+        BusinessRegister --> SubmitBusinessInfo[Submit Business Info]
+        SubmitBusinessInfo --> SaveBusinessData[Save Business Data]
+        SaveBusinessData --> FetchUserData
+        
+        ForgotPassword --> ResetPassword[Reset Password Process]
+        ResetPassword --> Login
+        
+        FetchUserData --> FetchBusiness[Fetch Business Data]
+        FetchBusiness --> SaveTokens[Save Auth Tokens]
+        SaveTokens --> AuthComplete[Auth Complete]
+        AuthComplete --> SetupCheck
+
+        %% Setup Check Flow
+        AuthComplete --> SetupCheck{Setup Complete?}
+        SetupCheck -- No --> SetupFlow[Setup Flow]
+        SetupCheck -- Yes --> Home
+        
+        %% Setup Flow 
+        SetupFlow --> AddProduct[Create Product]
+        SetupFlow --> AddStore[Create Store]
+        SetupFlow --> Marketing[Marketing Setup]
+        
+        AddProduct & AddStore & Marketing --> Home
+        
+        %% Dashboard Flow
+        Home --> MainTabs{Main Tabs}
+        
+        MainTabs -- Home --> HomeTab[Home Dashboard]
+        MainTabs -- Income --> IncomeTab[Income Analytics]
+        MainTabs -- Settings --> SettingsTab[Settings]
+        MainTabs -- Shop --> ShopTab[Shop]
+
+        %% Home Tab Detail
+        HomeTab --> SalesMetrics[Sales Metrics]
+        HomeTab --> PlatformCards[Platform Cards]
+        HomeTab --> DateSelection[Date Selection]
+        HomeTab --> ProductSelection[Product Selection]
+        
+        PlatformCards -- Facebook --> FacebookStats[Facebook Stats]
+        PlatformCards -- TikTok --> TikTokStats[TikTok Stats]
+        PlatformCards -- Shopee --> ShopeeStats[Shopee Stats]
+        PlatformCards -- Line --> LineStats[Line Stats]
+        
+        ProductSelection -- Select Product --> FilterData[Filter Data by Product]
+        DateSelection -- Select Dates --> MultiDateCalendar[Multi-Date Calendar]
+        MultiDateCalendar --> ApplyDates[Apply Date Filter]
+        
+        SalesMetrics --> TotalSales[Total Sales Display]
+
+        %% Settings Tab Detail
+        SettingsTab --> ProfileSettings[Profile Settings]
+        SettingsTab --> BusinessSettings[Business Settings]
+        SettingsTab --> ProductManage[Product Management]
+        SettingsTab --> StoreManage[Store Management]
+        SettingsTab --> AdsManage[Ads Management]
+        
+        %% Profile Settings
+        ProfileSettings --> EditProfile[Edit Profile]
+        
+        %% Business Management Flow
+        BusinessSettings --> BusinessCheck{Has Business?}
+        
+        BusinessCheck -- No --> CreateBusiness[Create Business]
+        BusinessCheck -- Yes --> ManageBusiness[Manage Business]
+        
+        CreateBusiness --> BusinessForm[Business Registration Form]
+        BusinessForm --> SubmitBusinessData2[Submit Business Data]
+        SubmitBusinessData2 -- Success --> BusinessCreated[Business Created]
+        SubmitBusinessData2 -- Error --> ShowBusinessError[Show Business Error]
+        ShowBusinessError --> BusinessForm
+        
+        ManageBusiness --> BusinessInfo[Business Info]
+        ManageBusiness --> SwitchBusiness[Switch Business]
+        
+        BusinessInfo --> EditBusinessInfo[Edit Business Info]
+        EditBusinessInfo --> UpdateBusinessInfo[Update Business Info]
+        UpdateBusinessInfo --> RefreshBusinessData[Refresh Business Data]
+        
+        SwitchBusiness --> BusinessAccChoice[Business Account Choice]
+        BusinessAccChoice --> SelectBusiness[Select Business]
+        SelectBusiness --> SaveSelectedBusiness[Save Selected Business]
+        SaveSelectedBusiness --> ReloadApp[Reload App]
+        
+        %% Product Management Flow
+        ProductManage --> ProductList[Product List]
+        ProductList --> ProductLimit{Under Product Limit?}
+        
+        ProductLimit -- Yes --> CreateProduct[Create Product]
+        ProductLimit -- No --> ShowLimitMessage[Show Limit Message]
+        ShowLimitMessage --> Roadmap[Go to Roadmap]
+        
+        CreateProduct --> ProductForm[Product Form]
+        ProductForm --> ValidateProduct{Validate Product}
+        ValidateProduct -- Invalid --> ShowProductError[Show Product Error]
+        ShowProductError --> ProductForm
+        ValidateProduct -- Valid --> SaveProduct[Save Product]
+        SaveProduct --> RefreshProducts[Refresh Product List]
+        
+        ProductList --> SelectProduct{Select Product}
+        SelectProduct -- View/Edit --> ProductDetails[Product Details]
+        SelectProduct -- Delete --> ConfirmDelete{Confirm Delete}
+        
+        ConfirmDelete -- Confirm --> DeleteProduct[Delete Product]
+        ConfirmDelete -- Cancel --> ProductList
+        DeleteProduct --> RefreshProducts
+        
+        ProductDetails --> EditProductDetails[Edit Product Details]
+        EditProductDetails --> SaveProductChanges[Save Product Changes]
+        SaveProductChanges --> RefreshProducts
+        
+        %% Store Management Flow
+        StoreManage --> StoreList[Store List]
+        StoreList --> StoreCheck{Has Stores?}
+        
+        StoreCheck -- No --> CreateStore[Create Store]
+        StoreCheck -- Yes --> ShowStoreList[Store List]
+        
+        CreateStore --> SelectStoreType[Select Store Type]
+        SelectStoreType --> StoreForm[Store Form]
+        StoreForm --> ValidateStore{Validate Store}
+        ValidateStore -- Invalid --> ShowStoreError[Show Store Error]
+        ShowStoreError --> StoreForm
+        ValidateStore -- Valid --> SaveStore[Save Store]
+        SaveStore --> RefreshStores[Refresh Store List]
+        
+        ShowStoreList --> SelectStore{Select Store}
+        SelectStore -- Edit --> EditStore[Edit Store]
+        SelectStore -- Delete --> ConfirmStoreDelete{Confirm Delete}
+        
+        ConfirmStoreDelete -- Confirm --> DeleteStore[Delete Store]
+        ConfirmStoreDelete -- Cancel --> ShowStoreList
+        DeleteStore --> RefreshStores
+        
+        EditStore --> UpdateStoreForm[Update Store Form]
+        UpdateStoreForm --> SaveStoreChanges[Save Store Changes]
+        SaveStoreChanges --> RefreshStores
+        
+        %% Ads Management Flow
+        AdsManage --> AdsList[Ads List]
+        
+        AdsList --> CreateAd[Create Ad]
+        AdsList --> SelectAd{Select Ad}
+        
+        CreateAd --> AdForm[Ad Form]
+        AdForm --> ValidateAd{Validate Ad}
+        ValidateAd -- Invalid --> ShowAdError[Show Ad Error]
+        ShowAdError --> AdForm
+        ValidateAd -- Valid --> SaveAd[Save Ad]
+        SaveAd --> CreateAdCost[Create Ad Cost]
+        CreateAdCost --> SaveAdCost[Save Ad Cost]
+        SaveAdCost --> RefreshAdsList[Refresh Ads List]
+        
+        SelectAd -- Edit --> EditAd[Edit Ad]
+        SelectAd -- Delete --> ConfirmAdDelete{Confirm Delete}
+        
+        ConfirmAdDelete -- Confirm --> DeleteAd[Delete Ad]
+        ConfirmAdDelete -- Cancel --> AdsList
+        DeleteAd --> RefreshAdsList
+        
+        EditAd --> UpdateAdForm[Update Ad Form]
+        UpdateAdForm --> SaveAdChanges[Save Ad Changes]
+        SaveAdChanges --> RefreshAdsList
+        
+        %% Shop Tab Flow
+        ShopTab --> TabView{Shop Categories}
+        TabView -- Office --> OfficeItems[Office Items]
+        TabView -- Coach --> CoachItems[Coach Items]
+        TabView -- Bank --> BankItems[Bank Items]
+        TabView -- Agency --> AgencyItems[Agency Items]
+        TabView -- ORM --> ORMItems[ORM Items]
+        
+        %% Style nodes by type
+        classDef mainFlow fill:#f5f5f5,stroke:#333,stroke-width:2px;
+        classDef decision fill:#ffffde,stroke:#333,stroke-width:1px;
+        classDef process fill:#e1f5fe,stroke:#333,stroke-width:1px;
+        classDef output fill:#e8f5e9,stroke:#333,stroke-width:1px;
+        classDef error fill:#ffebee,stroke:#333,stroke-width:1px;
+        
+        %% Apply styles
+        class Start,Land,Home,HomeTab,IncomeTab,SettingsTab,ShopTab mainFlow;
+        class CheckAuth,MobileWebCheck,ValidateCredentials,ValidateRegistration,SetupCheck,ProductLimit,ValidateProduct,ValidateStore,ValidateAd decision;
+        class Login,Register,BusinessRegister,FetchUserData,FetchBusiness,SaveTokens,SetupFlow,AddProduct,AddStore,Marketing,BusinessForm,ProductForm,StoreForm,AdForm process;
+        class ShowError,ShowRegError,ShowBusinessError,ShowProductError,ShowStoreError,ShowAdError error;
+        class SalesMetrics,PlatformCards,FacebookStats,TikTokStats,ShopeeStats,LineStats,TotalSales output;
+    </div>
+
+    <div class="legend">
+      <h3>Legend</h3>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #f5f5f5;"></div>
+        <div>Main Flow / Navigation Pages</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #ffffde;"></div>
+        <div>Decision Points</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #e1f5fe;"></div>
+        <div>Processes / Forms</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #e8f5e9;"></div>
+        <div>Output / Display</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #ffebee;"></div>
+        <div>Errors / Alerts</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple zoom functionality
+    let scale = 1;
+    const flowchart = document.getElementById('flowchart');
+    const zoomLevel = document.getElementById('zoomLevel');
+    
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      scale += 0.1;
+      updateZoom();
+    });
+    
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      if (scale > 0.5) scale -= 0.1;
+      updateZoom();
+    });
+    
+    document.getElementById('resetZoom').addEventListener('click', () => {
+      scale = 1;
+      updateZoom();
+    });
+    
+    function updateZoom() {
+      flowchart.style.transform = `scale(${scale})`;
+      flowchart.style.transformOrigin = 'top left';
+      zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+    }
+  </script>
+</body>
+</html>

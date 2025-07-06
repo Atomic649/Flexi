@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flexi Frontend React Expo App Flow</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      }
+    });
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .mermaid {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: auto;
+      max-width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    .section-title {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Flexi Frontend React Expo - Application Flow</h1>
+  
+  <h2 class="section-title">Main Application Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Start App] --> CheckAuth{Authenticated?}
+      CheckAuth -- No --> Land[Landing Page]
+      CheckAuth -- Yes --> Home[Dashboard Home]
+      
+      Land --> LandingFeatures[Show Features & Benefits]
+      Land --> LoginOption[Login Option]
+      Land --> RegisterOption[Register Option]
+      Land --> MobileWebCheck{Mobile Web?}
+      
+      MobileWebCheck -- Yes --> AppStores[Show App Store Links]
+      MobileWebCheck -- No --> LoginOption
+      
+      LoginOption --> Login[Login Screen]
+      RegisterOption --> Register[Register Screen]
+      
+      Login --> AuthProcess{Authentication}
+      Register --> Business[Business Registration]
+      Business --> AuthProcess
+      
+      AuthProcess -- Fail --> Login
+      AuthProcess -- Success --> SetupCheck{Setup Complete?}
+      
+      SetupCheck -- No --> Setup[Setup Flow]
+      SetupCheck -- Yes --> Home
+      
+      Setup --> AddProduct[Create Product]
+      Setup --> AddStore[Create Store]
+      Setup --> Marketing[Marketing Setup]
+      
+      AddProduct & AddStore & Marketing --> Home
+  </div>
+
+  <h2 class="section-title">Authentication Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Start Auth Flow] --> Login[Login Screen]
+      Login -- Submit --> ValidateCredentials{Validate Credentials}
+      Login -- Register --> Register[Register Screen]
+      Login -- Forgot Password --> ForgotPassword[Forgot Password Screen]
+      
+      ValidateCredentials -- Valid --> FetchUserData[Fetch User Data]
+      ValidateCredentials -- Invalid --> ShowError[Show Error]
+      ShowError --> Login
+      
+      Register --> SubmitRegister[Submit Registration]
+      SubmitRegister --> ValidateRegistration{Validate Registration}
+      ValidateRegistration -- Valid --> BusinessRegister[Business Registration]
+      ValidateRegistration -- Invalid --> ShowRegError[Show Error]
+      ShowRegError --> Register
+      
+      BusinessRegister --> SubmitBusinessInfo[Submit Business Info]
+      SubmitBusinessInfo --> SaveBusinessData[Save Business Data]
+      SaveBusinessData --> FetchUserData
+      
+      ForgotPassword --> ResetPassword[Reset Password Process]
+      ResetPassword --> Login
+      
+      FetchUserData --> FetchBusiness[Fetch Business Data]
+      FetchBusiness --> SaveTokens[Save Auth Tokens]
+      SaveTokens --> Complete[Auth Complete]
+  </div>
+
+  <h2 class="section-title">Dashboard & Navigation Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Dashboard Home] --> MainTabs{Main Tabs}
+      
+      MainTabs -- Home --> HomeTab[Home Dashboard]
+      MainTabs -- Income --> IncomeTab[Income Analytics]
+      MainTabs -- Settings --> SettingsTab[Settings]
+      MainTabs -- Shop --> ShopTab[Shop]
+      
+      HomeTab --> SalesMetrics[Sales Metrics]
+      HomeTab --> PlatformCards[Platform Cards]
+      HomeTab --> DateSelection[Date Selection]
+      HomeTab --> ProductSelection[Product Selection]
+      
+      PlatformCards -- Facebook --> FacebookStats[Facebook Stats]
+      PlatformCards -- TikTok --> TikTokStats[TikTok Stats]
+      PlatformCards -- Shopee --> ShopeeStats[Shopee Stats]
+      PlatformCards -- Line --> LineStats[Line Stats]
+      
+      ProductSelection -- Select Product --> FilterData[Filter Data]
+      DateSelection -- Select Dates --> MultiDateCalendar[Multi-Date Calendar]
+      MultiDateCalendar --> ApplyDates[Apply Date Filter]
+      
+      SalesMetrics --> TotalSales[Total Sales Display]
+      
+      SettingsTab --> ProfileSettings[Profile Settings]
+      SettingsTab --> BusinessSettings[Business Settings]
+      SettingsTab --> ProductManage[Product Management]
+      SettingsTab --> StoreManage[Store Management]
+      SettingsTab --> AdsManage[Ads Management]
+      
+      ProfileSettings --> EditProfile[Edit Profile]
+      BusinessSettings --> EditBusiness[Edit Business]
+      ProductManage --> ProductList[Product List]
+      StoreManage --> StoreList[Store List]
+      AdsManage --> AdsList[Ads List]
+      
+      ProductList --> CreateProduct[Create Product]
+      ProductList --> EditProduct[Edit Product]
+      ProductList --> DeleteProduct[Delete Product]
+      
+      StoreList --> CreateStore[Create Store]
+      StoreList --> EditStore[Edit Store]
+      StoreList --> DeleteStore[Delete Store]
+      
+      AdsList --> CreateAd[Create Ad]
+      AdsList --> EditAd[Edit Ad]
+      AdsList --> DeleteAd[Delete Ad]
+      
+      ShopTab --> TabView{Shop Categories}
+      TabView -- Office --> OfficeItems[Office Items]
+      TabView -- Coach --> CoachItems[Coach Items]
+      TabView -- Bank --> BankItems[Bank Items]
+      TabView -- Agency --> AgencyItems[Agency Items]
+      TabView -- ORM --> ORMItems[ORM Items]
+  </div>
+
+  <h2 class="section-title">Business Management Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Business Management] --> BusinessCheck{Has Business?}
+      
+      BusinessCheck -- No --> CreateBusiness[Create Business]
+      BusinessCheck -- Yes --> ManageBusiness[Manage Business]
+      
+      CreateBusiness --> BusinessForm[Business Registration Form]
+      BusinessForm --> SubmitBusinessData[Submit Business Data]
+      SubmitBusinessData -- Success --> BusinessCreated[Business Created]
+      SubmitBusinessData -- Error --> ShowBusinessError[Show Error]
+      ShowBusinessError --> BusinessForm
+      
+      ManageBusiness --> BusinessInfo[Business Info]
+      ManageBusiness --> SwitchBusiness[Switch Business]
+      
+      BusinessInfo --> EditBusinessInfo[Edit Business Info]
+      EditBusinessInfo --> UpdateBusinessInfo[Update Business Info]
+      UpdateBusinessInfo --> RefreshBusinessData[Refresh Business Data]
+      
+      SwitchBusiness --> BusinessAccChoice[Business Account Choice]
+      BusinessAccChoice --> SelectBusiness[Select Business]
+      SelectBusiness --> SaveSelectedBusiness[Save Selected Business]
+      SaveSelectedBusiness --> ReloadApp[Reload App]
+  </div>
+
+  <h2 class="section-title">Product Management Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Product Management] --> ProductLimit{Under Product Limit?}
+      
+      ProductLimit -- Yes --> CreateProduct[Create Product]
+      ProductLimit -- No --> ShowLimitMessage[Show Limit Message]
+      ShowLimitMessage --> Roadmap[Go to Roadmap]
+      
+      CreateProduct --> ProductForm[Product Form]
+      ProductForm --> ValidateProduct{Validate Product}
+      ValidateProduct -- Invalid --> ShowProductError[Show Error]
+      ShowProductError --> ProductForm
+      ValidateProduct -- Valid --> SaveProduct[Save Product]
+      SaveProduct --> ProductList[Product List]
+      
+      ProductList --> SelectProduct{Select Product}
+      SelectProduct -- View/Edit --> ProductDetails[Product Details]
+      SelectProduct -- Delete --> ConfirmDelete{Confirm Delete}
+      
+      ConfirmDelete -- Confirm --> DeleteProduct[Delete Product]
+      ConfirmDelete -- Cancel --> ProductList
+      DeleteProduct --> RefreshProducts[Refresh Product List]
+      
+      ProductDetails --> EditProductDetails[Edit Product Details]
+      EditProductDetails --> SaveProductChanges[Save Product Changes]
+      SaveProductChanges --> RefreshProducts
+  </div>
+
+  <h2 class="section-title">Store Connection Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Store Management] --> StoreCheck{Has Stores?}
+      
+      StoreCheck -- No --> CreateStore[Create Store]
+      StoreCheck -- Yes --> StoreList[Store List]
+      
+      CreateStore --> SelectStoreType[Select Store Type]
+      SelectStoreType --> StoreForm[Store Form]
+      StoreForm --> ValidateStore{Validate Store}
+      ValidateStore -- Invalid --> ShowStoreError[Show Error]
+      ShowStoreError --> StoreForm
+      ValidateStore -- Valid --> SaveStore[Save Store]
+      SaveStore --> StoreList
+      
+      StoreList --> SelectStore{Select Store}
+      SelectStore -- Edit --> EditStore[Edit Store]
+      SelectStore -- Delete --> ConfirmStoreDelete{Confirm Delete}
+      
+      ConfirmStoreDelete -- Confirm --> DeleteStore[Delete Store]
+      ConfirmStoreDelete -- Cancel --> StoreList
+      DeleteStore --> RefreshStores[Refresh Store List]
+      
+      EditStore --> UpdateStoreForm[Update Store Form]
+      UpdateStoreForm --> SaveStoreChanges[Save Store Changes]
+      SaveStoreChanges --> RefreshStores
+  </div>
+
+  <h2 class="section-title">Ads Management Flow</h2>
+  <div class="mermaid">
+    graph TD
+      Start[Ads Management] --> AdsList[Ads List]
+      
+      AdsList --> CreateAd[Create Ad]
+      AdsList --> SelectAd{Select Ad}
+      
+      CreateAd --> AdForm[Ad Form]
+      AdForm --> ValidateAd{Validate Ad}
+      ValidateAd -- Invalid --> ShowAdError[Show Error]
+      ShowAdError --> AdForm
+      ValidateAd -- Valid --> SaveAd[Save Ad]
+      SaveAd --> CreateAdCost[Create Ad Cost]
+      CreateAdCost --> SaveAdCost[Save Ad Cost]
+      SaveAdCost --> RefreshAdsList[Refresh Ads List]
+      
+      SelectAd -- Edit --> EditAd[Edit Ad]
+      SelectAd -- Delete --> ConfirmAdDelete{Confirm Delete}
+      
+      ConfirmAdDelete -- Confirm --> DeleteAd[Delete Ad]
+      ConfirmAdDelete -- Cancel --> AdsList
+      DeleteAd --> RefreshAdsList
+      
+      EditAd --> UpdateAdForm[Update Ad Form]
+      UpdateAdForm --> SaveAdChanges[Save Ad Changes]
+      SaveAdChanges --> RefreshAdsList
+  </div>
+</body>
+</html>
