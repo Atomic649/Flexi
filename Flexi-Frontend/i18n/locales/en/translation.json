@@ -760,31 +760,143 @@
     "upcoming": "Q3 2025",
     "future": "Q1 2026",
     "users": "Users",
-    "business": "Business Accounts",
+    "business": "Business Support",
+    "language": "Language",
+    "theme": "Theme",
+    "soloDev": "Solo Full-Stack Developer",
     "products": "Products",
     "ads": "Ad Platforms",
     "store": "Stores",
+    "cfoRole": "CFO Role & Financial Management",
+    "integrations": "Integrations:",
     "vision": "Small Team, Big Impact \n 0 Marketing Budget \n Possible 0 Funding",
     "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future",
     "userCounter": "Registered Users",
     "growthRate": "Growing by 23% monthly",
     "phase1": {
-      "title": "Phase 1: Foundation",
-      "description": "Core platform development, first 5 product categories, and 100+ active users milestone"
+      "title": "Phase 1: Scalable Foundation",
+      "description": "Core platform development, building basic functionality, hero function for automatic bank statement parsing for business expense management, tested with 5 businesses"
     },
     "phase2": {
-      "title": "Phase 2: Market Expansion",
-      "description": "Multi-business support, expanded platform integrations, and reaching 500 active users"
+      "title": "Phase 2: Connect and Expand",
+      "description": "Increase integrations with other platforms, scale the development team, find CFO partners, initiate marketing, test with altleat 10 businesses and expand to 100 businesses"
     },
     "phase3": {
-      "title": "Phase 3: Ecosystem Growth",
-      "description": "Multi-store management, advanced inventory systems, expanded payment options"
+      "title": "Phase 3: Revenue Generation",
+      "description": "Develop and launch advertising platform, generate revenue from B2B store connections, expand development and marketing teams, expand to 1000 businesses"
     },
     "phase4": {
       "title": "Phase 4: Regional Leadership",
-      "description": "Advanced marketing suite, AI-powered analytics, cross-border payment solutions"
+      "description": "Advanced marketing tools, AI-powered analytics, expansion to other Southeast Asian countries, test with 5000 businesses"
     }
   },
+  "phase1": {
+    "title": "Phase 1: Scalable Foundation",
+    "subtitle": "Completed Achievement Milestones",
+    "introduction": "Phase 1 established the foundation for the Flexi Business Hub platform, delivering core functionality across multiple devices and laying the groundwork for future expansion. Below are the key achievements of this foundational phase:",
+    "sections": {
+      "core": {
+        "title": "Core Platform Development",
+        "item1": "Multi-tier Architecture: Established a robust architecture with separate frontend, backend, and ads management services",
+        "item2": "Cross-platform Functionality: React Native/Expo frontend supporting both mobile apps and web interfaces",
+        "item3": "Internationalization: Implemented i18n for Thai/English language support"
+      },
+      "business": {
+        "title": "Business Management Features",
+        "item1": "Business Profile Management: Create, edit, and manage business information",
+        "item2": "Multi-store online and offline Support: Framework for managing multiple store locations",
+        "item3": "Inventory: Complete product management system with creation, editing, and listing capabilities"
+      },
+      "financial": {
+        "title": "Financial Management System",
+        "item1": "Expense Tracking: Automated expense tracking with PDF upload and categorization",
+        "item2": "Bill Management: Invoice and billing system for tracking business transactions",
+        "item3": "Financial Reporting: Basic reporting infrastructure to analyze business performance"
+      },      
+      "technical": {
+        "title": "Technical Infrastructure",
+        "item1": "Database Architecture: Using Prisma with multiple database schemas",
+        "item2": "API Organization: Well-structured API layers for different business domains",
+        "item3": "Secure Communications: SSL certificate configuration for secure data transfer",
+        "item4": "Containerization: Complete Docker setup with docker-compose for orchestrating multiple services",
+        "item5": "Nginx Configuration: Proper reverse proxy setup for handling web traffic"
+      },
+      "user": {
+        "title": "User Experience",
+        "item1": "Onboarding Flow: Landing pages and signup processes",
+        "item2": "Documentation: How-to pages to guide users",
+        "item3": "Legal Compliance: Privacy policy and terms of service pages"
+      },
+      "development": {
+        "title": "Development Organization",
+        "item1": "Component Structure: Well-organized component hierarchy and reusable UI elements",
+        "item2": "Internationalization: Support for multiple languages built into the system",
+        "item3": "Utility Functions: Common functionality extracted to utility modules",
+        "item4": "Tailwind Integration: Using Tailwind CSS for consistent styling"
+      }
+    },
+    "nextPhase": {
+      "title": "Moving Forward to Phase 2: Market Expansion",
+      "description": "With the foundation now firmly in place, we're moving into Phase 2, focusing on multi-business support, expanded platform integrations, and reaching a milestone of 500 active users."
+    }
+  },
+  "phase2": {
+      "title": "Phase 2: Connect and Expand",
+      "subtitle": "In Progress - July 2025",
+      "introduction": "Phase 2 is all about expanding the Flexi Business Hub platform through key integrations and partnerships. We're building connections with major platforms, scaling our team, and implementing advanced financial management features for multi-business support. Our target is to reach and test with 50 businesses during this phase.",
+      "sections": {
+        "integrations": {
+          "title": "Platform Integrations",
+          "item1": "Facebook API: Full integration with Facebook marketing and business APIs for analytics and automation",
+          "item2": "TikTok Integration: Connecting with TikTok For Business to synchronize marketing campaigns and tracking",
+          "item3": "Shopee Integration: Store connection, product catalog sync, and order management",
+          "item4": "LINE Integration: Customer communication and marketing channel integration"
+        },
+        "team": {
+          "title": "Team Expansion",
+          "item1": "Development Team Scaling: Growing beyond solo development to a small focused team",
+          "item2": "CFO Advisory Partnership: Establishing relationships with financial experts",
+          "item3": "Marketing Team Formation: Starting small-scale marketing initiatives"
+        },
+        "financial": {
+          "title": "Financial Management",
+          "item1": "Enhanced CFO Dashboard: Financial analytics and reporting designed for CFO use",
+          "item2": "Multi-business Financial Tracking: Supporting businesses with multiple revenue streams",
+          "item3": "Financial Planning Tools: Cash flow projections and budget management"
+        },
+        "market": {
+          "title": "Market Reach",
+          "item1": "Business Outreach: Testing with 50 businesses across diverse sectors",
+          "item2": "User Feedback Loop: Implementing structured feedback collection and response system",
+          "item3": "Early Adopter Program: Special onboarding for first 100 businesses"
+        },
+        "technical": {
+          "title": "Technical Scaling",
+          "item1": "Infrastructure Enhancement: Preparing systems for increased load and users",
+          "item2": "API Performance Optimization: Ensuring smooth operation with multiple platform integrations",
+          "item3": "Security Framework Upgrade: Advanced protection for expanded data processing",
+          "item4": "Database Scaling: Optimizing for multi-business support"
+        },
+        "marketing": {
+          "title": "Marketing Initiatives",
+          "item1": "Brand Positioning: Establishing Flexi Business Hub as the go-to solution for small businesses",
+          "item2": "Content Strategy: Educational content about business financial management",
+          "item3": "Community Building: Creating forums and events for business owners",
+          "item4": "Digital Marketing: Targeted campaigns to reach potential business users"
+        }
+      },
+      "targets": {
+        "title": "Business Growth Targets",
+        "businesses": "Test Businesses",
+        "integrations": "Integrations",
+        "team": "Team Members"
+      },
+      "nextPhase": {
+        "title": "Looking Ahead to Phase 3: Revenue Generation",
+        "description": "Upon completion of Phase 2, we'll transition into Phase 3 where we'll launch our advertising platform, create revenue streams from store connections, and expand our development and marketing teams to support up to 500 businesses."
+      }
+    },
+   
   "shop": {
     "title": "Installation Air condioner for Large System \n Factory, Office, Building , Hotel, Resort, Restaurant \n Tel : 065-4982496",
     "tap": {

@@ -1274,6 +1274,19 @@ export default function Landing() {
                         </CustomText>
                       </View>
                       <CustomText
+                          weight="bold"
+                          onPress={() => {router.push("/phase1")}}
+                          style={{ 
+                            fontSize: getResponsiveStyles().subtitleFontSize, 
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb() ? getResponsiveStyles().padding * 0.5 : 0,
+                            width: isMobileWeb() ? "100%" : "auto"
+                          }}
+                        >
+                          {t("roadmap.phase1.title") ||
+                            "Phase 1: Foundation"}
+                        </CustomText>
+                      <CustomText
                         style={{
                           color: textSecondaryColor,
                           lineHeight: getResponsiveStyles().lineHeight * getResponsiveStyles().bodyFontSize,
@@ -1294,7 +1307,7 @@ export default function Landing() {
                         }}
                       >
                         <Ionicons
-                          name="people"
+                          name="flag"
                           size={14}
                           color={textSecondaryColor}
                           style={{ marginRight: 6 }}
@@ -1302,8 +1315,36 @@ export default function Landing() {
                         <CustomText
                           style={{ fontSize: 14, color: textSecondaryColor }}
                         >
-                          100 {t("roadmap.users") || "Users"}
+                          2 {t("roadmap.language") || "Languages"}
                         </CustomText>
+
+
+
+                        {/* 2 themes */}
+                        <Ionicons
+                          name="color-palette"
+                          size={14}
+                          color={textSecondaryColor}
+                          style={{ marginLeft: 16, marginRight: 6 }}
+                        />
+                        <CustomText
+                          style={{ fontSize: 14, color: textSecondaryColor }}
+                        >
+                          2 {t("roadmap.theme") || "Themes"}
+                        </CustomText>
+                        {/* solo full-stack dev */}
+                        <Ionicons
+                          name="person"
+                          size={14}
+                          color={textSecondaryColor}
+                          style={{ marginLeft: 16, marginRight: 6 }}
+                        />
+                        <CustomText
+                          style={{ fontSize: 14, color: textSecondaryColor }}
+                        >
+                          {t("roadmap.soloDev") || "Solo Full-Stack Dev"}
+                        </CustomText>
+                        
                       </View>
                     </View>
                   </View>
@@ -1335,6 +1376,7 @@ export default function Landing() {
                       >
                         <CustomText
                           weight="bold"
+                          onPress={() => {router.push("/phase2")}}
                           style={{ 
                             fontSize: getResponsiveStyles().subtitleFontSize, 
                             color: textPrimaryColor,
@@ -1391,7 +1433,7 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            2 {t("roadmap.business") || "Businesses"}
+                            3 {t("roadmap.business") || "Businesses"}
                           </CustomText>
                         </View>
                         <View
@@ -1406,8 +1448,103 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            500 {t("roadmap.users") || "Users"}
+                            100 {t("roadmap.users") || "Users"}
                           </CustomText>
+                        </View>
+                      </View>
+                      
+                      {/* CFO role and external integrations */}
+                      <View
+                        style={{
+                          marginTop: 12,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Ionicons
+                            name="briefcase"
+                            size={14}
+                            color={textSecondaryColor}
+                            style={{ marginRight: 6 }}
+                          />
+                          <CustomText
+                            style={{ fontSize: 14, color: textSecondaryColor }}
+                          >
+                            {t("roadmap.cfoRole") || "CFO Role & Financial Management"}
+                          </CustomText>
+                        </View>
+                        
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <Ionicons
+                            name="globe"
+                            size={14}
+                            color={textSecondaryColor}
+                            style={{ marginRight: 6 }}
+                          />
+                          <CustomText
+                            style={{ fontSize: 14, color: textSecondaryColor, marginRight: 4 }}
+                          >
+                            {t("roadmap.integrations") || "Integrations:"}
+                          </CustomText>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                              marginTop: 4,
+                            }}
+                          >
+                            <View style={{ 
+                              backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              borderRadius: 4,
+                              marginRight: 4,
+                              marginBottom: 4,
+                            }}>
+                              <CustomText style={{ fontSize: 12, color: textSecondaryColor }}>Facebook</CustomText>
+                            </View>
+                            <View style={{ 
+                              backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              borderRadius: 4,
+                              marginRight: 4,
+                              marginBottom: 4,
+                            }}>
+                              <CustomText style={{ fontSize: 12, color: textSecondaryColor }}>TikTok</CustomText>
+                            </View>
+                            <View style={{ 
+                              backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              borderRadius: 4,
+                              marginRight: 4,
+                              marginBottom: 4,
+                            }}>
+                              <CustomText style={{ fontSize: 12, color: textSecondaryColor }}>Shopee</CustomText>
+                            </View>
+                            <View style={{ 
+                              backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              borderRadius: 4,
+                              marginBottom: 4,
+                            }}>
+                              <CustomText style={{ fontSize: 12, color: textSecondaryColor }}>LINE</CustomText>
+                            </View>
+                          </View>
                         </View>
                       </View>
                     </View>

@@ -299,6 +299,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* phase1 */}
+      <Stack.Screen
+        name="phase1"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("phase1.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* mobileWeb */}
       <Stack.Screen
         name="mobileweb"

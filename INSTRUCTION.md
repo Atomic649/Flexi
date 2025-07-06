@@ -204,7 +204,7 @@ rm -rf dist
 ```bash
 docker compose down --volumes expo-web nginx
 ```
-**Docker Up 
+**Docker Up**
 ```bash
 docker compose up --build  expo-web nginx
 ````
