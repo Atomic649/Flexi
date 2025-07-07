@@ -687,7 +687,7 @@ const Section = ({
           weight="medium"
           className={`text-lg mb-2 ${textColorClass}`}
         >
-          {title}{" "}
+          {title}
         </CustomText>
 
         {subtitle && (

@@ -90,7 +90,7 @@ const monthly = () => {
 
   // Adjust font size and color of Title Table with responsive styling
   const textStyle = {
-    fontSize: responsiveStyles.bodyFontSize,
+    fontSize: responsiveStyles.smallFontSize,
     color: isMobile()
       ? theme === "dark"
         ? "#27272a"
@@ -98,7 +98,7 @@ const monthly = () => {
       : theme === "dark"
       ? "#b4b4b5"
       : "#4b5563",
-    fontWeight: "900" as "900",
+   // fontWeight: "900" as "900",
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };

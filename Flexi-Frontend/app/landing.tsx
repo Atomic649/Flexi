@@ -585,7 +585,7 @@ export default function Landing() {
                         marginBottom: 16,
                       }}
                     >
-                      1.{" "}
+                     {t(t("1. "))}
                     </CustomText>
                     <Image
                       source={images.logo}
@@ -1811,7 +1811,7 @@ export default function Landing() {
                               color: accentColor,
                             }}
                           >
-                            {t("roadmap.growthRate") || "Growing by % monthly"}
+                            {t("roadmap.userCounter") }
                           </CustomText>
                         </View>
                       </View>
@@ -2146,7 +2146,7 @@ export default function Landing() {
                   textAlign: isDesktop ? "left" : "center",
                 }}
               >
-                © {new Date().getFullYear()} Atomic Intergroup Co., Ltd. {t("copyright") || "All rights reserved."}
+                © 2025 Atomic Intergroup Co., Ltd. All rights reserved.
               </CustomText>
 
               <View

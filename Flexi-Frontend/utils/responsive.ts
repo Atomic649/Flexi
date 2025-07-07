@@ -113,7 +113,7 @@ export const getResponsiveStyles = () => {
       titleFontSize: 22,
       subtitleFontSize: 18,
       bodyFontSize: 16, 
-      smallFontSize: 14,
+      smallFontSize: 13,
       lineHeight: 1.5
     }; // Tablet styles
   } else {

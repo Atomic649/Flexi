@@ -1,0 +1,175 @@
+import { Request, Response } from "express";
+import { format, startOfMonth, endOfMonth } from "date-fns";
+import { PrismaClient as PrismaClient1 } from "../generated/client1";
+
+const prisma = new PrismaClient1();
+
+// Get monthly report data
+export const getMonthlyReport = async (req: Request, res: Response) => {
+  try {
+    const { memberId, year, month } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    // Parse year and month from query params
+    const reportYear = parseInt(year as string) || new Date().getFullYear();
+    const reportMonth = parseInt(month as string) || new Date().getMonth() + 1;
+
+    // Create date range for the month
+    const startDate = startOfMonth(new Date(reportYear, reportMonth - 1));
+    const endDate = endOfMonth(new Date(reportYear, reportMonth - 1));
+
+    // Format dates for the query
+    const formattedStartDate = format(startDate, "yyyy-MM-dd");
+    const formattedEndDate = format(endDate, "yyyy-MM-dd");
+
+    // Get all bills for the member within the date range
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId as string,
+        purchaseAt: {
+          gte: new Date(formattedStartDate),
+          lte: new Date(formattedEndDate),
+        },
+      },
+      orderBy: {
+        purchaseAt: "desc",
+      },
+    });
+
+    // Calculate report statistics
+    const totalSales = bills.reduce(
+      (sum, bill) => sum + Number(bill.price) * Number(bill.amount),
+      0
+    );
+
+    const paidBills = bills.filter((bill) => bill.cashStatus);
+    const unpaidBills = bills.filter((bill) => !bill.cashStatus);
+
+    const reportStats = {
+      totalSales,
+      totalOrders: bills.length,
+      paidOrders: paidBills.length,
+      unpaidOrders: unpaidBills.length,
+      averageOrderValue: bills.length > 0 ? totalSales / bills.length : 0,
+      bills,
+    };
+
+    return res.status(200).json(reportStats);
+  } catch (error) {
+    console.error("Error generating monthly report:", error);
+    return res.status(500).json({ error: "Failed to generate monthly report" });
+  }
+};
+
+// Get bills by date range
+export const getBillsByDateRange = async (req: Request, res: Response) => {
+  try {
+    const { memberId, startDate, endDate } = req.query;
+
+    if (!memberId || !startDate || !endDate) {
+      return res.status(400).json({
+        error: "Member ID, start date, and end date are required",
+      });
+    }
+
+    // Get bills within the date range
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId as string,
+        purchaseAt: {
+          gte: new Date(startDate as string),
+          lte: new Date(endDate as string),
+        },
+      },
+      orderBy: {
+        purchaseAt: "desc",
+      },
+    });
+
+    return res.status(200).json(bills);
+  } catch (error) {
+    console.error("Error fetching bills by date range:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch bills by date range" });
+  }
+};
+
+// Search bills by customer name or partial name
+export const searchBillsByCustomer = async (req: Request, res: Response) => {
+  try {
+    const { memberId, customerName } = req.query;
+
+    if (!memberId || !customerName) {
+      return res.status(400).json({
+        error: "Member ID and customer name are required",
+      });
+    }
+
+    // Search by customer name or last name with case-insensitive search
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId as string,
+        OR: [
+          {
+            cName: {
+              contains: customerName as string,
+              mode: "insensitive",
+            },
+          },
+          {
+            cLastName: {
+              contains: customerName as string,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      orderBy: {
+        purchaseAt: "desc",
+      },
+    });
+
+    return res.status(200).json(bills);
+  } catch (error) {
+    console.error("Error searching bills by customer:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to search bills by customer" });
+  }
+};
+
+// Generate PDF invoice
+export const generateInvoicePDF = async (req: Request, res: Response) => {
+  try {
+    const { billId } = req.params;
+
+    if (!billId) {
+      return res.status(400).json({ error: "Bill ID is required" });
+    }
+
+    // Find the bill
+    const bill = await prisma.bill.findUnique({
+      where: {
+        id: parseInt(billId),
+      },
+    });
+
+    if (!bill) {
+      return res.status(404).json({ error: "Bill not found" });
+    }
+
+    // In a real implementation, generate a PDF here
+    // For now, we'll return the bill data
+    return res.status(200).json({
+      message: "PDF generation would happen here",
+      bill,
+    });
+  } catch (error) {
+    console.error("Error generating invoice PDF:", error);
+    return res.status(500).json({ error: "Failed to generate invoice PDF" });
+  }
+};

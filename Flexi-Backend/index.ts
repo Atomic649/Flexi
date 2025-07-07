@@ -78,7 +78,7 @@ import commentRoutes from "./src/routes/commentRoute";
 // Import report Routes
 import reportRoutes from "./src/routes/reportRoute";
 
-// Import pdf Rou
+// Import pdf Routes
 import pdfRoutes from "./src/routes/pdfRoute";
 
 // Import Store Routes
@@ -86,6 +86,9 @@ import storeRoutes from "./src/routes/storeRoute";
 
 // Import B2B Routes
 import b2BRoutes from "./src/routes/B2BRoute";
+
+// Import Print Routes
+import printRoutes from "./src/routes/printRoute";
 
 // --------------USE ROUTES-----------------
 
@@ -137,9 +140,11 @@ app.use("/pdf", pdfRoutes);
 // Store Routes
 app.use("/store", storeRoutes);
 
-
 // B2B Routes
 app.use("/b2b", b2BRoutes);
+
+// Print Routes
+app.use("/print", printRoutes);
 
 
 // start server with out SSL

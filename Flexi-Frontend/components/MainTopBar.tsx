@@ -6,6 +6,7 @@ import { icons, images } from "@/constants";
 import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CallAPIUser from "@/api/auth_api";
+import { Ionicons } from "@expo/vector-icons";
 
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
@@ -88,6 +89,18 @@ const MainTopBar = {
         className="flex-row items-center"
         style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 }}
       >
+        {/* print report */}
+        <TouchableOpacity
+          onPress={() => router.push("/print")}
+          className="mr-5"
+        >
+          <Ionicons
+            name="print"
+            size={22}
+            color={theme === "dark" ? "#ffffff" : "#4e4b47"}
+          />
+        </TouchableOpacity>
+
         {/* if web (Dimension of screen >786) show log in and register button and language setting */}
         <TouchableOpacity
           onPress={() => 

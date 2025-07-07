@@ -23,7 +23,7 @@ import { CustomText } from "../CustomText";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { router } from "expo-router";
-import { isDesktop, isMobileWeb } from "@/utils/responsive";
+import { getResponsiveStyles, isDesktop, isMobileWeb } from "@/utils/responsive";
 import shop from "../../app/(tabs)/shop";
 import icons from "@/constants/icons";
 
@@ -89,8 +89,8 @@ const ByOrder = () => {
 
   // Table header text style
   const headerTextStyle: TextStyle = {
-    fontWeight: "900" as "900", // or any other acceptable value
-    fontSize: 13,
+   // fontWeight: "900" as "900", // or any other acceptable value
+    fontSize:getResponsiveStyles().smallFontSize,
     color: theme === "dark" ? "#b4b4b5" : "#4b5563",
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",

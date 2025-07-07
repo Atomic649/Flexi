@@ -19,6 +19,7 @@ import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
 import { isMobile } from "@/utils/responsive";
 import { useMarketing } from "@/providers/MarketingProvider";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 
 // Function to format numbers for display, handling the large values properly
@@ -85,9 +86,9 @@ const Daily = () => {
   };
   // Adjust front size and color of Title Table
   const textStyle = {
-    fontSize: 13,
+    fontSize: getResponsiveStyles().smallFontSize,
     color: isMobile() ? theme === "dark" ? "#27272a" : "#4b5563": theme === "dark" ? "#b4b4b5" : "#4b5563",
-    fontWeight: "900" as "900", // or any other acceptable value
+    //fontWeight: "900" as "900", // or any other acceptable value
     fontFamily:
       i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
   };
