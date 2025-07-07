@@ -25,20 +25,32 @@ AuthContext.displayName = 'AuthContext'; // Explicitly set displayName
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any | null>(null); // Update the type according to your backend response
   const [loading, setLoading] = useState(true);
+  const [shouldRedirectToLanding, setShouldRedirectToLanding] = useState(false);
+
+  // Effect to handle navigation after component is mounted
+  useEffect(() => {
+    if (shouldRedirectToLanding && !loading) {
+      // Only navigate when we're no longer loading and redirect flag is set
+      router.replace('/landing');
+      setShouldRedirectToLanding(false);
+    }
+  }, [shouldRedirectToLanding, loading]);
 
   useEffect(() => {
     // Check Session when the app starts
     const fetchSession = async () => {
       try {
         const data = await CallAPIUser.getSessionAPI(); 
+        // Make sure session data is properly processed before setting state
         setSession(data.session);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error("Session fetch error:", error);
         await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
         await removeToken(); // Remove the token
         await removeMemberId(); // Remove the memberId        
-        router.navigate('/landing'); // Redirect to login page
+        // Set flag to redirect instead of navigating immediately
+        setShouldRedirectToLanding(true);
       } finally {
         setLoading(false);
       }
@@ -48,7 +60,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen to authentication state changes
     CallAPIUser.onAuthStateChange((newSession) => {
-      setSession(newSession);
+      // Make sure session data is properly validated before setting state
+      if (newSession && typeof newSession === 'object') {
+        setSession(newSession);
+      } else {
+        setSession(null);
+      }
       setLoading(false);
     });
   }, []);
@@ -58,13 +75,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       const data = await CallAPIUser.loginAPI({ email, password });
+      // Validate the session data before setting it
+      if (data && data.session) {
         setSession(data.session);
-      await saveToken(data.token); // Save the token
-      await AsyncStorage.setItem('isLoggedIn', 'true'); // Save login status      
-      await AsyncStorage.setItem("token", "token");
-      return data;
+        await saveToken(data.token); // Save the token
+        await AsyncStorage.setItem('isLoggedIn', 'true'); // Save login status      
+        await AsyncStorage.setItem("token", "token");
+        return data;
+      } else {
+        throw new Error("Invalid login response");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -73,11 +95,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Logout function
   const logout = async () => {
-    setSession(null);
-    await removeToken(); // Remove the token
-    await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
-    
-
+    setLoading(true);
+    try {
+      setSession(null);
+      await removeToken(); // Remove the token
+      await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
+      // Safe navigation after cleanup
+      router.replace('/landing');
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

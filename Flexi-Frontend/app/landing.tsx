@@ -120,6 +120,11 @@ export default function Landing() {
           setRegisteredUsers(JSON.parse(cachedData));
         }
 
+        // Add Safari-specific cache bypass
+        const headers = {
+          "Cache-Control": "no-cache", // Force fresh data
+        };
+
         const response = await CallAPIUser.getRegisteredUsersAPI();
         if (response.status === 200) {
           setRegisteredUsers(response);
@@ -331,10 +336,9 @@ export default function Landing() {
                 <Image
                   source={images.logo}
                   style={{
-                    width:  isMobileWeb() ? Dimensions.get("window").width * 0.25 : 180,
-                    height: isMobileWeb()  ? Dimensions.get("window").width * 0.25 :180,
+                    width: isMobileWeb() ? Dimensions.get("window").width * 0.25 : 180,
+                    height: isMobileWeb() ? Dimensions.get("window").width * 0.25 : 180,
                   }}
-                  
                   resizeMode="contain"
                 />
 
@@ -366,7 +370,7 @@ export default function Landing() {
                     maxWidth: 600,
                   }}
                 >
-                  {t("landing.subtitle") }
+                  {t("landing.subtitle")}
                 </CustomText>
 
                 {/* Call to action buttons */}
@@ -1315,7 +1319,7 @@ export default function Landing() {
                         <CustomText
                           style={{ fontSize: 14, color: textSecondaryColor }}
                         >
-                          2 {t("roadmap.language") || "Languages"}
+                          {`2 ${t("roadmap.language") || "Languages"}`}
                         </CustomText>
 
 
@@ -1330,7 +1334,7 @@ export default function Landing() {
                         <CustomText
                           style={{ fontSize: 14, color: textSecondaryColor }}
                         >
-                          2 {t("roadmap.theme") || "Themes"}
+                          {`2 ${t("roadmap.theme") || "Themes"}`}
                         </CustomText>
                         {/* solo full-stack dev */}
                         <Ionicons
@@ -1433,7 +1437,7 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            3 {t("roadmap.business") || "Businesses"}
+                            {`3 ${t("roadmap.business") || "Businesses"}`}
                           </CustomText>
                         </View>
                         <View
@@ -1448,7 +1452,7 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            100 {t("roadmap.users") || "Users"}
+                            {`100 ${t("roadmap.users") || "Users"}`}
                           </CustomText>
                         </View>
                       </View>
@@ -1637,7 +1641,7 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            5 {t("roadmap.store") || "Stores"}
+                            {`5 ${t("roadmap.store") || "Stores"}`}
                           </CustomText>
                         </View>
                         <View
@@ -1652,7 +1656,7 @@ export default function Landing() {
                           <CustomText
                             style={{ fontSize: 14, color: textSecondaryColor }}
                           >
-                            1,000 {t("roadmap.users") || "Users"}
+                            {`1,000 ${t("roadmap.users") || "Users"}`}
                           </CustomText>
                         </View>
                       </View>
@@ -2142,8 +2146,7 @@ export default function Landing() {
                   textAlign: isDesktop ? "left" : "center",
                 }}
               >
-                © {new Date().getFullYear()}{" "}
-                {t("copyright") || "All rights reserved."}
+                © {new Date().getFullYear()} Atomic Intergroup Co., Ltd. {t("copyright") || "All rights reserved."}
               </CustomText>
 
               <View

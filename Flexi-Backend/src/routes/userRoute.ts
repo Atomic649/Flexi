@@ -6,7 +6,7 @@ import authenticateToken from '../middleware/authMiddleware';
 const router = express.Router(); 
 
 // Get number of registered users
-router.get("/users", authenticateToken, getNumberOfUsers);
+router.get("/users", getNumberOfUsers);
 
 // Get User by ID
 router.get("/profile/:id", authenticateToken, getUserByID);

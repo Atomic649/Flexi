@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text as RNText, TextProps } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -18,6 +19,29 @@ export function CustomText({ children, weight = 'regular', style, ...props }: Cu
     return `${prefix}-${capitalizedWeight}`;
   };
 
+  // Safe rendering of children - handle objects properly
+  const renderChildren = () => {
+    if (children === null || children === undefined) {
+      return '';
+    }
+    
+    if (typeof children === 'object' && children !== null && !React.isValidElement(children)) {
+      // If it's an object with message property, use that
+      if ('message' in children && typeof children.message === 'string') {
+        return children.message;
+      }
+      // Otherwise try to stringify it
+      try {
+        return JSON.stringify(children);
+      } catch (e) {
+        console.warn('Could not stringify object in CustomText:', e);
+        return '[Object]';
+      }
+    }
+    
+    return children;
+  };
+
   return (
     <RNText
       style={[
@@ -29,7 +53,7 @@ export function CustomText({ children, weight = 'regular', style, ...props }: Cu
       ]}
       {...props}
     >
-      {children}
+      {renderChildren()}
     </RNText>
   );
-} 
+}
