@@ -33,6 +33,7 @@
     }
   },
   "print": {
+    "title": "Print & Share Center",
     "error": "Error",
     "fetchError": "Failed to fetch data",
     "searchError": "An error occurred during search",

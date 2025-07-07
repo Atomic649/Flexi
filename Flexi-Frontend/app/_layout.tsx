@@ -317,6 +317,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* print */}
+      <Stack.Screen
+        name="print"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("print.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* mobileWeb */}
       <Stack.Screen
         name="mobileweb"

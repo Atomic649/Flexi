@@ -1213,7 +1213,7 @@ export default function Print() {
                 {invoice.id}
               </CustomText>
             </View>
-            <View className="flex-row">
+            <View className="flex-row gap-1">
               <CustomText className="mb-1">{invoice.cName}</CustomText>
               <CustomText className="mb-1">{invoice.cLastName}</CustomText>
             </View>
@@ -1231,7 +1231,7 @@ export default function Print() {
               }`}
             >
               <CustomText className="text-white text-xs"
-              style={{ color: "white", fontSize: 12 }}>
+              style={{ color: "white", fontSize: 11 }}>
                 {invoice.cashStatus
                   ? t("bill.status.paid")
                   : t("bill.status.unpaid")}
@@ -1381,26 +1381,30 @@ export default function Print() {
                   </View>
                 </View>
 
-                <View
-                  className={`p-4 rounded-lg ${
-                    theme === "dark" ? "bg-zinc-800" : "bg-zinc-200"
-                  } mb-6`}
-                >
-                  <View className="flex-row justify-between mb-2">
-                    <CustomText weight="bold">
+                <View className="mb-2">
+                  <View className="flex-row justify-between items-center pb-2 mb-2 border-b border-zinc-300">
+                    <CustomText weight="bold" style={{ width: '38%' }}>
                       {t("print.productName")}
                     </CustomText>
-                    <CustomText weight="bold">{t("print.quantity")}</CustomText>
-                    <CustomText weight="bold">{t("print.price")}</CustomText>
-                    <CustomText weight="bold">{t("print.total")}</CustomText>
+                    <CustomText weight="bold" style={{ width: '22%', textAlign: 'center' }}>
+                      {t("print.quantity")}
+                    </CustomText>
+                    <CustomText weight="bold" style={{ width: '20%', textAlign: 'right' }}>
+                      {t("print.price")}
+                    </CustomText>
+                    <CustomText weight="bold" style={{ width: '20%', textAlign: 'right' }}>
+                      {t("print.total")}
+                    </CustomText>
                   </View>
-                  <View className="flex-row justify-between">
-                    <CustomText>{selectedInvoice.product}</CustomText>
-                    <CustomText>{selectedInvoice.amount}</CustomText>
-                    <CustomText>
+                  
+                  {/* Product item row */}
+                  <View className="flex-row justify-between items-center py-2">
+                    <CustomText style={{ width: '38%' }}>{selectedInvoice.product}</CustomText>
+                    <CustomText style={{ width: '22%', textAlign: 'center' }}>{selectedInvoice.amount}</CustomText>
+                    <CustomText style={{ width: '20%', textAlign: 'right' }}>
                       {formatCurrency(selectedInvoice.price)}
                     </CustomText>
-                    <CustomText>
+                    <CustomText style={{ width: '20%', textAlign: 'right' }}>
                       {formatCurrency(
                         selectedInvoice.price * selectedInvoice.amount
                       )}
@@ -1408,8 +1412,8 @@ export default function Print() {
                   </View>
                 </View>
 
-                <View className="flex-row justify-end">
-                  <View className="w-1/2">
+                <View className="flex-row justify-end mt-2">
+                  <View className="w-2/3">
                     <View className="flex-row justify-between mb-2">
                       <CustomText weight="bold">
                         {t("print.subtotal")}
