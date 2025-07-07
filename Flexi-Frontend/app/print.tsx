@@ -79,7 +79,7 @@ export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { businessName } = useBusiness();
-  const [activeTab, setActiveTab] = useState(TAB_INDICES.MONTHLY_REPORT);
+  const [activeTab, setActiveTab] = useState(TAB_INDICES.INDIVIDUAL_INVOICE);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [businessId, setBusinessId] = useState<number | null>(null);
   const [businessDetails, setBusinessDetails] = useState<any>(null);
@@ -1579,22 +1579,23 @@ export default function Print() {
             <TouchableOpacity
               className={`p-3 px-6 rounded-t-lg ${
                 activeTab === TAB_INDICES.MONTHLY_REPORT
-                  ? theme === "dark"
-                    ? "bg-zinc-800 border-b-2 border-teal-400"
-                    : "bg-white border-b-2 border-teal-400"
-                  : theme === "dark"
-                  ? "bg-zinc-700"
-                  : "bg-gray-200"
+                  ? theme === 'dark'
+                    ? 'bg-zinc-800 border-b-2 border-teal-400'
+                    : 'bg-white border-b-2 border-teal-400'
+                  : theme === 'dark'
+                    ? 'bg-zinc-700'
+                    : 'bg-gray-200'
               }`}
               onPress={() => {
                 setActiveTab(TAB_INDICES.MONTHLY_REPORT);
-                fetchMonthlyReportData(selectedMonth);
+                // Automatically fetch the current month's data when switching to Monthly Report tab
+                const currentDate = new Date();
+                setSelectedMonth(currentDate);
+                fetchMonthlyReportData(currentDate);
               }}
             >
-              <CustomText
-                weight={
-                  activeTab === TAB_INDICES.MONTHLY_REPORT ? "bold" : "regular"
-                }
+              <CustomText 
+                weight={activeTab === TAB_INDICES.MONTHLY_REPORT ? "bold" : "regular"}
               >
                 {t("print.monthlyReport")}
               </CustomText>
@@ -1603,10 +1604,10 @@ export default function Print() {
             <TouchableOpacity
               className={`p-3 px-6 rounded-t-lg ${
                 activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                  ? theme === "dark"
+                  ? theme === 'dark'
                     ? "bg-zinc-800 border-b-2 border-teal-400"
                     : "bg-white border-b-2 border-teal-400"
-                  : theme === "dark"
+                  : theme === 'dark'
                   ? "bg-zinc-700"
                   : "bg-gray-200"
               }`}
