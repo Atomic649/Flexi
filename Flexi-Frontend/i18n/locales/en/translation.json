@@ -64,9 +64,9 @@
     "printInvoice": "Print Invoice",
     "billedTo": "Billed To",
     "invoiceDate": "Invoice Date",
-    "paymentMethod": "Payment Method",
+    "paymentMethod": "Payment",
     "status": "Status",
-    "productName": "Product Name",
+    "productName": "Product",
     "quantity": "Quantity",
     "price": "Price",
     "total": "Total",
@@ -102,7 +102,13 @@
     "customer": "Customer",
     "paid": "Paid",
     "unpaid": "Unpaid",
-    "noInvoicesFound": "No invoices found for this period"
+    "noInvoicesFound": "No invoices found for this period",
+    "pdfPreview": "PDF Preview",
+    "pdfReady": "PDF Ready!",
+    "sharePdf": "Share PDF",
+    "downloadPdf": "Download PDF",
+    "success": "Success",
+    "enterBillId": "Enter Bill ID"
   },
   "auth": {
     "login": {
