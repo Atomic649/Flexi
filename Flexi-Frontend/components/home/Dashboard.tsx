@@ -1,19 +1,16 @@
 import { useState, useEffect } from "react";
 import {
   ScrollView,
-  Dimensions,
   SafeAreaView,
   View,
   TouchableOpacity,
   Modal,
   Platform,
-  GestureResponderEvent,
   ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
-import { LinearGradient } from "expo-linear-gradient";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
@@ -22,8 +19,6 @@ import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIStore from "@/api/store_api";
 import { format } from "date-fns";
-import Dropdown2 from "@/components/Dropdown2";
-import Expense from "../../app/(tabs)/expense";
 import Dropdown3 from "../Dropdown3";
 
 // Format currency
@@ -160,8 +155,8 @@ export default function Dashboard() {
   }));
 
   const storeOptions = stores.map((store) => ({
-    label: store.name,
-    value: store.name,
+    label: store.accName || "No Name",
+    value: store.accName || "No Name", // Using accName as both the label and value
   }));
 
   return (
