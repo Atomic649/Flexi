@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
-import TotalSale from "@/components/home/TotalSale";
-import FacebookCard from "@/components/home/FacebookCard";
-import TiktokCard from "@/components/home/TiktokCard";
-import ShopeeCard from "@/components/home/ShopeeCard";
-import LineCard from "@/components/home/LineCard";
+import TotalSale from "@/components/home/elements/TotalSale";
+import FacebookCard from "@/components/home/elements/FacebookCard";
+import TiktokCard from "@/components/home/elements/TiktokCard";
+import ShopeeCard from "@/components/home/elements/ShopeeCard";
+import LineCard from "@/components/home/elements/LineCard";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
