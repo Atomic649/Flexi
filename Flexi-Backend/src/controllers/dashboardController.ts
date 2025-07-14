@@ -39,9 +39,21 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         break;
       case 'custom':
         if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
           dateFilter = {
-            gte: new Date(startDate as string),
-            lte: new Date(endDate as string)
+            gte: start,
+            lte: end
           };
         }
         break;
@@ -148,9 +160,21 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         break;
       case 'custom':
         if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
           dateFilter = {
-            gte: new Date(startDate as string),
-            lte: new Date(endDate as string)
+            gte: start,
+            lte: end
           };
         }
         break;
@@ -284,9 +308,21 @@ export const getTopProducts = async (req: Request, res: Response) => {
         break;
       case 'custom':
         if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
           dateFilter = {
-            gte: new Date(startDate as string),
-            lte: new Date(endDate as string)
+            gte: start,
+            lte: end
           };
         }
         break;
@@ -374,9 +410,21 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         break;
       case 'custom':
         if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
           dateFilter = {
-            gte: new Date(startDate as string),
-            lte: new Date(endDate as string)
+            gte: start,
+            lte: end
           };
         }
         break;
@@ -463,9 +511,21 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
         break;
       case 'custom':
         if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
           dateFilter = {
-            gte: new Date(startDate as string),
-            lte: new Date(endDate as string)
+            gte: start,
+            lte: end
           };
         }
         break;

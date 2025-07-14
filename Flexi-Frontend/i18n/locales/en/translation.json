@@ -587,7 +587,7 @@
     "roi": "ROI",
     "avr": "AVR",
     "thisMonth": "This Month",
-    "thisDay": "This Day",
+    "today": "Today",
     "salesChart":{
       "title": "Sales Chart",
       "noData": "No sales data available for this period"

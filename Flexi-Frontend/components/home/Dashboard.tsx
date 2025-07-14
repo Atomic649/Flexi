@@ -144,7 +144,6 @@ export default function Dashboard() {
         console.log("Fetching dashboard data for member ID:", memberId);
       if (!memberId) return;
 
-
       // Build filters for API calls
       const filters: any = {
         memberId,
@@ -155,6 +154,13 @@ export default function Dashboard() {
       if (selectedPeriod === 'custom' && selectedDates.length > 0) {
         filters.startDate = selectedDates[0];
         filters.endDate = selectedDates[selectedDates.length - 1];
+        // Ensure we set the period to 'custom' when dates are selected
+        filters.period = 'custom';
+        
+        // If only one date selected, use it as both start and end date
+        if (selectedDates.length === 1) {
+          filters.endDate = selectedDates[0];
+        }
       }
 
       // Add product filter if selected
@@ -170,6 +176,8 @@ export default function Dashboard() {
         }
       }
 
+      console.log("📊 Dashboard API Filters:", filters);
+
       // Fetch all dashboard data in parallel
       const [metricsData, chartData, productsData] = await Promise.all([
         CallDashboardAPI.getDashboardMetricsAPI(filters),
@@ -179,14 +187,14 @@ export default function Dashboard() {
 
       // Update state with fetched data
       setMetrics({
-        income: metricsData.income,
-        expense: metricsData.expense,
-        profitloss: metricsData.profitloss,
-        orders: metricsData.orders,
+        income: metricsData.income || 0,
+        expense: metricsData.expense || 0,
+        profitloss: metricsData.profitloss || 0,
+        orders: metricsData.orders || 0,
       });
       
-      setSalesChartData(chartData);
-      setTopProducts(productsData);
+      setSalesChartData(chartData || []);
+      setTopProducts(productsData || []);
 
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -196,7 +204,7 @@ export default function Dashboard() {
 
   const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
-    setCalendarVisible(false);
+//setCalendarVisible(false); // Optionally close calendar after selection
     if (dates.length > 0) {
       setSelectedPeriod('custom');
       console.log("Selected dates:", dates);
@@ -297,9 +305,9 @@ export default function Dashboard() {
               onPress={() => handlePeriodChange('today')}
               style={{
                 backgroundColor: selectedPeriod === 'today' 
-                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  ? (theme === "dark" ? "#474747" : "#ccccc8")
                   : (theme === "dark" ? "#27272a" : "#eeedecb3"),
-                paddingVertical: 8,
+                paddingVertical: 9,
                 paddingHorizontal: 16,
                 borderRadius: 12,
                 flex: 3, // 30%
@@ -314,7 +322,7 @@ export default function Dashboard() {
                   fontSize: 12
                 }}
               >
-                {t("dashboard.thisDay")}
+                {t("dashboard.today")}
               </CustomText>
             </TouchableOpacity>
             
@@ -322,9 +330,9 @@ export default function Dashboard() {
               onPress={() => handlePeriodChange('thisMonth')}
               style={{
                 backgroundColor: selectedPeriod === 'thisMonth' 
-                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  ? (theme === "dark" ? "#474747" : "#ccccc8")
                   : (theme === "dark" ? "#27272a" : "#eeedecb3"),
-                paddingVertical: 8,
+                paddingVertical: 9,
                 paddingHorizontal: 16,
                 borderRadius: 12,
                 flex: 3, // 30% 
@@ -351,7 +359,7 @@ export default function Dashboard() {
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: selectedPeriod === 'custom' 
-                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  ? (theme === "dark" ? "#474747" : "#ccccc8")
                   : (theme === "dark" ? "#27272a" : "#eeedecb3"),
                 paddingVertical: 8,
                 paddingHorizontal: 16,
@@ -359,7 +367,10 @@ export default function Dashboard() {
                 flex: 4, // 40%
               }}
             >
-              <CustomText className="mr-2">{formatDateRange()}</CustomText>
+              <CustomText className="mr-2"
+              style={{
+                fontSize: 12,
+              }}>{formatDateRange()}</CustomText>
               <Ionicons
                 name="calendar"
                 size={20}
