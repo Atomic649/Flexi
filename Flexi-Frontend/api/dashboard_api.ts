@@ -1,0 +1,163 @@
+import axios from "axios";
+import { getAxiosWithAuth } from "@/utils/axiosInstance";
+
+interface DashboardMetrics {
+  income: number;
+  expense: number;
+  profitloss: number;
+  orders: number;
+  conversion?: number;
+}
+
+interface SalesChartData {
+  date: string;
+  income: number;
+  expense: number;
+  profit: number;
+}
+
+interface TopProduct {
+  name: string;
+  sales: number;
+  revenue: number;
+  orders: number;
+}
+
+interface PlatformRevenue {
+  platform: string;
+  revenue: number;
+  sales: number;
+  orders: number;
+}
+
+interface ExpenseBreakdown {
+  category: string;
+  amount: number;
+  type: 'expense' | 'ads';
+}
+
+interface DashboardFilters {
+  memberId: string;
+  startDate?: string;
+  endDate?: string;
+  productName?: string;
+  storeId?: number;
+  period?: 'today' | 'thisMonth' | 'lastMonth' | 'last30Days' | 'custom';
+}
+
+class CallAPIDashboard {
+  // Build query string from filters
+  private buildQueryString(filters: Partial<DashboardFilters>): string {
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, String(value));
+      }
+    });
+    
+    return params.toString();
+  }
+
+  // Get Dashboard Metrics
+  async getDashboardMetricsAPI(filters: DashboardFilters): Promise<DashboardMetrics> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/metrics?${queryString}`);
+
+      console.log("🚀Dashboard Metrics API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Dashboard Metrics API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get Sales Chart Data
+  async getSalesChartDataAPI(filters: Partial<DashboardFilters>): Promise<SalesChartData[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/sales-chart?${queryString}`);
+
+      console.log("🚀Sales Chart Data API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Sales Chart Data API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get Top Products
+  async getTopProductsAPI(filters: Partial<DashboardFilters> & { limit?: number }): Promise<TopProduct[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/top-products?${queryString}`);
+
+      console.log("🚀Top Products API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Top Products API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get Revenue by Platform
+  async getRevenueByPlatformAPI(filters: Partial<DashboardFilters>): Promise<PlatformRevenue[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/revenue-by-platform?${queryString}`);
+
+      console.log("🚀Revenue by Platform API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Revenue by Platform API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get Expense Breakdown
+  async getExpenseBreakdownAPI(filters: Partial<DashboardFilters>): Promise<ExpenseBreakdown[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/expense-breakdown?${queryString}`);
+
+      console.log("🚀Expense Breakdown API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Expense Breakdown API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+}
+
+export default new CallAPIDashboard();

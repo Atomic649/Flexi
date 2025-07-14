@@ -18,6 +18,7 @@ import { isDesktop, isMobile } from "@/utils/responsive";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIStore from "@/api/store_api";
+import CallDashboardAPI from "@/api/dashboard_api";
 import { format } from "date-fns";
 import Dropdown3 from "../Dropdown3";
 
@@ -91,48 +92,120 @@ export default function Dashboard() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Sample data for metrics (replace with actual API data)
-  const metrics = {
-    income: formatCurrency(100000),
-    expense: formatCurrency(50000),
-    profitloss: formatCurrency(50000),
-    orders: 120,
-    conversion: 75, // Example conversion rate
-  };
+  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'thisMonth' | 'custom'>('thisMonth');
+  
+  // Dashboard data state
+  const [metrics, setMetrics] = useState({
+    income: 0,
+    expense: 0,
+    profitloss: 0,
+    orders: 0,
+  });
+  const [salesChartData, setSalesChartData] = useState<any[]>([]);
+  const [topProducts, setTopProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchData();
+    fetchInitialData();
   }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    // Fetch dashboard data when filters change
+    fetchDashboardData();
+  }, [selectedDates, selectedProduct, selectedStore, selectedPeriod]);
+
+  const fetchInitialData = async () => {
     setIsLoading(true);
     try {
       const memberId = await getMemberId();
+      console.log("Member ID:", memberId);
       if (memberId) {
-        // Fetch products
-        const productResponse = await CallAPIProduct.getProductChoiceAPI(
-          memberId
-        );
+        // Fetch products and stores for filters
+        const [productResponse, storeResponse] = await Promise.all([
+          CallAPIProduct.getProductChoiceAPI(memberId),
+          CallAPIStore.getStoresAPI(memberId)
+        ]);
+        
         setProducts(productResponse || []);
-
-        // Fetch stores
-        const storeResponse = await CallAPIStore.getStoresAPI(memberId);
         setStores(storeResponse || []);
+        
+        // Fetch initial dashboard data
+        await fetchDashboardData();
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching initial data:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const fetchDashboardData = async () => {
+    try {
+      const memberId = await getMemberId();
+        console.log("Fetching dashboard data for member ID:", memberId);
+      if (!memberId) return;
 
 
+      // Build filters for API calls
+      const filters: any = {
+        memberId,
+        period: selectedPeriod
+      };
+
+      // Add date range if custom period and dates are selected
+      if (selectedPeriod === 'custom' && selectedDates.length > 0) {
+        filters.startDate = selectedDates[0];
+        filters.endDate = selectedDates[selectedDates.length - 1];
+      }
+
+      // Add product filter if selected
+      if (selectedProduct) {
+        filters.productName = selectedProduct;
+      }
+
+      // Add store filter if selected  
+      if (selectedStore) {
+        const store = stores.find(s => s.accName === selectedStore);
+        if (store) {
+          filters.storeId = store.id;
+        }
+      }
+
+      // Fetch all dashboard data in parallel
+      const [metricsData, chartData, productsData] = await Promise.all([
+        CallDashboardAPI.getDashboardMetricsAPI(filters),
+        CallDashboardAPI.getSalesChartDataAPI(filters),
+        CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 })
+      ]);
+
+      // Update state with fetched data
+      setMetrics({
+        income: metricsData.income,
+        expense: metricsData.expense,
+        profitloss: metricsData.profitloss,
+        orders: metricsData.orders,
+      });
+      
+      setSalesChartData(chartData);
+      setTopProducts(productsData);
+
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      // Keep existing data on error
+    }
+  };
 
   const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
     setCalendarVisible(false);
+    if (dates.length > 0) {
+      setSelectedPeriod('custom');
+      console.log("Selected dates:", dates);
+    }
+  };
+
+  const handlePeriodChange = (period: 'today' | 'thisMonth') => {
+    setSelectedPeriod(period);
+    setSelectedDates([]); // Clear custom dates when selecting predefined period
   };
 
   const formatDateRange = () => {
@@ -156,7 +229,7 @@ export default function Dashboard() {
 
   const storeOptions = stores.map((store) => ({
     label: store.accName || "No Name",
-    value: store.accName || "No Name", // Using accName as both the label and value
+    value: store.accName || "No Name",
   }));
 
   return (
@@ -221,8 +294,11 @@ export default function Dashboard() {
           >
             {/* Time period buttons and date selection - 30/30/40 split */}
             <TouchableOpacity
+              onPress={() => handlePeriodChange('today')}
               style={{
-                backgroundColor: theme === "dark" ? "#3f3f46" : "#f4f4f5",
+                backgroundColor: selectedPeriod === 'today' 
+                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 borderRadius: 12,
@@ -233,17 +309,21 @@ export default function Dashboard() {
             >
               <CustomText
                 weight="bold"
-                style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: 12
-                 }}
+                style={{ 
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                  fontSize: 12
+                }}
               >
                 {t("dashboard.thisDay")}
               </CustomText>
             </TouchableOpacity>
             
             <TouchableOpacity
+              onPress={() => handlePeriodChange('thisMonth')}
               style={{
-                backgroundColor: theme === "dark" ? "#27272a" : "#eeedecb3",
+                backgroundColor: selectedPeriod === 'thisMonth' 
+                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 borderRadius: 12,
@@ -254,8 +334,9 @@ export default function Dashboard() {
             >
               <CustomText
                 weight="bold"
-                style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: 12
+                style={{ 
+                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                  fontSize: 12
                 }}
               >
                 {t("dashboard.thisMonth")}
@@ -269,7 +350,9 @@ export default function Dashboard() {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: theme === "dark" ? "#27272a" : "#eeedecb3",
+                backgroundColor: selectedPeriod === 'custom' 
+                  ? (theme === "dark" ? "#3f3f46" : "#f4f4f5")
+                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 borderRadius: 12,
@@ -285,7 +368,7 @@ export default function Dashboard() {
             </TouchableOpacity>
           </View>
 
-          {/* Filters Section - Using Dropdown2 */}
+          {/* Filters Section - Using Dropdown3 */}
           <View
             style={{
               flexDirection: "row",
@@ -303,11 +386,10 @@ export default function Dashboard() {
               }}
             >
               <Dropdown3
-                //title={t("dashboard.filter.product")}
-                options={productOptions}
+                options={[{ label: "All Products", value: "" }, ...productOptions]}
                 placeholder={t("dashboard.filter.chooseProduct")}
-                selectedValue={selectedProduct}
-                onValueChange={(value: string) => setSelectedProduct(value)}
+                selectedValue={selectedProduct || ""}
+                onValueChange={(value: string) => setSelectedProduct(value || null)}
                 bgColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
                 bgChoiceColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
                 textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
@@ -322,11 +404,10 @@ export default function Dashboard() {
               }}
             >
               <Dropdown3
-                //title={t("dashboard.filter.store")}
-                options={storeOptions}
+                options={[{ label: "All Stores", value: "" }, ...storeOptions]}
                 placeholder={t("dashboard.filter.chooseStore")}
-                selectedValue={selectedStore}
-                onValueChange={(value: string) => setSelectedStore(value)}
+                selectedValue={selectedStore || ""}
+                onValueChange={(value: string) => setSelectedStore(value || null)}
                 bgColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
                 bgChoiceColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
                 textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
@@ -360,13 +441,13 @@ export default function Dashboard() {
                 >
                   <MetricCard
                     title={t("dashboard.metrics.income")}
-                    value={metrics.income}
+                    value={formatCurrency(metrics.income)}
                     icon="stats-chart"
                     color={theme === "dark" ? "#02c796" : "#02c796"}
                   />
                   <MetricCard
                     title={t("dashboard.metrics.expense")}
-                    value={metrics.expense}
+                    value={formatCurrency(metrics.expense)}
                     icon="cash-outline"
                     color={theme === "dark" ? "#ffb30e" : "#ffb30e"}
                   />
@@ -374,9 +455,12 @@ export default function Dashboard() {
                 <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
                   <MetricCard
                     title={t("dashboard.metrics.profitloss")}
-                    value={metrics.profitloss}
+                    value={formatCurrency(metrics.profitloss)}
                     icon="trending-up"
-                    color={theme === "dark" ? "#fb7185" : "#f43f5e"}
+                    color={metrics.profitloss >= 0 
+                      ? (theme === "dark" ? "#02c796" : "#02c796")
+                      : (theme === "dark" ? "#fb7185" : "#f43f5e")
+                    }
                   />
                   <MetricCard
                     title={t("dashboard.metrics.orders")}
@@ -394,11 +478,6 @@ export default function Dashboard() {
                   borderRadius: 16,
                   padding: 20,
                   marginBottom: 24,
-                  // shadowColor: "#000",
-                  // shadowOffset: { width: 0, height: 2 },
-                  // shadowOpacity: 0.1,
-                  // shadowRadius: 4,
-                  // elevation: 3,
                 }}
               >
                 <View
@@ -429,14 +508,37 @@ export default function Dashboard() {
                     padding: 16,
                   }}
                 >
-                  <Ionicons
-                    name="bar-chart-outline"
-                    size={48}
-                    color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
-                  />
-                  <CustomText className="mt-4 opacity-50">
-                    {t("dashboard.salesChart.noData")}
-                  </CustomText>
+                  {salesChartData.length > 0 ? (
+                    <View style={{ width: "100%", alignItems: "center" }}>
+                      <CustomText className="mb-4 opacity-70">
+                        {t("dashboard.salesChart.dataAvailable", `${salesChartData.length} data points`)}
+                      </CustomText>
+                      {/* Here you could add a chart library like react-native-chart-kit */}
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+                        {salesChartData.slice(0, 3).map((item, index) => (
+                          <View key={index} style={{ margin: 8, alignItems: "center" }}>
+                            <CustomText style={{ fontSize: 12, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                              {format(new Date(item.date), "dd/MM")}
+                            </CustomText>
+                            <CustomText style={{ fontSize: 14, fontWeight: "bold", color: "#02c796" }}>
+                              {formatCurrency(item.income)}
+                            </CustomText>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  ) : (
+                    <>
+                      <Ionicons
+                        name="bar-chart-outline"
+                        size={48}
+                        color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
+                      />
+                      <CustomText className="mt-4 opacity-50">
+                        {t("dashboard.salesChart.noData")}
+                      </CustomText>
+                    </>
+                  )}
                 </View>
               </View>
 
@@ -447,11 +549,6 @@ export default function Dashboard() {
                   borderRadius: 16,
                   padding: 20,
                   marginBottom: 24,
-                  // shadowColor: "#000",
-                  // shadowOffset: { width: 0, height: 2 },
-                  // shadowOpacity: 0.1,
-                  // shadowRadius: 4,
-                  // elevation: 3,
                 }}
               >
                 <View
@@ -480,27 +577,57 @@ export default function Dashboard() {
                     }}
                   >
                     <CustomText weight="bold" className="text-sm">
-                      0
+                      {topProducts.length}
                     </CustomText>
                   </View>
                 </View>
 
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingVertical: 40,
-                  }}
-                >
-                  <Ionicons
-                    name="cube-outline"
-                    size={48}
-                    color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
-                  />
-                  <CustomText className="mt-4 opacity-50">
-                    {t("dashboard.topProducts.noData")}
-                  </CustomText>
-                </View>
+                {topProducts.length > 0 ? (
+                  <View>
+                    {topProducts.map((product, index) => (
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingVertical: 12,
+                          borderBottomWidth: index < topProducts.length - 1 ? 1 : 0,
+                          borderBottomColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
+                        }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <CustomText weight="bold" style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                            {product.name}
+                          </CustomText>
+                          <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                            {product.orders} orders • {product.sales} units
+                          </CustomText>
+                        </View>
+                        <CustomText weight="bold" style={{ color: "#02c796" }}>
+                          {formatCurrency(product.revenue)}
+                        </CustomText>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingVertical: 40,
+                    }}
+                  >
+                    <Ionicons
+                      name="cube-outline"
+                      size={48}
+                      color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
+                    />
+                    <CustomText className="mt-4 opacity-50">
+                      {t("dashboard.topProducts.noData")}
+                    </CustomText>
+                  </View>
+                )}
               </View>
             </>
           )}

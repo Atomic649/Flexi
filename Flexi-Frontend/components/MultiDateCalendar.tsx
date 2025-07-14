@@ -108,7 +108,7 @@ const MultiDateCalendar: React.FC<MultiDateCalendarProps> = ({
         onDayPress={handleDayPress}
         markedDates={selectedDates}
         theme={calendarTheme}
-        enableMultiSelect={false} // Disable multi-date selection
+        // Multi-date selection is handled manually
         maxDate={new Date().toISOString().split("T")[0]} // Disable future dates
       />
     </View>
