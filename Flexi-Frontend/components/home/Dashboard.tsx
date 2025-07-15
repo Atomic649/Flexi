@@ -96,9 +96,9 @@ export default function Dashboard() {
   
   // Dashboard data state
   const [metrics, setMetrics] = useState({
+    profitloss: 0,
     income: 0,
     expense: 0,
-    profitloss: 0,
     orders: 0,
   });
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
@@ -451,20 +451,6 @@ export default function Dashboard() {
                   }}
                 >
                   <MetricCard
-                    title={t("dashboard.metrics.income")}
-                    value={formatCurrency(metrics.income)}
-                    icon="stats-chart"
-                    color={theme === "dark" ? "#02c796" : "#02c796"}
-                  />
-                  <MetricCard
-                    title={t("dashboard.metrics.expense")}
-                    value={formatCurrency(metrics.expense)}
-                    icon="cash-outline"
-                    color={theme === "dark" ? "#ffb30e" : "#ffb30e"}
-                  />
-                </View>
-                <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
-                  <MetricCard
                     title={t("dashboard.metrics.profitloss")}
                     value={formatCurrency(metrics.profitloss)}
                     icon="trending-up"
@@ -474,9 +460,23 @@ export default function Dashboard() {
                     }
                   />
                   <MetricCard
+                    title={t("dashboard.metrics.income")}
+                    value={formatCurrency(metrics.income)}
+                    icon="stats-chart"
+                    color={theme === "dark" ? "#02c796" : "#02c796"}
+                  />
+                </View>
+                <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
+                  <MetricCard
+                    title={t("dashboard.metrics.expense")}
+                    value={formatCurrency(metrics.expense)}
+                    icon="cash-outline"
+                    color={theme === "dark" ? "#ffb30e" : "#ffb30e"}
+                  />
+                  <MetricCard
                     title={t("dashboard.metrics.orders")}
                     value={metrics.orders}
-                    icon="document-text-outline"
+                    icon="document-text-outline" 
                     color={theme === "dark" ? "#a78bfa" : "#8b5cf6"}
                   />
                 </View>

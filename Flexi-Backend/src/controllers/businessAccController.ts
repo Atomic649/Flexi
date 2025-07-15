@@ -213,6 +213,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
         businessAddress: true,
         businessType: true,
         businessAvatar: true,
+        vat: true,
 
 
       },

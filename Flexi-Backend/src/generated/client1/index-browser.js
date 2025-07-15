@@ -151,6 +151,7 @@ exports.Prisma.BusinessAccScalarFieldEnum = {
   businessUserName: 'businessUserName',
   businessAvatar: 'businessAvatar',
   businessAddress: 'businessAddress',
+  vat: 'vat',
   vatId: 'vatId',
   businessType: 'businessType',
   taxType: 'taxType',
