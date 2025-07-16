@@ -20,7 +20,10 @@ export default function TaxDoc() {
   const anualSalesM = annualSalesMil.toFixed(1) + "M"; //
   const [businessData, setBusinessData] = useState<any>([]);
   const vat = businessData?.vat || false; // Default to false if not set
-  const annualExpense = 980000;
+  const annualExpense = 500000;
+  const annualExpenseK = annualExpense >= 1000000 
+    ? (annualExpense / 1000000).toFixed(1) + "M" 
+    : (annualExpense / 1000).toFixed(0) + "K";
   const percentageExpense = annualExpense / anualSales;
   const scoreExpense = percentageExpense * 100; // Convert to percentage
   const scoreExpensePercentage = scoreExpense.toFixed(2) + "%"; // Convert to millions
@@ -180,9 +183,16 @@ export default function TaxDoc() {
               <CustomText className="text-lg font-bold">
                 {t("taxDoc.annualTaxTitle")}
               </CustomText>
+              <View className="flex-row gap-2 items-center">
+              <Ionicons
+                  name="checkmark-circle"
+                  size={24}
+                  color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+                />
               <CustomText className="text-lg font-bold">
-                {businessData?.taxType || t("taxDoc.taxType")}
+                {t(businessData?.taxType)}
               </CustomText>
+              </View>
               <CustomText className="text-sm text-gray-600">
                 {t("taxDoc.annualTaxDesc")}
               </CustomText>
@@ -193,7 +203,7 @@ export default function TaxDoc() {
                   </CustomText>
 
                   <CustomText className="text-base text-left">
-                    {annualExpense}
+                    {annualExpenseK}
                   </CustomText>
                   <CustomText
                     className="text-base text-left"

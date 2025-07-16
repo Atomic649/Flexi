@@ -109,7 +109,12 @@
     "sharePdf": "Share PDF",
     "downloadPdf": "Download PDF",
     "success": "Success",
-    "enterBillId": "Enter Bill ID"
+    "enterBillId": "Enter Bill ID",
+    "searchingDateRange": "Searching in date range",
+    "searchForInvoices": "Search for invoices",
+    "noInvoicesForMonth": "No invoices found for this month",
+    "selectSearchType": "Select search type",
+    "shareInvoice": "Share Invoice"
   },
   "auth": {
     "login": {
@@ -515,7 +520,7 @@
   "home": {
     "SocialDashboard": "Social",
     "Dashboard": "Dashboard",
-    "TaxDoc" : "Tax Doc",
+    "TaxDoc": "Tax Doc",
     "welcome": {
       "title": "Welcome",
       "guest": "Guest"
@@ -588,7 +593,7 @@
     "avr": "AVR",
     "thisMonth": "This Month",
     "today": "Today",
-    "salesChart":{
+    "salesChart": {
       "title": "Sales Chart",
       "noData": "No sales data available for this period"
     },
@@ -1299,5 +1304,18 @@
       "appStore": "Coming soon to App Store!",
       "playStore": "Coming soon to Play Store!"
     }
-  }
+  },
+  "taxDoc": {
+    "vatTitle": "VAT Registration Alert",
+    "vatDesc": "If you are a business owner with annual revenue exceeding 1.8 million THB, you must register for VAT with the Revenue Department.",
+    "annualSales": "Annual Revenue",
+    "vatFullScore": "Maximum Limit",
+    "annualTaxTitle": "Annual Tax Calculation",
+    "annualTaxDesc": "You can deduct taxes using a flat expense rate of 60% without keeping documents. If your actual expenses exceed this, you can use the actual expenses but must keep the documents.",
+    "annualExpense": "Annual Expenses",
+    "annualIncome": "Annual Revenue",
+    "taxDocAlert": "Document Alert: Save more on taxes"
+  },
+  "Individual": "Individual",
+  "Juristic": "Company"
 }
