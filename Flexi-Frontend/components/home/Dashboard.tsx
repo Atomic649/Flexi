@@ -7,6 +7,7 @@ import {
   Modal,
   Platform,
   ActivityIndicator,
+  DimensionValue,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
@@ -21,6 +22,11 @@ import CallAPIStore from "@/api/store_api";
 import CallDashboardAPI from "@/api/dashboard_api";
 import { format } from "date-fns";
 import Dropdown3 from "../Dropdown3";
+import { Text } from "react-native";
+import { getResponsiveStyles } from "@/utils/responsive";
+
+const styles = getResponsiveStyles();
+const { headerFontSize } = styles;
 
 // Format currency
 const formatCurrency = (amount: number) => {
@@ -29,7 +35,7 @@ const formatCurrency = (amount: number) => {
       style: "decimal",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount) + " THB"
+    }).format(amount) + " ฿"
   );
 };
 
@@ -37,23 +43,36 @@ const formatCurrency = (amount: number) => {
 type MetricCardProps = {
   title: string;
   value: string | number; // Allow both string and number for flexibility
-  color: string;
   icon: keyof typeof Ionicons.glyphMap;
+  flex?: number; // Add flex prop instead of width for better control
+  valueColor?: string; // Add optional color prop for the value
 };
 
-const MetricCard = ({ title, value, color, icon }: MetricCardProps) => {
+const MetricCard = ({
+  title,
+  value,
+  icon,
+  flex = 1,
+  valueColor,
+}: MetricCardProps) => {
   const { theme } = useTheme();
 
   return (
     <View
       style={{
-        backgroundColor: theme === "dark" ? "#27272a" : "#eeedecb3",
+        backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
         borderRadius: 16,
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 4,
-        flex: 1,
+        flex: flex,
         minHeight: 110,
+        borderWidth: 1,
+        borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
+        shadowColor: theme === "dark" ? "#000" : "#ccc",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
       }}
     >
       <View
@@ -69,15 +88,23 @@ const MetricCard = ({ title, value, color, icon }: MetricCardProps) => {
         >
           {title}
         </CustomText>
-        <Ionicons name={icon} size={22} color={color} />
+        <Ionicons
+          name={icon}
+          size={22}
+          color={theme === "dark" ? "#fff" : "#75726a"}
+        />
       </View>
-      <CustomText
-        weight="bold"
-        className="text-2xl mt-4"
-        style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+      <Text
+        style={{
+          fontSize: headerFontSize,
+          fontWeight: "bold",
+          color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+        }}
+        numberOfLines={1}
+        adjustsFontSizeToFit
       >
         {value}
-      </CustomText>
+      </Text>
     </View>
   );
 };
@@ -92,8 +119,10 @@ export default function Dashboard() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'thisMonth' | 'custom'>('thisMonth');
-  
+  const [selectedPeriod, setSelectedPeriod] = useState<
+    "today" | "thisMonth" | "custom"
+  >("thisMonth");
+
   // Dashboard data state
   const [metrics, setMetrics] = useState({
     profitloss: 0,
@@ -122,12 +151,12 @@ export default function Dashboard() {
         // Fetch products and stores for filters
         const [productResponse, storeResponse] = await Promise.all([
           CallAPIProduct.getProductChoiceAPI(memberId),
-          CallAPIStore.getStoresAPI(memberId)
+          CallAPIStore.getStoresAPI(memberId),
         ]);
-        
+
         setProducts(productResponse || []);
         setStores(storeResponse || []);
-        
+
         // Fetch initial dashboard data
         await fetchDashboardData();
       }
@@ -141,22 +170,22 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const memberId = await getMemberId();
-        console.log("Fetching dashboard data for member ID:", memberId);
+      console.log("Fetching dashboard data for member ID:", memberId);
       if (!memberId) return;
 
       // Build filters for API calls
       const filters: any = {
         memberId,
-        period: selectedPeriod
+        period: selectedPeriod,
       };
 
       // Add date range if custom period and dates are selected
-      if (selectedPeriod === 'custom' && selectedDates.length > 0) {
+      if (selectedPeriod === "custom" && selectedDates.length > 0) {
         filters.startDate = selectedDates[0];
         filters.endDate = selectedDates[selectedDates.length - 1];
         // Ensure we set the period to 'custom' when dates are selected
-        filters.period = 'custom';
-        
+        filters.period = "custom";
+
         // If only one date selected, use it as both start and end date
         if (selectedDates.length === 1) {
           filters.endDate = selectedDates[0];
@@ -168,9 +197,9 @@ export default function Dashboard() {
         filters.productName = selectedProduct;
       }
 
-      // Add store filter if selected  
+      // Add store filter if selected
       if (selectedStore) {
-        const store = stores.find(s => s.accName === selectedStore);
+        const store = stores.find((s) => s.accName === selectedStore);
         if (store) {
           filters.storeId = store.id;
         }
@@ -182,7 +211,7 @@ export default function Dashboard() {
       const [metricsData, chartData, productsData] = await Promise.all([
         CallDashboardAPI.getDashboardMetricsAPI(filters),
         CallDashboardAPI.getSalesChartDataAPI(filters),
-        CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 })
+        CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
       ]);
 
       // Update state with fetched data
@@ -192,10 +221,9 @@ export default function Dashboard() {
         profitloss: metricsData.profitloss || 0,
         orders: metricsData.orders || 0,
       });
-      
+
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
-
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -204,14 +232,14 @@ export default function Dashboard() {
 
   const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
-//setCalendarVisible(false); // Optionally close calendar after selection
+    //setCalendarVisible(false); // Optionally close calendar after selection
     if (dates.length > 0) {
-      setSelectedPeriod('custom');
+      setSelectedPeriod("custom");
       console.log("Selected dates:", dates);
     }
   };
 
-  const handlePeriodChange = (period: 'today' | 'thisMonth') => {
+  const handlePeriodChange = (period: "today" | "thisMonth") => {
     setSelectedPeriod(period);
     setSelectedDates([]); // Clear custom dates when selecting predefined period
   };
@@ -290,139 +318,177 @@ export default function Dashboard() {
             marginTop: Platform.OS === "web" ? 80 : 10,
           }}
         >
-          {/* Header and Time Period Selection */}
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 16,
-              paddingTop: 5,
+              borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
+              borderWidth: 1,
+              borderRadius: 16,
+              padding: 8,
+              marginBottom: 12,
             }}
           >
-            {/* Time period buttons and date selection - 30/30/40 split */}
-            <TouchableOpacity
-              onPress={() => handlePeriodChange('today')}
-              style={{
-                backgroundColor: selectedPeriod === 'today' 
-                  ? (theme === "dark" ? "#474747" : "#ccccc8")
-                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
-                paddingVertical: 9,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-                flex: 3, // 30%
-                marginRight: 8,
-                alignItems: "center",
-              }}
-            >
-              <CustomText
-                weight="bold"
-                style={{ 
-                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                  fontSize: 12
-                }}
-              >
-                {t("dashboard.today")}
-              </CustomText>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              onPress={() => handlePeriodChange('thisMonth')}
-              style={{
-                backgroundColor: selectedPeriod === 'thisMonth' 
-                  ? (theme === "dark" ? "#474747" : "#ccccc8")
-                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
-                paddingVertical: 9,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-                flex: 3, // 30% 
-                marginRight: 8,
-                alignItems: "center",
-              }}
-            >
-              <CustomText
-                weight="bold"
-                style={{ 
-                  color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                  fontSize: 12
-                }}
-              >
-                {t("dashboard.thisMonth")}
-              </CustomText>
-            </TouchableOpacity>
-
-            {/* Calendar date picker */}
-            <TouchableOpacity
-              onPress={() => setCalendarVisible(true)}
+            {/* Header and Time Period Selection */}
+            <View
               style={{
                 flexDirection: "row",
+                justifyContent: "space-between",
                 alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: selectedPeriod === 'custom' 
-                  ? (theme === "dark" ? "#474747" : "#ccccc8")
-                  : (theme === "dark" ? "#27272a" : "#eeedecb3"),
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-                flex: 4, // 40%
+                marginBottom: 8,
               }}
             >
-              <CustomText className="mr-2"
-              style={{
-                fontSize: 12,
-              }}>{formatDateRange()}</CustomText>
-              <Ionicons
-                name="calendar"
-                size={20}
-                color={theme === "dark" ? "#c9c9c9" : "#48453e"}
-              />
-            </TouchableOpacity>
-          </View>
+              {/* Time period buttons and date selection - 30/30/40 split */}
+              <TouchableOpacity
+                onPress={() => handlePeriodChange("today")}
+                style={{
+                  backgroundColor:
+                    selectedPeriod === "today"
+                      ? theme === "dark"
+                        ? "#474747"
+                        : "#e3e3e3"
+                      : theme === "dark"
+                      ? "#27272a"
+                      : "#f4f4f5",
+                  paddingVertical: 9,
+                  paddingHorizontal: 16,
+                  borderRadius: 12,
+                  flex: 3, // 30%
+                  marginRight: 8,
+                  alignItems: "center",
+                }}
+              >
+                <CustomText
+                  weight="bold"
+                  style={{
+                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                    fontSize: 12,
+                  }}
+                >
+                  {t("dashboard.today")}
+                </CustomText>
+              </TouchableOpacity>
 
-          {/* Filters Section - Using Dropdown3 */}
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              marginBottom: 16,
-            }}
-          >
-            {/* Product Filter */}
-            <View
-              style={{
-                flex: 1,
-                minWidth: 150,
-                marginRight: 8,
-                marginBottom: 0,
-              }}
-            >
-              <Dropdown3
-                options={[{ label: "All Products", value: "" }, ...productOptions]}
-                placeholder={t("dashboard.filter.chooseProduct")}
-                selectedValue={selectedProduct || ""}
-                onValueChange={(value: string) => setSelectedProduct(value || null)}
-                bgColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
-                bgChoiceColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
-                textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
-              />
+              <TouchableOpacity
+                onPress={() => handlePeriodChange("thisMonth")}
+                style={{
+                  backgroundColor:
+                    selectedPeriod === "thisMonth"
+                      ? theme === "dark"
+                        ? "#474747"
+                        : "#e3e3e3"
+                      : theme === "dark"
+                      ? "#27272a"
+                      : "#f4f4f5",
+                  paddingVertical: 9,
+                  paddingHorizontal: 16,
+                  borderRadius: 12,
+                  flex: 3, // 30%
+                  marginRight: 8,
+                  alignItems: "center",
+                }}
+              >
+                <CustomText
+                  weight="bold"
+                  style={{
+                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                    fontSize: 12,
+                  }}
+                >
+                  {t("dashboard.thisMonth")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* Calendar date picker */}
+              <TouchableOpacity
+                onPress={() => setCalendarVisible(true)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor:
+                    selectedPeriod === "custom"
+                      ? theme === "dark"
+                        ? "#474747"
+                        : "#e3e3e3"
+                      : theme === "dark"
+                      ? "#27272a"
+                      : "#f4f4f5",
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  borderRadius: 12,
+                  flex: 4, // 40%
+                }}
+              >
+                <CustomText
+                  className="mr-2"
+                  style={{
+                    fontSize: 12,
+                  }}
+                >
+                  {formatDateRange()}
+                </CustomText>
+                <Ionicons
+                  name="calendar"
+                  size={20}
+                  color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+                />
+              </TouchableOpacity>
             </View>
 
-            {/* Store Filter */}
+            {/* Filters Section - Using Dropdown3 */}
             <View
               style={{
-                flex: 1,
-                minWidth: 150,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                marginBottom: 1,
               }}
             >
-              <Dropdown3
-                options={[{ label: "All Stores", value: "" }, ...storeOptions]}
-                placeholder={t("dashboard.filter.chooseStore")}
-                selectedValue={selectedStore || ""}
-                onValueChange={(value: string) => setSelectedStore(value || null)}
-                bgColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
-                bgChoiceColor={theme === "dark" ? "#27272a" : "#eeedecb3"}
-                textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
-              />
+              {/* Product Filter */}
+              <View
+                style={{
+                  flex: 1,
+                  minWidth: 150,
+                  marginRight: 8,
+                  marginBottom: 0,
+                }}
+              >
+                <Dropdown3
+                  options={[
+                    { label: "All Products", value: "" },
+                    ...productOptions,
+                  ]}
+                  placeholder={t("dashboard.filter.chooseProduct")}
+                  selectedValue={selectedProduct || ""}
+                  onValueChange={(value: string) =>
+                    setSelectedProduct(value || null)
+                  }
+                  bgColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
+                />
+              </View>
+
+              {/* Store Filter */}
+              <View
+                style={{
+                  flex: 1,
+                  minWidth: 150,
+                }}
+              >
+                <Dropdown3
+                  options={[
+                    { label: "All Stores", value: "" },
+                    ...storeOptions,
+                  ]}
+                  placeholder={t("dashboard.filter.chooseStore")}
+                  selectedValue={selectedStore || ""}
+                  onValueChange={(value: string) =>
+                    setSelectedStore(value || null)
+                  }
+                  bgColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
+                />
+              </View>
             </View>
           </View>
 
@@ -454,30 +520,34 @@ export default function Dashboard() {
                     title={t("dashboard.metrics.profitloss")}
                     value={formatCurrency(metrics.profitloss)}
                     icon="trending-up"
-                    color={metrics.profitloss >= 0 
-                      ? (theme === "dark" ? "#02c796" : "#02c796")
-                      : (theme === "dark" ? "#fb7185" : "#f43f5e")
+                    valueColor={
+                      metrics.profitloss >= 0
+                        ? theme === "dark"
+                          ? "#00fad9"
+                          : "#09ddc1"
+                        : "#FF006E"
                     }
                   />
-                  <MetricCard
-                    title={t("dashboard.metrics.income")}
-                    value={formatCurrency(metrics.income)}
-                    icon="stats-chart"
-                    color={theme === "dark" ? "#02c796" : "#02c796"}
-                  />
+                  <View className="flex-row">
+                    <MetricCard
+                      title={t("dashboard.metrics.income")}
+                      value={formatCurrency(metrics.income)}
+                      icon="stats-chart"
+                      flex={0.7} // 70% of the row
+                    />
+                    <MetricCard
+                      title={t("dashboard.metrics.orders")}
+                      value={metrics.orders}
+                      icon="document-text-outline"
+                      flex={0.3} // 30% of the row
+                    />
+                  </View>
                 </View>
                 <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
                   <MetricCard
                     title={t("dashboard.metrics.expense")}
                     value={formatCurrency(metrics.expense)}
                     icon="cash-outline"
-                    color={theme === "dark" ? "#ffb30e" : "#ffb30e"}
-                  />
-                  <MetricCard
-                    title={t("dashboard.metrics.orders")}
-                    value={metrics.orders}
-                    icon="document-text-outline" 
-                    color={theme === "dark" ? "#a78bfa" : "#8b5cf6"}
                   />
                 </View>
               </View>
@@ -485,7 +555,7 @@ export default function Dashboard() {
               {/* Sales Chart */}
               <View
                 style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#eeedecb3",
+                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
                   borderRadius: 16,
                   padding: 20,
                   marginBottom: 24,
@@ -522,16 +592,39 @@ export default function Dashboard() {
                   {salesChartData.length > 0 ? (
                     <View style={{ width: "100%", alignItems: "center" }}>
                       <CustomText className="mb-4 opacity-70">
-                        {t("dashboard.salesChart.dataAvailable", `${salesChartData.length} data points`)}
+                        {t(
+                          "dashboard.salesChart.dataAvailable",
+                          `${salesChartData.length} data points`
+                        )}
                       </CustomText>
                       {/* Here you could add a chart library like react-native-chart-kit */}
-                      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                        }}
+                      >
                         {salesChartData.slice(0, 3).map((item, index) => (
-                          <View key={index} style={{ margin: 8, alignItems: "center" }}>
-                            <CustomText style={{ fontSize: 12, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                          <View
+                            key={index}
+                            style={{ margin: 8, alignItems: "center" }}
+                          >
+                            <CustomText
+                              style={{
+                                fontSize: 12,
+                                color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                              }}
+                            >
                               {format(new Date(item.date), "dd/MM")}
                             </CustomText>
-                            <CustomText style={{ fontSize: 14, fontWeight: "bold", color: "#02c796" }}>
+                            <CustomText
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "bold",
+                                color: "#02c796",
+                              }}
+                            >
                               {formatCurrency(item.income)}
                             </CustomText>
                           </View>
@@ -556,7 +649,7 @@ export default function Dashboard() {
               {/* Top Products */}
               <View
                 style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#eeedecb3",
+                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
                   borderRadius: 16,
                   padding: 20,
                   marginBottom: 24,
@@ -603,17 +696,35 @@ export default function Dashboard() {
                           justifyContent: "space-between",
                           alignItems: "center",
                           paddingVertical: 12,
-                          borderBottomWidth: index < topProducts.length - 1 ? 1 : 0,
-                          borderBottomColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
+                          borderBottomWidth:
+                            index < topProducts.length - 1 ? 1 : 0,
+                          borderBottomColor:
+                            theme === "dark" ? "#3f3f42" : "#e5e7eb",
                         }}
                       >
                         <View style={{ flex: 1 }}>
-                          <CustomText weight="bold" style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                          <CustomText
+                            weight="bold"
+                            style={{
+                              color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                            }}
+                          >
                             {product.name}
                           </CustomText>
-                          <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                            {product.orders} orders • {product.sales} units
-                          </CustomText>
+                          <View className="flex-row gap-2">
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              {product.orders}
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              orders •
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              {product.sales}
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              units
+                            </CustomText>
+                          </View>
                         </View>
                         <CustomText weight="bold" style={{ color: "#02c796" }}>
                           {formatCurrency(product.revenue)}

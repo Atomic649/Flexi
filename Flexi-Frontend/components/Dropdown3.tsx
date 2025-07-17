@@ -26,20 +26,21 @@ const Dropdown = ({
     return (
         <View className={` ${otherStyles}`}>           
             <TouchableOpacity
-                className="w-full h-12 px-4 rounded-2xl border-2 border-transparent flex-row items-center justify-between"
+                className="w-full h-11 px-4 rounded-2xl border-2 border-transparent flex-row items-center justify-between"
                 onPress={handlePress}
                 style={{
                     backgroundColor: bgColor,
                     opacity: disabled ? 0.8 : 1
                 }}
             >
-                <Text className="text-[#b1b1b1] font-psemibold text-base"
+                <CustomText className="text-[#b1b1b1] font-psemibold text-sm"
+                weight="bold"
                     style={{ color: textcolor }}>
                     {selectedValue || placeholder}
-                </Text>
-                <Text className="text-zinc-300 font-psemibold text-base" style={{ opacity: disabled ? 0.5 : 1 }}>
+                </CustomText>
+                <CustomText className="text-zinc-300 font-psemibold text-sm" style={{ opacity: disabled ? 0.5 : 1 }}>
                     {isOpen ? "▲" : "▼"}
-                </Text>
+                </CustomText>
             </TouchableOpacity>
 
             {isOpen && !disabled && (
@@ -55,10 +56,10 @@ const Dropdown = ({
                             }}
                             style={{ backgroundColor: bgChoiceColor }}
                         >
-                            <Text className="font-psemibold text-base"
+                            <CustomText className="font-psemibold text-sm"
                                 style={{ color: textcolor }}>
                                 {item.label}
-                            </Text>
+                            </CustomText>
                         </TouchableOpacity>
                     )}
                     {...props}
