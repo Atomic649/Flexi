@@ -30,6 +30,9 @@ import * as Sharing from "expo-sharing";
 import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
+import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlyReportTemplate";
+import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
+import { generateMobileInvoiceHTML } from "@/components/PDFTemplates/MobileInvoiceTemplate";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -517,217 +520,18 @@ export default function Print() {
 
   // Function to print HTML content for web/desktop
   const printHTMLContent = () => {
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>${t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
-          <style>
-            @media print {
-              body { margin: 0; }
-              .no-print { display: none; }
-            }
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 20px; 
-              padding: 0; 
-              font-size: 12px;
-              line-height: 1.4;
-            }
-            .container { 
-              max-width: 800px; 
-              margin: 0 auto; 
-            }
-            h1 { 
-              font-size: 24px; 
-              margin-bottom: 10px; 
-              text-align: center;
-              color: #333;
-            }
-            h2 { 
-              font-size: 18px; 
-              margin-bottom: 15px; 
-              text-align: center;
-              color: #555;
-            }
-            h3 { 
-              font-size: 16px; 
-              margin-bottom: 10px; 
-              color: #333;
-              border-bottom: 2px solid #0891b2;
-              padding-bottom: 5px;
-            }
-            p { 
-              font-size: 12px; 
-              line-height: 1.6; 
-              margin: 5px 0; 
-            }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin: 15px 0; 
-              font-size: 11px;
-            }
-            th, td { 
-              padding: 8px; 
-              text-align: left; 
-              border: 1px solid #ddd; 
-            }
-            th { 
-              background-color: #0891b2; 
-              color: white;
-              font-weight: bold;
-            }
-            tr:nth-child(even) { 
-              background-color: #f9f9f9; 
-            }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .bold { font-weight: bold; }
-            .summary-grid {
-              display: grid;
-              grid-template-columns: repeat(2, 1fr);
-              gap: 15px;
-              margin: 20px 0;
-            }
-            .summary-card {
-              border: 1px solid #ddd;
-              border-radius: 8px;
-              padding: 15px;
-              background-color: #f8f9fa;
-            }
-            .summary-card .label {
-              font-size: 11px;
-              color: #666;
-              margin-bottom: 5px;
-            }
-            .summary-card .value {
-              font-size: 16px;
-              font-weight: bold;
-              color: #333;
-            }
-            .company-info {
-              background-color: #f8f9fa;
-              padding: 15px;
-              border-radius: 8px;
-              margin-bottom: 20px;
-            }
-            .footer { 
-              margin-top: 30px;
-              text-align: center; 
-              font-size: 10px; 
-              color: #888; 
-              border-top: 1px solid #ddd;
-              padding-top: 10px;
-            }
-            .status-paid { 
-              color: #059669; 
-              font-weight: bold; 
-            }
-            .status-unpaid { 
-              color: #dc2626; 
-              font-weight: bold; 
-            }
-            .no-data {
-              text-align: center;
-              color: #666;
-              font-style: italic;
-              padding: 20px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h1>${t("print.salesTaxSummary")}</h1>
-            <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
-
-            <div class="company-info">
-              <h3>${t("print.companyInformation")}</h3>
-              <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-              <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
-              <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
-            </div>
-
-            <h3>${t("print.monthlySummary")}</h3>
-            <div class="summary-grid">
-              <div class="summary-card">
-                <div class="label">${t("print.totalSales")}</div>
-                <div class="value">${formatCurrencyForPDF(monthlyTotals.totalSales)}</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">${t("print.totalOrders")}</div>
-                <div class="value">${monthlyTotals.totalOrders}</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">${t("print.paidOrders")}</div>
-                <div class="value">${monthlyTotals.paidOrders} (${monthlyTotals.totalOrders > 0 ? Math.round((monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100) : 0}%)</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">${t("print.unpaidOrders")}</div>
-                <div class="value">${monthlyTotals.unpaidOrders} (${monthlyTotals.totalOrders > 0 ? Math.round((monthlyTotals.unpaidOrders / monthlyTotals.totalOrders) * 100) : 0}%)</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">${t("print.avgOrderValue")}</div>
-                <div class="value">${formatCurrencyForPDF(monthlyTotals.averageOrderValue)}</div>
-              </div>
-              <div class="summary-card">
-                <div class="label">${t("print.vatAmount")} (7%)</div>
-                <div class="value">${formatCurrencyForPDF(monthlyTotals.totalSales * 0.07)}</div>
-              </div>
-            </div>
-
-            <h3>${t("print.invoiceList")}</h3>
-            ${bills.length > 0 ? `
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>${t("print.date")}</th>
-                    <th>${t("print.invoiceNo")}</th>
-                    <th>${t("print.customer")}</th>
-                    <th>${t("print.status")}</th>
-                    <th class="text-right">${t("print.price")}</th>
-                    <th class="text-right">VAT (7%)</th>
-                    <th class="text-right">${t("print.total")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${bills.map((bill, index) => `
-                    <tr>
-                      <td>${index + 1}</td>
-                      <td>${formatDate(bill.purchaseAt)}</td>
-                      <td>#${bill.id}</td>
-                      <td>${bill.cName || ''} ${bill.cLastName || ''}</td>
-                      <td class="${bill.cashStatus ? 'status-paid' : 'status-unpaid'}">
-                        ${bill.cashStatus ? t("print.paid") : t("print.unpaid")}
-                      </td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.price)}</td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.price * bill.amount * 0.07)}</td>
-                      <td class="text-right">${formatCurrencyForPDF((bill.price * bill.amount)+(bill.price * bill.amount * 0.07))}</td>
-                    </tr>
-                  `).join('')}
-                  <tr style="background-color: #e5e7eb; font-weight: bold;">
-                    <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount)+(bill.price * bill.amount * 0.07), 0))}</td>
-                  </tr>
-                </tbody>
-              </table>
-            ` : `
-              <div class="no-data">
-                ${t("print.noInvoicesFound")}
-              </div>
-            `}
-
-            <div class="footer">
-              ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business App
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    // Generate HTML content using the template component
+    const htmlContent = generateMonthlyReportHTML({
+      selectedMonth,
+      businessDetails,
+      businessName,
+      monthlyTotals,
+      bills,
+      t,
+      formatCurrencyForPDF,
+      formatDate,
+      formatMonthYear,
+    });
 
     // Create a new window for printing
     const printWindow = window.open('', '_blank');
@@ -771,222 +575,15 @@ export default function Print() {
   const printInvoiceHTMLContent = () => {
     if (!selectedInvoice) return;
 
-    const invoice = selectedInvoice;
-    const subtotal = invoice.price * invoice.amount;
-    const vatAmount = subtotal * 0.07;
-    const grandTotal = subtotal + vatAmount;
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>${t("print.invoice")} #${invoice.id}</title>
-          <style>
-            @media print {
-              body { margin: 0; }
-              .no-print { display: none; }
-            }
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 20px; 
-              padding: 0; 
-              font-size: 14px;
-              line-height: 1.6;
-              color: #333;
-            }
-            .container { 
-              max-width: 800px; 
-              margin: 0 auto; 
-            }
-            .header {
-              text-align: center;
-              margin-bottom: 30px;
-              border-bottom: 2px solid #0891b2;
-              padding-bottom: 20px;
-            }
-            h1 { 
-              font-size: 28px; 
-              margin-bottom: 5px; 
-              color: #0891b2;
-            }
-            .invoice-number {
-              font-size: 18px;
-              color: #666;
-              margin-bottom: 20px;
-            }
-            .company-info {
-              background-color: #f8f9fa;
-              padding: 15px;
-              border-radius: 8px;
-              margin-bottom: 30px;
-            }
-            .company-info h3 {
-              margin-top: 0;
-              color: #0891b2;
-            }
-            .billing-section {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 30px;
-            }
-            .billing-info {
-              flex: 1;
-            }
-            .billing-info h4 {
-              color: #0891b2;
-              margin-bottom: 10px;
-            }
-            .invoice-details {
-              text-align: right;
-              flex: 1;
-            }
-            .status-paid {
-              background-color: #059669;
-              color: white;
-              padding: 5px 10px;
-              border-radius: 15px;
-              font-size: 12px;
-              font-weight: bold;
-            }
-            .status-unpaid {
-              background-color: #dc2626;
-              color: white;
-              padding: 5px 10px;
-              border-radius: 15px;
-              font-size: 12px;
-              font-weight: bold;
-            }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin: 30px 0; 
-            }
-            th, td { 
-              padding: 12px; 
-              text-align: left; 
-              border: 1px solid #ddd; 
-            }
-            th { 
-              background-color: #0891b2; 
-              color: white;
-              font-weight: bold;
-            }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .summary-section {
-              margin-top: 30px;
-              text-align: right;
-            }
-            .summary-row {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 10px;
-              padding: 5px 0;
-            }
-            .summary-row.total {
-              border-top: 2px solid #0891b2;
-              font-weight: bold;
-              font-size: 16px;
-              color: #0891b2;
-              margin-top: 15px;
-              padding-top: 15px;
-            }
-            .footer { 
-              margin-top: 50px;
-              text-align: center; 
-              font-size: 12px; 
-              color: #888; 
-              border-top: 1px solid #ddd;
-              padding-top: 20px;
-            }
-            .thank-you {
-              text-align: center;
-              margin-top: 40px;
-              font-style: italic;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>${t("print.invoice")}</h1>
-              <div class="invoice-number">#${invoice.id}</div>
-            </div>
-
-            <div class="company-info">
-              <h3>${t("print.companyInformation")}</h3>
-              <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-              <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
-              <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
-            </div>
-
-            <div class="billing-section">
-              <div class="billing-info">
-                <h4>${t("print.billedTo")}:</h4>
-                <p><strong>${invoice.cName} ${invoice.cLastName}</strong></p>
-                <p>${invoice.cPhone || ''}</p>
-                <p>${invoice.cAddress || ''}</p>
-                <p>${invoice.cProvince || ''} ${invoice.cPostId || ''}</p>
-              </div>
-              
-              <div class="invoice-details">
-                <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(invoice.purchaseAt)}</p>
-                <p><strong>${t("print.paymentMethod")}:</strong> ${invoice.payment}</p>
-                <p><strong>${t("print.status")}:</strong> 
-                  <span class="${invoice.cashStatus ? 'status-paid' : 'status-unpaid'}">
-                    ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <table>
-              <thead>
-                <tr>
-                  <th>${t("print.productName")}</th>
-                  <th class="text-center">${t("print.quantity")}</th>
-                  <th class="text-right">${t("print.price")}</th>
-                  <th class="text-right">${t("print.total")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>${invoice.product}</td>
-                  <td class="text-center">${invoice.amount}</td>
-                  <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>
-                  <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="summary-section">
-              <div class="summary-row">
-                <span>${t("print.subtotal")}:</span>
-                <span>${formatCurrencyForPDF(subtotal)}</span>
-              </div>
-              <div class="summary-row">
-                <span>${t("print.tax")} (7%):</span>
-                <span>${formatCurrencyForPDF(vatAmount)}</span>
-              </div>
-              <div class="summary-row total">
-                <span>${t("print.grandTotal")}:</span>
-                <span>${formatCurrencyForPDF(grandTotal)}</span>
-              </div>
-            </div>
-
-            <div class="thank-you">
-              <p>${t("print.thankYou")}</p>
-            </div>
-
-            <div class="footer">
-              ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business Hub
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    // Generate HTML content using the template component
+    const htmlContent = generateInvoiceHTML({
+      invoice: selectedInvoice,
+      businessDetails,
+      businessName,
+      t,
+      formatCurrencyForPDF,
+      formatDate,
+    });
 
     // Create a new window for printing
     const printWindow = window.open('', '_blank');
@@ -1005,7 +602,7 @@ export default function Print() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `invoice_${invoice.id}.html`;
+      link.download = `invoice_${selectedInvoice.id}.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1013,7 +610,7 @@ export default function Print() {
     }
   };
 
-  // Function to handle saving content as PDF
+  // Function to save HTML content as PDF
   const saveToPDF = async () => {
     // Close the initial alert
     setAlertConfig((prev) => ({ ...prev, visible: false }));
@@ -1027,176 +624,22 @@ export default function Print() {
     });
 
     try {
-      // Create a function to format currency without THB for mobile PDF
-      const formatCurrencyMobile = (amount: number) => {
-        return new Intl.NumberFormat("en-US", {
-          style: "decimal",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(amount);
-      };
-
-      // Create a printable HTML content
-      const htmlContent = `
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-              .container { padding: 20px; }
-              h1 { font-size: 28px; margin-bottom: 20px; text-align: center; }
-              h2 { font-size: 24px; margin-bottom: 15px; text-align: center; }
-              h3 { font-size: 20px; margin-bottom: 10px; }
-              p { font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; }
-              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-              th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
-              th { background-color: #f2f2f2; font-size: 14px; font-weight: bold; }
-              td { font-size: 13px; }
-              .invoice-table th { font-size: 14px; }
-              .invoice-table td { font-size: 13px; }
-              .text-center { text-align: center; }
-              .text-right { text-align: right; }
-              .bold { font-weight: bold; }
-              .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 14px; color: #888; }
-              
-              /* Summary cards styling */
-              .summary-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                margin: 15px 0;
-              }
-              .summary-card {
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                padding: 12px;
-                background-color: #f8f9fa;
-                text-align: center;
-              }
-              .summary-card .label {
-                font-size: 14px;
-                color: #666;
-                margin-bottom: 5px;
-                font-weight: normal;
-              }
-              .summary-card .value {
-                font-size: 18px;
-                font-weight: bold;
-                color: #333;
-                margin: 0;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>${t("print.salesTaxSummary")}</h1>
-              <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
-
-              <h3>${t("print.companyInformation")}</h3>
-              <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-              <p>${t("print.address")}: ${businessDetails?.businessAddress || "Not specified"}</p>
-              <p>${t("print.taxId")}: ${businessDetails?.vatId || "Not specified"}</p>
-
-              <h3>${t("print.monthlySummary")}</h3>
-              <div class="summary-grid">
-                <div class="summary-card">
-                  <div class="label">${t("print.totalSales")}</div>
-                  <div class="value">${formatCurrencyMobile(monthlyTotals.totalSales)}</div>
-                </div>
-                <div class="summary-card">
-                  <div class="label">${t("print.totalOrders")}</div>
-                  <div class="value">${monthlyTotals.totalOrders}</div>
-                </div>
-                <div class="summary-card">
-                  <div class="label">${t("print.paidOrders")}</div>
-                  <div class="value">${monthlyTotals.paidOrders} (${
-        monthlyTotals.totalOrders > 0
-          ? Math.round(
-              (monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100
-            )
-          : 0
-      }%)</div>
-                </div>
-                <div class="summary-card">
-                  <div class="label">${t("print.unpaidOrders")}</div>
-                  <div class="value">${monthlyTotals.unpaidOrders} (${
-        monthlyTotals.totalOrders > 0
-          ? Math.round(
-              (monthlyTotals.unpaidOrders / monthlyTotals.totalOrders) * 100
-            )
-          : 0
-      }%)</div>
-                </div>
-                <div class="summary-card">
-                  <div class="label">${t("print.avgOrderValue")}</div>
-                  <div class="value">${formatCurrencyMobile(monthlyTotals.averageOrderValue)}</div>
-                </div>
-                <div class="summary-card">
-                  <div class="label">${t("print.taxAmount")} (7%)</div>
-                  <div class="value">${formatCurrencyMobile(monthlyTotals.totalSales * 0.07)}</div>
-                </div>
-              </div>
-
-              <h3>${t("print.invoiceList")}</h3>
-              <table class="invoice-table">
-                <tr>
-                  <th>#</th>
-                  <th>${t("print.date")}</th>
-                  <th>${t("print.invoiceNo")}</th>
-                  <th>${t("print.customer")}</th>
-                  <th>${t("print.status")}</th>
-                  <th>${t("print.price")}</th>
-                  <th>VAT (7%)</th>
-                  <th>${t("print.total")}</th>
-                </tr>
-                ${bills
-                  .map(
-                    (bill, index) => `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>${formatDate(bill.purchaseAt)}</td>
-                    <td>#${bill.id}</td>
-                    <td>${bill.cName} ${bill.cLastName}</td>
-                    <td>${
-                      bill.cashStatus
-                        ? t("print.paid")
-                        : t("print.unpaid")
-                    }</td>
-                    <td class="text-right">${formatCurrencyMobile(bill.price)}</td>
-                    <td class="text-right">${formatCurrencyMobile(
-                      bill.price * bill.amount * 0.07
-                    )}</td>
-                    <td class="text-right">${formatCurrencyMobile(
-                      (bill.price * bill.amount)+(bill.price * bill.amount * 0.07)
-                    )}</td>
-                  </tr>
-                `
-                  )
-                  .join("")}
-                <tr style="background-color: #e5e7eb; font-weight: bold;">
-                  <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
-                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
-                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + (bill.price * bill.amount)+(bill.price * bill.amount * 0.07), 0))}</td>
-                </tr>
-              </table>
-
-              <div class="footer">
-                ${t("print.generatedOn")} ${format(
-                  new Date(),
-                  "dd/MM/yyyy HH:mm"
-                )} - ${t("print.page")} 1 - Flexi Business App
-              </div>
-            </div>
-          </body>
-        </html>
-      `;
+      // Generate HTML content for monthly report
+      const htmlContent = generateMonthlyReportHTML({
+        selectedMonth,
+        businessDetails,
+        businessName,
+        monthlyTotals,
+        bills,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+        formatMonthYear,
+      });
 
       // Print the document
       await ExpoPrint.printAsync({
         html: htmlContent,
-        // options: {
-        //   // Add any specific options for printing here
-        // },
       });
 
       // Hide loading indicator
@@ -1237,133 +680,20 @@ export default function Print() {
 
     try {
       const invoice = selectedInvoice;
-      const subtotal = invoice.price * invoice.amount;
-      const vatAmount = subtotal * 0.07;
-      const grandTotal = subtotal + vatAmount;
 
-      // Create a function to format currency without THB for mobile PDF
-      const formatCurrencyMobile = (amount: number) => {
-        return new Intl.NumberFormat("en-US", {
-          style: "decimal",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(amount);
-      };
-
-      // Create a printable HTML content for individual invoice
-      const htmlContent = `
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-              .container { padding: 20px; }
-              .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0891b2; padding-bottom: 20px; }
-              h1 { font-size: 32px; margin-bottom: 10px; color: #0891b2; }
-              .invoice-number { font-size: 20px; color: #666; margin-bottom: 20px; }
-              h3 { font-size: 22px; margin-bottom: 15px; color: #0891b2; }
-              p { font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; }
-              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-              th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
-              th { background-color: #0891b2; color: white; font-size: 16px; font-weight: bold; }
-              td { font-size: 15px; }
-              .text-center { text-align: center; }
-              .text-right { text-align: right; }
-              .billing-section { margin: 30px 0; }
-              .company-info { background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
-              .invoice-details { margin: 20px 0; }
-              .status-paid { background-color: #059669; color: white; padding: 5px 10px; border-radius: 15px; font-size: 14px; font-weight: bold; }
-              .status-unpaid { background-color: #dc2626; color: white; padding: 5px 10px; border-radius: 15px; font-size: 14px; font-weight: bold; }
-              .summary-section { margin-top: 30px; }
-              .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; font-size: 16px; }
-              .summary-row.total { border-top: 2px solid #0891b2; font-weight: bold; font-size: 18px; color: #0891b2; margin-top: 15px; padding-top: 15px; }
-              .thank-you { text-align: center; margin-top: 40px; font-style: italic; color: #666; font-size: 16px; }
-              .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 14px; color: #888; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>${t("print.invoice")}</h1>
-                <div class="invoice-number">#${invoice.id}</div>
-              </div>
-
-              <div class="company-info">
-                <h3>${t("print.companyInformation")}</h3>
-                <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-                <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
-                <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
-              </div>
-
-              <div class="billing-section">
-                <h3>${t("print.billedTo")}:</h3>
-                <p><strong>${invoice.cName} ${invoice.cLastName}</strong></p>
-                <p>${invoice.cPhone || ''}</p>
-                <p>${invoice.cAddress || ''}</p>
-                <p>${invoice.cProvince || ''} ${invoice.cPostId || ''}</p>
-              </div>
-              
-              <div class="invoice-details">
-                <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(invoice.purchaseAt)}</p>
-                <p><strong>${t("print.paymentMethod")}:</strong> ${invoice.payment}</p>
-                <p><strong>${t("print.status")}:</strong> 
-                  <span class="${invoice.cashStatus ? 'status-paid' : 'status-unpaid'}">
-                    ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
-                  </span>
-                </p>
-              </div>
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>${t("print.productName")}</th>
-                    <th class="text-center">${t("print.quantity")}</th>
-                    <th class="text-right">${t("print.price")}</th>
-                    <th class="text-right">${t("print.total")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>${invoice.product}</td>
-                    <td class="text-center">${invoice.amount}</td>
-                    <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>
-                    <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="summary-section">
-                <div class="summary-row">
-                  <span>${t("print.subtotal")}:</span>
-                  <span>${formatCurrencyForPDF(subtotal)}</span>
-                </div>
-                <div class="summary-row">
-                  <span>${t("print.tax")} (7%):</span>
-                  <span>${formatCurrencyForPDF(vatAmount)}</span>
-                </div>
-                <div class="summary-row total">
-                  <span>${t("print.grandTotal")}:</span>
-                  <span>${formatCurrencyForPDF(grandTotal)}</span>
-                </div>
-              </div>
-
-              <div class="thank-you">
-                <p>${t("print.thankYou")}</p>
-              </div>
-
-              <div class="footer">
-                ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business App
-              </div>
-            </div>
-          </body>
-        </html>
-      `;
+      // Use mobile-optimized template for mobile devices
+      const htmlContent = generateMobileInvoiceHTML({
+        invoice,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
 
       // Print the document
       await ExpoPrint.printAsync({
         html: htmlContent,
-        // options: {
-        //   // Add any specific options for printing here
-        // },
       });
 
       // Hide loading indicator
@@ -1906,7 +1236,7 @@ export default function Print() {
               className={`p-3 px-6 rounded-t-lg ${
                 activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
                   ? theme === 'dark'
-                    ? "bg-zinc-800 border-b-2 border-teal-400"
+                    ? "bg-zinc-800 border-b-2 border-#02a4a4-400"
                     : "bg-white border-b-2 border-teal-400"
                   : theme === 'dark'
                   ? "bg-zinc-700"
