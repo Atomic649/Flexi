@@ -601,6 +601,10 @@
       "title": "Top Products",
       "noData": "No product data available"
     },
+    "topStores": {
+      "title": "Top Stores",
+      "noData": "No store data available"
+    },
     "start": {
       "title": "Start Your Business Journey",
       "subtitle": "Please do the following steps to get started",

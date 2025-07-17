@@ -201,7 +201,7 @@ export default function Dashboard() {
 
       // Add store filter if selected
       if (selectedStore) {
-        const store = stores.find((s) => s.name === selectedStore);
+        const store = stores.find((s) => s.accName === selectedStore);
         if (store) {
           filters.storeId = store.id;
         }
@@ -210,12 +210,13 @@ export default function Dashboard() {
       console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData, storesData] = await Promise.all([
-        CallDashboardAPI.getDashboardMetricsAPI(filters),
-        CallDashboardAPI.getSalesChartDataAPI(filters),
-        CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
-        CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
-      ]);
+      const [metricsData, chartData, productsData, storesData] =
+        await Promise.all([
+          CallDashboardAPI.getDashboardMetricsAPI(filters),
+          CallDashboardAPI.getSalesChartDataAPI(filters),
+          CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
+          CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
+        ]);
 
       // Update state with fetched data
       setMetrics({
@@ -268,8 +269,8 @@ export default function Dashboard() {
   }));
 
   const storeOptions = stores.map((store) => ({
-    label: store.name || "No Name",
-    value: store.name || "No Name",
+    label: store.accName || "No Name",
+    value: store.accName || "No Name",
   }));
 
   return (
@@ -324,11 +325,17 @@ export default function Dashboard() {
         >
           <View
             style={{
+              backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
               borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
               borderWidth: 1,
               borderRadius: 16,
               padding: 8,
               marginBottom: 12,
+
+              shadowColor: theme === "dark" ? "#000" : "#ccc",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.1,
+              shadowRadius: 2,
             }}
           >
             {/* Header and Time Period Selection */}
@@ -465,7 +472,7 @@ export default function Dashboard() {
                   onValueChange={(value: string) =>
                     setSelectedProduct(value || null)
                   }
-                  bgColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
                   bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
                   textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
                 />
@@ -488,7 +495,7 @@ export default function Dashboard() {
                   onValueChange={(value: string) =>
                     setSelectedStore(value || null)
                   }
-                  bgColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
+                  bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
                   bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
                   textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
                 />
@@ -517,7 +524,6 @@ export default function Dashboard() {
                 <View
                   style={{
                     flexDirection: isDesktop() ? "row" : "column",
-                    marginBottom: 8,
                   }}
                 >
                   <MetricCard
@@ -588,7 +594,7 @@ export default function Dashboard() {
                     minHeight: 280,
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: theme === "dark" ? "#3f3f42" : "#ffffff",
+                    backgroundColor: "transparent",
                     borderRadius: 8,
                     padding: 16,
                   }}
