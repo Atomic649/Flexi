@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import Dropdown3 from "../Dropdown3";
 import { Text } from "react-native";
 import { getResponsiveStyles } from "@/utils/responsive";
+import LinearChart from "@/components/LinearChart";
 
 const styles = getResponsiveStyles();
 const { headerFontSize } = styles;
@@ -132,6 +133,7 @@ export default function Dashboard() {
   });
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
+  const [topStores, setTopStores] = useState<any[]>([]);
 
   useEffect(() => {
     fetchInitialData();
@@ -199,7 +201,7 @@ export default function Dashboard() {
 
       // Add store filter if selected
       if (selectedStore) {
-        const store = stores.find((s) => s.accName === selectedStore);
+        const store = stores.find((s) => s.name === selectedStore);
         if (store) {
           filters.storeId = store.id;
         }
@@ -208,10 +210,11 @@ export default function Dashboard() {
       console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData] = await Promise.all([
+      const [metricsData, chartData, productsData, storesData] = await Promise.all([
         CallDashboardAPI.getDashboardMetricsAPI(filters),
         CallDashboardAPI.getSalesChartDataAPI(filters),
         CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
+        CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
       ]);
 
       // Update state with fetched data
@@ -224,6 +227,7 @@ export default function Dashboard() {
 
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
+      setTopStores(storesData || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -264,8 +268,8 @@ export default function Dashboard() {
   }));
 
   const storeOptions = stores.map((store) => ({
-    label: store.accName || "No Name",
-    value: store.accName || "No Name",
+    label: store.name || "No Name",
+    value: store.name || "No Name",
   }));
 
   return (
@@ -569,7 +573,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Ionicons
-                    name="bar-chart"
+                    name="analytics"
                     size={20}
                     color={theme === "dark" ? "#a78bfa" : "#8b5cf6"}
                     style={{ marginRight: 8 }}
@@ -581,7 +585,7 @@ export default function Dashboard() {
 
                 <View
                   style={{
-                    minHeight: 250,
+                    minHeight: 280,
                     justifyContent: "center",
                     alignItems: "center",
                     backgroundColor: theme === "dark" ? "#3f3f42" : "#ffffff",
@@ -590,47 +594,11 @@ export default function Dashboard() {
                   }}
                 >
                   {salesChartData.length > 0 ? (
-                    <View style={{ width: "100%", alignItems: "center" }}>
-                      <CustomText className="mb-4 opacity-70">
-                        {t(
-                          "dashboard.salesChart.dataAvailable",
-                          `${salesChartData.length} data points`
-                        )}
-                      </CustomText>
-                      {/* Here you could add a chart library like react-native-chart-kit */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          flexWrap: "wrap",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {salesChartData.slice(0, 3).map((item, index) => (
-                          <View
-                            key={index}
-                            style={{ margin: 8, alignItems: "center" }}
-                          >
-                            <CustomText
-                              style={{
-                                fontSize: 12,
-                                color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                              }}
-                            >
-                              {format(new Date(item.date), "dd/MM")}
-                            </CustomText>
-                            <CustomText
-                              style={{
-                                fontSize: 14,
-                                fontWeight: "bold",
-                                color: "#02c796",
-                              }}
-                            >
-                              {formatCurrency(item.income)}
-                            </CustomText>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
+                    <LinearChart
+                      data={salesChartData}
+                      width={isDesktop() ? 800 : undefined}
+                      height={220}
+                    />
                   ) : (
                     <>
                       <Ionicons
@@ -747,6 +715,112 @@ export default function Dashboard() {
                     />
                     <CustomText className="mt-4 opacity-50">
                       {t("dashboard.topProducts.noData")}
+                    </CustomText>
+                  </View>
+                )}
+              </View>
+
+              {/* Top Stores - New Section */}
+              <View
+                style={{
+                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                  borderRadius: 16,
+                  padding: 20,
+                  marginBottom: 24,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 16,
+                  }}
+                >
+                  <Ionicons
+                    name="storefront"
+                    size={20}
+                    color={theme === "dark" ? "#02c796" : "#02c796"}
+                    style={{ marginRight: 8 }}
+                  />
+                  <CustomText weight="bold" className="text-lg">
+                    {t("dashboard.topStores.title")}
+                  </CustomText>
+                  <View
+                    style={{
+                      backgroundColor: theme === "dark" ? "#3f3f42" : "#ffffff",
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      borderRadius: 12,
+                      marginLeft: 8,
+                    }}
+                  >
+                    <CustomText weight="bold" className="text-sm">
+                      {topStores.length}
+                    </CustomText>
+                  </View>
+                </View>
+
+                {topStores.length > 0 ? (
+                  <View>
+                    {topStores.map((store, index) => (
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingVertical: 12,
+                          borderBottomWidth:
+                            index < topStores.length - 1 ? 1 : 0,
+                          borderBottomColor:
+                            theme === "dark" ? "#3f3f42" : "#e5e7eb",
+                        }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <CustomText
+                            weight="bold"
+                            style={{
+                              color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                            }}
+                          >
+                            {store.name}
+                          </CustomText>
+                          <View className="flex-row gap-2">
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              {store.orders}
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              orders •
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              {store.sales}
+                            </CustomText>
+                            <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
+                              units
+                            </CustomText>
+                          </View>
+                        </View>
+                        <CustomText weight="bold" style={{ color: "#02c796" }}>
+                          {formatCurrency(store.revenue)}
+                        </CustomText>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingVertical: 40,
+                    }}
+                  >
+                    <Ionicons
+                      name="cube-outline"
+                      size={48}
+                      color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
+                    />
+                    <CustomText className="mt-4 opacity-50">
+                      {t("dashboard.topStores.noData")}
                     </CustomText>
                   </View>
                 )}

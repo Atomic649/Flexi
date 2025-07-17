@@ -23,6 +23,15 @@ interface TopProduct {
   orders: number;
 }
 
+interface TopStore {
+  id: number;
+  name: string;
+  platform: string;
+  sales: number;
+  revenue: number;
+  orders: number;
+}
+
 interface PlatformRevenue {
   platform: string;
   revenue: number;
@@ -111,6 +120,26 @@ class CallAPIDashboard {
       return response.data;
     } catch (error) {
       console.error("🚨 Get Top Products API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get Top Stores
+  async getTopStoresAPI(filters: Partial<DashboardFilters> & { limit?: number }): Promise<TopStore[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/top-stores?${queryString}`);
+
+      console.log("🚀Top Stores API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Top Stores API Error:", error);
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {

@@ -591,3 +591,131 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch expense breakdown" });
   }
 };
+
+// Get Top Stores
+export const getTopStores = async (req: Request, res: Response) => {
+  try {
+    const { memberId, period, startDate, endDate, productName, limit = 5 } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    // Build date filter
+    let dateFilter: any = {};
+    const now = new Date();
+    
+    switch (period) {
+      case 'today':
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = new Date(now);
+        todayEnd.setHours(23, 59, 59, 999);
+        dateFilter = {
+          gte: todayStart,
+          lte: todayEnd
+        };
+        break;
+      case 'thisMonth':
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        dateFilter = {
+          gte: monthStart,
+          lte: monthEnd
+        };
+        break;
+      case 'custom':
+        if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          
+          // If it's the same date, set the end date to end of day
+          if (startDate === endDate) {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          } else {
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+          }
+          
+          dateFilter = {
+            gte: start,
+            lte: end
+          };
+        }
+        break;
+    }
+
+    // Build product filter
+    const productFilter = productName ? { product: productName as string } : {};
+
+    // Get bills data grouped by store
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId as string,
+        deleted: false,
+        purchaseAt: dateFilter,
+        ...productFilter
+      },
+      select: {
+        storeId: true,
+        price: true,
+        amount: true
+      }
+    });
+
+    // Get store information
+    const stores = await prisma.store.findMany({
+      where: {
+        memberId: memberId as string,
+        deleted: false
+      },
+      select: {
+        id: true,
+        accName: true,
+        platform: true
+      }
+    });
+
+    // Create a map of store information
+    const storeMap = stores.reduce((acc, store) => {
+      acc[store.id] = {
+        name: store.accName || 'Unknown Store',
+        platform: store.platform || 'Unknown'
+      };
+      return acc;
+    }, {} as Record<number, { name: string; platform: string }>);
+
+    // Group by store and calculate metrics
+    const storeMetrics = bills.reduce((acc: any, bill) => {
+      const storeId = bill.storeId;
+      const storeInfo = storeMap[storeId] || { name: 'Unknown Store', platform: 'Unknown' };
+      
+      if (!acc[storeId]) {
+        acc[storeId] = {
+          id: storeId,
+          name: storeInfo.name,
+          platform: storeInfo.platform,
+          revenue: 0,
+          sales: 0,
+          orders: 0
+        };
+      }
+      acc[storeId].revenue += Number(bill.price) * Number(bill.amount);
+      acc[storeId].sales += Number(bill.amount);
+      acc[storeId].orders += 1;
+      return acc;
+    }, {});
+
+    // Convert to array and sort by revenue
+    const topStores = Object.values(storeMetrics)
+      .sort((a: any, b: any) => b.revenue - a.revenue)
+      .slice(0, parseInt(limit as string));
+
+    res.json(topStores);
+
+  } catch (error) {
+    console.error("Error fetching top stores:", error);
+    res.status(500).json({ error: "Failed to fetch top stores" });
+  }
+};

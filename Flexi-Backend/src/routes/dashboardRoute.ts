@@ -4,6 +4,7 @@ import {
   getDashboardMetrics,
   getSalesChartData,
   getTopProducts,
+  getTopStores,
   getRevenueByPlatform,
   getExpenseBreakdown
 } from "../controllers/dashboardController";
@@ -18,6 +19,9 @@ router.get("/sales-chart", authenticateToken, getSalesChartData);
 
 // Top products endpoint - GET /dashboard/top-products
 router.get("/top-products", authenticateToken, getTopProducts);
+
+// Top stores endpoint - GET /dashboard/top-stores
+router.get("/top-stores", authenticateToken, getTopStores);
 
 // Revenue by platform endpoint - GET /dashboard/revenue-by-platform
 router.get("/revenue-by-platform", authenticateToken, getRevenueByPlatform);
