@@ -1320,7 +1320,8 @@
     "noInvoicesForMonth": "ไม่พบใบแจ้งหนี้สำหรับเดือนนี้",
     "selectSearchType": "เลือกประเภทการค้นหา",
     "shareInvoice": "แชร์ใบแจ้งหนี้",
-    "companyInformation": "ข้อมูลบริษัท"
+    "companyInformation": "ข้อมูลบริษัท",
+    "vatAmount": "ภาษีมูลค่าเพิ่ม"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",

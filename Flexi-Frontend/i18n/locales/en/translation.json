@@ -129,7 +129,8 @@
     "noInvoicesForMonth": "No invoices found for this month",
     "selectSearchType": "Select search type",
     "shareInvoice": "Share Invoice",
-    "companyInformation": "Company Information"
+    "companyInformation": "Company Information",
+    "vatAmount": "VAT Amount"
   },
   "auth": {
     "login": {

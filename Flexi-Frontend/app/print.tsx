@@ -672,7 +672,7 @@ export default function Print() {
                 <div class="value">${formatCurrencyForPDF(monthlyTotals.averageOrderValue)}</div>
               </div>
               <div class="summary-card">
-                <div class="label">${t("print.taxAmount")} (7%)</div>
+                <div class="label">${t("print.vatAmount")} (7%)</div>
                 <div class="value">${formatCurrencyForPDF(monthlyTotals.totalSales * 0.07)}</div>
               </div>
             </div>
@@ -704,14 +704,14 @@ export default function Print() {
                       </td>
                       <td class="text-right">${formatCurrencyForPDF(bill.price)}</td>
                       <td class="text-right">${formatCurrencyForPDF(bill.price * bill.amount * 0.07)}</td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.price * bill.amount)}</td>
+                      <td class="text-right">${formatCurrencyForPDF((bill.price * bill.amount)+(bill.price * bill.amount * 0.07))}</td>
                     </tr>
                   `).join('')}
                   <tr style="background-color: #e5e7eb; font-weight: bold;">
                     <td colspan="5" class="text-right bold">${t("print.total")}</td>
                     <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
                     <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount), 0))}</td>
+                    <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount)+(bill.price * bill.amount * 0.07), 0))}</td>
                   </tr>
                 </tbody>
               </table>

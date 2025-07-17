@@ -316,7 +316,7 @@ export default function Dashboard() {
       <ScrollView>
         <View
           style={{
-            maxWidth: isDesktop() ? 1000 : "100%",
+            maxWidth: isDesktop() ? "45%" : "100%",
             width: "100%",
             paddingHorizontal: 16,
             alignSelf: "center",
@@ -523,7 +523,7 @@ export default function Dashboard() {
               <View style={{ marginBottom: 24 }}>
                 <View
                   style={{
-                    flexDirection: isDesktop() ? "row" : "column",
+                    flexDirection: isDesktop() ? "column" : "column",
                   }}
                 >
                   <MetricCard
@@ -602,7 +602,6 @@ export default function Dashboard() {
                   {salesChartData.length > 0 ? (
                     <LinearChart
                       data={salesChartData}
-                      width={isDesktop() ? 800 : undefined}
                       height={220}
                     />
                   ) : (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Dimensions } from 'react-native';
 import Svg, { Line, Circle, Path, Text as SvgText, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -22,20 +22,23 @@ interface LinearChartProps {
 
 const LinearChart: React.FC<LinearChartProps> = ({
   data,
-  width = Dimensions.get('window').width - 60,
+  width,
   height = 200,
   showGrid = true,
   showLabels = true,
 }) => {
   const { theme } = useTheme();
+  const [containerWidth, setContainerWidth] = useState(0);
   
   if (!data || data.length === 0) {
     return null;
   }
 
+  // Use provided width, container width, or fallback to screen width
+  const chartWidth = width || containerWidth || (Dimensions.get('window').width - 60);
+
   // Calculate dimensions
   const padding = 40;
-  const chartWidth = width - (padding * 2);
   const chartHeight = height - (padding * 2);
 
   // Find min and max values
@@ -115,8 +118,11 @@ const LinearChart: React.FC<LinearChartProps> = ({
   }
 
   return (
-    <View style={{ width, height: height + 40 }}>
-      <Svg width={width} height={height}>
+    <View 
+      style={{ width: '100%', height: height + 40 }} 
+      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width - 80)}
+    >
+      <Svg width={chartWidth} height={height}>
         <Defs>
           <SvgLinearGradient id="incomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <Stop offset="0%" stopColor="#02c796" stopOpacity="0.8" />
