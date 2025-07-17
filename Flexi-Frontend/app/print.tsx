@@ -27,8 +27,7 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { isMobile } from "@/utils/responsive";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import type { PDFFont, RGB } from "pdf-lib";
+import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 
@@ -523,552 +522,149 @@ export default function Print() {
     });
 
     try {
-      // Create a new PDF document
-      const pdfDoc = await PDFDocument.create();
-
-      // Embed standard fonts
-      const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-      const boldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
-      const italicFont = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
-
-      // Add a page to the document
-      const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
-      const { width, height } = page.getSize();
-
-      // Set margins
-      const margin = 40;
-      let yPosition = height - margin;
-      const lineHeight = 20;
-
-      // Helper function to draw text
-      const drawText = (
-        text: string,
-        x: number,
-        y: number,
-        options?: {
-          size?: number;
-          font?: PDFFont;
-          color?: RGB;
-          align?: "left" | "center" | "right";
-        }
-      ) => {
-        const size = options?.size || 10;
-        const font = options?.font || timesRomanFont;
-        const color = options?.color || rgb(0, 0, 0);
-
-        if (options?.align === "center") {
-          const textWidth = font.widthOfTextAtSize(text, size);
-          x = x - textWidth / 2;
-        } else if (options?.align === "right") {
-          const textWidth = font.widthOfTextAtSize(text, size);
-          x = x - textWidth;
-        }
-
-        page.drawText(safeText(text), {
-          x,
-          y,
-          size,
-          font,
-          color,
-        });
-      };
-
-      // Draw title - Company information section
-      drawText(t("print.salesTaxSummary"), width / 2, yPosition, {
-        size: 16,
-        font: boldFont,
-        align: "center",
-      });
-      yPosition -= lineHeight * 1.5;
-
-      // Month and Year header
-      const monthYearText = format(selectedMonth, "MMMM yyyy");
-      drawText(
-        `${t("print.monthYear")} ${monthYearText}`,
-        width / 2,
-        yPosition,
-        { size: 14, font: boldFont, align: "center" }
-      );
-      yPosition -= lineHeight * 2;
-
-      // Company Information
-      drawText(t("print.companyName"), margin, yPosition, {
-        size: 12,
-        font: boldFont,
-      });
-
-      // Get business name from context or use placeholder
-      const businessNameText =
-        businessName || businessDetails?.businessName || "Your Business Name";
-      drawText(businessNameText, margin + 120, yPosition, { size: 12 });
-
-      // Tax ID on right side
-      drawText(t("print.taxId"), width - margin - 200, yPosition, {
-        size: 12,
-        font: boldFont,
-      });
-      yPosition -= lineHeight;
-
-      // Company address
-      if (businessDetails?.businessAddress) {
-        drawText(t("print.address"), margin, yPosition, {
-          size: 12,
-          font: boldFont,
-        });
-        drawText(businessDetails.businessAddress, margin + 120, yPosition, {
-          size: 12,
-        });
-      }
-
-      // Business tax ID number
-      const taxIdNumber = businessDetails?.vatId || "0000000000000";
-      drawText(taxIdNumber, width - margin - 200, yPosition, { size: 12 });
-      yPosition -= lineHeight;
-
-      // Add a horizontal line
-      page.drawLine({
-        start: { x: margin, y: yPosition - 5 },
-        end: { x: width - margin, y: yPosition - 5 },
-        thickness: 1,
-        color: rgb(0.7, 0.7, 0.7),
-      });
-
-      yPosition -= lineHeight * 1.5;
-
-      // Add monthly summary section
-      drawText(t("print.monthlySummary"), margin, yPosition, {
-        size: 14,
-        font: boldFont,
-      });
-      yPosition -= lineHeight * 1.5;
-
-      // Draw summary statistics in a table format
-      const summaryTableWidth = width - margin * 2;
-      const col1 = margin;
-      const col2 = margin + summaryTableWidth * 0.3;
-      const col3 = margin + summaryTableWidth * 0.6;
-
-      // Summary table header - blue background
-      page.drawRectangle({
-        x: margin,
-        y: yPosition - lineHeight,
-        width: summaryTableWidth,
-        height: lineHeight,
-        color: rgb(0.5, 0.57, 0.7), // Similar to the blue in the reference
-      });
-
-      // White text headers
-      drawText(t("print.description"), col1 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-        font: boldFont,
-        color: rgb(1, 1, 1),
-      });
-
-      drawText(t("print.amount"), col2 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-        font: boldFont,
-        color: rgb(1, 1, 1),
-      });
-
-      drawText(t("print.taxAmount"), col3 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-        font: boldFont,
-        color: rgb(1, 1, 1),
-      });
-
-      yPosition -= lineHeight;
-
-      // Light gray for first summary row
-      page.drawRectangle({
-        x: margin,
-        y: yPosition - lineHeight,
-        width: summaryTableWidth,
-        height: lineHeight,
-        color: rgb(0.95, 0.95, 0.95),
-      });
-
-      // Total Sales Data
-      drawText(t("print.totalSales"), col1 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-      });
-      drawText(
-        formatCurrencyForPDF(monthlyTotals.totalSales),
-        col2 + 5,
-        yPosition - lineHeight + 5,
-        { size: 11 }
-      );
-
-      // Calculate tax amount (7% standard VAT in Thailand)
-      const taxAmount = monthlyTotals.totalSales * 0.07;
-      drawText(
-        formatCurrencyForPDF(taxAmount),
-        col3 + 5,
-        yPosition - lineHeight + 5,
-        { size: 11 }
-      );
-
-      yPosition -= lineHeight;
-
-      // White for second summary row
-      page.drawRectangle({
-        x: margin,
-        y: yPosition - lineHeight,
-        width: summaryTableWidth,
-        height: lineHeight,
-        color: rgb(1, 1, 1),
-      });
-
-      // Total Orders
-      drawText(t("print.totalOrders"), col1 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-      });
-      drawText(
-        monthlyTotals.totalOrders.toString(),
-        col2 + 5,
-        yPosition - lineHeight + 5,
-        { size: 11 }
-      );
-      drawText("", col3 + 5, yPosition - lineHeight + 5, { size: 11 });
-
-      yPosition -= lineHeight;
-
-      // Light gray for third summary row
-      page.drawRectangle({
-        x: margin,
-        y: yPosition - lineHeight,
-        width: summaryTableWidth,
-        height: lineHeight,
-        color: rgb(0.95, 0.95, 0.95),
-      });
-
-      // Paid orders
-      drawText(t("print.paidOrders"), col1 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-      });
-      drawText(
-        `${monthlyTotals.paidOrders} (${
-          monthlyTotals.totalOrders > 0
-            ? Math.round(
-                (monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100
-              )
-            : 0
-        }%)`,
-        col2 + 5,
-        yPosition - lineHeight + 5,
-        { size: 11 }
-      );
-      drawText("", col3 + 5, yPosition - lineHeight + 5, { size: 11 });
-
-      yPosition -= lineHeight;
-
-      // White for fourth summary row
-      page.drawRectangle({
-        x: margin,
-        y: yPosition - lineHeight,
-        width: summaryTableWidth,
-        height: lineHeight,
-        color: rgb(1, 1, 1),
-      });
-
-      // Unpaid orders
-      drawText(t("print.unpaidOrders"), col1 + 5, yPosition - lineHeight + 5, {
-        size: 11,
-      });
-      drawText(
-        `${monthlyTotals.unpaidOrders} (${
-          monthlyTotals.totalOrders > 0
-            ? Math.round(
-                (monthlyTotals.unpaidOrders / monthlyTotals.totalOrders) * 100
-              )
-            : 0
-        }%)`,
-        col2 + 5,
-        yPosition - lineHeight + 5,
-        { size: 11 }
-      );
-      drawText("", col3 + 5, yPosition - lineHeight + 5, { size: 11 });
-
-      yPosition -= lineHeight * 2;
-
-      // Add invoices section if there are bills
-      if (bills.length > 0) {
-        drawText(t("print.invoiceList"), margin, yPosition, {
-          size: 14,
-          font: boldFont,
-        });
-        yPosition -= lineHeight * 1.5;
-
-        // Define table columns for invoices
-        const tableWidth = width - margin * 2;
-        const colWidths = [
-          tableWidth * 0.05, // #
-          tableWidth * 0.1, // Date
-          tableWidth * 0.15, // Invoice No
-          tableWidth * 0.25, // Customer
-          tableWidth * 0.15, // Status
-          tableWidth * 0.15, // Price
-          tableWidth * 0.15, // Total with VAT
-        ];
-
-        // Calculate column starting positions
-        const colStarts: number[] = [];
-        let currentX = margin;
-        for (let i = 0; i < colWidths.length; i++) {
-          colStarts.push(currentX);
-          currentX += colWidths[i];
-        }
-
-        // Draw table header with blue background
-        page.drawRectangle({
-          x: margin,
-          y: yPosition - lineHeight,
-          width: tableWidth,
-          height: lineHeight,
-          color: rgb(0.5, 0.57, 0.7), // Similar blue color
-        });
-
-        // Header text
-        const headers = [
-          "#",
-          t("print.date"),
-          t("print.invoiceNo"),
-          t("print.customer"),
-          t("print.status"),
-          t("print.price"),
-          t("print.total"),
-        ];
-
-        // Draw header texts
-        headers.forEach((header, idx) => {
-          drawText(header, colStarts[idx] + 3, yPosition - lineHeight + 5, {
-            size: 10,
-            font: boldFont,
-            color: rgb(1, 1, 1), // White text
-          });
-        });
-
-        yPosition -= lineHeight;
-
-        // Draw each bill as a row in the table
-        // We'll display max 20 bills per page
-        const itemsPerPage = 20;
-        let itemCount = 0;
-        let rowIsGray = false;
-
-        for (let i = 0; i < bills.length; i++) {
-          const bill = bills[i];
-
-          // If we reach the page limit, add a new page and reset counters
-          if (itemCount >= itemsPerPage || yPosition < margin + lineHeight) {
-            // Add new page
-            const newPage = pdfDoc.addPage([595.28, 841.89]);
-            yPosition = height - margin;
-
-            // Add page header
-            drawText(
-              t("print.invoiceList") + " " + t("print.continued"),
-              width / 2,
-              yPosition,
-              {
-                size: 14,
-                font: boldFont,
-                align: "center",
-              }
-            );
-            yPosition -= lineHeight * 2;
-
-            // Reset counter
-            itemCount = 0;
-            rowIsGray = false;
-
-            // Draw table header again
-            page.drawRectangle({
-              x: margin,
-              y: yPosition - lineHeight,
-              width: tableWidth,
-              height: lineHeight,
-              color: rgb(0.5, 0.57, 0.7), // Blue header
-            });
-
-            // Header text again
-            headers.forEach((header, idx) => {
-              drawText(header, colStarts[idx] + 3, yPosition - lineHeight + 5, {
-                size: 10,
-                font: boldFont,
-                color: rgb(1, 1, 1), // White text
-              });
-            });
-
-            yPosition -= lineHeight;
-          }
-
-          // Alternating row colors
-          const rowColor = rowIsGray ? rgb(0.95, 0.95, 0.95) : rgb(1, 1, 1);
-          rowIsGray = !rowIsGray;
-
-          page.drawRectangle({
-            x: margin,
-            y: yPosition - lineHeight,
-            width: tableWidth,
-            height: lineHeight,
-            color: rowColor,
-          });
-
-          // Draw row data
-          // #
-          drawText(
-            (i + 1).toString(),
-            colStarts[0] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          // Date
-          drawText(
-            formatDate(bill.purchaseAt),
-            colStarts[1] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          // Invoice No
-          drawText(
-            `#${bill.id}`,
-            colStarts[2] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          // Customer name - handle long names
-          const customerName = `${bill.cName || ""} ${bill.cLastName || ""}`;
-          drawText(
-            customerName.length > 20
-              ? customerName.substring(0, 17) + "..."
-              : customerName,
-            colStarts[3] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          // Payment status
-          const statusColor = bill.cashStatus
-            ? rgb(0, 0.5, 0)
-            : rgb(0.8, 0.4, 0); // Green for paid, red for unpaid
-          drawText(
-            bill.cashStatus ? t("print.paid") : t("print.unpaid"),
-            colStarts[4] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10, color: statusColor }
-          );
-
-          // Price
-          drawText(
-            formatCurrencyForPDF(bill.price),
-            colStarts[5] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          // Total with VAT
-          drawText(
-            formatCurrencyForPDF(bill.price * bill.amount),
-            colStarts[6] + 3,
-            yPosition - lineHeight + 5,
-            { size: 10 }
-          );
-
-          yPosition -= lineHeight;
-          itemCount++;
-        }
-
-        // Draw totals row with bold formatting
-        page.drawRectangle({
-          x: margin,
-          y: yPosition - lineHeight,
-          width: tableWidth,
-          height: lineHeight,
-          color: rgb(0.9, 0.9, 0.9), // Light gray for total row
-        });
-
-        // Totals text
-        drawText(t("print.total"), margin + 3, yPosition - lineHeight + 5, {
-          size: 10,
-          font: boldFont,
-        });
-
-        // Total amount
-        const totalAmount = bills.reduce(
-          (sum, bill) => sum + bill.price * bill.amount,
-          0
-        );
-
-        // Draw empty cells for date, invoice, customer
-        // Draw the total amount in the price and total columns
-        drawText(
-          formatCurrencyForPDF(totalAmount),
-          colStarts[5] + 3,
-          yPosition - lineHeight + 5,
-          {
-            size: 10,
-            font: boldFont,
-          }
-        );
-
-        drawText(
-          formatCurrencyForPDF(totalAmount),
-          colStarts[6] + 3,
-          yPosition - lineHeight + 5,
-          {
-            size: 10,
-            font: boldFont,
-          }
-        );
-      } else {
-        // No invoices message
-        drawText(t("print.noInvoicesFound"), margin, yPosition, {
-          size: 12,
-          font: italicFont,
-        });
-      }
-
-      // Add footer with generation date and page number
-      const footerY = margin / 2;
-      const footerText = `${t("print.generatedOn")} ${format(
-        new Date(),
-        "dd/MM/yyyy HH:mm"
-      )} - ${t("print.page")} 1 - Flexi Business App`;
-      drawText(footerText, width / 2, footerY, {
-        size: 8,
-        align: "center",
-        color: rgb(0.5, 0.5, 0.5),
-      });
-
-      // Serialize the PDF to bytes
-      const pdfBytes = await pdfDoc.save();
-
-      // Convert the Uint8Array to a base64 string
-      const uint8Array = new Uint8Array(pdfBytes);
-      let binary = "";
-      for (let i = 0; i < uint8Array.byteLength; i++) {
-        binary += String.fromCharCode(uint8Array[i]);
-      }
-      const pdfBase64 = btoa(binary);
-
-      // Generate a filename
-      const fileName = `income_report_${format(selectedMonth, "yyyy-MM")}.pdf`;
-      const filePath = `${FileSystem.documentDirectory}${fileName}`;
-
-      // Write the PDF to the file system
-      await FileSystem.writeAsStringAsync(filePath, pdfBase64, {
-        encoding: FileSystem.EncodingType.Base64,
+      // Create a printable HTML content
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+              .container { padding: 20px; }
+              h1 { font-size: 24px; margin-bottom: 20px; }
+              h2 { font-size: 20px; margin-bottom: 15px; }
+              h3 { font-size: 18px; margin-bottom: 10px; }
+              p { font-size: 14px; line-height: 1.6; margin: 0 0 10px 0; }
+              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+              th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+              th { background-color: #f2f2f2; }
+              .text-center { text-align: center; }
+              .text-right { text-align: right; }
+              .bold { font-weight: bold; }
+              .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 12px; color: #888; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>${t("print.salesTaxSummary")}</h1>
+              <h2>${t("print.monthYear")} ${format(
+                selectedMonth,
+                "MMMM yyyy"
+              )}</h2>
+
+              <h3>${t("print.companyName")}</h3>
+              <p>${t("print.address")}: ${businessDetails?.businessAddress}</p>
+              <p>${t("print.taxId")}: ${businessDetails?.vatId}</p>
+
+              <h3>${t("print.monthlySummary")}</h3>
+              <table>
+                <tr>
+                  <th>${t("print.description")}</th>
+                  <th>${t("print.amount")}</th>
+                  <th>${t("print.taxAmount")}</th>
+                </tr>
+                <tr>
+                  <td>${t("print.totalSales")}</td>
+                  <td class="text-right">
+                    ${formatCurrencyForPDF(monthlyTotals.totalSales)}
+                  </td>
+                  <td class="text-right">
+                    ${formatCurrencyForPDF(monthlyTotals.totalSales * 0.07)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>${t("print.totalOrders")}</td>
+                  <td class="text-right">${monthlyTotals.totalOrders}</td>
+                  <td class="text-right"></td>
+                </tr>
+                <tr>
+                  <td>${t("print.paidOrders")}</td>
+                  <td class="text-right">
+                    ${monthlyTotals.paidOrders} (${
+        monthlyTotals.totalOrders > 0
+          ? Math.round(
+              (monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100
+            )
+          : 0
+      }%)
+                  </td>
+                  <td class="text-right"></td>
+                </tr>
+                <tr>
+                  <td>${t("print.unpaidOrders")}</td>
+                  <td class="text-right">
+                    ${monthlyTotals.unpaidOrders} (${
+        monthlyTotals.totalOrders > 0
+          ? Math.round(
+              (monthlyTotals.unpaidOrders / monthlyTotals.totalOrders) * 100
+            )
+          : 0
+      }%)
+                  </td>
+                  <td class="text-right"></td>
+                </tr>
+                <tr>
+                  <td>${t("print.avgOrderValue")}</td>
+                  <td class="text-right">
+                    ${formatCurrencyForPDF(monthlyTotals.averageOrderValue)}
+                  </td>
+                  <td class="text-right"></td>
+                </tr>
+              </table>
+
+              <h3>${t("print.invoiceList")}</h3>
+              <table>
+                <tr>
+                  <th>#</th>
+                  <th>${t("print.date")}</th>
+                  <th>${t("print.invoiceNo")}</th>
+                  <th>${t("print.customer")}</th>
+                  <th>${t("print.status")}</th>
+                  <th>${t("print.price")}</th>
+                  <th>${t("print.total")}</th>
+                </tr>
+                ${bills
+                  .map(
+                    (bill, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${formatDate(bill.purchaseAt)}</td>
+                    <td>#${bill.id}</td>
+                    <td>${bill.cName} ${bill.cLastName}</td>
+                    <td>${
+                      bill.cashStatus
+                        ? t("print.paid")
+                        : t("print.unpaid")
+                    }</td>
+                    <td class="text-right">${formatCurrencyForPDF(bill.price)}</td>
+                    <td class="text-right">${formatCurrencyForPDF(
+                      bill.price * bill.amount
+                    )}</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </table>
+
+              <div class="footer">
+                ${t("print.generatedOn")} ${format(
+                  new Date(),
+                  "dd/MM/yyyy HH:mm"
+                )} - ${t("print.page")} 1 - Flexi Business App
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      // Print the document
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+        // options: {
+        //   // Add any specific options for printing here
+        // },
       });
 
       // Hide loading indicator
       setAlertConfig((prev) => ({ ...prev, visible: false }));
-
-      // Show PDF preview options modal
-      setPdfPreviewUri(filePath);
-      setPdfPreviewModalVisible(true);
     } catch (error) {
       console.error("Error generating PDF:", error);
       setAlertConfig({
