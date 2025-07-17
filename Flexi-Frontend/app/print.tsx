@@ -762,6 +762,15 @@ export default function Print() {
     });
 
     try {
+      // Create a function to format currency without THB for mobile PDF
+      const formatCurrencyMobile = (amount: number) => {
+        return new Intl.NumberFormat("en-US", {
+          style: "decimal",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(amount);
+      };
+
       // Create a printable HTML content
       const htmlContent = `
         <html>
@@ -804,10 +813,10 @@ export default function Print() {
                 <tr>
                   <td>${t("print.totalSales")}</td>
                   <td class="text-right">
-                    ${formatCurrencyForPDF(monthlyTotals.totalSales)}
+                    ${formatCurrencyMobile(monthlyTotals.totalSales)}
                   </td>
                   <td class="text-right">
-                    ${formatCurrencyForPDF(monthlyTotals.totalSales * 0.07)}
+                    ${formatCurrencyMobile(monthlyTotals.totalSales * 0.07)}
                   </td>
                 </tr>
                 <tr>
@@ -844,14 +853,14 @@ export default function Print() {
                 <tr>
                   <td>${t("print.avgOrderValue")}</td>
                   <td class="text-right">
-                    ${formatCurrencyForPDF(monthlyTotals.averageOrderValue)}
+                    ${formatCurrencyMobile(monthlyTotals.averageOrderValue)}
                   </td>
                   <td class="text-right"></td>
                 </tr>
               </table>
 
               <h3>${t("print.invoiceList")}</h3>
-              <table>
+              <table class="invoice-table">
                 <tr>
                   <th>#</th>
                   <th>${t("print.date")}</th>
@@ -875,12 +884,12 @@ export default function Print() {
                         ? t("print.paid")
                         : t("print.unpaid")
                     }</td>
-                    <td class="text-right">${formatCurrencyForPDF(bill.price)}</td>
-                    <td class="text-right">${formatCurrencyForPDF(
+                    <td class="text-right">${formatCurrencyMobile(bill.price)}</td>
+                    <td class="text-right">${formatCurrencyMobile(
                       bill.price * bill.amount * 0.07
                     )}</td>
-                    <td class="text-right">${formatCurrencyForPDF(
-                      bill.price * bill.amount
+                    <td class="text-right">${formatCurrencyMobile(
+                      (bill.price * bill.amount)+(bill.price * bill.amount * 0.07)
                     )}</td>
                   </tr>
                 `
@@ -888,9 +897,9 @@ export default function Print() {
                   .join("")}
                 <tr style="background-color: #e5e7eb; font-weight: bold;">
                   <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount), 0))}</td>
+                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
+                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
+                  <td class="text-right bold">${formatCurrencyMobile(bills.reduce((sum, bill) => sum + (bill.price * bill.amount)+(bill.price * bill.amount * 0.07), 0))}</td>
                 </tr>
               </table>
 
