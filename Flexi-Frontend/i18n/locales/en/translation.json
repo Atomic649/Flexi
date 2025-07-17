@@ -21,6 +21,20 @@
     "readOnly": "Read Only",
     "editMode": "Edit Mode"
   },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "copyright": "Atomic Intergroup Co., Ltd. All rights reserved.",
   "footer": {
     "terms": "Terms of Service",
@@ -114,7 +128,8 @@
     "searchForInvoices": "Search for invoices",
     "noInvoicesForMonth": "No invoices found for this month",
     "selectSearchType": "Select search type",
-    "shareInvoice": "Share Invoice"
+    "shareInvoice": "Share Invoice",
+    "companyInformation": "Company Information"
   },
   "auth": {
     "login": {

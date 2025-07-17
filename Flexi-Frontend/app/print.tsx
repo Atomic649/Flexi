@@ -74,6 +74,33 @@ const formatDate = (dateString: string) => {
   return format(parsedDate, "dd/MM/yyyy");
 };
 
+// Helper function to get translated month name
+const getTranslatedMonth = (date: Date, t: any) => {
+  const month = date.getMonth();
+  const monthKeys = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ];
+  return t(`months.${monthKeys[month]}`);
+};
+
+// Helper function to format month year with translation
+const formatMonthYear = (date: Date, t: any) => {
+  const translatedMonth = getTranslatedMonth(date, t);
+  const year = date.getFullYear();
+  return `${translatedMonth} ${year}`;
+};
+
 export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -495,7 +522,7 @@ export default function Print() {
       <html>
         <head>
           <meta charset="UTF-8">
-          <title>${t("print.salesTaxSummary")} - ${format(selectedMonth, "MMMM yyyy")}</title>
+          <title>${t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
           <style>
             @media print {
               body { margin: 0; }
@@ -613,7 +640,7 @@ export default function Print() {
         <body>
           <div class="container">
             <h1>${t("print.salesTaxSummary")}</h1>
-            <h2>${t("print.monthlyReport")} ${format(selectedMonth, "MMMM yyyy")}</h2>
+            <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 
             <div class="company-info">
               <h3>${t("print.companyInformation")}</h3>
@@ -778,86 +805,98 @@ export default function Print() {
             <style>
               body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
               .container { padding: 20px; }
-              h1 { font-size: 24px; margin-bottom: 20px; }
-              h2 { font-size: 20px; margin-bottom: 15px; }
-              h3 { font-size: 18px; margin-bottom: 10px; }
-              p { font-size: 14px; line-height: 1.6; margin: 0 0 10px 0; }
+              h1 { font-size: 28px; margin-bottom: 20px; text-align: center; }
+              h2 { font-size: 24px; margin-bottom: 15px; text-align: center; }
+              h3 { font-size: 20px; margin-bottom: 10px; }
+              p { font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; }
               table { width: 100%; border-collapse: collapse; margin: 20px 0; }
               th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
-              th { background-color: #f2f2f2; }
+              th { background-color: #f2f2f2; font-size: 14px; font-weight: bold; }
+              td { font-size: 13px; }
+              .invoice-table th { font-size: 14px; }
+              .invoice-table td { font-size: 13px; }
               .text-center { text-align: center; }
               .text-right { text-align: right; }
               .bold { font-weight: bold; }
-              .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 12px; color: #888; }
+              .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 14px; color: #888; }
+              
+              /* Summary cards styling */
+              .summary-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin: 15px 0;
+              }
+              .summary-card {
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                padding: 12px;
+                background-color: #f8f9fa;
+                text-align: center;
+              }
+              .summary-card .label {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 5px;
+                font-weight: normal;
+              }
+              .summary-card .value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+                margin: 0;
+              }
             </style>
           </head>
           <body>
             <div class="container">
               <h1>${t("print.salesTaxSummary")}</h1>
-              <h2>${t("print.monthYear")} ${format(
-                selectedMonth,
-                "MMMM yyyy"
-              )}</h2>
+              <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 
-              <h3>${t("print.companyName")}</h3>
-              <p>${t("print.address")}: ${businessDetails?.businessAddress}</p>
-              <p>${t("print.taxId")}: ${businessDetails?.vatId}</p>
+              <h3>${t("print.companyInformation")}</h3>
+              <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
+              <p>${t("print.address")}: ${businessDetails?.businessAddress || "Not specified"}</p>
+              <p>${t("print.taxId")}: ${businessDetails?.vatId || "Not specified"}</p>
 
               <h3>${t("print.monthlySummary")}</h3>
-              <table>
-                <tr>
-                  <th>${t("print.description")}</th>
-                  <th>${t("print.amount")}</th>
-                  <th>${t("print.taxAmount")}</th>
-                </tr>
-                <tr>
-                  <td>${t("print.totalSales")}</td>
-                  <td class="text-right">
-                    ${formatCurrencyMobile(monthlyTotals.totalSales)}
-                  </td>
-                  <td class="text-right">
-                    ${formatCurrencyMobile(monthlyTotals.totalSales * 0.07)}
-                  </td>
-                </tr>
-                <tr>
-                  <td>${t("print.totalOrders")}</td>
-                  <td class="text-right">${monthlyTotals.totalOrders}</td>
-                  <td class="text-right"></td>
-                </tr>
-                <tr>
-                  <td>${t("print.paidOrders")}</td>
-                  <td class="text-right">
-                    ${monthlyTotals.paidOrders} (${
+              <div class="summary-grid">
+                <div class="summary-card">
+                  <div class="label">${t("print.totalSales")}</div>
+                  <div class="value">${formatCurrencyMobile(monthlyTotals.totalSales)}</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">${t("print.totalOrders")}</div>
+                  <div class="value">${monthlyTotals.totalOrders}</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">${t("print.paidOrders")}</div>
+                  <div class="value">${monthlyTotals.paidOrders} (${
         monthlyTotals.totalOrders > 0
           ? Math.round(
               (monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100
             )
           : 0
-      }%)
-                  </td>
-                  <td class="text-right"></td>
-                </tr>
-                <tr>
-                  <td>${t("print.unpaidOrders")}</td>
-                  <td class="text-right">
-                    ${monthlyTotals.unpaidOrders} (${
+      }%)</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">${t("print.unpaidOrders")}</div>
+                  <div class="value">${monthlyTotals.unpaidOrders} (${
         monthlyTotals.totalOrders > 0
           ? Math.round(
               (monthlyTotals.unpaidOrders / monthlyTotals.totalOrders) * 100
             )
           : 0
-      }%)
-                  </td>
-                  <td class="text-right"></td>
-                </tr>
-                <tr>
-                  <td>${t("print.avgOrderValue")}</td>
-                  <td class="text-right">
-                    ${formatCurrencyMobile(monthlyTotals.averageOrderValue)}
-                  </td>
-                  <td class="text-right"></td>
-                </tr>
-              </table>
+      }%)</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">${t("print.avgOrderValue")}</div>
+                  <div class="value">${formatCurrencyMobile(monthlyTotals.averageOrderValue)}</div>
+                </div>
+                <div class="summary-card">
+                  <div class="label">${t("print.taxAmount")} (7%)</div>
+                  <div class="value">${formatCurrencyMobile(monthlyTotals.totalSales * 0.07)}</div>
+                </div>
+              </div>
 
               <h3>${t("print.invoiceList")}</h3>
               <table class="invoice-table">
@@ -1509,7 +1548,7 @@ export default function Print() {
                   </TouchableOpacity>
 
                   <CustomText weight="bold" className="text-xl">
-                    {format(selectedMonth, "MMMM yyyy")}
+                    {formatMonthYear(selectedMonth, t)}
                   </CustomText>
 
                   <TouchableOpacity

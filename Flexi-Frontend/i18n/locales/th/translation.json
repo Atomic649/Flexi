@@ -21,6 +21,20 @@
     "readOnly": "อ่านอย่างเดียว",
     "editMode": "โหมดแก้ไข"
   },
+  "months": {
+    "january": "มกราคม",
+    "february": "กุมภาพันธ์",
+    "march": "มีนาคม",
+    "april": "เมษายน",
+    "may": "พฤษภาคม",
+    "june": "มิถุนายน",
+    "july": "กรกฎาคม",
+    "august": "สิงหาคม",
+    "september": "กันยายน",
+    "october": "ตุลาคม",
+    "november": "พฤศจิกายน",
+    "december": "ธันวาคม"
+  },
   "copyright": "บริษัท อะตอมมิค อินเตอร์กรุ๊ป จำกัด .ขอสงวนลิขสิทธิ์",
   "footer": {
     "terms": "ข้อกำหนดการให้บริการ",
@@ -1248,7 +1262,7 @@
     "monthlyReport": "รายงานประจำเดือน",
     "searchResults": "ผลการค้นหา",
     "invoiceSearch": "ค้นหาใบเสร็จ",
-    "findInvoice": "ค้นหาใบเสร็จ",
+       "findInvoice": "ค้นหาใบเสร็จ",
     "monthlyInvoices": "ใบเสร็จประจำเดือน",
     "invoice": "ใบแจ้งหนี้",
     "totalSales": "ยอดขายรวม",
@@ -1305,7 +1319,8 @@
     "searchForInvoices": "ค้นหาใบแจ้งหนี้",
     "noInvoicesForMonth": "ไม่พบใบแจ้งหนี้สำหรับเดือนนี้",
     "selectSearchType": "เลือกประเภทการค้นหา",
-    "shareInvoice": "แชร์ใบแจ้งหนี้"
+    "shareInvoice": "แชร์ใบแจ้งหนี้",
+    "companyInformation": "ข้อมูลบริษัท"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",
