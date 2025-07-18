@@ -20,7 +20,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
   } = data;
 
   const subtotal = invoice.price * invoice.amount;
-  const vatAmount = subtotal * 0.07;
+  const isVatRegistered = businessDetails?.vat === true;
+  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;
 
   return `
@@ -213,10 +214,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <span>${t("print.subtotal")}:</span>
               <span>${formatCurrencyForPDF(subtotal)}</span>
             </div>
+            ${isVatRegistered ? `
             <div class="summary-row">
               <span>${t("print.tax")} (7%):</span>
               <span>${formatCurrencyForPDF(vatAmount)}</span>
             </div>
+            ` : ''}
             <div class="summary-row total">
               <span>${t("print.grandTotal")}:</span>
               <span>${formatCurrencyForPDF(grandTotal)}</span>

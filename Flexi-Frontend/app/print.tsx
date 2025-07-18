@@ -3,12 +3,10 @@ import {
   View,
   SafeAreaView,
   ScrollView,
-  Dimensions,
   TouchableOpacity,
   Platform,
   ActivityIndicator,
   Modal,
-  Share,
 } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -30,7 +28,7 @@ import * as Sharing from "expo-sharing";
 import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
-import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlyReportTemplate";
+import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateMobileInvoiceHTML } from "@/components/PDFTemplates/MobileInvoiceTemplate";
 
@@ -129,6 +127,9 @@ export default function Print() {
     averageOrderValue: 0,
   });
 
+  // Check business is Vat registered
+  const isVatRegistered = businessDetails?.vat === true;
+
   const printRef = useRef<any>(null);
 
   // Alert state
@@ -184,7 +185,7 @@ export default function Print() {
             memberId
           );
           setBusinessDetails(response);
-          console.log("Business Details:", response);
+          console.log("Business Details :", response);
         }
       } catch (error) {
         console.error("Error fetching business details:", error);
@@ -534,11 +535,11 @@ export default function Print() {
     });
 
     // Create a new window for printing
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
-      
+
       // Wait for content to load, then print
       printWindow.onload = () => {
         printWindow.print();
@@ -546,9 +547,9 @@ export default function Print() {
       };
     } else {
       // Fallback: create a blob and open it
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const blob = new Blob([htmlContent], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `income_report_${format(selectedMonth, "yyyy-MM")}.html`;
       document.body.appendChild(link);
@@ -586,11 +587,11 @@ export default function Print() {
     });
 
     // Create a new window for printing
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(htmlContent);
       printWindow.document.close();
-      
+
       // Wait for content to load, then print
       printWindow.onload = () => {
         printWindow.print();
@@ -598,9 +599,9 @@ export default function Print() {
       };
     } else {
       // Fallback: create a blob and open it
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const blob = new Blob([htmlContent], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `invoice_${selectedInvoice.id}.html`;
       document.body.appendChild(link);
@@ -703,7 +704,9 @@ export default function Print() {
       setAlertConfig({
         visible: true,
         title: t("print.error"),
-        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        message: `${t("print.pdfGenerationError")}: ${
+          (error as Error).message
+        }`,
         buttons: [
           {
             text: t("common.ok"),
@@ -832,8 +835,10 @@ export default function Print() {
         <View className="flex-row justify-between items-center">
           <View>
             <View className="flex-row">
-              <CustomText weight="bold" className="mb-1 text-base">
-                {t("print.invoice")}
+              <CustomText weight="bold" className="mb-4 text-lg">
+                {isVatRegistered
+                  ? t("print.monthlyTaxInvoices")
+                  : t("print.monthlyReceipts")}
               </CustomText>
               <CustomText className="mb-1">#</CustomText>
               <CustomText weight="bold" className="mb-1 text-base">
@@ -857,8 +862,10 @@ export default function Print() {
                 invoice.cashStatus ? "bg-green-700" : "bg-orange-700"
               }`}
             >
-              <CustomText className="text-white text-xs"
-              style={{ color: "white", fontSize: 11 }}>
+              <CustomText
+                className="text-white text-xs"
+                style={{ color: "white", fontSize: 11 }}
+              >
                 {invoice.cashStatus
                   ? t("bill.status.paid")
                   : t("bill.status.unpaid")}
@@ -938,8 +945,10 @@ export default function Print() {
                 <View className="flex-row justify-between items-center mb-6">
                   <View className="flex-row">
                     <CustomText weight="bold" className="text-xl">
-                      {t("print.invoice")}
-                    </CustomText>
+                      {isVatRegistered
+                        ? t("print.taxInvoice")
+                        : t("print.receipt")}
+                                          </CustomText>
                     <CustomText weight="bold" className="text-xl">
                       #
                     </CustomText>
@@ -998,8 +1007,7 @@ export default function Print() {
                           : "bg-orange-700"
                       }`}
                     >
-                      <CustomText 
-                      style={{ color: "white", fontSize: 12 }}>
+                      <CustomText style={{ color: "white", fontSize: 12 }}>
                         {selectedInvoice.cashStatus
                           ? t("bill.status.paid")
                           : t("bill.status.unpaid")}
@@ -1010,28 +1018,41 @@ export default function Print() {
 
                 <View className="mb-2">
                   <View className="flex-row justify-between items-center pb-2 mb-2 border-b border-zinc-300">
-                    <CustomText weight="bold" style={{ width: '38%' }}>
+                    <CustomText weight="bold" style={{ width: "38%" }}>
                       {t("print.productName")}
                     </CustomText>
-                    <CustomText weight="bold" style={{ width: '22%', textAlign: 'center' }}>
+                    <CustomText
+                      weight="bold"
+                      style={{ width: "22%", textAlign: "center" }}
+                    >
                       {t("print.quantity")}
                     </CustomText>
-                    <CustomText weight="bold" style={{ width: '20%', textAlign: 'right' }}>
+                    <CustomText
+                      weight="bold"
+                      style={{ width: "20%", textAlign: "right" }}
+                    >
                       {t("print.price")}
                     </CustomText>
-                    <CustomText weight="bold" style={{ width: '20%', textAlign: 'right' }}>
+                    <CustomText
+                      weight="bold"
+                      style={{ width: "20%", textAlign: "right" }}
+                    >
                       {t("print.total")}
                     </CustomText>
                   </View>
-                  
+
                   {/* Product item row */}
                   <View className="flex-row justify-between items-center py-2">
-                    <CustomText style={{ width: '38%' }}>{selectedInvoice.product}</CustomText>
-                    <CustomText style={{ width: '22%', textAlign: 'center' }}>{selectedInvoice.amount}</CustomText>
-                    <CustomText style={{ width: '20%', textAlign: 'right' }}>
+                    <CustomText style={{ width: "38%" }}>
+                      {selectedInvoice.product}
+                    </CustomText>
+                    <CustomText style={{ width: "22%", textAlign: "center" }}>
+                      {selectedInvoice.amount}
+                    </CustomText>
+                    <CustomText style={{ width: "20%", textAlign: "right" }}>
                       {formatCurrency(selectedInvoice.price)}
                     </CustomText>
-                    <CustomText style={{ width: '20%', textAlign: 'right' }}>
+                    <CustomText style={{ width: "20%", textAlign: "right" }}>
                       {formatCurrency(
                         selectedInvoice.price * selectedInvoice.amount
                       )}
@@ -1051,30 +1072,38 @@ export default function Print() {
                         )}
                       </CustomText>
                     </View>
-                    <View className="flex-row justify-between mb-2">
-                      <View className="flex-row">
-                      <CustomText weight="bold">
-                        {t("print.tax")} 
-                      </CustomText>
-                      <CustomText weight="bold">
-                         (7%)
-                      </CustomText>
+                    {isVatRegistered && (
+                      <View className="flex-row justify-between mb-2">
+                        <View className="flex-row">
+                          <CustomText weight="bold">
+                            {t("print.tax")}
+                          </CustomText>
+                          <CustomText weight="bold"> (7%)</CustomText>
+                        </View>
+
+                        <CustomText>
+                          {formatCurrency(
+                            selectedInvoice.price *
+                              selectedInvoice.amount *
+                              0.07
+                          )}
+                        </CustomText>
                       </View>
-                      
-                      <CustomText>
-                        {formatCurrency(
-                          selectedInvoice.price * selectedInvoice.amount * 0.07
-                        )}
-                      </CustomText>
-                    </View>
+                    )}
                     <View className="flex-row justify-between mb-2">
                       <CustomText weight="bold">
                         {t("print.grandTotal")}
                       </CustomText>
                       <CustomText weight="bold">
-                        {formatCurrency(
-                          selectedInvoice.price * selectedInvoice.amount * 1.07
-                        )}
+                        {isVatRegistered
+                          ? formatCurrency(
+                              selectedInvoice.price *
+                                selectedInvoice.amount *
+                                1.07
+                            )
+                          : formatCurrency(
+                              selectedInvoice.price * selectedInvoice.amount
+                            )}
                       </CustomText>
                     </View>
                   </View>
@@ -1185,11 +1214,11 @@ export default function Print() {
         >
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6 pt-4">
-            {!isMobile() && (
+          
               <CustomText weight="bold" className="text-2xl">
                 {t("print.printCenter")}
               </CustomText>
-            )}
+            
             <TouchableOpacity
               onPress={handlePrint}
               className={`flex-row items-center ${isMobile() ? "ml-auto" : ""}`}
@@ -1201,7 +1230,8 @@ export default function Print() {
                 style={{ marginRight: 8 }}
               />
               {!isMobile() && (
-              <CustomText>{t("print.incomeReport")}</CustomText>)}
+                <CustomText>{t("print.incomeReport")}</CustomText>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -1210,12 +1240,12 @@ export default function Print() {
             <TouchableOpacity
               className={`p-3 px-6 rounded-t-lg ${
                 activeTab === TAB_INDICES.MONTHLY_REPORT
-                  ? theme === 'dark'
-                    ? 'bg-zinc-800 border-b-2 border-teal-400'
-                    : 'bg-white border-b-2 border-teal-400'
-                  : theme === 'dark'
-                    ? 'bg-zinc-700'
-                    : 'bg-gray-200'
+                  ? theme === "dark"
+                    ? "bg-zinc-800 border-b-2 border-teal-400"
+                    : "bg-white border-b-2 border-teal-400"
+                  : theme === "dark"
+                  ? "bg-zinc-700"
+                  : "bg-gray-200"
               }`}
               onPress={() => {
                 setActiveTab(TAB_INDICES.MONTHLY_REPORT);
@@ -1225,8 +1255,10 @@ export default function Print() {
                 fetchMonthlyReportData(currentDate);
               }}
             >
-              <CustomText 
-                weight={activeTab === TAB_INDICES.MONTHLY_REPORT ? "bold" : "regular"}
+              <CustomText
+                weight={
+                  activeTab === TAB_INDICES.MONTHLY_REPORT ? "bold" : "regular"
+                }
               >
                 {t("print.monthlyReport")}
               </CustomText>
@@ -1234,24 +1266,26 @@ export default function Print() {
 
             <TouchableOpacity
               className={`p-3 px-6 rounded-t-lg ${
-                activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                  ? theme === 'dark'
-                    ? "bg-zinc-800 border-b-2 border-#02a4a4-400"
-                    : "bg-white border-b-2 border-teal-400"
-                  : theme === 'dark'
-                  ? "bg-zinc-700"
-                  : "bg-gray-200"
+              activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                ? theme === "dark"
+                ? "bg-zinc-800 border-b-2 border-teal-400"
+                : "bg-white border-b-2 border-teal-400"
+                : theme === "dark"
+                ? "bg-zinc-700"
+                : "bg-gray-200"
               }`}
               onPress={() => setActiveTab(TAB_INDICES.INDIVIDUAL_INVOICE)}
             >
               <CustomText
-                weight={
-                  activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                    ? "bold"
-                    : "regular"
-                }
+              weight={
+                activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                ? "bold"
+                : "regular"
+              }
               >
-                {t("print.invoiceSearch")}
+              {isVatRegistered
+                ? t("print.taxInvoiceSearch")
+                : t("print.receiptSearch")}
               </CustomText>
             </TouchableOpacity>
           </View>
@@ -1360,8 +1394,10 @@ export default function Print() {
                               {monthlyTotals.paidOrders}
                             </CustomText>
                             <View className="ml-2 p-1 px-2 rounded-full bg-green-700">
-                              <CustomText className="text-white text-xs"
-                              style={{ color: "white", fontSize: 10 }}>
+                              <CustomText
+                                className="text-white text-xs"
+                                style={{ color: "white", fontSize: 10 }}
+                              >
                                 {monthlyTotals.totalOrders > 0
                                   ? `${Math.round(
                                       (monthlyTotals.paidOrders /
@@ -1393,8 +1429,10 @@ export default function Print() {
                               {monthlyTotals.unpaidOrders}
                             </CustomText>
                             <View className="ml-2 p-1 px-2 rounded-full bg-orange-700">
-                              <CustomText className="text-white text-xs"
-                              style={{ color: "white", fontSize: 10 }}>
+                              <CustomText
+                                className="text-white text-xs"
+                                style={{ color: "white", fontSize: 10 }}
+                              >
                                 {monthlyTotals.totalOrders > 0
                                   ? `${Math.round(
                                       (monthlyTotals.unpaidOrders /
@@ -1431,8 +1469,11 @@ export default function Print() {
                     {/* Monthly Invoices */}
                     <View className="flex-row">
                       <CustomText weight="bold" className="mb-4 text-lg">
-                        {t("print.monthlyInvoices")}
+                        {isVatRegistered
+                          ? t("print.monthlyTaxInvoices")
+                          : t("print.monthlyReceipts")}
                       </CustomText>
+
                       <CustomText weight="bold" className="mb-4 text-lg ml-2">
                         {bills.length}
                       </CustomText>
@@ -1459,7 +1500,9 @@ export default function Print() {
               // Individual Invoice Search Tab
               <>
                 <CustomText weight="bold" className="mb-4 text-lg">
-                  {t("print.findInvoice")}
+                  {isVatRegistered?
+                  t("print.findTaxInvoice"):
+                  t("print.findReceipt")}
                 </CustomText>
 
                 <View className="flex-row mb-4 flex-wrap">

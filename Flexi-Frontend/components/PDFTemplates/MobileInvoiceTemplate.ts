@@ -20,7 +20,8 @@ export const generateMobileInvoiceHTML = (data: MobileInvoiceData): string => {
   } = data;
 
   const subtotal = invoice.price * invoice.amount;
-  const vatAmount = subtotal * 0.07;
+  const isVatRegistered = businessDetails?.vat === true;
+  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;
 
   return `
@@ -386,12 +387,14 @@ export const generateMobileInvoiceHTML = (data: MobileInvoiceData): string => {
                   subtotal
                 )}</span>
               </div>
+              ${isVatRegistered ? `
               <div class="summary-row tax">
                 <span class="summary-label">${t("print.tax")} (7%):</span>
                 <span class="summary-amount">${formatCurrencyForPDF(
                   vatAmount
                 )}</span>
               </div>
+              ` : ''}
               <div class="summary-row total">
                 <span class="summary-label">${t("print.grandTotal")}:</span>
                 <span class="summary-amount">${formatCurrencyForPDF(

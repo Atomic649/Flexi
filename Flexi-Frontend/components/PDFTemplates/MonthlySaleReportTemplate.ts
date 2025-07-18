@@ -31,12 +31,15 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
     formatMonthYear,
   } = data;
 
+  // Check if business is VAT registered
+  const isVatRegistered = businessDetails?.vat === true;
+
   return `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
-        <title>${t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
+        <title>${isVatRegistered  ? t("print.salesTaxVatSummary"): t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
         <style>
           @media print {
             body { margin: 0; }
@@ -153,12 +156,12 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
       </head>
       <body>
         <div class="container">
-          <h1>${t("print.salesTaxSummary")}</h1>
+          <h1>${isVatRegistered ? t("print.salesTaxVatSummary") : t("print.salesTaxSummary")}</h1>
           <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 
           <div class="company-info">
-            <h3>${t("print.companyInformation")}</h3>
-            <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
+            <h3>${businessDetails?.taxType === "Juristic" ? t("print.companyInformation") : t("print.storeInformation")}</h3>
+            <p><strong>${businessDetails?.taxType === "Juristic" ? t("print.companyName") : t("print.storeName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
             <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
             <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
           </div>
@@ -185,13 +188,15 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
               <div class="label">${t("print.avgOrderValue")}</div>
               <div class="value">${formatCurrencyForPDF(monthlyTotals.averageOrderValue)}</div>
             </div>
+            ${isVatRegistered ? `
             <div class="summary-card">
               <div class="label">${t("print.vatAmount")} (7%)</div>
               <div class="value">${formatCurrencyForPDF(monthlyTotals.totalSales * 0.07)}</div>
             </div>
+            ` : ''}
           </div>
 
-          <h3>${t("print.invoiceList")}</h3>
+          <h3>${isVatRegistered ? t("print.taxInvoiceList") : t("print.receiptList")}</h3>
           ${bills.length > 0 ? `
             <table>
               <thead>
@@ -202,12 +207,17 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                   <th>${t("print.customer")}</th>
                   <th>${t("print.status")}</th>
                   <th class="text-right">${t("print.price")}</th>
-                  <th class="text-right">VAT (7%)</th>
-                  <th class="text-right">${t("print.total")}</th>
+                  ${isVatRegistered ? `<th class="text-right">VAT (7%)</th>
+                  <th class="text-right">${t("print.total")}</th>` : ''}
                 </tr>
               </thead>
               <tbody>
-                ${bills.map((bill, index) => `
+                ${bills.map((bill, index) => {
+                  const subtotal = bill.price * bill.amount;
+                  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
+                  const total = subtotal + vatAmount;
+                  
+                  return `
                   <tr>
                     <td>${index + 1}</td>
                     <td>${formatDate(bill.purchaseAt)}</td>
@@ -216,16 +226,21 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                     <td class="${bill.cashStatus ? 'status-paid' : 'status-unpaid'}">
                       ${bill.cashStatus ? t("print.paid") : t("print.unpaid")}
                     </td>
-                    <td class="text-right">${formatCurrencyForPDF(bill.price)}</td>
-                    <td class="text-right">${formatCurrencyForPDF(bill.price * bill.amount * 0.07)}</td>
-                    <td class="text-right">${formatCurrencyForPDF((bill.price * bill.amount)+(bill.price * bill.amount * 0.07))}</td>
+                    <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
+                    ${isVatRegistered ? `<td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
+                    <td class="text-right">${formatCurrencyForPDF(total)}</td>` : ''}
                   </tr>
-                `).join('')}
+                `;
+                }).join('')}
                 <tr style="background-color: #e5e7eb; font-weight: bold;">
                   <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + bill.price, 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount)+(bill.price * bill.amount * 0.07), 0))}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount), 0))}</td>
+                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => {
+                    const subtotal = bill.price * bill.amount;
+                    const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
+                    return sum + subtotal + vatAmount;
+                  }, 0))}</td>` : ''}
                 </tr>
               </tbody>
             </table>
@@ -236,7 +251,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
           `}
 
           <div class="footer">
-            ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business App
+            ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business Hub
           </div>
         </div>
       </body>
