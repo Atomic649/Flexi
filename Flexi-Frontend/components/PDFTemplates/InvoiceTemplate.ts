@@ -29,209 +29,444 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     <html>
       <head>
         <meta charset="UTF-8">
-        <title>${t("print.invoice")} #${invoice.id}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${isVatRegistered ? t("print.taxInvoice") : t("print.receipt")} #${invoice.id}</title>
         <style>
+          @page {
+            margin: 8mm;
+            size: A4 portrait;
+          }
           @media print {
             body { margin: 0; }
             .no-print { display: none; }
           }
+          * {
+            box-sizing: border-box;
+          }
           body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
             padding: 0; 
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 12px;
+            line-height: 1.4;
             color: #333;
           }
-          .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
+          .invoice-container { 
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
           }
-          .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #0891b2;
-            padding-bottom: 20px;
-          }
-          h1 { 
-            font-size: 28px; 
-            margin-bottom: 5px; 
-            color: #0891b2;
-          }
-          .invoice-number {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 20px;
-          }
-          .company-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-          }
-          .company-info h3 {
-            margin-top: 0;
-            color: #0891b2;
-          }
-          .billing-section {
+          
+          /* Header Section */
+          .invoice-header { 
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #00d3be;
           }
-          .billing-info {
-            flex: 1;
+          .company-logo-section h1 { 
+            font-size: 28px; 
+            margin: 0; 
+            color: #00d3be;
+            font-weight: 700;
+            letter-spacing: -0.5px;
           }
-          .billing-info h4 {
-            color: #0891b2;
-            margin-bottom: 10px;
+          .company-logo-section p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
           }
-          .invoice-details {
+          .invoice-meta {
             text-align: right;
-            flex: 1;
+            min-width: 200px;
           }
-          .status-paid {
-            background-color: #059669;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
+          .invoice-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00d3be;
+            margin: 0 0 5px 0;
+          }
+          .invoice-date {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+          }
+          
+          /* Business Info Section */
+          .business-info-section {
+            background: #f0fdfa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00d3be;
+          }
+          .business-info-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d3be;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .business-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+          }
+          .business-details p {
+            margin: 3px 0;
             font-size: 12px;
-            font-weight: bold;
+            line-height: 1.3;
           }
-          .status-unpaid {
-            background-color: #dc2626;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
+          .business-details strong {
+            color: #374151;
+            font-weight: 600;
+          }
+          
+          /* Billing Section */
+          .billing-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+          }
+          .billing-section {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background-color: #fafbfc;
+          }
+          .billing-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d3be;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+          }
+          .billing-section p {
+            margin: 4px 0;
             font-size: 12px;
-            font-weight: bold;
+            line-height: 1.3;
           }
-          table { 
+          .customer-name {
+            font-weight: 600;
+            color: #111827;
+            font-size: 14px !important;
+          }
+          .payment-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+          }
+          .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+          .status-paid { 
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+          }
+          .status-unpaid { 
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+          }
+          
+          /* Items Table */
+          .items-section {
+            margin-bottom: 20px;
+          }
+          .items-table { 
             width: 100%; 
-            border-collapse: collapse; 
-            margin: 30px 0; 
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           }
-          th, td { 
-            padding: 12px; 
-            text-align: left; 
-            border: 1px solid #ddd; 
+          .items-table th { 
+            background: #00d3be;
+            color: white; 
+            padding: 12px 10px;
+            font-size: 12px; 
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: none;
           }
-          th { 
-            background-color: #0891b2; 
-            color: white;
-            font-weight: bold;
+          .items-table td { 
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 12px;
+            background-color: #fafbfc;
+          }
+          .items-table tbody tr:last-child td {
+            border-bottom: none;
           }
           .text-center { text-align: center; }
           .text-right { text-align: right; }
-          .summary-section {
-            margin-top: 30px;
+          .font-medium { font-weight: 500; }
+          .font-bold { font-weight: 600; }
+          
+          /* Summary Section */
+          .summary-section { 
+            margin-bottom: 20px;
+          }
+          .summary-table {
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+          }
+          .summary-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f3f4f6;
+          }
+          .summary-row:last-child {
+            border-bottom: none;
+          }
+          .summary-row.subtotal {
+            color: #6b7280;
+          }
+          .summary-row.tax {
+            color: #6b7280;
+          }
+          .summary-row.total { 
+            border-top: 2px solid #00d3be;
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #00d3be;
+          }
+          .summary-label {
+            font-weight: 500;
+          }
+          .summary-amount {
+            font-weight: 600;
+            min-width: 100px;
             text-align: right;
           }
-          .summary-row {
+          
+          /* Footer */
+          .invoice-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
-          }
-          .summary-row.total {
-            border-top: 2px solid #0891b2;
-            font-weight: bold;
-            font-size: 16px;
-            color: #0891b2;
-            margin-top: 15px;
-            padding-top: 15px;
-          }
-          .footer { 
-            margin-top: 50px;
-            text-align: center; 
-            font-size: 12px; 
-            color: #888; 
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
+            align-items: center;
           }
           .thank-you {
-            text-align: center;
-            margin-top: 40px;
             font-style: italic;
-            color: #666;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+          }
+          .generated-info {
+            font-size: 10px;
+            color: #9ca3af;
+            text-align: right;
+          }
+          
+          /* Mobile Responsive */
+          @media (max-width: 768px) {
+            .invoice-container {
+              padding: 10px;
+            }
+            .invoice-header {
+              flex-direction: column;
+              text-align: center;
+              gap: 10px;
+            }
+            .invoice-meta {
+              text-align: center;
+              min-width: auto;
+            }
+            .company-logo-section h1 {
+              font-size: 24px;
+            }
+            .business-details {
+              grid-template-columns: 1fr;
+              gap: 10px;
+            }
+            .billing-info {
+              grid-template-columns: 1fr;
+              gap: 15px;
+            }
+            .items-table th,
+            .items-table td {
+              padding: 8px 6px;
+              font-size: 11px;
+            }
+            .summary-table {
+              max-width: 100%;
+            }
+            .invoice-footer {
+              flex-direction: column;
+              gap: 10px;
+              text-align: center;
+            }
+            .generated-info {
+              text-align: center;
+            }
+          }
+          
+          /* Print Optimizations */
+          @media print {
+            .invoice-container {
+              max-width: 100%;
+              padding: 10px;
+            }
+            .invoice-header {
+              page-break-inside: avoid;
+            }
+            .business-info-section {
+              page-break-inside: avoid;
+            }
+            .billing-info {
+              page-break-inside: avoid;
+            }
+            .items-table {
+              page-break-inside: avoid;
+            }
+            .summary-section {
+              page-break-inside: avoid;
+            }
+            .invoice-footer {
+              page-break-inside: avoid;
+            }
           }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <h1>${t("print.invoice")}</h1>
-            <div class="invoice-number">#${invoice.id}</div>
+        <div class="invoice-container">
+          <!-- Header -->
+          <div class="invoice-header">
+            <div class="company-logo-section">
+              <h1>${isVatRegistered ? t("print.taxInvoice") : t("print.receipt")}</h1>
+              <p>${t("print.professionalBusinessSolution")}</p>
+            </div>
+            <div class="invoice-meta">
+              <div class="invoice-number">#${invoice.id}</div>
+              <div class="invoice-date">${formatDate(invoice.purchaseAt)}</div>
+            </div>
           </div>
 
-          <div class="company-info">
+          <!-- Business Information -->
+          <div class="business-info-section">
             <h3>${t("print.companyInformation")}</h3>
-            <p><strong>${t("print.companyName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-            <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
-            <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
+            <div class="business-details">
+              <div>
+                <p><strong>${t("print.companyName")}:</strong> ${
+                  businessDetails?.businessName ||
+                  businessName ||
+                  "Your Business Name"
+                }</p>
+                <p><strong>${t("print.address")}:</strong> ${
+                  businessDetails?.businessAddress || t("print.notSpecified")
+                }</p>
+              </div>
+              <div>
+                <p><strong>${t("print.taxId")}:</strong> ${
+                  businessDetails?.vatId || t("print.notSpecified")
+                }</p>
+                <p><strong>${t("print.contact")}:</strong> ${
+                  businessDetails?.phone || t("print.notSpecified")
+                }</p>
+              </div>
+            </div>
           </div>
 
-          <div class="billing-section">
-            <div class="billing-info">
-              <h4>${t("print.billedTo")}:</h4>
-              <p><strong>${invoice.cName} ${invoice.cLastName}</strong></p>
-              <p>${invoice.cPhone || ''}</p>
-              <p>${invoice.cAddress || ''}</p>
-              <p>${invoice.cProvince || ''} ${invoice.cPostId || ''}</p>
+          <!-- Billing Information -->
+          <div class="billing-info">
+            <div class="billing-section">
+              <h3>${t("print.billedTo")}</h3>
+              <p class="customer-name">${invoice.cName} ${invoice.cLastName}</p>
+              <p>${invoice.cPhone || t("print.phoneNotProvided")}</p>
+              <p>${invoice.cAddress || t("print.addressNotProvided")}</p>
+              <p>${invoice.cProvince || ""} ${invoice.cPostId || ""}</p>
             </div>
             
-            <div class="invoice-details">
-              <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(invoice.purchaseAt)}</p>
+            <div class="billing-section">
+              <h3>${t("print.paymentDetails")}</h3>
               <p><strong>${t("print.paymentMethod")}:</strong> ${invoice.payment}</p>
-              <p><strong>${t("print.status")}:</strong> 
-                <span class="${invoice.cashStatus ? 'status-paid' : 'status-unpaid'}">
+              <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(invoice.purchaseAt)}</p>
+              <div class="payment-status">
+                <strong>${t("print.status")}:</strong>
+                <span class="status-badge ${
+                  invoice.cashStatus ? "status-paid" : "status-unpaid"
+                }">
                   ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
                 </span>
-              </p>
+              </div>
             </div>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>${t("print.productName")}</th>
-                <th class="text-center">${t("print.quantity")}</th>
-                <th class="text-right">${t("print.price")}</th>
-                <th class="text-right">${t("print.total")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>${invoice.product}</td>
-                <td class="text-center">${invoice.amount}</td>
-                <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>
-                <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- Items Table -->
+          <div class="items-section">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">${t("print.productName")}</th>
+                  <th class="text-center" style="width: 15%;">${t("print.quantity")}</th>
+                  <th class="text-right" style="width: 17.5%;">${t("print.price")}</th>
+                  <th class="text-right" style="width: 17.5%;">${t("print.total")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-medium">${invoice.product}</td>
+                  <td class="text-center">${invoice.amount}</td>
+                  <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>
+                  <td class="text-right font-bold">${formatCurrencyForPDF(subtotal)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
+          <!-- Summary -->
           <div class="summary-section">
-            <div class="summary-row">
-              <span>${t("print.subtotal")}:</span>
-              <span>${formatCurrencyForPDF(subtotal)}</span>
-            </div>
-            ${isVatRegistered ? `
-            <div class="summary-row">
-              <span>${t("print.tax")} (7%):</span>
-              <span>${formatCurrencyForPDF(vatAmount)}</span>
-            </div>
-            ` : ''}
-            <div class="summary-row total">
-              <span>${t("print.grandTotal")}:</span>
-              <span>${formatCurrencyForPDF(grandTotal)}</span>
+            <div class="summary-table">
+              <div class="summary-row subtotal">
+                <span class="summary-label">${t("print.subtotal")}:</span>
+                <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+              </div>
+              ${isVatRegistered ? `
+              <div class="summary-row tax">
+                <span class="summary-label">${t("print.tax")} (7%):</span>
+                <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+              </div>
+              ` : ''}
+              <div class="summary-row total">
+                <span class="summary-label">${t("print.grandTotal")}:</span>
+                <span class="summary-amount">${formatCurrencyForPDF(grandTotal)}</span>
+              </div>
             </div>
           </div>
 
-          <div class="thank-you">
-            <p>${t("print.thankYou")}</p>
-          </div>
-
-          <div class="footer">
-            ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business App
+          <!-- Footer -->
+          <div class="invoice-footer">
+            <div class="thank-you">
+              ${t("print.thankYou")}
+            </div>
+            <div class="generated-info">
+              ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")}<br>
+              ${t("print.poweredByFlexi")}
+            </div>
           </div>
         </div>
       </body>

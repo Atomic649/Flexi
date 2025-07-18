@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
@@ -30,7 +29,6 @@ import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
-import { generateMobileInvoiceHTML } from "@/components/PDFTemplates/MobileInvoiceTemplate";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -519,7 +517,7 @@ export default function Print() {
     }
   };
 
-  // Function to print HTML content for web/desktop
+  // Function to print HTML Monthly content for web/desktop
   const printHTMLContent = () => {
     // Generate HTML content using the template component
     const htmlContent = generateMonthlyReportHTML({
@@ -683,7 +681,7 @@ export default function Print() {
       const invoice = selectedInvoice;
 
       // Use mobile-optimized template for mobile devices
-      const htmlContent = generateMobileInvoiceHTML({
+      const htmlContent = generateInvoiceHTML({
         invoice,
         businessDetails,
         businessName,
@@ -969,7 +967,7 @@ export default function Print() {
                 </View>
 
                 <View className="flex-row justify-between mb-6">
-                  <View>
+                  <View style={{ maxWidth: '50%' }}>
                     <CustomText weight="bold" className="mb-1">
                       {t("print.billedTo")}
                     </CustomText>
@@ -978,7 +976,9 @@ export default function Print() {
                       <CustomText>{selectedInvoice.cLastName}</CustomText>
                     </View>
                     <CustomText>{selectedInvoice.cPhone}</CustomText>
-                    <CustomText>{selectedInvoice.cAddress}</CustomText>
+                    <CustomText numberOfLines={3} ellipsizeMode="tail" style={{ flexWrap: 'wrap' }}>
+                      {selectedInvoice.cAddress}
+                    </CustomText>
                     <View className="flex-row gap-1">
                       <CustomText>{selectedInvoice.cProvince}</CustomText>
                       <CustomText>{selectedInvoice.cPostId}</CustomText>
@@ -1062,6 +1062,7 @@ export default function Print() {
 
                 <View className="flex-row justify-end mt-2">
                   <View className="w-2/3">
+                  {isVatRegistered && (
                     <View className="flex-row justify-between mb-2">
                       <CustomText weight="bold">
                         {t("print.subtotal")}
@@ -1072,6 +1073,7 @@ export default function Print() {
                         )}
                       </CustomText>
                     </View>
+                    )}
                     {isVatRegistered && (
                       <View className="flex-row justify-between mb-2">
                         <View className="flex-row">
