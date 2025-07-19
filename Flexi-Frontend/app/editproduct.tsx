@@ -296,7 +296,7 @@ export default function EditProduct() {
             <View className="w-1/2 pl-2">
               {/* Unit dropdown moved beside product name */}
               <Dropdown2
-                title={t("product.unit")}
+                title={t("product.unitTitle")}
                 options={units}
                 selectedValue={
                   unit ? units.find((u) => u.value === unit)?.label : ""

@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import icons from "@/constants/icons";
 import { useRouter } from "expo-router";
+import { CustomText } from "./CustomText";
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
@@ -138,20 +139,21 @@ export default function ExpenseCard({
                   >
                     {formatDate(date)}
                   </Text>
-                  <Text
+                  <CustomText
                     className="text-sm font-normal"
                     style={{ color: DescColor }}
                     numberOfLines={1}
                   >
                     {type === "ads" ? note : desc}
-                  </Text>
-                  <Text
+                  </CustomText>
+                  <CustomText
                     className="text-base font-psemibold"
+                    weight="semibold"
                     style={{ color: NoteColor }}
                     numberOfLines={1}
                   >
                     {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
-                  </Text>
+                  </CustomText>
                 </View>
               </View>
               <View className="pt-2 flex-row items-center">

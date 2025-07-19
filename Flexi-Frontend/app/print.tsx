@@ -1216,25 +1216,26 @@ export default function Print() {
         >
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6 pt-4">
-          
+          {!isMobile() && (
               <CustomText weight="bold" className="text-2xl">
                 {t("print.printCenter")}
               </CustomText>
+            )}
             
-            <TouchableOpacity
-              onPress={handlePrint}
-              className={`flex-row items-center ${isMobile() ? "ml-auto" : ""}`}
-            >
-              <Ionicons
-                name="print"
-                size={24}
-                color={theme === "dark" ? "#ffffff" : "#393838"}
-                style={{ marginRight: 8 }}
-              />
-              {!isMobile() && (
+            {activeTab === TAB_INDICES.MONTHLY_REPORT && (
+              <TouchableOpacity
+                onPress={handlePrint}
+                className={`flex-row items-center ${isMobile() ? "ml-auto" : ""}`}
+              >
+                <Ionicons
+                  name="print"
+                  size={24}
+                  color={theme === "dark" ? "#ffffff" : "#393838"}
+                  style={{ marginRight: 8 }}
+                />
                 <CustomText>{t("print.incomeReport")}</CustomText>
-              )}
-            </TouchableOpacity>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Tabs */}

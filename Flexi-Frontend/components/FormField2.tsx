@@ -42,10 +42,10 @@ const FormField = ({
         )}
       </View>
       <View
-        className="w-full h-16 px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
+        className="w-full  px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
         style={{
           backgroundColor: bgColor,
-          height: boxheight ? boxheight : 56,
+          height: boxheight ? boxheight : 50,
           opacity: editable ? 1 : 0.8,
         }}
       >

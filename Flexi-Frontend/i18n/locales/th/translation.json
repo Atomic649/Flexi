@@ -156,6 +156,7 @@
     "createProduct": "สร้างสินค้า",
     "uploadImage": "อัปโหลดรูปภาพ",
     "imageLimit": "คุณสามารถอัปโหลดได้สูงสุด {{count}} รูปภาพ",
+    "unitTitle": "หน่วย",
     "unit": {
       "Piece": "ชิ้น",
       "Hour": "ช.ม.",
@@ -704,7 +705,7 @@
     "detail": {
       "description": "รายละเอียด(ไม่บังคับ)",
       "amount": "จำนวนเงิน",
-      "note": "โน้ต",
+      "note": "บันทึกค่าใช้จ่ายทางบัญชี",
 
       "group": {
         "marketing": "การตลาด",
@@ -1258,7 +1259,7 @@
     "paidOrders": "คำสั่งซื้อที่ชำระแล้ว",
     "avgOrderValue": "มูลค่าคำสั่งซื้อเฉลี่ย",
     "unpaidOrders": "คำสั่งซื้อที่ยังไม่ชำระ",
-    "incomeReport": "รายงานรายได้",
+    "incomeReport": "รายงานรายได้ประจำเดือน",
     "monthlyReport": "รายงานประจำเดือน",
     "searchResults": "ผลการค้นหา",
     "taxInvoiceSearch": "ค้นหาใบเสร็จรับเงิน/ใบกำกับภาษี",

@@ -156,6 +156,7 @@
     "createProduct": "Create Product",
     "uploadImage": "Upload Image",
     "imageLimit": "You can upload up to {{count}} images",
+    "unitTitle": "Unit",
     "unit": {
       "Piece": "pcs",
       "Hour": "Hour",
@@ -1240,7 +1241,7 @@
     }
   },
   "print": {
-    "title": "Printing and Sharing Center",
+    "title": "Print Center",
     "error": "Error",
     "fetchError": "Unable to fetch data",
     "searchError": "An error occurred during the search",
@@ -1260,7 +1261,7 @@
     "paidOrders": "Paid Orders",
     "avgOrderValue": "Average Order Value",
     "unpaidOrders": "Unpaid Orders",
-    "incomeReport": "Income Report",
+    "incomeReport": "Monthly Income Report",
     "monthlyReport": "Monthly Report",
     "searchResults": "Search Results",
     "taxInvoiceSearch": "Search Tax Invoice/Receipt",
@@ -1318,16 +1319,19 @@
     "page": "Page",
     "continued": "Continued",
     "companyName": "Company Name",
+    "storeName": "Store Name",
     "taxId": "Tax ID",
     "address": "Address",
     "monthlySummary": "Monthly Summary",
     "taxAmount": "Tax Amount",
-    "salesTaxSummary": "Sales and Tax Summary",
+    "salesTaxVatSummary": "Sales and VAT Summary Table",
+    "salesTaxSummary": "Sales Summary Table",
     "monthYear": "For the month of",
-    "invoiceList": "Tax Invoice/Receipt List",
+    "taxInvoiceList": "Tax Invoice/Receipt List",
+    "receiptList": "Receipt List",
     "date": "Date",
     "invoiceNo": "Invoice No.",
-    "customer": "Customer",
+    "customer": "Customer Information",
     "paid": "Paid",
     "unpaid": "Unpaid",
     "noInvoicesFound": "No tax invoices/receipts found for this period",
@@ -1342,9 +1346,10 @@
     "noInvoicesForMonth": "No tax invoices/receipts found for this month",
     "selectSearchType": "Select search type",
     "shareInvoice": "Share Tax Invoice/Receipt",
-    "companyInformation": "Company Information"
+    "companyInformation": "Company Information",
+    "storeInformation": "Store Information",
+    "paymentDetails": "Payment Details"
   },
-  
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",
     "vatDesc": "If you are a business owner with annual revenue exceeding 1.8 million THB, you must register for VAT with the Revenue Department.",
