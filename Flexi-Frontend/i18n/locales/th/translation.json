@@ -1328,7 +1328,7 @@
     "receiptList": "รายการใบเสร็จรับเงิน",
     "date": "วันที่",
     "invoiceNo": "เลขที่",
-    "customer": "ลูกค้า",
+    "customer": "ข้อมูลลูกค้า",
     "paid": "ชำระแล้ว",
     "unpaid": "ยังไม่ชำระ",
     "noInvoicesFound": "ไม่พบใบเสร็จรับเงิน/ใบกำกับภาษีสำหรับช่วงเวลานี้",
@@ -1344,7 +1344,8 @@
     "selectSearchType": "เลือกประเภทการค้นหา",
     "shareInvoice": "แชร์ใบเสร็จรับเงิน/ใบกำกับภาษี",
     "companyInformation": "ข้อมูลบริษัท",
-    "storeInformation": "ข้อมูลผู้ประกอบการ"
+    "storeInformation": "ข้อมูลผู้ประกอบการ",
+    "paymentDetails": "รายละเอียดการชำระเงิน"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",

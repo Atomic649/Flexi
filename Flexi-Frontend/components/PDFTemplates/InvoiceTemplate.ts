@@ -64,12 +64,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             align-items: flex-start;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #00d3be;
+            border-bottom: 2px solid #5e5e5e;
           }
           .company-logo-section h1 { 
             font-size: 28px; 
             margin: 0; 
-            color: #00d3be;
+            color: #5e5e5e;
             font-weight: 700;
             letter-spacing: -0.5px;
           }
@@ -86,7 +86,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           .invoice-number {
             font-size: 20px;
             font-weight: 700;
-            color: #00d3be;
+            color: #5e5e5e;
             margin: 0 0 5px 0;
           }
           .invoice-date {
@@ -97,17 +97,17 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Business Info Section */
           .business-info-section {
-            background: #f0fdfa;
+            background: #fafbfc;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #00d3be;
+            border-left: 4px solid #5e5e5e;
           }
           .business-info-section h3 {
             margin: 0 0 12px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #00d3be;
+            color: #5e5e5e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
@@ -143,7 +143,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             margin: 0 0 10px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #00d3be;
+            color: #5e5e5e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid #e5e7eb;
@@ -196,7 +196,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           }
           .items-table th { 
-            background: #00d3be;
+            background: #5e5e5e;
             color: white; 
             padding: 12px 10px;
             font-size: 12px; 
@@ -245,12 +245,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             color: #6b7280;
           }
           .summary-row.total { 
-            border-top: 2px solid #00d3be;
+            border-top: 2px solid #5e5e5e;
             margin-top: 8px;
             padding-top: 12px;
             font-weight: 700;
             font-size: 16px;
-            color: #00d3be;
+            color: #5e5e5e;
           }
           .summary-label {
             font-weight: 500;
@@ -287,13 +287,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             .invoice-container {
               padding: 10px;
             }
+            /* Keep header side by side on mobile */
             .invoice-header {
-              flex-direction: column;
-              text-align: center;
+              flex-direction: row;
+              text-align: left;
               gap: 10px;
             }
             .invoice-meta {
-              text-align: center;
+              text-align: left;
               min-width: auto;
             }
             .company-logo-section h1 {
@@ -304,7 +305,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               gap: 10px;
             }
             .billing-info {
-              grid-template-columns: 1fr;
+              grid-template-columns: 1fr 1fr;
               gap: 15px;
             }
             .items-table th,
@@ -368,25 +369,15 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
 
           <!-- Business Information -->
           <div class="business-info-section">
-            <h3>${t("print.companyInformation")}</h3>
+            <h3>${businessDetails?.taxType === "Juristic" ? t("print.companyInformation") : t("print.storeInformation")}</h3>
             <div class="business-details">
               <div>
-                <p><strong>${t("print.companyName")}:</strong> ${
-                  businessDetails?.businessName ||
-                  businessName ||
-                  "Your Business Name"
-                }</p>
-                <p><strong>${t("print.address")}:</strong> ${
-                  businessDetails?.businessAddress || t("print.notSpecified")
-                }</p>
+                <p><strong>${businessDetails?.taxType === "Juristic" ? t("print.companyName") : t("print.storeName") }:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
+                <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || t("print.notSpecified")}</p>
               </div>
               <div>
-                <p><strong>${t("print.taxId")}:</strong> ${
-                  businessDetails?.vatId || t("print.notSpecified")
-                }</p>
-                <p><strong>${t("print.contact")}:</strong> ${
-                  businessDetails?.phone || t("print.notSpecified")
-                }</p>
+                <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || t("print.notSpecified")}</p>
+                <p><strong>${t("print.contact")}:</strong> ${businessDetails?.phone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>
@@ -441,11 +432,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <!-- Summary -->
           <div class="summary-section">
             <div class="summary-table">
+              ${isVatRegistered ? `
               <div class="summary-row subtotal">
                 <span class="summary-label">${t("print.subtotal")}:</span>
                 <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
               </div>
-              ${isVatRegistered ? `
               <div class="summary-row tax">
                 <span class="summary-label">${t("print.tax")} (7%):</span>
                 <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
@@ -465,7 +456,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </div>
             <div class="generated-info">
               ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")}<br>
-              ${t("print.poweredByFlexi")}
+              Flexi Business Hub
             </div>
           </div>
         </div>

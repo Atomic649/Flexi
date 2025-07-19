@@ -72,7 +72,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             font-size: 16px; 
             margin-bottom: 10px; 
             color: #333;
-            border-bottom: 2px solid #0891b2;
+            border-bottom: 2px solid #5e5e5e;
             padding-bottom: 5px;
           }
           p { 
@@ -92,7 +92,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             border: 1px solid #ddd; 
           }
           th { 
-            background-color: #0891b2; 
+            background-color: #5e5e5e; 
             color: white;
             font-weight: bold;
           }
