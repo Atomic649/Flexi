@@ -1360,7 +1360,9 @@
     "annualExpense": "Annual Expenses",
     "annualIncome": "Annual Revenue",
     "taxDocAlert": "Document Alert: Save more on taxes",
-    "vatRegistration": "VAT Registration"
+    "vatRegistration": "VAT Registration",
+    "corpRegistration": "Corporate Registration",
+    "tipTitle": "Tips for Tax Savings"
   },
   "Individual": "Individual",
   "Juristic": "Company"

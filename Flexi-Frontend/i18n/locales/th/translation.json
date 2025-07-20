@@ -1358,8 +1358,19 @@
     "annualExpense": "ค่าใช้จ่ายทั้งปีตอนนี้",
     "annualIncome": "รายได้ทั้งปีตอนนี้",
     "taxDocAlert": "แจ้งเตือนเก็บเอกสารประหยัดภาษีกว่า",
-    "vatRegistration": "ลงทะเบียนภาษีมูลค่าเพิ่ม"
+    "vatRegistration": "จดทะเบียนภาษีมูลค่าเพิ่ม",
+    "corpRegistration": "นิติบุคคล",
+    "tipTitle": "คำนวณดึงเงินออกจากบริษัทแบบประหยัดภาษี",
+    "salary": "เงินเดือน",
+    "dividend": "เงินปันผล",
+    "rental": "ค่าเช่า",
+    "wage": "ค่าจ้าง",
+    "otherProfession": "วิชาชีพอื่นๆ",
+    "monthly": "รายเดือน",
+    "yearly": "รายปี",
+    "reduct": "หักค่าใช้จ่าย",
+    "reductMax": "ตามจริง"
   },
   "Individual": "บุคคลธรรมดา",
-  "Juristic": "บริษัท"
+  "Juristic": "นิติบุคคล"
 }
