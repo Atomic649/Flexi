@@ -18,7 +18,6 @@ import { Ionicons } from "@expo/vector-icons";
 import FormField from "../FormField3";
 import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
 
-
 export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -42,26 +41,26 @@ export default function TaxDoc() {
   // Handle form field values
   const [salary, setSalary] = useState(0);
   const [wage, setWage] = useState(0);
-  const [rental, setRental] = useState(0);
-  const [otherProfession, setOtherProfession] = useState(0);
+  const [carRental, setCarRental] = useState(0);
+  const [officeRental, setOfficeRental] = useState(0); 
   const [yearIncome, setYearIncome] = useState(0);
   const [allYearWage, setAllYearWage] = useState(0);
-  const [allYearRental, setAllYearRental] = useState(0);
-  const [allYearOtherProfession, setAllYearOtherProfession] = useState(0);
+  const [allYearCarRental, setAllYearCarRental] = useState(0);
+  const [allYearOfficeRental, setAllYearOfficeRental] = useState(0);
   const [reductSalary, setReductSalary] = useState(""); // Default value for reduct
   const [reductWage, setReductWage] = useState(""); // Default value for reduct
-  const [reductRental, setReductRental] = useState(""); // Default value for reduct
-  const [reductOtherProfession, setReductOtherProfession] = useState(""); // Default value for reduct
+  const [reductCarRental, setReductCarRental] = useState(""); // Default value for reduct
+  const [reductOfficeRental, setReductOfficeRental] = useState(""); // Default value for reduct
 
   // sum
   const monthlySum =
-    Number(salary) + Number(wage) + Number(rental) + Number(otherProfession);
+    Number(salary) + Number(wage) + Number(carRental) + Number(officeRental);
   const yearlySum = monthlySum * 12;
   const reductSum =
     Number(reductSalary) +
     Number(reductWage) +
-    Number(reductRental) +
-    Number(reductOtherProfession);
+    Number(reductCarRental) +
+    Number(reductOfficeRental);
 
   // get business data from API
   const fetchBusinessDataDetails = async () => {
@@ -87,6 +86,7 @@ export default function TaxDoc() {
         style={{
           width: Dimensions.get("window").width > 768 ? "100%" : "100%",
           alignSelf: "center", // Center the content on larger screens
+          padding: 10,
         }}
       >
         {/* VAT7% */}
@@ -346,7 +346,7 @@ export default function TaxDoc() {
           </View>
           {/* title */}
           <View className="flex-row gap-2">
-            <View className="flex-1 w-1/4" ></View>
+            <View className="flex-1 w-1/4"></View>
             <View className="flex-1 w-1/4 items-start">
               <CustomText style={{}} className="text-base text-left">
                 {t("taxDoc.monthly")}
@@ -394,34 +394,6 @@ export default function TaxDoc() {
                 bgColor="#ededed"
                 textcolor="#5e5e5e"
               />
-
-              <FormField
-                title={t("taxDoc.rental")}
-                value={rental}
-                value2={allYearRental.toString()}
-                onChangeText={(value: number) => {
-                  setRental(value);
-                  setAllYearRental(Number(value) * 12);
-                }}
-                placeholder="0"
-                placeholder3="100000"
-                bgColor="#ededed"
-                textcolor="#5e5e5e"
-              />
-
-              <FormField
-                title={t("taxDoc.otherProfession")}
-                value={otherProfession}
-                value2={allYearOtherProfession.toString()}
-                onChangeText={(value: number) => {
-                  setOtherProfession(value);
-                  setAllYearOtherProfession(Number(value) * 12);
-                }}
-                placeholder="0"
-                placeholder3="100000"
-                bgColor="#ededed"
-                textcolor="#5e5e5e"
-              />
             </View>
             {/* Reduct Section*/}
             <View className="flex-col gap-2" style={{ width: "20%" }}>
@@ -452,8 +424,26 @@ export default function TaxDoc() {
                   editable={true}
                   keyboardType="numeric"
                 />
-              </View>
-              <View
+              </View>              
+            
+            </View>
+          </View>
+          {/* CarRental Section */}
+          <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
+            <FormField
+              title={t("taxDoc.carRental")}
+              value={carRental}
+              value2={allYearCarRental.toString()}
+              onChangeText={(value: number) => {
+                setCarRental(value);
+                setAllYearCarRental(Number(value) * 12);
+              }}
+              placeholder="0"
+              placeholder3="100000"
+              bgColor="#ededed"
+              textcolor="#5e5e5e"
+            />
+            <View
                 className="rounded-2xl border-2 border-transparent  "
                 style={{
                   backgroundColor: "#ededed",
@@ -464,11 +454,11 @@ export default function TaxDoc() {
               >
                 <TextInput
                   className="flex-1 font-psemibold text-base px-2"
-                  value={reductRental.toString()}
+                  value={reductCarRental.toString()}
                   placeholder={t("taxDoc.reductMax")}
                   placeholderTextColor={"#a5a5a5"}
                   onChangeText={(value: string) =>
-                    setReductRental(Number(value).toString())
+                    setReductCarRental(Number(value).toString())
                   }
                   style={{
                     color: "#5e5e5e",
@@ -481,7 +471,23 @@ export default function TaxDoc() {
                   keyboardType="numeric"
                 />
               </View>
-              <View
+          </View>
+          {/* OfficeRental Section */}
+          <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
+            <FormField
+              title={t("taxDoc.officeRental")}
+              value={officeRental}
+              value2={allYearOfficeRental.toString()}
+              onChangeText={(value: number) => {
+                setOfficeRental(value);
+                setAllYearOfficeRental(Number(value) * 12);
+              }}
+              placeholder="0"
+              placeholder3="100000"
+              bgColor="#ededed"
+              textcolor="#5e5e5e"
+            />
+            <View
                 className="rounded-2xl border-2 border-transparent  "
                 style={{
                   backgroundColor: "#ededed",
@@ -492,11 +498,11 @@ export default function TaxDoc() {
               >
                 <TextInput
                   className="flex-1 font-psemibold text-base px-2"
-                  value={reductOtherProfession.toString()}
+                  value={reductOfficeRental.toString()}
                   placeholder={t("taxDoc.reductMax")}
                   placeholderTextColor={"#a5a5a5"}
                   onChangeText={(value: string) =>
-                    setReductOtherProfession(Number(value).toString())
+                    setReductOfficeRental(Number(value).toString())
                   }
                   style={{
                     color: "#5e5e5e",
@@ -504,13 +510,13 @@ export default function TaxDoc() {
                       i18n.language === "th"
                         ? "IBMPlexSansThai-Medium"
                         : "Poppins-Regular",
-                  }}
+                  }} 
                   editable={true}
                   keyboardType="numeric"
                 />
               </View>
             </View>
-          </View>
+
           {/* Sum */}
           <View className="flex-row pt-4 gap-2">
             <View className="flex-1 " style={{ width: "20%" }}></View>
@@ -535,3 +541,4 @@ export default function TaxDoc() {
     </SafeAreaView>
   );
 }
+
