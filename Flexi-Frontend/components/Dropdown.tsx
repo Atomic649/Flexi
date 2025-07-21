@@ -25,12 +25,12 @@ const Dropdown = ({
         className="w-full h-16 px-4 bg-[#423f39]  rounded-2xl border-2 border-[#423f39] flex flex-row items-center justify-between"
         onPress={() => setIsOpen(!isOpen)}
       >
-        <Text
+        <CustomText
           className="text-white font-psemibold text-base"
           
         >
           {selectedValue || placeholder}
-        </Text>
+        </CustomText>
         <CustomText className="text-zinc-300 font-psemibold text-base">
           {isOpen ? "▲" : "▼"}
         </CustomText>
@@ -48,9 +48,9 @@ const Dropdown = ({
                 setIsOpen(false);
               }}
             >
-              <Text className="text-zinc-100 font-psemibold text-base">
+              <CustomText className="text-zinc-100 font-psemibold text-base">
                 {item.label}
-              </Text>
+              </CustomText>
             </TouchableOpacity>
           )}
           {...props}

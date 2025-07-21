@@ -32,15 +32,15 @@ export function Text(props: TextProps) {
     const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
     const fontFamilyMap = {
-        thin: 'NotoSansThai-Thin',
-        extraLight: 'NotoSansThai-ExtraLight',
-        light: 'NotoSansThai-Light',
-        regular: 'NotoSansThai-Regular',
-        medium: 'NotoSansThai-Medium',
-        semiBold: 'NotoSansThai-SemiBold',
-        bold: 'NotoSansThai-Bold',
-        extraBold: 'NotoSansThai-ExtraBold',
-        black: 'NotoSansThai-Black',
+        thin: 'IBMPlexSansThai-Thin',
+        extraLight: 'IBMPlexSansThai-ExtraLight',
+        light: 'IBMPlexSansThai-Light',
+        regular: 'IBMPlexSansThai-Regular',
+        medium: 'IBMPlexSansThai-Medium',
+        semiBold: 'IBMPlexSansThai-SemiBold',
+        bold: 'IBMPlexSansThai-Bold',
+        extraBold: 'IBMPlexSansThai-ExtraBold',
+        black: 'IBMPlexSansThai-Black',
     };
 
     return <DefaultText style={[{ color, fontFamily: fontFamilyMap[fontWeight] }, style]} {...otherProps} />;

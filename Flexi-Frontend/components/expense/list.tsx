@@ -89,7 +89,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
       ? "#b4b4b5"
       : "#4b5563",
     fontFamily:
-      i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
+      i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
   };
 
   // Fetch expenses function

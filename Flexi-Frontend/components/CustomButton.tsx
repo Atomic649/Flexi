@@ -1,4 +1,5 @@
 import { ActivityIndicator, TouchableOpacity ,Text} from "react-native"
+import { CustomText } from "./CustomText"; // Ensure this path is correct
 
 
 const CustomButton = ({
@@ -17,9 +18,9 @@ const CustomButton = ({
       }`}
       disabled={isLoading}
     >
-      <Text className={`text-primary font-bold text-lg ${textStyles}`}>
+      <CustomText className={`font-bold text-lg text-white ${textStyles}`}>
         {title}
-      </Text>
+      </CustomText>
 
       {isLoading && (
         <ActivityIndicator

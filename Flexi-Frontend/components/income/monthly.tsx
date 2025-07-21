@@ -100,7 +100,7 @@ const monthly = () => {
       : "#4b5563",
    // fontWeight: "900" as "900",
     fontFamily:
-      i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
+      i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
   };
 
   return (

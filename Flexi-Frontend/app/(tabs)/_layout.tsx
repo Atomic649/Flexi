@@ -95,9 +95,9 @@ export default function TabLayout() {
           fontSize: Dimensions.get("window").width > 768  ? 16 : 12,
           fontFamily:
             i18n.language === "th"
-              ? "NotoSansThai-Regular"
+              ? "IBMPlexSansThai-Medium"
               : "Poppins-Regular",
-          marginTop: 5,
+          marginTop: 5, 
         },
         tabBarStyle: {
           backgroundColor: tabBarBackgroundColor,

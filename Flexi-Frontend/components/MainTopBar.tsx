@@ -76,7 +76,7 @@ const MainTopBar = {
           {isLoading ? (
             <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
           ) : (
-            <CustomText className="text-base font-bold text-zinc-500 " numberOfLines={1}>
+            <CustomText className="text-base font-bold " numberOfLines={1}>
               {businessName || ""}
             </CustomText>
           )}

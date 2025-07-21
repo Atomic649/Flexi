@@ -8,13 +8,13 @@ interface CustomTextProps extends TextProps {
   link?: boolean;
 }
 
-export function CustomText({ children, weight = 'regular', style, ...props }: CustomTextProps) {
+export function CustomText({ children, weight = 'medium', style, ...props }: CustomTextProps) {
   const { i18n } = useTranslation();
   const { theme } = useTheme();
   const isThaiLanguage = i18n.language === 'th';
 
   const getFontFamily = () => {
-    const prefix = isThaiLanguage ? 'NotoSansThai' : 'Poppins';
+    const prefix = isThaiLanguage ? 'IBMPlexSansThai' : 'Poppins';
     const capitalizedWeight = weight.charAt(0).toUpperCase() + weight.slice(1);
     return `${prefix}-${capitalizedWeight}`;
   };
@@ -47,7 +47,8 @@ export function CustomText({ children, weight = 'regular', style, ...props }: Cu
       style={[
       { 
         fontFamily: getFontFamily(),
-        color: props.link ? '#00dec1' : theme === 'dark' ? '#b4b3b3' : '#2a2a2a'
+        color: props.link ? '#00dec1' : theme === 'dark' ? '#b4b3b3' : '#2a2a2a',
+       
       }, 
       style
       ]}

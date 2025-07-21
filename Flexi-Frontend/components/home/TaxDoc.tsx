@@ -16,6 +16,8 @@ import CallAPIBusiness from "@/api/business_api";
 import { taxType } from "../../../Flexi-Backend/src/generated/client1/index.d";
 import { Ionicons } from "@expo/vector-icons";
 import FormField from "../FormField3";
+import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
+
 
 export default function TaxDoc() {
   const { t } = useTranslation();
@@ -51,14 +53,15 @@ export default function TaxDoc() {
   const [reductRental, setReductRental] = useState(""); // Default value for reduct
   const [reductOtherProfession, setReductOtherProfession] = useState(""); // Default value for reduct
 
-// sum
-const monthlySum = Number(salary) + Number(wage) + Number(rental) + Number(otherProfession);
-const yearlySum = monthlySum * 12;
-const reductSum =
-  Number(reductSalary) +
-  Number(reductWage) +
-  Number(reductRental) +
-  Number(reductOtherProfession);
+  // sum
+  const monthlySum =
+    Number(salary) + Number(wage) + Number(rental) + Number(otherProfession);
+  const yearlySum = monthlySum * 12;
+  const reductSum =
+    Number(reductSalary) +
+    Number(reductWage) +
+    Number(reductRental) +
+    Number(reductOtherProfession);
 
   // get business data from API
   const fetchBusinessDataDetails = async () => {
@@ -327,24 +330,34 @@ const reductSum =
           }}
         >
           <View className="px-4 flex-row gap-2">
-            <CustomText className="text-lg mb-2 font-bold">
+            {/* icon */}
+            <Ionicons>
+              <Ionicons
+                name="cash"
+                size={24}
+                color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+                style={{ marginRight: 4 }}
+              />
+            </Ionicons>
+            {/* title */}
+            <CustomText className="text-lg mb-4 font-bold">
               {t("taxDoc.tipTitle")}
             </CustomText>
           </View>
           {/* title */}
           <View className="flex-row gap-2">
-            <View className="flex-1 " style={{ width: "23%" }}></View>
-            <View className="flex-1 w-1/4 items-center">
+            <View className="flex-1 w-1/4" ></View>
+            <View className="flex-1 w-1/4 items-start">
               <CustomText style={{}} className="text-base text-left">
                 {t("taxDoc.monthly")}
               </CustomText>
             </View>
-            <View className="flex-1 w-1/4 items-center">
+            <View className="flex-1 w-1/4 items-start">
               <CustomText style={{}} className="text-base text-left">
                 {t("taxDoc.yearly")}
               </CustomText>
             </View>
-            <View className="flex-1 w-1/4 items-center">
+            <View className="flex-1 w-1/4 items-start">
               <CustomText style={{}} className="text-base text-left">
                 {t("taxDoc.reduct")}
               </CustomText>
@@ -353,7 +366,7 @@ const reductSum =
 
           <View className="flex-row items-start ">
             {/* Month&year Section*/}
-            <View className="flex-col gap-2" style={{ width: "80%" }}>
+            <View className="flex-col gap-2" style={{ width: "75%" }}>
               <FormField
                 title={t("taxDoc.salary")}
                 value={salary}
@@ -429,7 +442,13 @@ const reductSum =
                   onChangeText={(value: string) =>
                     setReductSalary(Number(value).toString())
                   }
-                  style={{ color: "#5e5e5e" }}
+                  style={{
+                    color: "#5e5e5e",
+                    fontFamily:
+                      i18n.language === "th"
+                        ? "IBMPlexSansThai-Medium"
+                        : "Poppins-Regular",
+                  }}
                   editable={true}
                   keyboardType="numeric"
                 />
@@ -451,7 +470,13 @@ const reductSum =
                   onChangeText={(value: string) =>
                     setReductRental(Number(value).toString())
                   }
-                  style={{ color: "#5e5e5e" }}
+                  style={{
+                    color: "#5e5e5e",
+                    fontFamily:
+                      i18n.language === "th"
+                        ? "IBMPlexSansThai-Medium"
+                        : "Poppins-Regular",
+                  }} 
                   editable={true}
                   keyboardType="numeric"
                 />
@@ -473,34 +498,38 @@ const reductSum =
                   onChangeText={(value: string) =>
                     setReductOtherProfession(Number(value).toString())
                   }
-                  style={{ color: "#5e5e5e" }}
+                  style={{
+                    color: "#5e5e5e",
+                    fontFamily:
+                      i18n.language === "th"
+                        ? "IBMPlexSansThai-Medium"
+                        : "Poppins-Regular",
+                  }}
                   editable={true}
                   keyboardType="numeric"
                 />
               </View>
             </View>
           </View>
-           {/* Sum */}
-           <View className="flex-row pt-2 gap-2">
-            <View className="flex-1 " style={{ width: "23%" }}></View>
-            <View className="flex-1 w-1/4 items-center">
-              <CustomText weight="semibold" className="text-base text-left"
-                style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}>
+          {/* Sum */}
+          <View className="flex-row pt-4 gap-2">
+            <View className="flex-1 " style={{ width: "20%" }}></View>
+            <View className="flex-1 w-1/4 items-start">
+              <CustomText className="text-base text-right">
                 {monthlySum.toLocaleString()}
               </CustomText>
             </View>
-            <View className="flex-1 w-1/4 items-center">
-              <CustomText style={{}} className="text-base text-left">
+            <View className="flex-1 w-1/4 items-start">
+              <CustomText className="text-base text-right">
                 {yearlySum.toLocaleString()}
               </CustomText>
             </View>
-            <View className="flex-1 w-1/4 items-center">
-              <CustomText style={{}} className="text-base text-left">
+            <View className="flex-1 w-1/4 items-start">
+              <CustomText className="text-base text-right">
                 {reductSum.toLocaleString()}
               </CustomText>
             </View>
           </View>
-
         </View>
       </ScrollView>
     </SafeAreaView>

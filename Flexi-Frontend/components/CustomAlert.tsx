@@ -55,7 +55,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
               weight="medium"
               className="text-lg text-center"
               style={{ 
-                fontFamily: i18n.language === 'th' ? 'NotoSansThai-Medium' : 'Poppins-Medium'
+                fontFamily: i18n.language === 'th' ? 'IBMPlexSansThai-Medium' : 'Poppins-Medium'
               }}
             >
               {title}
@@ -70,7 +70,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
                 theme === 'dark' ? 'text-zinc-300' : 'text-zinc-600'
               }`}
               style={{ 
-                fontFamily: i18n.language === 'th' ? 'NotoSansThai-Regular' : 'Poppins-Regular'
+                fontFamily: i18n.language === 'th' ? 'IBMPlexSansThai-Regular' : 'Poppins-Regular'
               }}
             >
               {message}
@@ -101,7 +101,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
                       className={`text-center ${getButtonStyle(button.style)}`}
                       style={{ 
                         fontFamily: i18n.language === 'th' 
-                          ? button.style === 'cancel' ? 'NotoSansThai-Regular' : 'NotoSansThai-Medium'
+                          ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
                           : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
                       }}
                     >
@@ -119,7 +119,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
                       className={`text-center ${getButtonStyle(button.style)}`}
                       style={{ 
                         fontFamily: i18n.language === 'th' 
-                          ? button.style === 'cancel' ? 'NotoSansThai-Regular' : 'NotoSansThai-Medium'
+                          ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
                           : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
                       }}
                     >

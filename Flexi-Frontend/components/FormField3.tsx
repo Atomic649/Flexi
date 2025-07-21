@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Image } from "react-native";
 import { icons } from "../constants";
 import { CustomText } from "./CustomText"; // Make sure to import CustomText
 import { Ionicons } from "@expo/vector-icons";
+import i18n from "../i18n"; // Adjust the path if your i18n config is elsewhere
 
 const FormField = ({
   title,
@@ -62,22 +63,30 @@ const FormField = ({
           width: "33%",
           opacity: editable ? 1 : 0.8,
           marginRight: 5,
+          
         }}
       >
         <TextInput
           className="flex-1 font-psemibold text-base"
+          style={{
+            fontFamily:
+              i18n.language === "th"
+                ? "IBMPlexSansThai-Medium"
+                : "Poppins-Regular",
+            color: textcolor,
+          }}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
           onChangeText={handleChangeText}
-          style={{ color: textcolor }}
           editable={editable}
           keyboardType="numeric"
           {...props}
         />
       </View>
       <View
-        className="px-2 rounded-2xl border-2 border-transparent flex-row items-center"        style={{
+        className="px-2 rounded-2xl border-2 border-transparent flex-row items-center"
+        style={{
           backgroundColor: bgColor,
           height: boxheight ? boxheight : 40,
           width: "33%",
@@ -87,12 +96,18 @@ const FormField = ({
       >
         {value2 > 0 && (
           <TextInput
-            className="flex-1 font-psemibold text-base"
+            className="flex-1 font-psemibold text-base "
+            style={{
+              fontFamily:
+                i18n.language === "th"
+                  ? "IBMPlexSansThai-Medium"
+                  : "Poppins-Regular",
+              color: textcolor,
+            }}
             value={value2}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
             editable={false}
-            style={{ color: textcolor }}
             keyboardType="numeric"
             {...props}
           />

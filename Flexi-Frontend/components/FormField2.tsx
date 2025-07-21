@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Image } from "react-native";
 import { icons } from "../constants";
 import { CustomText } from "./CustomText"; // Make sure to import CustomText
 import { Ionicons } from "@expo/vector-icons";
+import i18n from "../i18n"; // Adjust the path if your i18n config is elsewhere
 
 const FormField = ({
   title,
@@ -51,12 +52,12 @@ const FormField = ({
       >
         <TextInput
           className="flex-1 font-psemibold text-base"
+          style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",color: textcolor }}          
           value={value}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showPassword}
-          style={{ color: textcolor }}
           editable={editable}
           {...props}
         />

@@ -373,15 +373,12 @@ export default function RootLayout() {
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
     "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
-    "NotoSansThai-Thin": require("../assets/fonts/NotoSansThai-Thin.ttf"),
-    "NotoSansThai-ExtraLight": require("../assets/fonts/NotoSansThai-ExtraLight.ttf"),
-    "NotoSansThai-Light": require("../assets/fonts/NotoSansThai-Light.ttf"),
-    "NotoSansThai-Regular": require("../assets/fonts/NotoSansThai-Regular.ttf"),
-    "NotoSansThai-Medium": require("../assets/fonts/NotoSansThai-Medium.ttf"),
-    "NotoSansThai-SemiBold": require("../assets/fonts/NotoSansThai-SemiBold.ttf"),
-    "NotoSansThai-Bold": require("../assets/fonts/NotoSansThai-Bold.ttf"),
-    "NotoSansThai-ExtraBold": require("../assets/fonts/NotoSansThai-ExtraBold.ttf"),
-    "NotoSansThai-Black": require("../assets/fonts/NotoSansThai-Black.ttf"),
+    "IBMPlexSansThai-Regular": require("../assets/fonts/IBMPlexSansThai-Regular.ttf"),
+    "IBMPlexSansThai-Medium": require("../assets/fonts/IBMPlexSansThai-Medium.ttf"),
+    "IBMPlexSansThai-SemiBold": require("../assets/fonts/IBMPlexSansThai-SemiBold.ttf"),
+    "IBMPlexSansThai-Bold": require("../assets/fonts/IBMPlexSansThai-Bold.ttf"),
+    "IBMPlexSansThai-Thin": require("../assets/fonts/IBMPlexSansThai-Thin.ttf"),
+    "IBMPlexSansThai-ExtraLight": require("../assets/fonts/IBMPlexSansThai-ExtraLight.ttf"),
   });
 
   if (error) throw error;
@@ -407,6 +404,7 @@ const showTopBarAndBackIcon = (theme: string) => ({
   headerShown: true,
   headerStyle: {
     backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
@@ -425,6 +423,7 @@ const showTopBarAndBackToSetting = (theme: string) => ({
   headerShown: true,
   headerStyle: {
     backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
@@ -447,5 +446,5 @@ const HideTopBar = () => ({
 const getHeaderTitleStyle = () => ({
   fontSize: 15,
   fontFamily:
-    i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
+    i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
 });

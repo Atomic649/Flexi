@@ -180,7 +180,7 @@ export default function RoadMap() {
             className="text-center justify-center text-lg font-bold"
             style={{
               color: theme === "dark" ? "#08ffe6" : "#04ecd5",
-              fontFamily: i18n.language === "th" ? "NotoSansThai-Regular" : "Poppins-Regular",
+              fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
               fontSize: 18,
               fontWeight: "bold" as "bold",
             }}

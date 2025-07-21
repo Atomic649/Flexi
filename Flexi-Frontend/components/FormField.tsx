@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, TextInput, TouchableOpacity, Image } from "react-native";
 import { icons } from "../constants";
 import { CustomText } from "./CustomText";
+import i18n from "../i18n"; // Adjust the path if your i18n config is elsewhere
 
 const FormField = ({
     title,
@@ -20,6 +21,7 @@ const FormField = ({
             <View className="w-full h-16 px-4 bg-[#423f39] rounded-2xl border-2 border-[#423f39] focus:border-secondary flex flex-row items-center">
                 <TextInput
                     className="flex-1 text-white font-psemibold text-base"
+                    style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular" }}
                     value={value}
                     placeholder={placeholder}
                     placeholderTextColor="#989795"

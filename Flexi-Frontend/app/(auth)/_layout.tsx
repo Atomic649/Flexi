@@ -9,7 +9,7 @@ export default function AuthLayout() {
     <>
       <Stack screenOptions={{
         headerTitleStyle: {
-          fontFamily: i18n.language === 'th' ? "NotoSansThai-Regular" : "Poppins-Regular",
+          fontFamily: i18n.language === 'th' ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
         }
       }}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
