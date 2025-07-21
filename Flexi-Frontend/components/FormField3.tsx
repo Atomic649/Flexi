@@ -36,8 +36,8 @@ const FormField = ({
     borderWidth: 1,
     borderColor: "#ededed",
     borderRadius: 8,
-    paddingHorizontal: 8,
-    height: 32,
+    paddingHorizontal: 4,
+    height: 33,
     backgroundColor: "#f9f9f9",
   };
 

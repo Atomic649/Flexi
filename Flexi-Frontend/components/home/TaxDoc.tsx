@@ -28,7 +28,7 @@ const commonTextInputStyle: TextStyle = {
   borderWidth: 1,
   borderColor: "#ededed",
   borderRadius: 8,
-  paddingHorizontal: 8,
+  paddingHorizontal: 4,
   height: 32,
   backgroundColor: "#f9f9f9",
 };
@@ -407,6 +407,69 @@ export default function TaxDoc() {
           </View>
         )}
 
+        {/* Individual Tax */}
+        <View
+          className="p-4"
+          style={{
+            backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+            borderRadius: 10,
+            margin: 10,
+          }}
+        >
+          <View className="px-4 flex-row gap-2 items-start">
+            {/* Yearly Income */}
+            <View
+              className="
+              flex-col w-1/4 items-center"
+            >
+              <CustomText>{t("taxDoc.yearIncome")}</CustomText>
+              <CustomText
+              className="pt-2">{yearlySum.toLocaleString()}</CustomText>
+            </View>
+            {/* Reduct */}
+            <View className="flex-col w-1/4 items-center">
+              <CustomText>{t("taxDoc.reduction")}</CustomText>
+              <CustomText className="pt-2">{reductSum.toLocaleString()}</CustomText>
+            </View>
+            {/* TextInput Exemption */}
+            <View className="flex-col w-1/4 items-center">
+              <CustomText>{t("taxDoc.exemption")}</CustomText>
+              <TextInput
+                value={exemption.toString()}
+                onChangeText={(value) => setExemption(Number(value) || 0)}
+                placeholder="0"
+                placeholderTextColor="#a5a5a5"
+                keyboardType="numeric"
+                style={commonTextInputStyle}
+              />
+            </View>
+            {/* Taxable Income */}
+            <View className="flex-col w-1/4 items-center">
+              <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
+              <CustomText className="pt-2">
+                {(yearlySum - (reductSum + exemption)).toLocaleString()}
+              </CustomText>
+            </View>
+          </View>
+          {/* Tax Calculation */}
+          <View className="p-4 flex-row gap-2 items-center">
+            <CustomText>{t("taxDoc.individualTax")}</CustomText>
+            <CustomText
+            weight="bold"
+            style={{
+              color: theme === "dark" ? "#06fbc6" : "#0be4c0",
+              fontSize: 28,
+              marginLeft: 10,
+              
+              }}>
+              {(() => {
+                const taxableIncome = yearlySum - (reductSum + exemption);
+                return calculateTax(taxableIncome).toLocaleString();
+              })()}
+            </CustomText>
+          </View>
+        </View>
+
         {/* Tip to take money from corparate to individual spend */}
         <View
           className="p-4"
@@ -427,14 +490,14 @@ export default function TaxDoc() {
               />
             </Ionicons>
             {/* title */}
-            <CustomText className="text-lg mb-2 font-bold">
+            <CustomText className="text-lg mb- font-bold">
               {t("taxDoc.tipTitle")}
             </CustomText>
           </View>
 
           {/* Add more carRental */}
           <TouchableOpacity
-            className="flex-row gap-2 items-end mb-2 justify-end"
+            className="flex-row gap-2 items-end mt-2 mb-6 justify-end"
             onPress={() => {
               if (carRentals.length < 3) {
                 setCarRentals([
@@ -519,7 +582,8 @@ export default function TaxDoc() {
                   height: 86,
                   opacity: 0.8,
                   width: 80,
-                  paddingTop: 20,
+                 // paddingTop: 20,
+                  
                 }}
               >
                 <TextInput
@@ -527,14 +591,14 @@ export default function TaxDoc() {
                   value={
                     Number(reductSalary) > 0 ? reductSalary.toString() : ""
                   }
-                  placeholder="50% max100K"
+                  placeholder="50% max 100,000"
                   placeholderTextColor={"#a5a5a5"}
                   onChangeText={(value: string) =>
                     setReductSalary(Number(value).toString())
                   }
                   style={{
                     ...commonTextInputStyle,
-                    height: 90,
+                    height: 180,
                     textAlignVertical: "center",
                   }}
                   editable={false}
@@ -559,7 +623,7 @@ export default function TaxDoc() {
                   marginTop: idx === 0 ? 10 : 0,
                 }}
               >
-                <FormField
+                <FormField                  
                   title={
                     <>
                       {t("taxDoc.carRental")}
@@ -596,6 +660,7 @@ export default function TaxDoc() {
                     height: 40,
                     opacity: 0.8,
                     width: 80,
+                    
                   }}
                 >
                   <TextInput
@@ -701,67 +766,7 @@ export default function TaxDoc() {
           </View>
         </View>
 
-        {/* Individual Tax */}
-        <View
-          className="p-4"
-          style={{
-            backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-            borderRadius: 10,
-            margin: 10,
-          }}
-        >
-          <View className="px-4 flex-row gap-2 items-center">
-            {/* Yearly Income */}
-            <View
-              className="
-              flex-col w-1/4"
-            >
-              <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-              <CustomText>{yearlySum.toLocaleString()}</CustomText>
-            </View>
-            {/* Reduct */}
-            <View className="flex-col w-1/4">
-              <CustomText>{t("taxDoc.reduct")}</CustomText>
-              <CustomText>{reductSum.toLocaleString()}</CustomText>
-            </View>
-            {/* TextInput Exemption */}
-            <View className="flex-col w-1/4">
-              <CustomText>{t("taxDoc.exemption")}</CustomText>
-              <TextInput
-                value={exemption.toString()}
-                onChangeText={(value) => setExemption(Number(value) || 0)}
-                placeholder="0"
-                placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
-                style={commonTextInputStyle}
-              />
-            </View>
-            {/* Taxable Income */}
-            <View className="flex-col w-1/4">
-              <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
-              <CustomText>
-                {(yearlySum - (reductSum + exemption)).toLocaleString()}
-              </CustomText>
-            </View>
-          </View>
-          {/* Tax Calculation */}
-          <View className="p-4 flex-row gap-2 items-center">
-            <CustomText>{t("taxDoc.individualTax")}</CustomText>
-            <CustomText
-            weight="bold"
-            style={{
-              color: theme === "dark" ? "#06fbc6" : "#0be4c0",
-              fontSize: 28,
-              marginLeft: 10,
-              
-              }}>
-              {(() => {
-                const taxableIncome = yearlySum - (reductSum + exemption);
-                return calculateTax(taxableIncome).toLocaleString();
-              })()}
-            </CustomText>
-          </View>
-        </View>
+        
       </ScrollView>
     </SafeAreaView>
   );
