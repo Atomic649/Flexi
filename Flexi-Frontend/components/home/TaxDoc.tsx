@@ -5,6 +5,7 @@ import {
   View,
   Text,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
@@ -41,25 +42,29 @@ export default function TaxDoc() {
   // Handle form field values
   const [salary, setSalary] = useState(0);
   const [wage, setWage] = useState(0);
-  const [carRental, setCarRental] = useState(0);
-  const [officeRental, setOfficeRental] = useState(0); 
+  const [officeRental, setOfficeRental] = useState(0);
   const [yearIncome, setYearIncome] = useState(0);
   const [allYearWage, setAllYearWage] = useState(0);
-  const [allYearCarRental, setAllYearCarRental] = useState(0);
   const [allYearOfficeRental, setAllYearOfficeRental] = useState(0);
   const [reductSalary, setReductSalary] = useState(""); // Default value for reduct
   const [reductWage, setReductWage] = useState(""); // Default value for reduct
-  const [reductCarRental, setReductCarRental] = useState(""); // Default value for reduct
   const [reductOfficeRental, setReductOfficeRental] = useState(""); // Default value for reduct
+  // Car rental state as array
+  const [carRentals, setCarRentals] = useState([
+    { value: 0, yearly: 0, reduct: "" },
+  ]);
 
-  // sum
+  // Updated sum logic to include all car rentals
   const monthlySum =
-    Number(salary) + Number(wage) + Number(carRental) + Number(officeRental);
+    Number(salary) +
+    Number(wage) +
+    carRentals.reduce((sum, car) => sum + Number(car.value), 0) +
+    Number(officeRental);
   const yearlySum = monthlySum * 12;
   const reductSum =
     Number(reductSalary) +
     Number(reductWage) +
-    Number(reductCarRental) +
+    carRentals.reduce((sum, car) => sum + Number(car.reduct), 0) +
     Number(reductOfficeRental);
 
   // get business data from API
@@ -340,10 +345,40 @@ export default function TaxDoc() {
               />
             </Ionicons>
             {/* title */}
-            <CustomText className="text-lg mb-4 font-bold">
+            <CustomText className="text-lg mb-2 font-bold">
               {t("taxDoc.tipTitle")}
             </CustomText>
           </View>
+
+          {/* Add more carRental */}
+          <TouchableOpacity
+            className="flex-row gap-2 items-end mb-2 justify-end"
+            onPress={() => {
+              if (carRentals.length < 3) {
+                setCarRentals([
+                  ...carRentals,
+                  { value: 0, yearly: 0, reduct: "" },
+                ]);
+              }
+            }}
+            disabled={carRentals.length >= 3}
+          >
+            <Ionicons
+              name="add-circle"
+              size={24}
+              color={
+                carRentals.length >= 3
+                  ? "#ccc"
+                  : theme === "dark"
+                  ? "#06fbc6"
+                  : "#0be4c0"
+              }
+              style={{ marginRight: 4 }}
+            />
+            <CustomText className="text-base text-left">
+              {t("taxDoc.addMoreCar")}
+            </CustomText>
+          </TouchableOpacity>
           {/* title */}
           <View className="flex-row gap-2">
             <View className="flex-1 w-1/4"></View>
@@ -424,54 +459,86 @@ export default function TaxDoc() {
                   editable={true}
                   keyboardType="numeric"
                 />
-              </View>              
-            
+              </View>
             </View>
           </View>
           {/* CarRental Section */}
-          <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
-            <FormField
-              title={t("taxDoc.carRental")}
-              value={carRental}
-              value2={allYearCarRental.toString()}
+          {carRentals.map((car, idx) => (
+            <View
+              key={idx}
+              className="flex-row gap-2"
+              style={{
+              width: "75%",
+              marginTop: idx === 0 ? 10 : 0,
+              }}
+            >
+              <FormField
+              title={
+                t("taxDoc.carRental") +
+                (carRentals.length > 1 ? ` #${idx + 1}` : "")
+              }
+              value={car.value}
+              value2={car.yearly.toString()}
               onChangeText={(value: number) => {
-                setCarRental(value);
-                setAllYearCarRental(Number(value) * 12);
+                const updated = [...carRentals];
+                updated[idx].value = value;
+                updated[idx].yearly = Number(value) * 12;
+                setCarRentals(updated);
               }}
               placeholder="0"
               placeholder3="100000"
               bgColor="#ededed"
               textcolor="#5e5e5e"
-            />
-            <View
-                className="rounded-2xl border-2 border-transparent  "
+              />
+
+              <View
+              className="rounded-2xl border-2 border-transparent  "
+              style={{
+                backgroundColor: "#ededed",
+                height: 40,
+                opacity: 0.8,
+                width: 80,
+              }}
+              >
+              <TextInput
+                className="flex-1 font-psemibold text-base px-2"
+                value={car.reduct.toString()}
+                placeholder={t("taxDoc.reductMax")}
+                placeholderTextColor={"#a5a5a5"}
+                onChangeText={(value: string) => {
+                const updated = [...carRentals];
+                updated[idx].reduct = Number(value).toString();
+                setCarRentals(updated);
+                }}
                 style={{
-                  backgroundColor: "#ededed",
-                  height: 40,
-                  opacity: 0.8,
-                  width: 80,
+                color: "#5e5e5e",
+                fontFamily:
+                  i18n.language === "th"
+                  ? "IBMPlexSansThai-Medium"
+                  : "Poppins-Regular",
+                }}
+                editable={true}
+                keyboardType="numeric"
+              />
+              </View>
+              {/* Delete icon */}
+              {carRentals.length > 1 && (
+              <TouchableOpacity
+                onPress={() => {
+                const updated = carRentals.filter((_, i) => i !== idx);
+                setCarRentals(updated);
+                }}
+                style={{
+                justifyContent: "flex-start",
+                alignItems: "center",
+                paddingRight: 20,
                 }}
               >
-                <TextInput
-                  className="flex-1 font-psemibold text-base px-2"
-                  value={reductCarRental.toString()}
-                  placeholder={t("taxDoc.reductMax")}
-                  placeholderTextColor={"#a5a5a5"}
-                  onChangeText={(value: string) =>
-                    setReductCarRental(Number(value).toString())
-                  }
-                  style={{
-                    color: "#5e5e5e",
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
-                  }} 
-                  editable={true}
-                  keyboardType="numeric"
-                />
-              </View>
-          </View>
+                <Ionicons name="close-circle" size={20} color="#ff4d4f" />
+              </TouchableOpacity>
+              )}
+            </View>
+          ))}
           {/* OfficeRental Section */}
           <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
             <FormField
@@ -488,34 +555,34 @@ export default function TaxDoc() {
               textcolor="#5e5e5e"
             />
             <View
-                className="rounded-2xl border-2 border-transparent  "
+              className="rounded-2xl border-2 border-transparent  "
+              style={{
+                backgroundColor: "#ededed",
+                height: 40,
+                opacity: 0.8,
+                width: 80,
+              }}
+            >
+              <TextInput
+                className="flex-1 font-psemibold text-base px-2"
+                value={reductOfficeRental.toString()}
+                placeholder={t("taxDoc.reductMax")}
+                placeholderTextColor={"#a5a5a5"}
+                onChangeText={(value: string) =>
+                  setReductOfficeRental(Number(value).toString())
+                }
                 style={{
-                  backgroundColor: "#ededed",
-                  height: 40,
-                  opacity: 0.8,
-                  width: 80,
+                  color: "#5e5e5e",
+                  fontFamily:
+                    i18n.language === "th"
+                      ? "IBMPlexSansThai-Medium"
+                      : "Poppins-Regular",
                 }}
-              >
-                <TextInput
-                  className="flex-1 font-psemibold text-base px-2"
-                  value={reductOfficeRental.toString()}
-                  placeholder={t("taxDoc.reductMax")}
-                  placeholderTextColor={"#a5a5a5"}
-                  onChangeText={(value: string) =>
-                    setReductOfficeRental(Number(value).toString())
-                  }
-                  style={{
-                    color: "#5e5e5e",
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
-                  }} 
-                  editable={true}
-                  keyboardType="numeric"
-                />
-              </View>
+                editable={true}
+                keyboardType="numeric"
+              />
             </View>
+          </View>
 
           {/* Sum */}
           <View className="flex-row pt-4 gap-2">
@@ -541,4 +608,3 @@ export default function TaxDoc() {
     </SafeAreaView>
   );
 }
-
