@@ -27,6 +27,20 @@ const FormField = ({
 }: any) => {
   const [] = useState(false);
 
+  // Define a common style for all TextInputs (same as exemption in TaxDoc)
+  const commonTextInputStyle = {
+    color: textcolor || "#5e5e5e",
+    fontFamily:
+      i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
+    textAlign: "right",
+    borderWidth: 1,
+    borderColor: "#ededed",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    height: 32,
+    backgroundColor: "#f9f9f9",
+  };
+
   return (
     <View className={`flex-row ${otherStyles}`}>
       <View
@@ -58,23 +72,16 @@ const FormField = ({
       <View
         className="px-2 rounded-2xl border-2 border-transparent flex-row items-center"
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: "transparent",
           height: boxheight ? boxheight : 40,
           width: "33%",
           opacity: editable ? 1 : 0.8,
           marginRight: 5,
-          
         }}
       >
         <TextInput
           className="flex-1 font-psemibold text-base"
-          style={{
-            fontFamily:
-              i18n.language === "th"
-                ? "IBMPlexSansThai-Medium"
-                : "Poppins-Regular",
-            color: textcolor,
-          }}
+          style={commonTextInputStyle}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
@@ -87,31 +94,23 @@ const FormField = ({
       <View
         className="px-2 rounded-2xl border-2 border-transparent flex-row items-center"
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: "transparent",
           height: boxheight ? boxheight : 40,
           width: "33%",
           opacity: editable ? 1 : 0.8,
           marginRight: 4,
         }}
       >
-        {value2 > 0 && (
-          <TextInput
-            className="flex-1 font-psemibold text-base "
-            style={{
-              fontFamily:
-                i18n.language === "th"
-                  ? "IBMPlexSansThai-Medium"
-                  : "Poppins-Regular",
-              color: textcolor,
-            }}
-            value={value2}
-            placeholder={placeholder}
-            placeholderTextColor={placeholderTextColor}
-            editable={false}
-            keyboardType="numeric"
-            {...props}
-          />
-        )}
+        <TextInput
+          className="flex-1 font-psemibold text-base "
+          style={commonTextInputStyle}
+          value={value2}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+          editable={false}
+          keyboardType="numeric"
+          {...props}
+        />
       </View>
     </View>
   );

@@ -19,6 +19,20 @@ import { Ionicons } from "@expo/vector-icons";
 import FormField from "../FormField3";
 import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
 
+import { TextStyle } from "react-native";
+
+const commonTextInputStyle: TextStyle = {
+  color: "#5e5e5e",
+  fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
+  textAlign: "right",
+  borderWidth: 1,
+  borderColor: "#ededed",
+  borderRadius: 8,
+  paddingHorizontal: 8,
+  height: 32,
+  backgroundColor: "#f9f9f9",
+};
+
 export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -53,6 +67,8 @@ export default function TaxDoc() {
   const [carRentals, setCarRentals] = useState([
     { value: 0, yearly: 0, reduct: "" },
   ]);
+  // Add exemption state
+  const [exemption, setExemption] = useState(0);
 
   // Updated sum logic to include all car rentals
   const monthlySum =
@@ -84,6 +100,31 @@ export default function TaxDoc() {
   useEffect(() => {
     fetchBusinessDataDetails();
   }, []);
+
+  useEffect(() => {
+    // Calculate 30% of (yearIncome + allYearWage), capped at 100,000
+    const reduct = Math.floor((Number(yearIncome) + Number(allYearWage)) * 0.5);
+    setReductSalary(reduct > 100000 ? "100000" : reduct.toString());
+  }, [yearIncome, allYearWage]);
+
+  useEffect(() => {
+    // Calculate 30% of allYearOfficeRental, no max limit
+    const reduct = Math.floor(Number(allYearOfficeRental) * 0.3);
+    setReductOfficeRental(reduct.toString());
+  }, [allYearOfficeRental]);
+
+  // Calculate and set reduct for each car rental when carRentals change, no max limit
+  useEffect(() => {
+    setCarRentals((prevCarRentals) => {
+      return prevCarRentals.map((car) => {
+        const reduct = Math.floor(Number(car.yearly) * 0.3);
+        return {
+          ...car,
+          reduct: reduct.toString(),
+        };
+      });
+    });
+  }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
@@ -404,14 +445,13 @@ export default function TaxDoc() {
             <View className="flex-col gap-2" style={{ width: "75%" }}>
               <FormField
                 title={t("taxDoc.salary")}
-                value={salary}
+                value={Number(reductSalary) > 0 ? salary : ""}
                 value2={yearIncome.toString()}
                 onChangeText={(value: number) => {
                   setSalary(value);
                   setYearIncome(Number(value) * 12);
                 }}
                 placeholder="0"
-                placeholder3="100000"
                 bgColor="#ededed"
                 textcolor="#5e5e5e"
               />
@@ -425,7 +465,6 @@ export default function TaxDoc() {
                   setAllYearWage(Number(value) * 12);
                 }}
                 placeholder="0"
-                placeholder3="100000"
                 bgColor="#ededed"
                 textcolor="#5e5e5e"
               />
@@ -435,110 +474,123 @@ export default function TaxDoc() {
               <View
                 className="rounded-2xl border-2 border-transparent  "
                 style={{
-                  backgroundColor: "#ededed",
+                  backgroundColor: "transparent",
                   height: 86,
                   opacity: 0.8,
                   width: 80,
+                  paddingTop: 20,
                 }}
               >
                 <TextInput
                   className="flex-1 font-psemibold text-base px-2"
-                  value={reductSalary.toString()}
-                  placeholder="100,000"
+                  value={
+                    Number(reductSalary) > 0 ? reductSalary.toString() : ""
+                  }
+                  placeholder="50% max100K"
                   placeholderTextColor={"#a5a5a5"}
                   onChangeText={(value: string) =>
                     setReductSalary(Number(value).toString())
                   }
                   style={{
-                    color: "#5e5e5e",
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
+                    ...commonTextInputStyle,
+                    height: 90,
+                    textAlignVertical: "center",
                   }}
-                  editable={true}
+                  editable={false}
                   keyboardType="numeric"
+                  multiline={true}
+                  numberOfLines={3}
                 />
               </View>
             </View>
           </View>
           {/* CarRental Section */}
-          {carRentals.map((car, idx) => (
-            <View
-              key={idx}
-              className="flex-row gap-2"
-              style={{
-              width: "75%",
-              marginTop: idx === 0 ? 10 : 0,
-              }}
-            >
-              <FormField
-              title={
-                t("taxDoc.carRental") +
-                (carRentals.length > 1 ? ` #${idx + 1}` : "")
-              }
-              value={car.value}
-              value2={car.yearly.toString()}
-              onChangeText={(value: number) => {
-                const updated = [...carRentals];
-                updated[idx].value = value;
-                updated[idx].yearly = Number(value) * 12;
-                setCarRentals(updated);
-              }}
-              placeholder="0"
-              placeholder3="100000"
-              bgColor="#ededed"
-              textcolor="#5e5e5e"
-              />
-
+          {carRentals.map((car, idx) => {
+            const allCarRentalsZero = carRentals.every(
+              (c) => Number(c.value) <= 0
+            );
+            return (
               <View
-              className="rounded-2xl border-2 border-transparent  "
-              style={{
-                backgroundColor: "#ededed",
-                height: 40,
-                opacity: 0.8,
-                width: 80,
-              }}
-              >
-              <TextInput
-                className="flex-1 font-psemibold text-base px-2"
-                value={car.reduct.toString()}
-                placeholder={t("taxDoc.reductMax")}
-                placeholderTextColor={"#a5a5a5"}
-                onChangeText={(value: string) => {
-                const updated = [...carRentals];
-                updated[idx].reduct = Number(value).toString();
-                setCarRentals(updated);
-                }}
+                key={idx}
+                className="flex-row gap-2"
                 style={{
-                color: "#5e5e5e",
-                fontFamily:
-                  i18n.language === "th"
-                  ? "IBMPlexSansThai-Medium"
-                  : "Poppins-Regular",
+                  width: "75%",
+                  marginTop: idx === 0 ? 10 : 0,
                 }}
-                editable={true}
-                keyboardType="numeric"
-              />
+              >
+                <FormField
+                  title={
+                    <>
+                      {t("taxDoc.carRental")}
+                      {carRentals.length > 1 && (
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                          <CustomText style={{ fontSize: 12, marginLeft: 2 }} weight="light" className="text-xs">#</CustomText>
+                          <CustomText style={{ fontSize: 12, marginLeft: 2 }} weight="light" className="text-xs">{idx + 1}</CustomText>
+                        </View>
+                      )}
+                    </>
+                  }
+                  value={car.value}
+                  value2={car.yearly.toString()}
+                  onChangeText={(value: number) => {
+                    if (value > 36001) {
+                      alert(t("taxDoc.carRentalMaxAlert") || "Car rental value cannot exceed 36,000");
+                      return;
+                    }
+                    const updated = [...carRentals];
+                    updated[idx].value = value;
+                    updated[idx].yearly = Number(value) * 12;
+                    setCarRentals(updated);
+                  }}
+                  placeholder="0"
+                  placeholder3="100000"
+                  bgColor="#ededed"
+                  textcolor="#5e5e5e"
+                />
+
+                <View
+                  className="rounded-2xl border-2 border-transparent  "
+                  style={{
+                    backgroundColor: "transparent",
+                    height: 40,
+                    opacity: 0.8,
+                    width: 80,
+                  }}
+                >
+                  <TextInput
+                    className="flex-1 font-psemibold text-base px-2"
+                    value={allCarRentalsZero ? "" : car.reduct.toString()}
+                    placeholder={t("taxDoc.reductMax")}
+                    placeholderTextColor={"#a5a5a5"}
+                    onChangeText={(value: string) => {
+                      const updated = [...carRentals];
+                      updated[idx].reduct = Number(value).toString();
+                      setCarRentals(updated);
+                    }}
+                    style={commonTextInputStyle}
+                    editable={true}
+                    keyboardType="numeric"
+                  />
+                </View>
+                {/* Delete icon */}
+                {carRentals.length > 1 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      const updated = carRentals.filter((_, i) => i !== idx);
+                      setCarRentals(updated);
+                    }}
+                    style={{
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      paddingRight: 20,
+                    }}
+                  >
+                    <Ionicons name="close-circle" size={20} color="#ff4d4f" />
+                  </TouchableOpacity>
+                )}
               </View>
-              {/* Delete icon */}
-              {carRentals.length > 1 && (
-              <TouchableOpacity
-                onPress={() => {
-                const updated = carRentals.filter((_, i) => i !== idx);
-                setCarRentals(updated);
-                }}
-                style={{
-                justifyContent: "flex-start",
-                alignItems: "center",
-                paddingRight: 20,
-                }}
-              >
-                <Ionicons name="close-circle" size={20} color="#ff4d4f" />
-              </TouchableOpacity>
-              )}
-            </View>
-          ))}
+            );
+          })}
           {/* OfficeRental Section */}
           <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
             <FormField
@@ -557,7 +609,7 @@ export default function TaxDoc() {
             <View
               className="rounded-2xl border-2 border-transparent  "
               style={{
-                backgroundColor: "#ededed",
+                backgroundColor: "transparent",
                 height: 40,
                 opacity: 0.8,
                 width: 80,
@@ -565,19 +617,18 @@ export default function TaxDoc() {
             >
               <TextInput
                 className="flex-1 font-psemibold text-base px-2"
-                value={reductOfficeRental.toString()}
+                value={
+                  Number(officeRental) <= 0 &&
+                  carRentals.every((c) => Number(c.value) <= 0)
+                    ? ""
+                    : reductOfficeRental.toString()
+                }
                 placeholder={t("taxDoc.reductMax")}
                 placeholderTextColor={"#a5a5a5"}
                 onChangeText={(value: string) =>
                   setReductOfficeRental(Number(value).toString())
                 }
-                style={{
-                  color: "#5e5e5e",
-                  fontFamily:
-                    i18n.language === "th"
-                      ? "IBMPlexSansThai-Medium"
-                      : "Poppins-Regular",
-                }}
+                style={commonTextInputStyle}
                 editable={true}
                 keyboardType="numeric"
               />
@@ -600,6 +651,51 @@ export default function TaxDoc() {
             <View className="flex-1 w-1/4 items-start">
               <CustomText className="text-base text-right">
                 {reductSum.toLocaleString()}
+              </CustomText>
+            </View>
+          </View>
+        </View>
+
+        {/* Individual Tax */}
+        <View
+          className="p-4"
+          style={{
+            backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+            borderRadius: 10,
+            margin: 10,
+          }}
+        >
+          <View className="px-4 flex-row gap-2 items-center">
+            {/* Yearly Income */}
+            <View
+              className="
+              flex-col w-1/4"
+            >
+              <CustomText>{t("taxDoc.yearIncome")}</CustomText>
+              <CustomText>{yearIncome.toLocaleString()}</CustomText>
+            </View>
+            {/* Reduct */}
+            <View className="flex-col w-1/4">
+              <CustomText>{t("taxDoc.reduct")}</CustomText>
+              <CustomText>{reductSum.toLocaleString()}</CustomText>
+            </View>
+            {/* TextInput Exemption */}
+            <View className="flex-col w-1/4">
+              <CustomText>{t("taxDoc.exemption")}</CustomText>
+              <TextInput
+                value={exemption.toString()}
+                onChangeText={(value) => setExemption(Number(value) || 0)}
+                placeholder="0"
+                placeholderTextColor="#a5a5a5"
+                keyboardType="numeric"
+                style={commonTextInputStyle}
+              />
+            </View>
+            {/* Taxable Income */}
+            <View className="flex-col w-1/4">
+              <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
+              <CustomText>
+                {(yearIncome - reductSum - exemption).toLocaleString()}
               </CustomText>
             </View>
           </View>
