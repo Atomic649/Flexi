@@ -33,6 +33,47 @@ const commonTextInputStyle: TextStyle = {
   backgroundColor: "#f9f9f9",
 };
 
+// Tax brackets for progressive tax calculation
+interface TaxBracket {
+  min: number;
+  max?: number; // undefined = no upper limit
+  rate: number;
+  cumulativeTax: number; // ภาษีสะสมของขั้นก่อนหน้า
+}
+
+const taxBrackets: TaxBracket[] = [
+  { min: 0,          max: 150000,   rate: 0,    cumulativeTax: 0 },
+  { min: 150000,     max: 300000,   rate: 0.05, cumulativeTax: 0 }, // ภาษีสะสมก่อนหน้านี้คือ 0
+  { min: 300000,     max: 500000,   rate: 0.10, cumulativeTax: 7500 }, // ภาษีสะสมก่อนหน้านี้คือ 7500
+  { min: 500000,     max: 750000,   rate: 0.15, cumulativeTax: 27500 }, // ภาษีสะสมก่อนหน้านี้คือ 27500
+  { min: 750000,     max: 1000000,  rate: 0.20, cumulativeTax: 65000 },
+  { min: 1000000,    max: 2000000,  rate: 0.25, cumulativeTax: 115000 },
+  { min: 2000000,    max: 5000000,  rate: 0.30, cumulativeTax: 365000 },
+  { min: 5000000,    rate: 0.35,    cumulativeTax: 1265000 }
+];
+
+function calculateTax(taxableIncome: number): number {
+  // ค้นหา bracket ที่ถูกต้อง
+  // ใช้ >= b.min และ <= b.max เพื่อครอบคลุมขอบเขตทั้งหมด
+  const bracket = taxBrackets.find(b =>
+    taxableIncome > b.min && // รายได้ต้องมากกว่าจุดเริ่มต้นของขั้น (เพราะ min คือจุดเริ่มต้นของช่วงนั้นๆ)
+    (b.max === undefined || taxableIncome <= b.max) // และน้อยกว่าหรือเท่ากับจุดสิ้นสุดของขั้นนั้นๆ
+  );
+
+  // ถ้าไม่เจอ bracket (เช่น taxableIncome เป็น 0 หรือติดลบ)
+  if (!bracket) {
+    // กรณี taxableIncome เป็น 0 หรือน้อยกว่า 0
+    if (taxableIncome <= taxBrackets[0].min) {
+        return 0; // รายได้อยู่ในขั้น 0%
+    }
+    return 0; // หรือจัดการ error ตามความเหมาะสม
+  }
+  
+  // คำนวณภาษี
+  // ภาษีที่ต้องจ่ายในขั้นนี้ = (รายได้ที่เกินจากจุดเริ่มต้นขั้น - 1) * อัตราภาษีในขั้น + ภาษีสะสมจากขั้นก่อนหน้า
+  // ลบ 1 ออกจาก bracket.min เพราะรายได้ที่ min เป็นจุดเริ่มต้นของขั้นใหม่
+  return (taxableIncome - bracket.min) * bracket.rate + bracket.cumulativeTax;
+}
 export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -639,17 +680,21 @@ export default function TaxDoc() {
           <View className="flex-row pt-4 gap-2">
             <View className="flex-1 " style={{ width: "20%" }}></View>
             <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right">
+              <CustomText className="text-base text-right"
+              style={{textDecorationLine: "underline"}}>
                 {monthlySum.toLocaleString()}
               </CustomText>
             </View>
             <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right">
+              <CustomText className="text-base text-right"
+               style={{textDecorationLine: "underline"}}>
+             
                 {yearlySum.toLocaleString()}
               </CustomText>
             </View>
             <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right">
+              <CustomText className="text-base text-right"
+               style={{textDecorationLine: "underline"}}>
                 {reductSum.toLocaleString()}
               </CustomText>
             </View>
@@ -672,7 +717,7 @@ export default function TaxDoc() {
               flex-col w-1/4"
             >
               <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-              <CustomText>{yearIncome.toLocaleString()}</CustomText>
+              <CustomText>{yearlySum.toLocaleString()}</CustomText>
             </View>
             {/* Reduct */}
             <View className="flex-col w-1/4">
@@ -695,9 +740,26 @@ export default function TaxDoc() {
             <View className="flex-col w-1/4">
               <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
               <CustomText>
-                {(yearIncome - reductSum - exemption).toLocaleString()}
+                {(yearlySum - (reductSum + exemption)).toLocaleString()}
               </CustomText>
             </View>
+          </View>
+          {/* Tax Calculation */}
+          <View className="p-4 flex-row gap-2 items-center">
+            <CustomText>{t("taxDoc.individualTax")}</CustomText>
+            <CustomText
+            weight="bold"
+            style={{
+              color: theme === "dark" ? "#06fbc6" : "#0be4c0",
+              fontSize: 28,
+              marginLeft: 10,
+              
+              }}>
+              {(() => {
+                const taxableIncome = yearlySum - (reductSum + exemption);
+                return calculateTax(taxableIncome).toLocaleString();
+              })()}
+            </CustomText>
           </View>
         </View>
       </ScrollView>
