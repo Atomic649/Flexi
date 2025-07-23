@@ -377,7 +377,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               </div>
               <div>
                 <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || t("print.notSpecified")}</p>
-                <p><strong>${t("print.contact")}:</strong> ${businessDetails?.phone || t("print.notSpecified")}</p>
+                <p><strong>${t("print.contact")}:</strong> ${businessDetails?.businessPhone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>

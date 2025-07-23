@@ -833,14 +833,14 @@ export default function Print() {
         <View className="flex-row justify-between items-center">
           <View>
             <View className="flex-row">
-              <CustomText weight="bold" className="mb-4 text-lg">
+              {/* <CustomText weight="bold" className="mb-4 text-lg">
                 {isVatRegistered
                   ? t("print.monthlyTaxInvoices")
                   : t("print.monthlyReceipts")}
-              </CustomText>
+              </CustomText> */}
               <CustomText className="mb-1">#</CustomText>
               <CustomText weight="bold" className="mb-1 text-base">
-                {invoice.id}
+                {invoice.billId}
               </CustomText>
             </View>
             <View className="flex-row gap-1">
@@ -941,18 +941,20 @@ export default function Print() {
             {selectedInvoice && (
               <View ref={printRef} className="p-4">
                 <View className="flex-row justify-between items-center mb-6">
-                  <View className="flex-row">
+                  <View className="flex-col pt-1">
                     <CustomText weight="bold" className="text-xl">
                       {isVatRegistered
                         ? t("print.taxInvoice")
                         : t("print.receipt")}
-                                          </CustomText>
-                    <CustomText weight="bold" className="text-xl">
-                      #
                     </CustomText>
-                    <CustomText weight="bold" className="text-xl">
-                      {selectedInvoice.id}
-                    </CustomText>
+                    <View className="flex-row">
+                      <CustomText weight="bold" className="text-xl">
+                        #
+                      </CustomText>
+                      <CustomText weight="semibold" className="text-base">
+                        {selectedInvoice.billId}
+                      </CustomText>
+                    </View>
                   </View>
                   <TouchableOpacity
                     onPress={() => setInvoiceModalVisible(false)}
@@ -967,7 +969,7 @@ export default function Print() {
                 </View>
 
                 <View className="flex-row justify-between mb-6">
-                  <View style={{ maxWidth: '50%' }}>
+                  <View style={{ maxWidth: "50%" }}>
                     <CustomText weight="bold" className="mb-1">
                       {t("print.billedTo")}
                     </CustomText>
@@ -976,7 +978,11 @@ export default function Print() {
                       <CustomText>{selectedInvoice.cLastName}</CustomText>
                     </View>
                     <CustomText>{selectedInvoice.cPhone}</CustomText>
-                    <CustomText numberOfLines={3} ellipsizeMode="tail" style={{ flexWrap: 'wrap' }}>
+                    <CustomText
+                      numberOfLines={3}
+                      ellipsizeMode="tail"
+                      style={{ flexWrap: "wrap" }}
+                    >
                       {selectedInvoice.cAddress}
                     </CustomText>
                     <View className="flex-row gap-1">
@@ -1062,17 +1068,17 @@ export default function Print() {
 
                 <View className="flex-row justify-end mt-2">
                   <View className="w-2/3">
-                  {isVatRegistered && (
-                    <View className="flex-row justify-between mb-2">
-                      <CustomText weight="bold">
-                        {t("print.subtotal")}
-                      </CustomText>
-                      <CustomText>
-                        {formatCurrency(
-                          selectedInvoice.price * selectedInvoice.amount
-                        )}
-                      </CustomText>
-                    </View>
+                    {isVatRegistered && (
+                      <View className="flex-row justify-between mb-2">
+                        <CustomText weight="bold">
+                          {t("print.subtotal")}
+                        </CustomText>
+                        <CustomText>
+                          {formatCurrency(
+                            selectedInvoice.price * selectedInvoice.amount
+                          )}
+                        </CustomText>
+                      </View>
                     )}
                     {isVatRegistered && (
                       <View className="flex-row justify-between mb-2">
@@ -1216,16 +1222,18 @@ export default function Print() {
         >
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6 pt-4">
-          {!isMobile() && (
+            {!isMobile() && (
               <CustomText weight="bold" className="text-2xl">
                 {t("print.printCenter")}
               </CustomText>
             )}
-            
+
             {activeTab === TAB_INDICES.MONTHLY_REPORT && (
               <TouchableOpacity
                 onPress={handlePrint}
-                className={`flex-row items-center ${isMobile() ? "ml-auto" : ""}`}
+                className={`flex-row items-center ${
+                  isMobile() ? "ml-auto" : ""
+                }`}
               >
                 <Ionicons
                   name="print"
@@ -1269,26 +1277,26 @@ export default function Print() {
 
             <TouchableOpacity
               className={`p-3 px-6 rounded-t-lg ${
-              activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                ? theme === "dark"
-                ? "bg-zinc-800 border-b-2 border-teal-400"
-                : "bg-white border-b-2 border-teal-400"
-                : theme === "dark"
-                ? "bg-zinc-700"
-                : "bg-gray-200"
+                activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                  ? theme === "dark"
+                    ? "bg-zinc-800 border-b-2 border-teal-400"
+                    : "bg-white border-b-2 border-teal-400"
+                  : theme === "dark"
+                  ? "bg-zinc-700"
+                  : "bg-gray-200"
               }`}
               onPress={() => setActiveTab(TAB_INDICES.INDIVIDUAL_INVOICE)}
             >
               <CustomText
-              weight={
-                activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                ? "bold"
-                : "regular"
-              }
+                weight={
+                  activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                    ? "bold"
+                    : "regular"
+                }
               >
-              {isVatRegistered
-                ? t("print.taxInvoiceSearch")
-                : t("print.receiptSearch")}
+                {isVatRegistered
+                  ? t("print.taxInvoiceSearch")
+                  : t("print.receiptSearch")}
               </CustomText>
             </TouchableOpacity>
           </View>
@@ -1503,9 +1511,9 @@ export default function Print() {
               // Individual Invoice Search Tab
               <>
                 <CustomText weight="bold" className="mb-4 text-lg">
-                  {isVatRegistered?
-                  t("print.findTaxInvoice"):
-                  t("print.findReceipt")}
+                  {isVatRegistered
+                    ? t("print.findTaxInvoice")
+                    : t("print.findReceipt")}
                 </CustomText>
 
                 <View className="flex-row mb-4 flex-wrap">

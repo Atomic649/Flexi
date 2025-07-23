@@ -23,6 +23,7 @@ export default function BusinessInfo() {
   const [taxType, settaxType] = useState("");
   const [vatId, setvatId] = useState("");
   const [businessType, setbusinessType] = useState("");
+  const [businessPhone, setBusinessPhone] = useState("");
   const [error, setError] = useState("");
 
   // Add alert config state
@@ -57,6 +58,7 @@ export default function BusinessInfo() {
       settaxType(data.taxType || "");
       setvatId(data.vatId || "");
       setbusinessType(data.businessType || "");
+      setBusinessPhone(data.businessPhone || "");
 
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
@@ -110,6 +112,7 @@ export default function BusinessInfo() {
         vatId,
         businessType,
         taxType,
+        businessPhone,
       });
 
       if (data.error) throw new Error(data.error);
@@ -247,6 +250,18 @@ export default function BusinessInfo() {
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+          />
+
+          <FormField2
+            title={t("auth.businessRegister.businessPhone")}
+            placeholder={t("auth.businessRegister.businessPhone")}
+            value={businessPhone}
+            handleChangeText={setBusinessPhone}
+            otherStyles="mt-7"
+            keyboardType="phone-pad"
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
           />
 

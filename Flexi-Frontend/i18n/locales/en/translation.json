@@ -1350,7 +1350,8 @@
     "storeInformation": "Store Information",
     "paymentDetails": "Payment Details",
     "original" : "Original",
-    "no": "No."
+    "no": "No.",
+    "contact": "Contact Info"
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",

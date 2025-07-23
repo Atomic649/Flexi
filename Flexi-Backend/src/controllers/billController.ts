@@ -115,13 +115,13 @@ const createBill = async (req: Request, res: Response) => {
     // Map or cast store.platform to a valid SocialMedia type
         billInput.platform = store.platform as SocialMedia;
 
-    // Generate BillId as INV + YEAR + RUNNING NUMBER
+    // Generate BillId as INV + YEAR + / + RUNNING NUMBER
     const currentYear = new Date().getFullYear();
     // Find the latest bill for this year
     const latestBill = await prisma.bill.findFirst({
       where: {
         billId: {
-          startsWith: `INV${currentYear}`,
+          startsWith: `INV${currentYear}/`,
         },
       },
       orderBy: {
@@ -130,12 +130,12 @@ const createBill = async (req: Request, res: Response) => {
     });
     let runningNumber = 1;
     if (latestBill && latestBill.billId) {
-      const match = latestBill.billId.match(/INV\d{4}(\d{6})/);
+      const match = latestBill.billId.match(/INV\d{4}\/(\d+)/);
       if (match && match[1]) {
         runningNumber = parseInt(match[1], 10) + 1;
       }
     }
-    billInput.billId = `INV${currentYear}${runningNumber.toString().padStart(6, '0')}`;
+    billInput.billId = `INV${currentYear}/${runningNumber}`;
 
     // Create a new bill into the database
     try {

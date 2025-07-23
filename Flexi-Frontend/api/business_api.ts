@@ -111,6 +111,7 @@ class CallAPIBusiness {
     memberId: string,
     data: {
       businessName: string;
+      businessPhone?: string;
       vatId: string;
       businessType: string;
       taxType: string;

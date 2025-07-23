@@ -221,7 +221,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                   <tr>
                     <td>${index + 1}</td>
                     <td>${formatDate(bill.purchaseAt)}</td>
-                    <td>#${bill.id}</td>
+                    <td>#${bill.billId}</td>
                     <td>${bill.cName || ''} ${bill.cLastName || ''}</td>
                     <td class="${bill.cashStatus ? 'status-paid' : 'status-unpaid'}">
                       ${bill.cashStatus ? t("print.paid") : t("print.unpaid")}

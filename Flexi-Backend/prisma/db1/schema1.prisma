@@ -201,6 +201,8 @@ model BusinessAcc {
   businessUserName String?      @unique
   businessAvatar   String?
   businessAddress  String?
+  businessWebsite  String?
+  businessPhone      String?
   vat              Boolean?    @default(false)
   vatId            String       @unique
   businessType     BusinessType @default(OnlineSale)

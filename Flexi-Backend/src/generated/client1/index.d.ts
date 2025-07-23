@@ -6257,6 +6257,8 @@ export namespace Prisma {
     businessUserName: string | null
     businessAvatar: string | null
     businessAddress: string | null
+    businessWebsite: string | null
+    businessPhone: string | null
     vat: boolean | null
     vatId: string | null
     businessType: $Enums.BusinessType | null
@@ -6273,6 +6275,8 @@ export namespace Prisma {
     businessUserName: string | null
     businessAvatar: string | null
     businessAddress: string | null
+    businessWebsite: string | null
+    businessPhone: string | null
     vat: boolean | null
     vatId: string | null
     businessType: $Enums.BusinessType | null
@@ -6289,6 +6293,8 @@ export namespace Prisma {
     businessUserName: number
     businessAvatar: number
     businessAddress: number
+    businessWebsite: number
+    businessPhone: number
     vat: number
     vatId: number
     businessType: number
@@ -6317,6 +6323,8 @@ export namespace Prisma {
     businessUserName?: true
     businessAvatar?: true
     businessAddress?: true
+    businessWebsite?: true
+    businessPhone?: true
     vat?: true
     vatId?: true
     businessType?: true
@@ -6333,6 +6341,8 @@ export namespace Prisma {
     businessUserName?: true
     businessAvatar?: true
     businessAddress?: true
+    businessWebsite?: true
+    businessPhone?: true
     vat?: true
     vatId?: true
     businessType?: true
@@ -6349,6 +6359,8 @@ export namespace Prisma {
     businessUserName?: true
     businessAvatar?: true
     businessAddress?: true
+    businessWebsite?: true
+    businessPhone?: true
     vat?: true
     vatId?: true
     businessType?: true
@@ -6452,6 +6464,8 @@ export namespace Prisma {
     businessUserName: string | null
     businessAvatar: string | null
     businessAddress: string | null
+    businessWebsite: string | null
+    businessPhone: string | null
     vat: boolean | null
     vatId: string
     businessType: $Enums.BusinessType
@@ -6487,6 +6501,8 @@ export namespace Prisma {
     businessUserName?: boolean
     businessAvatar?: boolean
     businessAddress?: boolean
+    businessWebsite?: boolean
+    businessPhone?: boolean
     vat?: boolean
     vatId?: boolean
     businessType?: boolean
@@ -6512,6 +6528,8 @@ export namespace Prisma {
     businessUserName?: boolean
     businessAvatar?: boolean
     businessAddress?: boolean
+    businessWebsite?: boolean
+    businessPhone?: boolean
     vat?: boolean
     vatId?: boolean
     businessType?: boolean
@@ -6529,6 +6547,8 @@ export namespace Prisma {
     businessUserName?: boolean
     businessAvatar?: boolean
     businessAddress?: boolean
+    businessWebsite?: boolean
+    businessPhone?: boolean
     vat?: boolean
     vatId?: boolean
     businessType?: boolean
@@ -6546,6 +6566,8 @@ export namespace Prisma {
     businessUserName?: boolean
     businessAvatar?: boolean
     businessAddress?: boolean
+    businessWebsite?: boolean
+    businessPhone?: boolean
     vat?: boolean
     vatId?: boolean
     businessType?: boolean
@@ -6554,7 +6576,7 @@ export namespace Prisma {
     memberId?: boolean
   }
 
-  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "vat" | "vatId" | "businessType" | "taxType" | "userId" | "memberId", ExtArgs["result"]["businessAcc"]>
+  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "vatId" | "businessType" | "taxType" | "userId" | "memberId", ExtArgs["result"]["businessAcc"]>
   export type BusinessAccInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     AllMember?: boolean | BusinessAcc$AllMemberArgs<ExtArgs>
@@ -6593,6 +6615,8 @@ export namespace Prisma {
       businessUserName: string | null
       businessAvatar: string | null
       businessAddress: string | null
+      businessWebsite: string | null
+      businessPhone: string | null
       vat: boolean | null
       vatId: string
       businessType: $Enums.BusinessType
@@ -7037,6 +7061,8 @@ export namespace Prisma {
     readonly businessUserName: FieldRef<"BusinessAcc", 'String'>
     readonly businessAvatar: FieldRef<"BusinessAcc", 'String'>
     readonly businessAddress: FieldRef<"BusinessAcc", 'String'>
+    readonly businessWebsite: FieldRef<"BusinessAcc", 'String'>
+    readonly businessPhone: FieldRef<"BusinessAcc", 'String'>
     readonly vat: FieldRef<"BusinessAcc", 'Boolean'>
     readonly vatId: FieldRef<"BusinessAcc", 'String'>
     readonly businessType: FieldRef<"BusinessAcc", 'BusinessType'>
@@ -27895,6 +27921,8 @@ export namespace Prisma {
     businessUserName: 'businessUserName',
     businessAvatar: 'businessAvatar',
     businessAddress: 'businessAddress',
+    businessWebsite: 'businessWebsite',
+    businessPhone: 'businessPhone',
     vat: 'vat',
     vatId: 'vatId',
     businessType: 'businessType',
@@ -28708,6 +28736,8 @@ export namespace Prisma {
     businessUserName?: StringNullableFilter<"BusinessAcc"> | string | null
     businessAvatar?: StringNullableFilter<"BusinessAcc"> | string | null
     businessAddress?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessWebsite?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessPhone?: StringNullableFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableFilter<"BusinessAcc"> | boolean | null
     vatId?: StringFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeFilter<"BusinessAcc"> | $Enums.BusinessType
@@ -28732,6 +28762,8 @@ export namespace Prisma {
     businessUserName?: SortOrderInput | SortOrder
     businessAvatar?: SortOrderInput | SortOrder
     businessAddress?: SortOrderInput | SortOrder
+    businessWebsite?: SortOrderInput | SortOrder
+    businessPhone?: SortOrderInput | SortOrder
     vat?: SortOrderInput | SortOrder
     vatId?: SortOrder
     businessType?: SortOrder
@@ -28760,6 +28792,8 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"BusinessAcc"> | Date | string | null
     businessAvatar?: StringNullableFilter<"BusinessAcc"> | string | null
     businessAddress?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessWebsite?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessPhone?: StringNullableFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableFilter<"BusinessAcc"> | boolean | null
     businessType?: EnumBusinessTypeFilter<"BusinessAcc"> | $Enums.BusinessType
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
@@ -28783,6 +28817,8 @@ export namespace Prisma {
     businessUserName?: SortOrderInput | SortOrder
     businessAvatar?: SortOrderInput | SortOrder
     businessAddress?: SortOrderInput | SortOrder
+    businessWebsite?: SortOrderInput | SortOrder
+    businessPhone?: SortOrderInput | SortOrder
     vat?: SortOrderInput | SortOrder
     vatId?: SortOrder
     businessType?: SortOrder
@@ -28807,6 +28843,8 @@ export namespace Prisma {
     businessUserName?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
     businessAvatar?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
     businessAddress?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+    businessWebsite?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+    businessPhone?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableWithAggregatesFilter<"BusinessAcc"> | boolean | null
     vatId?: StringWithAggregatesFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeWithAggregatesFilter<"BusinessAcc"> | $Enums.BusinessType
@@ -30524,6 +30562,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -30547,6 +30587,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -30569,6 +30611,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -30592,6 +30636,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -30615,6 +30661,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -30630,6 +30678,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -30645,6 +30695,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -32601,6 +32653,8 @@ export namespace Prisma {
     businessUserName?: SortOrder
     businessAvatar?: SortOrder
     businessAddress?: SortOrder
+    businessWebsite?: SortOrder
+    businessPhone?: SortOrder
     vat?: SortOrder
     vatId?: SortOrder
     businessType?: SortOrder
@@ -32622,6 +32676,8 @@ export namespace Prisma {
     businessUserName?: SortOrder
     businessAvatar?: SortOrder
     businessAddress?: SortOrder
+    businessWebsite?: SortOrder
+    businessPhone?: SortOrder
     vat?: SortOrder
     vatId?: SortOrder
     businessType?: SortOrder
@@ -32638,6 +32694,8 @@ export namespace Prisma {
     businessUserName?: SortOrder
     businessAvatar?: SortOrder
     businessAddress?: SortOrder
+    businessWebsite?: SortOrder
+    businessPhone?: SortOrder
     vat?: SortOrder
     vatId?: SortOrder
     businessType?: SortOrder
@@ -36652,6 +36710,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -36674,6 +36734,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -37097,6 +37159,8 @@ export namespace Prisma {
     businessUserName?: StringNullableFilter<"BusinessAcc"> | string | null
     businessAvatar?: StringNullableFilter<"BusinessAcc"> | string | null
     businessAddress?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessWebsite?: StringNullableFilter<"BusinessAcc"> | string | null
+    businessPhone?: StringNullableFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableFilter<"BusinessAcc"> | boolean | null
     vatId?: StringFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeFilter<"BusinessAcc"> | $Enums.BusinessType
@@ -37487,6 +37551,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -37509,6 +37575,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -37860,6 +37928,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -37882,6 +37952,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -38721,6 +38793,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -38743,6 +38817,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -38899,6 +38975,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -38921,6 +38999,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39039,6 +39119,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39061,6 +39143,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39217,6 +39301,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39239,6 +39325,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39310,6 +39398,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39332,6 +39422,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39404,6 +39496,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39426,6 +39520,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39519,6 +39615,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39541,6 +39639,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39629,6 +39729,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39651,6 +39753,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39772,6 +39876,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39794,6 +39900,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -39882,6 +39990,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -39904,6 +40014,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -40091,6 +40203,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -40113,6 +40227,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -40223,6 +40339,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -40245,6 +40363,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -42577,6 +42697,8 @@ export namespace Prisma {
     businessUserName?: string | null
     businessAvatar?: string | null
     businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
     vat?: boolean | null
     vatId: string
     businessType?: $Enums.BusinessType
@@ -42707,6 +42829,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -42729,6 +42853,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
@@ -42751,6 +42877,8 @@ export namespace Prisma {
     businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
     businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
     businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vatId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
