@@ -33,6 +33,7 @@ const commonTextInputStyle: TextStyle = {
   backgroundColor: "#f9f9f9",
 };
 
+
 // Tax brackets for progressive tax calculation
 interface TaxBracket {
   min: number;
@@ -454,19 +455,18 @@ export default function TaxDoc() {
           {/* Tax Calculation */}
           <View className="p-4 flex-row gap-2 items-center">
             <CustomText>{t("taxDoc.individualTax")}</CustomText>
-            <CustomText
-            weight="bold"
+            <Text
             style={{
-              color: theme === "dark" ? "#06fbc6" : "#0be4c0",
+              color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
               fontSize: 28,
+              fontWeight: "900",
               marginLeft: 10,
-              
-              }}>
+             }}>
               {(() => {
                 const taxableIncome = yearlySum - (reductSum + exemption);
                 return calculateTax(taxableIncome).toLocaleString();
               })()}
-            </CustomText>
+            </Text>
           </View>
         </View>
 

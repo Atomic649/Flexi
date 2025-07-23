@@ -13,6 +13,7 @@ const prisma = new PrismaClient1();
 //Interface for request body from client
 interface billInput {
   id?: number;
+  billId : string;
   createdAt: Date;
   updatedAt?: Date;
   cName: string;
@@ -38,6 +39,7 @@ interface billInput {
 // Validate the request body
 const schema = Joi.object({
   id: Joi.number(),
+  billId: Joi.string(),
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   purchaseAt: Joi.date(),
@@ -87,6 +89,7 @@ const createBill = async (req: Request, res: Response) => {
       return res.status(400).json({ message: error.details[0].message });
     }
     // convert string to number in amount and price and businessAcc
+
     billInput.amount = Number(billInput.amount);
     billInput.price = Number(billInput.price);
     billInput.businessAcc = Number(billInput.businessAcc);
@@ -112,12 +115,35 @@ const createBill = async (req: Request, res: Response) => {
     // Map or cast store.platform to a valid SocialMedia type
         billInput.platform = store.platform as SocialMedia;
 
+    // Generate BillId as INV + YEAR + RUNNING NUMBER
+    const currentYear = new Date().getFullYear();
+    // Find the latest bill for this year
+    const latestBill = await prisma.bill.findFirst({
+      where: {
+        billId: {
+          startsWith: `INV${currentYear}`,
+        },
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+    let runningNumber = 1;
+    if (latestBill && latestBill.billId) {
+      const match = latestBill.billId.match(/INV\d{4}(\d{6})/);
+      if (match && match[1]) {
+        runningNumber = parseInt(match[1], 10) + 1;
+      }
+    }
+    billInput.billId = `INV${currentYear}${runningNumber.toString().padStart(6, '0')}`;
+
     // Create a new bill into the database
     try {
       const bill = await prisma.bill.create({
         data: {
           // createdAt: new Date(),
           // updatedAt: new Date(),
+          billId: billInput.billId,
           cName: billInput.cName,
           cLastName: billInput.cLastName,
           cPhone: billInput.cPhone,

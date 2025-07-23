@@ -226,7 +226,7 @@ export default function CreateBill() {
 
     try {
       // Call API to create bill
-      const data = await CallAPIBill.createBillAPI({
+      const data = await CallAPIBill.createBillAPI({        
         purchaseAt,
         cName,
         cLastName,

@@ -7655,6 +7655,7 @@ export namespace Prisma {
 
   export type BillMinAggregateOutputType = {
     id: number | null
+    billId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     cName: string | null
@@ -7680,6 +7681,7 @@ export namespace Prisma {
 
   export type BillMaxAggregateOutputType = {
     id: number | null
+    billId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     cName: string | null
@@ -7705,6 +7707,7 @@ export namespace Prisma {
 
   export type BillCountAggregateOutputType = {
     id: number
+    billId: number
     createdAt: number
     updatedAt: number
     cName: number
@@ -7748,6 +7751,7 @@ export namespace Prisma {
 
   export type BillMinAggregateInputType = {
     id?: true
+    billId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -7773,6 +7777,7 @@ export namespace Prisma {
 
   export type BillMaxAggregateInputType = {
     id?: true
+    billId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -7798,6 +7803,7 @@ export namespace Prisma {
 
   export type BillCountAggregateInputType = {
     id?: true
+    billId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -7910,6 +7916,7 @@ export namespace Prisma {
 
   export type BillGroupByOutputType = {
     id: number
+    billId: string
     createdAt: Date
     updatedAt: Date
     cName: string
@@ -7954,6 +7961,7 @@ export namespace Prisma {
 
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    billId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -7983,6 +7991,7 @@ export namespace Prisma {
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    billId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8012,6 +8021,7 @@ export namespace Prisma {
 
   export type BillSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    billId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8041,6 +8051,7 @@ export namespace Prisma {
 
   export type BillSelectScalar = {
     id?: boolean
+    billId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8064,7 +8075,7 @@ export namespace Prisma {
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "product" | "payment" | "amount" | "purchaseAt" | "platform" | "cashStatus" | "price" | "image" | "deleted" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "product" | "payment" | "amount" | "purchaseAt" | "platform" | "cashStatus" | "price" | "image" | "deleted" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     productList?: boolean | ProductDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8094,6 +8105,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      billId: string
       createdAt: Date
       updatedAt: Date
       cName: string
@@ -8543,6 +8555,7 @@ export namespace Prisma {
    */
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'Int'>
+    readonly billId: FieldRef<"Bill", 'String'>
     readonly createdAt: FieldRef<"Bill", 'DateTime'>
     readonly updatedAt: FieldRef<"Bill", 'DateTime'>
     readonly cName: FieldRef<"Bill", 'String'>
@@ -27895,6 +27908,7 @@ export namespace Prisma {
 
   export const BillScalarFieldEnum: {
     id: 'id',
+    billId: 'billId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     cName: 'cName',
@@ -28806,6 +28820,7 @@ export namespace Prisma {
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     id?: IntFilter<"Bill"> | number
+    billId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -28835,6 +28850,7 @@ export namespace Prisma {
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
+    billId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -28867,6 +28883,7 @@ export namespace Prisma {
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
+    billId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -28896,6 +28913,7 @@ export namespace Prisma {
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
+    billId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -28929,6 +28947,7 @@ export namespace Prisma {
     OR?: BillScalarWhereWithAggregatesInput[]
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Bill"> | number
+    billId?: StringWithAggregatesFilter<"Bill"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     cName?: StringWithAggregatesFilter<"Bill"> | string
@@ -30635,6 +30654,7 @@ export namespace Prisma {
   }
 
   export type BillCreateInput = {
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -30660,6 +30680,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -30684,6 +30705,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -30709,6 +30731,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -30734,6 +30757,7 @@ export namespace Prisma {
 
   export type BillCreateManyInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -30758,6 +30782,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateManyMutationInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -30779,6 +30804,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -32701,6 +32727,7 @@ export namespace Prisma {
 
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
+    billId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -32734,6 +32761,7 @@ export namespace Prisma {
 
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
+    billId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -32759,6 +32787,7 @@ export namespace Prisma {
 
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
+    billId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -37500,6 +37529,7 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutMemberInput = {
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -37524,6 +37554,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutMemberInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -37886,6 +37917,7 @@ export namespace Prisma {
     OR?: BillScalarWhereInput[]
     NOT?: BillScalarWhereInput | BillScalarWhereInput[]
     id?: IntFilter<"Bill"> | number
+    billId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -38178,6 +38210,7 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutBusinessIdInput = {
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -38202,6 +38235,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutBusinessIdInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -39673,6 +39707,7 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutStoreInput = {
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -39697,6 +39732,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutStoreInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -39924,6 +39960,7 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutProductListInput = {
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -39948,6 +39985,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutProductListInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43090,6 +43128,7 @@ export namespace Prisma {
 
   export type BillCreateManyMemberInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43181,6 +43220,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutMemberInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43205,6 +43245,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutMemberInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43229,6 +43270,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutMemberInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43469,6 +43511,7 @@ export namespace Prisma {
 
   export type BillCreateManyBusinessIdInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43599,6 +43642,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutBusinessIdInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43623,6 +43667,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutBusinessIdInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43647,6 +43692,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43921,6 +43967,7 @@ export namespace Prisma {
 
   export type BillCreateManyStoreInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43944,6 +43991,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutStoreInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43968,6 +44016,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutStoreInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -43992,6 +44041,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutStoreInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -44016,6 +44066,7 @@ export namespace Prisma {
 
   export type BillCreateManyProductListInput = {
     id?: number
+    billId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -44050,6 +44101,7 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutProductListInput = {
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -44074,6 +44126,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutProductListInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -44098,6 +44151,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutProductListInput = {
     id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string

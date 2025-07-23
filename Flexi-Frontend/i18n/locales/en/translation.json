@@ -1348,7 +1348,9 @@
     "shareInvoice": "Share Tax Invoice/Receipt",
     "companyInformation": "Company Information",
     "storeInformation": "Store Information",
-    "paymentDetails": "Payment Details"
+    "paymentDetails": "Payment Details",
+    "original" : "Original",
+    "no": "No."
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",

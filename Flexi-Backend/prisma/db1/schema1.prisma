@@ -219,6 +219,7 @@ model BusinessAcc {
 
 model Bill {
   id         Int           @id @default(autoincrement())
+  billId     String        
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   cName      String

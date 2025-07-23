@@ -1346,7 +1346,9 @@
     "shareInvoice": "แชร์ใบเสร็จรับเงิน/ใบกำกับภาษี",
     "companyInformation": "ข้อมูลบริษัท",
     "storeInformation": "ข้อมูลผู้ประกอบการ",
-    "paymentDetails": "รายละเอียดการชำระเงิน"
+    "paymentDetails": "รายละเอียดการชำระเงิน",
+    "original": "ต้นฉบับ",
+    "no": "ลำดับที่"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",

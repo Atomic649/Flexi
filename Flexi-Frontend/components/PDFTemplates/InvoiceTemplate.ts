@@ -359,10 +359,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <div class="invoice-header">
             <div class="company-logo-section">
               <h1>${isVatRegistered ? t("print.taxInvoice") : t("print.receipt")}</h1>
-              <p>${t("print.professionalBusinessSolution")}</p>
+              <p>${t("print.original")}</p>
             </div>
             <div class="invoice-meta">
-              <div class="invoice-number">#${invoice.id}</div>
+              <div class="invoice-number">#${invoice.billId}</div>
               <div class="invoice-date">${formatDate(invoice.purchaseAt)}</div>
             </div>
           </div>
@@ -412,7 +412,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <table class="items-table">
               <thead>
                 <tr>
-                  <th style="width: 50%;">${t("print.productName")}</th>
+                  <th style="width: 7%;">${t("print.no")}</th>
+                  <th style="width: 43%;">${t("print.productName")}</th>
                   <th class="text-center" style="width: 15%;">${t("print.quantity")}</th>
                   <th class="text-right" style="width: 17.5%;">${t("print.price")}</th>
                   <th class="text-right" style="width: 17.5%;">${t("print.total")}</th>
@@ -420,6 +421,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               </thead>
               <tbody>
                 <tr>
+                  <td class="text-center font-medium">1</td>
                   <td class="font-medium">${invoice.product}</td>
                   <td class="text-center">${invoice.amount}</td>
                   <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>

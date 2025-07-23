@@ -161,6 +161,7 @@ exports.Prisma.BusinessAccScalarFieldEnum = {
 
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
+  billId: 'billId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   cName: 'cName',
