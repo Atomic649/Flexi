@@ -120,6 +120,7 @@
         "Juristic": "Juristic"
       },
       "chooseBusinessType": "Select Business Type",
+      "businessPhone":" Business Phone Number",
       "businessTypeOption": {
         "": "Select Business Type",
         "OnlineSale": "Online Sale",

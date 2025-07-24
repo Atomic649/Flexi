@@ -29,13 +29,16 @@ import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
+import CallAPIBill from "@/api/bill_api";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
-  CUSTOMER_NAME: "customer",
+  CUSTOMER_NAME: "customerName",
   BILL_ID: "billId",
   DATE_RANGE: "dateRange",
 };
+
+
 
 const TAB_INDICES = {
   MONTHLY_REPORT: 0,
@@ -324,53 +327,9 @@ export default function Print() {
     }
   };
 
-  // Search bills by bill ID
+  // Search bills by bill ID 
   const searchByBillId = async () => {
-    if (!memberId || !searchQuery) return;
 
-    setIsLoading(true);
-    try {
-      const response = await CallAPIPrint.getBillByIdAPI(Number(searchQuery));
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      // If it belongs to this member, add it to the list
-      if (response && response.memberId === memberId) {
-        setBills([response]);
-      } else {
-        setBills([]);
-        setAlertConfig({
-          visible: true,
-          title: t("print.noResults"),
-          message: t("print.noBillFound"),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () =>
-                setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-      }
-    } catch (error) {
-      console.error("Error searching by bill ID:", error);
-      setAlertConfig({
-        visible: true,
-        title: t("print.error"),
-        message: t("print.searchError"),
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
-      });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // Search bills by date range
@@ -761,63 +720,6 @@ export default function Print() {
     }
   };
 
-  // Function to save PDF to a user-selected location
-  const handleSavePdfToLocation = async (filePath: string) => {
-    try {
-      // On web, trigger a download
-      if (Platform.OS === "web") {
-        const link = document.createElement("a");
-        link.href = filePath;
-        link.download = `income_report_${format(selectedMonth, "yyyy-MM")}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // On mobile, save to documents directory and notify user
-        const destDir = FileSystem.documentDirectory;
-        const newPath = `${destDir}income_report_${format(
-          selectedMonth,
-          "yyyy-MM"
-        )}.pdf`;
-
-        // Copy file to documents directory
-        await FileSystem.copyAsync({
-          from: filePath,
-          to: newPath,
-        });
-
-        setAlertConfig({
-          visible: true,
-          title: t("print.success"),
-          message: t("print.pdfSavedMessage") + `\n${newPath}`,
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () =>
-                setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-      }
-    } catch (error) {
-      console.error("Error saving PDF:", error);
-      setAlertConfig({
-        visible: true,
-        title: t("print.error"),
-        message: `${t("print.pdfSavingError")}: ${(error as Error).message}`,
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
-      });
-    } finally {
-      setPdfPreviewModalVisible(false);
-    }
-  };
-
   // Render invoice card
   const renderInvoiceCard = (invoice: any) => {
     return (
@@ -948,10 +850,10 @@ export default function Print() {
                         : t("print.receipt")}
                     </CustomText>
                     <View className="flex-row">
-                      <CustomText weight="bold" className="text-xl">
+                      <CustomText weight="regular" className="text-xl">
                         #
                       </CustomText>
-                      <CustomText weight="semibold" className="text-base">
+                      <CustomText weight="regular" className="text-base">
                         {selectedInvoice.billId}
                       </CustomText>
                     </View>
@@ -1537,7 +1439,7 @@ export default function Print() {
                         },
                       ]}
                       placeholder={t("print.selectSearchType")}
-                      selectedValue={searchType}
+                      selectedValue={t(`print.${searchType}`)}
                       onValueChange={setSearchType}
                       bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                       bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}

@@ -120,6 +120,7 @@
         "Juristic": "นิติบุคคล"
       },
       "chooseBusinessType": "เลือกประเภทธุรกิจ",
+      "businessPhone":"เบอร์ติดต่อ"
       "businessTypeOption": {
         "": "เลือกประเภทธุรกิจ",
         "OnlineSale": "ขายออนไลน์",

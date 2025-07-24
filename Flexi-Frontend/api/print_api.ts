@@ -77,10 +77,15 @@ class CallAPIPrint {
   }
 
   // Get Bill By ID
-  async getBillByIdAPI(billId: number): Promise<any> {
+  async getBillByIdAPI(memberId: string, billId: number): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/print/bill/${billId}`);
+      const response = await axiosInstance.get(`/print/bill/`, {
+        params: {
+          memberId,
+          billId
+        }
+      });
 
       console.log("🚀 Get Bill By ID API:", response.data);
 
