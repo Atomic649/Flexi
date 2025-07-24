@@ -115,6 +115,7 @@ class CallAPIBusiness {
       vatId: string;
       businessType: string;
       taxType: string;
+      vat: boolean;
     }
   ): Promise<any> {
     try {

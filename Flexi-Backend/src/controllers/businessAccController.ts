@@ -25,6 +25,7 @@ interface businessAccInput {
   membebId: string;
   businessWebsite?: string;
   businessPhone?:string;
+  vat?: boolean;
 }
 
 // validate the request body
@@ -38,7 +39,8 @@ const schema = Joi.object({
   businessAddress: Joi.string(),
   businessAvatar: Joi.string(),
   businessPhone: Joi.string(),
-  buisnessWebsite: Joi.string()
+  buisnessWebsite: Joi.string(),
+  vat: Joi.boolean().optional().default(false),
   
 });
 
@@ -239,9 +241,9 @@ const getBusinessDetail = async (req: Request, res: Response) => {
 // Update Business Details by MemberId - Put
 const updateBusinessAcc = async (req: Request, res: Response) => {
   const { memberId } = req.params;
-  const { businessName, vatId, businessType, taxType, businessPhone, businessWebsite } = req.body;
+  const { businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat } = req.body;
 
-  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType, businessPhone, businessWebsite });
+  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat });
 
   try {
     const businessAcc = await prisma.businessAcc.updateMany({
@@ -254,7 +256,8 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         businessType,
         taxType,
         businessPhone,
-        businessWebsite
+        businessWebsite,
+        vat
       },
     });
 

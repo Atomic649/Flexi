@@ -1,4 +1,4 @@
-import { Dimensions, ScrollView } from "react-native";
+import { Dimensions, ScrollView, Switch } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import CustomButton from "@/components/CustomButton";
@@ -42,6 +42,8 @@ export default function BusinessInfo() {
     buttons: [],
   });
 
+  const [isVatRegistered, setIsVatRegistered] = useState(false);
+
   // Handle exit business info CallAPI getBusinessDetailsAPI
   const handleExit = async () => {
     try {
@@ -58,6 +60,7 @@ export default function BusinessInfo() {
       setvatId(data.vatId || "");
       setbusinessType(data.businessType || "");
       setBusinessPhone(data.businessPhone || "");
+      setIsVatRegistered(!!data.vat); // handle exited data
 
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
@@ -112,6 +115,7 @@ export default function BusinessInfo() {
         businessType,
         taxType,
         businessPhone,
+        vat: isVatRegistered, // update data logic
       });
 
       if (data.error) throw new Error(data.error);
@@ -184,12 +188,27 @@ export default function BusinessInfo() {
             ]}
             placeholder={t("auth.businessRegister.taxType")}
             onValueChange={settaxType}
-            selectedValue={`${taxType}`} // Pre-fill with existing data
+            selectedValue={t(`auth.businessRegister.taxTypeOption.${taxType}`)} // Pre-fill with existing data
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
           />
+
+          {/* VAT Toggle */}
+          <View className="flex-row items-center justify-between mt-7 mb-2">
+            <CustomText className="mr-3">
+              {isVatRegistered
+                ? t("auth.businessRegister.vatRegistered")
+                : t("auth.businessRegister.noVatRegistered")}
+            </CustomText>
+            <Switch
+              value={isVatRegistered}
+              onValueChange={setIsVatRegistered}
+              trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#0feac2" }}
+              thumbColor={isVatRegistered ? "#009688" : theme === "dark" ? "#222" : "#fff"}
+            />
+          </View>
 
           <FormField2
             title={t("auth.businessRegister.vatId")}
@@ -244,7 +263,7 @@ export default function BusinessInfo() {
               },
             ]}
             placeholder={t("auth.businessRegister.chooseBusinessType")}
-            selectedValue={t(`${businessType}`)} // Pre-fill with existing data
+            selectedValue={t(`auth.businessRegister.businessTypeOption.${businessType}`)} // Pre-fill with existing data
             onValueChange={setbusinessType}
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}

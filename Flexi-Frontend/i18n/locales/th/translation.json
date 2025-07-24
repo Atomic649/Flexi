@@ -121,6 +121,9 @@
       },
       "chooseBusinessType": "เลือกประเภทธุรกิจ",
       "businessPhone":"เบอร์ติดต่อ",
+      "vatRegistered":"จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)",
+      "noVatRegistered": "ไม่จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)",
+
       "businessTypeOption": {
         "": "เลือกประเภทธุรกิจ",
         "OnlineSale": "ขายออนไลน์",

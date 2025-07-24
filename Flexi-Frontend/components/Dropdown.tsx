@@ -26,7 +26,8 @@ const Dropdown = ({
         onPress={() => setIsOpen(!isOpen)}
       >
         <CustomText
-          className="text-white font-psemibold text-base"
+          className="font-psemibold text-base"
+          style={{ color: textcolor || "white" }} // Use provided text color or default
           
         >
           {selectedValue || placeholder}
@@ -48,7 +49,8 @@ const Dropdown = ({
                 setIsOpen(false);
               }}
             >
-              <CustomText className="text-zinc-100 font-psemibold text-base">
+              <CustomText className="text-zinc-100 font-psemibold text-base"
+                style={{ color: textcolor || "#f4f4f5" }} >{/* Use provided text color or default */}
                 {item.label}
               </CustomText>
             </TouchableOpacity>

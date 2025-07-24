@@ -6,6 +6,7 @@ import {
   Platform,
   SafeAreaView,
   Text,
+  Switch,
 } from "react-native";
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
@@ -29,6 +30,8 @@ export default function Register() {
   const [taxType, settaxType] = useState("");
   const [vatId, setvatId] = useState("");
   const [businessType, setbusinessType] = useState("");
+  const [businessPhone, setBusinessPhone] = useState("");
+  const [isVatRegistered, setIsVatRegistered] = useState(false);
   const [error, setError] = useState("");
 
   // Add alert config state
@@ -113,7 +116,7 @@ export default function Register() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="h-full"
       >
-        <ScrollView contentContainerStyle={{ height: "100%" }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View
             className="w-full flex justify-center h-full px-4"
             style={{
@@ -161,6 +164,30 @@ export default function Register() {
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 
               />
+
+              <FormField
+                title={t("auth.businessRegister.businessPhone")}
+                placeholder={t("auth.businessRegister.businessPhone")}
+                value={businessPhone}
+                handleChangeText={setBusinessPhone}
+                otherStyles="mt-7"
+                keyboardType="phone-pad"
+              />
+
+              {/* VAT Toggle */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 28, marginBottom: 8 }}>
+                <CustomText style={{ marginRight: 12 }}>
+                  {isVatRegistered
+                    ? t("auth.businessRegister.vatRegistered")
+                    : t("auth.businessRegister.noVatRegistered")}
+                </CustomText>
+                <Switch
+                  value={isVatRegistered}
+                  onValueChange={setIsVatRegistered}
+                  trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#0feac2" }}
+                  thumbColor={isVatRegistered ? "#009688" : theme === "dark" ? "#222" : "#fff"}
+                />
+              </View>
 
               <FormField
                 title={t("auth.businessRegister.vatId")}
@@ -227,8 +254,7 @@ export default function Register() {
                 otherStyles="mt-7"
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
+                />
 
               {error ? (
                 <Text className="text-red-500 mt-4">{error}</Text>

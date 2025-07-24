@@ -121,6 +121,8 @@
       },
       "chooseBusinessType": "Select Business Type",
       "businessPhone":" Business Phone Number",
+      "vatRegistered":" Vat Registered",
+      "noVatRegistered": " No Vat Registered",
       "businessTypeOption": {
         "": "Select Business Type",
         "OnlineSale": "Online Sale",
