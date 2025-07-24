@@ -13,7 +13,6 @@ import { getMemberId, getUserId } from "@/utils/utility";
 import Dropdown2 from "@/components/Dropdown2";
 import FormField2 from "@/components/FormField2";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Platform } from "react-native";
 
 export default function BusinessInfo() {
   const { theme } = useTheme();
@@ -185,7 +184,7 @@ export default function BusinessInfo() {
             ]}
             placeholder={t("auth.businessRegister.taxType")}
             onValueChange={settaxType}
-            selectedValue={taxType} // Pre-fill with existing data
+            selectedValue={`${taxType}`} // Pre-fill with existing data
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
@@ -245,7 +244,7 @@ export default function BusinessInfo() {
               },
             ]}
             placeholder={t("auth.businessRegister.chooseBusinessType")}
-            selectedValue={businessType} // Pre-fill with existing data
+            selectedValue={t(`${businessType}`)} // Pre-fill with existing data
             onValueChange={setbusinessType}
             otherStyles="mt-7"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
