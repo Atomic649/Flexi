@@ -30,7 +30,6 @@ const commonTextInputStyle: TextStyle = {
   paddingHorizontal: 4,
   height: 32,
   backgroundColor: "#f9f9f9",
-  
 };
 
 
@@ -172,7 +171,7 @@ export default function TaxDoc() {
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
         style={{
-          width: isMobile() ? "100%" : "40%",
+        style={{
           alignSelf: "center", // Center the content on larger screens
           padding: 10,
         }}
@@ -408,10 +407,10 @@ export default function TaxDoc() {
           </View>
         )}
 
+
         {/* 3D Tax Bracket Stairs before Individual Tax */}
         <View style={{ marginVertical: 0 }}>       
           <TaxBracketStairs3D taxBrackets={taxBrackets} taxableIncome={yearlySum - (reductSum + exemption)} />
-        </View>
         {/* Individual Tax */}
         <View
           className="p-4"
@@ -445,13 +444,13 @@ export default function TaxDoc() {
                 placeholder="0"
                 placeholderTextColor="#a5a5a5"
                 keyboardType="numeric"
+                keyboardType="numeric"
                 style={{
                   ...commonTextInputStyle,
                   width: isMobile() ? 80 : 120,
                   minWidth: 60,
                   maxWidth: 160,
                   alignSelf: "center",
-                }}
               />
             </View>
             {/* Taxable Income */}
@@ -463,7 +462,7 @@ export default function TaxDoc() {
             </View>
           </View>
           {/* Tax Calculation */}
-          <View className="p-4 flex-row gap-2 items-center justify-center">
+          {/* Tax Calculation */}
             <CustomText>{t("taxDoc.individualTax")}</CustomText>
             <Text
             style={{
@@ -489,7 +488,7 @@ export default function TaxDoc() {
             margin: 10,
           }}
         >
-          <View className="px-4 flex-row gap-2 mb-2">
+        >
             <Ionicons>
               <Ionicons
                 name="cash"
@@ -498,7 +497,7 @@ export default function TaxDoc() {
                 style={{ marginRight: 4 }}
               />
             </Ionicons>
-            <CustomText className="text-lg font-bold">
+            </Ionicons>
               {t("taxDoc.tipTitle")}
             </CustomText>
           </View>
@@ -506,20 +505,20 @@ export default function TaxDoc() {
           <TouchableOpacity
             className="flex-row gap-2 items-end mt-2 mb-6 justify-end"
             onPress={() => {
-              if (carRentals.length < 5) {
+            onPress={() => {
                 setCarRentals([
                   ...carRentals,
                   { value: 0, yearly: 0, reduct: "" },
                 ]);
               }
             }}
-            disabled={carRentals.length >= 5}
+            }}
           >
             <Ionicons
               name="add-circle"
               size={24}
               color={
-                carRentals.length >= 5
+              color={
                   ? "#ccc"
                   : theme === "dark"
                   ? "#06fbc6"
@@ -531,12 +530,13 @@ export default function TaxDoc() {
               {t("taxDoc.addMoreCar")}
             </CustomText>
           </TouchableOpacity>
+          </TouchableOpacity>
           {/* Table header */}
           <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: "#e0e0e0", paddingBottom: 4, marginBottom: 4 }}>
             <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText> </CustomText></View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.monthly")}</CustomText></View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.yearly")}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.reduct")}</CustomText></View>
+          </View>
           </View>
           {/* Salary row (merged deduction with wage) */}
           <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
@@ -547,8 +547,8 @@ export default function TaxDoc() {
                 onChangeText={(value) => {
                   const num = Number(value) || 0;
                   setSalary(num);
-                  setYearIncome(num * 12);
                 }}
+                placeholder="0"
                 placeholder="0"
                 placeholderTextColor="#a5a5a5"
                 keyboardType="numeric"
@@ -558,13 +558,13 @@ export default function TaxDoc() {
                   minWidth: 60,
                   maxWidth: 160,
                   alignSelf: "center",
-                }}
               />
+            </View>
             </View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText>{yearIncome.toLocaleString()}</CustomText></View>
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-              <CustomText style={{ textAlign: "center" }}>{reductSalary.toLocaleString()}</CustomText>
             </View>
+          </View>
           </View>
           {/* Wage row (deduction cell merged above) */}
           <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
@@ -579,7 +579,7 @@ export default function TaxDoc() {
                 }}
                 placeholder="0"
                 placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
+                style={{
                 style={{
                   ...commonTextInputStyle,
                   width: isMobile() ? 80 : 120,
@@ -597,18 +597,18 @@ export default function TaxDoc() {
             <View key={idx} style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
               <View style={{ flex: isMobile() ? 1.5 : 1, flexDirection: "row", alignItems: "center" }}>
                 <CustomText>{t("taxDoc.carRental")}</CustomText>
-                <CustomText>{carRentals.length > 1 ? ` #${idx + 1}` : ""}</CustomText>
                 {carRentals.length > 1 && (
                   <TouchableOpacity
                     onPress={() => {
                       const updated = carRentals.filter((_, i) => i !== idx);
                       setCarRentals(updated);
                     }}
-                    style={{ marginLeft: 6 }}
+                    }}
                   >
-                    <Ionicons name="close-circle" size={16} color="#ff4d4f" />
+                  >
                   </TouchableOpacity>
                 )}
+              </View>
               </View>
               <View style={{ flex: 1, alignItems: "center" }}>
                 <TextInput
@@ -643,7 +643,7 @@ export default function TaxDoc() {
           {/* Office rental row */}
           <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
             <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.officeRental")}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}>
+              <TextInput
               <TextInput
                 value={officeRental.toString()}
                 onChangeText={(value) => {
@@ -652,7 +652,7 @@ export default function TaxDoc() {
                   setAllYearOfficeRental(num * 12);
                 }}
                 placeholder="0"
-                placeholderTextColor="#a5a5a5"
+                keyboardType="numeric"
                 keyboardType="numeric"
                 style={{
                   ...commonTextInputStyle,
@@ -660,22 +660,21 @@ export default function TaxDoc() {
                   minWidth: 60,
                   maxWidth: 160,
                   alignSelf: "center",
-                }}
               />
             </View>
+            </View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText>{allYearOfficeRental.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{reductOfficeRental.toLocaleString()}</CustomText></View>
+          </View>
           </View>
           {/* Sum row */}
           <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2, borderTopWidth: 1, borderColor: "#e0e0e0", marginTop: 4 }}>
             <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText></View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{monthlySum.toLocaleString()}</CustomText></View>
             <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{yearlySum.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{reductSum.toLocaleString()}</CustomText></View>
           </View>
         </View>
+        </View>
 
-        
 
         
       </ScrollView>
