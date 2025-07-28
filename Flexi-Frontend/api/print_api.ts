@@ -124,6 +124,30 @@ class CallAPIPrint {
       }
     }
   }
+
+  // Search Bill By ID
+  async searchBillByIdAPI(memberId: string, billId: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/print/search-by-bill-id`, {
+        params: {
+          memberId,
+          billId
+        }
+      });
+
+      console.log("🚀 Search Bill By ID API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Search Bill By ID API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
 }
 
 export default new CallAPIPrint();

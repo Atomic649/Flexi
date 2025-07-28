@@ -329,7 +329,43 @@ export default function Print() {
 
   // Search bills by bill ID 
   const searchByBillId = async () => {
-
+    if (!memberId || !searchQuery) return;
+    setIsLoading(true);
+    try {
+      const response = await CallAPIPrint.searchBillByIdAPI(memberId, searchQuery);
+      // If found, set as array for consistency
+      if (response) {
+        setBills([response]);
+      } else {
+        setBills([]);
+        setAlertConfig({
+          visible: true,
+          title: t("print.noResults"),
+          message: t("print.noResultsMessage"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.error("Error searching by bill ID:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: t("print.searchError"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Search bills by date range
@@ -1462,7 +1498,7 @@ export default function Print() {
                         placeholder={
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("bill.enterName")
-                            : "123"
+                            : "INV2025/123 or 2025/123 or 123"
                         }
                         bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                         placeholderTextColor={

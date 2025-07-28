@@ -173,3 +173,33 @@ export const generateInvoicePDF = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to generate invoice PDF" });
   }
 };
+
+// Search by bill ID
+export const searchBillById = async (req: Request, res: Response) => {
+  try {
+    const { billId, memberId } = req.query;
+
+    if (!billId || !memberId) {
+      return res.status(400).json({ error: "Bill ID and Member ID are required" });
+    }
+
+    // Always use endsWith for flexible search
+    const bill = await prisma.bill.findFirst({
+      where: {
+        billId: { endsWith: billId as string },
+        memberId: memberId as string,
+      },
+    });
+
+    if (!bill) {
+      // Instead of 404 error, return 200 with null (no bill found)
+      return res.status(200).json(null);
+    }
+    console.log("🚀 Search Bill by ID API:", bill);
+    return res.status(200).json(bill);
+  } catch (error) {
+    console.error("Error searching bill by ID:", error);
+    return res.status(500).json({ error: "Failed to search bill by ID" });
+  }
+}
+
