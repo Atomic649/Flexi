@@ -22,14 +22,12 @@ import { getMemberId, getBusinessId } from "@/utils/utility";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { isMobile } from "@/utils/responsive";
-import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
-import CallAPIBill from "@/api/bill_api";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -199,11 +197,12 @@ export default function Print() {
   // Handle date range selection for the calendar
   const handleDatesChange = (dates: string[]) => {
     setDateRange(dates);
-    setCalendarVisible(false);
+   // setCalendarVisible(false);
 
     // If dates were selected, search with those dates
     if (dates && dates.length > 0) {
       searchByDateRange(dates);
+      console.log("Selected Dates:", dates);
     }
   };
 
@@ -380,6 +379,9 @@ export default function Print() {
         // If only one date selected, use that day only
         startDate = format(new Date(dates[0]), "yyyy-MM-dd");
         endDate = format(new Date(dates[0]), "yyyy-MM-dd");
+
+        console.log(" Single date selected :", startDate);
+        console.log("Single date selected:", endDate);
       } else {
         // Sort dates to get start and end
         const sortedDates = dates.sort();
@@ -1536,9 +1538,11 @@ export default function Print() {
                   <>
                     {searchType === SEARCH_TYPES.DATE_RANGE &&
                       dateRange.length > 0 && (
-                        <View className="mb-4 p-4 rounded-lg bg-teal-900 bg-opacity-20">
+                        <View className="flex-row mb-4 p-4 rounded-lg">
                           <CustomText>
-                            {t("print.searchingDateRange")}:{" "}
+                            {t("print.searchingDateRange")}                           
+                          </CustomText>
+                           <CustomText>
                             {dateRange.length === 1
                               ? formatDate(dateRange[0])
                               : `${formatDate(dateRange[0])} - ${formatDate(

@@ -1344,7 +1344,7 @@
     "downloadPdf": "Download PDF",
     "success": "Success",
     "enterBillId": "Enter Bill ID",
-    "searchingDateRange": "Searching within date range",
+    "searchingDateRange": "Searching within date range : ",
     "searchForInvoices": "Search for Tax Invoices/Receipts",
     "noInvoicesForMonth": "No tax invoices/receipts found for this month",
     "selectSearchType": "Select search type",

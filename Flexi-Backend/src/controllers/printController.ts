@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { console } from "inspector";
 
 const prisma = new PrismaClient1();
 
@@ -75,13 +76,19 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       });
     }
 
+    console.log("startDate:", startDate, "endDate:", endDate);
+
+    // Ensure full day coverage for the date range
+    const start = new Date(`${startDate}T00:00:00.000Z`);
+    const end = new Date(`${endDate}T23:59:59.999Z`);
+
     // Get bills within the date range
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
         purchaseAt: {
-          gte: new Date(startDate as string),
-          lte: new Date(endDate as string),
+          gte: start,
+          lte: end,
         },
       },
       orderBy: {
@@ -89,6 +96,7 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       },
     });
 
+    console.log("🚀 Get Bills By Date Range API:", bills);
     return res.status(200).json(bills);
   } catch (error) {
     console.error("Error fetching bills by date range:", error);
@@ -195,7 +203,6 @@ export const searchBillById = async (req: Request, res: Response) => {
       // Instead of 404 error, return 200 with null (no bill found)
       return res.status(200).json(null);
     }
-    console.log("🚀 Search Bill by ID API:", bill);
     return res.status(200).json(bill);
   } catch (error) {
     console.error("Error searching bill by ID:", error);

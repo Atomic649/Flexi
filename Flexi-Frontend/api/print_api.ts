@@ -40,6 +40,7 @@ class CallAPIPrint {
       });
 
       console.log("🚀 Get Bills By Date Range API:", response.data);
+      console.log("startDate:", startDate, "endDate:", endDate);
 
       return response.data;
     } catch (error) {

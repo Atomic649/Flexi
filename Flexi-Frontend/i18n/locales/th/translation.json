@@ -1343,7 +1343,7 @@
     "downloadPdf": "ดาวน์โหลด PDF",
     "success": "สำเร็จ",
     "enterBillId": "กรอกเลขที่ใบเสร็จ",
-    "searchingDateRange": "กำลังค้นหาในช่วงวันที่",
+    "searchingDateRange": "กำลังค้นหาในช่วงวันที่ : ",
     "searchForInvoices": "ค้นหาใบเสร็จรับเงิน/ใบกำกับภาษี",
     "noInvoicesForMonth": "ไม่พบใบเสร็จรับเงิน/ใบกำกับภาษีสำหรับเดือนนี้",
     "selectSearchType": "เลือกประเภทการค้นหา",
