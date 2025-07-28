@@ -14,12 +14,11 @@ import { CustomText } from "../CustomText";
 import { useEffect, useState } from "react";
 import { getMemberId } from "@/utils/utility";
 import CallAPIBusiness from "@/api/business_api";
-import { taxType } from "../../../Flexi-Backend/src/generated/client1/index.d";
 import { Ionicons } from "@expo/vector-icons";
-import FormField from "../FormField3";
 import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
-
 import { TextStyle } from "react-native";
+import { isMobile } from "@/utils/responsive";
+import TaxBracketStairs3D from "../TaxBracketStairs3D";
 
 const commonTextInputStyle: TextStyle = {
   color: "#5e5e5e",
@@ -31,6 +30,7 @@ const commonTextInputStyle: TextStyle = {
   paddingHorizontal: 4,
   height: 32,
   backgroundColor: "#f9f9f9",
+  
 };
 
 
@@ -172,7 +172,7 @@ export default function TaxDoc() {
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
         style={{
-          width: Dimensions.get("window").width > 768 ? "100%" : "100%",
+          width: isMobile() ? "100%" : "40%",
           alignSelf: "center", // Center the content on larger screens
           padding: 10,
         }}
@@ -408,6 +408,10 @@ export default function TaxDoc() {
           </View>
         )}
 
+        {/* 3D Tax Bracket Stairs before Individual Tax */}
+        <View style={{ marginVertical: 0 }}>       
+          <TaxBracketStairs3D taxBrackets={taxBrackets} taxableIncome={yearlySum - (reductSum + exemption)} />
+        </View>
         {/* Individual Tax */}
         <View
           className="p-4"
@@ -441,7 +445,13 @@ export default function TaxDoc() {
                 placeholder="0"
                 placeholderTextColor="#a5a5a5"
                 keyboardType="numeric"
-                style={commonTextInputStyle}
+                style={{
+                  ...commonTextInputStyle,
+                  width: isMobile() ? 80 : 120,
+                  minWidth: 60,
+                  maxWidth: 160,
+                  alignSelf: "center",
+                }}
               />
             </View>
             {/* Taxable Income */}
@@ -453,7 +463,7 @@ export default function TaxDoc() {
             </View>
           </View>
           {/* Tax Calculation */}
-          <View className="p-4 flex-row gap-2 items-center">
+          <View className="p-4 flex-row gap-2 items-center justify-center">
             <CustomText>{t("taxDoc.individualTax")}</CustomText>
             <Text
             style={{
@@ -479,8 +489,7 @@ export default function TaxDoc() {
             margin: 10,
           }}
         >
-          <View className="px-4 flex-row gap-2">
-            {/* icon */}
+          <View className="px-4 flex-row gap-2 mb-2">
             <Ionicons>
               <Ionicons
                 name="cash"
@@ -489,30 +498,28 @@ export default function TaxDoc() {
                 style={{ marginRight: 4 }}
               />
             </Ionicons>
-            {/* title */}
-            <CustomText className="text-lg mb- font-bold">
+            <CustomText className="text-lg font-bold">
               {t("taxDoc.tipTitle")}
             </CustomText>
           </View>
-
           {/* Add more carRental */}
           <TouchableOpacity
             className="flex-row gap-2 items-end mt-2 mb-6 justify-end"
             onPress={() => {
-              if (carRentals.length < 3) {
+              if (carRentals.length < 5) {
                 setCarRentals([
                   ...carRentals,
                   { value: 0, yearly: 0, reduct: "" },
                 ]);
               }
             }}
-            disabled={carRentals.length >= 3}
+            disabled={carRentals.length >= 5}
           >
             <Ionicons
               name="add-circle"
               size={24}
               color={
-                carRentals.length >= 3
+                carRentals.length >= 5
                   ? "#ccc"
                   : theme === "dark"
                   ? "#06fbc6"
@@ -524,247 +531,151 @@ export default function TaxDoc() {
               {t("taxDoc.addMoreCar")}
             </CustomText>
           </TouchableOpacity>
-          {/* title */}
-          <View className="flex-row gap-2">
-            <View className="flex-1 w-1/4"></View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText style={{}} className="text-base text-left">
-                {t("taxDoc.monthly")}
-              </CustomText>
-            </View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText style={{}} className="text-base text-left">
-                {t("taxDoc.yearly")}
-              </CustomText>
-            </View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText style={{}} className="text-base text-left">
-                {t("taxDoc.reduct")}
-              </CustomText>
-            </View>
+          {/* Table header */}
+          <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: "#e0e0e0", paddingBottom: 4, marginBottom: 4 }}>
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText> </CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.monthly")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.yearly")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.reduct")}</CustomText></View>
           </View>
-
-          <View className="flex-row items-start ">
-            {/* Month&year Section*/}
-            <View className="flex-col gap-2" style={{ width: "75%" }}>
-              <FormField
-                title={t("taxDoc.salary")}
-                value={Number(reductSalary) > 0 ? salary : ""}
-                value2={yearIncome.toString()}
-                onChangeText={(value: number) => {
-                  setSalary(value);
-                  setYearIncome(Number(value) * 12);
+          {/* Salary row (merged deduction with wage) */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.salary")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <TextInput
+                value={salary.toString()}
+                onChangeText={(value) => {
+                  const num = Number(value) || 0;
+                  setSalary(num);
+                  setYearIncome(num * 12);
                 }}
                 placeholder="0"
-                bgColor="#ededed"
-                textcolor="#5e5e5e"
-              />
-
-              <FormField
-                title={t("taxDoc.wage")}
-                value={wage}
-                value2={allYearWage.toString()}
-                onChangeText={(value: number) => {
-                  setWage(value);
-                  setAllYearWage(Number(value) * 12);
+                placeholderTextColor="#a5a5a5"
+                keyboardType="numeric"
+                style={{
+                  ...commonTextInputStyle,
+                  width: isMobile() ? 80 : 120,
+                  minWidth: 60,
+                  maxWidth: 160,
+                  alignSelf: "center",
                 }}
-                placeholder="0"
-                bgColor="#ededed"
-                textcolor="#5e5e5e"
               />
             </View>
-            {/* Reduct Section*/}
-            <View className="flex-col gap-2" style={{ width: "20%" }}>
-              <View
-                className="rounded-2xl border-2 border-transparent  "
-                style={{
-                  backgroundColor: "transparent",
-                  height: 86,
-                  opacity: 0.8,
-                  width: 80,
-                 // paddingTop: 20,
-                  
-                }}
-              >
-                <TextInput
-                  className="flex-1 font-psemibold text-base px-2"
-                  value={
-                    Number(reductSalary) > 0 ? reductSalary.toString() : ""
-                  }
-                  placeholder="50% max 100,000"
-                  placeholderTextColor={"#a5a5a5"}
-                  onChangeText={(value: string) =>
-                    setReductSalary(Number(value).toString())
-                  }
-                  style={{
-                    ...commonTextInputStyle,
-                    height: 180,
-                    textAlignVertical: "center",
-                  }}
-                  editable={false}
-                  keyboardType="numeric"
-                  multiline={true}
-                  numberOfLines={3}
-                />
-              </View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{yearIncome.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+              <CustomText style={{ textAlign: "center" }}>{reductSalary.toLocaleString()}</CustomText>
             </View>
           </View>
-          {/* CarRental Section */}
-          {carRentals.map((car, idx) => {
-            const allCarRentalsZero = carRentals.every(
-              (c) => Number(c.value) <= 0
-            );
-            return (
-              <View
-                key={idx}
-                className="flex-row gap-2"
-                style={{
-                  width: "75%",
-                  marginTop: idx === 0 ? 10 : 0,
+          {/* Wage row (deduction cell merged above) */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.wage")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <TextInput
+                value={wage.toString()}
+                onChangeText={(value) => {
+                  const num = Number(value) || 0;
+                  setWage(num);
+                  setAllYearWage(num * 12);
                 }}
-              >
-                <FormField                  
-                  title={
-                    <>
-                      {t("taxDoc.carRental")}
-                      {carRentals.length > 1 && (
-                        <View style={{ flexDirection: "row", alignItems: "center" }}>
-                          <CustomText style={{ fontSize: 12, marginLeft: 2 }} weight="light" className="text-xs">#</CustomText>
-                          <CustomText style={{ fontSize: 12, marginLeft: 2 }} weight="light" className="text-xs">{idx + 1}</CustomText>
-                        </View>
-                      )}
-                    </>
-                  }
-                  value={car.value}
-                  value2={car.yearly.toString()}
-                  onChangeText={(value: number) => {
-                    if (value > 36001) {
-                      alert(t("taxDoc.carRentalMaxAlert") || "Car rental value cannot exceed 36,000");
-                      return;
-                    }
-                    const updated = [...carRentals];
-                    updated[idx].value = value;
-                    updated[idx].yearly = Number(value) * 12;
-                    setCarRentals(updated);
-                  }}
-                  placeholder="0"
-                  placeholder3="100000"
-                  bgColor="#ededed"
-                  textcolor="#5e5e5e"
-                />
-
-                <View
-                  className="rounded-2xl border-2 border-transparent  "
-                  style={{
-                    backgroundColor: "transparent",
-                    height: 40,
-                    opacity: 0.8,
-                    width: 80,
-                    
-                  }}
-                >
-                  <TextInput
-                    className="flex-1 font-psemibold text-base px-2"
-                    value={allCarRentalsZero ? "" : car.reduct.toString()}
-                    placeholder={t("taxDoc.reductMax")}
-                    placeholderTextColor={"#a5a5a5"}
-                    onChangeText={(value: string) => {
-                      const updated = [...carRentals];
-                      updated[idx].reduct = Number(value).toString();
-                      setCarRentals(updated);
-                    }}
-                    style={commonTextInputStyle}
-                    editable={true}
-                    keyboardType="numeric"
-                  />
-                </View>
-                {/* Delete icon */}
+                placeholder="0"
+                placeholderTextColor="#a5a5a5"
+                keyboardType="numeric"
+                style={{
+                  ...commonTextInputStyle,
+                  width: isMobile() ? 80 : 120,
+                  minWidth: 60,
+                  maxWidth: 160,
+                  alignSelf: "center",
+                }}
+              />
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{allYearWage.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1 }} />
+          </View>
+          {/* Car rental rows (one per car rental) */}
+          {carRentals.map((car, idx) => (
+            <View key={idx} style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
+              <View style={{ flex: isMobile() ? 1.5 : 1, flexDirection: "row", alignItems: "center" }}>
+                <CustomText>{t("taxDoc.carRental")}</CustomText>
+                <CustomText>{carRentals.length > 1 ? ` #${idx + 1}` : ""}</CustomText>
                 {carRentals.length > 1 && (
                   <TouchableOpacity
                     onPress={() => {
                       const updated = carRentals.filter((_, i) => i !== idx);
                       setCarRentals(updated);
                     }}
-                    style={{
-                      justifyContent: "flex-start",
-                      alignItems: "center",
-                      paddingRight: 20,
-                    }}
+                    style={{ marginLeft: 6 }}
                   >
-                    <Ionicons name="close-circle" size={20} color="#ff4d4f" />
+                    <Ionicons name="close-circle" size={16} color="#ff4d4f" />
                   </TouchableOpacity>
                 )}
               </View>
-            );
-          })}
-          {/* OfficeRental Section */}
-          <View className="flex-row gap-2 mt-2" style={{ width: "75%" }}>
-            <FormField
-              title={t("taxDoc.officeRental")}
-              value={officeRental}
-              value2={allYearOfficeRental.toString()}
-              onChangeText={(value: number) => {
-                setOfficeRental(value);
-                setAllYearOfficeRental(Number(value) * 12);
-              }}
-              placeholder="0"
-              placeholder3="100000"
-              bgColor="#ededed"
-              textcolor="#5e5e5e"
-            />
-            <View
-              className="rounded-2xl border-2 border-transparent  "
-              style={{
-                backgroundColor: "transparent",
-                height: 40,
-                opacity: 0.8,
-                width: 80,
-              }}
-            >
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <TextInput
+                  value={car.value.toString()}
+                  onChangeText={(value) => {
+                    let num = Number(value) || 0;
+                    if (num > 36000) {
+                      alert(t("taxDoc.carRentalMaxAlert") || "Car rental value cannot exceed 36,000");
+                      num = 36000;
+                    }
+                    const updated = [...carRentals];
+                    updated[idx].value = num;
+                    updated[idx].yearly = num * 12;
+                    setCarRentals(updated);
+                  }}
+                  placeholder="0"
+                  placeholderTextColor="#a5a5a5"
+                  keyboardType="numeric"
+                  style={{
+                    ...commonTextInputStyle,
+                    width: isMobile() ? 80 : 120,
+                    minWidth: 60,
+                    maxWidth: 160,
+                    alignSelf: "center",
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}><CustomText>{Number(car.yearly).toLocaleString()}</CustomText></View>
+              <View style={{ flex: 1, alignItems: "center" }}><CustomText>{Number(car.reduct).toLocaleString()}</CustomText></View>
+            </View>
+          ))}
+          {/* Office rental row */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.officeRental")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}>
               <TextInput
-                className="flex-1 font-psemibold text-base px-2"
-                value={
-                  Number(officeRental) <= 0 &&
-                  carRentals.every((c) => Number(c.value) <= 0)
-                    ? ""
-                    : reductOfficeRental.toString()
-                }
-                placeholder={t("taxDoc.reductMax")}
-                placeholderTextColor={"#a5a5a5"}
-                onChangeText={(value: string) =>
-                  setReductOfficeRental(Number(value).toString())
-                }
-                style={commonTextInputStyle}
-                editable={true}
+                value={officeRental.toString()}
+                onChangeText={(value) => {
+                  const num = Number(value) || 0;
+                  setOfficeRental(num);
+                  setAllYearOfficeRental(num * 12);
+                }}
+                placeholder="0"
+                placeholderTextColor="#a5a5a5"
                 keyboardType="numeric"
+                style={{
+                  ...commonTextInputStyle,
+                  width: isMobile() ? 80 : 120,
+                  minWidth: 60,
+                  maxWidth: 160,
+                  alignSelf: "center",
+                }}
               />
             </View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{allYearOfficeRental.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{reductOfficeRental.toLocaleString()}</CustomText></View>
           </View>
-
-          {/* Sum */}
-          <View className="flex-row pt-4 gap-2">
-            <View className="flex-1 " style={{ width: "20%" }}></View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right"
-              style={{textDecorationLine: "underline"}}>
-                {monthlySum.toLocaleString()}
-              </CustomText>
-            </View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right"
-               style={{textDecorationLine: "underline"}}>
-             
-                {yearlySum.toLocaleString()}
-              </CustomText>
-            </View>
-            <View className="flex-1 w-1/4 items-start">
-              <CustomText className="text-base text-right"
-               style={{textDecorationLine: "underline"}}>
-                {reductSum.toLocaleString()}
-              </CustomText>
-            </View>
+          {/* Sum row */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2, borderTopWidth: 1, borderColor: "#e0e0e0", marginTop: 4 }}>
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{monthlySum.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{yearlySum.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{reductSum.toLocaleString()}</CustomText></View>
           </View>
         </View>
+
+        
 
         
       </ScrollView>
