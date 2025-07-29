@@ -5,6 +5,7 @@ import {
   getExpenseById,
   updateExpenseById, 
   searchExpenseByDate,
+  getThisYearExpensesAPI,
   deleteExpenseById
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
@@ -28,6 +29,10 @@ router.get("/search/:date", authenticateToken, searchExpenseByDate);
 
 // Delete a Expense by ID
 router.delete("/:id", authenticateToken, deleteExpenseById);
+
+
+// Get this year's expenses by memberId
+router.get("/year/expense", authenticateToken, getThisYearExpensesAPI);
 
 
 export default router;

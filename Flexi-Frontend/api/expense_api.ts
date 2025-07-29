@@ -186,6 +186,29 @@ class CallAPIExpense {
       }
     }
   }
+  // get this year expenses by memberId
+  async getThisYearExpensesAPI(memberId: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/expense/year/expense`, {
+        params: { memberId },
+      });
+
+      console.log("🚀Get This Year Expenses API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get This Year Expenses API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          throw new Error("API endpoint not found (404)");
+        }
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
  
 }
 

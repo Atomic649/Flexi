@@ -20,6 +20,7 @@ import { TextStyle } from "react-native";
 import { isMobile } from "@/utils/responsive";
 import TaxBracketStairs3D from "../TaxBracketStairs3D";
 import CallAPIBill from "@/api/bill_api";
+import CallAPIExpense from "@/api/expense_api";
 
 
 const commonTextInputStyle: TextStyle = {
@@ -107,11 +108,26 @@ export default function TaxDoc() {
   const score = percentage * 100; // Convert to  
   const [businessData, setBusinessData] = useState<any>([]);
   const vat = businessData?.vat || false; // Default to false if not set
-  const annualExpense = 500000;
-  const annualExpenseK =
-    annualExpense >= 1000000
-      ? (annualExpense / 1000000).toFixed(1) + "M"
-      : (annualExpense / 1000).toFixed(0) + "K";
+  const [annualExpense, setAnnualExpense] = useState(0);
+
+  // Fetch this year's expenses from API and set to annualExpense
+  useEffect(() => {
+    const fetchAnnualExpense = async () => {
+      try {
+        const memberId = await getMemberId();
+        if (memberId !== null) {
+          const response = await CallAPIExpense.getThisYearExpensesAPI(memberId);
+          console.log("Annual Expense Response:", response);
+          setAnnualExpense(Number(response?.anualExpenseM) || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching annual expense:", error);
+      }
+    };
+    fetchAnnualExpense();
+  }, []);
+
+  
   const percentageExpense = annualExpense / anualSales;
   const scoreExpense = percentageExpense * 100; // Convert to percentage
   const scoreExpensePercentage = scoreExpense.toFixed(2) + "%"; // Convert to millions
@@ -348,7 +364,7 @@ export default function TaxDoc() {
                   </CustomText>
 
                   <CustomText className="text-base text-left">
-                    {annualExpenseK}
+                    {annualExpense}
                   </CustomText>
                   <CustomText
                     className="text-base text-left"

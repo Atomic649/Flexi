@@ -281,6 +281,49 @@ const autoDeleteExpense = async () => {
   }
 };
 
+//get all expenses by memberId query
+const getThisYearExpensesAPI = async (req: Request, res: Response) => {
+  const { memberId } = req.query;
+  try {
+    if (!memberId) {
+      return res.status(400).json({ message: "Member ID is required" });
+    }
+    const expense = await prisma.expense.aggregate({
+      _sum: {
+      amount: true,
+      },
+      where: {
+      memberId: memberId as string,
+      date: {
+        gte: new Date(new Date().getFullYear(), 0, 1),
+        lte: new Date(new Date().getFullYear(), 11, 31),
+      },
+      },
+    });
+    if (!expense || !expense._sum.amount) {
+      return res.status(404).json({ message: "No expenses found for this year" });
+    }
+    const amountNumber = Number(expense._sum.amount);
+    // Convert to millions or thousands
+    let anualExpenseM: string;
+    if (amountNumber >= 1000000) {
+      anualExpenseM = (amountNumber / 1000000).toFixed(1) + "M";
+    } else if (amountNumber >= 1000) {
+      anualExpenseM = (amountNumber / 1000).toFixed(0) + "K";
+    } else {
+      anualExpenseM = amountNumber.toString();
+    }
+    // Do not assign string to a number property; instead, return formatted value separately
+    console.log("🚀 Get This Year Expense API:", anualExpenseM);
+    res.json({
+      anualExpenseM
+    });
+    } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get this year expense" });
+  }
+};
+
 export {
   createExpense,
   getExpenses,
@@ -289,4 +332,5 @@ export {
   searchExpenseByDate,
   autoDeleteExpense,
   deleteExpenseById,
+  getThisYearExpensesAPI
 };
