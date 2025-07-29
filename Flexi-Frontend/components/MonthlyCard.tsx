@@ -133,6 +133,7 @@ export default function MonthlyCard({
               {profit}
             </Text>
           </View>
+              {marketingPreference !== "organic" && (
           <View 
             style={{ width: "13%" }} 
             className="flex flex-col items-center"
@@ -145,6 +146,7 @@ export default function MonthlyCard({
               {percentageAds}%
             </Text>
           </View>
+          )}
         </View>
       </View>
     </View>

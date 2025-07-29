@@ -248,6 +248,7 @@ const monthly = () => {
                 }}
               />
             </View>
+                {marketingPreference !== "organic" && (
 
             <View
               className="flex flex-col items-center"
@@ -257,6 +258,7 @@ const monthly = () => {
                 {t("income.table.percentAd")}
               </Text>
             </View>
+            )}
           </View>
         </View>
 

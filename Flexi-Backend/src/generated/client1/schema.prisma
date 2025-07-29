@@ -234,6 +234,7 @@ model Bill {
   product    String
   payment    Payment
   amount     Int
+  total      Int
   purchaseAt DateTime      @default(now())
   platform   IncomeChannel
   cashStatus Boolean       @default(false)

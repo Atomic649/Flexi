@@ -103,6 +103,9 @@ export default function DailyCard({
               {profit}
             </Text>
           </View>
+
+          {/* Only show ads cost if marketingPreference is not "organic" */}
+          {marketingPreference !== "organic" && (
           <View className="flex flex-col items-center w-1/6">
             <Text
               className={`font-normal justify-end text-zinc-500`}
@@ -112,6 +115,8 @@ export default function DailyCard({
               {percentageAds}%
             </Text>
           </View>
+
+          )}
         </View>
       </View>
     </View>

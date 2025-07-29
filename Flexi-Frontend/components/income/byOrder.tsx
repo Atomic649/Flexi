@@ -306,14 +306,13 @@ const ByOrder = () => {
                     </Text>
                     <Text
                       className={`${
-                        theme === "dark" ? "text-zinc-300" : "text-zinc-600"
+                      theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-28 font-bold `}
                       style={{
-                        color: theme === "dark" ? "#b4b4b5" : undefined,
+                      color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
-                      // style={{ color: theme === "dark" ? "#04ecd5" : "#01e0c6" }}
                     >
-                      +{bill.price}
+                      +{bill.price * bill.amount}
                     </Text>
                     <View className={`w-28 flex items-center justify-center`}>
                       {getPlatformIcon(bill.platform)}

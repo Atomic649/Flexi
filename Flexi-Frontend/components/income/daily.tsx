@@ -153,14 +153,16 @@ const Daily = () => {
 
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
-                {t("income.table.profit")}
+                + / -
               </Text>
             </View>
+              {marketingPreference !== "organic" && (
             <View className="flex flex-col items-center w-1/6">
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.percentAd")}
               </Text>
             </View>
+            )}
           </View>
         </View>
 

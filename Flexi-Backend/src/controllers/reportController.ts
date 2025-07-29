@@ -15,7 +15,7 @@ const dailyReport = async (req: Request, res: Response) => {
        select: {
         purchaseAt: true,
         amount: true,
-        price: true,
+        total: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -32,18 +32,18 @@ const dailyReport = async (req: Request, res: Response) => {
       take: 100, // Limit to 100 records
     });
 
-    // Group by purchaseAt and sum amount and price
+    // Group by purchaseAt and sum amount and total
     const dailyBills = bills.reduce((acc: any, bill) => {
       const date = bill.purchaseAt.toISOString().split("T")[0];
       if (!acc[date]) {
         acc[date] = {
           date: date,
           amount: 0,
-          price: 0,
+          total: 0,
         };
       }
       acc[date].amount += bill.amount;
-      acc[date].price += bill.price;
+      acc[date].total += bill.total;
       return acc;
     }, {});
 
@@ -64,7 +64,7 @@ const dailyReport = async (req: Request, res: Response) => {
     // Merge dailyBills and dailyAdsCost
     const result = Object.keys(dailyBills).map((date) => {
       const adsCost = dailyAdsCost[date]?.adsCost ? Number(dailyAdsCost[date].adsCost) : 0;
-      const price = dailyBills[date].price;
+      const price = dailyBills[date].total;
       const profit = price - adsCost;
       const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
       const ROI = adsCost ? parseFloat(((profit / adsCost) ).toFixed(1)) : 0.00;
@@ -98,7 +98,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       select: {
         purchaseAt: true,
         amount: true,
-        price: true,
+        total: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -134,18 +134,18 @@ const monthlyReport = async (req: Request, res: Response) => {
 
     console.log(expenses);
 
-    // Group by mounth of purchaseAt and sum amount and price
+    // Group by mounth of purchaseAt and sum amount and total
     const monthlyBills = bills.reduce((acc: any, bill) => {
       const date = bill.purchaseAt.toISOString().split("-").slice(0, 2).join("-");
       if (!acc[date]) {
         acc[date] = {
           date: date,
           amount: 0,
-          price: 0,
+          total: 0,
         };
       }
       acc[date].amount += bill.amount;
-      acc[date].price += bill.price;
+      acc[date].total += bill.total;
       return acc;
     }, {});
 
@@ -189,7 +189,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       // Ensure adsCost is a number
       const adsCost = monthlyAdsCost[date]?.adsCost ? Number(monthlyAdsCost[date].adsCost) : 0;
       const expenses = monthlyExpenses[date]?.amount ? Number(monthlyExpenses[date].amount) : 0;
-      const price = monthlyBills[date].price;
+      const price = monthlyBills[date].total;
       const profit = price - expenses;
       const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
       const ROI = adsCost ? parseFloat(((profit / adsCost) ).toFixed(1)) : 0.00;

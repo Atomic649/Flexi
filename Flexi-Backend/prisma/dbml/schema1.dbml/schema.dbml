@@ -90,6 +90,7 @@ Table Bill {
   product String [not null]
   payment Payment [not null]
   amount Int [not null]
+  total Int [not null]
   purchaseAt DateTime [default: `now()`, not null]
   platform IncomeChannel [not null]
   cashStatus Boolean [not null, default: false]

@@ -155,7 +155,7 @@ export default function BillCard({
               style={{ color: PriceColor }}
               numberOfLines={1}
             >
-              + {price}
+              + {price * amount}
             </Text>
           </View>
         </View>

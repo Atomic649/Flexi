@@ -176,6 +176,7 @@ exports.Prisma.BillScalarFieldEnum = {
   product: 'product',
   payment: 'payment',
   amount: 'amount',
+  total: 'total',
   purchaseAt: 'purchaseAt',
   platform: 'platform',
   cashStatus: 'cashStatus',
