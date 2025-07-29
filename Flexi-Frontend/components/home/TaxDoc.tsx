@@ -19,6 +19,8 @@ import i18n from "../../i18n"; // Update the path to where your i18n config actu
 import { TextStyle } from "react-native";
 import { isMobile } from "@/utils/responsive";
 import TaxBracketStairs3D from "../TaxBracketStairs3D";
+import CallAPIBill from "@/api/bill_api";
+
 
 const commonTextInputStyle: TextStyle = {
   color: "#5e5e5e",
@@ -34,7 +36,7 @@ const commonTextInputStyle: TextStyle = {
 };
 
 
-// Tax brackets for progressive tax calculation
+//------------ Tax brackets for progressive tax calculation--------------------
 interface TaxBracket {
   min: number;
   max?: number; // undefined = no upper limit
@@ -75,15 +77,34 @@ function calculateTax(taxableIncome: number): number {
   // ลบ 1 ออกจาก bracket.min เพราะรายได้ที่ min เป็นจุดเริ่มต้นของขั้นใหม่
   return (taxableIncome - bracket.min) * bracket.rate + bracket.cumulativeTax;
 }
+
 export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
 
-  const anualSales = 1200000; // Example annual sales
+  // State for annual sales
+  const [anualSales, setAnualSales] = useState(0); // Default value, will be replaced by API
+
+  // Fetch yearly sales from API and set to anualSales
+  useEffect(() => {
+    const fetchYearlySales = async () => {
+      try {
+        const memberId = await getMemberId();
+        if (memberId !== null) {
+          const response = await CallAPIBill.getYearlySalesAPI(memberId);
+          console.log("Yearly Sales Response:", response);
+            setAnualSales(Number(response?.anualSalesM) || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching yearly sales:", error);
+      }
+    };
+    fetchYearlySales();
+  }, []);
+  
+
   const percentage = anualSales / 1800000; // Assuming full score is 1.8 million
-  const score = percentage * 100; // Convert to
-  var annualSalesMil = anualSales / 1000000; // Convert to millions
-  const anualSalesM = annualSalesMil.toFixed(1) + "M"; //
+  const score = percentage * 100; // Convert to  
   const [businessData, setBusinessData] = useState<any>([]);
   const vat = businessData?.vat || false; // Default to false if not set
   const annualExpense = 500000;
@@ -168,6 +189,7 @@ export default function TaxDoc() {
     });
   }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
+
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
@@ -178,7 +200,7 @@ export default function TaxDoc() {
         }}
       >
         {/* VAT7% */}
-        {vat && (
+        {/* {vat && (
           <View
             className="p-4"
             style={{
@@ -200,7 +222,7 @@ export default function TaxDoc() {
               </CustomText>
             </View>
           </View>
-        )}
+        )} */}
         {!vat && (
           <View
             className="p-4"
@@ -225,7 +247,7 @@ export default function TaxDoc() {
                     {t("taxDoc.annualSales")}
                   </CustomText>
                   <CustomText className="text-base text-left">
-                    {anualSalesM}
+                    {anualSales}
                   </CustomText>
                 </View>
                 <View className="flex-col">
@@ -269,7 +291,7 @@ export default function TaxDoc() {
         )}
 
         {/* Annual Tax */}
-        {businessData?.taxType === "Juristic" && (
+        {/* {businessData?.taxType === "Juristic" && (
           <View
             className="p-4"
             style={{
@@ -291,7 +313,7 @@ export default function TaxDoc() {
               </CustomText>
             </View>
           </View>
-        )}
+        )} */}
 
         {businessData?.taxType === "Individual" && (
           <View
@@ -358,7 +380,7 @@ export default function TaxDoc() {
                     {t("taxDoc.annualIncome")}
                   </CustomText>
                   <CustomText className="text-base text-right">
-                    {anualSalesM}
+                    {anualSales}
                   </CustomText>
                 </View>
               </View>
@@ -418,7 +440,7 @@ export default function TaxDoc() {
           style={{
             backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
             borderRadius: 10,
-            margin: 10,
+            marginBottom: 10,
           }}
         >
           <View className="px-4 flex-row gap-2 items-start">

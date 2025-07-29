@@ -419,6 +419,49 @@ const searchBill = async (req: Request, res: Response) => {
   }
 };
 
+// Get whole year sales form bills by memberId - Get
+const getthisYearSales = async (req: Request, res: Response) => {
+  const { memberId } = req.query;
+  try {
+    if (!memberId) {
+      return res.status(400).json({ message: "Member ID is required" });
+    }
+    const sales = await prisma.bill.aggregate({
+      _sum: {
+        price: true,
+      },
+      where: {
+        memberId: memberId as string,
+        purchaseAt: {
+          gte: new Date(new Date().getFullYear(), 0, 1),
+          lte: new Date(new Date().getFullYear(), 11, 31),
+        },
+      },
+    });
+    if (!sales || !sales._sum.price) {
+      return res.status(404).json({ message: "No sales found for this year" });
+    }
+    sales._sum.price = Number(sales._sum.price);
+    // Convert to millions or thousands
+    let anualSalesM: string;
+    if (sales._sum.price >= 1000000) {
+      anualSalesM = (sales._sum.price / 1000000).toFixed(1) + "M";
+    } else if (sales._sum.price >= 1000) {
+      anualSalesM = (sales._sum.price / 1000).toFixed(0) + "K";
+    } else {
+      anualSalesM = sales._sum.price.toString();
+    }
+    // Do not assign string to a number property; instead, return formatted value separately
+    console.log("🚀 Get This Year Sales API:", anualSalesM);
+    res.json({
+      anualSalesM
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get this year sales" });
+  }
+};
+
 
 
 
@@ -430,5 +473,6 @@ export {
   updateBill,
   searchBill,
   updateCashStatusById,
+  getthisYearSales
   
 };

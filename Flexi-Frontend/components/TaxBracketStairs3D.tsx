@@ -14,14 +14,17 @@ interface TaxBracketStairs3DProps {
   taxBrackets: TaxBracket[];
   taxableIncome: number;
 }
- 
+
 const steps = 7;
 const baseHeight = 30; // px
 const heightStep = 14; // px
 const blockWidth = 44; // px
 const blockGap = 8; // px
 
-export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBracketStairs3DProps) {
+export default function TaxBracketStairs3D({
+  taxBrackets,
+  taxableIncome,
+}: TaxBracketStairs3DProps) {
   // Responsive sizing using getDeviceType from responsive.ts
   const deviceType = getDeviceType();
   let dynamicBlockWidth = blockWidth;
@@ -30,13 +33,13 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
   let dynamicBlockGap = blockGap;
   let labelFontSize = 16;
 
-  if (deviceType === 'mobile') {
+  if (deviceType === "mobile") {
     dynamicBlockWidth = 35;
     dynamicBaseHeight = 18;
     dynamicHeightStep = 10;
     dynamicBlockGap = 4;
     labelFontSize = 10;
-  } else if (deviceType === 'tablet') {
+  } else if (deviceType === "tablet") {
     dynamicBlockWidth = 32;
     dynamicBaseHeight = 24;
     dynamicHeightStep = 10;
@@ -45,8 +48,9 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
   }
 
   // Find the bracket index for highlight
-  let highlightIdx = taxBrackets.findIndex(b =>
-    taxableIncome > b.min && (b.max === undefined || taxableIncome <= b.max)
+  let highlightIdx = taxBrackets.findIndex(
+    (b) =>
+      taxableIncome > b.min && (b.max === undefined || taxableIncome <= b.max)
   );
   if (highlightIdx === -1) {
     highlightIdx = 0; // Always highlight the first block if no bracket matches (e.g., income <= 0)
@@ -56,10 +60,11 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
   const { theme } = useTheme();
 
   return (
-    <View className="flex-col items-center justify-center"
+    <View
+      className="flex-col items-center justify-center"
       style={{
         height: dynamicBaseHeight + dynamicHeightStep * steps + 60,
-        marginVertical: 12,
+        marginVertical: 0,
       }}
     >
       <View className="flex-row items-end justify-center">
@@ -69,7 +74,7 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
           // Assume theme is available via context or prop (add as needed)
           // For this example, let's get theme from a prop or default to 'light'
           // You may need to adjust this to fit your actual theme management
-         
+
           return (
             <View
               key={i}
@@ -78,18 +83,21 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
                 width: dynamicBlockWidth,
                 height,
                 marginHorizontal: isMobile() ? "100%" : dynamicBlockGap / 2,
-                position: 'relative',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                zIndex: 10 - i,
-                shadowColor: '#000',
+                position: "relative",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 2,
                 elevation: 2,
                 backgroundColor: isHighlight
-                  ? (theme === "dark" ? '#53fadb' : '#53fadb')
-                  : (theme === "dark" ? '#272727' : '#efefef'),
+                  ? theme === "dark"
+                    ? "#53fadb"
+                    : "#53fadb"
+                  : theme === "dark"
+                  ? "#272727"
+                  : "#efefef",
               }}
             />
           );
@@ -100,22 +108,22 @@ export default function TaxBracketStairs3D({ taxBrackets, taxableIncome }: TaxBr
         {Array.from({ length: steps }).map((_, i) => {
           const isHighlight = i === highlightIdx;
           // Use rate as percent label if available, else fallback to calculated percent
-          let percent = '';
-          if (taxBrackets[i] && typeof taxBrackets[i].rate === 'number') {
+          let percent = "";
+          if (taxBrackets[i] && typeof taxBrackets[i].rate === "number") {
             percent = `${Math.round(taxBrackets[i].rate * 100)}%`;
           } else {
-            percent = Math.round((i / (steps - 1)) * 100) + '%';
+            percent = Math.round((i / (steps - 1)) * 100) + "%";
           }
           return (
             <Text
               key={i}
-              className={`mx-1 font-bold ${isHighlight ? '' : 'text-gray-400'}`}
+              className={`mx-1 font-bold ${isHighlight ? "" : "text-gray-400"}`}
               style={{
                 width: dynamicBlockWidth,
-                textAlign: 'center',
-                fontSize: labelFontSize *0.8,
-                fontWeight: '600',
-                color: isHighlight ? '#00e6cf' : 'transparent',
+                textAlign: "center",
+                fontSize: labelFontSize * 0.8,
+                fontWeight: "600",
+                color: isHighlight ? "#00e6cf" : "transparent",
               }}
             >
               {percent}

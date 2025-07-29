@@ -6,6 +6,7 @@ import {
   deleteBill,
   updateBill,
   searchBill,
+  getthisYearSales,
   updateCashStatusById,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
@@ -33,5 +34,8 @@ router.get("/:keyword", authenticateToken, searchBill);
 
 // Update Cash Status
 router.put("/cash/:id", authenticateToken, updateCashStatusById);
+
+// Get Yearly Sales
+router.get("/yearly/sales", authenticateToken, getthisYearSales);
 
 export default router;
