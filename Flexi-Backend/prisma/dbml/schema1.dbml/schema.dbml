@@ -87,23 +87,30 @@ Table Bill {
   cAddress String
   cProvince String
   cPostId String
-  product String [not null]
+  product ProductItem [not null]
   payment Payment [not null]
-  amount Int [not null]
   total Int [not null]
   purchaseAt DateTime [default: `now()`, not null]
   platform IncomeChannel [not null]
   cashStatus Boolean [not null, default: false]
-  price Int [not null]
   image String
   deleted Boolean [default: false]
-  productList Product [not null]
   memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   storeId Int [not null]
   store Store [not null]
+}
+
+Table ProductItem {
+  id Int [pk, increment]
+  product String [not null]
+  quantity Int [not null]
+  unitPrice Int [not null]
+  billId Int
+  bill Bill
+  productList Product [not null]
 }
 
 Table AdsCost {
@@ -188,7 +195,7 @@ Table Product {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deleted Boolean [default: false]
-  billRecord Bill [not null]
+  billRecord ProductItem [not null]
   adsRecord AdsCost [not null]
   member Member [not null]
   businessAcc Int [not null]
@@ -463,13 +470,15 @@ Ref: Member.businessId > BusinessAcc.id
 
 Ref: BusinessAcc.userId > User.id
 
-Ref: Bill.product > Product.name
-
 Ref: Bill.memberId > Member.uniqueId
 
 Ref: Bill.businessAcc > BusinessAcc.id
 
 Ref: Bill.storeId > Store.id
+
+Ref: ProductItem.billId > Bill.id
+
+Ref: ProductItem.product > Product.name
 
 Ref: AdsCost.memberId > Member.uniqueId
 

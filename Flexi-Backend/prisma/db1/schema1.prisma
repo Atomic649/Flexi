@@ -231,25 +231,35 @@ model Bill {
   cAddress   String?
   cProvince  String?
   cPostId    String?
-  product    String
+  product    ProductItem[]
   payment    Payment
-  amount     Int
   total      Int
   purchaseAt DateTime      @default(now())
   platform   IncomeChannel
   cashStatus Boolean       @default(false)
-  price      Int
   image      String?
   deleted    Boolean?      @default(false)
 
-  // Relation 
-  productList Product     @relation(fields: [product], references: [name])
+  // Relation   
   memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   storeId     Int
   store       Store       @relation(fields: [storeId], references: [id])
+
+
+}
+model ProductItem {
+  id        Int      @id @default(autoincrement())
+  product   String
+  quantity  Int
+  unitPrice Int
+  billId    Int?
+
+  // Relation
+  bill Bill? @relation(fields: [billId], references: [id])
+  productList Product @relation(fields: [product], references: [name])
 }
 
 model AdsCost {
@@ -340,7 +350,7 @@ model Product {
   deleted     Boolean? @default(false)
 
   // relation
-  billRecord  Bill[]
+  billRecord  ProductItem[]
   adsRecord   AdsCost[]
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int

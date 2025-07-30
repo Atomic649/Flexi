@@ -59,27 +59,37 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         break;
     }
 
-    // Build product filter
-    const productFilter = productName ? { product: productName as string } : {};
+    // Build product filter (for nested ProductItem relation)
+    // const productFilter = productName ? { product: productName as string } : {};
 
     // Build store filter
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
 
-    // Get income from bills
-    const billsAggregation = await prisma.bill.aggregate({
+    // Get income from bills (multi-product support)
+    // Aggregate total from ProductItem (product) relation
+    const billsAggregation = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
         deleted: false,
         purchaseAt: dateFilter,
-        ...productFilter,
         ...storeFilter
       },
-      _sum: {
-        price: true,
-        amount: true
-      },
-      _count: {
-        id: true
+      include: {
+        product: productName
+          ? { where: { product: productName as string } }
+          : true
+      }
+    });
+
+    // Calculate income and orders from all product items
+    let income = 0;
+    let orders = 0;
+    billsAggregation.forEach(bill => {
+      if (bill.product && Array.isArray(bill.product)) {
+        bill.product.forEach(item => {
+          income += Number(item.unitPrice) * Number(item.quantity);
+          orders += 1;
+        });
       }
     });
 
@@ -108,10 +118,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       }
     });
 
-    const income = billsAggregation._sum.price || 0;
     const expense = (expensesAggregation._sum.amount?.toNumber() || 0) + (adsCostAggregation._sum.adsCost?.toNumber() || 0);
     const profitloss = income - expense;
-    const orders = billsAggregation._count.id || 0;
 
     res.json({
       income,
@@ -190,13 +198,12 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         memberId: memberId as string,
         deleted: false,
         purchaseAt: dateFilter,
-        ...productFilter,
         ...storeFilter
       },
-      select: {
-        purchaseAt: true,
-        price: true,
-        amount: true
+      include: {
+        product: productName
+          ? { where: { product: productName as string } }
+          : true
       },
       orderBy: {
         purchaseAt: 'asc'
@@ -236,7 +243,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       if (!acc[date]) {
         acc[date] = { income: 0, expense: 0 };
       }
-      acc[date].income += Number(bill.price) * Number(bill.amount);
+      acc[date].income += Number(bill.total) * Number(bill.total);
       return acc;
     }, {});
 
@@ -274,7 +281,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
   }
 };
 
-// Get Top Products
+// Get Top Products (multi-product support)
 export const getTopProducts = async (req: Request, res: Response) => {
   try {
     const { memberId, period, startDate, endDate, storeId, limit = 5 } = req.query;
@@ -331,7 +338,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
     // Build store filter
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
 
-    // Get bills data grouped by product
+    // Get bills with product items
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
@@ -339,44 +346,47 @@ export const getTopProducts = async (req: Request, res: Response) => {
         purchaseAt: dateFilter,
         ...storeFilter
       },
-      select: {
-        product: true,
-        price: true,
-        amount: true
+      include: {
+        product: true
       }
     });
 
-    // Group by product and calculate metrics
-    const productMetrics = bills.reduce((acc: any, bill) => {
-      const productName = bill.product;
-      if (!acc[productName]) {
-        acc[productName] = {
-          name: productName,
+    // Flatten all product items
+    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
+      product: item.product,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice)
+    })));
+
+    // Aggregate by product name
+    const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number }> = {};
+    allProductItems.forEach(item => {
+      if (!productMetrics[item.product]) {
+        productMetrics[item.product] = {
+          name: item.product,
           revenue: 0,
           sales: 0,
           orders: 0
         };
       }
-      acc[productName].revenue += Number(bill.price) * Number(bill.amount);
-      acc[productName].sales += Number(bill.amount);
-      acc[productName].orders += 1;
-      return acc;
-    }, {});
+      productMetrics[item.product].revenue += item.unitPrice * item.quantity;
+      productMetrics[item.product].sales += item.quantity;
+      productMetrics[item.product].orders += 1;
+    });
 
     // Convert to array and sort by revenue
     const topProducts = Object.values(productMetrics)
-      .sort((a: any, b: any) => b.revenue - a.revenue)
+      .sort((a, b) => b.revenue - a.revenue)
       .slice(0, parseInt(limit as string));
 
     res.json(topProducts);
-
   } catch (error) {
     console.error("Error fetching top products:", error);
     res.status(500).json({ error: "Failed to fetch top products" });
   }
 };
 
-// Get Revenue by Platform
+// Get Revenue by Platform (multi-product support)
 export const getRevenueByPlatform = async (req: Request, res: Response) => {
   try {
     const { memberId, period, startDate, endDate, productName } = req.query;
@@ -430,47 +440,51 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         break;
     }
 
-    // Build product filter
-    const productFilter = productName ? { product: productName as string } : {};
-
-    // Get bills with platform information
+    // Get bills with product items
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
         deleted: false,
-        purchaseAt: dateFilter,
-        ...productFilter
+        purchaseAt: dateFilter
       },
       select: {
         platform: true,
-        price: true,
-        amount: true
+        product: true
       }
     });
 
-    // Group by platform
-    const platformMetrics = bills.reduce((acc: any, bill) => {
-      const platform = bill.platform || 'Unknown';
-      if (!acc[platform]) {
-        acc[platform] = {
-          platform,
+    // Flatten all product items with platform
+    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
+      platform: bill.platform || 'Unknown',
+      product: item.product,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice)
+    })));
+
+    // Optionally filter by productName
+    const filteredItems = productName ? allProductItems.filter(item => item.product === productName) : allProductItems;
+
+    // Aggregate by platform
+    const platformMetrics: Record<string, { platform: string; revenue: number; sales: number; orders: number }> = {};
+    filteredItems.forEach(item => {
+      if (!platformMetrics[item.platform]) {
+        platformMetrics[item.platform] = {
+          platform: item.platform,
           revenue: 0,
           sales: 0,
           orders: 0
         };
       }
-      acc[platform].revenue += Number(bill.price) * Number(bill.amount);
-      acc[platform].sales += Number(bill.amount);
-      acc[platform].orders += 1;
-      return acc;
-    }, {});
+      platformMetrics[item.platform].revenue += item.unitPrice * item.quantity;
+      platformMetrics[item.platform].sales += item.quantity;
+      platformMetrics[item.platform].orders += 1;
+    });
 
     // Convert to array and sort by revenue
     const platformRevenue = Object.values(platformMetrics)
-      .sort((a: any, b: any) => b.revenue - a.revenue);
+      .sort((a, b) => b.revenue - a.revenue);
 
     res.json(platformRevenue);
-
   } catch (error) {
     console.error("Error fetching revenue by platform:", error);
     res.status(500).json({ error: "Failed to fetch revenue by platform" });
@@ -592,7 +606,7 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
   }
 };
 
-// Get Top Stores
+// Get Top Stores (multi-product support)
 export const getTopStores = async (req: Request, res: Response) => {
   try {
     const { memberId, period, startDate, endDate, productName, limit = 5 } = req.query;
@@ -649,18 +663,16 @@ export const getTopStores = async (req: Request, res: Response) => {
     // Build product filter
     const productFilter = productName ? { product: productName as string } : {};
 
-    // Get bills data grouped by store
+    // Get bills with product items
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
         deleted: false,
-        purchaseAt: dateFilter,
-        ...productFilter
+        purchaseAt: dateFilter
       },
       select: {
         storeId: true,
-        price: true,
-        amount: true
+        product: true
       }
     });
 
@@ -686,14 +698,20 @@ export const getTopStores = async (req: Request, res: Response) => {
       return acc;
     }, {} as Record<number, { name: string; platform: string }>);
 
-    // Group by store and calculate metrics
-    const storeMetrics = bills.reduce((acc: any, bill) => {
-      const storeId = bill.storeId;
-      const storeInfo = storeMap[storeId] || { name: 'Unknown Store', platform: 'Unknown' };
-      
-      if (!acc[storeId]) {
-        acc[storeId] = {
-          id: storeId,
+    // Flatten all product items with storeId
+    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
+      storeId: bill.storeId,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice)
+    })));
+
+    // Aggregate by storeId
+    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number }> = {};
+    allProductItems.forEach(item => {
+      const storeInfo = storeMap[item.storeId] || { name: 'Unknown Store', platform: 'Unknown' };
+      if (!storeMetrics[item.storeId]) {
+        storeMetrics[item.storeId] = {
+          id: item.storeId,
           name: storeInfo.name,
           platform: storeInfo.platform,
           revenue: 0,
@@ -701,19 +719,17 @@ export const getTopStores = async (req: Request, res: Response) => {
           orders: 0
         };
       }
-      acc[storeId].revenue += Number(bill.price) * Number(bill.amount);
-      acc[storeId].sales += Number(bill.amount);
-      acc[storeId].orders += 1;
-      return acc;
-    }, {});
+      storeMetrics[item.storeId].revenue += item.unitPrice * item.quantity;
+      storeMetrics[item.storeId].sales += item.quantity;
+      storeMetrics[item.storeId].orders += 1;
+    });
 
     // Convert to array and sort by revenue
     const topStores = Object.values(storeMetrics)
-      .sort((a: any, b: any) => b.revenue - a.revenue)
+      .sort((a, b) => b.revenue - a.revenue)
       .slice(0, parseInt(limit as string));
 
     res.json(topStores);
-
   } catch (error) {
     console.error("Error fetching top stores:", error);
     res.status(500).json({ error: "Failed to fetch top stores" });

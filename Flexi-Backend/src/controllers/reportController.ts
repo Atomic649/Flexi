@@ -13,9 +13,9 @@ const dailyReport = async (req: Request, res: Response) => {
         memberId: memberId,
       },
        select: {
-        purchaseAt: true,
-        amount: true,
+        purchaseAt: true,        
         total: true,
+        product: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -42,7 +42,10 @@ const dailyReport = async (req: Request, res: Response) => {
           total: 0,
         };
       }
-      acc[date].amount += bill.amount;
+      // Sum amount from all product items (quantity)
+      if (bill.product && Array.isArray(bill.product)) {
+        acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
+      }
       acc[date].total += bill.total;
       return acc;
     }, {});
@@ -97,8 +100,8 @@ const monthlyReport = async (req: Request, res: Response) => {
       },
       select: {
         purchaseAt: true,
-        amount: true,
         total: true,
+        product: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -144,7 +147,10 @@ const monthlyReport = async (req: Request, res: Response) => {
           total: 0,
         };
       }
-      acc[date].amount += bill.amount;
+      // Sum amount from all product items (quantity)
+      if (bill.product && Array.isArray(bill.product)) {
+        acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
+      }
       acc[date].total += bill.total;
       return acc;
     }, {});

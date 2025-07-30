@@ -173,19 +173,24 @@ exports.Prisma.BillScalarFieldEnum = {
   cAddress: 'cAddress',
   cProvince: 'cProvince',
   cPostId: 'cPostId',
-  product: 'product',
   payment: 'payment',
-  amount: 'amount',
   total: 'total',
   purchaseAt: 'purchaseAt',
   platform: 'platform',
   cashStatus: 'cashStatus',
-  price: 'price',
   image: 'image',
   deleted: 'deleted',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'
+};
+
+exports.Prisma.ProductItemScalarFieldEnum = {
+  id: 'id',
+  product: 'product',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  billId: 'billId'
 };
 
 exports.Prisma.AdsCostScalarFieldEnum = {
@@ -515,6 +520,7 @@ exports.Prisma.ModelName = {
   Member: 'Member',
   BusinessAcc: 'BusinessAcc',
   Bill: 'Bill',
+  ProductItem: 'ProductItem',
   AdsCost: 'AdsCost',
   Expense: 'Expense',
   Platform: 'Platform',

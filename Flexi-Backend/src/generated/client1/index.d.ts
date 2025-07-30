@@ -34,6 +34,11 @@ export type BusinessAcc = $Result.DefaultSelection<Prisma.$BusinessAccPayload>
  */
 export type Bill = $Result.DefaultSelection<Prisma.$BillPayload>
 /**
+ * Model ProductItem
+ * 
+ */
+export type ProductItem = $Result.DefaultSelection<Prisma.$ProductItemPayload>
+/**
  * Model AdsCost
  * 
  */
@@ -501,6 +506,16 @@ export class PrismaClient<
     * ```
     */
   get bill(): Prisma.BillDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.productItem`: Exposes CRUD operations for the **ProductItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProductItems
+    * const productItems = await prisma.productItem.findMany()
+    * ```
+    */
+  get productItem(): Prisma.ProductItemDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.adsCost`: Exposes CRUD operations for the **AdsCost** model.
@@ -1105,6 +1120,7 @@ export namespace Prisma {
     Member: 'Member',
     BusinessAcc: 'BusinessAcc',
     Bill: 'Bill',
+    ProductItem: 'ProductItem',
     AdsCost: 'AdsCost',
     Expense: 'Expense',
     Platform: 'Platform',
@@ -1139,7 +1155,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "member" | "businessAcc" | "bill" | "adsCost" | "expense" | "platform" | "store" | "product" | "credit" | "post" | "reaction" | "comment" | "inbox" | "shop" | "order" | "option" | "optionValue" | "review" | "cart"
+      modelProps: "user" | "member" | "businessAcc" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "store" | "product" | "credit" | "post" | "reaction" | "comment" | "inbox" | "shop" | "order" | "option" | "optionValue" | "review" | "cart"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1436,6 +1452,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BillCountArgs<ExtArgs>
             result: $Utils.Optional<BillCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProductItem: {
+        payload: Prisma.$ProductItemPayload<ExtArgs>
+        fields: Prisma.ProductItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProductItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProductItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          findFirst: {
+            args: Prisma.ProductItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProductItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          findMany: {
+            args: Prisma.ProductItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>[]
+          }
+          create: {
+            args: Prisma.ProductItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          createMany: {
+            args: Prisma.ProductItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProductItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>[]
+          }
+          delete: {
+            args: Prisma.ProductItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          update: {
+            args: Prisma.ProductItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProductItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProductItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProductItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.ProductItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductItemPayload>
+          }
+          aggregate: {
+            args: Prisma.ProductItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProductItem>
+          }
+          groupBy: {
+            args: Prisma.ProductItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProductItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProductItemCountArgs<ExtArgs>
+            result: $Utils.Optional<ProductItemCountAggregateOutputType> | number
           }
         }
       }
@@ -2711,6 +2801,7 @@ export namespace Prisma {
     member?: MemberOmit
     businessAcc?: BusinessAccOmit
     bill?: BillOmit
+    productItem?: ProductItemOmit
     adsCost?: AdsCostOmit
     expense?: ExpenseOmit
     platform?: PlatformOmit
@@ -3117,6 +3208,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type BillCountOutputType
+   */
+
+  export type BillCountOutputType = {
+    product: number
+  }
+
+  export type BillCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | BillCountOutputTypeCountProductArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BillCountOutputType without action
+   */
+  export type BillCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillCountOutputType
+     */
+    select?: BillCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BillCountOutputType without action
+   */
+  export type BillCountOutputTypeCountProductArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductItemWhereInput
+  }
+
+
+  /**
    * Count Type PlatformCountOutputType
    */
 
@@ -3207,7 +3329,7 @@ export namespace Prisma {
    * ProductCountOutputType without action
    */
   export type ProductCountOutputTypeCountBillRecordArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BillWhereInput
+    where?: ProductItemWhereInput
   }
 
   /**
@@ -7665,18 +7787,14 @@ export namespace Prisma {
 
   export type BillAvgAggregateOutputType = {
     id: number | null
-    amount: number | null
     total: number | null
-    price: number | null
     businessAcc: number | null
     storeId: number | null
   }
 
   export type BillSumAggregateOutputType = {
     id: number | null
-    amount: number | null
     total: number | null
-    price: number | null
     businessAcc: number | null
     storeId: number | null
   }
@@ -7693,14 +7811,11 @@ export namespace Prisma {
     cAddress: string | null
     cProvince: string | null
     cPostId: string | null
-    product: string | null
     payment: $Enums.Payment | null
-    amount: number | null
     total: number | null
     purchaseAt: Date | null
     platform: $Enums.IncomeChannel | null
     cashStatus: boolean | null
-    price: number | null
     image: string | null
     deleted: boolean | null
     memberId: string | null
@@ -7720,14 +7835,11 @@ export namespace Prisma {
     cAddress: string | null
     cProvince: string | null
     cPostId: string | null
-    product: string | null
     payment: $Enums.Payment | null
-    amount: number | null
     total: number | null
     purchaseAt: Date | null
     platform: $Enums.IncomeChannel | null
     cashStatus: boolean | null
-    price: number | null
     image: string | null
     deleted: boolean | null
     memberId: string | null
@@ -7747,14 +7859,11 @@ export namespace Prisma {
     cAddress: number
     cProvince: number
     cPostId: number
-    product: number
     payment: number
-    amount: number
     total: number
     purchaseAt: number
     platform: number
     cashStatus: number
-    price: number
     image: number
     deleted: number
     memberId: number
@@ -7766,18 +7875,14 @@ export namespace Prisma {
 
   export type BillAvgAggregateInputType = {
     id?: true
-    amount?: true
     total?: true
-    price?: true
     businessAcc?: true
     storeId?: true
   }
 
   export type BillSumAggregateInputType = {
     id?: true
-    amount?: true
     total?: true
-    price?: true
     businessAcc?: true
     storeId?: true
   }
@@ -7794,14 +7899,11 @@ export namespace Prisma {
     cAddress?: true
     cProvince?: true
     cPostId?: true
-    product?: true
     payment?: true
-    amount?: true
     total?: true
     purchaseAt?: true
     platform?: true
     cashStatus?: true
-    price?: true
     image?: true
     deleted?: true
     memberId?: true
@@ -7821,14 +7923,11 @@ export namespace Prisma {
     cAddress?: true
     cProvince?: true
     cPostId?: true
-    product?: true
     payment?: true
-    amount?: true
     total?: true
     purchaseAt?: true
     platform?: true
     cashStatus?: true
-    price?: true
     image?: true
     deleted?: true
     memberId?: true
@@ -7848,14 +7947,11 @@ export namespace Prisma {
     cAddress?: true
     cProvince?: true
     cPostId?: true
-    product?: true
     payment?: true
-    amount?: true
     total?: true
     purchaseAt?: true
     platform?: true
     cashStatus?: true
-    price?: true
     image?: true
     deleted?: true
     memberId?: true
@@ -7962,14 +8058,11 @@ export namespace Prisma {
     cAddress: string | null
     cProvince: string | null
     cPostId: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt: Date
     platform: $Enums.IncomeChannel
     cashStatus: boolean
-    price: number
     image: string | null
     deleted: boolean | null
     memberId: string
@@ -8008,23 +8101,21 @@ export namespace Prisma {
     cAddress?: boolean
     cProvince?: boolean
     cPostId?: boolean
-    product?: boolean
     payment?: boolean
-    amount?: boolean
     total?: boolean
     purchaseAt?: boolean
     platform?: boolean
     cashStatus?: boolean
-    price?: boolean
     image?: boolean
     deleted?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
+    product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
+    _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8039,20 +8130,16 @@ export namespace Prisma {
     cAddress?: boolean
     cProvince?: boolean
     cPostId?: boolean
-    product?: boolean
     payment?: boolean
-    amount?: boolean
     total?: boolean
     purchaseAt?: boolean
     platform?: boolean
     cashStatus?: boolean
-    price?: boolean
     image?: boolean
     deleted?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
@@ -8070,20 +8157,16 @@ export namespace Prisma {
     cAddress?: boolean
     cProvince?: boolean
     cPostId?: boolean
-    product?: boolean
     payment?: boolean
-    amount?: boolean
     total?: boolean
     purchaseAt?: boolean
     platform?: boolean
     cashStatus?: boolean
-    price?: boolean
     image?: boolean
     deleted?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
@@ -8101,14 +8184,11 @@ export namespace Prisma {
     cAddress?: boolean
     cProvince?: boolean
     cPostId?: boolean
-    product?: boolean
     payment?: boolean
-    amount?: boolean
     total?: boolean
     purchaseAt?: boolean
     platform?: boolean
     cashStatus?: boolean
-    price?: boolean
     image?: boolean
     deleted?: boolean
     memberId?: boolean
@@ -8116,21 +8196,20 @@ export namespace Prisma {
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "product" | "payment" | "amount" | "total" | "purchaseAt" | "platform" | "cashStatus" | "price" | "image" | "deleted" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
+    product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
+    _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
   }
   export type BillIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    productList?: boolean | ProductDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
@@ -8139,7 +8218,7 @@ export namespace Prisma {
   export type $BillPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Bill"
     objects: {
-      productList: Prisma.$ProductPayload<ExtArgs>
+      product: Prisma.$ProductItemPayload<ExtArgs>[]
       member: Prisma.$MemberPayload<ExtArgs>
       businessId: Prisma.$BusinessAccPayload<ExtArgs>
       store: Prisma.$StorePayload<ExtArgs>
@@ -8156,14 +8235,11 @@ export namespace Prisma {
       cAddress: string | null
       cProvince: string | null
       cPostId: string | null
-      product: string
       payment: $Enums.Payment
-      amount: number
       total: number
       purchaseAt: Date
       platform: $Enums.IncomeChannel
       cashStatus: boolean
-      price: number
       image: string | null
       deleted: boolean | null
       memberId: string
@@ -8563,7 +8639,7 @@ export namespace Prisma {
    */
   export interface Prisma__BillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    productList<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    product<T extends Bill$productArgs<ExtArgs> = {}>(args?: Subset<T, Bill$productArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     member<T extends MemberDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MemberDefaultArgs<ExtArgs>>): Prisma__MemberClient<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     businessId<T extends BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAccDefaultArgs<ExtArgs>>): Prisma__BusinessAccClient<$Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     store<T extends StoreDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StoreDefaultArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -8607,14 +8683,11 @@ export namespace Prisma {
     readonly cAddress: FieldRef<"Bill", 'String'>
     readonly cProvince: FieldRef<"Bill", 'String'>
     readonly cPostId: FieldRef<"Bill", 'String'>
-    readonly product: FieldRef<"Bill", 'String'>
     readonly payment: FieldRef<"Bill", 'Payment'>
-    readonly amount: FieldRef<"Bill", 'Int'>
     readonly total: FieldRef<"Bill", 'Int'>
     readonly purchaseAt: FieldRef<"Bill", 'DateTime'>
     readonly platform: FieldRef<"Bill", 'IncomeChannel'>
     readonly cashStatus: FieldRef<"Bill", 'Boolean'>
-    readonly price: FieldRef<"Bill", 'Int'>
     readonly image: FieldRef<"Bill", 'String'>
     readonly deleted: FieldRef<"Bill", 'Boolean'>
     readonly memberId: FieldRef<"Bill", 'String'>
@@ -9016,6 +9089,30 @@ export namespace Prisma {
   }
 
   /**
+   * Bill.product
+   */
+  export type Bill$productArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    where?: ProductItemWhereInput
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    cursor?: ProductItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProductItemScalarFieldEnum | ProductItemScalarFieldEnum[]
+  }
+
+  /**
    * Bill without action
    */
   export type BillDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9031,6 +9128,1137 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BillInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProductItem
+   */
+
+  export type AggregateProductItem = {
+    _count: ProductItemCountAggregateOutputType | null
+    _avg: ProductItemAvgAggregateOutputType | null
+    _sum: ProductItemSumAggregateOutputType | null
+    _min: ProductItemMinAggregateOutputType | null
+    _max: ProductItemMaxAggregateOutputType | null
+  }
+
+  export type ProductItemAvgAggregateOutputType = {
+    id: number | null
+    quantity: number | null
+    unitPrice: number | null
+    billId: number | null
+  }
+
+  export type ProductItemSumAggregateOutputType = {
+    id: number | null
+    quantity: number | null
+    unitPrice: number | null
+    billId: number | null
+  }
+
+  export type ProductItemMinAggregateOutputType = {
+    id: number | null
+    product: string | null
+    quantity: number | null
+    unitPrice: number | null
+    billId: number | null
+  }
+
+  export type ProductItemMaxAggregateOutputType = {
+    id: number | null
+    product: string | null
+    quantity: number | null
+    unitPrice: number | null
+    billId: number | null
+  }
+
+  export type ProductItemCountAggregateOutputType = {
+    id: number
+    product: number
+    quantity: number
+    unitPrice: number
+    billId: number
+    _all: number
+  }
+
+
+  export type ProductItemAvgAggregateInputType = {
+    id?: true
+    quantity?: true
+    unitPrice?: true
+    billId?: true
+  }
+
+  export type ProductItemSumAggregateInputType = {
+    id?: true
+    quantity?: true
+    unitPrice?: true
+    billId?: true
+  }
+
+  export type ProductItemMinAggregateInputType = {
+    id?: true
+    product?: true
+    quantity?: true
+    unitPrice?: true
+    billId?: true
+  }
+
+  export type ProductItemMaxAggregateInputType = {
+    id?: true
+    product?: true
+    quantity?: true
+    unitPrice?: true
+    billId?: true
+  }
+
+  export type ProductItemCountAggregateInputType = {
+    id?: true
+    product?: true
+    quantity?: true
+    unitPrice?: true
+    billId?: true
+    _all?: true
+  }
+
+  export type ProductItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProductItem to aggregate.
+     */
+    where?: ProductItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductItems to fetch.
+     */
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProductItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProductItems
+    **/
+    _count?: true | ProductItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProductItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProductItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProductItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProductItemMaxAggregateInputType
+  }
+
+  export type GetProductItemAggregateType<T extends ProductItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateProductItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProductItem[P]>
+      : GetScalarType<T[P], AggregateProductItem[P]>
+  }
+
+
+
+
+  export type ProductItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductItemWhereInput
+    orderBy?: ProductItemOrderByWithAggregationInput | ProductItemOrderByWithAggregationInput[]
+    by: ProductItemScalarFieldEnum[] | ProductItemScalarFieldEnum
+    having?: ProductItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProductItemCountAggregateInputType | true
+    _avg?: ProductItemAvgAggregateInputType
+    _sum?: ProductItemSumAggregateInputType
+    _min?: ProductItemMinAggregateInputType
+    _max?: ProductItemMaxAggregateInputType
+  }
+
+  export type ProductItemGroupByOutputType = {
+    id: number
+    product: string
+    quantity: number
+    unitPrice: number
+    billId: number | null
+    _count: ProductItemCountAggregateOutputType | null
+    _avg: ProductItemAvgAggregateOutputType | null
+    _sum: ProductItemSumAggregateOutputType | null
+    _min: ProductItemMinAggregateOutputType | null
+    _max: ProductItemMaxAggregateOutputType | null
+  }
+
+  type GetProductItemGroupByPayload<T extends ProductItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProductItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProductItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProductItemGroupByOutputType[P]>
+            : GetScalarType<T[P], ProductItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProductItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    product?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    billId?: boolean
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productItem"]>
+
+  export type ProductItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    product?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    billId?: boolean
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productItem"]>
+
+  export type ProductItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    product?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    billId?: boolean
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productItem"]>
+
+  export type ProductItemSelectScalar = {
+    id?: boolean
+    product?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    billId?: boolean
+  }
+
+  export type ProductItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "product" | "quantity" | "unitPrice" | "billId", ExtArgs["result"]["productItem"]>
+  export type ProductItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type ProductItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type ProductItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bill?: boolean | ProductItem$billArgs<ExtArgs>
+    productList?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+
+  export type $ProductItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProductItem"
+    objects: {
+      bill: Prisma.$BillPayload<ExtArgs> | null
+      productList: Prisma.$ProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      product: string
+      quantity: number
+      unitPrice: number
+      billId: number | null
+    }, ExtArgs["result"]["productItem"]>
+    composites: {}
+  }
+
+  type ProductItemGetPayload<S extends boolean | null | undefined | ProductItemDefaultArgs> = $Result.GetResult<Prisma.$ProductItemPayload, S>
+
+  type ProductItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProductItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProductItemCountAggregateInputType | true
+    }
+
+  export interface ProductItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProductItem'], meta: { name: 'ProductItem' } }
+    /**
+     * Find zero or one ProductItem that matches the filter.
+     * @param {ProductItemFindUniqueArgs} args - Arguments to find a ProductItem
+     * @example
+     * // Get one ProductItem
+     * const productItem = await prisma.productItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProductItemFindUniqueArgs>(args: SelectSubset<T, ProductItemFindUniqueArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ProductItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProductItemFindUniqueOrThrowArgs} args - Arguments to find a ProductItem
+     * @example
+     * // Get one ProductItem
+     * const productItem = await prisma.productItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProductItemFindUniqueOrThrowArgs>(args: SelectSubset<T, ProductItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProductItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemFindFirstArgs} args - Arguments to find a ProductItem
+     * @example
+     * // Get one ProductItem
+     * const productItem = await prisma.productItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProductItemFindFirstArgs>(args?: SelectSubset<T, ProductItemFindFirstArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProductItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemFindFirstOrThrowArgs} args - Arguments to find a ProductItem
+     * @example
+     * // Get one ProductItem
+     * const productItem = await prisma.productItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProductItemFindFirstOrThrowArgs>(args?: SelectSubset<T, ProductItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ProductItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProductItems
+     * const productItems = await prisma.productItem.findMany()
+     * 
+     * // Get first 10 ProductItems
+     * const productItems = await prisma.productItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const productItemWithIdOnly = await prisma.productItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProductItemFindManyArgs>(args?: SelectSubset<T, ProductItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ProductItem.
+     * @param {ProductItemCreateArgs} args - Arguments to create a ProductItem.
+     * @example
+     * // Create one ProductItem
+     * const ProductItem = await prisma.productItem.create({
+     *   data: {
+     *     // ... data to create a ProductItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProductItemCreateArgs>(args: SelectSubset<T, ProductItemCreateArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ProductItems.
+     * @param {ProductItemCreateManyArgs} args - Arguments to create many ProductItems.
+     * @example
+     * // Create many ProductItems
+     * const productItem = await prisma.productItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProductItemCreateManyArgs>(args?: SelectSubset<T, ProductItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ProductItems and returns the data saved in the database.
+     * @param {ProductItemCreateManyAndReturnArgs} args - Arguments to create many ProductItems.
+     * @example
+     * // Create many ProductItems
+     * const productItem = await prisma.productItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ProductItems and only return the `id`
+     * const productItemWithIdOnly = await prisma.productItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProductItemCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ProductItem.
+     * @param {ProductItemDeleteArgs} args - Arguments to delete one ProductItem.
+     * @example
+     * // Delete one ProductItem
+     * const ProductItem = await prisma.productItem.delete({
+     *   where: {
+     *     // ... filter to delete one ProductItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProductItemDeleteArgs>(args: SelectSubset<T, ProductItemDeleteArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ProductItem.
+     * @param {ProductItemUpdateArgs} args - Arguments to update one ProductItem.
+     * @example
+     * // Update one ProductItem
+     * const productItem = await prisma.productItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProductItemUpdateArgs>(args: SelectSubset<T, ProductItemUpdateArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ProductItems.
+     * @param {ProductItemDeleteManyArgs} args - Arguments to filter ProductItems to delete.
+     * @example
+     * // Delete a few ProductItems
+     * const { count } = await prisma.productItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProductItemDeleteManyArgs>(args?: SelectSubset<T, ProductItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProductItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProductItems
+     * const productItem = await prisma.productItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProductItemUpdateManyArgs>(args: SelectSubset<T, ProductItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProductItems and returns the data updated in the database.
+     * @param {ProductItemUpdateManyAndReturnArgs} args - Arguments to update many ProductItems.
+     * @example
+     * // Update many ProductItems
+     * const productItem = await prisma.productItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ProductItems and only return the `id`
+     * const productItemWithIdOnly = await prisma.productItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProductItemUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ProductItem.
+     * @param {ProductItemUpsertArgs} args - Arguments to update or create a ProductItem.
+     * @example
+     * // Update or create a ProductItem
+     * const productItem = await prisma.productItem.upsert({
+     *   create: {
+     *     // ... data to create a ProductItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProductItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProductItemUpsertArgs>(args: SelectSubset<T, ProductItemUpsertArgs<ExtArgs>>): Prisma__ProductItemClient<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ProductItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemCountArgs} args - Arguments to filter ProductItems to count.
+     * @example
+     * // Count the number of ProductItems
+     * const count = await prisma.productItem.count({
+     *   where: {
+     *     // ... the filter for the ProductItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProductItemCountArgs>(
+      args?: Subset<T, ProductItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProductItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProductItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProductItemAggregateArgs>(args: Subset<T, ProductItemAggregateArgs>): Prisma.PrismaPromise<GetProductItemAggregateType<T>>
+
+    /**
+     * Group by ProductItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProductItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProductItemGroupByArgs['orderBy'] }
+        : { orderBy?: ProductItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProductItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProductItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProductItem model
+   */
+  readonly fields: ProductItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProductItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProductItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bill<T extends ProductItem$billArgs<ExtArgs> = {}>(args?: Subset<T, ProductItem$billArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    productList<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProductItem model
+   */
+  interface ProductItemFieldRefs {
+    readonly id: FieldRef<"ProductItem", 'Int'>
+    readonly product: FieldRef<"ProductItem", 'String'>
+    readonly quantity: FieldRef<"ProductItem", 'Int'>
+    readonly unitPrice: FieldRef<"ProductItem", 'Int'>
+    readonly billId: FieldRef<"ProductItem", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProductItem findUnique
+   */
+  export type ProductItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductItem to fetch.
+     */
+    where: ProductItemWhereUniqueInput
+  }
+
+  /**
+   * ProductItem findUniqueOrThrow
+   */
+  export type ProductItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductItem to fetch.
+     */
+    where: ProductItemWhereUniqueInput
+  }
+
+  /**
+   * ProductItem findFirst
+   */
+  export type ProductItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductItem to fetch.
+     */
+    where?: ProductItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductItems to fetch.
+     */
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProductItems.
+     */
+    cursor?: ProductItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProductItems.
+     */
+    distinct?: ProductItemScalarFieldEnum | ProductItemScalarFieldEnum[]
+  }
+
+  /**
+   * ProductItem findFirstOrThrow
+   */
+  export type ProductItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductItem to fetch.
+     */
+    where?: ProductItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductItems to fetch.
+     */
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProductItems.
+     */
+    cursor?: ProductItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProductItems.
+     */
+    distinct?: ProductItemScalarFieldEnum | ProductItemScalarFieldEnum[]
+  }
+
+  /**
+   * ProductItem findMany
+   */
+  export type ProductItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductItems to fetch.
+     */
+    where?: ProductItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductItems to fetch.
+     */
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProductItems.
+     */
+    cursor?: ProductItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductItems.
+     */
+    skip?: number
+    distinct?: ProductItemScalarFieldEnum | ProductItemScalarFieldEnum[]
+  }
+
+  /**
+   * ProductItem create
+   */
+  export type ProductItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProductItem.
+     */
+    data: XOR<ProductItemCreateInput, ProductItemUncheckedCreateInput>
+  }
+
+  /**
+   * ProductItem createMany
+   */
+  export type ProductItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProductItems.
+     */
+    data: ProductItemCreateManyInput | ProductItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProductItem createManyAndReturn
+   */
+  export type ProductItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many ProductItems.
+     */
+    data: ProductItemCreateManyInput | ProductItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProductItem update
+   */
+  export type ProductItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProductItem.
+     */
+    data: XOR<ProductItemUpdateInput, ProductItemUncheckedUpdateInput>
+    /**
+     * Choose, which ProductItem to update.
+     */
+    where: ProductItemWhereUniqueInput
+  }
+
+  /**
+   * ProductItem updateMany
+   */
+  export type ProductItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProductItems.
+     */
+    data: XOR<ProductItemUpdateManyMutationInput, ProductItemUncheckedUpdateManyInput>
+    /**
+     * Filter which ProductItems to update
+     */
+    where?: ProductItemWhereInput
+    /**
+     * Limit how many ProductItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProductItem updateManyAndReturn
+   */
+  export type ProductItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * The data used to update ProductItems.
+     */
+    data: XOR<ProductItemUpdateManyMutationInput, ProductItemUncheckedUpdateManyInput>
+    /**
+     * Filter which ProductItems to update
+     */
+    where?: ProductItemWhereInput
+    /**
+     * Limit how many ProductItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProductItem upsert
+   */
+  export type ProductItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProductItem to update in case it exists.
+     */
+    where: ProductItemWhereUniqueInput
+    /**
+     * In case the ProductItem found by the `where` argument doesn't exist, create a new ProductItem with this data.
+     */
+    create: XOR<ProductItemCreateInput, ProductItemUncheckedCreateInput>
+    /**
+     * In case the ProductItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProductItemUpdateInput, ProductItemUncheckedUpdateInput>
+  }
+
+  /**
+   * ProductItem delete
+   */
+  export type ProductItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
+    /**
+     * Filter which ProductItem to delete.
+     */
+    where: ProductItemWhereUniqueInput
+  }
+
+  /**
+   * ProductItem deleteMany
+   */
+  export type ProductItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProductItems to delete
+     */
+    where?: ProductItemWhereInput
+    /**
+     * Limit how many ProductItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProductItem.bill
+   */
+  export type ProductItem$billArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bill
+     */
+    omit?: BillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    where?: BillWhereInput
+  }
+
+  /**
+   * ProductItem without action
+   */
+  export type ProductItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductItem
+     */
+    select?: ProductItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductItem
+     */
+    omit?: ProductItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductItemInclude<ExtArgs> | null
   }
 
 
@@ -14218,7 +15446,7 @@ export namespace Prisma {
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
-      billRecord: Prisma.$BillPayload<ExtArgs>[]
+      billRecord: Prisma.$ProductItemPayload<ExtArgs>[]
       adsRecord: Prisma.$AdsCostPayload<ExtArgs>[]
       member: Prisma.$MemberPayload<ExtArgs>
       businessId: Prisma.$BusinessAccPayload<ExtArgs>
@@ -14634,7 +15862,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    billRecord<T extends Product$billRecordArgs<ExtArgs> = {}>(args?: Subset<T, Product$billRecordArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    billRecord<T extends Product$billRecordArgs<ExtArgs> = {}>(args?: Subset<T, Product$billRecordArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     adsRecord<T extends Product$adsRecordArgs<ExtArgs> = {}>(args?: Subset<T, Product$adsRecordArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdsCostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     member<T extends MemberDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MemberDefaultArgs<ExtArgs>>): Prisma__MemberClient<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     businessId<T extends BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAccDefaultArgs<ExtArgs>>): Prisma__BusinessAccClient<$Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -15083,23 +16311,23 @@ export namespace Prisma {
    */
   export type Product$billRecordArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Bill
+     * Select specific fields to fetch from the ProductItem
      */
-    select?: BillSelect<ExtArgs> | null
+    select?: ProductItemSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Bill
+     * Omit specific fields from the ProductItem
      */
-    omit?: BillOmit<ExtArgs> | null
+    omit?: ProductItemOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BillInclude<ExtArgs> | null
-    where?: BillWhereInput
-    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
-    cursor?: BillWhereUniqueInput
+    include?: ProductItemInclude<ExtArgs> | null
+    where?: ProductItemWhereInput
+    orderBy?: ProductItemOrderByWithRelationInput | ProductItemOrderByWithRelationInput[]
+    cursor?: ProductItemWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+    distinct?: ProductItemScalarFieldEnum | ProductItemScalarFieldEnum[]
   }
 
   /**
@@ -27963,14 +29191,11 @@ export namespace Prisma {
     cAddress: 'cAddress',
     cProvince: 'cProvince',
     cPostId: 'cPostId',
-    product: 'product',
     payment: 'payment',
-    amount: 'amount',
     total: 'total',
     purchaseAt: 'purchaseAt',
     platform: 'platform',
     cashStatus: 'cashStatus',
-    price: 'price',
     image: 'image',
     deleted: 'deleted',
     memberId: 'memberId',
@@ -27979,6 +29204,17 @@ export namespace Prisma {
   };
 
   export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
+  export const ProductItemScalarFieldEnum: {
+    id: 'id',
+    product: 'product',
+    quantity: 'quantity',
+    unitPrice: 'unitPrice',
+    billId: 'billId'
+  };
+
+  export type ProductItemScalarFieldEnum = (typeof ProductItemScalarFieldEnum)[keyof typeof ProductItemScalarFieldEnum]
 
 
   export const AdsCostScalarFieldEnum: {
@@ -28886,20 +30122,17 @@ export namespace Prisma {
     cAddress?: StringNullableFilter<"Bill"> | string | null
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
-    product?: StringFilter<"Bill"> | string
     payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
-    amount?: IntFilter<"Bill"> | number
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
     cashStatus?: BoolFilter<"Bill"> | boolean
-    price?: IntFilter<"Bill"> | number
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
-    productList?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    product?: ProductItemListRelationFilter
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     store?: XOR<StoreScalarRelationFilter, StoreWhereInput>
@@ -28917,20 +30150,17 @@ export namespace Prisma {
     cAddress?: SortOrderInput | SortOrder
     cProvince?: SortOrderInput | SortOrder
     cPostId?: SortOrderInput | SortOrder
-    product?: SortOrder
     payment?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
     cashStatus?: SortOrder
-    price?: SortOrder
     image?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
-    productList?: ProductOrderByWithRelationInput
+    product?: ProductItemOrderByRelationAggregateInput
     member?: MemberOrderByWithRelationInput
     businessId?: BusinessAccOrderByWithRelationInput
     store?: StoreOrderByWithRelationInput
@@ -28951,20 +30181,17 @@ export namespace Prisma {
     cAddress?: StringNullableFilter<"Bill"> | string | null
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
-    product?: StringFilter<"Bill"> | string
     payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
-    amount?: IntFilter<"Bill"> | number
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
     cashStatus?: BoolFilter<"Bill"> | boolean
-    price?: IntFilter<"Bill"> | number
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
-    productList?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+    product?: ProductItemListRelationFilter
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
     store?: XOR<StoreScalarRelationFilter, StoreWhereInput>
@@ -28982,14 +30209,11 @@ export namespace Prisma {
     cAddress?: SortOrderInput | SortOrder
     cProvince?: SortOrderInput | SortOrder
     cPostId?: SortOrderInput | SortOrder
-    product?: SortOrder
     payment?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
     cashStatus?: SortOrder
-    price?: SortOrder
     image?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
     memberId?: SortOrder
@@ -29017,19 +30241,76 @@ export namespace Prisma {
     cAddress?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     cProvince?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     cPostId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
-    product?: StringWithAggregatesFilter<"Bill"> | string
     payment?: EnumPaymentWithAggregatesFilter<"Bill"> | $Enums.Payment
-    amount?: IntWithAggregatesFilter<"Bill"> | number
     total?: IntWithAggregatesFilter<"Bill"> | number
     purchaseAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelWithAggregatesFilter<"Bill"> | $Enums.IncomeChannel
     cashStatus?: BoolWithAggregatesFilter<"Bill"> | boolean
-    price?: IntWithAggregatesFilter<"Bill"> | number
     image?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     deleted?: BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
     businessAcc?: IntWithAggregatesFilter<"Bill"> | number
     storeId?: IntWithAggregatesFilter<"Bill"> | number
+  }
+
+  export type ProductItemWhereInput = {
+    AND?: ProductItemWhereInput | ProductItemWhereInput[]
+    OR?: ProductItemWhereInput[]
+    NOT?: ProductItemWhereInput | ProductItemWhereInput[]
+    id?: IntFilter<"ProductItem"> | number
+    product?: StringFilter<"ProductItem"> | string
+    quantity?: IntFilter<"ProductItem"> | number
+    unitPrice?: IntFilter<"ProductItem"> | number
+    billId?: IntNullableFilter<"ProductItem"> | number | null
+    bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
+    productList?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }
+
+  export type ProductItemOrderByWithRelationInput = {
+    id?: SortOrder
+    product?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrderInput | SortOrder
+    bill?: BillOrderByWithRelationInput
+    productList?: ProductOrderByWithRelationInput
+  }
+
+  export type ProductItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ProductItemWhereInput | ProductItemWhereInput[]
+    OR?: ProductItemWhereInput[]
+    NOT?: ProductItemWhereInput | ProductItemWhereInput[]
+    product?: StringFilter<"ProductItem"> | string
+    quantity?: IntFilter<"ProductItem"> | number
+    unitPrice?: IntFilter<"ProductItem"> | number
+    billId?: IntNullableFilter<"ProductItem"> | number | null
+    bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
+    productList?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }, "id">
+
+  export type ProductItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    product?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrderInput | SortOrder
+    _count?: ProductItemCountOrderByAggregateInput
+    _avg?: ProductItemAvgOrderByAggregateInput
+    _max?: ProductItemMaxOrderByAggregateInput
+    _min?: ProductItemMinOrderByAggregateInput
+    _sum?: ProductItemSumOrderByAggregateInput
+  }
+
+  export type ProductItemScalarWhereWithAggregatesInput = {
+    AND?: ProductItemScalarWhereWithAggregatesInput | ProductItemScalarWhereWithAggregatesInput[]
+    OR?: ProductItemScalarWhereWithAggregatesInput[]
+    NOT?: ProductItemScalarWhereWithAggregatesInput | ProductItemScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ProductItem"> | number
+    product?: StringWithAggregatesFilter<"ProductItem"> | string
+    quantity?: IntWithAggregatesFilter<"ProductItem"> | number
+    unitPrice?: IntWithAggregatesFilter<"ProductItem"> | number
+    billId?: IntNullableWithAggregatesFilter<"ProductItem"> | number | null
   }
 
   export type AdsCostWhereInput = {
@@ -29414,7 +30695,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Product"> | Date | string
     deleted?: BoolNullableFilter<"Product"> | boolean | null
     businessAcc?: IntFilter<"Product"> | number
-    billRecord?: BillListRelationFilter
+    billRecord?: ProductItemListRelationFilter
     adsRecord?: AdsCostListRelationFilter
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -29437,7 +30718,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
-    billRecord?: BillOrderByRelationAggregateInput
+    billRecord?: ProductItemOrderByRelationAggregateInput
     adsRecord?: AdsCostOrderByRelationAggregateInput
     member?: MemberOrderByWithRelationInput
     businessId?: BusinessAccOrderByWithRelationInput
@@ -29463,7 +30744,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Product"> | Date | string
     deleted?: BoolNullableFilter<"Product"> | boolean | null
     businessAcc?: IntFilter<"Product"> | number
-    billRecord?: BillListRelationFilter
+    billRecord?: ProductItemListRelationFilter
     adsRecord?: AdsCostListRelationFilter
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30740,15 +32021,13 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
-    productList: ProductCreateNestedOneWithoutBillRecordInput
+    product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -30766,19 +32045,17 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
     businessAcc: number
     storeId: number
+    product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillUpdateInput = {
@@ -30793,15 +32070,13 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+    product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -30819,19 +32094,17 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
+    product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillCreateManyInput = {
@@ -30846,14 +32119,11 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
@@ -30873,12 +32143,10 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
@@ -30895,19 +32163,67 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductItemCreateInput = {
+    quantity: number
+    unitPrice: number
+    bill?: BillCreateNestedOneWithoutProductInput
+    productList: ProductCreateNestedOneWithoutBillRecordInput
+  }
+
+  export type ProductItemUncheckedCreateInput = {
+    id?: number
+    product: string
+    quantity: number
+    unitPrice: number
+    billId?: number | null
+  }
+
+  export type ProductItemUpdateInput = {
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    bill?: BillUpdateOneWithoutProductNestedInput
+    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+  }
+
+  export type ProductItemUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    product?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    billId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type ProductItemCreateManyInput = {
+    id?: number
+    product: string
+    quantity: number
+    unitPrice: number
+    billId?: number | null
+  }
+
+  export type ProductItemUpdateManyMutationInput = {
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductItemUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    product?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    billId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type AdsCostCreateInput = {
@@ -31288,7 +32604,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean | null
-    billRecord?: BillCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostCreateNestedManyWithoutProductListInput
     member: MemberCreateNestedOneWithoutProductInput
     businessId: BusinessAccCreateNestedOneWithoutProductInput
@@ -31311,7 +32627,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean | null
     businessAcc: number
-    billRecord?: BillUncheckedCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemUncheckedCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostUncheckedCreateNestedManyWithoutProductListInput
   }
 
@@ -31329,7 +32645,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    billRecord?: BillUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUpdateManyWithoutProductListNestedInput
     member?: MemberUpdateOneRequiredWithoutProductNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutProductNestedInput
@@ -31352,7 +32668,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessAcc?: IntFieldUpdateOperationsInput | number
-    billRecord?: BillUncheckedUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUncheckedUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUncheckedUpdateManyWithoutProductListNestedInput
   }
 
@@ -32793,9 +34109,10 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type ProductScalarRelationFilter = {
-    is?: ProductWhereInput
-    isNot?: ProductWhereInput
+  export type ProductItemListRelationFilter = {
+    every?: ProductItemWhereInput
+    some?: ProductItemWhereInput
+    none?: ProductItemWhereInput
   }
 
   export type MemberScalarRelationFilter = {
@@ -32813,6 +34130,10 @@ export namespace Prisma {
     isNot?: StoreWhereInput
   }
 
+  export type ProductItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
@@ -32825,14 +34146,11 @@ export namespace Prisma {
     cAddress?: SortOrder
     cProvince?: SortOrder
     cPostId?: SortOrder
-    product?: SortOrder
     payment?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
     cashStatus?: SortOrder
-    price?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
     memberId?: SortOrder
@@ -32842,9 +34160,7 @@ export namespace Prisma {
 
   export type BillAvgOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
-    price?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
   }
@@ -32861,14 +34177,11 @@ export namespace Prisma {
     cAddress?: SortOrder
     cProvince?: SortOrder
     cPostId?: SortOrder
-    product?: SortOrder
     payment?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
     cashStatus?: SortOrder
-    price?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
     memberId?: SortOrder
@@ -32888,14 +34201,11 @@ export namespace Prisma {
     cAddress?: SortOrder
     cProvince?: SortOrder
     cPostId?: SortOrder
-    product?: SortOrder
     payment?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
     cashStatus?: SortOrder
-    price?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
     memberId?: SortOrder
@@ -32905,9 +34215,7 @@ export namespace Prisma {
 
   export type BillSumOrderByAggregateInput = {
     id?: SortOrder
-    amount?: SortOrder
     total?: SortOrder
-    price?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
   }
@@ -32948,6 +34256,54 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type BillNullableScalarRelationFilter = {
+    is?: BillWhereInput | null
+    isNot?: BillWhereInput | null
+  }
+
+  export type ProductScalarRelationFilter = {
+    is?: ProductWhereInput
+    isNot?: ProductWhereInput
+  }
+
+  export type ProductItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    product?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrder
+  }
+
+  export type ProductItemAvgOrderByAggregateInput = {
+    id?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrder
+  }
+
+  export type ProductItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    product?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrder
+  }
+
+  export type ProductItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    product?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrder
+  }
+
+  export type ProductItemSumOrderByAggregateInput = {
+    id?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    billId?: SortOrder
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -35175,10 +36531,11 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
-  export type ProductCreateNestedOneWithoutBillRecordInput = {
-    create?: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
-    connectOrCreate?: ProductCreateOrConnectWithoutBillRecordInput
-    connect?: ProductWhereUniqueInput
+  export type ProductItemCreateNestedManyWithoutBillInput = {
+    create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
+    createMany?: ProductItemCreateManyBillInputEnvelope
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
   }
 
   export type MemberCreateNestedOneWithoutBillInput = {
@@ -35199,6 +36556,13 @@ export namespace Prisma {
     connect?: StoreWhereUniqueInput
   }
 
+  export type ProductItemUncheckedCreateNestedManyWithoutBillInput = {
+    create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
+    createMany?: ProductItemCreateManyBillInputEnvelope
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+  }
+
   export type NullableEnumGenderFieldUpdateOperationsInput = {
     set?: $Enums.Gender | null
   }
@@ -35215,12 +36579,18 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type ProductUpdateOneRequiredWithoutBillRecordNestedInput = {
-    create?: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
-    connectOrCreate?: ProductCreateOrConnectWithoutBillRecordInput
-    upsert?: ProductUpsertWithoutBillRecordInput
-    connect?: ProductWhereUniqueInput
-    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutBillRecordInput, ProductUpdateWithoutBillRecordInput>, ProductUncheckedUpdateWithoutBillRecordInput>
+  export type ProductItemUpdateManyWithoutBillNestedInput = {
+    create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
+    upsert?: ProductItemUpsertWithWhereUniqueWithoutBillInput | ProductItemUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: ProductItemCreateManyBillInputEnvelope
+    set?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    disconnect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    delete?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    update?: ProductItemUpdateWithWhereUniqueWithoutBillInput | ProductItemUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: ProductItemUpdateManyWithWhereWithoutBillInput | ProductItemUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
   }
 
   export type MemberUpdateOneRequiredWithoutBillNestedInput = {
@@ -35245,6 +36615,50 @@ export namespace Prisma {
     upsert?: StoreUpsertWithoutStorefrontIdInput
     connect?: StoreWhereUniqueInput
     update?: XOR<XOR<StoreUpdateToOneWithWhereWithoutStorefrontIdInput, StoreUpdateWithoutStorefrontIdInput>, StoreUncheckedUpdateWithoutStorefrontIdInput>
+  }
+
+  export type ProductItemUncheckedUpdateManyWithoutBillNestedInput = {
+    create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
+    upsert?: ProductItemUpsertWithWhereUniqueWithoutBillInput | ProductItemUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: ProductItemCreateManyBillInputEnvelope
+    set?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    disconnect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    delete?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    update?: ProductItemUpdateWithWhereUniqueWithoutBillInput | ProductItemUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: ProductItemUpdateManyWithWhereWithoutBillInput | ProductItemUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
+  }
+
+  export type BillCreateNestedOneWithoutProductInput = {
+    create?: XOR<BillCreateWithoutProductInput, BillUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BillCreateOrConnectWithoutProductInput
+    connect?: BillWhereUniqueInput
+  }
+
+  export type ProductCreateNestedOneWithoutBillRecordInput = {
+    create?: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutBillRecordInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type BillUpdateOneWithoutProductNestedInput = {
+    create?: XOR<BillCreateWithoutProductInput, BillUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BillCreateOrConnectWithoutProductInput
+    upsert?: BillUpsertWithoutProductInput
+    disconnect?: BillWhereInput | boolean
+    delete?: BillWhereInput | boolean
+    connect?: BillWhereUniqueInput
+    update?: XOR<XOR<BillUpdateToOneWithWhereWithoutProductInput, BillUpdateWithoutProductInput>, BillUncheckedUpdateWithoutProductInput>
+  }
+
+  export type ProductUpdateOneRequiredWithoutBillRecordNestedInput = {
+    create?: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutBillRecordInput
+    upsert?: ProductUpsertWithoutBillRecordInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutBillRecordInput, ProductUpdateWithoutBillRecordInput>, ProductUncheckedUpdateWithoutBillRecordInput>
   }
 
   export type MemberCreateNestedOneWithoutAdsCostInput = {
@@ -35487,11 +36901,11 @@ export namespace Prisma {
     deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
   }
 
-  export type BillCreateNestedManyWithoutProductListInput = {
-    create?: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput> | BillCreateWithoutProductListInput[] | BillUncheckedCreateWithoutProductListInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutProductListInput | BillCreateOrConnectWithoutProductListInput[]
-    createMany?: BillCreateManyProductListInputEnvelope
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  export type ProductItemCreateNestedManyWithoutProductListInput = {
+    create?: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput> | ProductItemCreateWithoutProductListInput[] | ProductItemUncheckedCreateWithoutProductListInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutProductListInput | ProductItemCreateOrConnectWithoutProductListInput[]
+    createMany?: ProductItemCreateManyProductListInputEnvelope
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
   }
 
   export type AdsCostCreateNestedManyWithoutProductListInput = {
@@ -35513,11 +36927,11 @@ export namespace Prisma {
     connect?: BusinessAccWhereUniqueInput
   }
 
-  export type BillUncheckedCreateNestedManyWithoutProductListInput = {
-    create?: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput> | BillCreateWithoutProductListInput[] | BillUncheckedCreateWithoutProductListInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutProductListInput | BillCreateOrConnectWithoutProductListInput[]
-    createMany?: BillCreateManyProductListInputEnvelope
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  export type ProductItemUncheckedCreateNestedManyWithoutProductListInput = {
+    create?: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput> | ProductItemCreateWithoutProductListInput[] | ProductItemUncheckedCreateWithoutProductListInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutProductListInput | ProductItemCreateOrConnectWithoutProductListInput[]
+    createMany?: ProductItemCreateManyProductListInputEnvelope
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
   }
 
   export type AdsCostUncheckedCreateNestedManyWithoutProductListInput = {
@@ -35535,18 +36949,18 @@ export namespace Prisma {
     set?: $Enums.ProductType | null
   }
 
-  export type BillUpdateManyWithoutProductListNestedInput = {
-    create?: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput> | BillCreateWithoutProductListInput[] | BillUncheckedCreateWithoutProductListInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutProductListInput | BillCreateOrConnectWithoutProductListInput[]
-    upsert?: BillUpsertWithWhereUniqueWithoutProductListInput | BillUpsertWithWhereUniqueWithoutProductListInput[]
-    createMany?: BillCreateManyProductListInputEnvelope
-    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    update?: BillUpdateWithWhereUniqueWithoutProductListInput | BillUpdateWithWhereUniqueWithoutProductListInput[]
-    updateMany?: BillUpdateManyWithWhereWithoutProductListInput | BillUpdateManyWithWhereWithoutProductListInput[]
-    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  export type ProductItemUpdateManyWithoutProductListNestedInput = {
+    create?: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput> | ProductItemCreateWithoutProductListInput[] | ProductItemUncheckedCreateWithoutProductListInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutProductListInput | ProductItemCreateOrConnectWithoutProductListInput[]
+    upsert?: ProductItemUpsertWithWhereUniqueWithoutProductListInput | ProductItemUpsertWithWhereUniqueWithoutProductListInput[]
+    createMany?: ProductItemCreateManyProductListInputEnvelope
+    set?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    disconnect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    delete?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    update?: ProductItemUpdateWithWhereUniqueWithoutProductListInput | ProductItemUpdateWithWhereUniqueWithoutProductListInput[]
+    updateMany?: ProductItemUpdateManyWithWhereWithoutProductListInput | ProductItemUpdateManyWithWhereWithoutProductListInput[]
+    deleteMany?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
   }
 
   export type AdsCostUpdateManyWithoutProductListNestedInput = {
@@ -35579,18 +36993,18 @@ export namespace Prisma {
     update?: XOR<XOR<BusinessAccUpdateToOneWithWhereWithoutProductInput, BusinessAccUpdateWithoutProductInput>, BusinessAccUncheckedUpdateWithoutProductInput>
   }
 
-  export type BillUncheckedUpdateManyWithoutProductListNestedInput = {
-    create?: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput> | BillCreateWithoutProductListInput[] | BillUncheckedCreateWithoutProductListInput[]
-    connectOrCreate?: BillCreateOrConnectWithoutProductListInput | BillCreateOrConnectWithoutProductListInput[]
-    upsert?: BillUpsertWithWhereUniqueWithoutProductListInput | BillUpsertWithWhereUniqueWithoutProductListInput[]
-    createMany?: BillCreateManyProductListInputEnvelope
-    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
-    update?: BillUpdateWithWhereUniqueWithoutProductListInput | BillUpdateWithWhereUniqueWithoutProductListInput[]
-    updateMany?: BillUpdateManyWithWhereWithoutProductListInput | BillUpdateManyWithWhereWithoutProductListInput[]
-    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  export type ProductItemUncheckedUpdateManyWithoutProductListNestedInput = {
+    create?: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput> | ProductItemCreateWithoutProductListInput[] | ProductItemUncheckedCreateWithoutProductListInput[]
+    connectOrCreate?: ProductItemCreateOrConnectWithoutProductListInput | ProductItemCreateOrConnectWithoutProductListInput[]
+    upsert?: ProductItemUpsertWithWhereUniqueWithoutProductListInput | ProductItemUpsertWithWhereUniqueWithoutProductListInput[]
+    createMany?: ProductItemCreateManyProductListInputEnvelope
+    set?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    disconnect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    delete?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    connect?: ProductItemWhereUniqueInput | ProductItemWhereUniqueInput[]
+    update?: ProductItemUpdateWithWhereUniqueWithoutProductListInput | ProductItemUpdateWithWhereUniqueWithoutProductListInput[]
+    updateMany?: ProductItemUpdateManyWithWhereWithoutProductListInput | ProductItemUpdateManyWithWhereWithoutProductListInput[]
+    deleteMany?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
   }
 
   export type AdsCostUncheckedUpdateManyWithoutProductListNestedInput = {
@@ -37643,15 +39057,13 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
-    productList: ProductCreateNestedOneWithoutBillRecordInput
+    product?: ProductItemCreateNestedManyWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
   }
@@ -37668,18 +39080,16 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     businessAcc: number
     storeId: number
+    product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillCreateOrConnectWithoutMemberInput = {
@@ -37780,7 +39190,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean | null
-    billRecord?: BillCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostCreateNestedManyWithoutProductListInput
     businessId: BusinessAccCreateNestedOneWithoutProductInput
   }
@@ -37801,7 +39211,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean | null
     businessAcc: number
-    billRecord?: BillUncheckedCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemUncheckedCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostUncheckedCreateNestedManyWithoutProductListInput
   }
 
@@ -38036,14 +39446,11 @@ export namespace Prisma {
     cAddress?: StringNullableFilter<"Bill"> | string | null
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
-    product?: StringFilter<"Bill"> | string
     payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
-    amount?: IntFilter<"Bill"> | number
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
     cashStatus?: BoolFilter<"Bill"> | boolean
-    price?: IntFilter<"Bill"> | number
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
     memberId?: StringFilter<"Bill"> | string
@@ -38331,15 +39738,13 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
-    productList: ProductCreateNestedOneWithoutBillRecordInput
+    product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
   }
@@ -38356,18 +39761,16 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
     storeId: number
+    product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillCreateOrConnectWithoutBusinessIdInput = {
@@ -38534,7 +39937,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean | null
-    billRecord?: BillCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostCreateNestedManyWithoutProductListInput
     member: MemberCreateNestedOneWithoutProductInput
   }
@@ -38555,7 +39958,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean | null
-    billRecord?: BillUncheckedCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemUncheckedCreateNestedManyWithoutProductListInput
     adsRecord?: AdsCostUncheckedCreateNestedManyWithoutProductListInput
   }
 
@@ -38747,48 +40150,27 @@ export namespace Prisma {
     data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutBusinessIdInput>
   }
 
-  export type ProductCreateWithoutBillRecordInput = {
-    name: string
-    unit?: $Enums.Unit | null
-    productType?: $Enums.ProductType | null
-    description?: string | null
-    barcode?: string | null
-    image?: string | null
-    stock: number
-    price: number
-    categoryId?: number | null
-    statusId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deleted?: boolean | null
-    adsRecord?: AdsCostCreateNestedManyWithoutProductListInput
-    member: MemberCreateNestedOneWithoutProductInput
-    businessId: BusinessAccCreateNestedOneWithoutProductInput
+  export type ProductItemCreateWithoutBillInput = {
+    quantity: number
+    unitPrice: number
+    productList: ProductCreateNestedOneWithoutBillRecordInput
   }
 
-  export type ProductUncheckedCreateWithoutBillRecordInput = {
+  export type ProductItemUncheckedCreateWithoutBillInput = {
     id?: number
-    name: string
-    unit?: $Enums.Unit | null
-    productType?: $Enums.ProductType | null
-    description?: string | null
-    barcode?: string | null
-    image?: string | null
-    stock: number
-    price: number
-    categoryId?: number | null
-    memberId: string
-    statusId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deleted?: boolean | null
-    businessAcc: number
-    adsRecord?: AdsCostUncheckedCreateNestedManyWithoutProductListInput
+    product: string
+    quantity: number
+    unitPrice: number
   }
 
-  export type ProductCreateOrConnectWithoutBillRecordInput = {
-    where: ProductWhereUniqueInput
-    create: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
+  export type ProductItemCreateOrConnectWithoutBillInput = {
+    where: ProductItemWhereUniqueInput
+    create: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput>
+  }
+
+  export type ProductItemCreateManyBillInputEnvelope = {
+    data: ProductItemCreateManyBillInput | ProductItemCreateManyBillInput[]
+    skipDuplicates?: boolean
   }
 
   export type MemberCreateWithoutBillInput = {
@@ -38906,54 +40288,31 @@ export namespace Prisma {
     create: XOR<StoreCreateWithoutStorefrontIdInput, StoreUncheckedCreateWithoutStorefrontIdInput>
   }
 
-  export type ProductUpsertWithoutBillRecordInput = {
-    update: XOR<ProductUpdateWithoutBillRecordInput, ProductUncheckedUpdateWithoutBillRecordInput>
-    create: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
-    where?: ProductWhereInput
+  export type ProductItemUpsertWithWhereUniqueWithoutBillInput = {
+    where: ProductItemWhereUniqueInput
+    update: XOR<ProductItemUpdateWithoutBillInput, ProductItemUncheckedUpdateWithoutBillInput>
+    create: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput>
   }
 
-  export type ProductUpdateToOneWithWhereWithoutBillRecordInput = {
-    where?: ProductWhereInput
-    data: XOR<ProductUpdateWithoutBillRecordInput, ProductUncheckedUpdateWithoutBillRecordInput>
+  export type ProductItemUpdateWithWhereUniqueWithoutBillInput = {
+    where: ProductItemWhereUniqueInput
+    data: XOR<ProductItemUpdateWithoutBillInput, ProductItemUncheckedUpdateWithoutBillInput>
   }
 
-  export type ProductUpdateWithoutBillRecordInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
-    productType?: NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    barcode?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    stock?: IntFieldUpdateOperationsInput | number
-    price?: IntFieldUpdateOperationsInput | number
-    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
-    statusId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    adsRecord?: AdsCostUpdateManyWithoutProductListNestedInput
-    member?: MemberUpdateOneRequiredWithoutProductNestedInput
-    businessId?: BusinessAccUpdateOneRequiredWithoutProductNestedInput
+  export type ProductItemUpdateManyWithWhereWithoutBillInput = {
+    where: ProductItemScalarWhereInput
+    data: XOR<ProductItemUpdateManyMutationInput, ProductItemUncheckedUpdateManyWithoutBillInput>
   }
 
-  export type ProductUncheckedUpdateWithoutBillRecordInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
-    productType?: NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    barcode?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    stock?: IntFieldUpdateOperationsInput | number
-    price?: IntFieldUpdateOperationsInput | number
-    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
-    memberId?: StringFieldUpdateOperationsInput | string
-    statusId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    businessAcc?: IntFieldUpdateOperationsInput | number
-    adsRecord?: AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  export type ProductItemScalarWhereInput = {
+    AND?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
+    OR?: ProductItemScalarWhereInput[]
+    NOT?: ProductItemScalarWhereInput | ProductItemScalarWhereInput[]
+    id?: IntFilter<"ProductItem"> | number
+    product?: StringFilter<"ProductItem"> | string
+    quantity?: IntFilter<"ProductItem"> | number
+    unitPrice?: IntFilter<"ProductItem"> | number
+    billId?: IntNullableFilter<"ProductItem"> | number | null
   }
 
   export type MemberUpsertWithoutBillInput = {
@@ -39089,6 +40448,210 @@ export namespace Prisma {
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
+  export type BillCreateWithoutProductInput = {
+    billId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cName: string
+    cLastName?: string | null
+    cPhone?: string | null
+    cGender?: $Enums.Gender | null
+    cAddress?: string | null
+    cProvince?: string | null
+    cPostId?: string | null
+    payment: $Enums.Payment
+    total: number
+    purchaseAt?: Date | string
+    platform: $Enums.IncomeChannel
+    cashStatus?: boolean
+    image?: string | null
+    deleted?: boolean | null
+    member: MemberCreateNestedOneWithoutBillInput
+    businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
+    store: StoreCreateNestedOneWithoutStorefrontIdInput
+  }
+
+  export type BillUncheckedCreateWithoutProductInput = {
+    id?: number
+    billId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cName: string
+    cLastName?: string | null
+    cPhone?: string | null
+    cGender?: $Enums.Gender | null
+    cAddress?: string | null
+    cProvince?: string | null
+    cPostId?: string | null
+    payment: $Enums.Payment
+    total: number
+    purchaseAt?: Date | string
+    platform: $Enums.IncomeChannel
+    cashStatus?: boolean
+    image?: string | null
+    deleted?: boolean | null
+    memberId: string
+    businessAcc: number
+    storeId: number
+  }
+
+  export type BillCreateOrConnectWithoutProductInput = {
+    where: BillWhereUniqueInput
+    create: XOR<BillCreateWithoutProductInput, BillUncheckedCreateWithoutProductInput>
+  }
+
+  export type ProductCreateWithoutBillRecordInput = {
+    name: string
+    unit?: $Enums.Unit | null
+    productType?: $Enums.ProductType | null
+    description?: string | null
+    barcode?: string | null
+    image?: string | null
+    stock: number
+    price: number
+    categoryId?: number | null
+    statusId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deleted?: boolean | null
+    adsRecord?: AdsCostCreateNestedManyWithoutProductListInput
+    member: MemberCreateNestedOneWithoutProductInput
+    businessId: BusinessAccCreateNestedOneWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutBillRecordInput = {
+    id?: number
+    name: string
+    unit?: $Enums.Unit | null
+    productType?: $Enums.ProductType | null
+    description?: string | null
+    barcode?: string | null
+    image?: string | null
+    stock: number
+    price: number
+    categoryId?: number | null
+    memberId: string
+    statusId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deleted?: boolean | null
+    businessAcc: number
+    adsRecord?: AdsCostUncheckedCreateNestedManyWithoutProductListInput
+  }
+
+  export type ProductCreateOrConnectWithoutBillRecordInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
+  }
+
+  export type BillUpsertWithoutProductInput = {
+    update: XOR<BillUpdateWithoutProductInput, BillUncheckedUpdateWithoutProductInput>
+    create: XOR<BillCreateWithoutProductInput, BillUncheckedCreateWithoutProductInput>
+    where?: BillWhereInput
+  }
+
+  export type BillUpdateToOneWithWhereWithoutProductInput = {
+    where?: BillWhereInput
+    data: XOR<BillUpdateWithoutProductInput, BillUncheckedUpdateWithoutProductInput>
+  }
+
+  export type BillUpdateWithoutProductInput = {
+    billId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cName?: StringFieldUpdateOperationsInput | string
+    cLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    cPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    cGender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    cAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    cProvince?: NullableStringFieldUpdateOperationsInput | string | null
+    cPostId?: NullableStringFieldUpdateOperationsInput | string | null
+    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    total?: IntFieldUpdateOperationsInput | number
+    purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
+    cashStatus?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    member?: MemberUpdateOneRequiredWithoutBillNestedInput
+    businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
+    store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
+  }
+
+  export type BillUncheckedUpdateWithoutProductInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    billId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cName?: StringFieldUpdateOperationsInput | string
+    cLastName?: NullableStringFieldUpdateOperationsInput | string | null
+    cPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    cGender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    cAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    cProvince?: NullableStringFieldUpdateOperationsInput | string | null
+    cPostId?: NullableStringFieldUpdateOperationsInput | string | null
+    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    total?: IntFieldUpdateOperationsInput | number
+    purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
+    cashStatus?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    memberId?: StringFieldUpdateOperationsInput | string
+    businessAcc?: IntFieldUpdateOperationsInput | number
+    storeId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductUpsertWithoutBillRecordInput = {
+    update: XOR<ProductUpdateWithoutBillRecordInput, ProductUncheckedUpdateWithoutBillRecordInput>
+    create: XOR<ProductCreateWithoutBillRecordInput, ProductUncheckedCreateWithoutBillRecordInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutBillRecordInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutBillRecordInput, ProductUncheckedUpdateWithoutBillRecordInput>
+  }
+
+  export type ProductUpdateWithoutBillRecordInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+    productType?: NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    stock?: IntFieldUpdateOperationsInput | number
+    price?: IntFieldUpdateOperationsInput | number
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    statusId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    adsRecord?: AdsCostUpdateManyWithoutProductListNestedInput
+    member?: MemberUpdateOneRequiredWithoutProductNestedInput
+    businessId?: BusinessAccUpdateOneRequiredWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutBillRecordInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+    productType?: NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    stock?: IntFieldUpdateOperationsInput | number
+    price?: IntFieldUpdateOperationsInput | number
+    categoryId?: NullableIntFieldUpdateOperationsInput | number | null
+    memberId?: StringFieldUpdateOperationsInput | string
+    statusId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    businessAcc?: IntFieldUpdateOperationsInput | number
+    adsRecord?: AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  }
+
   export type MemberCreateWithoutAdsCostInput = {
     uniqueId?: string
     role?: $Enums.UserRole
@@ -39218,7 +40781,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean | null
-    billRecord?: BillCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemCreateNestedManyWithoutProductListInput
     member: MemberCreateNestedOneWithoutProductInput
     businessId: BusinessAccCreateNestedOneWithoutProductInput
   }
@@ -39240,7 +40803,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean | null
     businessAcc: number
-    billRecord?: BillUncheckedCreateNestedManyWithoutProductListInput
+    billRecord?: ProductItemUncheckedCreateNestedManyWithoutProductListInput
   }
 
   export type ProductCreateOrConnectWithoutAdsRecordInput = {
@@ -39406,7 +40969,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    billRecord?: BillUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUpdateManyWithoutProductListNestedInput
     member?: MemberUpdateOneRequiredWithoutProductNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutProductNestedInput
   }
@@ -39428,7 +40991,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessAcc?: IntFieldUpdateOperationsInput | number
-    billRecord?: BillUncheckedUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUncheckedUpdateManyWithoutProductListNestedInput
   }
 
   export type BusinessAccCreateWithoutExpenseRecordInput = {
@@ -39862,15 +41425,13 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
-    productList: ProductCreateNestedOneWithoutBillRecordInput
+    product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
   }
@@ -39887,18 +41448,16 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
     businessAcc: number
+    product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillCreateOrConnectWithoutStoreInput = {
@@ -40113,64 +41672,26 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutMemberNestedInput
   }
 
-  export type BillCreateWithoutProductListInput = {
-    billId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    cName: string
-    cLastName?: string | null
-    cPhone?: string | null
-    cGender?: $Enums.Gender | null
-    cAddress?: string | null
-    cProvince?: string | null
-    cPostId?: string | null
-    payment: $Enums.Payment
-    amount: number
-    total: number
-    purchaseAt?: Date | string
-    platform: $Enums.IncomeChannel
-    cashStatus?: boolean
-    price: number
-    image?: string | null
-    deleted?: boolean | null
-    member: MemberCreateNestedOneWithoutBillInput
-    businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
-    store: StoreCreateNestedOneWithoutStorefrontIdInput
+  export type ProductItemCreateWithoutProductListInput = {
+    quantity: number
+    unitPrice: number
+    bill?: BillCreateNestedOneWithoutProductInput
   }
 
-  export type BillUncheckedCreateWithoutProductListInput = {
+  export type ProductItemUncheckedCreateWithoutProductListInput = {
     id?: number
-    billId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    cName: string
-    cLastName?: string | null
-    cPhone?: string | null
-    cGender?: $Enums.Gender | null
-    cAddress?: string | null
-    cProvince?: string | null
-    cPostId?: string | null
-    payment: $Enums.Payment
-    amount: number
-    total: number
-    purchaseAt?: Date | string
-    platform: $Enums.IncomeChannel
-    cashStatus?: boolean
-    price: number
-    image?: string | null
-    deleted?: boolean | null
-    memberId: string
-    businessAcc: number
-    storeId: number
+    quantity: number
+    unitPrice: number
+    billId?: number | null
   }
 
-  export type BillCreateOrConnectWithoutProductListInput = {
-    where: BillWhereUniqueInput
-    create: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput>
+  export type ProductItemCreateOrConnectWithoutProductListInput = {
+    where: ProductItemWhereUniqueInput
+    create: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput>
   }
 
-  export type BillCreateManyProductListInputEnvelope = {
-    data: BillCreateManyProductListInput | BillCreateManyProductListInput[]
+  export type ProductItemCreateManyProductListInputEnvelope = {
+    data: ProductItemCreateManyProductListInput | ProductItemCreateManyProductListInput[]
     skipDuplicates?: boolean
   }
 
@@ -40292,20 +41813,20 @@ export namespace Prisma {
     create: XOR<BusinessAccCreateWithoutProductInput, BusinessAccUncheckedCreateWithoutProductInput>
   }
 
-  export type BillUpsertWithWhereUniqueWithoutProductListInput = {
-    where: BillWhereUniqueInput
-    update: XOR<BillUpdateWithoutProductListInput, BillUncheckedUpdateWithoutProductListInput>
-    create: XOR<BillCreateWithoutProductListInput, BillUncheckedCreateWithoutProductListInput>
+  export type ProductItemUpsertWithWhereUniqueWithoutProductListInput = {
+    where: ProductItemWhereUniqueInput
+    update: XOR<ProductItemUpdateWithoutProductListInput, ProductItemUncheckedUpdateWithoutProductListInput>
+    create: XOR<ProductItemCreateWithoutProductListInput, ProductItemUncheckedCreateWithoutProductListInput>
   }
 
-  export type BillUpdateWithWhereUniqueWithoutProductListInput = {
-    where: BillWhereUniqueInput
-    data: XOR<BillUpdateWithoutProductListInput, BillUncheckedUpdateWithoutProductListInput>
+  export type ProductItemUpdateWithWhereUniqueWithoutProductListInput = {
+    where: ProductItemWhereUniqueInput
+    data: XOR<ProductItemUpdateWithoutProductListInput, ProductItemUncheckedUpdateWithoutProductListInput>
   }
 
-  export type BillUpdateManyWithWhereWithoutProductListInput = {
-    where: BillScalarWhereInput
-    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutProductListInput>
+  export type ProductItemUpdateManyWithWhereWithoutProductListInput = {
+    where: ProductItemScalarWhereInput
+    data: XOR<ProductItemUpdateManyMutationInput, ProductItemUncheckedUpdateManyWithoutProductListInput>
   }
 
   export type AdsCostUpsertWithWhereUniqueWithoutProductListInput = {
@@ -43310,14 +44831,11 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     businessAcc: number
@@ -43404,15 +44922,13 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+    product?: ProductItemUpdateManyWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
   }
@@ -43429,18 +44945,16 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
+    product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateManyWithoutMemberInput = {
@@ -43455,14 +44969,11 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessAcc?: IntFieldUpdateOperationsInput | number
@@ -43565,7 +45076,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    billRecord?: BillUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUpdateManyWithoutProductListNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutProductNestedInput
   }
@@ -43586,7 +45097,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessAcc?: IntFieldUpdateOperationsInput | number
-    billRecord?: BillUncheckedUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUncheckedUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUncheckedUpdateManyWithoutProductListNestedInput
   }
 
@@ -43697,14 +45208,11 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
@@ -43830,15 +45338,13 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+    product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
   }
@@ -43855,18 +45361,16 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
+    product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
@@ -43881,14 +45385,11 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -44059,7 +45560,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    billRecord?: BillUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUpdateManyWithoutProductListNestedInput
     member?: MemberUpdateOneRequiredWithoutProductNestedInput
   }
@@ -44080,7 +45581,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    billRecord?: BillUncheckedUpdateManyWithoutProductListNestedInput
+    billRecord?: ProductItemUncheckedUpdateManyWithoutProductListNestedInput
     adsRecord?: AdsCostUncheckedUpdateManyWithoutProductListNestedInput
   }
 
@@ -44100,6 +45601,33 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type ProductItemCreateManyBillInput = {
+    id?: number
+    product: string
+    quantity: number
+    unitPrice: number
+  }
+
+  export type ProductItemUpdateWithoutBillInput = {
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+  }
+
+  export type ProductItemUncheckedUpdateWithoutBillInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    product?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductItemUncheckedUpdateManyWithoutBillInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    product?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
   }
 
   export type AdsCostCreateManyPlatformInput = {
@@ -44157,14 +45685,11 @@ export namespace Prisma {
     cAddress?: string | null
     cProvince?: string | null
     cPostId?: string | null
-    product: string
     payment: $Enums.Payment
-    amount: number
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
     cashStatus?: boolean
-    price: number
     image?: string | null
     deleted?: boolean | null
     memberId: string
@@ -44183,15 +45708,13 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
+    product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   }
@@ -44208,18 +45731,16 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
+    product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateManyWithoutStoreInput = {
@@ -44234,44 +45755,22 @@ export namespace Prisma {
     cAddress?: NullableStringFieldUpdateOperationsInput | string | null
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    product?: StringFieldUpdateOperationsInput | string
     payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
-  export type BillCreateManyProductListInput = {
+  export type ProductItemCreateManyProductListInput = {
     id?: number
-    billId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    cName: string
-    cLastName?: string | null
-    cPhone?: string | null
-    cGender?: $Enums.Gender | null
-    cAddress?: string | null
-    cProvince?: string | null
-    cPostId?: string | null
-    payment: $Enums.Payment
-    amount: number
-    total: number
-    purchaseAt?: Date | string
-    platform: $Enums.IncomeChannel
-    cashStatus?: boolean
-    price: number
-    image?: string | null
-    deleted?: boolean | null
-    memberId: string
-    businessAcc: number
-    storeId: number
+    quantity: number
+    unitPrice: number
+    billId?: number | null
   }
 
   export type AdsCostCreateManyProductListInput = {
@@ -44285,81 +45784,24 @@ export namespace Prisma {
     businessAcc: number
   }
 
-  export type BillUpdateWithoutProductListInput = {
-    billId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    cName?: StringFieldUpdateOperationsInput | string
-    cLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    cPhone?: NullableStringFieldUpdateOperationsInput | string | null
-    cGender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
-    cAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    cProvince?: NullableStringFieldUpdateOperationsInput | string | null
-    cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
-    total?: IntFieldUpdateOperationsInput | number
-    purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
-    cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    member?: MemberUpdateOneRequiredWithoutBillNestedInput
-    businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
-    store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
+  export type ProductItemUpdateWithoutProductListInput = {
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    bill?: BillUpdateOneWithoutProductNestedInput
   }
 
-  export type BillUncheckedUpdateWithoutProductListInput = {
+  export type ProductItemUncheckedUpdateWithoutProductListInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    cName?: StringFieldUpdateOperationsInput | string
-    cLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    cPhone?: NullableStringFieldUpdateOperationsInput | string | null
-    cGender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
-    cAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    cProvince?: NullableStringFieldUpdateOperationsInput | string | null
-    cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
-    total?: IntFieldUpdateOperationsInput | number
-    purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
-    cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: StringFieldUpdateOperationsInput | string
-    businessAcc?: IntFieldUpdateOperationsInput | number
-    storeId?: IntFieldUpdateOperationsInput | number
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    billId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
-  export type BillUncheckedUpdateManyWithoutProductListInput = {
+  export type ProductItemUncheckedUpdateManyWithoutProductListInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    cName?: StringFieldUpdateOperationsInput | string
-    cLastName?: NullableStringFieldUpdateOperationsInput | string | null
-    cPhone?: NullableStringFieldUpdateOperationsInput | string | null
-    cGender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
-    cAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    cProvince?: NullableStringFieldUpdateOperationsInput | string | null
-    cPostId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
-    amount?: IntFieldUpdateOperationsInput | number
-    total?: IntFieldUpdateOperationsInput | number
-    purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
-    cashStatus?: BoolFieldUpdateOperationsInput | boolean
-    price?: IntFieldUpdateOperationsInput | number
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: StringFieldUpdateOperationsInput | string
-    businessAcc?: IntFieldUpdateOperationsInput | number
-    storeId?: IntFieldUpdateOperationsInput | number
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitPrice?: IntFieldUpdateOperationsInput | number
+    billId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type AdsCostUpdateWithoutProductListInput = {

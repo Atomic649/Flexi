@@ -38,11 +38,17 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
       orderBy: {
         purchaseAt: "desc",
       },
+      include: {
+        product: true
+      }
     });
 
     // Calculate report statistics
     const totalSales = bills.reduce(
-      (sum, bill) => sum + Number(bill.price) * Number(bill.amount),
+      (sum, bill) =>
+        sum + (bill.product && Array.isArray(bill.product)
+          ? bill.product.reduce((itemSum, item) => itemSum + Number(item.unitPrice) * Number(item.quantity), 0)
+          : 0),
       0
     );
 

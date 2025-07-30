@@ -38,7 +38,7 @@ class CallAPIBill {
         }
     }
     
-    // Create Bill
+    // Create Bill (multi-product)
     async createBillAPI(data: {
         id?: number;
         createdAt?: Date;
@@ -51,15 +51,17 @@ class CallAPIBill {
         cAddress: string;
         cPostId: string;
         cProvince: string;
-        product: string;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash";
-        amount: number;       
         cashStatus: boolean;
-        price: number;
         memberId: string;
         businessAcc: number;
         storeId: number;
-        image?: string;       
+        image?: string;
+        productItems: Array<{
+            product: string;
+            unitPrice: number;
+            quantity: number;
+        }>;
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -78,7 +80,7 @@ class CallAPIBill {
         }
     }
 
-    // Update Bill
+    // Update Bill (multi-product)
     async updateBillAPI(data: {
         id: number;
         purchaseAt: Date;
@@ -89,15 +91,17 @@ class CallAPIBill {
         cAddress: string;
         cPostId: string;
         cProvince: string;
-        product: string;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash";
-        amount: number;       
         cashStatus: boolean;
-        price: number;
         memberId: string;
         businessAcc: number;
         storeId: number;
-        image?: string;       
+        image?: string;
+        productItems: Array<{
+            product: string;
+            unitPrice: number;
+            quantity: number;
+        }>;
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

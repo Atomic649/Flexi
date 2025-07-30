@@ -71,18 +71,16 @@ export default function EditBill() {
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
 
-  // Product information
-  const [product, setProduct] = useState("");
+  // Payment information
   const [payment, setPayment] = useState("");
-  const [amount, setAmount] = useState("");
-  const [platform, setPlatform] = useState("");
   const [cashStatus, setCashStatus] = useState(false);
-  const [price, setPrice] = useState("");
   const [businessAcc, setBusinessAcc] = useState(0);
   const [image, setImage] = useState("");
 
-  // Product choice
-  const [productChoice, setProductChoice] = useState<any[]>([]);
+  // --- Product Items State ---
+  const [productItems, setProductItems] = useState([
+    { product: "", price: "", quantity: "1" },
+  ]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
@@ -118,7 +116,6 @@ export default function EditBill() {
         setIsLoading(true);
         const billData = await CallAPIBill.getBillByIdAPI(Number(id));
 
-        // Set all the bill data to the state
         setCName(billData.cName);
         setCLastName(billData.cLastName);
         setCPhone(billData.cPhone);
@@ -126,23 +123,28 @@ export default function EditBill() {
         setCAddress(billData.cAddress);
         setCPostId(billData.cPostId);
         setCProvince(billData.cProvince);
-        setProduct(billData.product);
         setPayment(billData.payment);
-        setAmount(billData.amount.toString());
-        setPlatform(billData.platform);
         setCashStatus(billData.cashStatus);
-        setPrice(billData.price.toString());
         setStoreId(billData.storeId);
         setImage(billData.image);
-
+        // Set productItems from billData.product (array of items)
+        if (billData.product && Array.isArray(billData.product) && billData.product.length > 0) {
+          setProductItems(
+            billData.product.map((item: any) => ({
+              product: item.product,
+              price: item.unitPrice.toString(),
+              quantity: item.quantity.toString(),
+            }))
+          );
+        } else {
+          setProductItems([{ product: "", price: "", quantity: "1" }]);
+        }
         // Set purchase date
         if (billData.purchaseAt) {
-          const purchaseDate = new Date(billData.purchaseAt);
-          setPurchaseAt(purchaseDate);
-          setSelectedDates([purchaseDate.toISOString()]);
-          setDate([purchaseDate.toISOString()]);
+          setPurchaseAt(new Date(billData.purchaseAt));
+          setSelectedDates([new Date(billData.purchaseAt).toISOString()]);
+          setDate([new Date(billData.purchaseAt).toISOString()]);
         }
-
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching bill data:", error);
@@ -150,7 +152,6 @@ export default function EditBill() {
         setIsLoading(false);
       }
     };
-
     fetchBillData();
   }, [id]);
 
@@ -196,16 +197,49 @@ export default function EditBill() {
     fetchProductChoice();
   }, []);
 
+  // Product choice
+  const [productChoice, setProductChoice] = useState<any[]>([]);
+
   const validatePhone = (phone: string) => {
     return phone.length === 10 && /^\d+$/.test(phone);
   };
 
+  // --- Handlers for Product Items ---
+  const handleProductItemChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    setProductItems((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      // If product is changed, auto-fill price
+      if (field === "product") {
+        const selectedProduct = productChoice.find((p: any) => p.name === value);
+        updated[index].price =
+          selectedProduct && selectedProduct.price
+            ? selectedProduct.price.toString()
+            : "";
+      }
+      return updated;
+    });
+  };
+
+  const handleAddProductItem = () => {
+    setProductItems((prev) => [
+      ...prev,
+      { product: "", price: "", quantity: "1" },
+    ]);
+  };
+
+  const handleRemoveProductItem = (index: number) => {
+    setProductItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleUpdateBill = async () => {
     setError("");
-
     // Check if all required fields are filled and create array of missing fields
     const missingFields = [];
-
     if (!cName) missingFields.push(t("bill.customerName"));
     if (!cLastName) missingFields.push(t("bill.customerLastName"));
     if (!cPhone) missingFields.push(t("bill.customerPhone"));
@@ -213,12 +247,35 @@ export default function EditBill() {
     if (!cAddress) missingFields.push(t("bill.customerAddress"));
     if (!cPostId) missingFields.push(t("bill.customerPostal"));
     if (!cProvince) missingFields.push(t("bill.customerProvince"));
-    if (!product) missingFields.push(t("bill.productName"));
     if (!payment) missingFields.push(t("bill.paymentMethod"));
-    if (!amount) missingFields.push(t("bill.amount"));
-    if (!price) missingFields.push(t("bill.price"));
     if (!storeId) missingFields.push(t("bill.store"));
-
+    // Validate product items
+    if (
+      productItems.some(
+        (item) => !item.product || !item.price || !item.quantity
+      )
+    ) {
+      setAlertConfig({
+        visible: true,
+        title: t("bill.validation.incomplete"),
+        message:
+          t("bill.validation.missingFields") +
+          ":\n• " +
+          t("bill.productName") +
+          ", " +
+          t("bill.price") +
+          ", " +
+          t("bill.amount"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
+    }
     if (missingFields.length > 0) {
       setAlertConfig({
         visible: true,
@@ -237,7 +294,6 @@ export default function EditBill() {
       });
       return;
     }
-
     // Validate phone number
     if (!validatePhone(cPhone)) {
       setAlertConfig({
@@ -254,7 +310,6 @@ export default function EditBill() {
       });
       return;
     }
-
     try {
       // Call API to update bill
       const data = await CallAPIBill.updateBillAPI({
@@ -267,19 +322,19 @@ export default function EditBill() {
         cAddress,
         cPostId,
         cProvince,
-        product,
-        payment: payment as "COD" | "Transfer" | "CreditCard",
-        amount: Number(amount),
+        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash",
         cashStatus,
-        price: Number(price),
         memberId: memberId || "",
         businessAcc,
         storeId,
         image,
+        productItems: productItems.map((item) => ({
+          product: item.product,
+          unitPrice: Number(item.price),
+          quantity: Number(item.quantity),
+        })),
       });
-
       if (data.error) throw new Error(data.error);
-
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.success"),
@@ -310,21 +365,6 @@ export default function EditBill() {
 
     setCalendarVisible(false);
   }; // force to chose only one date
-
-  // Handle product selection to auto-fill price
-  const handleProductSelect = (selectedProductName: string) => {
-    setProduct(selectedProductName);
-
-    // Find the product with matching name and set its price
-    const selectedProduct = productChoice.find(
-      (p) => p.name === selectedProductName
-    );
-
-    if (selectedProduct && selectedProduct.price) {
-      setPrice(selectedProduct.price.toString());
-    }
-    // Don't clear the price if product not found, as this might be an existing bill
-  };
 
   if (isLoading) {
     return (
@@ -555,39 +595,92 @@ export default function EditBill() {
             </View>
           </View>
 
-          <View className="flex flex-row justify-between">
-            <View className="w-2/3 pr-2">
-              <Dropdown2
-                title={t("bill.productName")}
-                options={productChoice.map((product) => ({
-                  label: product.name,
-                  value: product.name,
-                }))}
-                placeholder={t("bill.selectProduct")}
-                selectedValue={product || t("bill.selectProduct")}
-                onValueChange={handleProductSelect}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-                disabled={!isEditMode}
-              />
+          {/* --- Product Items UI --- */}
+          {productItems.map((item, idx) => (
+            <View
+              key={idx}
+              className="flex flex-row items-center mb-1 relative"
+            >
+              <View className="w-1/2 pr-2">
+                <Dropdown2
+                  title={t(`bill.productName`) + ` ${idx + 1}`}
+                  options={productChoice.map((product) => ({
+                    label: product.name,
+                    value: product.name,
+                  }))}
+                  placeholder={t("bill.selectProduct")}
+                  selectedValue={item.product || t("bill.selectProduct")}
+                  onValueChange={(value: string) =>
+                    handleProductItemChange(idx, "product", value)
+                  }
+                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-1"
+                  disabled={!isEditMode}
+                />
+              </View>
+              <View className="w-1/4 pr-2">
+                <FormField2
+                  title={t("bill.price")}
+                  value={item.price}
+                  handleChangeText={(value: string) =>
+                    handleProductItemChange(idx, "price", value)
+                  }
+                  placeholder="1000"
+                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-1"
+                  keyboardType="numeric"
+                  editable={isEditMode}
+                />
+              </View>
+              <View className="w-1/4 pr-2" style={{ position: "relative" }}>
+                <FormField2
+                  title={t("bill.amount")}
+                  value={item.quantity}
+                  handleChangeText={(value: string) =>
+                    handleProductItemChange(idx, "quantity", value)
+                  }
+                  placeholder="1"
+                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-1"
+                  keyboardType="numeric"
+                  editable={isEditMode}
+                />
+                {idx !== 0 && isEditMode && (
+                  <TouchableOpacity
+                    onPress={() => handleRemoveProductItem(idx)}
+                    style={{
+                      position: "absolute",
+                      top: 17,
+                      right: -6,
+                      zIndex: 1,
+                    }}
+                  >
+                    <Ionicons name="remove-circle" size={22} color="#e74c3c" />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-            <View className="w-1/3 pr-2">
-              <FormField2
-                title={t("bill.price")}
-                value={price}
-                handleChangeText={setPrice}
-                placeholder="1000"
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                keyboardType="numeric"
-                editable={isEditMode}
-              />
+          ))}
+          {isEditMode && (
+            <View className="flex flex-row justify-end mb-2">
+              <TouchableOpacity onPress={handleAddProductItem}>
+                <View className="flex flex-row items-center gap-2">
+                  <Ionicons name="add-circle" size={28} color="#2ecc71" />
+                  <CustomText>{t("bill.addProductItem")}</CustomText>
+                </View>
+              </TouchableOpacity>
             </View>
-          </View>
+          )}
 
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
@@ -622,38 +715,25 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/3 pr-2">
-              <FormField2
-                title={t("bill.amount")}
-                value={amount}
-                handleChangeText={setAmount}
-                placeholder="1"
+              <Dropdown2
+                title={t("bill.paymentStatus")}
+                options={[
+                  { label: t("bill.status.paid"), value: "true" },
+                  { label: t("bill.status.unpaid"), value: "false" },
+                ]}
+                placeholder={t("bill.selectStatus")}
+                selectedValue={
+                  cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
+                }
+                onValueChange={(value: string) => setCashStatus(value === "true")}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                keyboardType="numeric"
-                editable={isEditMode}
+                otherStyles="mt-2 mb-2"
+                disabled={!isEditMode}
               />
             </View>
           </View>
-
-          <Dropdown2
-            title={t("bill.paymentStatus")}
-            options={[
-              { label: t("bill.status.paid"), value: "true" },
-              { label: t("bill.status.unpaid"), value: "false" },
-            ]}
-            placeholder={t("bill.selectStatus")}
-            selectedValue={
-              cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
-            }
-            onValueChange={(value: string) => setCashStatus(value === "true")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles="mt-2 mb-2"
-            disabled={!isEditMode}
-          />
 
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>

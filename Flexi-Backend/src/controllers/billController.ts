@@ -1,20 +1,33 @@
 import { Request, Response } from "express";
-import { Gender, Payment, PrismaClient as PrismaClient1, SocialMedia } from "../generated/client1";
+import {
+  Gender,
+  Payment,
+  PrismaClient as PrismaClient1,
+  SocialMedia,
+} from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 
-
-const upload = multer(multerConfig.multerConfigImage.config).single(multerConfig.multerConfigImage.keyUpload);
+const upload = multer(multerConfig.multerConfigImage.config).single(
+  multerConfig.multerConfigImage.keyUpload
+);
 
 // Create  instance of PrismaClient
 const prisma = new PrismaClient1();
 
-//Interface for request body from client
+// Interface for request body from client
+interface ProductItemInput {
+  product: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+// Updated interface for request body from client
 interface billInput {
   id?: number;
-  billId : string;
-  createdAt: Date;
+  billId?: string;
+  createdAt?: Date;
   updatedAt?: Date;
   cName: string;
   cLastName: string;
@@ -23,18 +36,15 @@ interface billInput {
   cAddress: string;
   cPostId: string;
   cProvince: string;
-  product: string;
   payment: Payment;
-  amount: number;
-  platform: SocialMedia;
   cashStatus: boolean;
-  price: number;
   memberId: string;
   purchaseAt: Date;
   businessAcc: number;
   image: string;
   storeId: number;
-  total: number;
+  total?: number;
+  productItems: ProductItemInput[];
 }
 
 // Validate the request body
@@ -51,32 +61,29 @@ const schema = Joi.object({
   cAddress: Joi.string().required(),
   cProvince: Joi.string().required(),
   cPostId: Joi.string().required(),
-  product: Joi.string().required(),
-  payment: Joi.string().valid("COD", "Transfer", "CreditCard", "Cash").required(),
-  amount: Joi.number().required(),
-  // platform: Joi.string().valid(
-  //   "Facebook",
-  //   "Tiktok",
-  //   "Shopee",
-  //   "Instagram",
-  //   "Youtube",
-  //   "Lazada",
-  //   "Line",
-  //   "X",
-  //   "Google"
-  // ),
+  payment: Joi.string()
+    .valid("COD", "Transfer", "CreditCard", "Cash")
+    .required(),
   cashStatus: Joi.boolean().required(),
-  price: Joi.number().required(),
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
   image: Joi.string().allow(""),
   storeId: Joi.number().required(),
   total: Joi.number(),
+  productItems: Joi.array()
+    .items(
+      Joi.object({
+        product: Joi.string().required(),
+        quantity: Joi.number().min(1).required(),
+        unitPrice: Joi.number().min(0).required(),
+      })
+    )
+    .min(1)
+    .required(),
 });
 
 //Create a New Bill - Post
 const createBill = async (req: Request, res: Response) => {
-  //
   upload(req, res, async (err) => {
     //Multer
     if (err instanceof multer.MulterError) {
@@ -90,21 +97,12 @@ const createBill = async (req: Request, res: Response) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-    // convert string to number in amount and price and businessAcc
-
-    billInput.amount = Number(billInput.amount);
-    billInput.price = Number(billInput.price);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.storeId = Number(billInput.storeId);
-
-    //  convert string to boolean in cashStatus
     billInput.cashStatus = ["true", "1", "yes"].includes(
       String(billInput.cashStatus).toLowerCase()
     );
-
-    // convert string to date in purchaseAt
     billInput.purchaseAt = new Date(billInput.purchaseAt);
-
     // find platform from Store id
     const store = await prisma.store.findUnique({
       where: {
@@ -114,12 +112,8 @@ const createBill = async (req: Request, res: Response) => {
     if (!store) {
       return res.status(404).json({ message: "Store not found" });
     }
-    // Map or cast store.platform to a valid SocialMedia type
-        billInput.platform = store.platform as SocialMedia;
-
     // Generate BillId as INV + YEAR + / + RUNNING NUMBER
     const currentYear = new Date().getFullYear();
-    // Find the latest bill for this year
     const latestBill = await prisma.bill.findFirst({
       where: {
         billId: {
@@ -127,7 +121,7 @@ const createBill = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        id: 'desc',
+        id: "desc",
       },
     });
     let runningNumber = 1;
@@ -138,13 +132,15 @@ const createBill = async (req: Request, res: Response) => {
       }
     }
     billInput.billId = `INV${currentYear}/${runningNumber}`;
-
+    // Calculate total from all product items
+    const total = billInput.productItems.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    );
     // Create a new bill into the database
     try {
       const bill = await prisma.bill.create({
         data: {
-          // createdAt: new Date(),
-          // updatedAt: new Date(),
           billId: billInput.billId,
           cName: billInput.cName,
           cLastName: billInput.cLastName,
@@ -153,21 +149,24 @@ const createBill = async (req: Request, res: Response) => {
           cAddress: billInput.cAddress,
           cPostId: billInput.cPostId,
           cProvince: billInput.cProvince,
-          product: billInput.product,
+          product: {
+            create: billInput.productItems.map((item) => ({
+              product: item.product,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+            })),
+          },
           payment: billInput.payment,
-          amount: billInput.amount,
-          platform: billInput.platform,
+          platform: store.platform, // IncomeChannel
           cashStatus: billInput.cashStatus,
-          price: billInput.price,
           memberId: billInput.memberId,
           purchaseAt: billInput.purchaseAt,
           businessAcc: billInput.businessAcc,
           storeId: billInput.storeId,
           image: req.file?.filename ?? "",
-          total: billInput.amount * billInput.price,
+          total        
         },
       });
-      //console.log(bill);
       res.json({
         status: "ok",
         message: "Created bill successfully",
@@ -190,7 +189,7 @@ const getBills = async (req: Request, res: Response) => {
       },
       take: 100, // Limit to 100 records
     });
-    
+
     // Find product units
     const productUnits = await prisma.product.findMany({
       where: {
@@ -201,17 +200,20 @@ const getBills = async (req: Request, res: Response) => {
         unit: true,
       },
     });
-    
-    // Map units to bills based on product name
-    const billsWithUnits = bills.map(bill => {
-      const matchingProduct = productUnits.find(product => product.name === bill.product);
-      return {
-        ...bill,
-        unit: matchingProduct?.unit || ""
-      };
-    });
-    
-    res.json(billsWithUnits);
+
+    // // Map units to bills based on product name
+    // const billsWithUnits = bills.map((bill) => {
+    //   const matchingProduct = productUnits.find(
+    //     (product) => product.name === bill.product
+    //   );
+    //   return {
+    //     ...bill,
+    //     unit: matchingProduct?.unit || "",
+    //   };
+    // });
+
+    //res.json(billsWithUnits);
+    res.json(bills);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get bills" });
@@ -226,7 +228,11 @@ const getBillById = async (req: Request, res: Response) => {
       where: {
         id: Number(id),
       },
+      include: {
+        product: true, // Include product items
+      },
     });
+ console.log("🚀 Get Bill by ID:", bill);
     res.json(bill);
   } catch (e) {
     console.error(e);
@@ -237,50 +243,42 @@ const getBillById = async (req: Request, res: Response) => {
 // Update a Bill - Put
 const updateBill = async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Multer show image and update
-
   upload(req, res, async (err) => {
-    //Multer
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: err.message });
     } else if (err) {
       return res.status(500).json({ message: err.message });
     }
     const billInput: billInput = req.body;
-
     // Validate the request body
     const { error } = schema.validate(billInput);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-    // convert string to number in amount and price and businessAcc
-    billInput.amount = Number(billInput.amount);
-    billInput.price = Number(billInput.price);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.storeId = Number(billInput.storeId);
-
-    //  convert string to boolean in cashStatus
     billInput.cashStatus = ["true", "1", "yes"].includes(
       String(billInput.cashStatus).toLowerCase()
     );
-
-    // convert string to date in purchaseAt
     billInput.purchaseAt = new Date(billInput.purchaseAt);
-
-    // find platform from Store id
-    const platform = await prisma.store.findUnique({
+    const store = await prisma.store.findUnique({
       where: {
         id: billInput.storeId,
       },
     });
-    if (!platform) {
+    if (!store) {
       return res.status(404).json({ message: "Store not found" });
     }
-    // Map or cast store.platform to a valid SocialMedia type
-    billInput.platform = platform.platform as SocialMedia;
-
-    // Create a new bill into the database
+    // Calculate total from all product items
+    const total = billInput.productItems.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    );
     try {
+      // Delete existing product items for this bill (to fully replace)
+      await prisma.productItem.deleteMany({
+        where: { billId: Number(id) },
+      });
       const bill = await prisma.bill.update({
         where: {
           id: Number(id),
@@ -294,21 +292,25 @@ const updateBill = async (req: Request, res: Response) => {
           cAddress: billInput.cAddress,
           cPostId: billInput.cPostId,
           cProvince: billInput.cProvince,
-          product: billInput.product,
+          product: {
+            create: billInput.productItems.map((item) => ({
+              product: item.product,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+            })),
+          },
           payment: billInput.payment,
-          amount: billInput.amount,
-          platform: billInput.platform,
+          platform: store.platform, // IncomeChannel
           storeId: billInput.storeId,
           cashStatus: billInput.cashStatus,
-          price: billInput.price,
           memberId: billInput.memberId,
           purchaseAt: billInput.purchaseAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
-          total: billInput.amount * billInput.price,
+          total
+        
         },
       });
-      //console.log(bill);
       res.json({
         status: "ok",
         message: "Updated bill successfully",
@@ -407,11 +409,7 @@ const searchBill = async (req: Request, res: Response) => {
               contains: keyword,
             },
           },
-          {
-            product: {
-              contains: keyword,
-            },
-          },
+          
         ],
       },
       take: 100, // Limit to 100 records
@@ -432,7 +430,7 @@ const getthisYearSales = async (req: Request, res: Response) => {
     }
     const sales = await prisma.bill.aggregate({
       _sum: {
-        price: true,
+        total: true,
       },
       where: {
         memberId: memberId as string,
@@ -442,32 +440,29 @@ const getthisYearSales = async (req: Request, res: Response) => {
         },
       },
     });
-    if (!sales || !sales._sum.price) {
+    if (!sales || !sales._sum.total) {
       return res.status(404).json({ message: "No sales found for this year" });
     }
-    sales._sum.price = Number(sales._sum.price);
+    sales._sum.total = Number(sales._sum.total);
     // Convert to millions or thousands
     let anualSalesM: string;
-    if (sales._sum.price >= 1000000) {
-      anualSalesM = (sales._sum.price / 1000000).toFixed(1) + "M";
-    } else if (sales._sum.price >= 1000) {
-      anualSalesM = (sales._sum.price / 1000).toFixed(0) + "K";
+    if (sales._sum.total >= 1000000) {
+      anualSalesM = (sales._sum.total / 1000000).toFixed(1) + "M";
+    } else if (sales._sum.total >= 1000) {
+      anualSalesM = (sales._sum.total / 1000).toFixed(0) + "K";
     } else {
-      anualSalesM = sales._sum.price.toString();
+      anualSalesM = sales._sum.total.toString();
     }
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Sales API:", anualSalesM);
     res.json({
-      anualSalesM
+      anualSalesM,
     });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get this year sales" });
   }
 };
-
-
-
 
 export {
   createBill,
@@ -477,6 +472,5 @@ export {
   updateBill,
   searchBill,
   updateCashStatusById,
-  getthisYearSales
-  
+  getthisYearSales,
 };
