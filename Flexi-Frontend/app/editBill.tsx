@@ -79,7 +79,7 @@ export default function EditBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1" },
+    { product: "", price: "", quantity: "1", unit: "" },
   ]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -134,10 +134,11 @@ export default function EditBill() {
               product: item.product,
               price: item.unitPrice.toString(),
               quantity: item.quantity.toString(),
+              unit: item.unit || ""
             }))
           );
         } else {
-          setProductItems([{ product: "", price: "", quantity: "1" }]);
+          setProductItems([{ product: "", price: "", quantity: "1", unit: "" }]);
         }
         // Set purchase date
         if (billData.purchaseAt) {
@@ -212,13 +213,18 @@ export default function EditBill() {
   ) => {
     setProductItems((prev) => {
       const updated = [...prev];
+      // Always ensure unit exists
       updated[index] = { ...updated[index], [field]: value };
-      // If product is changed, auto-fill price
+      // If product is changed, auto-fill price and unit
       if (field === "product") {
         const selectedProduct = productChoice.find((p: any) => p.name === value);
         updated[index].price =
           selectedProduct && selectedProduct.price
             ? selectedProduct.price.toString()
+            : "";
+        updated[index].unit =
+          selectedProduct && selectedProduct.unit
+            ? selectedProduct.unit.toString()
             : "";
       }
       return updated;
@@ -228,7 +234,7 @@ export default function EditBill() {
   const handleAddProductItem = () => {
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1" },
+      { product: "", price: "", quantity: "1", unit: "" },
     ]);
   };
 
@@ -330,6 +336,7 @@ export default function EditBill() {
         image,
         productItems: productItems.map((item) => ({
           product: item.product,
+          unit: item.unit,
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
@@ -655,6 +662,12 @@ export default function EditBill() {
                   keyboardType="numeric"
                   editable={isEditMode}
                 />
+                {/* Show unit if available */}
+                {item.unit && (
+                  <CustomText className="absolute right-2 top-0 text-xs text-zinc-400">
+                    {t(`product.unit.${item.unit}`) || item.unit}
+                  </CustomText>
+                )}
                 {idx !== 0 && isEditMode && (
                   <TouchableOpacity
                     onPress={() => handleRemoveProductItem(idx)}

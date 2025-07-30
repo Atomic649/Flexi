@@ -53,6 +53,7 @@ type Bill = {
     product : string;
     unitPrice: number;
     quantity: number;
+    unit?: string;
   }>;
 };
 
@@ -261,7 +262,7 @@ const ByOrder = () => {
                   }
                 >
                   <View
-                    className="flex flex-row border-b py-3"
+                    className="flex flex-row border-b py-3 items-center"
                     style={{
                       borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
                     }}
@@ -287,20 +288,21 @@ const ByOrder = () => {
                     >
                       {bill.cName} {bill.cLastName}
                     </Text>
-                    <Text
+                    <CustomText
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-64`}
                       style={{
                         color: theme === "dark" ? "#b4b4b5" : undefined,
+                       
                       }}
-                      numberOfLines={1}
+                     // numberOfLines={2}
                     >
                       {bill.product
-                        ? bill.product.map((p) => p.product).join(", ")
+                        ? bill.product.map((p) => p.product).join("\n")
                         : ""}
-                    </Text>
-                    <Text
+                    </CustomText>
+                    <CustomText
                       className={`${
                         theme === "dark" ? "text-zinc-300" : "text-zinc-600"
                       } w-28`}
@@ -308,8 +310,14 @@ const ByOrder = () => {
                         color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
                     >
-                      {bill.product ? bill.product.reduce((sum, p) => sum + p.quantity, 0) : 0} {bill.unit ? bill.unit : t("common.pcs")}
-                    </Text>
+                      {bill.product
+                        ? bill.product
+                            .map(
+                              (p) => `${p.quantity} ${p.unit ? t(`product.unit.${p.unit}`) || p.unit : t("common.pcs")}`
+                            )
+                            .join("\n ")
+                        : ""}
+                    </CustomText>
                     <Text
                       className={`${
                       theme === "dark" ? "text-zinc-300" : "text-zinc-600"
@@ -393,7 +401,7 @@ const ByOrder = () => {
                   PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                   cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
                   getBorderColor={getBorderColor(bill.platform)}
-                  unit={bill.unit}
+                  unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
                 />
               </TouchableOpacity>
             ))}

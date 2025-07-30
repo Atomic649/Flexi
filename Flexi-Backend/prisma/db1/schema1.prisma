@@ -256,6 +256,7 @@ model ProductItem {
   quantity  Int
   unitPrice Int
   billId    Int?
+  unit      Unit? 
 
   // Relation
   bill Bill? @relation(fields: [billId], references: [id])

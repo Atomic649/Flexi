@@ -109,6 +109,7 @@ Table ProductItem {
   quantity Int [not null]
   unitPrice Int [not null]
   billId Int
+  unit Unit
   bill Bill
   productList Product [not null]
 }

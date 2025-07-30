@@ -103,29 +103,23 @@ export default function BillCard({
                     >
                       {item.product}
                     </CustomText>
+                  
                     <CustomText
-                      className="font-bold text-sm text-zinc-400"
-                      numberOfLines={2}
-                      style={{ color: "#7e7d7a" }}
-                    >
-                      x
-                    </CustomText>
-                      <CustomText
                       className="font-bold text-sm text-zinc-400"
                       numberOfLines={2}
                       style={{ color: "#7e7d7a" }}
                     >
                       {item.quantity}
                     </CustomText>
-                    {/* {unit && (
+                    {item.unit && (
                       <CustomText
                         className="font-bold text-sm text-zinc-400"
                         numberOfLines={2}
                         style={{ color: "#7e7d7a" }}
                       >
-                        {t(`product.unit.${unit}`) || unit}
+                        {t(`product.unit.${item.unit}`) || item.unit}
                       </CustomText>
-                    )} */}
+                    )}
                   </View>
                 ))
               ) : (

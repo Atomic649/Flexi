@@ -190,7 +190,8 @@ exports.Prisma.ProductItemScalarFieldEnum = {
   product: 'product',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
-  billId: 'billId'
+  billId: 'billId',
+  unit: 'unit'
 };
 
 exports.Prisma.AdsCostScalarFieldEnum = {
@@ -449,6 +450,17 @@ exports.IncomeChannel = exports.$Enums.IncomeChannel = {
   TMB: 'TMB'
 };
 
+exports.Unit = exports.$Enums.Unit = {
+  Piece: 'Piece',
+  Hour: 'Hour',
+  Course: 'Course',
+  List: 'List',
+  Box: 'Box',
+  Pack: 'Pack',
+  Set: 'Set',
+  Dozen: 'Dozen'
+};
+
 exports.Bank = exports.$Enums.Bank = {
   SCB: 'SCB',
   KBANK: 'KBANK',
@@ -467,17 +479,6 @@ exports.SocialMedia = exports.$Enums.SocialMedia = {
   X: 'X',
   Youtube: 'Youtube',
   Google: 'Google'
-};
-
-exports.Unit = exports.$Enums.Unit = {
-  Piece: 'Piece',
-  Hour: 'Hour',
-  Course: 'Course',
-  List: 'List',
-  Box: 'Box',
-  Pack: 'Pack',
-  Set: 'Set',
-  Dozen: 'Dozen'
 };
 
 exports.ProductType = exports.$Enums.ProductType = {

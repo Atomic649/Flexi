@@ -282,6 +282,7 @@ const getProductChoiceWithPrice = async (req: Request, res: Response) => {
       select: {
         name: true,
         price: true,
+        unit: true,
       },
     });
     res.json(products);

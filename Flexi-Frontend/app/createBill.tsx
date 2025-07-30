@@ -87,7 +87,7 @@ export default function CreateBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1" },
+    { product: "", price: "", quantity: "1", unit: "" },
   ]);
 
   const fieldStyles = "mt-2 mb-2";
@@ -184,12 +184,16 @@ export default function CreateBill() {
     setProductItems((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
-      // If product is changed, auto-fill price
+      // If product is changed, auto-fill price and unit
       if (field === "product") {
         const selectedProduct = productChoice.find((p) => p.name === value);
         updated[index].price =
           selectedProduct && selectedProduct.price
             ? selectedProduct.price.toString()
+            : "";
+        updated[index].unit =
+          selectedProduct && selectedProduct.unit
+            ? selectedProduct.unit.toString()
             : "";
       }
       return updated;
@@ -199,7 +203,7 @@ export default function CreateBill() {
   const handleAddProductItem = () => {
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1" },
+      { product: "", price: "", quantity: "1", unit: "" },
     ]);
   };
 
@@ -305,6 +309,7 @@ export default function CreateBill() {
         image,
         productItems: productItems.map((item) => ({
           product: item.product,
+          unit: item.unit,
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
@@ -594,6 +599,12 @@ export default function CreateBill() {
                   otherStyles="mt-1 mb-1"
                   keyboardType="numeric"
                 />
+                {/* Show unit if available */}
+                {/* {item.unit && (
+                  <CustomText className="absolute right-2 top-0 text-xs text-zinc-400">
+                    {t(`product.unit.${item.unit}`) || item.unit}
+                  </CustomText>
+                )} */}
                 {idx !== 0 && (
                   <TouchableOpacity
                     onPress={() => handleRemoveProductItem(idx)}

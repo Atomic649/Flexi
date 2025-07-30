@@ -4,6 +4,7 @@ import {
   Payment,
   PrismaClient as PrismaClient1,
   SocialMedia,
+  Unit,
 } from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
@@ -21,6 +22,7 @@ interface ProductItemInput {
   product: string;
   quantity: number;
   unitPrice: number;
+  unit: Unit;
 }
 
 // Updated interface for request body from client
@@ -76,6 +78,7 @@ const schema = Joi.object({
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         unitPrice: Joi.number().min(0).required(),
+        unit: Joi.string().required(),
       })
     )
     .min(1)
@@ -154,6 +157,7 @@ const createBill = async (req: Request, res: Response) => {
               product: item.product,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
+              unit: item.unit, // Assuming unit is part of the product item
             })),
           },
           payment: billInput.payment,
@@ -198,11 +202,13 @@ const getBills = async (req: Request, res: Response) => {
         purchaseAt: true,             
         storeId: true,
         total: true,
+        platform : true,
         product: {
           select: {
             product: true,
             quantity: true,
             unitPrice: true,
+            unit: true
           },
         }, // Include product items
       
@@ -211,6 +217,8 @@ const getBills = async (req: Request, res: Response) => {
     });
 
     
+
+
 
     console.log("🚀 Get Bills API:", bills);
     res.json(bills);
@@ -297,6 +305,7 @@ const updateBill = async (req: Request, res: Response) => {
               product: item.product,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
+              unit: item.unit
             })),
           },
           payment: billInput.payment,
