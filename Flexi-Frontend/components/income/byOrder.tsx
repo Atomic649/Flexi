@@ -37,19 +37,23 @@ type Bill = {
   cGender: string;
   cAddress: string;
   cPostId: string;
-  cProvince: string;
-  product: string;
+  cProvince: string; 
   payment: string;
   amount: number;
   platform: string;
   cashStatus: boolean;
-  price: number;
+  total: number;
   memberId: string;
   purchaseAt: Date;
   businessAcc: number;
   image: string;
   storeId: number;
   unit: string; 
+  product?: Array<{
+    product : string;
+    unitPrice: number;
+    quantity: number;
+  }>;
 };
 
 // Group bills by date
@@ -292,7 +296,9 @@ const ByOrder = () => {
                       }}
                       numberOfLines={1}
                     >
-                      {bill.product}
+                      {bill.product
+                        ? bill.product.map((p) => p.product).join(", ")
+                        : ""}
                     </Text>
                     <Text
                       className={`${
@@ -302,7 +308,7 @@ const ByOrder = () => {
                         color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
                     >
-                      {bill.amount} {bill.unit ? bill.unit : t("common.pcs")}
+                      {bill.product ? bill.product.reduce((sum, p) => sum + p.quantity, 0) : 0} {bill.unit ? bill.unit : t("common.pcs")}
                     </Text>
                     <Text
                       className={`${
@@ -312,7 +318,7 @@ const ByOrder = () => {
                       color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
                     >
-                      +{bill.price * bill.amount}
+                      +{bill.total}
                     </Text>
                     <View className={`w-28 flex items-center justify-center`}>
                       {getPlatformIcon(bill.platform)}
@@ -380,7 +386,7 @@ const ByOrder = () => {
                   amount={bill.amount}
                   cName={bill.cName}
                   cLastName={bill.cLastName}
-                  price={bill.price}
+                  total={bill.total}
                   purchaseAt={bill.purchaseAt}
                   CardColor={theme === "dark" ? "#232425" : "#24232108"}
                   onDelete={handleDelete}

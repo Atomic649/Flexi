@@ -187,32 +187,32 @@ const getBills = async (req: Request, res: Response) => {
         memberId: memberId,
         deleted: false,
       },
+      select: {
+        id: true,
+        billId: true,
+        cName: true,
+        cLastName: true,
+       // cPhone: true,       
+        payment: true,
+       // cashStatus: true,       
+        purchaseAt: true,             
+        storeId: true,
+        total: true,
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            unitPrice: true,
+          },
+        }, // Include product items
+      
+      },
       take: 100, // Limit to 100 records
     });
 
-    // Find product units
-    const productUnits = await prisma.product.findMany({
-      where: {
-        memberId: memberId,
-      },
-      select: {
-        name: true,
-        unit: true,
-      },
-    });
+    
 
-    // // Map units to bills based on product name
-    // const billsWithUnits = bills.map((bill) => {
-    //   const matchingProduct = productUnits.find(
-    //     (product) => product.name === bill.product
-    //   );
-    //   return {
-    //     ...bill,
-    //     unit: matchingProduct?.unit || "",
-    //   };
-    // });
-
-    //res.json(billsWithUnits);
+    console.log("🚀 Get Bills API:", bills);
     res.json(bills);
   } catch (e) {
     console.error(e);

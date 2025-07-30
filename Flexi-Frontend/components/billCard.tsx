@@ -36,22 +36,9 @@ export default function BillCard({
   id,
   cName,
   cLastName,
-  cPhone,
-  cGender,
-  cAddress,
-  cPostId,
-  cProvince,
-  product,
-  payment,
-  amount,
-  platform,
-  cashStatus,
-  price,
-  memberId,
+  product = [], // Expecting array of { product, quantity, unitPrice }
+  total,
   purchaseAt,
-  businessAcc,
-  image,
-  storeId,
   CardColor,
   PriceColor,
   cNameColor,
@@ -59,23 +46,6 @@ export default function BillCard({
   getBorderColor,
   unit,
 }: any) {
-  const handleDelete = () => {
-    Alert.alert(
-      "Delete",
-      "Are you sure you want to delete this ad connection?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => onDelete(id),
-        },
-      ]
-    );
-  };
 
   return (
     <View
@@ -107,9 +77,7 @@ export default function BillCard({
               <CustomText
                 className="text-base  "
                 weight="semibold"
-                style={{ color: cNameColor,
-                
-                 }}
+                style={{ color: cNameColor }}
                 numberOfLines={1}
               >
                 {cName}
@@ -123,31 +91,49 @@ export default function BillCard({
                 {cLastName}
               </CustomText>
             </View>
-            <View className="flex-row gap-x-2">
-            <CustomText
-              className="font-bold text-sm text-zinc-400"
-              numberOfLines={3}
-              style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
-            >
-              {product} 
-            </CustomText>
-            <CustomText
-              className="font-bold text-sm text-zinc-400"
-              numberOfLines={3}
-              style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
-            >
-              {amount} 
-            </CustomText>
-            <CustomText
-              className="font-bold text-sm text-zinc-400"
-              numberOfLines={3}
-              style={{ color: "#7e7d7a" }} // Replace "gray" with your desired color
-            >
-            {t(`product.unit.${unit}`) || unit}
-            </CustomText>
+            {/* Render all products */}
+            <View className="flex-col gap-y-1 mt-1">
+              {Array.isArray(product) && product.length > 0 ? (
+                product.map((item: any, idx: number) => (
+                  <View key={idx} className="flex-row gap-x-2 items-center">
+                    <CustomText
+                      className="font-bold text-sm text-zinc-400"
+                      numberOfLines={2}
+                      style={{ color: "#7e7d7a" }}
+                    >
+                      {item.product}
+                    </CustomText>
+                    <CustomText
+                      className="font-bold text-sm text-zinc-400"
+                      numberOfLines={2}
+                      style={{ color: "#7e7d7a" }}
+                    >
+                      x
+                    </CustomText>
+                      <CustomText
+                      className="font-bold text-sm text-zinc-400"
+                      numberOfLines={2}
+                      style={{ color: "#7e7d7a" }}
+                    >
+                      {item.quantity}
+                    </CustomText>
+                    {/* {unit && (
+                      <CustomText
+                        className="font-bold text-sm text-zinc-400"
+                        numberOfLines={2}
+                        style={{ color: "#7e7d7a" }}
+                      >
+                        {t(`product.unit.${unit}`) || unit}
+                      </CustomText>
+                    )} */}
+                  </View>
+                ))
+              ) : (
+                <CustomText className="font-bold text-sm text-zinc-400" style={{ color: "#7e7d7a" }}>
+                  -
+                </CustomText>
+              )}
             </View>
-            
-
           </View>
           <View className="pt-2 flex flex-col items-end">
             <Text
@@ -155,7 +141,7 @@ export default function BillCard({
               style={{ color: PriceColor }}
               numberOfLines={1}
             >
-              + {price * amount}
+              + {total}
             </Text>
           </View>
         </View>
