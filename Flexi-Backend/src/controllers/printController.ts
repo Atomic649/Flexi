@@ -100,6 +100,9 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       orderBy: {
         purchaseAt: "desc",
       },
+      include: {
+        product: true // Ensure product items are included for multi-product support
+      }
     });
 
     console.log("🚀 Get Bills By Date Range API:", bills);
@@ -202,6 +205,9 @@ export const searchBillById = async (req: Request, res: Response) => {
       where: {
         billId: { endsWith: billId as string },
         memberId: memberId as string,
+      },
+      include: {
+        product: true, // Include products if needed
       },
     });
 

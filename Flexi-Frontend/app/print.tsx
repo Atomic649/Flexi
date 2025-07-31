@@ -36,8 +36,6 @@ const SEARCH_TYPES = {
   DATE_RANGE: "dateRange",
 };
 
-
-
 const TAB_INDICES = {
   MONTHLY_REPORT: 0,
   INDIVIDUAL_INVOICE: 1,
@@ -197,7 +195,7 @@ export default function Print() {
   // Handle date range selection for the calendar
   const handleDatesChange = (dates: string[]) => {
     setDateRange(dates);
-   // setCalendarVisible(false);
+    // setCalendarVisible(false);
 
     // If dates were selected, search with those dates
     if (dates && dates.length > 0) {
@@ -231,8 +229,7 @@ export default function Print() {
       // Calculate monthly totals
       if (response && response.length > 0) {
         const totalSales = response.reduce(
-          (sum: number, bill: any) =>
-            sum + Number(bill.price) * Number(bill.amount),
+          (sum: number, bill: any) => sum + Number(bill.total),
           0
         );
 
@@ -326,12 +323,15 @@ export default function Print() {
     }
   };
 
-  // Search bills by bill ID 
+  // Search bills by bill ID
   const searchByBillId = async () => {
     if (!memberId || !searchQuery) return;
     setIsLoading(true);
     try {
-      const response = await CallAPIPrint.searchBillByIdAPI(memberId, searchQuery);
+      const response = await CallAPIPrint.searchBillByIdAPI(
+        memberId,
+        searchQuery
+      );
       // If found, set as array for consistency
       if (response) {
         setBills([response]);
@@ -344,7 +344,8 @@ export default function Print() {
           buttons: [
             {
               text: t("common.ok"),
-              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
             },
           ],
         });
@@ -358,7 +359,8 @@ export default function Print() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
           },
         ],
       });
@@ -793,7 +795,7 @@ export default function Print() {
           </View>
           <View className="items-end">
             <CustomText weight="bold" className="text-base">
-              {formatCurrency(invoice.price * invoice.amount)}
+              {formatCurrency(invoice.total)}
             </CustomText>
             <View
               className={`mt-2 p-1 px-2 rounded-full ${
@@ -987,23 +989,51 @@ export default function Print() {
                     </CustomText>
                   </View>
 
-                  {/* Product item row */}
-                  <View className="flex-row justify-between items-center py-2">
-                    <CustomText style={{ width: "38%" }}>
-                      {selectedInvoice.product}
-                    </CustomText>
-                    <CustomText style={{ width: "22%", textAlign: "center" }}>
-                      {selectedInvoice.amount}
-                    </CustomText>
-                    <CustomText style={{ width: "20%", textAlign: "right" }}>
-                      {formatCurrency(selectedInvoice.price)}
-                    </CustomText>
-                    <CustomText style={{ width: "20%", textAlign: "right" }}>
-                      {formatCurrency(
-                        selectedInvoice.price * selectedInvoice.amount
-                      )}
-                    </CustomText>
-                  </View>
+                  {/* Product item rows for multi-product */}
+                  {Array.isArray(selectedInvoice.product) &&
+                  selectedInvoice.product.length > 0 ? (
+                    selectedInvoice.product.map((item: any, idx: number) => (
+                      <View
+                        key={idx}
+                        className="flex-row justify-between items-center py-2"
+                      >
+                        <CustomText style={{ width: "38%" }}>
+                          {item.product}
+                        </CustomText>
+                        <CustomText
+                          style={{ width: "22%", textAlign: "center" }}
+                        >
+                          {item.quantity}
+                          {/* {item.unit ? t(`product.unit.${item.unit}`) || item.unit : t("common.pcs")} */}
+                        </CustomText>
+                        <CustomText
+                          style={{ width: "20%", textAlign: "right" }}
+                        >
+                          {formatCurrency(item.unitPrice)}
+                        </CustomText>
+                        <CustomText
+                          style={{ width: "20%", textAlign: "right" }}
+                        >
+                          {formatCurrency(item.unitPrice * item.quantity)}
+                        </CustomText>
+                      </View>
+                    ))
+                  ) : (
+                    <View className="flex-row justify-between items-center py-2">
+                      <CustomText style={{ width: "38%" }}>
+                        {selectedInvoice.product}
+                      </CustomText>
+                      <CustomText style={{ width: "22%", textAlign: "center" }}>
+                        {selectedInvoice.amount}
+                      </CustomText>
+                      <CustomText style={{ width: "20%", textAlign: "right" }}>
+                        {formatCurrency(selectedInvoice.total)}
+                      </CustomText>
+                      <CustomText style={{ width: "20%", textAlign: "right" }}>
+                        {formatCurrency(selectedInvoice.total)}
+                      </CustomText>
+                    </View>
+                  )}
                 </View>
 
                 <View className="flex-row justify-end mt-2">
@@ -1014,9 +1044,7 @@ export default function Print() {
                           {t("print.subtotal")}
                         </CustomText>
                         <CustomText>
-                          {formatCurrency(
-                            selectedInvoice.price * selectedInvoice.amount
-                          )}
+                          {formatCurrency(selectedInvoice.total)}
                         </CustomText>
                       </View>
                     )}
@@ -1030,11 +1058,7 @@ export default function Print() {
                         </View>
 
                         <CustomText>
-                          {formatCurrency(
-                            selectedInvoice.price *
-                              selectedInvoice.amount *
-                              0.07
-                          )}
+                          {formatCurrency(selectedInvoice.total * 0.07)}
                         </CustomText>
                       </View>
                     )}
@@ -1044,14 +1068,8 @@ export default function Print() {
                       </CustomText>
                       <CustomText weight="bold">
                         {isVatRegistered
-                          ? formatCurrency(
-                              selectedInvoice.price *
-                                selectedInvoice.amount *
-                                1.07
-                            )
-                          : formatCurrency(
-                              selectedInvoice.price * selectedInvoice.amount
-                            )}
+                          ? formatCurrency(selectedInvoice.total * 1.07)
+                          : formatCurrency(selectedInvoice.total)}
                       </CustomText>
                     </View>
                   </View>
@@ -1540,9 +1558,9 @@ export default function Print() {
                       dateRange.length > 0 && (
                         <View className="flex-row mb-4 p-4 rounded-lg">
                           <CustomText>
-                            {t("print.searchingDateRange")}                           
+                            {t("print.searchingDateRange")}
                           </CustomText>
-                           <CustomText>
+                          <CustomText>
                             {dateRange.length === 1
                               ? formatDate(dateRange[0])
                               : `${formatDate(dateRange[0])} - ${formatDate(
