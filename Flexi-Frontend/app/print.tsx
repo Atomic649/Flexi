@@ -1009,12 +1009,12 @@ export default function Print() {
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {formatCurrency(item.unitPrice)}
+                          {(item.unitPrice)}
                         </CustomText>
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {formatCurrency(item.unitPrice * item.quantity)}
+                          {(item.unitPrice * item.quantity)}
                         </CustomText>
                       </View>
                     ))

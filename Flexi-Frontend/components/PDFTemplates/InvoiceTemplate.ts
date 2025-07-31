@@ -19,8 +19,13 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     formatDate,
   } = data;
 
-  const subtotal = invoice.price * invoice.amount;
+  // Use correct field from backend: invoice.product (array of ProductItem)
+  const productItems = invoice.product || [];
   const isVatRegistered = businessDetails?.vat === true;
+  const subtotal = productItems.reduce(
+    (sum: number, item: any) => sum + (item.unitPrice * item.quantity),
+    0
+  );
   const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;
 
@@ -373,11 +378,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="business-details">
               <div>
                 <p><strong>${businessDetails?.taxType === "Juristic" ? t("print.companyName") : t("print.storeName") }:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
-                <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || t("print.notSpecified")}</p>
+                <p><strong>${t("print.address") }:</strong> ${businessDetails?.businessAddress || t("print.notSpecified")}</p>
               </div>
               <div>
-                <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || t("print.notSpecified")}</p>
-                <p><strong>${t("print.contact")}:</strong> ${businessDetails?.businessPhone || t("print.notSpecified")}</p>
+                <p><strong>${t("print.taxId") }:</strong> ${businessDetails?.vatId || t("print.notSpecified")}</p>
+                <p><strong>${t("print.contact") }:</strong> ${businessDetails?.businessPhone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>
@@ -394,39 +399,49 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             
             <div class="billing-section">
               <h3>${t("print.paymentDetails")}</h3>
-              <p><strong>${t("print.paymentMethod")}:</strong> ${invoice.payment}</p>
-              <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(invoice.purchaseAt)}</p>
+              <p><strong>${t("print.paymentMethod") }:</strong> ${invoice.payment}</p>
+              <p><strong>${t("print.invoiceDate") }:</strong> ${formatDate(invoice.purchaseAt)}</p>
               <div class="payment-status">
-                <strong>${t("print.status")}:</strong>
-                <span class="status-badge ${
-                  invoice.cashStatus ? "status-paid" : "status-unpaid"
-                }">
+                <strong>${t("print.status") }:</strong>
+                <span class="status-badge ${invoice.cashStatus ? "status-paid" : "status-unpaid"}">
                   ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
                 </span>
               </div>
             </div>
           </div>
 
-          <!-- Items Table -->
+          <!-- Items Table (multi-product) -->
           <div class="items-section">
             <table class="items-table">
               <thead>
                 <tr>
                   <th style="width: 7%;">${t("print.no")}</th>
-                  <th style="width: 43%;">${t("print.productName")}</th>
-                  <th class="text-center" style="width: 15%;">${t("print.quantity")}</th>
+                  <th style="width: 30%;">${t("print.productName")}</th>
+                  <th style="width: 15%;">${t("product.unitTitle")}</th>
+                  <th class="text-center" style="width: 10%;">${t("print.quantity")}</th>
                   <th class="text-right" style="width: 17.5%;">${t("print.price")}</th>
                   <th class="text-right" style="width: 17.5%;">${t("print.total")}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-center font-medium">1</td>
-                  <td class="font-medium">${invoice.product}</td>
-                  <td class="text-center">${invoice.amount}</td>
-                  <td class="text-right">${formatCurrencyForPDF(invoice.price)}</td>
-                  <td class="text-right font-bold">${formatCurrencyForPDF(subtotal)}</td>
-                </tr>
+                ${productItems
+                  .map(
+                    (item: any, idx: number) => `
+                  <tr>
+                    <td class="text-center font-medium">${idx + 1}</td>
+                    <td class="font-medium">${item.product || "-"}</td>
+                    <td class="text-center">
+                      ${item.unit ? t(`product.unit.${item.unit}`) : "-"}
+                    </td>
+                    <td class="text-center">${item.quantity}</td>
+                    <td class="text-right">${formatCurrencyForPDF(item.unitPrice)}</td>
+                    <td class="text-right font-bold">${formatCurrencyForPDF(
+                      item.unitPrice * item.quantity
+                    )}</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
