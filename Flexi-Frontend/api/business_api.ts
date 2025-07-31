@@ -112,6 +112,7 @@ class CallAPIBusiness {
     data: {
       businessName: string;
       businessPhone?: string;
+      businessAddress: string;
       vatId: string;
       businessType: string;
       taxType: string;

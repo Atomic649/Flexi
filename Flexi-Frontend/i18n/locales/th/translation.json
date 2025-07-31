@@ -114,6 +114,7 @@
       "taxType": "ประเภทภาษี",
       "vatId": "หมายเลขผู้เสียภาษี",
       "businessType": "ประเภทธุรกิจ",
+      "businessAddress": "ที่อยู่ธุรกิจ",
       "taxTypeOption": {
         "": "เลือกประเภทภาษี",
         "Individual": "บุคคลธรรมดา",

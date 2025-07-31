@@ -1,7 +1,7 @@
-import { Dimensions, Platform, ScrollView } from "react-native";
+import { Dimensions, Platform, ScrollView, KeyboardAvoidingView } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -25,6 +25,8 @@ export default function CreateAds() {
   const [error, setError] = useState("");
 
   const fieldStyles = "mt-2 mb-2";
+
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -108,70 +110,81 @@ export default function CreateAds() {
         alignItems: Platform.OS === "web" ? "center" : "center",
       }}
     >
-      <ScrollView>
-        <View className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
-          <Dropdown2
-            title={t("ads.platform")}
-            options={[
-              {
-                label: t("ads.platformOption.Facebook"),
-                value: "Facebook",
-              },
-              {
-                label: t("ads.platformOption.Tiktok"),
-                value: "Tiktok",
-              },
-              {
-                label: t("ads.platformOption.Shopee"),
-                value: "Shopee",
-              },
-              {
-                label: t("ads.platformOption.Line"),
-                value: "Line",
-              },
-            ]}
-            placeholder={t("ads.choosePlatform")}
-            selectedValue={t(`ads.platformOption.${platform}`)}
-            onValueChange={setPlatform}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles="mt-0 mb-2"
-          />
-          <FormField2
-            title={t("ads.accName")}
-            value={accName}
-            handleChangeText={setAccName}
-            placeholder={t("ads.accNameRecommend")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-          />
-          <FormField2
-            title={t("ads.accId")}
-            value={accId}
-            handleChangeText={setAccId}
-            otherStyles={fieldStyles}
-            placeholder="00000000000000"
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            keyboardType="numeric"
-          />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={80}
+      >
+        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
+          <View className=" flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
+            <Dropdown2
+              title={t("ads.platform")}
+              options={[
+                {
+                  label: t("ads.platformOption.Facebook"),
+                  value: "Facebook",
+                },
+                {
+                  label: t("ads.platformOption.Tiktok"),
+                  value: "Tiktok",
+                },
+                {
+                  label: t("ads.platformOption.Shopee"),
+                  value: "Shopee",
+                },
+                {
+                  label: t("ads.platformOption.Line"),
+                  value: "Line",
+                },
+              ]}
+              placeholder={t("ads.choosePlatform")}
+              selectedValue={t(`ads.platformOption.${platform}`)}
+              onValueChange={setPlatform}
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles="mt-0 mb-2"
+            />
+            <FormField2
+              title={t("ads.accName")}
+              value={accName}
+              handleChangeText={setAccName}
+              placeholder={t("ads.accNameRecommend")}
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+            />
+            <FormField2
+              title={t("ads.accId")}
+              value={accId}
+              handleChangeText={setAccId}
+              otherStyles={fieldStyles}
+              placeholder="00000000000000"
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              keyboardType="numeric"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+            />
 
-          {error ? (
-            <CustomText className="text-red-500 mt-4">{error}</CustomText>
-          ) : null}
+            {error ? (
+              <CustomText className="text-red-500 mt-4">{error}</CustomText>
+            ) : null}
 
-          <CustomButton
-            title={t("ads.createbutton")}
-            handlePress={handleCreatePlatform}
-            containerStyles="mt-5 "
-            textStyles="!text-white"
-          />
-        </View>
-      </ScrollView>
+            <CustomButton
+              title={t("ads.createbutton")}
+              handlePress={handleCreatePlatform}
+              containerStyles="mt-5 "
+              textStyles="!text-white"
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <CustomAlert
         visible={alertConfig.visible}
         title={alertConfig.title}

@@ -114,6 +114,7 @@
       "taxType": "Tax Type",
       "vatId": "VAT ID",
       "businessType": "Business Type",
+      "businessAddress": "Business Address",
       "taxTypeOption": {
         "": "Select Tax Type",
         "Individual": "Individual",

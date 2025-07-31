@@ -241,9 +241,9 @@ const getBusinessDetail = async (req: Request, res: Response) => {
 // Update Business Details by MemberId - Put
 const updateBusinessAcc = async (req: Request, res: Response) => {
   const { memberId } = req.params;
-  const { businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat } = req.body;
+  const { businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat, businessAddress } = req.body;
 
-  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat });
+  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat, businessAddress });
 
   try {
     const businessAcc = await prisma.businessAcc.updateMany({
@@ -257,7 +257,9 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         taxType,
         businessPhone,
         businessWebsite,
+        businessAddress,
         vat
+
       },
     });
 
