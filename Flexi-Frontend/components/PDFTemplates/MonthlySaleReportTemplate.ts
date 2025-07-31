@@ -206,6 +206,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                   <th>${t("print.invoiceNo")}</th>
                   <th>${t("print.customer")}</th>
                   <th>${t("print.status")}</th>
+                  <th>${t("print.productDetails")}</th>
                   <th class="text-right">${t("print.price")}</th>
                   ${isVatRegistered ? `<th class="text-right">VAT (7%)</th>
                   <th class="text-right">${t("print.total")}</th>` : ''}
@@ -213,31 +214,39 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
               </thead>
               <tbody>
                 ${bills.map((bill, index) => {
-                  const subtotal = bill.price * bill.amount;
+                  // Multi-product: sum all product items for this bill
+                  const productItems = bill.product || [];
+                  const subtotal = productItems.reduce((sum: number, item: { unitPrice: number; quantity: number; }) => sum + (item.unitPrice * item.quantity), 0);
                   const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
                   const total = subtotal + vatAmount;
-                  
                   return `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>${formatDate(bill.purchaseAt)}</td>
-                    <td>#${bill.billId}</td>
-                    <td>${bill.cName || ''} ${bill.cLastName || ''}</td>
-                    <td class="${bill.cashStatus ? 'status-paid' : 'status-unpaid'}">
-                      ${bill.cashStatus ? t("print.paid") : t("print.unpaid")}
-                    </td>
-                    <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
-                    ${isVatRegistered ? `<td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
-                    <td class="text-right">${formatCurrencyForPDF(total)}</td>` : ''}
-                  </tr>
-                `;
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${formatDate(bill.purchaseAt)}</td>
+                      <td>#${bill.billId}</td>
+                      <td>${bill.cName || ''} ${bill.cLastName || ''}</td>
+                      <td class="${bill.cashStatus ? 'status-paid' : 'status-unpaid'}">
+                        ${bill.cashStatus ? t("print.paid") : t("print.unpaid")}
+                      </td>
+                      <td>
+                        <ul style="margin:0; padding-left:16px;">
+                          ${productItems.map((item: { product: any; quantity: any; unit: any; unitPrice: number; }, idx: any) =>
+                            `<li>${item.product || '-'} ${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ''} </li>`
+                          ).join('')}
+                        </ul>
+                      </td>
+                      <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
+                      ${isVatRegistered ? `<td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(total)}</td>` : ''}
+                    </tr>
+                  `;
                 }).join('')}
                 <tr style="background-color: #e5e7eb; font-weight: bold;">
-                  <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount), 0))}</td>
-                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + (bill.price * bill.amount * 0.07), 0))}</td>
+                  <td colspan="6" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + ((bill.product||[]).reduce((s: number, i: { unitPrice: number; quantity: number; }) => s + (i.unitPrice * i.quantity), 0)), 0))}</td>
+                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => sum + ((bill.product||[]).reduce((s: number, i: { unitPrice: number; quantity: number; }) => s + (i.unitPrice * i.quantity), 0)) * 0.07, 0))}</td>
                   <td class="text-right bold">${formatCurrencyForPDF(bills.reduce((sum, bill) => {
-                    const subtotal = bill.price * bill.amount;
+                    const subtotal = (bill.product||[]).reduce((s: number, i: { unitPrice: number; quantity: number; }) => s + (i.unitPrice * i.quantity), 0);
                     const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
                     return sum + subtotal + vatAmount;
                   }, 0))}</td>` : ''}

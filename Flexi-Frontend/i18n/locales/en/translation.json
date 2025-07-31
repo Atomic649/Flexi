@@ -1354,7 +1354,8 @@
     "paymentDetails": "Payment Details",
     "original" : "Original",
     "no": "No.",
-    "contact": "Contact Info"
+    "contact": "Contact Info",
+    "productDetails" : "Product Details"
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",
