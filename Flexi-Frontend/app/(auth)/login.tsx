@@ -9,7 +9,7 @@ import {
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "@/components/Button";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,9 +18,14 @@ import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { t } from "i18next";
-import { saveBusinessId, saveMemberId, saveToken, saveUserId } from "@/utils/utility";
+import {
+  saveBusinessId,
+  saveMemberId,
+  saveToken,
+  saveUserId,
+} from "@/utils/utility";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
-import ForgotPassword from './forgot_password';
+import ForgotPassword from "./forgot_password";
 
 export default function Login() {
   // State variables for email and password
@@ -76,7 +81,7 @@ export default function Login() {
 
     try {
       const response = await CallAPIUser.loginAPI(form);
-      
+
       // Save token and user details
       saveToken(response.token);
       await AsyncStorage.setItem("isLoggedIn", "true");
@@ -101,18 +106,18 @@ export default function Login() {
     } catch (error: any) {
       // Handle login error properly
       console.error("Login error:", error);
-      
+
       let errorMessage = t("auth.login.alerts.genericError");
-      
+
       // Extract meaningful error message
-      if (error && typeof error === 'object') {
+      if (error && typeof error === "object") {
         if (error.message) {
           errorMessage = error.message;
         } else if (error.error) {
           errorMessage = error.error;
         }
       }
-      
+
       setAlertConfig({
         visible: true,
         title: t("auth.login.alerts.error"),
@@ -130,13 +135,15 @@ export default function Login() {
     }
   };
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="h-full"
       >
-        <ScrollView contentContainerStyle={{ height: "100%" }}>
+        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
           <View
             className="w-full flex justify-center h-full px-4"
             style={{
@@ -146,7 +153,7 @@ export default function Login() {
           >
             <View
               style={{
-                width: Dimensions.get("window").width > 768  ? "40%" : "100%",
+                width: Dimensions.get("window").width > 768 ? "40%" : "100%",
                 maxWidth: 600,
               }}
             >
@@ -163,7 +170,7 @@ export default function Login() {
               </View>
 
               <CustomText
-                className={`text-2xl font-bold mt-4 ${useTextColorClass()}`}
+                className={`text-2xl font-bold mt-4 py-1 ${useTextColorClass()}`}
               >
                 {t("auth.login.title")}
               </CustomText>
@@ -175,6 +182,11 @@ export default function Login() {
                 handleChangeText={(e: any) => setForm({ ...form, email: e })}
                 otherStyles="mt-7 dark:text-white"
                 keyboardType="email-address"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  },150);
+                }}
               />
 
               <FormField
@@ -183,6 +195,12 @@ export default function Login() {
                 value={form.password}
                 handleChangeText={(e: any) => setForm({ ...form, password: e })}
                 otherStyles="mt-7"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 150);
+                }}
+                secureTextEntry={true}
               />
 
               <CustomButton
@@ -194,7 +212,6 @@ export default function Login() {
               />
 
               <View className="flex justify-center  items-center pt-5 flex-row gap-6">
-
                 <Button
                   title={t("auth.login.registerButton")}
                   onPress={() => router.replace("/register")}
@@ -203,7 +220,6 @@ export default function Login() {
                   title={t("auth.login.ForgotPasswordButton")}
                   onPress={() => router.replace("/forgot_password")}
                 />
-                
               </View>
             </View>
           </View>

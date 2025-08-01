@@ -184,11 +184,7 @@ export default function BusinessInfo() {
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              onFocus={() => {
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 200);
-              }}
+             
             />
 
             <Dropdown2
@@ -242,11 +238,7 @@ export default function BusinessInfo() {
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              onFocus={() => {
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 200);
-              }}
+            
             />
 
             <Dropdown2

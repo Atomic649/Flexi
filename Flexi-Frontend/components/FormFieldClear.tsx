@@ -10,12 +10,12 @@ const FormField = ({
   placeholder,
   handleChangeText,
   otherStyles,
-  bgColor,
   placeholderTextColor,
   textcolor,
   boxheight,
   icons,
   handlePress,
+  borderColor ,
   editable = true,
   ...props
 }: any) => {
@@ -24,7 +24,7 @@ const FormField = ({
   return (
     <View className={`space-y-2 ${otherStyles}`}>
       <View className="flex-row items-center">
-        <CustomText className="text-base text-zinc-500 font-pmedium mb-3">
+        <CustomText className="text-base text-zinc-500 font-pmedium mb-1">
           {title}
         </CustomText>
         {icons && (
@@ -44,13 +44,15 @@ const FormField = ({
       <View
         className="w-full  px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: "transparent",
+          borderColor: borderColor? borderColor : "transparent",
+          borderWidth: borderColor ? 0.5 : 0,          
           height: boxheight ? boxheight : 50,
-          opacity: editable ? 1 : 0.8,
+          opacity: editable ? 0.8 : 0.5,
         }}
       >
         <TextInput
-          className="flex-1 font-psemibold text-base"
+          className="flex-1 font-psemibold text-lg item-center"
           style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",color: textcolor }}          
           value={value}
           placeholder={placeholder}

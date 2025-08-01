@@ -20,7 +20,7 @@ const FormField = ({
             <CustomText className="text-base text-zinc-500 font-pmedium mb-4">{title}</CustomText>
             <View className="w-full h-16 px-4 bg-[#423f39] rounded-2xl border-2 border-[#423f39] focus:border-secondary flex flex-row items-center">
                 <TextInput
-                    className="flex-1 text-white font-psemibold text-base"
+                    className="flex-1 text-white font-psemibold text-lg"
                     style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular" }}
                     value={value}
                     placeholder={placeholder}

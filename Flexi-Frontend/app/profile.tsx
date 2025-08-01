@@ -281,13 +281,19 @@ export default function Profile() {
         </Modal>
 
         {/* User Details */}
-        <View className="mt-5">
-          <Text
+        <View className="flex-row mt-5 gap-2 items-center">
+          <CustomText
             className="text-lg font-bold text-center"
             style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
           >
-            {userData.firstName} {userData.lastName}
-          </Text>
+            {userData.firstName} 
+          </CustomText>
+          <CustomText
+            className="text-lg font-bold text-center"
+            style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+          >
+            {userData.lastName}
+          </CustomText>
         </View>
 
         {/* Business Acc Choice*/}
@@ -300,7 +306,7 @@ export default function Profile() {
               }}
             >
               <CustomText
-                className="text-sm font-bold text-center w-full"
+                className="text-base font-bold text-center w-full"
                 style={{
                   color: theme === "dark" ? "#c9c9c9" : "#ffffff",
                 }}

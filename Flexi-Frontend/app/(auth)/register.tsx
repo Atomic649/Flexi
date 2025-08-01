@@ -14,7 +14,7 @@ import { router } from "expo-router";
 import Button from "@/components/Button";
 import CustomButton from "@/components/CustomButton";
 import { images } from "@/constants";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -252,6 +252,7 @@ export default function Register() {
       </RNView>
     );
   };
+const scrollViewRef = useRef<ScrollView>(null);
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
@@ -259,7 +260,9 @@ export default function Register() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView>
+        <ScrollView
+           ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled">
           <View
             className="w-full flex justify-center h-full px-4 py-10"
             style={{
@@ -309,6 +312,11 @@ export default function Register() {
                 handleChangeText={setEmail}
                 otherStyles="mt-7"
                 keyboardType="email-address"
+                onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
               />
 
               <FormField
@@ -318,6 +326,11 @@ export default function Register() {
                 handleChangeText={setPassword}
                 otherStyles="mt-7"
                 secureTextEntry
+                onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
               />
 
               <RNView className="mt-5">

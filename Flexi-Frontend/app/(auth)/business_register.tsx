@@ -12,7 +12,7 @@ import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/CustomButton";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import Dropdown from "@/components/Dropdown";
@@ -109,14 +109,16 @@ export default function Register() {
       setError(error.message);
     }
   };
-
+ const scrollViewRef = useRef<ScrollView>(null);
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="h-full"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+         ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled">
           <View
             className="w-full flex justify-center h-full px-4"
             style={{
@@ -142,6 +144,15 @@ export default function Register() {
                 otherStyles="mt-7"
               />
 
+               <FormField
+                title={t("auth.businessRegister.businessPhone")}
+                placeholder={t("auth.businessRegister.businessPhone")}
+                value={businessPhone}
+                handleChangeText={setBusinessPhone}
+                otherStyles="mt-7"
+                keyboardType="phone-pad"
+              />
+
               <Dropdown
                 title={t("auth.businessRegister.taxType")}
                 options={[
@@ -165,14 +176,7 @@ export default function Register() {
                 
               />
 
-              <FormField
-                title={t("auth.businessRegister.businessPhone")}
-                placeholder={t("auth.businessRegister.businessPhone")}
-                value={businessPhone}
-                handleChangeText={setBusinessPhone}
-                otherStyles="mt-7"
-                keyboardType="phone-pad"
-              />
+             
 
               {/* VAT Toggle */}
               <View style={{ flexDirection: "row", alignItems: "center", marginTop: 28, marginBottom: 8 }}>
@@ -196,6 +200,11 @@ export default function Register() {
                 handleChangeText={setvatId}
                 otherStyles="mt-7"
                 keyboardType="number-pad"
+                 onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
               />
 
               <Dropdown

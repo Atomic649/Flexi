@@ -1146,6 +1146,7 @@
       "male": "Male",
       "female": "Female"
     },
+    "addProductItem": "Add Product",
     "selectGender": "Select gender",
     "selectProduct": "Select product",
     "customerAddress": "Address",
@@ -1165,7 +1166,7 @@
     "payment": {
       "cod": "Cash on Delivery",
       "transfer": "Bank Transfer",
-      "creditCard": "Credit Card",
+      "creditcard": "Credit Card",
       "cash": "Cash"
     },
     "selectPayment": "Select payment method",

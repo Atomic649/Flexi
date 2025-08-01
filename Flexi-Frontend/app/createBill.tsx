@@ -13,20 +13,17 @@ import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import FormField2 from "@/components/FormField2";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
-import Dropdown2 from "@/components/Dropdown2";
+import DropdownClear from "@/components/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { format } from "date-fns";
-import { th } from "date-fns/locale"; // Import Thai locale if needed
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
-import { icons } from "@/constants";
+import FormFieldClear from "@/components/FormFieldClear";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -400,19 +397,20 @@ export default function CreateBill() {
           <View className="flex flex-row justify-between items-center">
             <View className="w-1/2 pr-2">
               {stores.length > 0 ? (
-                <Dropdown2
+                <DropdownClear
                   title={t("bill.store")}
                   options={stores.map((store) => ({
                     label: store.accName,
                     value: store.id.toString(),
                   }))}
                   placeholder={t("bill.selectStore")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   selectedValue={
                     stores.find((store) => store.id === storeId)?.accName ||
                     t("bill.selectStore")
                   }
                   onValueChange={(value: any) => setStoreId(Number(value))}
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-2 mb-2"
@@ -443,24 +441,24 @@ export default function CreateBill() {
           </View>
           <View className="flex flex-row justify-between">
             <View className="w-1/2 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerName")}
                 value={cName}
                 handleChangeText={setCName}
                 placeholder={t("bill.enterName")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
               />
             </View>
             <View className="w-1/2 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerLastName")}
                 value={cLastName}
                 handleChangeText={setCLastName}
                 placeholder={t("bill.enterLastName")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -469,12 +467,12 @@ export default function CreateBill() {
           </View>
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerPhone")}
                 value={cPhone}
                 handleChangeText={setCPhone}
                 placeholder="0812345678"
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -483,29 +481,30 @@ export default function CreateBill() {
               />
             </View>
             <View className="w-1/3 pr-2">
-              <Dropdown2
-                title={t("bill.customerGender")}
-                options={[
-                  { label: t("bill.gender.male"), value: "Male" },
-                  { label: t("bill.gender.female"), value: "Female" },
-                ]}
-                placeholder={t("bill.selectGender")}
-                selectedValue={cGender}
-                onValueChange={setCGender}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
+              <DropdownClear
+              title={t("bill.customerGender")}
+              options={[
+                { label: t("bill.gender.male"), value: "Male" },
+                { label: t("bill.gender.female"), value: "Female" },
+              ]}
+              placeholder={t("bill.selectGender")}
+              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
+              onValueChange={(value: string) => setCGender(value)}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles="mt-2 mb-2"
               />
             </View>
           </View>
 
-          <FormField2
+          <FormFieldClear
             title={t("bill.customerAddress")}
             value={cAddress}
             handleChangeText={setCAddress}
             placeholder={t("bill.enterAddress")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
@@ -516,24 +515,24 @@ export default function CreateBill() {
           />
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerProvince")}
                 value={cProvince}
                 handleChangeText={setCProvince}
                 placeholder={t("bill.enterProvince")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
               />
             </View>
             <View className="w-1/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerPostal")}
                 value={cPostId}
                 handleChangeText={setCPostId}
                 placeholder="10400"
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -549,32 +548,33 @@ export default function CreateBill() {
               className="flex flex-row items-center mb-1 relative"
             >
               <View className="w-1/2 pr-2">
-                <Dropdown2
+                <DropdownClear
                   title={t(`bill.productName`) + ` ${idx + 1}`}
                   options={productChoice.map((product) => ({
                     label: product.name,
                     value: product.name,
                   }))}
                   placeholder={t("bill.selectProduct")}
-                  selectedValue={item.product || t("bill.selectProduct")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={item.product}
                   onValueChange={(value: string) =>
                     handleProductItemChange(idx, "product", value)
                   }
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-1 mb-1"
                 />
               </View>
               <View className="w-1/4 pr-2">
-                <FormField2
+                <FormFieldClear
                   title={t("bill.price")}
                   value={item.price}
                   handleChangeText={(value: string) =>
                     handleProductItemChange(idx, "price", value)
                   }
                   placeholder="1000"
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
                   }
@@ -584,14 +584,17 @@ export default function CreateBill() {
                 />
               </View>
               <View className="w-1/4 pr-2" style={{ position: "relative" }}>
-                <FormField2
-                  title={t("bill.amount")}
+                <FormFieldClear
+                  title={
+                    t("bill.amount") +
+                    ((item.unit && (t(`product.unit.${item.unit}`) || item.unit)) ? ` (${t(`product.unit.${item.unit}`) || item.unit})` : "")
+                  }
                   value={item.quantity}
                   handleChangeText={(value: string) =>
                     handleProductItemChange(idx, "quantity", value)
                   }
                   placeholder="1"
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
                   }
@@ -599,12 +602,6 @@ export default function CreateBill() {
                   otherStyles="mt-1 mb-1"
                   keyboardType="numeric"
                 />
-                {/* Show unit if available */}
-                {/* {item.unit && (
-                  <CustomText className="absolute right-2 top-0 text-xs text-zinc-400">
-                    {t(`product.unit.${item.unit}`) || item.unit}
-                  </CustomText>
-                )} */}
                 {idx !== 0 && (
                   <TouchableOpacity
                     onPress={() => handleRemoveProductItem(idx)}
@@ -629,51 +626,49 @@ export default function CreateBill() {
               </View>
             </TouchableOpacity>
           </View>
-          <Dropdown2
-            title={t("bill.paymentMethod")}
-            options={[
+            <DropdownClear
+              title={t("bill.paymentMethod")}
+              options={[
               { label: t("bill.payment.cod"), value: "COD" },
               { label: t("bill.payment.transfer"), value: "Transfer" },
-              { label: t("bill.payment.creditCard"), value: "CreditCard" },
+              { label: t("bill.payment.creditcard"), value: "CreditCard" },
               { label: t("bill.payment.cash"), value: "Cash" },
-            ]}
-            placeholder={t("bill.selectPayment")}
-            selectedValue={
+              ]}
+              placeholder={t("bill.selectPayment")}
+              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              selectedValue={
               payment
-                ? payment === "COD"
-                  ? t("bill.payment.cod")
-                  : payment === "Transfer"
-                  ? t("bill.payment.transfer")
-                  : payment === "CreditCard"
-                  ? t("bill.payment.creditCard")
-                  : payment === "Cash"
-                  ? t("bill.payment.cash")
-                  : t("bill.selectPayment")
-                : t("bill.selectPayment")
-            }
-            onValueChange={setPayment}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles="mt-2 mb-2"
-          />
+                ? t(`bill.payment.${payment.toLowerCase()}`)
+                : ""
+              }
+              onValueChange={setPayment}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles="mt-2 mb-2"
+            />
 
-          <Dropdown2
-            title={t("bill.paymentStatus")}
-            options={[
+            <DropdownClear
+              title={t("bill.paymentStatus")}
+              options={[
               { label: t("bill.status.paid"), value: "true" },
               { label: t("bill.status.unpaid"), value: "false" },
-            ]}
-            placeholder={t("bill.selectStatus")}
-            selectedValue={
-              cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
-            }
-            onValueChange={(value: string) => setCashStatus(value === "true")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-            bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles="mt-2 mb-2"
-          />
+              ]}
+              placeholder={t("bill.selectStatus")}
+              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              selectedValue={
+              cashStatus === true
+                ? t("bill.status.paid")
+                : cashStatus === false && payment
+                ? t("bill.status.unpaid")
+                : ""
+              }
+              onValueChange={(value: string) => setCashStatus(value === "true")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles="mt-2 mb-2"
+            />
 
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>

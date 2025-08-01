@@ -1144,6 +1144,7 @@
       "male": "ชาย",
       "female": "หญิง"
     },
+    "addProductItem": "เพิ่มสินค้า",
     "selectGender": "เลือกเพศ",
     "selectProduct": "เลือกสินค้า",
     "customerAddress": "ที่อยู่",
@@ -1163,7 +1164,7 @@
     "payment": {
       "cod": "เก็บเงินปลายทาง",
       "transfer": "โอนเงินผ่านธนาคาร",
-      "creditCard": "บัตรเครดิต",
+      "creditcard": "บัตรเครดิต",
       "cash": "เงินสด"
     },
     "selectPayment": "เลือกวิธีการชำระเงิน",
