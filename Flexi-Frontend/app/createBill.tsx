@@ -482,19 +482,21 @@ export default function CreateBill() {
             </View>
             <View className="w-1/3 pr-2">
               <DropdownClear
-              title={t("bill.customerGender")}
-              options={[
-                { label: t("bill.gender.male"), value: "Male" },
-                { label: t("bill.gender.female"), value: "Female" },
-              ]}
-              placeholder={t("bill.selectGender")}
-              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
-              onValueChange={(value: string) => setCGender(value)}
-              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              otherStyles="mt-2 mb-2"
+                title={t("bill.customerGender")}
+                options={[
+                  { label: t("bill.gender.male"), value: "Male" },
+                  { label: t("bill.gender.female"), value: "Female" },
+                ]}
+                placeholder={t("bill.selectGender")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                selectedValue={
+                  cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
+                }
+                onValueChange={(value: string) => setCGender(value)}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles="mt-2 mb-2"
               />
             </View>
           </View>
@@ -587,7 +589,9 @@ export default function CreateBill() {
                 <FormFieldClear
                   title={
                     t("bill.amount") +
-                    ((item.unit && (t(`product.unit.${item.unit}`) || item.unit)) ? ` (${t(`product.unit.${item.unit}`) || item.unit})` : "")
+                    (item.unit && (t(`product.unit.${item.unit}`) || item.unit)
+                      ? ` (${t(`product.unit.${item.unit}`) || item.unit})`
+                      : "")
                   }
                   value={item.quantity}
                   handleChangeText={(value: string) =>
@@ -626,49 +630,54 @@ export default function CreateBill() {
               </View>
             </TouchableOpacity>
           </View>
-            <DropdownClear
-              title={t("bill.paymentMethod")}
-              options={[
-              { label: t("bill.payment.cod"), value: "COD" },
-              { label: t("bill.payment.transfer"), value: "Transfer" },
-              { label: t("bill.payment.creditcard"), value: "CreditCard" },
-              { label: t("bill.payment.cash"), value: "Cash" },
-              ]}
-              placeholder={t("bill.selectPayment")}
-              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              selectedValue={
-              payment
-                ? t(`bill.payment.${payment.toLowerCase()}`)
-                : ""
-              }
-              onValueChange={setPayment}
-              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              otherStyles="mt-2 mb-2"
-            />
-
-            <DropdownClear
-              title={t("bill.paymentStatus")}
-              options={[
-              { label: t("bill.status.paid"), value: "true" },
-              { label: t("bill.status.unpaid"), value: "false" },
-              ]}
-              placeholder={t("bill.selectStatus")}
-              placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              selectedValue={
-              cashStatus === true
-                ? t("bill.status.paid")
-                : cashStatus === false && payment
-                ? t("bill.status.unpaid")
-                : ""
-              }
-              onValueChange={(value: string) => setCashStatus(value === "true")}
-              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              otherStyles="mt-2 mb-2"
-            />
+          <View className="flex flex-row justify-between">
+            <View className="w-2/3 pr-2">
+              <DropdownClear
+                title={t("bill.paymentMethod")}
+                options={[
+                  { label: t("bill.payment.cod"), value: "COD" },
+                  { label: t("bill.payment.transfer"), value: "Transfer" },
+                  { label: t("bill.payment.creditcard"), value: "CreditCard" },
+                  { label: t("bill.payment.cash"), value: "Cash" },
+                ]}
+                placeholder={t("bill.selectPayment")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                selectedValue={
+                  payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
+                }
+                onValueChange={setPayment}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles="mt-2 mb-2"
+              />
+            </View>
+            <View className="w-1/3 pr-2">
+              <DropdownClear
+                title={t("bill.paymentStatus")}
+                options={[
+                  { label: t("bill.status.paid"), value: "true" },
+                  { label: t("bill.status.unpaid"), value: "false" },
+                ]}
+                placeholder={t("bill.selectStatus")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                selectedValue={
+                  cashStatus === true
+                    ? t("bill.status.paid")
+                    : cashStatus === false && payment
+                    ? t("bill.status.unpaid")
+                    : ""
+                }
+                onValueChange={(value: string) =>
+                  setCashStatus(value === "true")
+                }
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles="mt-2 mb-2"
+              />
+            </View>
+          </View>
 
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>

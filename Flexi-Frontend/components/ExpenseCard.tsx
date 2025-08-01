@@ -130,9 +130,9 @@ export default function ExpenseCard({
               backgroundColor: getCardColor(type),
             }}
           >
-            <View className="flex flex-row gap-3 items-start">
+            <View className="flex flex-row gap-3 items-center">
               <View className="flex justify-center items-center flex-row flex-1">
-                <View className="flex justify-center flex-1 ml-3 gap-y-1">
+                <View className="flex justify-center flex-1 ml-3 ">
                   <Text
                     className="text-sm text-zinc-500 font-normal"
                     numberOfLines={1}
@@ -140,14 +140,14 @@ export default function ExpenseCard({
                     {formatDate(date)}
                   </Text>
                   <CustomText
-                    className="text-sm font-normal"
+                    className="text-sm font-normal pt-1"
                     style={{ color: DescColor }}
                     numberOfLines={1}
                   >
                     {type === "ads" ? note : desc}
                   </CustomText>
                   <CustomText
-                    className="text-base font-psemibold"
+                    className="text-base font-psemibold pt-1"
                     weight="semibold"
                     style={{ color: NoteColor }}
                     numberOfLines={1}
@@ -156,7 +156,7 @@ export default function ExpenseCard({
                   </CustomText>
                 </View>
               </View>
-              <View className="pt-2 flex-row items-center">
+              <View className="flex-row items-center">
                 <Text
                   className="text-xl font-bold justify-end"
                   style={{ color: getExpenseTextColor(type) }}

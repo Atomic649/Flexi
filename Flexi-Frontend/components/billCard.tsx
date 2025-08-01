@@ -92,29 +92,29 @@ export default function BillCard({
               </CustomText>
             </View>
             {/* Render all products */}
-            <View className="flex-col gap-y-1 mt-1">
+            <View className="flex-col gap-y-1 ">
               {Array.isArray(product) && product.length > 0 ? (
                 product.map((item: any, idx: number) => (
                   <View key={idx} className="flex-row gap-x-2 items-center">
                     <CustomText
-                      className="font-bold text-sm text-zinc-400"
-                      numberOfLines={2}
+                      className="font-bold text-sm text-zinc-400 pt-1"
+                      numberOfLines={1}
                       style={{ color: "#7e7d7a" }}
                     >
                       {item.product}
                     </CustomText>
                   
                     <CustomText
-                      className="font-bold text-sm text-zinc-400"
-                      numberOfLines={2}
+                      className="font-bold text-sm text-zinc-400 pt-1"
+                      numberOfLines={1}
                       style={{ color: "#7e7d7a" }}
                     >
                       {item.quantity}
                     </CustomText>
                     {item.unit && (
                       <CustomText
-                        className="font-bold text-sm text-zinc-400"
-                        numberOfLines={2}
+                        className="font-bold text-sm text-zinc-400 pt-1"
+                        numberOfLines={1}
                         style={{ color: "#7e7d7a" }}
                       >
                         {t(`product.unit.${item.unit}`) || item.unit}

@@ -14,21 +14,17 @@ import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import FormField2 from "@/components/FormField2";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
-import Dropdown2 from "@/components/Dropdown2";
+import DropdownClear from "@/components/DropdownClear";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { format } from "date-fns";
-import { th } from "date-fns/locale";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { icons } from "@/constants";
-import { Link } from "@react-navigation/native";
 import { isMobile } from "@/utils/responsive";
+import FormFieldClear from "@/components/FormFieldClear";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -434,24 +430,19 @@ export default function EditBill() {
           <View className="flex flex-row justify-between items-center">
             <View className="w-1/2 pr-2">
               {stores.length > 0 ? (
-                <Dropdown2
+                <DropdownClear
                   title={t("bill.store")}
                   options={stores.map((store) => ({
                     label: store.accName,
                     value: store.id.toString(),
                   }))}
                   placeholder={t("bill.selectStore")}
-                  selectedValue={
-                    stores.find((store) => store.id === storeId)?.accName ||
-                    t("bill.selectStore")
-                  }
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={stores.find((store) => store.id === storeId)?.accName || ""}
                   onValueChange={(value:any) => {
-                    if (isEditMode) {
-                      console.log("Setting store ID to:", value);
-                      setStoreId(Number(value));
-                    }
+                    if (isEditMode) setStoreId(Number(value));
                   }}
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-2 mb-2"
@@ -484,12 +475,12 @@ export default function EditBill() {
           </View>
           <View className="flex flex-row justify-between">
             <View className="w-1/2 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerName")}
                 value={cName}
                 handleChangeText={setCName}
                 placeholder={t("bill.enterName")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -497,12 +488,12 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/2 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerLastName")}
                 value={cLastName}
                 handleChangeText={setCLastName}
                 placeholder={t("bill.enterLastName")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -513,12 +504,12 @@ export default function EditBill() {
 
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerPhone")}
                 value={cPhone}
                 handleChangeText={setCPhone}
                 placeholder="0812345678"
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -532,22 +523,17 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/3 pr-2">
-              <Dropdown2
+              <DropdownClear
                 title={t("bill.customerGender")}
                 options={[
                   { label: t("bill.gender.male"), value: "Male" },
                   { label: t("bill.gender.female"), value: "Female" },
                 ]}
                 placeholder={t("bill.selectGender")}
-                selectedValue={
-                  cGender === "Male"
-                    ? t("bill.gender.male")
-                    : cGender === "Female"
-                    ? t("bill.gender.female")
-                    : t("bill.selectGender")
-                }
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
                 onValueChange={setCGender}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
@@ -556,12 +542,12 @@ export default function EditBill() {
             </View>
           </View>
 
-          <FormField2
+          <FormFieldClear
             title={t("bill.customerAddress")}
             value={cAddress}
             handleChangeText={setCAddress}
             placeholder={t("bill.enterAddress")}
-            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
@@ -574,12 +560,12 @@ export default function EditBill() {
 
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerProvince")}
                 value={cProvince}
                 handleChangeText={setCProvince}
                 placeholder={t("bill.enterProvince")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -587,12 +573,12 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/3 pr-2">
-              <FormField2
+              <FormFieldClear
                 title={t("bill.customerPostal")}
                 value={cPostId}
                 handleChangeText={setCPostId}
                 placeholder="10400"
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
@@ -609,18 +595,17 @@ export default function EditBill() {
               className="flex flex-row items-center mb-1 relative"
             >
               <View className="w-1/2 pr-2">
-                <Dropdown2
+                <DropdownClear
                   title={t(`bill.productName`) + ` ${idx + 1}`}
                   options={productChoice.map((product) => ({
                     label: product.name,
                     value: product.name,
                   }))}
                   placeholder={t("bill.selectProduct")}
-                  selectedValue={item.product || t("bill.selectProduct")}
-                  onValueChange={(value: string) =>
-                    handleProductItemChange(idx, "product", value)
-                  }
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={item.product}
+                  onValueChange={(value: string) => handleProductItemChange(idx, "product", value)}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-1 mb-1"
@@ -628,14 +613,14 @@ export default function EditBill() {
                 />
               </View>
               <View className="w-1/4 pr-2">
-                <FormField2
+                <FormFieldClear
                   title={t("bill.price")}
                   value={item.price}
                   handleChangeText={(value: string) =>
                     handleProductItemChange(idx, "price", value)
                   }
                   placeholder="1000"
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
                   }
@@ -646,14 +631,14 @@ export default function EditBill() {
                 />
               </View>
               <View className="w-1/4 pr-2" style={{ position: "relative" }}>
-                <FormField2
+                <FormFieldClear
                   title={t("bill.amount")}
                   value={item.quantity}
                   handleChangeText={(value: string) =>
                     handleProductItemChange(idx, "quantity", value)
                   }
                   placeholder="1"
-                  bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
                   }
@@ -697,30 +682,21 @@ export default function EditBill() {
 
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
-              <Dropdown2
+              <DropdownClear
                 title={t("bill.paymentMethod")}
                 options={[
                   { label: t("bill.payment.cod"), value: "COD" },
                   { label: t("bill.payment.transfer"), value: "Transfer" },
-                  { label: t("bill.payment.creditCard"), value: "CreditCard" },
+                  { label: t("bill.payment.creditcard"), value: "CreditCard" },
                   { label: t("bill.payment.cash"), value: "Cash" },
                 ]}
                 placeholder={t("bill.selectPayment")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 selectedValue={
-                  payment
-                    ? payment === "COD"
-                      ? t("bill.payment.cod")
-                      : payment === "Transfer"
-                      ? t("bill.payment.transfer")
-                      : payment === "CreditCard"
-                      ? t("bill.payment.creditCard")
-                      : payment === "Cash"
-                      ? t("bill.payment.cash")
-                      : t("bill.selectPayment")
-                    : t("bill.selectPayment")
+                  payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
                 }
                 onValueChange={setPayment}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
@@ -728,18 +704,19 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/3 pr-2">
-              <Dropdown2
+              <DropdownClear
                 title={t("bill.paymentStatus")}
                 options={[
                   { label: t("bill.status.paid"), value: "true" },
                   { label: t("bill.status.unpaid"), value: "false" },
                 ]}
                 placeholder={t("bill.selectStatus")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 selectedValue={
                   cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
                 }
                 onValueChange={(value: string) => setCashStatus(value === "true")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
