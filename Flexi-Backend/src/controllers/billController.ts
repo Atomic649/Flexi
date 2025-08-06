@@ -43,6 +43,7 @@ interface billInput {
   memberId: string;
   purchaseAt: Date;
   businessAcc: number;
+  cTaxId: string;
   image: string;
   storeId: number;
   total?: number;
@@ -57,12 +58,13 @@ const schema = Joi.object({
   updatedAt: Joi.date(),
   purchaseAt: Joi.date(),
   cName: Joi.string().required(),
-  cLastName: Joi.string().required(),
+  cLastName: Joi.string().allow(""),
   cPhone: Joi.string().min(10).max(10).required(),
-  cGender: Joi.string().valid("Female", "Male").required(),
+  cGender: Joi.string().valid("Female", "Male","NotSpecified").required(),
   cAddress: Joi.string().required(),
   cProvince: Joi.string().required(),
   cPostId: Joi.string().required(),
+  cTaxId: Joi.string().allow("").optional(),
   payment: Joi.string()
     .valid("COD", "Transfer", "CreditCard", "Cash")
     .required(),
@@ -70,7 +72,7 @@ const schema = Joi.object({
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
   image: Joi.string().allow(""),
-  storeId: Joi.number().required(),
+  storeId: Joi.number(),
   total: Joi.number(),
   productItems: Joi.array()
     .items(
@@ -100,6 +102,7 @@ const createBill = async (req: Request, res: Response) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+    billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.storeId = Number(billInput.storeId);
     billInput.cashStatus = ["true", "1", "yes"].includes(
@@ -152,6 +155,7 @@ const createBill = async (req: Request, res: Response) => {
           cAddress: billInput.cAddress,
           cPostId: billInput.cPostId,
           cProvince: billInput.cProvince,
+          cTaxId: billInput.cTaxId,
           product: {
             create: billInput.productItems.map((item) => ({
               product: item.product,
@@ -263,6 +267,7 @@ const updateBill = async (req: Request, res: Response) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+    billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.storeId = Number(billInput.storeId);
     billInput.cashStatus = ["true", "1", "yes"].includes(
@@ -300,6 +305,7 @@ const updateBill = async (req: Request, res: Response) => {
           cAddress: billInput.cAddress,
           cPostId: billInput.cPostId,
           cProvince: billInput.cProvince,
+          cTaxId: billInput.cTaxId,
           product: {
             create: billInput.productItems.map((item) => ({
               product: item.product,

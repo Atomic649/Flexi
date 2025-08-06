@@ -66,6 +66,7 @@ export default function EditBill() {
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
+  const [cTaxId, setCTaxId] = useState("");
 
   // Payment information
   const [payment, setPayment] = useState("");
@@ -320,10 +321,11 @@ export default function EditBill() {
         cName,
         cLastName,
         cPhone,
-        cGender: cGender as "Female" | "Male",
+        cGender: cGender as "Female" | "Male"|"NotSpecified",
         cAddress,
         cPostId,
         cProvince,
+        cTaxId: cTaxId,
         payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash",
         cashStatus,
         memberId: memberId || "",
@@ -501,6 +503,19 @@ export default function EditBill() {
               />
             </View>
           </View>
+          <FormFieldClear
+            title={t("bill.customerTaxId")}
+            value={cTaxId}
+            handleChangeText={setCTaxId}
+            placeholder={t("bill.enterTaxId")}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+            keyboardType="numeric"
+            maxLength={13}
+            editable={isEditMode}
+          />
 
           <View className="flex flex-row justify-between">
             <View className="w-2/3 pr-2">
@@ -528,6 +543,7 @@ export default function EditBill() {
                 options={[
                   { label: t("bill.gender.male"), value: "Male" },
                   { label: t("bill.gender.female"), value: "Female" },
+                  { label: t("bill.gender.notSpecified"), value: "NotSpecified" },
                 ]}
                 placeholder={t("bill.selectGender")}
                 placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -632,7 +648,12 @@ export default function EditBill() {
               </View>
               <View className="w-1/4 pr-2" style={{ position: "relative" }}>
                 <FormFieldClear
-                  title={t("bill.amount")}
+                 title={
+                    t("bill.amount") +
+                    (item.unit && (t(`product.unit.${item.unit}`) || item.unit)
+                      ? ` (${t(`product.unit.${item.unit}`) || item.unit})`
+                      : "")
+                  }
                   value={item.quantity}
                   handleChangeText={(value: string) =>
                     handleProductItemChange(idx, "quantity", value)
@@ -647,12 +668,7 @@ export default function EditBill() {
                   keyboardType="numeric"
                   editable={isEditMode}
                 />
-                {/* Show unit if available */}
-                {item.unit && (
-                  <CustomText className="absolute right-2 top-0 text-xs text-zinc-400">
-                    {t(`product.unit.${item.unit}`) || item.unit}
-                  </CustomText>
-                )}
+                
                 {idx !== 0 && isEditMode && (
                   <TouchableOpacity
                     onPress={() => handleRemoveProductItem(idx)}

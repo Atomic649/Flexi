@@ -141,6 +141,7 @@
   "product": {
     "Products": "Products",
     "productName": "Product Name",
+    "serviceName": "Service Name",
     "barcode": "Barcode",
     "stock": "Stock",
     "limit": "Limit 3 Products",

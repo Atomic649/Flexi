@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { BusinessType, PrismaClient as PrismaClient1, taxType } from "../generated/client1";
+import {
+  BusinessType,
+  PrismaClient as PrismaClient1,
+  taxType,
+} from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
@@ -24,7 +28,7 @@ interface businessAccInput {
   businessAvatar: string;
   membebId: string;
   businessWebsite?: string;
-  businessPhone?:string;
+  businessPhone?: string;
   vat?: boolean;
 }
 
@@ -41,7 +45,6 @@ const schema = Joi.object({
   businessPhone: Joi.string(),
   buisnessWebsite: Joi.string(),
   vat: Joi.boolean().optional().default(false),
-  
 });
 
 // Create a Business Account - Post
@@ -53,20 +56,20 @@ const createBusinessAcc = async (req: Request, res: Response) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  try {   
+  try {
     // check if business account already exists
     const existingBusinessAcc = await prisma.businessAcc.findUnique({
       where: {
         businessName: businessAccInput.businessName,
         vatId: businessAccInput.vatId,
       },
-    })
+    });
     if (existingBusinessAcc) {
       return res.status(400).json({
         status: "error",
         message: "business account already exists",
       });
-    }   
+    }
     const businessAcc = await prisma.businessAcc.create({
       data: {
         businessName: businessAccInput.businessName,
@@ -76,7 +79,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         userId: businessAccInput.userId,
         memberId: businessAccInput.memberId,
         businessWebsite: businessAccInput.businessWebsite,
-        businessPhone: businessAccInput.businessPhone
+        businessPhone: businessAccInput.businessPhone,
       },
     });
     res.json({
@@ -90,13 +93,13 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         userId: businessAcc.userId,
         memberId: businessAcc.memberId,
         id: businessAcc.id,
-        }});
+      },
+    });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to create business account" });
   }
 };
-
 
 // add more business account by creating a memberId first
 const AddMoreBusinessAcc = async (req: Request, res: Response) => {
@@ -107,20 +110,33 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  try {   
+  try {
     // check if business account already exists
     const existingBusinessAcc = await prisma.businessAcc.findUnique({
       where: {
         businessName: businessAccInput.businessName,
         vatId: businessAccInput.vatId,
       },
-    })
+    });
     if (existingBusinessAcc) {
       return res.status(400).json({
         status: "error",
         message: "business account already exists",
       });
-    }   
+    }
+
+    // Check if vatId is already used by another business account
+    const existingVatId = await prisma.businessAcc.findUnique({
+      where: {
+        vatId: businessAccInput.vatId,
+      },
+    });
+    if (existingVatId) {
+      return res.status(400).json({
+        status: "error",
+        message: "This Tax Id already used by another business account",
+      });
+    }
 
     // create memberId
     const memberId = await prisma.member.create({
@@ -157,12 +173,60 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         memberId: businessAcc.memberId,
         id: businessAcc.id,
         businessAvatar: businessAcc.businessAvatar,
-  }});
+      },
+    });
+    // If businessType is "Influencer", create default products
+    if (businessAccInput.businessType === "Influencer") {
+      const defaultProducts = [
+      "Tiktok Affiliate",
+      "Shopee Affiliate",
+      "Clip",
+      "Live"
+      ];
+
+      for (const name of defaultProducts) {
+      const product = await prisma.product.create({
+        data: {
+        name,
+        productType: "Service",
+        price: 0,
+        memberId: memberId.uniqueId,
+        stock: 0,
+        businessAcc: businessAcc.id,
+        unit: "List", 
+        },
+      });
+      console.log("product created", product);
+      }
+   }
+
+   // create store if businessType is "Influencer"
+   if (businessAccInput.businessType === "Influencer") {
+      const defaultProducts = [
+      "Tiktok Affiliate",
+      "Shopee Affiliate",
+      "Clip",
+      "Live"
+      ];
+
+      for (const name of defaultProducts) {
+     const store = await prisma.store.create({
+       data: {
+         accName: name,
+         platform: "Affiliate",
+         memberId: memberId.uniqueId,
+          businessAcc: businessAcc.id,
+        },
+      });
+      console.log("store created", store);
+    }
+  }
+
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to create business account" });
   }
-}
+};
 
 // Get All Business Accounts - Get
 const getBusinessAcc = async (_: Request, res: Response) => {
@@ -178,16 +242,16 @@ const getBusinessAcc = async (_: Request, res: Response) => {
 };
 // Get a Business Account by ID - Get
 const getBusinessAccByUserId = async (req: Request, res: Response) => {
-  const { userId} = req.params;
+  const { userId } = req.params;
   try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        userId : Number(userId),
+        userId: Number(userId),
       },
       select: {
         businessName: true,
         memberId: true,
-      }
+      },
     });
     res.json(businessAcc);
   } catch (e) {
@@ -198,7 +262,7 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
 
 // Get a Business Account Detail by MemberId- Get
 const getBusinessDetail = async (req: Request, res: Response) => {
-  const { memberId} = req.params;
+  const { memberId } = req.params;
 
   // find role by memberId
   const role = await prisma.member.findUnique({
@@ -208,29 +272,28 @@ const getBusinessDetail = async (req: Request, res: Response) => {
     select: {
       role: true,
     },
-  });  try {
+  });
+  try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        memberId : memberId,
+        memberId: memberId,
       },
-      select: { 
-        id: true,       
+      select: {
+        id: true,
         businessName: true,
         vatId: true,
-        taxType: true,                
+        taxType: true,
         businessAddress: true,
         businessType: true,
         businessAvatar: true,
         vat: true,
-        businessPhone:true
-
-
+        businessPhone: true,
       },
     });
     res.json({
       ...businessAcc[0],
-    
-      role: role?.role
+
+      role: role?.role,
     });
   } catch (e) {
     console.error(e);
@@ -241,9 +304,28 @@ const getBusinessDetail = async (req: Request, res: Response) => {
 // Update Business Details by MemberId - Put
 const updateBusinessAcc = async (req: Request, res: Response) => {
   const { memberId } = req.params;
-  const { businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat, businessAddress } = req.body;
+  const {
+    businessName,
+    vatId,
+    businessType,
+    taxType,
+    businessPhone,
+    businessWebsite,
+    vat,
+    businessAddress,
+  } = req.body;
 
-  console.log("Update Business Details", { memberId, businessName, vatId, businessType, taxType, businessPhone, businessWebsite, vat, businessAddress });
+  console.log("Update Business Details", {
+    memberId,
+    businessName,
+    vatId,
+    businessType,
+    taxType,
+    businessPhone,
+    businessWebsite,
+    vat,
+    businessAddress,
+  });
 
   try {
     const businessAcc = await prisma.businessAcc.updateMany({
@@ -258,8 +340,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         businessPhone,
         businessWebsite,
         businessAddress,
-        vat
-
+        vat,
       },
     });
 
@@ -314,8 +395,6 @@ const searchBusinessAcc = async (req: Request, res: Response) => {
               contains: keyword,
             },
           },
-          
-          
         ],
       },
     });
@@ -328,7 +407,7 @@ const searchBusinessAcc = async (req: Request, res: Response) => {
 
 //Update Business Avatar by id - Put
 const updateBusinessAvatar = async (req: Request, res: Response) => {
-    upload(req, res, async (err: any) => {
+  upload(req, res, async (err: any) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
@@ -380,27 +459,24 @@ const updateBusinessAvatar = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Failed to update business avatar" });
     }
   });
-}
+};
 
 // get business Avatar by memberId - Get
 const getBusinessAvatar = async (req: Request, res: Response) => {
-  const { memberId} = req.params;
+  const { memberId } = req.params;
 
-    try {
+  try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        memberId : memberId,
+        memberId: memberId,
       },
-      select: {         
+      select: {
         businessAvatar: true,
         businessName: true,
-
-
       },
     });
     res.json({
       ...businessAcc[0],
-    
     });
   } catch (e) {
     console.error(e);
@@ -418,10 +494,5 @@ export {
   deleteBusinessAcc,
   searchBusinessAcc,
   updateBusinessAvatar,
-  getBusinessAvatar
-  
- ,
-
-  
- 
+  getBusinessAvatar,
 };

@@ -283,7 +283,7 @@ export default function CreateProduct() {
           <View className="flex flex-row justify-between">
             <View className="w-1/2 pr-2">
               <FormField2
-                title={t("product.productName")}
+                title={productType !== "Service" ? t("product.productName") : t("product.serviceName")}
                 value={name}
                 handleChangeText={setproductname}
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}

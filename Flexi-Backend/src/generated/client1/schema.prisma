@@ -50,6 +50,7 @@ enum taxType {
 enum Gender {
   Female
   Male
+  NotSpecified
 }
 
 enum Payment {
@@ -87,6 +88,7 @@ enum IncomeChannel {
   KTB
   BBL
   TMB
+  Affiliate
 }
 
 enum Bank {
@@ -231,6 +233,7 @@ model Bill {
   cAddress   String?
   cProvince  String?
   cPostId    String?
+  cTaxId     String?
   product    ProductItem[]
   payment    Payment
   total      Int
@@ -321,7 +324,7 @@ model Store {
   id           Int           @id @default(autoincrement())
   platform     IncomeChannel
   accName      String        @unique
-  accId        String
+  accId        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   storefrontId Bill[]
@@ -335,7 +338,7 @@ model Store {
 model Product {
   id          Int          @id @default(autoincrement())
   name        String       @unique
-  unit        Unit?        @default(Piece)
+  unit        Unit?
   productType ProductType? @default(Product)
   description String?
   barcode     String?

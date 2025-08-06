@@ -420,7 +420,8 @@ export default function Setting() {
                     color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base"
+                  weight="regular">
                     {t("settings.socialMedia.facebook")}
                   </CustomText>
                 </View>
@@ -446,7 +447,7 @@ export default function Setting() {
                     color={theme === "dark" ? "#fff" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base" weight="regular">
                     {t("settings.socialMedia.tiktok")}
                   </CustomText>
                 </View>
@@ -472,7 +473,7 @@ export default function Setting() {
                     color={theme === "dark" ? "#fff" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base" weight="regular">
                     {t("settings.socialMedia.shopee")}
                   </CustomText>
                 </View>
@@ -498,7 +499,7 @@ export default function Setting() {
                     color={theme === "dark" ? "#fff" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base" weight="regular">
                     {t("settings.socialMedia.line")}
                   </CustomText>
                 </View>
@@ -553,7 +554,8 @@ export default function Setting() {
                     color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base"
+                  weight="regular">
                     {marketingPreference === "ads"
                       ? t("settings.marketing.ads")
                       : t("settings.marketing.organic")}
@@ -608,7 +610,8 @@ export default function Setting() {
                     color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
-                  <CustomText className="text-base">
+                  <CustomText className="text-base"
+                  weight="regular">
                     {theme === "dark"
                       ? t("settings.appearance.dark")
                       : t("settings.appearance.light")}

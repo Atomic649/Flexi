@@ -173,6 +173,7 @@ exports.Prisma.BillScalarFieldEnum = {
   cAddress: 'cAddress',
   cProvince: 'cProvince',
   cPostId: 'cPostId',
+  cTaxId: 'cTaxId',
   payment: 'payment',
   total: 'total',
   purchaseAt: 'purchaseAt',
@@ -422,7 +423,8 @@ exports.taxType = exports.$Enums.taxType = {
 
 exports.Gender = exports.$Enums.Gender = {
   Female: 'Female',
-  Male: 'Male'
+  Male: 'Male',
+  NotSpecified: 'NotSpecified'
 };
 
 exports.Payment = exports.$Enums.Payment = {
@@ -447,7 +449,8 @@ exports.IncomeChannel = exports.$Enums.IncomeChannel = {
   KBANK: 'KBANK',
   KTB: 'KTB',
   BBL: 'BBL',
-  TMB: 'TMB'
+  TMB: 'TMB',
+  Affiliate: 'Affiliate'
 };
 
 exports.Unit = exports.$Enums.Unit = {

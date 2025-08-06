@@ -47,9 +47,10 @@ class CallAPIBill {
         cName: string;
         cLastName: string;
         cPhone: string;
-        cGender: "Female" | "Male";
+        cGender: "Female" | "Male"| "NotSpecified";
         cAddress: string;
         cPostId: string;
+        cTaxId: string;
         cProvince: string;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash";
         cashStatus: boolean;
@@ -87,10 +88,11 @@ class CallAPIBill {
         cName: string;
         cLastName: string;
         cPhone: string;
-        cGender: "Female" | "Male";
+        cGender: "Female" | "Male"| "NotSpecified";
         cAddress: string;
         cPostId: string;
         cProvince: string;
+        cTaxId : string;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash";
         cashStatus: boolean;
         memberId: string;
