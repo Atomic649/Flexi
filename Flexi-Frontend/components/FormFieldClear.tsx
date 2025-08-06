@@ -52,7 +52,7 @@ const FormField = ({
         }}
       >
         <TextInput
-          className="flex-1 font-psemibold text-lg item-center"
+          className="flex-1 font-psemibold text-lg item-center pt-1"
           style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",color: textcolor }}          
           value={value}
           placeholder={placeholder}

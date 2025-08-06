@@ -3,6 +3,7 @@ import React from "react";
 import { isMobile, getResponsiveStyles } from "@/utils/responsive";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import { CustomText} from "./CustomText";
 
 const formatDate = (dateString: string) => {
   const month = new Date(dateString);
@@ -58,13 +59,13 @@ export default function MonthlyCard({
             style={{ width: marketingPreference === "organic" ? "18%" : "15%" }} 
             className="flex flex-col items-start"
           >
-            <Text
-              className="text-zinc-500 font-normal"
-              style={{ fontSize: styles.smallFontSize }}
+            <CustomText
+              className="text-zinc-500 font-base "
+              style={{ fontSize: styles.smallFontSize*1.05 }}
               numberOfLines={1}
             >
               {formatDate(month)}
-            </Text>
+            </CustomText>
           </View>
           
           <View 

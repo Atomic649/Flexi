@@ -80,7 +80,7 @@ const schema = Joi.object({
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         unitPrice: Joi.number().min(0).required(),
-        unit: Joi.string().required(),
+        unit: Joi.string().optional(), // Optional field for unit
       })
     )
     .min(1)

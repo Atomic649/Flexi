@@ -141,21 +141,21 @@ export default function CreateBill() {
     fetchProductChoice();
   }, []);
 
-  // Handle product selection to auto-fill price
-  const handleProductSelect = (selectedProductName: string) => {
-    setProduct(selectedProductName);
+  // // Handle product selection to auto-fill price
+  // const handleProductSelect = (selectedProductName: string) => {
+  //   setProduct(selectedProductName);
 
-    // Find the product with matching name and set its price
-    const selectedProduct = productChoice.find(
-      (p) => p.name === selectedProductName
-    );
+  //   // Find the product with matching name and set its price
+  //   const selectedProduct = productChoice.find(
+  //     (p) => p.name === selectedProductName
+  //   );
 
-    if (selectedProduct && selectedProduct.price) {
-      setPrice(selectedProduct.price.toString());
-    } else {
-      setPrice(""); // Clear price if product not found or has no price
-    }
-  };
+  //   if (selectedProduct && selectedProduct.price) {
+  //     setPrice(selectedProduct.price.toString());
+  //   } else {
+  //     setPrice(""); // Clear price if product not found or has no price
+  //   }
+  // };
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -211,9 +211,10 @@ export default function CreateBill() {
         setCashStatus(false);
         setTaxType("Individual");
         setMemberId(memberId); // keep memberId for context, but reset fields
+        setStoreId(0); // Reset storeId to 0
         // Auto-fill customer fields if product is Tiktok Affiliate
         if (value === "Tiktok Affiliate") {
-          setCName("ติ๊กต๊อก (ไทยแลนด์) จำกัด");
+          setCName("บริษัท ติ๊กต๊อก (ไทยแลนด์) จำกัด");
           setCLastName("");
           setCPhone("0000000000");
           setTaxId("0105562003561");
@@ -225,7 +226,12 @@ export default function CreateBill() {
           setCashStatus(true);        
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
-        
+          // Set storeId to the store with name "Tiktok Affiliate" if it exists
+          const tiktokStore = stores.find((store) => store.accName === "Tiktok");
+          if (tiktokStore) {
+            setStoreId(tiktokStore.id);
+            console.log("Store ID set to:", tiktokStore.id);
+          }
         }
         // Auto-fill customer fields if product is Shopee Affiliate
         if (value === "Shopee Affiliate") {
@@ -241,6 +247,12 @@ export default function CreateBill() {
           setCashStatus(true);        
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
+          // Set storeId to the store with name "Shopee Affiliate" if it exists
+          const shopeeStore = stores.find((store) => store.accName === "Shopee");
+          if (shopeeStore) {
+            setStoreId(shopeeStore.id);
+            console.log("Store ID set to:", shopeeStore.id);
+          }
         }
       }
       return updated;
@@ -357,7 +369,7 @@ export default function CreateBill() {
         image,
         productItems: productItems.map((item) => ({
           product: item.product,
-          unit: item.unit,
+          unit: item.unit || undefined,
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
@@ -491,7 +503,7 @@ export default function CreateBill() {
             </View>
           </View>
           {/* Tax Type Checkboxes Row */}
-          <View className="flex flex-row items-center mb-2" style={{ backgroundColor: 'transparent', marginBottom: 8 }}>
+          <View className="flex flex-row items-center mt-2 mb-2" style={{ backgroundColor: 'transparent', marginBottom: 8 }}>
             <TouchableOpacity
               style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}
               onPress={() => {

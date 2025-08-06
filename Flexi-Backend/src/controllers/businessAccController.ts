@@ -192,8 +192,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         price: 0,
         memberId: memberId.uniqueId,
         stock: 0,
-        businessAcc: businessAcc.id,
-        unit: "List", 
+        businessAcc: businessAcc.id        
         },
       });
       console.log("product created", product);
@@ -212,7 +211,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
      const store = await prisma.store.create({
        data: {
          accName: name,
-         platform: "Affiliate",
+         platform: name as any as import("../generated/client1").IncomeChannel,
          memberId: memberId.uniqueId,
           businessAcc: businessAcc.id,
         },

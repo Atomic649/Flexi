@@ -40,7 +40,7 @@ const Dropdown = ({
         }}
       >
         <CustomText
-          className="font-psemibold text-lg"
+          className="font-psemibold text-lg  pt-1"
           style={{ color: selectedValue ? textcolor : placeholderColor }}
         >
           {selectedValue || placeholder}

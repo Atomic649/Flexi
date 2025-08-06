@@ -392,8 +392,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="billing-section">
               <h3>${t("print.billedTo")}</h3>
               <p class="customer-name">${invoice.cName} ${invoice.cLastName}</p>
-              <p>${invoice.cPhone || t("print.phoneNotProvided")}</p>
+              ${invoice.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${invoice.cTaxId}</p>` : ""}
+              ${invoice.cPhone && invoice.cPhone !== "0000000000" ? `<p>${invoice.cPhone}</p>` : ""}
               <p>${invoice.cAddress || t("print.addressNotProvided")}</p>
+              
               <p>${invoice.cProvince || ""} ${invoice.cPostId || ""}</p>
             </div>
             
