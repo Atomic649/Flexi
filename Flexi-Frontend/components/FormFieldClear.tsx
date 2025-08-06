@@ -48,7 +48,7 @@ const FormField = ({
           borderColor: borderColor? borderColor : "transparent",
           borderWidth: borderColor ? 0.5 : 0,          
           height: boxheight ? boxheight : 50,
-          opacity: editable ? 0.8 : 0.5,
+          opacity: editable ? 0.8 : 0.6,
         }}
       >
         <TextInput

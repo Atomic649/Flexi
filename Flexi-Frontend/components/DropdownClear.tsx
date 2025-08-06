@@ -36,7 +36,7 @@ const Dropdown = ({
           backgroundColor: "transparent",
           borderColor: borderColor ? borderColor : "transparent",
           borderWidth: borderColor ? 0.5 : 0,
-          opacity: disabled ? 0.5 : 0.8,
+          opacity: disabled ? 0.7 : 0.8,
         }}
       >
         <CustomText

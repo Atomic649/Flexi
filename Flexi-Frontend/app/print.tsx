@@ -767,7 +767,7 @@ export default function Print() {
         key={invoice.id}
         className={`p-4 mb-3 rounded-lg border ${
           theme === "dark"
-            ? "border-gray-700 bg-zinc-800"
+            ? "border-zinc-700 bg-transparent"
             : "border-gray-200 bg-white"
         }`}
         onPress={() => viewInvoiceDetails(invoice)}
@@ -1009,12 +1009,12 @@ export default function Print() {
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {(item.unitPrice)}
+                          {item.unitPrice}
                         </CustomText>
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {(item.unitPrice * item.quantity)}
+                          {item.unitPrice * item.quantity}
                         </CustomText>
                       </View>
                     ))
@@ -1207,15 +1207,23 @@ export default function Print() {
           {/* Tabs */}
           <View className="flex-row mb-6">
             <TouchableOpacity
-              className={`p-3 px-6 rounded-t-lg ${
-                activeTab === TAB_INDICES.MONTHLY_REPORT
-                  ? theme === "dark"
-                    ? "bg-zinc-800 border-b-2 border-teal-400"
-                    : "bg-white border-b-2 border-teal-400"
-                  : theme === "dark"
-                  ? "bg-zinc-700"
-                  : "bg-gray-200"
-              }`}
+              className="p-3 px-6 rounded-t-lg"
+              style={{
+                backgroundColor:
+                  activeTab === TAB_INDICES.MONTHLY_REPORT
+                    ? theme === "dark"
+                      ? "transparent"
+                      : "#ffffff"
+                    : theme === "dark"
+                    ? "#212121"
+                    : "#e7e7e7",
+                borderBottomWidth:
+                  activeTab === TAB_INDICES.MONTHLY_REPORT ? 2 : 0,
+                borderBottomColor:
+                  activeTab === TAB_INDICES.MONTHLY_REPORT
+                    ? "#0feac2"
+                    : "transparent",
+              }}
               onPress={() => {
                 setActiveTab(TAB_INDICES.MONTHLY_REPORT);
                 // Automatically fetch the current month's data when switching to Monthly Report tab
@@ -1234,15 +1242,23 @@ export default function Print() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`p-3 px-6 rounded-t-lg ${
-                activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                  ? theme === "dark"
-                    ? "bg-zinc-800 border-b-2 border-teal-400"
-                    : "bg-white border-b-2 border-teal-400"
-                  : theme === "dark"
-                  ? "bg-zinc-700"
-                  : "bg-gray-200"
-              }`}
+              className="p-3 px-6 rounded-t-lg"
+              style={{
+                backgroundColor:
+                  activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                    ? theme === "dark"
+                      ? "transparent"
+                      : "#ffffff"
+                    : theme === "dark"
+                    ? "#212121"
+                    : "#e7e7e7",
+                borderBottomWidth:
+                  activeTab === TAB_INDICES.INDIVIDUAL_INVOICE ? 2 : 0,
+                borderBottomColor:
+                  activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
+                    ? "#0feac2"
+                    : "transparent",
+              }}
               onPress={() => setActiveTab(TAB_INDICES.INDIVIDUAL_INVOICE)}
             >
               <CustomText
@@ -1261,9 +1277,7 @@ export default function Print() {
 
           {/* Content */}
           <View
-            className={`p-4 rounded-lg ${
-              theme === "dark" ? "bg-zinc-800" : "bg-white"
-            } mb-8`}
+            className={`p-4 rounded-lg bg-transparent mb-8`}
             style={{
               minHeight: 400,
             }}
@@ -1313,11 +1327,13 @@ export default function Print() {
                         } mb-4`}
                       >
                         <View
-                          className={`p-4 rounded-lg ${
-                            theme === "dark" ? "bg-zinc-700" : "bg-zinc-200"
-                          }`}
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
                         >
-                          <CustomText className="text-zinc-500 mb-1">
+                          <CustomText className=" mb-1">
                             {t("print.totalSales")}
                           </CustomText>
                           <CustomText weight="bold" className="text-xl">
@@ -1332,11 +1348,13 @@ export default function Print() {
                         } mb-4`}
                       >
                         <View
-                          className={`p-4 rounded-lg ${
-                            theme === "dark" ? "bg-zinc-700" : "bg-zinc-200"
-                          }`}
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
                         >
-                          <CustomText className="text-zinc-500 mb-1">
+                          <CustomText className=" mb-1">
                             {t("print.totalOrders")}
                           </CustomText>
                           <CustomText weight="bold" className="text-xl">
@@ -1351,11 +1369,13 @@ export default function Print() {
                         } mb-4`}
                       >
                         <View
-                          className={`p-4 rounded-lg ${
-                            theme === "dark" ? "bg-zinc-700" : "bg-zinc-200"
-                          }`}
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
                         >
-                          <CustomText className="text-zinc-500 mb-1">
+                          <CustomText className="mb-1">
                             {t("print.paidOrders")}
                           </CustomText>
                           <View className="flex-row items-center">
@@ -1386,11 +1406,13 @@ export default function Print() {
                         } mb-4`}
                       >
                         <View
-                          className={`p-4 rounded-lg ${
-                            theme === "dark" ? "bg-zinc-700" : "bg-zinc-200"
-                          }`}
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
                         >
-                          <CustomText className="text-zinc-500 mb-1">
+                          <CustomText className=" mb-1">
                             {t("print.unpaidOrders")}
                           </CustomText>
                           <View className="flex-row items-center">
@@ -1421,11 +1443,13 @@ export default function Print() {
                         } mb-4`}
                       >
                         <View
-                          className={`p-4 rounded-lg ${
-                            theme === "dark" ? "bg-zinc-700" : "bg-zinc-200"
-                          }`}
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
                         >
-                          <CustomText className="text-zinc-500 mb-1">
+                          <CustomText className=" mb-1">
                             {t("print.avgOrderValue")}
                           </CustomText>
                           <CustomText weight="bold" className="text-xl">
