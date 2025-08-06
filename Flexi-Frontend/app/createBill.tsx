@@ -198,6 +198,19 @@ export default function CreateBill() {
           selectedProduct && selectedProduct.unit
             ? selectedProduct.unit.toString()
             : "";
+        // Always clear autofill fields before applying new autofill
+        setCName("");
+        setCLastName("");
+        setCPhone("");
+        setTaxId("");
+        setCGender("");
+        setCAddress("");
+        setCProvince("");
+        setCPostId("");
+        setPayment("");
+        setCashStatus(false);
+        setTaxType("Individual");
+        setMemberId(memberId); // keep memberId for context, but reset fields
         // Auto-fill customer fields if product is Tiktok Affiliate
         if (value === "Tiktok Affiliate") {
           setCName("ติ๊กต๊อก (ไทยแลนด์) จำกัด");
@@ -211,6 +224,22 @@ export default function CreateBill() {
           setPayment("Transfer");
           setCashStatus(true);        
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
+          setMemberId(memberId);
+        
+        }
+        // Auto-fill customer fields if product is Shopee Affiliate
+        if (value === "Shopee Affiliate") {
+          setCName("บริษัท ช้อปปี้ (ประเทศไทย) จำกัด");
+          setCLastName("");
+          setCPhone("0000000000");
+          setTaxId("0105558019581");
+          setCGender("NotSpecified");
+          setCAddress("89 อาคารเอไอเอ แคปปิตอล เซ็นเตอร์ ชั้นที่ 24 ถนนรัชดาภิเษก ดินแดง");
+          setCProvince("กรุงเทพมหานคร");
+          setCPostId("10400");
+          setPayment("Transfer");
+          setCashStatus(true);        
+          setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
         }
       }

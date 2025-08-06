@@ -312,8 +312,12 @@ const ByOrder = () => {
                     >
                       {bill.product
                         ? bill.product
-                            .map(
-                              (p) => `${p.quantity} ${p.unit ? t(`product.unit.${p.unit}`) || p.unit : t("common.pcs")}`
+                            .map((p) =>
+                              p.unit
+                                ? `${p.quantity} ${t(`product.unit.${p.unit}`)}`
+                                : p.unit === "" || p.unit == null
+                                ? ""
+                                : `${p.quantity} ${t("common.pcs")}`
                             )
                             .join("\n ")
                         : ""}
@@ -391,7 +395,7 @@ const ByOrder = () => {
                   id={bill.id}
                   platform={bill.platform}
                   product={bill.product}
-                  amount={bill.amount}
+                  amount={bill.amount} 
                   cName={bill.cName}
                   cLastName={bill.cLastName}
                   total={bill.total}

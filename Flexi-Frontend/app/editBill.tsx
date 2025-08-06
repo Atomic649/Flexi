@@ -104,15 +104,16 @@ export default function EditBill() {
 
   const fieldStyles = "mt-2 mb-2";
 
+  // Tax type state
+  const [taxType, setTaxType] = useState<'Individual' | 'Juristic'>('Individual');
+
   // Fetch bill data
   useEffect(() => {
     const fetchBillData = async () => {
       if (!id) return;
-
       try {
         setIsLoading(true);
         const billData = await CallAPIBill.getBillByIdAPI(Number(id));
-
         setCName(billData.cName);
         setCLastName(billData.cLastName);
         setCPhone(billData.cPhone);
@@ -124,6 +125,13 @@ export default function EditBill() {
         setCashStatus(billData.cashStatus);
         setStoreId(billData.storeId);
         setImage(billData.image);
+        setCTaxId(billData.cTaxId);
+        // Set taxType based on fields
+        if (billData.cTaxId && billData.cTaxId.length > 0) {
+          setTaxType('Juristic');
+        } else {
+          setTaxType('Individual');
+        }
         // Set productItems from billData.product (array of items)
         if (billData.product && Array.isArray(billData.product) && billData.product.length > 0) {
           setProductItems(
@@ -210,7 +218,6 @@ export default function EditBill() {
   ) => {
     setProductItems((prev) => {
       const updated = [...prev];
-      // Always ensure unit exists
       updated[index] = { ...updated[index], [field]: value };
       // If product is changed, auto-fill price and unit
       if (field === "product") {
@@ -223,6 +230,21 @@ export default function EditBill() {
           selectedProduct && selectedProduct.unit
             ? selectedProduct.unit.toString()
             : "";
+        // Auto-fill customer fields if product is Tiktok Affiliate
+        if (value === "Tiktok Affiliate") {
+          setCName("ติ๊กต๊อก (ไทยแลนด์) จำกัด");
+          setCLastName("");
+          setCPhone("0000000000");
+          setCTaxId("0105562003561");
+          setCGender("NotSpecified");
+          setCAddress("เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง");
+          setCProvince("กรุงเทพมหานคร");
+          setCPostId("10310");
+          setPayment("Transfer");
+          setCashStatus(true);
+          setStoreId(0); // Set to 0 for Tiktok Affiliate
+          setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
+        }
       }
       return updated;
     });
@@ -244,7 +266,7 @@ export default function EditBill() {
     // Check if all required fields are filled and create array of missing fields
     const missingFields = [];
     if (!cName) missingFields.push(t("bill.customerName"));
-    if (!cLastName) missingFields.push(t("bill.customerLastName"));
+    //if (!cLastName) missingFields.push(t("bill.customerLastName"));
     if (!cPhone) missingFields.push(t("bill.customerPhone"));
     if (!cGender) missingFields.push(t("bill.customerGender"));
     if (!cAddress) missingFields.push(t("bill.customerAddress"));
@@ -476,7 +498,7 @@ export default function EditBill() {
             </View>
           </View>
           <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
+            <View className={taxType === 'Juristic' ? 'w-full' : 'w-1/2 pr-2'}>
               <FormFieldClear
                 title={t("bill.customerName")}
                 value={cName}
@@ -490,35 +512,39 @@ export default function EditBill() {
               />
             </View>
             <View className="w-1/2 pr-2">
-              <FormFieldClear
-                title={t("bill.customerLastName")}
-                value={cLastName}
-                handleChangeText={setCLastName}
-                placeholder={t("bill.enterLastName")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                editable={isEditMode}
-              />
+              {taxType !== 'Juristic' && (
+                <FormFieldClear
+                  title={t("bill.customerLastName")}
+                  value={cLastName}
+                  handleChangeText={setCLastName}
+                  placeholder={t("bill.enterLastName")}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles={fieldStyles}
+                  editable={isEditMode}
+                />
+              )}
             </View>
           </View>
-          <FormFieldClear
-            title={t("bill.customerTaxId")}
-            value={cTaxId}
-            handleChangeText={setCTaxId}
-            placeholder={t("bill.enterTaxId")}
-            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-            keyboardType="numeric"
-            maxLength={13}
-            editable={isEditMode}
-          />
+          {taxType === 'Juristic' && (
+            <FormFieldClear
+              title={t("bill.customerTaxId")}
+              value={cTaxId}
+              handleChangeText={setCTaxId}
+              placeholder={t("bill.enterTaxId")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              keyboardType="numeric"
+              maxLength={13}
+              editable={isEditMode}
+            />
+          )}
 
           <View className="flex flex-row justify-between">
-            <View className="w-2/3 pr-2">
+            <View className={taxType === 'Juristic' ? 'w-full' : 'w-1/2 pr-2'}>
               <FormFieldClear
                 title={t("bill.customerPhone")}
                 value={cPhone}
@@ -530,32 +556,30 @@ export default function EditBill() {
                 otherStyles={fieldStyles}
                 keyboardType="numeric"
                 maxLength={10}
-                icons={"call"} // Use the phone icon from constants
-                handlePress={() => {
-                  Linking.openURL(`tel:${cPhone}`); // Open phone dialer with the number
-                }}
                 editable={isEditMode}
               />
             </View>
-            <View className="w-1/3 pr-2">
-              <DropdownClear
-                title={t("bill.customerGender")}
-                options={[
-                  { label: t("bill.gender.male"), value: "Male" },
-                  { label: t("bill.gender.female"), value: "Female" },
-                  { label: t("bill.gender.notSpecified"), value: "NotSpecified" },
-                ]}
-                placeholder={t("bill.selectGender")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
-                onValueChange={setCGender}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-                disabled={!isEditMode}
-              />
-            </View>
+            {taxType === 'Individual' && (
+              <View className="w-1/2 pr-2">
+                <DropdownClear
+                  title={t("bill.customerGender")}
+                  options={[
+                    { label: t("bill.gender.male"), value: "Male" },
+                    { label: t("bill.gender.female"), value: "Female" },
+                    { label: t("bill.gender.notSpecified"), value: "NotSpecified" },
+                  ]}
+                  placeholder={t("bill.selectGender")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
+                  onValueChange={setCGender}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
+                  disabled={!isEditMode}
+                />
+              </View>
+            )}
           </View>
 
           <FormFieldClear
@@ -575,7 +599,7 @@ export default function EditBill() {
           />
 
           <View className="flex flex-row justify-between">
-            <View className="w-2/3 pr-2">
+            <View className="w-1/2 pr-2">
               <FormFieldClear
                 title={t("bill.customerProvince")}
                 value={cProvince}
@@ -588,7 +612,7 @@ export default function EditBill() {
                 editable={isEditMode}
               />
             </View>
-            <View className="w-1/3 pr-2">
+            <View className="w-1/2 pr-2">
               <FormFieldClear
                 title={t("bill.customerPostal")}
                 value={cPostId}

@@ -203,10 +203,9 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
    // create store if businessType is "Influencer"
    if (businessAccInput.businessType === "Influencer") {
       const defaultProducts = [
-      "Tiktok Affiliate",
-      "Shopee Affiliate",
-      "Clip",
-      "Live"
+      "Tiktok",
+      "Shopee",
+    
       ];
 
       for (const name of defaultProducts) {
