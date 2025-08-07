@@ -432,6 +432,7 @@ export default function TaxDoc() {
               <View
                 style={{
                   width: `${scoreExpense}%`, // Adjust width based on score
+                  maxWidth: "100%",
                   height: 16, // Adjust height to fit content
                   justifyContent: "center",
                   alignItems: "flex-start",

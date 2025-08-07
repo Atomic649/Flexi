@@ -25,6 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/FormFieldClear";
+import icons from "@/constants/icons";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -546,17 +547,23 @@ export default function EditBill() {
           <View className="flex flex-row justify-between">
             <View className={taxType === 'Juristic' ? 'w-full' : 'w-1/2 pr-2'}>
               <FormFieldClear
-                title={t("bill.customerPhone")}
-                value={cPhone}
-                handleChangeText={setCPhone}
-                placeholder="0812345678"
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                keyboardType="numeric"
-                maxLength={10}
-                editable={isEditMode}
+              title={t("bill.customerPhone")}
+              value={cPhone}
+              icons={"call"}
+              handleChangeText={setCPhone}
+              handlePress={() => {
+                if (cPhone && cPhone.length === 10) {
+                Linking.openURL(`tel:${cPhone}`);
+                }
+              }}
+              placeholder="0812345678"
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              keyboardType="numeric"
+              maxLength={10}
+              editable={isEditMode}
               />
             </View>
             {taxType === 'Individual' && (
@@ -721,7 +728,7 @@ export default function EditBill() {
           )}
 
           <View className="flex flex-row justify-between">
-            <View className="w-2/3 pr-2">
+            <View className="w-1/2 pr-2">
               <DropdownClear
                 title={t("bill.paymentMethod")}
                 options={[
@@ -743,7 +750,7 @@ export default function EditBill() {
                 disabled={!isEditMode}
               />
             </View>
-            <View className="w-1/3 pr-2">
+            <View className="w-1/2 pr-2">
               <DropdownClear
                 title={t("bill.paymentStatus")}
                 options={[
@@ -828,7 +835,14 @@ export default function EditBill() {
           </View>
 
           {/* Edit mode toggle button */}
-          <View className="absolute top-0 right-0">
+          <View 
+          style={{
+            position: "absolute",
+            top: -10,
+            right: 2,
+            zIndex: 1000,
+      
+          }}>
             <TouchableOpacity
               onPress={() => setIsEditMode((prev) => !prev)}
               style={{
@@ -855,17 +869,7 @@ export default function EditBill() {
                 color="#404040"
                 style={{ marginRight: 5 }}
               />
-              {/* <CustomText
-                className="text-bas"
-                style={{
-                  color: "#404040",
-                  fontWeight: "bold",
-                }}
-              >
-                {isEditMode
-                  ? t("common.editMode")
-                  : t("common.readOnly")}
-              </CustomText> */}
+              
             </TouchableOpacity>
           </View>
         </View>

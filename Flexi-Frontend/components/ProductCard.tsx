@@ -1,11 +1,18 @@
-import { View, Text, Image, TouchableOpacity, useWindowDimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  useWindowDimensions,
+  Pressable,
+} from "react-native";
 import React, { useState } from "react";
-import { icons } from "@/constants";
 import { router } from "expo-router";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import CustomAlert from "@/components/CustomAlert";
 import { useTranslation } from "react-i18next";
+import { CustomText } from "./CustomText";
 
 export default function ProductCard({
   id,
@@ -21,7 +28,7 @@ export default function ProductCard({
   const isSmallScreen = width < 380;
   const isWebLarge = width > 768;
   const { t } = useTranslation();
-  
+
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -38,14 +45,15 @@ export default function ProductCard({
     message: "",
     buttons: [],
   });
-  
+
   const handleDelete = () => {
     setAlertConfig({
       visible: true,
       title: t("product.deleteAlert.title") || "Delete Product",
-      message: t("product.deleteAlert.message") || "Are you sure you want to delete this product?",
+      message:
+        t("product.deleteAlert.message") ||
+        "Are you sure you want to delete this product?",
       buttons: [
-       
         {
           text: t("common.delete") || "Delete",
           style: "destructive",
@@ -57,7 +65,8 @@ export default function ProductCard({
         {
           text: t("common.cancel") || "Cancel",
           style: "cancel",
-          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          onPress: () =>
+            setAlertConfig((prev) => ({ ...prev, visible: false })),
         },
       ],
     });
@@ -75,10 +84,35 @@ export default function ProductCard({
   return (
     <>
       <Swipeable renderRightActions={renderRightActions}>
-        <View className="flex-1 flex-col items-center px-2 sm:px-4 my-2">
+        <View
+        className="p-2"
+        >
+        <Pressable
+          android_ripple={{ color: "#e0f7fa" }}
+          style={({ pressed }) => [
+            {
+              opacity: pressed ? 0.85 : 1,
+            },
+            // Tailwind classes
+            {
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              paddingHorizontal: isSmallScreen ? 8 : 16,             
+              marginVertical: 8,
+            },
+          ]}
+          onPress={() => {
+            router.push(`/editproduct?id=${id}`);
+          }}
+        >
           <View className="flex flex-row gap-2 sm:gap-3 items-start w-full">
             <View className="flex justify-center items-center flex-row flex-1">
-              <View className={`${isSmallScreen ? 'w-[70px] h-[70px]' : 'w-[90px] h-[90px]'} rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}>
+              <View
+                className={`${
+                  isSmallScreen ? "w-[70px] h-[70px]" : "w-[90px] h-[90px]"
+                } rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}
+              >
                 <Image
                   source={{ uri: productimage }}
                   className="w-full h-full rounded-lg"
@@ -86,49 +120,40 @@ export default function ProductCard({
                 />
               </View>
 
-              <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1">
-                <Text
-                  className={`font-psemibold ${isSmallScreen ? 'text-base' : 'text-lg'} text-zinc-500`}
+              <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1 px-2">
+                <CustomText
+                  className={`font-psemibold ${
+                    isSmallScreen ? "text-base" : "text-lg"
+                  }`}
+                  style={{ color: "#71717a" }}
                   numberOfLines={2}
                 >
                   {productname}
-                </Text>
+                </CustomText>
                 <Text
-                  className={`${isSmallScreen ? 'text-lg' : 'text-xl'} text-zinc-500 font-pregular`}
+                  className={`${
+                    isSmallScreen ? "text-lg" : "text-xl"
+                  } text-zinc-500 font-bold`}
                   numberOfLines={1}
                 >
                   {productprice}
                 </Text>
 
-                {producttype === "product" && (
+                {producttype === "Product" && (
                   <Text
                     className="text-sm text-zinc-500 font-pregular"
                     numberOfLines={1}
                   >
-                    Stock: {productstock} {unit ? `${unit}` : ''}
+                    Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
                   </Text>
                 )}
               </View>
             </View>
-
-            <View className="p-2 ">
-              <TouchableOpacity 
-                className="p-1"
-                onPress={() => {
-                  router.push(`/editproduct?id=${id}`);
-                }}
-              >
-                <Ionicons
-                  name="create-outline"
-                  size={24}
-                  color="#7c7d7d"
-                />
-              </TouchableOpacity>
-            </View>
           </View>
+        </Pressable>
         </View>
       </Swipeable>
-      
+
       <CustomAlert
         visible={alertConfig.visible}
         title={alertConfig.title}

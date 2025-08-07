@@ -97,7 +97,7 @@ export default function CreateBill() {
 
   useEffect(() => {
     const fetchMemberId = async () => {
-      const uniqueId = await getMemberId();      
+      const uniqueId = await getMemberId();
       const businessId = await getBusinessId();
 
       setMemberId(uniqueId);
@@ -109,10 +109,11 @@ export default function CreateBill() {
         try {
           const storesData = await CallAPIStore.getStoresAPI(uniqueId);
           setStores(storesData);
-          if (storesData.length > 0) {
-            setStoreId(storesData[0].id);
-            console.log("Store ID set to:", storesData[0].id);
-          }
+          // Do NOT auto-select the first store
+          // if (storesData.length > 0) {
+          //   setStoreId(storesData[0].id);
+          //   console.log("Store ID set to:", storesData[0].id);
+          // }
         } catch (error) {
           console.error("Failed to fetch stores:", error);
         }
@@ -198,20 +199,7 @@ export default function CreateBill() {
           selectedProduct && selectedProduct.unit
             ? selectedProduct.unit.toString()
             : "";
-        // Always clear autofill fields before applying new autofill
-        setCName("");
-        setCLastName("");
-        setCPhone("");
-        setTaxId("");
-        setCGender("");
-        setCAddress("");
-        setCProvince("");
-        setCPostId("");
-        setPayment("");
-        setCashStatus(false);
-        setTaxType("Individual");
-        setMemberId(memberId); // keep memberId for context, but reset fields
-        setStoreId(0); // Reset storeId to 0
+
         // Auto-fill customer fields if product is Tiktok Affiliate
         if (value === "Tiktok Affiliate") {
           setCName("บริษัท ติ๊กต๊อก (ไทยแลนด์) จำกัด");
@@ -219,15 +207,19 @@ export default function CreateBill() {
           setCPhone("0000000000");
           setTaxId("0105562003561");
           setCGender("NotSpecified");
-          setCAddress("เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง");
+          setCAddress(
+            "เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง"
+          );
           setCProvince("กรุงเทพมหานคร");
           setCPostId("10310");
           setPayment("Transfer");
-          setCashStatus(true);        
+          setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
           // Set storeId to the store with name "Tiktok Affiliate" if it exists
-          const tiktokStore = stores.find((store) => store.accName === "Tiktok");
+          const tiktokStore = stores.find(
+            (store) => store.accName === "Tiktok"
+          );
           if (tiktokStore) {
             setStoreId(tiktokStore.id);
             console.log("Store ID set to:", tiktokStore.id);
@@ -240,15 +232,19 @@ export default function CreateBill() {
           setCPhone("0000000000");
           setTaxId("0105558019581");
           setCGender("NotSpecified");
-          setCAddress("89 อาคารเอไอเอ แคปปิตอล เซ็นเตอร์ ชั้นที่ 24 ถนนรัชดาภิเษก ดินแดง");
+          setCAddress(
+            "89 อาคารเอไอเอ แคปปิตอล เซ็นเตอร์ ชั้นที่ 24 ถนนรัชดาภิเษก ดินแดง"
+          );
           setCProvince("กรุงเทพมหานคร");
           setCPostId("10400");
           setPayment("Transfer");
-          setCashStatus(true);        
+          setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
           // Set storeId to the store with name "Shopee Affiliate" if it exists
-          const shopeeStore = stores.find((store) => store.accName === "Shopee");
+          const shopeeStore = stores.find(
+            (store) => store.accName === "Shopee"
+          );
           if (shopeeStore) {
             setStoreId(shopeeStore.id);
             console.log("Store ID set to:", shopeeStore.id);
@@ -409,6 +405,23 @@ export default function CreateBill() {
     setCalendarVisible(false);
   }; // force to chose only one date
 
+  // Clear all customer and bill fields
+  const handleClearFields = () => {
+    setCName("");
+    setCLastName("");
+    setCPhone("");
+    setTaxId("");
+    setCGender("");
+    setCAddress("");
+    setCProvince("");
+    setCPostId("");
+    setPayment("");
+    setCashStatus(false);
+    setTaxType("Individual");
+    setMemberId(memberId); // keep memberId for context, but reset fields
+    setStoreId(0); // Reset storeId to 0
+  };
+
   return (
     <SafeAreaView
       className={`flex-1 ${useBackgroundColorClass()}`}
@@ -457,6 +470,24 @@ export default function CreateBill() {
             alignSelf: Platform.OS === "web" ? "center" : "auto",
           }}
         >
+          {/* Clear Button in Top Right */}
+          <View style={{ position: "absolute", top: 0, right: 0, zIndex: 10 }}>
+            <TouchableOpacity
+              style={{ flexDirection: "row", alignItems: "center" ,paddingHorizontal: 10}}
+              onPress={handleClearFields}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >        
+              <CustomText
+                weight="bold"
+                style={{
+                  color: theme === "dark" ? "#03dbc1": "#03dbc1",
+                  fontSize: 18,
+                  paddingHorizontal: 10,
+                }}
+              >{t("bill.clearFields")}</CustomText>
+            </TouchableOpacity>
+          </View>
+
           <View className="flex flex-row justify-between items-center">
             <View className="w-1/2 pr-2">
               {stores.length > 0 ? (
@@ -464,13 +495,14 @@ export default function CreateBill() {
                   title={t("bill.store")}
                   options={stores.map((store) => ({
                     label: store.accName,
-                    value: store.id.toString(),
+                    value: store.id.toString()
                   }))}
                   placeholder={t("bill.selectStore")}
                   placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   selectedValue={
-                    stores.find((store) => store.id === storeId)?.accName ||
-                    t("bill.selectStore")
+                    storeId
+                      ? stores.find((store) => store.id === storeId)?.accName || ""
+                      : ""
                   }
                   onValueChange={(value: any) => setStoreId(Number(value))}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -503,39 +535,56 @@ export default function CreateBill() {
             </View>
           </View>
           {/* Tax Type Checkboxes Row */}
-          <View className="flex flex-row items-center mt-2 mb-2" style={{ backgroundColor: 'transparent', marginBottom: 8 }}>
+          <View
+            className="flex flex-row items-center mt-2 mb-2"
+            style={{ backgroundColor: "transparent", marginBottom: 8 }}
+          >
             <TouchableOpacity
-              style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 20,
+              }}
               onPress={() => {
-                setTaxType('Individual');
-                setCGender(''); // Allow gender selection
+                setTaxType("Individual");
+                setCGender(""); // Allow gender selection
               }}
             >
               <Ionicons
-                name={taxType === 'Individual' ? 'checkbox' : 'square-outline'}
+                name={taxType === "Individual" ? "checkbox" : "square-outline"}
                 size={22}
-                color={theme === 'dark' ? '#b1b1b1' : '#606060'}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
               />
-              <CustomText className="ml-2" style={{ color: theme === 'dark' ? '#b1b1b1' : '#606060' }}>{t('auth.businessRegister.taxTypeOption.Individual')}</CustomText>
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                {t("auth.businessRegister.taxTypeOption.Individual")}
+              </CustomText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ flexDirection: 'row', alignItems: 'center' }}
+              style={{ flexDirection: "row", alignItems: "center" }}
               onPress={() => {
-                setTaxType('Juristic');
-                setCGender('NotSpecified'); // Always set gender to NotSpecified
+                setTaxType("Juristic");
+                setCGender("NotSpecified"); // Always set gender to NotSpecified
               }}
             >
               <Ionicons
-                name={taxType === 'Juristic' ? 'checkbox' : 'square-outline'}
+                name={taxType === "Juristic" ? "checkbox" : "square-outline"}
                 size={22}
-                color={theme === 'dark' ? '#b1b1b1' : '#606060'}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
               />
-              <CustomText className="ml-2" style={{ color: theme === 'dark' ? '#b1b1b1' : '#606060' }}>{t('auth.businessRegister.taxTypeOption.Juristic')}</CustomText>
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                {t("auth.businessRegister.taxTypeOption.Juristic")}
+              </CustomText>
             </TouchableOpacity>
           </View>
 
           <View className="flex flex-row justify-between">
-            <View className={taxType === 'Juristic' ? 'w-full' : 'w-1/2 pr-2'}>
+            <View className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}>
               <FormFieldClear
                 title={t("bill.customerName")}
                 value={cName}
@@ -547,7 +596,7 @@ export default function CreateBill() {
                 otherStyles={fieldStyles}
               />
             </View>
-            {taxType !== 'Juristic' && (
+            {taxType !== "Juristic" && (
               <View className="w-1/2 pr-2">
                 <FormFieldClear
                   title={t("bill.customerLastName")}
@@ -555,14 +604,16 @@ export default function CreateBill() {
                   handleChangeText={setCLastName}
                   placeholder={t("bill.enterLastName")}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles={fieldStyles}
                 />
               </View>
             )}
           </View>
-          {taxType === 'Juristic' && (
+          {taxType === "Juristic" && (
             <FormFieldClear
               title={t("bill.customerTaxId")}
               value={cTaxId}
@@ -577,7 +628,7 @@ export default function CreateBill() {
             />
           )}
           <View className="flex flex-row justify-between">
-            <View className={taxType === 'Juristic' ? 'w-full' : 'w-1/2 pr-2'}>
+            <View className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}>
               <FormFieldClear
                 title={t("bill.customerPhone")}
                 value={cPhone}
@@ -591,18 +642,23 @@ export default function CreateBill() {
                 maxLength={10}
               />
             </View>
-            {taxType === 'Individual' && (
+            {taxType === "Individual" && (
               <View className="w-1/2 pr-2">
                 <DropdownClear
                   title={t("bill.customerGender")}
                   options={[
                     { label: t("bill.gender.male"), value: "Male" },
                     { label: t("bill.gender.female"), value: "Female" },
-                    { label: t("bill.gender.notSpecified"), value: "NotSpecified" },
+                    {
+                      label: t("bill.gender.notSpecified"),
+                      value: "NotSpecified",
+                    },
                   ]}
                   placeholder={t("bill.selectGender")}
                   placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""}
+                  selectedValue={
+                    cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
+                  }
                   onValueChange={(value: string) => setCGender(value)}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
@@ -623,11 +679,10 @@ export default function CreateBill() {
             placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             otherStyles={fieldStyles}
-             maxLength={200}
+            maxLength={200}
             multiline={true}
             numberOfLines={4}
             boxheight={110}
-         
           />
           <View className="flex flex-row justify-between">
             <View className="w-1/2 pr-2">
@@ -647,7 +702,7 @@ export default function CreateBill() {
                 title={t("bill.customerPostal")}
                 value={cPostId}
                 handleChangeText={setCPostId}
-                placeholder={t("bill.enterPostal")}
+                placeholder={t("bill.customerPostal")}
                 borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
@@ -746,7 +801,7 @@ export default function CreateBill() {
             </TouchableOpacity>
           </View>
           <View className="flex flex-row justify-between">
-            <View className="w-2/3 pr-2">
+            <View className="w-1/2 pr-2">
               <DropdownClear
                 title={t("bill.paymentMethod")}
                 options={[
@@ -767,7 +822,7 @@ export default function CreateBill() {
                 otherStyles="mt-2 mb-2"
               />
             </View>
-            <View className="w-1/3 pr-2">
+            <View className="w-1/2 pr-2">
               <DropdownClear
                 title={t("bill.paymentStatus")}
                 options={[

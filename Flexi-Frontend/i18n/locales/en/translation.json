@@ -121,8 +121,8 @@
         "Juristic": "Juristic"
       },
       "chooseBusinessType": "Select Business Type",
-      "businessPhone":" Business Phone Number",
-      "vatRegistered":" Vat Registered",
+      "businessPhone": " Business Phone Number",
+      "vatRegistered": " Vat Registered",
       "noVatRegistered": " No Vat Registered",
       "businessTypeOption": {
         "": "Select Business Type",
@@ -1145,8 +1145,12 @@
     "customerGender": "Gender",
     "gender": {
       "male": "Male",
-      "female": "Female"
+      "female": "Female",
+      "notSpecified": "Not Specified"
     },
+    "clearFields": "CLEAR",
+    "customerTaxId": "Tax ID",
+    "enterTaxId": "Enter Tax ID",
     "addProductItem": "Add Product",
     "selectGender": "Select gender",
     "selectProduct": "Select product",
@@ -1186,7 +1190,11 @@
       "ok": "OK",
       "success": "Success",
       "successTitle": "Bill Created Successfully",
-      "successMessage": "Please press OK to proceed"
+      "successMessage": "Please press OK to proceed",
+      "deleteTitle": "Delete Bill",
+      "deleteMessage": "Are you sure you want to delete this bill?",
+      "deleteSuccess": "Bill deleted successfully",
+      "deleteError": "Error deleting bill"
     },
     "validation": {
       "incomplete": "Incomplete Data",
@@ -1355,10 +1363,10 @@
     "companyInformation": "Company Information",
     "storeInformation": "Store Information",
     "paymentDetails": "Payment Details",
-    "original" : "Original",
+    "original": "Original",
     "no": "No.",
     "contact": "Contact Info",
-    "productDetails" : "Product Details"
+    "productDetails": "Product Details"
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",
@@ -1382,7 +1390,7 @@
     "monthly": "Monthly",
     "yearly": "Yearly",
     "reduction": "(Reduction +",
-    "reduct":"Reduction",
+    "reduct": "Reduction",
     "reductMax": "Actual",
     "addMoreCar": "Add More Cars",
     "yearIncome": "Annual Income -",
@@ -1390,7 +1398,7 @@
     "taxableIncome": "= Net Income",
     "carRentalMaxAlert": "The Revenue Department allows a maximum expense deduction of 36,000 THB per month per car.",
     "individualTax": "Individual Tax"
-    },
+  },
   "Individual": "Individual",
   "Juristic": "Company"
 }

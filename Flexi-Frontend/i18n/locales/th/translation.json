@@ -1143,8 +1143,12 @@
     "customerGender": "เพศ",
     "gender": {
       "male": "ชาย",
-      "female": "หญิง"
+      "female": "หญิง",
+      "notSpecified": "ไม่ระบุ"
     },
+    "clearFields": "CLEAR",
+    "customerTaxId": "เลขประจำตัวผู้เสียภาษี",
+    "enterTaxId": "กรอกเลขประจำตัวผู้เสียภาษีลูกค้า",
     "addProductItem": "เพิ่มสินค้า",
     "selectGender": "เลือกเพศ",
     "selectProduct": "เลือกสินค้า",
@@ -1155,7 +1159,7 @@
     "enterProvince": "กรอกจังหวัด",
     "orderInfo": "ข้อมูลการสั่งซื้อ",
     "purchaseDate": "วันที่ซื้อ",
-    "productName": "ชื่อสินค้า",
+    "productName": "ชื่อสินค้าลูกค้า",
     "enterProductName": "กรอกชื่อสินค้า",
     "amount": "จำนวน",
     "price": "ราคา",
@@ -1175,8 +1179,8 @@
       "unpaid": "ยังไม่ชำระ"
     },
     "selectStatus": "เลือกสถานะ",
-    "store": "ร้านค้า",
-    "selectStore": "เลือกร้านค้า",
+    "store": "แพลตฟอร์ม",
+    "selectStore": "เลือกแพลตฟอร์ม",
     "createButton": "สร้างใบเสร็จ",
     "updateButton": "อัพเดทใบเสร็จ",
     "alerts": {
@@ -1184,7 +1188,11 @@
       "ok": "ตกลง",
       "success": "สำเร็จ",
       "successTitle": "สร้างใบเสร็จสำเร็จ",
-      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+      "deleteTitle": "ลบใบเสร็จ",
+      "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบใบเสร็จนี้?",
+      "deleteSuccess": "ลบใบเสร็จสำเร็จ",
+      "deleteError": "ไม่สามารถลบใบเสร็จได้" 
     },
     "validation": {
       "incomplete": "ข้อมูลไม่ครบถ้วน",
