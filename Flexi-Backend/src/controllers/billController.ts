@@ -459,15 +459,7 @@ const getthisYearSales = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No sales found for this year" });
     }
     sales._sum.total = Number(sales._sum.total);
-    // Convert to millions or thousands
-    let anualSalesM: string;
-    if (sales._sum.total >= 1000000) {
-      anualSalesM = (sales._sum.total / 1000000).toFixed(1) + "M";
-    } else if (sales._sum.total >= 1000) {
-      anualSalesM = (sales._sum.total / 1000).toFixed(0) + "K";
-    } else {
-      anualSalesM = sales._sum.total.toString();
-    }
+    const anualSalesM = sales._sum.total.toFixed(2); // Format to 2 decimal places
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Sales API:", anualSalesM);
     res.json({

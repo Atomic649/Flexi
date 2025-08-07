@@ -22,10 +22,10 @@ import TaxBracketStairs3D from "../TaxBracketStairs3D";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIExpense from "@/api/expense_api";
 
-
 const commonTextInputStyle: TextStyle = {
   color: "#5e5e5e",
-  fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
+  fontFamily:
+    i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
   textAlign: "right",
   borderWidth: 1,
   borderColor: "#ededed",
@@ -33,9 +33,7 @@ const commonTextInputStyle: TextStyle = {
   paddingHorizontal: 4,
   height: 32,
   backgroundColor: "#f9f9f9",
-  
 };
-
 
 //------------ Tax brackets for progressive tax calculation--------------------
 interface TaxBracket {
@@ -46,33 +44,34 @@ interface TaxBracket {
 }
 
 const taxBrackets: TaxBracket[] = [
-  { min: 0,          max: 150000,   rate: 0,    cumulativeTax: 0 },
-  { min: 150000,     max: 300000,   rate: 0.05, cumulativeTax: 0 }, // ภาษีสะสมก่อนหน้านี้คือ 0
-  { min: 300000,     max: 500000,   rate: 0.10, cumulativeTax: 7500 }, // ภาษีสะสมก่อนหน้านี้คือ 7500
-  { min: 500000,     max: 750000,   rate: 0.15, cumulativeTax: 27500 }, // ภาษีสะสมก่อนหน้านี้คือ 27500
-  { min: 750000,     max: 1000000,  rate: 0.20, cumulativeTax: 65000 },
-  { min: 1000000,    max: 2000000,  rate: 0.25, cumulativeTax: 115000 },
-  { min: 2000000,    max: 5000000,  rate: 0.30, cumulativeTax: 365000 },
-  { min: 5000000,    rate: 0.35,    cumulativeTax: 1265000 }
+  { min: 0, max: 150000, rate: 0, cumulativeTax: 0 },
+  { min: 150000, max: 300000, rate: 0.05, cumulativeTax: 0 }, // ภาษีสะสมก่อนหน้านี้คือ 0
+  { min: 300000, max: 500000, rate: 0.1, cumulativeTax: 7500 }, // ภาษีสะสมก่อนหน้านี้คือ 7500
+  { min: 500000, max: 750000, rate: 0.15, cumulativeTax: 27500 }, // ภาษีสะสมก่อนหน้านี้คือ 27500
+  { min: 750000, max: 1000000, rate: 0.2, cumulativeTax: 65000 },
+  { min: 1000000, max: 2000000, rate: 0.25, cumulativeTax: 115000 },
+  { min: 2000000, max: 5000000, rate: 0.3, cumulativeTax: 365000 },
+  { min: 5000000, rate: 0.35, cumulativeTax: 1265000 },
 ];
 
 function calculateTax(taxableIncome: number): number {
   // ค้นหา bracket ที่ถูกต้อง
   // ใช้ >= b.min และ <= b.max เพื่อครอบคลุมขอบเขตทั้งหมด
-  const bracket = taxBrackets.find(b =>
-    taxableIncome > b.min && // รายได้ต้องมากกว่าจุดเริ่มต้นของขั้น (เพราะ min คือจุดเริ่มต้นของช่วงนั้นๆ)
-    (b.max === undefined || taxableIncome <= b.max) // และน้อยกว่าหรือเท่ากับจุดสิ้นสุดของขั้นนั้นๆ
+  const bracket = taxBrackets.find(
+    (b) =>
+      taxableIncome > b.min && // รายได้ต้องมากกว่าจุดเริ่มต้นของขั้น (เพราะ min คือจุดเริ่มต้นของช่วงนั้นๆ)
+      (b.max === undefined || taxableIncome <= b.max) // และน้อยกว่าหรือเท่ากับจุดสิ้นสุดของขั้นนั้นๆ
   );
 
   // ถ้าไม่เจอ bracket (เช่น taxableIncome เป็น 0 หรือติดลบ)
   if (!bracket) {
     // กรณี taxableIncome เป็น 0 หรือน้อยกว่า 0
     if (taxableIncome <= taxBrackets[0].min) {
-        return 0; // รายได้อยู่ในขั้น 0%
+      return 0; // รายได้อยู่ในขั้น 0%
     }
     return 0; // หรือจัดการ error ตามความเหมาะสม
   }
-  
+
   // คำนวณภาษี
   // ภาษีที่ต้องจ่ายในขั้นนี้ = (รายได้ที่เกินจากจุดเริ่มต้นขั้น - 1) * อัตราภาษีในขั้น + ภาษีสะสมจากขั้นก่อนหน้า
   // ลบ 1 ออกจาก bracket.min เพราะรายได้ที่ min เป็นจุดเริ่มต้นของขั้นใหม่
@@ -94,7 +93,7 @@ export default function TaxDoc() {
         if (memberId !== null) {
           const response = await CallAPIBill.getYearlySalesAPI(memberId);
           console.log("Yearly Sales Response:", response);
-            setAnualSales(Number(response?.anualSalesM) || 0);
+          setAnualSales(Number(response?.anualSalesM) || 0);
         }
       } catch (error) {
         console.error("Error fetching yearly sales:", error);
@@ -102,10 +101,9 @@ export default function TaxDoc() {
     };
     fetchYearlySales();
   }, []);
-  
 
   const percentage = anualSales / 1800000; // Assuming full score is 1.8 million
-  const score = percentage * 100; // Convert to  
+  const score = percentage * 100; // Convert to
   const [businessData, setBusinessData] = useState<any>([]);
   const vat = businessData?.vat || false; // Default to false if not set
   const [annualExpense, setAnnualExpense] = useState(0);
@@ -116,7 +114,9 @@ export default function TaxDoc() {
       try {
         const memberId = await getMemberId();
         if (memberId !== null) {
-          const response = await CallAPIExpense.getThisYearExpensesAPI(memberId);
+          const response = await CallAPIExpense.getThisYearExpensesAPI(
+            memberId
+          );
           console.log("Annual Expense Response:", response);
           setAnnualExpense(Number(response?.anualExpenseM) || 0);
         }
@@ -127,7 +127,6 @@ export default function TaxDoc() {
     fetchAnnualExpense();
   }, []);
 
-  
   const percentageExpense = annualExpense / anualSales;
   const scoreExpense = percentageExpense * 100; // Convert to percentage
   const scoreExpensePercentage = scoreExpense.toFixed(2) + "%"; // Convert to millions
@@ -205,7 +204,6 @@ export default function TaxDoc() {
     });
   }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
-
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
@@ -263,45 +261,46 @@ export default function TaxDoc() {
                     {t("taxDoc.annualSales")}
                   </CustomText>
                   <CustomText className="text-base text-left">
-                    {anualSales}
+                    {anualSales.toLocaleString()}
                   </CustomText>
                 </View>
                 <View className="flex-col">
                   <CustomText className="text-base text-right">
                     {t("taxDoc.vatFullScore")}
                   </CustomText>
-                  <CustomText className="text-base text-right">1.8M</CustomText>
+                  <CustomText className="text-base text-right">
+                    {(1800000).toLocaleString()}
+                  </CustomText>
                 </View>
               </View>
             </View>
 
             {/* VAT Power Tank limit */}
-            <View className="px-6 mb-4">
+            <View className="mb-4" style={{ position: "relative", height: 16, width: "100%" }}>
+              {/* Background (grey) bar */}
               <View
                 style={{
                   width: "100%",
-                  height: 16, // Adjust height to fit content
-                  justifyContent: "center",
-                  alignItems: "center",
+                  height: 16,
                   backgroundColor: theme === "dark" ? "#343436" : "#d9d8d5",
                   borderRadius: 10,
-                  margin: 10,
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
                 }}
-              ></View>
-
+              />
+              {/* Foreground (teal) bar */}
               <View
                 style={{
-                  width: `${score}%`, // Adjust width based on score
-                  height: 16, // Adjust height to fit content
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: `${score}%`,
+                  height: 16,
                   backgroundColor: theme === "dark" ? "#06fbc6" : "#0efbd4",
                   borderRadius: 10,
-                  margin: 10,
-                  position: "absolute", // Position it on top of the background
-                  left: 0, // Align to the left
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
                 }}
-              ></View>
+              />
             </View>
           </View>
         )}
@@ -364,12 +363,13 @@ export default function TaxDoc() {
                   </CustomText>
 
                   <CustomText className="text-base text-left">
-                    {annualExpense}
+                    {annualExpense.toLocaleString()}
                   </CustomText>
                   <CustomText
-                    className="text-base text-left"
+                    className="text-base text-left pt-2"
+                    weight="bold"
                     style={{
-                      fontWeight: "bold",
+                      
                       color:
                         parseFloat(scoreExpensePercentage) > 60
                           ? "red"
@@ -396,7 +396,7 @@ export default function TaxDoc() {
                     {t("taxDoc.annualIncome")}
                   </CustomText>
                   <CustomText className="text-base text-right">
-                    {anualSales}
+                    {anualSales.toLocaleString()}
                   </CustomText>
                 </View>
               </View>
@@ -409,8 +409,8 @@ export default function TaxDoc() {
                   width: "100%",
                   height: 16, // Adjust height to fit content
                   justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: theme === "dark" ? "#343436" : "#d9d8d5",
+                  alignItems: "flex-start",
+                  backgroundColor: theme === "dark" ? "#06fbc6" : "#9cffef",
                   borderRadius: 10,
                   margin: 10,
                 }}
@@ -420,7 +420,7 @@ export default function TaxDoc() {
                   width: "60%", // Adjust width based on score
                   height: 16, // Adjust height to fit content
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "flex-start",
                   backgroundColor: theme === "dark" ? "#fe270b50" : "#fe270b73",
                   margin: 10,
                   borderTopLeftRadius: 10,
@@ -434,8 +434,8 @@ export default function TaxDoc() {
                   width: `${scoreExpense}%`, // Adjust width based on score
                   height: 16, // Adjust height to fit content
                   justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: theme === "dark" ? "#06fbc6" : "#0efbd4",
+                  alignItems: "flex-start",
+                  backgroundColor: theme === "dark" ? "#ff2d31" : "#ff2d31",
                   borderRadius: 10,
                   margin: 10,
                   position: "absolute", // Position it on top of the background
@@ -447,8 +447,11 @@ export default function TaxDoc() {
         )}
 
         {/* 3D Tax Bracket Stairs before Individual Tax */}
-        <View style={{ marginVertical: 0 }}>       
-          <TaxBracketStairs3D taxBrackets={taxBrackets} taxableIncome={yearlySum - (reductSum + exemption)} />
+        <View style={{ marginVertical: 0 }}>
+          <TaxBracketStairs3D
+            taxBrackets={taxBrackets}
+            taxableIncome={yearlySum - (reductSum + exemption)}
+          />
         </View>
         {/* Individual Tax */}
         <View
@@ -466,13 +469,16 @@ export default function TaxDoc() {
               flex-col w-1/4 items-center"
             >
               <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-              <CustomText
-              className="pt-2">{yearlySum.toLocaleString()}</CustomText>
+              <CustomText className="pt-2">
+                {yearlySum.toLocaleString()}
+              </CustomText>
             </View>
             {/* Reduct */}
             <View className="flex-col w-1/4 items-center">
               <CustomText>{t("taxDoc.reduction")}</CustomText>
-              <CustomText className="pt-2">{reductSum.toLocaleString()}</CustomText>
+              <CustomText className="pt-2">
+                {reductSum.toLocaleString()}
+              </CustomText>
             </View>
             {/* TextInput Exemption */}
             <View className="flex-col w-1/4 items-center">
@@ -504,12 +510,13 @@ export default function TaxDoc() {
           <View className="p-4 flex-row gap-2 items-center justify-center">
             <CustomText>{t("taxDoc.individualTax")}</CustomText>
             <Text
-            style={{
-              color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
-              fontSize: 28,
-              fontWeight: "900",
-              marginLeft: 10,
-             }}>
+              style={{
+                color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
+                fontSize: 28,
+                fontWeight: "900",
+                marginLeft: 10,
+              }}
+            >
               {(() => {
                 const taxableIncome = yearlySum - (reductSum + exemption);
                 return calculateTax(taxableIncome).toLocaleString();
@@ -570,15 +577,39 @@ export default function TaxDoc() {
             </CustomText>
           </TouchableOpacity>
           {/* Table header */}
-          <View style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: "#e0e0e0", paddingBottom: 4, marginBottom: 4 }}>
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText> </CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.monthly")}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.yearly")}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{t("taxDoc.reduct")}</CustomText></View>
+          <View
+            style={{
+              flexDirection: "row",
+              borderBottomWidth: 1,
+              borderColor: "#e0e0e0",
+              paddingBottom: 4,
+              marginBottom: 4,
+            }}
+          >
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+              <CustomText> </CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{t("taxDoc.monthly")}</CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{t("taxDoc.yearly")}</CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{t("taxDoc.reduct")}</CustomText>
+            </View>
           </View>
           {/* Salary row (merged deduction with wage) */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.salary")}</CustomText></View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 2,
+            }}
+          >
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+              <CustomText>{t("taxDoc.salary")}</CustomText>
+            </View>
             <View style={{ flex: 1, alignItems: "center" }}>
               <TextInput
                 value={salary.toString()}
@@ -599,14 +630,32 @@ export default function TaxDoc() {
                 }}
               />
             </View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{yearIncome.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-              <CustomText style={{ textAlign: "center" }}>{reductSalary.toLocaleString()}</CustomText>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{yearIncome.toLocaleString()}</CustomText>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CustomText style={{ textAlign: "center" }}>
+                {reductSalary.toLocaleString()}
+              </CustomText>
             </View>
           </View>
           {/* Wage row (deduction cell merged above) */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.wage")}</CustomText></View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 2,
+            }}
+          >
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+              <CustomText>{t("taxDoc.wage")}</CustomText>
+            </View>
             <View style={{ flex: 1, alignItems: "center" }}>
               <TextInput
                 value={wage.toString()}
@@ -627,15 +676,32 @@ export default function TaxDoc() {
                 }}
               />
             </View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{allYearWage.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{allYearWage.toLocaleString()}</CustomText>
+            </View>
             <View style={{ flex: 1 }} />
           </View>
           {/* Car rental rows (one per car rental) */}
           {carRentals.map((car, idx) => (
-            <View key={idx} style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
-              <View style={{ flex: isMobile() ? 1.5 : 1, flexDirection: "row", alignItems: "center" }}>
+            <View
+              key={idx}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 2,
+              }}
+            >
+              <View
+                style={{
+                  flex: isMobile() ? 1.5 : 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 <CustomText>{t("taxDoc.carRental")}</CustomText>
-                <CustomText>{carRentals.length > 1 ? ` #${idx + 1}` : ""}</CustomText>
+                <CustomText>
+                  {carRentals.length > 1 ? ` #${idx + 1}` : ""}
+                </CustomText>
                 {carRentals.length > 1 && (
                   <TouchableOpacity
                     onPress={() => {
@@ -654,7 +720,10 @@ export default function TaxDoc() {
                   onChangeText={(value) => {
                     let num = Number(value) || 0;
                     if (num > 36000) {
-                      alert(t("taxDoc.carRentalMaxAlert") || "Car rental value cannot exceed 36,000");
+                      alert(
+                        t("taxDoc.carRentalMaxAlert") ||
+                          "Car rental value cannot exceed 36,000"
+                      );
                       num = 36000;
                     }
                     const updated = [...carRentals];
@@ -674,13 +743,25 @@ export default function TaxDoc() {
                   }}
                 />
               </View>
-              <View style={{ flex: 1, alignItems: "center" }}><CustomText>{Number(car.yearly).toLocaleString()}</CustomText></View>
-              <View style={{ flex: 1, alignItems: "center" }}><CustomText>{Number(car.reduct).toLocaleString()}</CustomText></View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{Number(car.yearly).toLocaleString()}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{Number(car.reduct).toLocaleString()}</CustomText>
+              </View>
             </View>
           ))}
           {/* Office rental row */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2 }}>
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText>{t("taxDoc.officeRental")}</CustomText></View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 2,
+            }}
+          >
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+              <CustomText>{t("taxDoc.officeRental")}</CustomText>
+            </View>
             <View style={{ flex: 1, alignItems: "center" }}>
               <TextInput
                 value={officeRental.toString()}
@@ -701,21 +782,44 @@ export default function TaxDoc() {
                 }}
               />
             </View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{allYearOfficeRental.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText>{reductOfficeRental.toLocaleString()}</CustomText></View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{allYearOfficeRental.toLocaleString()}</CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText>{reductOfficeRental.toLocaleString()}</CustomText>
+            </View>
           </View>
           {/* Sum row */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 2, borderTopWidth: 1, borderColor: "#e0e0e0", marginTop: 4 }}>
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}><CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{monthlySum.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{yearlySum.toLocaleString()}</CustomText></View>
-            <View style={{ flex: 1, alignItems: "center" }}><CustomText style={{ fontWeight: "bold" }}>{reductSum.toLocaleString()}</CustomText></View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 2,
+              borderTopWidth: 1,
+              borderColor: "#e0e0e0",
+              marginTop: 4,
+            }}
+          >
+            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+              <CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText style={{ fontWeight: "bold" }}>
+                {monthlySum.toLocaleString()}
+              </CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText style={{ fontWeight: "bold" }}>
+                {yearlySum.toLocaleString()}
+              </CustomText>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <CustomText style={{ fontWeight: "bold" }}>
+                {reductSum.toLocaleString()}
+              </CustomText>
+            </View>
           </View>
         </View>
-
-        
-
-        
       </ScrollView>
     </SafeAreaView>
   );

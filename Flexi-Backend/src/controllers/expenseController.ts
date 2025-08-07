@@ -304,15 +304,8 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No expenses found for this year" });
     }
     const amountNumber = Number(expense._sum.amount);
-    // Convert to millions or thousands
-    let anualExpenseM: string;
-    if (amountNumber >= 1000000) {
-      anualExpenseM = (amountNumber / 1000000).toFixed(1) + "M";
-    } else if (amountNumber >= 1000) {
-      anualExpenseM = (amountNumber / 1000).toFixed(0) + "K";
-    } else {
-      anualExpenseM = amountNumber.toString();
-    }
+    const anualExpenseM = amountNumber.toFixed(2); // Format to 2 decimal places
+
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Expense API:", anualExpenseM);
     res.json({
