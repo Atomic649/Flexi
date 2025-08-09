@@ -19,7 +19,11 @@
     "today": "วันนี้",
     "signOut": "ออกจากระบบ",
     "readOnly": "อ่านอย่างเดียว",
-    "editMode": "โหมดแก้ไข"
+    "editMode": "โหมดแก้ไข",
+    "seeMore": "ดูเพิ่มเติม",
+    "more": "เพิ่มเติม",
+    "showLess": "ดูน้อยลง",
+    "future": "อนาคต"
   },
   "months": {
     "january": "มกราคม",
@@ -171,7 +175,8 @@
       "Box": "กล่อง",
       "Pack": "แพ็ค",
       "Set": "ชุด",
-      "Dozen": "โหล"
+      "Dozen": "โหล",
+      "NotSpecified": ""
     },
     "selectUnit": "เลือกหน่วย",
     "type": "ประเภทสินค้า",
@@ -184,7 +189,8 @@
       "box": "กล่อง",
       "pack": "แพ็ค",
       "set": "ชุด",
-      "dozen": "โหล"
+      "dozen": "โหล",
+      "notSpecified": ""
     },
     "productTypes": {
       "service": "บริการ",
@@ -1194,14 +1200,17 @@
       "deleteTitle": "ลบใบเสร็จ",
       "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบใบเสร็จนี้?",
       "deleteSuccess": "ลบใบเสร็จสำเร็จ",
-      "deleteError": "ไม่สามารถลบใบเสร็จได้" 
+      "deleteError": "ไม่สามารถลบใบเสร็จได้",
+      "repeatSuccessMessage": "ใบเสร็จนี้จะถูกทำซ้ำทุกเดือนตามที่คุณกำหนด" 
     },
     "validation": {
       "incomplete": "ข้อมูลไม่ครบถ้วน",
       "invalidData": "กรุณากรอกข้อมูลที่จำเป็นทั้งหมด",
       "invalidPhone": "เบอร์โทรศัพท์ไม่ถูกต้อง",
       "phoneFormat": "เบอร์โทรศัพท์ต้องมี 10 หลัก",
-      "missingFields": "ข้อมูลที่ขาดหายไป"
+      "missingFields": "ข้อมูลที่ขาดหายไป",
+      "invalidRepeat": "จำนวนเดือนไม่ถูกต้อง",
+      "repeatMonth": "ลิมิตที่ 2-12 เดือน"
     }
   },
   "forgotPassword": {

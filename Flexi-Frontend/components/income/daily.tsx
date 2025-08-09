@@ -50,6 +50,35 @@ const Daily = () => {
   const [dailyReport, setDailyReport] = useState<DailyCardProps[]>([]);
   const { marketingPreference } = useMarketing();
 
+  // Generate dates starting from today going backwards
+  const generateDates = (days: number = 30) => {
+    const dates = [];
+    for (let i = 0; i < days; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      dates.push(date.toISOString().split('T')[0]); // Format: YYYY-MM-DD
+    }
+    return dates;
+  };
+
+  // Merge backend data with generated dates
+  const mergeDataWithDates = (backendData: DailyCardProps[], generatedDates: string[]) => {
+    const dataMap = new Map(backendData.map(item => [item.date, item]));
+    
+    return generatedDates.map(date => {
+      const existingData = dataMap.get(date);
+      return existingData || {
+        date,
+        amount: 0,
+        sale: 0,
+        adsCost: 0,
+        profit: 0,
+        percentageAds: 0,
+        ROI: 0,
+      };
+    });
+  };
+
   // Call API to get daily data
   useEffect(() => {
     const fetchReport = async () => {
@@ -57,12 +86,23 @@ const Daily = () => {
         const memberId = await getMemberId();
         if (memberId) {
           const response = await CallAPIReport.getDailyReportsAPI(memberId);
-          setDailyReport(response);
+          // Generate dates and merge with backend data
+          const generatedDates = generateDates(30); // Show last 30 days
+          const mergedData = mergeDataWithDates(response || [], generatedDates);
+          setDailyReport(mergedData);
         } else {
           console.log("Member ID is null");
+          // Even without member ID, show dates with zero values
+          const generatedDates = generateDates(30);
+          const emptyData = mergeDataWithDates([], generatedDates);
+          setDailyReport(emptyData);
         }
       } catch (error) {
         console.error("Error fetching reports", error);
+        // On error, still show dates with zero values
+        const generatedDates = generateDates(30);
+        const emptyData = mergeDataWithDates([], generatedDates);
+        setDailyReport(emptyData);
       }
     };
     fetchReport();
@@ -75,12 +115,23 @@ const Daily = () => {
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIReport.getDailyReportsAPI(memberId);
-        setDailyReport(response);
+        // Generate dates and merge with backend data
+        const generatedDates = generateDates(30); // Show last 30 days
+        const mergedData = mergeDataWithDates(response || [], generatedDates);
+        setDailyReport(mergedData);
       } else {
         console.error("Member ID is null");
+        // Even without member ID, show dates with zero values
+        const generatedDates = generateDates(30);
+        const emptyData = mergeDataWithDates([], generatedDates);
+        setDailyReport(emptyData);
       }
     } catch (error) {
       console.error("Error fetching reports", error);
+      // On error, still show dates with zero values
+      const generatedDates = generateDates(30);
+      const emptyData = mergeDataWithDates([], generatedDates);
+      setDailyReport(emptyData);
     }
     setRefreshing(false);
   };

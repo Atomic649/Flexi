@@ -33,6 +33,7 @@ enum Unit{
   Pack
   Set
   Dozen  
+  NotSpecified
 }
 
 enum UserRole {

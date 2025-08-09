@@ -296,11 +296,13 @@ const getBills = async (req: Request, res: Response) => {
         product: {
           select: {
             product: true,
-            quantity: true,
+            quantity: true, 
             unitPrice: true,
             unit: true
           },
         }, // Include product items
+        repeat :true
+        
       
       },
       take: 100, // Limit to 100 records

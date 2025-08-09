@@ -18,7 +18,7 @@ const Home = () => {
   const [index, setIndex] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [routes] = useState([
-    { key: "SocialDashboard", title1: t("home.SocialDashboard") },
+    //{ key: "SocialDashboard", title1: t("home.SocialDashboard") },
     { key: "Dashboard", title2: t("home.Dashboard") },
     { key: "TaxDoc", title3: t("home.TaxDoc") }
   ]);
@@ -34,7 +34,7 @@ const Home = () => {
   // Create scene map with access to refresh trigger
   const renderSceneWithProps = () => {
     return {
-      SocialDashboard: SocialDashboard,
+//SocialDashboard: SocialDashboard,
       Dashboard: Dashboard,
       TaxDoc: TaxDoc,
     };
@@ -67,11 +67,11 @@ const Home = () => {
               <View
                 className="flex-row items-center my-5 "
                 style={{
-                  width: Dimensions.get("window").width / 3,
+                  width: Dimensions.get("window").width / 2,
                   justifyContent: "center",
                 }}
               >
-                {route.title1 && (
+                {/* {route.title1 && (
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
@@ -96,7 +96,7 @@ const Home = () => {
                       </CustomText>
                     </TouchableOpacity>
                   </View>
-                )}
+                )} */}
                 {route.title2 && (
                   <View className="justify-center items-center">
                     <TouchableOpacity

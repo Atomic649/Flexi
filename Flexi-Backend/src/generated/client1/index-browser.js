@@ -465,7 +465,8 @@ exports.Unit = exports.$Enums.Unit = {
   Box: 'Box',
   Pack: 'Pack',
   Set: 'Set',
-  Dozen: 'Dozen'
+  Dozen: 'Dozen',
+  NotSpecified: 'NotSpecified'
 };
 
 exports.Bank = exports.$Enums.Bank = {

@@ -19,7 +19,11 @@
     "today": "Today",
     "signOut": "Sign Out",
     "readOnly": "Read Only",
-    "editMode": "Edit Mode"
+    "editMode": "Edit Mode",
+    "seeMore": "See More",
+    "more": "More",
+    "showLess": "Show Less",
+    "future": "future"
   },
   "months": {
     "january": "January",
@@ -170,7 +174,8 @@
       "Box": "Box",
       "Pack": "Pack",
       "Set": "Set",
-      "Dozen": "Dozen"
+      "Dozen": "Dozen",
+      "NotSpecified": ""
     },
     "selectUnit": "Select unit",
     "type": "Product Type",
@@ -183,7 +188,8 @@
       "box": "Box",
       "pack": "Pack",
       "set": "Set",
-      "dozen": "Dozen"
+      "dozen": "Dozen",
+      "notSpecified": ""
     },
     "productTypes": {
       "service": "Service",
@@ -1196,13 +1202,16 @@
       "deleteTitle": "Delete Bill",
       "deleteMessage": "Are you sure you want to delete this bill?",
       "deleteSuccess": "Bill deleted successfully",
-      "deleteError": "Error deleting bill"
+      "deleteError": "Error deleting bill",
+      "repeatSuccessMessage": "Bill will be repeated every"
     },
     "validation": {
       "incomplete": "Incomplete Data",
       "invalidData": "Please fill all required fields",
       "invalidPhone": "Invalid Phone Number",
-      "phoneFormat": "Phone number must be 10 digits"
+      "phoneFormat": "Phone number must be 10 digits",
+      "invalidRepeat": "Invalid Repeat Value",
+      "repeatMonth" : "Limit only 2-12 months"
     }
   },
   "forgotPassword": {

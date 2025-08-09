@@ -683,8 +683,8 @@ export default function EditBill() {
                 <FormFieldClear
                  title={
                     t("bill.amount") +
-                    (item.unit && (t(`product.unit.${item.unit}`) || item.unit)
-                      ? ` (${t(`product.unit.${item.unit}`) || item.unit})`
+                    (item.unit && (t(`product.unit.${item.unit}`) )
+                      ? ` (${t(`product.unit.${item.unit}`) })`
                       : "")
                   }
                   value={item.quantity}

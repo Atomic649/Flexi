@@ -66,12 +66,12 @@ export default function CreateBill() {
   const [cTaxId, setTaxId] = useState("");
 
   // Product information
-  const [product, setProduct] = useState("");
+  // [product, setProduct] = useState("");
   const [payment, setPayment] = useState("");
   const [amount, setAmount] = useState("1");
-  const [platform, setPlatform] = useState("");
+  // [platform, setPlatform] = useState("");
   const [cashStatus, setCashStatus] = useState(false);
-  const [price, setPrice] = useState("");
+  //const [price, setPrice] = useState("");
   const [businessAcc, setBusinessAcc] = useState(0);
   const [image, setImage] = useState("");
 
@@ -371,7 +371,7 @@ export default function CreateBill() {
       setAlertConfig({
         visible: true,
         title: t("bill.validation.invalidRepeat"),
-        message: "Please enter a number between 1 and 12 months only.",
+        message: t("bill.validation.repeatMonth"),
         buttons: [
           {
             text: t("common.ok"),
@@ -804,8 +804,8 @@ export default function CreateBill() {
                 <FormFieldClear
                   title={
                     t("bill.amount") +
-                    (item.unit && (t(`product.unit.${item.unit}`) || item.unit)
-                      ? ` (${t(`product.unit.${item.unit}`) || item.unit})`
+                    (item.unit && (t(`product.unit.${item.unit}`))
+                      ? ` (${t(`product.unit.${item.unit}`)})`
                       : "")
                   }
                   value={item.quantity}

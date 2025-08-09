@@ -69,6 +69,8 @@ export default function CreateProduct() {
         { label: t("product.units.pack"), value: "Pack" },
         { label: t("product.units.set"), value: "Set" },
         { label: t("product.units.dozen"), value: "Dozen" },
+        { label: t("product.units.notSpecified"), value: "NotSpecified" }
+
       ]);
 
       setProductTypes([

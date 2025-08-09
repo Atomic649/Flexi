@@ -104,7 +104,7 @@ export default function BillCard({
                       {item.product}
                     </CustomText>
 
-                    {item.unit ? (
+                    {item.unit !== "NotSpecified" ? (
                       <>
                         <CustomText
                           className="font-bold text-sm text-zinc-400 pt-1"
@@ -120,7 +120,7 @@ export default function BillCard({
                           numberOfLines={1}
                           style={{ color: "#7e7d7a" }}
                         >
-                          {t(`product.unit.${item.unit}`) || item.unit}
+                          {t(`product.unit.${item.unit}`) }
                         </CustomText>
                       </>
                     ) : null}

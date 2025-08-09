@@ -57,19 +57,32 @@ type Bill = {
   }>;
 };
 
-// Group bills by date
+// Group bills by date with future date handling
 const groupByDate = (items: Bill[]): { [key: string]: Bill[] } => {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  
   return items.reduce((groups, item) => {
     const purchaseDate = new Date(item.purchaseAt);
-    const day = purchaseDate.getDate().toString().padStart(2, "0");
-    const month = (purchaseDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = purchaseDate.getFullYear();
-    const date = `${day}/${month}/${year}`;
-
-    if (!groups[date]) {
-      groups[date] = [];
+    purchaseDate.setHours(0, 0, 0, 0);
+    
+    let groupKey: string;
+    
+    if (purchaseDate > currentDate) {
+      // Group all future dates under "Future"
+      groupKey = "Future";
+    } else {
+      // Use normal date format for current and past dates
+      const day = purchaseDate.getDate().toString().padStart(2, "0");
+      const month = (purchaseDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = purchaseDate.getFullYear();
+      groupKey = `${day}/${month}/${year}`;
     }
-    groups[date].push(item);
+
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
+    }
+    groups[groupKey].push(item);
     return groups;
   }, {} as { [key: string]: Bill[] });
 };
@@ -139,9 +152,70 @@ const ByOrder = () => {
 
   const handleDelete = async (id: number) => {};
 
+  // State to track expanded future bills
+  const [showAllFuture, setShowAllFuture] = useState(false);
+
   // Create memoized grouped bills to ensure data is always fresh
   const groupedBills = useMemo(() => groupByDate(bills), [bills]);
+  
+  // Sort date groups chronologically
+  const sortedDateGroups = useMemo(() => {
+    const dateKeys = Object.keys(groupedBills);
+    
+    return dateKeys.sort((a, b) => {
+      // Future group always comes first
+      if (a === "Future") return -1;
+      if (b === "Future") return 1;
+      
+      // Convert date strings to Date objects for comparison
+      const parseDate = (dateStr: string): Date => {
+        const [day, month, year] = dateStr.split('/');
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      };
+      
+      const dateA = parseDate(a);
+      const dateB = parseDate(b);
+      
+      // Sort in descending order (most recent first)
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [groupedBills]);
+
   const today = new Date().toISOString().split("T")[0];
+
+  // Get display name for date group
+  const getDateGroupDisplayName = useCallback((dateKey: string) => {
+    if (dateKey === "Future") {
+      return t("common.future") || "Future";
+    }
+    
+    // Check if it's today
+    const currentDate = new Date();
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    const todayString = `${day}/${month}/${year}`;
+    
+    return dateKey === todayString ? (t("common.today") || "Today") : dateKey;
+  }, [t]);
+
+  // Get bills to display for a date group
+  const getBillsToDisplay = useCallback((date: string, bills: Bill[]) => {
+    if (date === "Future" && !showAllFuture) {
+      return bills.slice(0, 1); // Show only first bill for Future group
+    }
+    return bills; // Show all bills for other groups
+  }, [showAllFuture]);
+
+  // Check if a date is in the future
+  const isDateInFuture = useCallback((date: Date) => {
+    const billDate = new Date(date);
+    const currentDate = new Date();
+    // Set time to start of day for accurate comparison
+    billDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+    return billDate > currentDate;
+  }, []);
 
   // Get border color based on platform - memoized but updates when bills change
   const getBorderColor = useCallback((platform: string) => {
@@ -260,6 +334,9 @@ const ByOrder = () => {
                       params: { id: bill.id },
                     })
                   }
+                  style={{
+                    opacity: isDateInFuture(bill.purchaseAt) ? 0.5 : 1,
+                  }}
                 >
                   <View
                     className="flex flex-row border-b py-3 items-center"
@@ -364,7 +441,7 @@ const ByOrder = () => {
   const renderCardView = () => {
     return (
       <FlatList
-        data={Object.keys(groupedBills)}
+        data={sortedDateGroups}
         keyExtractor={(date) => date}
         renderItem={({ item: date }) => (
           <View
@@ -377,10 +454,10 @@ const ByOrder = () => {
                 theme === "dark" ? "text-zinc-400" : "text-zinc-600"
               } p-4`}
             >
-              {date === today ? "Today" : date}
+              {getDateGroupDisplayName(date)}
             </Text>
 
-            {groupedBills[date].map((bill) => (
+            {getBillsToDisplay(date, groupedBills[date]).map((bill) => (
               <TouchableOpacity
                 key={bill.id}
                 onPress={() =>
@@ -389,7 +466,10 @@ const ByOrder = () => {
                     params: { id: bill.id },
                   })
                 }
-                style={{ width: "100%" }}
+                style={{ 
+                  width: "100%",
+                  opacity: isDateInFuture(bill.purchaseAt) ? 0.5 : 1,
+                }}
               >
                 <BillCard
                   id={bill.id}
@@ -409,6 +489,36 @@ const ByOrder = () => {
                 />
               </TouchableOpacity>
             ))}
+
+            {/* Show "See More" button for Future group */}
+            {date === "Future" && groupedBills[date].length > 1 && (
+              <TouchableOpacity
+                onPress={() => setShowAllFuture(!showAllFuture)}
+                style={{
+                  width: "100%",
+                  padding: 15,
+                  alignItems: "center",
+                  backgroundColor: theme === "dark" ? "#232425" : "#f5f5f5",
+                  marginHorizontal: 10,
+                  marginBottom: 10,
+                  borderRadius: 8,
+                  opacity: 0.5, // Match the opacity of future bills
+                }}
+              >
+                <Text
+                  style={{
+                    color: theme === "dark" ? "#04ecd5" : "#01e0c6",
+                    fontSize: 14,
+                    fontWeight: "600",
+                  }}
+                >
+                  {showAllFuture 
+                    ? `${t("common.showLess") || "Show Less"}` 
+                    : `${t("common.seeMore") || "See More"} (${groupedBills[date].length - 1} ${t("common.more") || "more"})`
+                  }
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         ListEmptyComponent={() => (

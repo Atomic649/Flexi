@@ -46,6 +46,60 @@ const monthly = () => {
   const deviceType = getDeviceType();
   const { marketingPreference } = useMarketing();
 
+  // Generate months starting from oldest month in database or fallback to 12 months ago
+  const generateMonths = (backendData: MonthlyCardProps[] = [], months: number = 12) => {
+    let startDate: Date;
+    
+    if (backendData.length > 0) {
+      // Find the oldest month from backend data
+      const oldestMonth = backendData
+        .map(item => new Date(item.month + '-01')) // Convert YYYY-MM to Date
+        .sort((a, b) => a.getTime() - b.getTime())[0]; // Sort ascending and get first
+      
+      startDate = new Date(oldestMonth);
+    } else {
+      // Fallback: start from 12 months ago if no backend data
+      startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - (months - 1));
+    }
+    
+    const monthsList = [];
+    const currentDate = new Date();
+    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    
+    // Generate months from oldest to current
+    const iterDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+    
+    while (iterDate <= endDate) {
+      const year = iterDate.getFullYear();
+      const month = (iterDate.getMonth() + 1).toString().padStart(2, '0');
+      monthsList.push(`${year}-${month}`);
+      iterDate.setMonth(iterDate.getMonth() + 1);
+    }
+    
+    // Reverse to show newest first (current month at top)
+    return monthsList.reverse();
+  };
+
+  // Merge backend data with generated months
+  const mergeDataWithMonths = (backendData: MonthlyCardProps[], generatedMonths: string[]) => {
+    const dataMap = new Map(backendData.map(item => [item.month, item]));
+    
+    return generatedMonths.map(month => {
+      const existingData = dataMap.get(month);
+      return existingData || {
+        month,
+        amount: 0,
+        sale: 0,
+        adsCost: 0,
+        expenses: 0,
+        profit: 0,
+        percentageAds: 0,
+        ROI: 0,
+      };
+    });
+  };
+
   // Call API to get monthly data
   useEffect(() => {
     const fetchReport = async () => {
@@ -53,12 +107,23 @@ const monthly = () => {
         const memberId = await getMemberId();
         if (memberId) {
           const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
-          setMonthlyReport(response);
+          // Generate months starting from oldest in database and merge with backend data
+          const generatedMonths = generateMonths(response || []);
+          const mergedData = mergeDataWithMonths(response || [], generatedMonths);
+          setMonthlyReport(mergedData);
         } else {
           console.log("Member ID is null");
+          // Even without member ID, show months with zero values (fallback to 12 months)
+          const generatedMonths = generateMonths([]);
+          const emptyData = mergeDataWithMonths([], generatedMonths);
+          setMonthlyReport(emptyData);
         }
       } catch (error) {
         console.error("Error fetching reports", error);
+        // On error, still show months with zero values (fallback to 12 months)
+        const generatedMonths = generateMonths([]);
+        const emptyData = mergeDataWithMonths([], generatedMonths);
+        setMonthlyReport(emptyData);
       }
     };
     fetchReport();
@@ -71,12 +136,23 @@ const monthly = () => {
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
-        setMonthlyReport(response);
+        // Generate months starting from oldest in database and merge with backend data
+        const generatedMonths = generateMonths(response || []);
+        const mergedData = mergeDataWithMonths(response || [], generatedMonths);
+        setMonthlyReport(mergedData);
       } else {
         console.error("Member ID is null");
+        // Even without member ID, show months with zero values (fallback to 12 months)
+        const generatedMonths = generateMonths([]);
+        const emptyData = mergeDataWithMonths([], generatedMonths);
+        setMonthlyReport(emptyData);
       }
     } catch (error) {
       console.error("Error fetching reports", error);
+      // On error, still show months with zero values (fallback to 12 months)
+      const generatedMonths = generateMonths([]);
+      const emptyData = mergeDataWithMonths([], generatedMonths);
+      setMonthlyReport(emptyData);
     }
     setRefreshing(false);
   };

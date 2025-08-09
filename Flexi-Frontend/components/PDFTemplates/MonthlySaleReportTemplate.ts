@@ -231,7 +231,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                       <td>
                         <ul style="margin:0; padding-left:16px;">
                           ${productItems.map((item: { product: any; quantity: any; unit: any; unitPrice: number; }, idx: any) =>
-                            `<li>${item.product || '-'} ${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ''} </li>`
+                            `<li>${item.product || '-'} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ''}` : ''} </li>`
                           ).join('')}
                         </ul>
                       </td>

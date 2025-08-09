@@ -131,7 +131,8 @@ export namespace $Enums {
   Box: 'Box',
   Pack: 'Pack',
   Set: 'Set',
-  Dozen: 'Dozen'
+  Dozen: 'Dozen',
+  NotSpecified: 'NotSpecified'
 };
 
 export type Unit = (typeof Unit)[keyof typeof Unit]
