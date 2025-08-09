@@ -181,6 +181,10 @@ exports.Prisma.BillScalarFieldEnum = {
   cashStatus: 'cashStatus',
   image: 'image',
   deleted: 'deleted',
+  repeat: 'repeat',
+  repeatMonths: 'repeatMonths',
+  note: 'note',
+  TaxType: 'TaxType',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'
@@ -410,7 +414,7 @@ exports.BusinessType = exports.$Enums.BusinessType = {
   Restaurant: 'Restaurant',
   Bar: 'Bar',
   Cafe: 'Cafe',
-  Hotel: 'Hotel',
+  Rental: 'Rental',
   Tutor: 'Tutor',
   Influencer: 'Influencer',
   Other: 'Other'

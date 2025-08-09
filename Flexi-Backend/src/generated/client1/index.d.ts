@@ -228,7 +228,7 @@ export const BusinessType: {
   Restaurant: 'Restaurant',
   Bar: 'Bar',
   Cafe: 'Cafe',
-  Hotel: 'Hotel',
+  Rental: 'Rental',
   Tutor: 'Tutor',
   Influencer: 'Influencer',
   Other: 'Other'
@@ -7790,6 +7790,7 @@ export namespace Prisma {
   export type BillAvgAggregateOutputType = {
     id: number | null
     total: number | null
+    repeatMonths: number | null
     businessAcc: number | null
     storeId: number | null
   }
@@ -7797,6 +7798,7 @@ export namespace Prisma {
   export type BillSumAggregateOutputType = {
     id: number | null
     total: number | null
+    repeatMonths: number | null
     businessAcc: number | null
     storeId: number | null
   }
@@ -7821,6 +7823,10 @@ export namespace Prisma {
     cashStatus: boolean | null
     image: string | null
     deleted: boolean | null
+    repeat: boolean | null
+    repeatMonths: number | null
+    note: string | null
+    TaxType: $Enums.taxType | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7846,6 +7852,10 @@ export namespace Prisma {
     cashStatus: boolean | null
     image: string | null
     deleted: boolean | null
+    repeat: boolean | null
+    repeatMonths: number | null
+    note: string | null
+    TaxType: $Enums.taxType | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7871,6 +7881,10 @@ export namespace Prisma {
     cashStatus: number
     image: number
     deleted: number
+    repeat: number
+    repeatMonths: number
+    note: number
+    TaxType: number
     memberId: number
     businessAcc: number
     storeId: number
@@ -7881,6 +7895,7 @@ export namespace Prisma {
   export type BillAvgAggregateInputType = {
     id?: true
     total?: true
+    repeatMonths?: true
     businessAcc?: true
     storeId?: true
   }
@@ -7888,6 +7903,7 @@ export namespace Prisma {
   export type BillSumAggregateInputType = {
     id?: true
     total?: true
+    repeatMonths?: true
     businessAcc?: true
     storeId?: true
   }
@@ -7912,6 +7928,10 @@ export namespace Prisma {
     cashStatus?: true
     image?: true
     deleted?: true
+    repeat?: true
+    repeatMonths?: true
+    note?: true
+    TaxType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -7937,6 +7957,10 @@ export namespace Prisma {
     cashStatus?: true
     image?: true
     deleted?: true
+    repeat?: true
+    repeatMonths?: true
+    note?: true
+    TaxType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -7962,6 +7986,10 @@ export namespace Prisma {
     cashStatus?: true
     image?: true
     deleted?: true
+    repeat?: true
+    repeatMonths?: true
+    note?: true
+    TaxType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8074,6 +8102,10 @@ export namespace Prisma {
     cashStatus: boolean
     image: string | null
     deleted: boolean | null
+    repeat: boolean | null
+    repeatMonths: number | null
+    note: string | null
+    TaxType: $Enums.taxType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -8118,6 +8150,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: boolean
     deleted?: boolean
+    repeat?: boolean
+    repeatMonths?: boolean
+    note?: boolean
+    TaxType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8148,6 +8184,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: boolean
     deleted?: boolean
+    repeat?: boolean
+    repeatMonths?: boolean
+    note?: boolean
+    TaxType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8176,6 +8216,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: boolean
     deleted?: boolean
+    repeat?: boolean
+    repeatMonths?: boolean
+    note?: boolean
+    TaxType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8204,12 +8248,16 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: boolean
     deleted?: boolean
+    repeat?: boolean
+    repeatMonths?: boolean
+    note?: boolean
+    TaxType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8256,6 +8304,10 @@ export namespace Prisma {
       cashStatus: boolean
       image: string | null
       deleted: boolean | null
+      repeat: boolean | null
+      repeatMonths: number | null
+      note: string | null
+      TaxType: $Enums.taxType | null
       memberId: string
       businessAcc: number
       storeId: number
@@ -8705,6 +8757,10 @@ export namespace Prisma {
     readonly cashStatus: FieldRef<"Bill", 'Boolean'>
     readonly image: FieldRef<"Bill", 'String'>
     readonly deleted: FieldRef<"Bill", 'Boolean'>
+    readonly repeat: FieldRef<"Bill", 'Boolean'>
+    readonly repeatMonths: FieldRef<"Bill", 'Int'>
+    readonly note: FieldRef<"Bill", 'String'>
+    readonly TaxType: FieldRef<"Bill", 'taxType'>
     readonly memberId: FieldRef<"Bill", 'String'>
     readonly businessAcc: FieldRef<"Bill", 'Int'>
     readonly storeId: FieldRef<"Bill", 'Int'>
@@ -29227,6 +29283,10 @@ export namespace Prisma {
     cashStatus: 'cashStatus',
     image: 'image',
     deleted: 'deleted',
+    repeat: 'repeat',
+    repeatMonths: 'repeatMonths',
+    note: 'note',
+    TaxType: 'TaxType',
     memberId: 'memberId',
     businessAcc: 'businessAcc',
     storeId: 'storeId'
@@ -30160,6 +30220,10 @@ export namespace Prisma {
     cashStatus?: BoolFilter<"Bill"> | boolean
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
+    repeat?: BoolNullableFilter<"Bill"> | boolean | null
+    repeatMonths?: IntNullableFilter<"Bill"> | number | null
+    note?: StringNullableFilter<"Bill"> | string | null
+    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30189,6 +30253,10 @@ export namespace Prisma {
     cashStatus?: SortOrder
     image?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
+    repeat?: SortOrderInput | SortOrder
+    repeatMonths?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    TaxType?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30221,6 +30289,10 @@ export namespace Prisma {
     cashStatus?: BoolFilter<"Bill"> | boolean
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
+    repeat?: BoolNullableFilter<"Bill"> | boolean | null
+    repeatMonths?: IntNullableFilter<"Bill"> | number | null
+    note?: StringNullableFilter<"Bill"> | string | null
+    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30250,6 +30322,10 @@ export namespace Prisma {
     cashStatus?: SortOrder
     image?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
+    repeat?: SortOrderInput | SortOrder
+    repeatMonths?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    TaxType?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30283,6 +30359,10 @@ export namespace Prisma {
     cashStatus?: BoolWithAggregatesFilter<"Bill"> | boolean
     image?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     deleted?: BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
+    repeat?: BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
+    repeatMonths?: IntNullableWithAggregatesFilter<"Bill"> | number | null
+    note?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    TaxType?: EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
     businessAcc?: IntWithAggregatesFilter<"Bill"> | number
     storeId?: IntWithAggregatesFilter<"Bill"> | number
@@ -32068,6 +32148,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -32094,6 +32178,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32119,6 +32207,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -32145,6 +32237,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -32171,6 +32267,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32195,6 +32295,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   }
 
   export type BillUncheckedUpdateManyInput = {
@@ -32217,6 +32321,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -34163,6 +34271,13 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type EnumtaxTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.taxType | EnumtaxTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
+  }
+
   export type ProductItemListRelationFilter = {
     every?: ProductItemWhereInput
     some?: ProductItemWhereInput
@@ -34208,6 +34323,10 @@ export namespace Prisma {
     cashStatus?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
+    repeat?: SortOrder
+    repeatMonths?: SortOrder
+    note?: SortOrder
+    TaxType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34216,6 +34335,7 @@ export namespace Prisma {
   export type BillAvgOrderByAggregateInput = {
     id?: SortOrder
     total?: SortOrder
+    repeatMonths?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
   }
@@ -34240,6 +34360,10 @@ export namespace Prisma {
     cashStatus?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
+    repeat?: SortOrder
+    repeatMonths?: SortOrder
+    note?: SortOrder
+    TaxType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34265,6 +34389,10 @@ export namespace Prisma {
     cashStatus?: SortOrder
     image?: SortOrder
     deleted?: SortOrder
+    repeat?: SortOrder
+    repeatMonths?: SortOrder
+    note?: SortOrder
+    TaxType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34273,6 +34401,7 @@ export namespace Prisma {
   export type BillSumOrderByAggregateInput = {
     id?: SortOrder
     total?: SortOrder
+    repeatMonths?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
   }
@@ -34313,6 +34442,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type EnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.taxType | EnumtaxTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
   }
 
   export type EnumUnitNullableFilter<$PrismaModel = never> = {
@@ -36639,6 +36778,10 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
+    set?: $Enums.taxType | null
+  }
+
   export type ProductItemUpdateManyWithoutBillNestedInput = {
     create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
     connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
@@ -37978,6 +38121,13 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedEnumtaxTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.taxType | EnumtaxTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
+  }
+
   export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -38014,6 +38164,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.taxType | EnumtaxTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumUnitNullableFilter<$PrismaModel = never> = {
@@ -39124,6 +39284,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -39149,6 +39313,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     businessAcc: number
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -39516,6 +39684,10 @@ export namespace Prisma {
     cashStatus?: BoolFilter<"Bill"> | boolean
     image?: StringNullableFilter<"Bill"> | string | null
     deleted?: BoolNullableFilter<"Bill"> | boolean | null
+    repeat?: BoolNullableFilter<"Bill"> | boolean | null
+    repeatMonths?: IntNullableFilter<"Bill"> | number | null
+    note?: StringNullableFilter<"Bill"> | string | null
+    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -39808,6 +39980,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -39833,6 +40009,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -40535,6 +40715,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40560,6 +40744,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -40644,6 +40832,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -40669,6 +40861,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -41504,6 +41700,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -41529,6 +41729,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     businessAcc: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -44915,6 +45119,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     businessAcc: number
     storeId: number
   }
@@ -45006,6 +45214,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45031,6 +45243,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45056,6 +45272,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -45296,6 +45516,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     storeId: number
   }
@@ -45426,6 +45650,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45451,6 +45679,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45476,6 +45708,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -45781,6 +46017,10 @@ export namespace Prisma {
     cashStatus?: boolean
     image?: string | null
     deleted?: boolean | null
+    repeat?: boolean | null
+    repeatMonths?: number | null
+    note?: string | null
+    TaxType?: $Enums.taxType | null
     memberId: string
     businessAcc: number
   }
@@ -45804,6 +46044,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -45829,6 +46073,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45854,6 +46102,10 @@ export namespace Prisma {
     cashStatus?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
   }

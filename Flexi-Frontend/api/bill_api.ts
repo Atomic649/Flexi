@@ -63,6 +63,8 @@ class CallAPIBill {
             unitPrice: number;
             quantity: number;
         }>;
+        repeat: boolean;
+        repeatMonths: number;
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -104,6 +106,8 @@ class CallAPIBill {
             unitPrice: number;
             quantity: number;
         }>;
+        repeat: boolean;
+        repeatMonths: number;
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

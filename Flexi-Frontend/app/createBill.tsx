@@ -18,6 +18,7 @@ import CallAPIProduct from "@/api/product_api";
 import DropdownClear from "@/components/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
+import CallAPIBusiness from "@/api/business_api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -95,6 +96,14 @@ export default function CreateBill() {
     "Individual"
   );
 
+  // Repeat bill state
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [repeatMonths, setRepeatMonths] = useState(2);
+  const [repeatMonthsInput, setRepeatMonthsInput] = useState("2");
+
+  // Business type state
+  const [businessType, setBusinessType] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchMemberId = async () => {
       const uniqueId = await getMemberId();
@@ -140,24 +149,27 @@ export default function CreateBill() {
     };
 
     fetchProductChoice();
+
+    // Fetch business details to get business type
+    const fetchBusinessDetails = async () => {
+      try {
+        const memberId = await getMemberId();
+        if (memberId) {
+          const response = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+          if (response && response.businessType) {
+            setBusinessType(response.businessType);
+            console.log("Business type fetched:", response.businessType);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching business details:", error);
+      }
+    };
+
+    fetchBusinessDetails();
   }, []);
 
-  // // Handle product selection to auto-fill price
-  // const handleProductSelect = (selectedProductName: string) => {
-  //   setProduct(selectedProductName);
-
-  //   // Find the product with matching name and set its price
-  //   const selectedProduct = productChoice.find(
-  //     (p) => p.name === selectedProductName
-  //   );
-
-  //   if (selectedProduct && selectedProduct.price) {
-  //     setPrice(selectedProduct.price.toString());
-  //   } else {
-  //     setPrice(""); // Clear price if product not found or has no price
-  //   }
-  // };
-
+  
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -345,6 +357,32 @@ export default function CreateBill() {
       return;
     }
 
+    // Validate repeat months if repeat is enabled
+    if (isRepeat && (repeatMonths < 1 || repeatMonths > 12 || repeatMonthsInput === "" || isNaN(parseInt(repeatMonthsInput)))) {
+      // Ensure we have a valid value before submission
+      if (repeatMonthsInput === "" || isNaN(parseInt(repeatMonthsInput))) {
+        setRepeatMonthsInput("1");
+        setRepeatMonths(1);
+      } else if (parseInt(repeatMonthsInput) > 12) {
+        setRepeatMonthsInput("12");
+        setRepeatMonths(12);
+      }
+      
+      setAlertConfig({
+        visible: true,
+        title: t("bill.validation.invalidRepeat"),
+        message: "Please enter a number between 1 and 12 months only.",
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
+    }
+
     try {
       // Call API to create bill
       const data = await CallAPIBill.createBillAPI({
@@ -369,6 +407,8 @@ export default function CreateBill() {
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
+        repeat: isRepeat,
+        repeatMonths: isRepeat ? repeatMonths : 1
       });
 
       if (data.error) throw new Error(data.error);
@@ -376,7 +416,9 @@ export default function CreateBill() {
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.successTitle"),
-        message: t("bill.alerts.successMessage"),
+        message: isRepeat 
+          ? t("bill.alerts.repeatSuccessMessage").replace("{months}", repeatMonths.toString())
+          : t("bill.alerts.successMessage"),
         buttons: [
           {
             text: t("common.ok"),
@@ -420,6 +462,9 @@ export default function CreateBill() {
     setTaxType("Individual");
     setMemberId(memberId); // keep memberId for context, but reset fields
     setStoreId(0); // Reset storeId to 0
+    setIsRepeat(false);
+    setRepeatMonths(1);
+    setRepeatMonthsInput("1");
   };
 
   return (
@@ -848,6 +893,93 @@ export default function CreateBill() {
               />
             </View>
           </View>
+
+          {/* Repeat Bill Section - Only show for Rental business type */}
+          {businessType === "Rental" && (
+            <View className="flex flex-row items-center mt-4 mb-2" style={{ backgroundColor: "transparent" }}>
+              <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center", marginRight: 20 }}
+                onPress={() => setIsRepeat(!isRepeat)}
+              >
+                <Ionicons
+                  name={isRepeat ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("bill.repeatBill")}
+                </CustomText>
+              </TouchableOpacity>
+              
+              {isRepeat && (
+                <View className="flex-1 ml-4">
+                  <FormFieldClear
+                    title={t("bill.repeatMonths")}
+                    value={repeatMonthsInput}
+                    handleChangeText={(value: string) => {
+                      // Allow any input including empty string
+                      setRepeatMonthsInput(value);
+                      
+                      // Update the actual repeat months value if valid
+                      if (value !== "") {
+                        const num = parseInt(value);
+                        if (!isNaN(num)) {
+                          if (num > 12) {
+                            // Show alert if number is over 12
+                            setAlertConfig({
+                              visible: true,
+                              title: t("bill.validation.invalidRepeat"),
+                              message: "Please enter a number between 1 and 12 months only.",
+                              buttons: [
+                                {
+                                  text: t("common.ok"),
+                                  onPress: () => {
+                                    setAlertConfig((prev) => ({ ...prev, visible: false }));
+                                    // Reset to maximum allowed value
+                                    setRepeatMonthsInput("12");
+                                    setRepeatMonths(12);
+                                  },
+                                },
+                              ],
+                            });
+                          } else if (num >= 1 && num <= 12) {
+                            setRepeatMonths(num);
+                          }
+                        }
+                      }
+                    }}
+                    onBlur={() => {
+                      // When field loses focus, ensure it has a valid value
+                      if (repeatMonthsInput === "" || parseInt(repeatMonthsInput) < 1 || isNaN(parseInt(repeatMonthsInput))) {
+                        setRepeatMonthsInput("2");
+                        setRepeatMonths(1);
+                      } else {
+                        // Ensure the repeat months is synchronized
+                        const num = parseInt(repeatMonthsInput);
+                        if (num > 12) {
+                          // If over 12, set to 12
+                          setRepeatMonthsInput("12");
+                          setRepeatMonths(12);
+                        } else if (num >= 1 && num <= 12) {
+                          setRepeatMonths(num);
+                        }
+                      }
+                    }}
+                    placeholder="1-12"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    otherStyles="mt-0 mb-0"
+                  />
+                </View>
+              )}
+            </View>
+          )}
 
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>

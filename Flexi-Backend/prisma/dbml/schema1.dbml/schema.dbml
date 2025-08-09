@@ -96,6 +96,10 @@ Table Bill {
   cashStatus Boolean [not null, default: false]
   image String
   deleted Boolean [default: false]
+  repeat Boolean [default: false]
+  repeatMonths Int [default: 0]
+  note String
+  TaxType taxType [default: 'Individual']
   memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
@@ -427,7 +431,7 @@ Enum BusinessType {
   Restaurant
   Bar
   Cafe
-  Hotel
+  Rental
   Tutor
   Influencer
   Other

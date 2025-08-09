@@ -131,7 +131,7 @@
         "Restaurant": "Restaurant",
         "Bar": "Bar",
         "Cafe": "Cafe",
-        "Hotel": "Hotel / Resort",
+        "Rental": "Property Rental / Resort",
         "Tutor": "Tutor / Coach",
         "Influencer": "Influencer",
         "Other": "Other"
@@ -1149,6 +1149,8 @@
       "notSpecified": "Not Specified"
     },
     "clearFields": "CLEAR",
+    "repeatBill": "Repeat Monthly",
+    "repeatMonths" : "Repeat every",
     "customerTaxId": "Tax ID",
     "enterTaxId": "Enter Tax ID",
     "addProductItem": "Add Product",

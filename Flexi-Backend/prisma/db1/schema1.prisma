@@ -105,7 +105,7 @@ enum BusinessType {
   Restaurant
   Bar
   Cafe
-  Hotel
+  Rental
   Tutor
   Influencer
   Other
@@ -242,7 +242,10 @@ model Bill {
   cashStatus Boolean       @default(false)
   image      String?
   deleted    Boolean?      @default(false)
-
+  repeat     Boolean?      @default(false)
+  repeatMonths Int?        @default(0)
+  note       String?
+  TaxType    taxType? @default(Individual)
   // Relation   
   memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])

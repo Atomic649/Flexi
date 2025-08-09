@@ -105,7 +105,7 @@ enum BusinessType {
   Restaurant
   Bar
   Cafe
-  Hotel
+  Rental
   Tutor
   Influencer
   Other
@@ -222,34 +222,37 @@ model BusinessAcc {
 }
 
 model Bill {
-  id         Int           @id @default(autoincrement())
-  billId     String
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  cName      String
-  cLastName  String?
-  cPhone     String?
-  cGender    Gender?
-  cAddress   String?
-  cProvince  String?
-  cPostId    String?
-  cTaxId     String?
-  product    ProductItem[]
-  payment    Payment
-  total      Int
-  purchaseAt DateTime      @default(now())
-  platform   IncomeChannel
-  cashStatus Boolean       @default(false)
-  image      String?
-  deleted    Boolean?      @default(false)
-
+  id           Int           @id @default(autoincrement())
+  billId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  cName        String
+  cLastName    String?
+  cPhone       String?
+  cGender      Gender?
+  cAddress     String?
+  cProvince    String?
+  cPostId      String?
+  cTaxId       String?
+  product      ProductItem[]
+  payment      Payment
+  total        Int
+  purchaseAt   DateTime      @default(now())
+  platform     IncomeChannel
+  cashStatus   Boolean       @default(false)
+  image        String?
+  deleted      Boolean?      @default(false)
+  repeat       Boolean?      @default(false)
+  repeatMonths Int?          @default(0)
+  note         String?
+  TaxType      taxType?      @default(Individual)
   // Relation   
-  memberId    String
-  member      Member      @relation(fields: [memberId], references: [uniqueId])
-  businessAcc Int
-  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  storeId     Int
-  store       Store       @relation(fields: [storeId], references: [id])
+  memberId     String
+  member       Member        @relation(fields: [memberId], references: [uniqueId])
+  businessAcc  Int
+  businessId   BusinessAcc   @relation(fields: [businessAcc], references: [id])
+  storeId      Int
+  store        Store         @relation(fields: [storeId], references: [id])
 }
 
 model ProductItem {

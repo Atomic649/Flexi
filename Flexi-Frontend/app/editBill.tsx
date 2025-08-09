@@ -361,6 +361,8 @@ export default function EditBill() {
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
+        repeat: false, // Set to false for single bill update
+        repeatMonths: 1, // Set to 1 for single bill update
       });
       if (data.error) throw new Error(data.error);
       setAlertConfig({

@@ -48,6 +48,8 @@ interface billInput {
   storeId: number;
   total?: number;
   productItems: ProductItemInput[];
+  repeat?: boolean;
+  repeatMonths?: number;
 }
 
 // Validate the request body
@@ -74,6 +76,8 @@ const schema = Joi.object({
   image: Joi.string().allow(""),
   storeId: Joi.number(),
   total: Joi.number(),
+  repeat: Joi.boolean().optional(),
+  repeatMonths: Joi.number().min(1).max(12).optional(),
   productItems: Joi.array()
     .items(
       Joi.object({
@@ -143,43 +147,125 @@ const createBill = async (req: Request, res: Response) => {
       (sum, item) => sum + item.quantity * item.unitPrice,
       0
     );
-    // Create a new bill into the database
+
+    // Handle repeat bills
     try {
-      const bill = await prisma.bill.create({
-        data: {
-          billId: billInput.billId,
-          cName: billInput.cName,
-          cLastName: billInput.cLastName,
-          cPhone: billInput.cPhone,
-          cGender: billInput.cGender,
-          cAddress: billInput.cAddress,
-          cPostId: billInput.cPostId,
-          cProvince: billInput.cProvince,
-          cTaxId: billInput.cTaxId,
-          product: {
-            create: billInput.productItems.map((item) => ({
-              product: item.product,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              unit: item.unit, // Assuming unit is part of the product item
-            })),
+      const createdBills = [];
+      const currentDate = new Date();
+      const originalDate = new Date(billInput.purchaseAt);
+      
+      if (billInput.repeat && billInput.repeatMonths && billInput.repeatMonths > 1) {
+        // Create repeat bills for each month
+        for (let i = 0; i < billInput.repeatMonths; i++) {
+          // Calculate the date for each month (same day of month)
+          const billDate = new Date(originalDate);
+          billDate.setMonth(originalDate.getMonth() + i);
+          
+          // Only create bills for future dates (don't create past bills)
+          if (billDate >= currentDate || i === 0) {
+            // Generate unique billId for each month
+            const billYear = billDate.getFullYear();
+            const latestBillForYear = await prisma.bill.findFirst({
+              where: {
+                billId: {
+                  startsWith: `INV${billYear}/`,
+                },
+              },
+              orderBy: {
+                id: "desc",
+              },
+            });
+            
+            let monthRunningNumber = 1;
+            if (latestBillForYear && latestBillForYear.billId) {
+              const match = latestBillForYear.billId.match(/INV\d{4}\/(\d+)/);
+              if (match && match[1]) {
+                monthRunningNumber = parseInt(match[1], 10) + 1;
+              }
+            }
+            
+            const monthBillId = `INV${billYear}/${monthRunningNumber}`;
+            
+            const bill = await prisma.bill.create({
+              data: {
+                billId: monthBillId,
+                cName: billInput.cName,
+                cLastName: billInput.cLastName,
+                cPhone: billInput.cPhone,
+                cGender: billInput.cGender,
+                cAddress: billInput.cAddress,
+                cPostId: billInput.cPostId,
+                cProvince: billInput.cProvince,
+                cTaxId: billInput.cTaxId,
+                product: {
+                  create: billInput.productItems.map((item) => ({
+                    product: item.product,
+                    quantity: item.quantity,
+                    unitPrice: item.unitPrice,
+                    unit: item.unit,
+                  })),
+                },
+                payment: billInput.payment,
+                platform: store.platform,
+                cashStatus: billInput.cashStatus,
+                memberId: billInput.memberId,
+                purchaseAt: billDate,
+                businessAcc: billInput.businessAcc,
+                storeId: billInput.storeId,
+                image: req.file?.filename ?? "",
+                total
+              },
+            });
+            
+            createdBills.push(bill);
+          }
+        }
+        
+        res.json({
+          status: "ok",
+          message: `Created ${createdBills.length} bills successfully for ${billInput.repeatMonths} months`,
+          bills: createdBills,
+          totalBills: createdBills.length
+        });
+      } else {
+        // Create single bill
+        const bill = await prisma.bill.create({
+          data: {
+            billId: billInput.billId,
+            cName: billInput.cName,
+            cLastName: billInput.cLastName,
+            cPhone: billInput.cPhone,
+            cGender: billInput.cGender,
+            cAddress: billInput.cAddress,
+            cPostId: billInput.cPostId,
+            cProvince: billInput.cProvince,
+            cTaxId: billInput.cTaxId,
+            product: {
+              create: billInput.productItems.map((item) => ({
+                product: item.product,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                unit: item.unit,
+              })),
+            },
+            payment: billInput.payment,
+            platform: store.platform,
+            cashStatus: billInput.cashStatus,
+            memberId: billInput.memberId,
+            purchaseAt: billInput.purchaseAt,
+            businessAcc: billInput.businessAcc,
+            storeId: billInput.storeId,
+            image: req.file?.filename ?? "",
+            total        
           },
-          payment: billInput.payment,
-          platform: store.platform, // IncomeChannel
-          cashStatus: billInput.cashStatus,
-          memberId: billInput.memberId,
-          purchaseAt: billInput.purchaseAt,
-          businessAcc: billInput.businessAcc,
-          storeId: billInput.storeId,
-          image: req.file?.filename ?? "",
-          total        
-        },
-      });
-      res.json({
-        status: "ok",
-        message: "Created bill successfully",
-        bill: bill,
-      });
+        });
+        
+        res.json({
+          status: "ok",
+          message: "Created bill successfully",
+          bill: bill,
+        });
+      }
     } catch (e) {
       console.error(e);
       res.status(500).json({ message: "failed to create bill" });
