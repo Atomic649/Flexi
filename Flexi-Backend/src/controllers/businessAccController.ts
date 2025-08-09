@@ -181,7 +181,8 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       "Tiktok Affiliate",
       "Shopee Affiliate",
       "Clip",
-      "Live"
+      "Live",
+      "Post"
       ];
 
       for (const name of defaultProducts) {
@@ -204,7 +205,11 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       const defaultProducts = [
       "Tiktok",
       "Shopee",
-    
+      "Facebook",
+      "Instagram",
+      "X",
+      "Youtube",
+      "Line",    
       ];
 
       for (const name of defaultProducts) {

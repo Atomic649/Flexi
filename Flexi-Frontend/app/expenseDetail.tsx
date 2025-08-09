@@ -19,6 +19,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import { router } from "expo-router";
+import i18n from "@/i18n";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -283,6 +284,9 @@ export default function ExpenseDetail({
 
               <TextInput
                 style={{
+                   fontFamily: i18n.language === "th"
+                    ? "IBMPlexSansThai-Medium"
+                    : "Poppins-Regular",
                   textAlign: "center",
                   fontSize: 16,
                   color: theme === "dark" ? "#818181" : "#68655f",
@@ -308,7 +312,9 @@ export default function ExpenseDetail({
                     ? "bg-primary-100 border-black-200"
                     : "bg-white border-gray-100"
                 }`}
-                style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}
+                style={{  fontFamily: i18n.language === "th"
+                    ? "IBMPlexSansThai-Medium"
+                    : "Poppins-Regular",color: theme === "dark" ? "#ffffff" : "#000000" }}
                 value={note}
                 onChangeText={setNote}
                 placeholder={t("expense.detail.note")}
