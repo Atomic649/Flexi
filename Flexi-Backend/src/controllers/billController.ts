@@ -50,7 +50,7 @@ interface billInput {
   productItems: ProductItemInput[];
   repeat?: boolean;
   repeatMonths?: number;
-  DocumentType: "Invoice" | "Receipt" | "Quotation";
+  DocumentType: ("Invoice" | "Receipt" | "Quotation")[];
   note?: string; // Optional note 
   discount?: number; // Optional discount field
 }
@@ -92,7 +92,7 @@ const schema = Joi.object({
     )
     .min(1)
     .required(),
-  DocumentType: Joi.string().valid( "Invoice", "Receipt", "Quotation").required(),
+  DocumentType: Joi.array().items(Joi.string().valid("Invoice", "Receipt", "Quotation")).min(1).required(),
   note: Joi.string().allow("").optional(), // Optional note field
   discount: Joi.number().min(0).optional(), // Optional discount field
 });
@@ -221,7 +221,7 @@ const createBill = async (req: Request, res: Response) => {
                 image: req.file?.filename ?? "",
                 discount: billInput.discount || 0, // Include discount if provided
                 total,
-                DocumentType: billInput.DocumentType,
+                DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
 
               },
@@ -268,7 +268,7 @@ const createBill = async (req: Request, res: Response) => {
             image: req.file?.filename ?? "",
             discount: billInput.discount || 0, // Include discount if provided
             total,
-            DocumentType: billInput.DocumentType     ,
+            DocumentType: billInput.DocumentType[0], // Take first element from array
           note: billInput.note || "", // Optional note field     
           },
         });
@@ -429,7 +429,7 @@ const updateBill = async (req: Request, res: Response) => {
           total: total,
           note: billInput.note || "", // Optional note field
           discount: billInput.discount || 0, // Optional discount 
-          DocumentType: billInput.DocumentType, // Document type
+          DocumentType: billInput.DocumentType[0], // Take first element from array
 
         },
       });

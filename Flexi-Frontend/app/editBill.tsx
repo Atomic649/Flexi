@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -18,6 +18,7 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
+import CallAPIBusiness from "@/api/business_api";
 import DropdownClear from "@/components/DropdownClear";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -113,6 +114,8 @@ export default function EditBill() {
 
   // Document type progression state
   const [selectedDocumentType, setSelectedDocumentType] = useState<"QA" | "IV" | "RE">("QA");
+  const [showProgressSection, setShowProgressSection] = useState(true);
+  const [availableDocumentTypes, setAvailableDocumentTypes] = useState<string[]>([]);
 
   // Helper functions for DocumentType progression UI
   const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
@@ -165,12 +168,47 @@ export default function EditBill() {
     return mapping[type];
   };
 
+  // Helper functions to check document type availability
+  const isDocumentTypeAvailable = (type: string): boolean => {
+    return availableDocumentTypes.includes(type);
+  };
+
+  const getAvailableSteps = (): ("QA" | "IV" | "RE")[] => {
+    const steps: ("QA" | "IV" | "RE")[] = [];
+    if (isDocumentTypeAvailable("Quotation")) steps.push("QA");
+    if (isDocumentTypeAvailable("Invoice")) steps.push("IV");
+    if (isDocumentTypeAvailable("Receipt")) steps.push("RE");
+    return steps;
+  };
+
   // Fetch bill data
   useEffect(() => {
     const fetchBillData = async () => {
       if (!id) return;
       try {
         setIsLoading(true);
+        
+        // First fetch business details to get available document types
+        const memberId = await getMemberId();
+        let businessDocTypes: string[] = [];
+        
+        if (memberId) {
+          try {
+            const businessResponse = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+            if (businessResponse && businessResponse.DocumentType) {
+              if (Array.isArray(businessResponse.DocumentType)) {
+                businessDocTypes = businessResponse.DocumentType;
+              } else if (typeof businessResponse.DocumentType === 'string') {
+                businessDocTypes = [businessResponse.DocumentType];
+              }
+              setAvailableDocumentTypes(businessDocTypes);
+            }
+          } catch (error) {
+            console.error("Error fetching business details:", error);
+          }
+        }
+        
+        // Then fetch bill data
         const billData = await CallAPIBill.getBillByIdAPI(Number(id));
         setCName(billData.cName);
         setCLastName(billData.cLastName);
@@ -188,9 +226,31 @@ export default function EditBill() {
         if (billData.note) {
           setNote(billData.note);
         }
-        // Set document type from API data
+        // Set document type from API data, but only if it's available in business
         if (billData.DocumentType) {
-          setSelectedDocumentType(getDocumentTypeFromAPI(billData.DocumentType));
+          const billDocType = getDocumentTypeFromAPI(billData.DocumentType);
+          // Check if the bill's document type is available in the business settings
+          const billDocTypeName = getDocumentTypeForAPI(billDocType);
+          if (businessDocTypes.length === 0 || businessDocTypes.includes(billDocTypeName)) {
+            setSelectedDocumentType(billDocType);
+          } else {
+            // If bill's document type is not available, set to first available type
+            if (businessDocTypes.includes("Quotation")) {
+              setSelectedDocumentType("QA");
+            } else if (businessDocTypes.includes("Invoice")) {
+              setSelectedDocumentType("IV");
+            } else if (businessDocTypes.includes("Receipt")) {
+              setSelectedDocumentType("RE");
+            }
+          }
+        }
+        
+        // Set progress section visibility based on business document types
+        if (businessDocTypes.length === 1 && businessDocTypes[0] === "Receipt") {
+          setShowProgressSection(false);
+          setSelectedDocumentType("RE");
+        } else {
+          setShowProgressSection(true);
         }
         // Set taxType based on fields
         if (billData.cTaxId && billData.cTaxId.length > 0) {
@@ -267,6 +327,56 @@ export default function EditBill() {
     };
 
     fetchProductChoice();
+
+    // Fetch business details to get business type and document types
+    const fetchBusinessDetails = async () => {
+      try {
+        const memberId = await getMemberId();
+        if (memberId) {
+          const response = await CallAPIBusiness.getBusinessDetailsAPI(
+            memberId
+          );
+          
+          // Handle DocumentType from business details
+          if (response && response.DocumentType) {
+            console.log("DocumentType fetched:", response.DocumentType);
+            
+            let docTypes: string[] = [];
+            if (Array.isArray(response.DocumentType)) {
+              docTypes = response.DocumentType;
+            } else if (typeof response.DocumentType === 'string') {
+              docTypes = [response.DocumentType];
+            }
+            
+            setAvailableDocumentTypes(docTypes);
+            
+            // Check if DocumentType is only "Receipt"
+            if (docTypes.length === 1 && docTypes[0] === "Receipt") {
+              // Hide Progress Section and set DocumentType to Receipt
+              setShowProgressSection(false);
+              setSelectedDocumentType("RE");
+              console.log("Only Receipt document type available - hiding progress section");
+            } else {
+              // Show Progress Section for multiple document types
+              setShowProgressSection(true);
+              
+              // Set default selected document type to first available
+              if (docTypes.includes("Quotation")) {
+                setSelectedDocumentType("QA");
+              } else if (docTypes.includes("Invoice")) {
+                setSelectedDocumentType("IV");
+              } else if (docTypes.includes("Receipt")) {
+                setSelectedDocumentType("RE");
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching business details:", error);
+      }
+    };
+
+    fetchBusinessDetails();
   }, []);
 
   // Product choice
@@ -420,7 +530,7 @@ export default function EditBill() {
         businessAcc,
         storeId,
         image,
-        DocumentType: getDocumentTypeForAPI(selectedDocumentType),
+        DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
         productItems: productItems.map((item) => ({
           product: item.product,
@@ -514,205 +624,131 @@ export default function EditBill() {
       </Modal>
 
       <ScrollView>
-        {/* Enhanced DocumentType Progression */}
-        <View style={{               
-          backgroundColor: "#00000000"
-        }}>        
-          
-          {/* Enhanced Progress Container */}
-          <View style={{ 
-            backgroundColor: "transparent",
-            borderRadius: 20,
-            padding: 10,
-            marginVertical: 5,
-            borderWidth: 0,
-            borderColor: "transparent"
-          }}>
+        {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
+        {showProgressSection && (
+          <View style={{               
+            backgroundColor: "#00000000"
+          }}>        
             
-            {/* Progress Line Container */}
+            {/* Enhanced Progress Container */}
             <View style={{ 
-              flexDirection: "row", 
-              alignItems: "center", 
-              justifyContent: "center",
               backgroundColor: "transparent",
-              paddingVertical: 5
+              borderRadius: 20,
+              padding: 10,
+              marginVertical: 5,
+              borderWidth: 0,
+              borderColor: "transparent"
             }}>
               
-              {/* QA (Quotation) */}
-              <TouchableOpacity 
-                style={{ 
-                  alignItems: "center", 
-                  backgroundColor: "transparent"
-                }}
-                onPress={() => isEditMode ? setSelectedDocumentType("QA") : null}
-                activeOpacity={0.7}
-              >
-                <View style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 25,
-                  backgroundColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
-                  borderWidth: 3,
-                  borderColor: isStepCompleted("QA") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: getStepOpacity("QA"),
-                  shadowColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.6,
-                  shadowRadius: 8,
-                  elevation: isStepCompleted("QA") ? 8 : 0,
-                }}>
-                  <Ionicons
-                    name="document-text-outline"
-                    size={24}
-                    color={isStepCompleted("QA") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("QA")}
-                  />
-                </View>
-                
-                <CustomText style={{
-                  fontSize: 10,
-                  color: getStepDescriptionColor("QA"),
-                  textAlign: "center",
-                  marginTop: 5
-                }}>
-                  {t("bill.quotation")}
-                </CustomText>
-              </TouchableOpacity>
-
-              {/* Connection Line 1 - Dots */}
-              <View style={{
-                width: 60,
-                height: 4,
-                marginHorizontal: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 5
+              {/* Progress Line Container */}
+              <View style={{ 
+                flexDirection: "row", 
+                alignItems: "center", 
+                justifyContent: "center",
+                backgroundColor: "transparent",
+                paddingVertical: 5
               }}>
-                {[...Array(5)].map((_, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      width: 4,
-                      height: 4,
-                      borderRadius: 2,
-                      backgroundColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
-                    }}
-                  />
-                ))}
+                
+                {getAvailableSteps().map((step, index) => {
+                  const stepConfig = {
+                    QA: { 
+                      icon: "document-text-outline", 
+                      label: t("bill.quotation"),
+                      type: "Quotation"
+                    },
+                    IV: { 
+                      icon: "receipt-outline", 
+                      label: t("bill.invoice"),
+                      type: "Invoice"
+                    },
+                    RE: { 
+                      icon: "checkmark-circle-outline", 
+                      label: t("bill.receipt"),
+                      type: "Receipt"
+                    }
+                  };
+                  
+                  const availableSteps = getAvailableSteps();
+                  const isLastStep = index === availableSteps.length - 1;
+                  
+                  return (
+                    <React.Fragment key={step}>
+                      {/* Step Circle */}
+                      <TouchableOpacity 
+                        style={{ 
+                          alignItems: "center", 
+                          backgroundColor: "transparent"
+                        }}
+                        onPress={() => isEditMode ? setSelectedDocumentType(step) : null}
+                        activeOpacity={0.7}
+                      >
+                        <View style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 25,
+                          backgroundColor: isStepCompleted(step) ? "#0feac2" : "transparent",
+                          borderWidth: 3,
+                          borderColor: isStepCompleted(step) ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                          alignItems: "center",
+                          justifyContent: "center",
+                          opacity: getStepOpacity(step),
+                          shadowColor: isStepCompleted(step) ? "#0feac2" : "transparent",
+                          shadowOffset: { width: 0, height: 0 },
+                          shadowOpacity: 0.6,
+                          shadowRadius: 8,
+                          elevation: isStepCompleted(step) ? 8 : 0,
+                        }}>
+                          <Ionicons
+                            name={stepConfig[step].icon as any}
+                            size={24}
+                            color={isStepCompleted(step) ?  (theme === "dark" ? "#18181b" : "#ffffff") : getStepIconColor(step)}
+                          />
+                        </View>
+                        
+                        <CustomText style={{
+                          fontSize: 10,
+                          color: getStepDescriptionColor(step),
+                          textAlign: "center",
+                          marginTop: 5
+                        }}>
+                          {stepConfig[step].label}
+                        </CustomText>
+                      </TouchableOpacity>
+                      
+                      {/* Connection Line - Only show if not last step */}
+                      {!isLastStep && (
+                        <View style={{
+                          width: 60,
+                          height: 4,
+                          marginHorizontal: 10,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          paddingHorizontal: 5
+                        }}>
+                          {[...Array(5)].map((_, dotIndex) => (
+                            <View
+                              key={dotIndex}
+                              style={{
+                                width: 4,
+                                height: 4,
+                                borderRadius: 2,
+                                backgroundColor: index < availableSteps.findIndex(s => s === selectedDocumentType) 
+                                  ? "#0feac2" 
+                                  : (theme === "dark" ? "#444" : "#ddd"),
+                              }}
+                            />
+                          ))}
+                        </View>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </View>
 
-              {/* IV (Invoice) */}
-              <TouchableOpacity 
-                style={{ 
-                  alignItems: "center", 
-                  backgroundColor: "transparent"
-                }}
-                onPress={() => isEditMode ? setSelectedDocumentType("IV") : null}
-                activeOpacity={0.7}
-              >
-                <View style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 25,
-                  backgroundColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
-                  borderWidth: 3,
-                  borderColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: getStepOpacity("IV"),
-                  shadowColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.6,
-                  shadowRadius: 8,
-                  elevation: isStepCompleted("IV") ? 8 : 0,
-                }}>
-                  <Ionicons
-                    name="receipt-outline"
-                    size={24}
-                    color={isStepCompleted("IV") ?(theme === "dark" ? "#18181B" : "#ffffff")  : getStepIconColor("IV")}
-                  />
-                </View>
-                
-                <CustomText style={{
-                  fontSize: 10,
-                  color: getStepDescriptionColor("IV"),
-                  textAlign: "center",
-                  marginTop: 5
-                }}>
-                  {t("bill.invoice")}
-                </CustomText>
-              </TouchableOpacity>
-
-              {/* Connection Line 2 - Dots */}
-              <View style={{
-                width: 60,
-                height: 4,
-                marginHorizontal: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 5
-              }}>
-                {[...Array(5)].map((_, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      width: 4,
-                      height: 4,
-                      borderRadius: 2,
-                      backgroundColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
-                    }}
-                  />
-                ))}
-              </View>
-
-              {/* RE (Receipt) */}
-              <TouchableOpacity 
-                style={{ 
-                  alignItems: "center", 
-                  backgroundColor: "transparent"
-                }}
-                onPress={() => isEditMode ? setSelectedDocumentType("RE") : null}
-                activeOpacity={0.7}
-              >
-                <View style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 25,
-                  backgroundColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
-                  borderWidth: 3,
-                  borderColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: getStepOpacity("RE"),
-                  shadowColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.6,
-                  shadowRadius: 8,
-                  elevation: isStepCompleted("RE") ? 8 : 0,
-                }}>
-                  <Ionicons
-                    name="checkmark-circle-outline"
-                    size={24}
-                    color={isStepCompleted("RE") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("RE")}
-                  />
-                </View>
-                
-                <CustomText style={{
-                  fontSize: 10,
-                  color: getStepDescriptionColor("RE"),
-                  textAlign: "center",
-                  marginTop: 5
-                }}>
-                  {t("bill.receipt")}
-                </CustomText>
-              </TouchableOpacity>
             </View>
-
           </View>
-        </View>
+        )}
         <View
           className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20"
           style={{

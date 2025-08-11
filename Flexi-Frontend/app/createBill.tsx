@@ -67,6 +67,7 @@ export default function CreateBill() {
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
 
+
   // Product information
   // [product, setProduct] = useState("");
   const [payment, setPayment] = useState("");
@@ -131,10 +132,6 @@ export default function CreateBill() {
     return theme === "dark" ? "#666" : "#999";
   };
 
-  const getStepTextColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isStepCompleted(step)) return "#0feac2";
-    return theme === "dark" ? "#666" : "#999";
-  };
 
   const getStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
     if (isStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
@@ -152,6 +149,16 @@ export default function CreateBill() {
     if (isDocumentTypeAvailable("Invoice")) steps.push("IV");
     if (isDocumentTypeAvailable("Receipt")) steps.push("RE");
     return steps;
+  };
+
+  // Helper function to convert internal document type to API format
+  const getDocumentTypeForAPI = (type: "QA" | "IV" | "RE"): "Quotation" | "Invoice" | "Receipt" => {
+    const mapping = {
+      QA: "Quotation" as const,
+      IV: "Invoice" as const,
+      RE: "Receipt" as const
+    };
+    return mapping[type];
   };
 
   useEffect(() => {
@@ -313,6 +320,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
+        
           // Set storeId to the store with name "Tiktok Affiliate" if it exists
           const tiktokStore = stores.find(
             (store) => store.accName === "Tiktok"
@@ -338,6 +346,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
+  
           // Set storeId to the store with name "Shopee Affiliate" if it exists
           const shopeeStore = stores.find(
             (store) => store.accName === "Shopee"
@@ -501,7 +510,7 @@ export default function CreateBill() {
         note,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
-        DocumentType: "Bill", // Default to Bill, can be changed later
+        DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
       });
 
       if (data.error) throw new Error(data.error);
@@ -682,7 +691,7 @@ export default function CreateBill() {
                           <Ionicons
                             name={stepConfig[step].icon as any}
                             size={24}
-                            color={isStepCompleted(step) ? "#ffffff" : getStepIconColor(step)}
+                            color={isStepCompleted(step) ?  (theme === "dark" ? "#18181b" : "#ffffff") : getStepIconColor(step)}
                           />
                         </View>
                         
