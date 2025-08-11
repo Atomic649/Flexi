@@ -107,7 +107,8 @@
       "loginButton": "Login",
       "validation": {
         "incomplete": "Incomplete data",
-        "invalidData": "Please enter valid data"
+        "invalidData": "Please enter valid data",
+        "selectDocumentType": "Please select at least one document type"
       },
       "alerts": {
         "success": "Registration successful",
@@ -139,6 +140,12 @@
         "Tutor": "Tutor / Coach",
         "Influencer": "Influencer",
         "Other": "Other"
+      },
+      "documentTypes": "Document Types",
+      "documentType": {
+        "Invoice": "Invoice",
+        "Receipt": "Receipt/Tax Invoice",
+        "Quotation": "Quotation"
       }
     }
   },

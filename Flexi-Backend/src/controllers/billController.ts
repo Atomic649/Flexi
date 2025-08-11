@@ -50,6 +50,7 @@ interface billInput {
   productItems: ProductItemInput[];
   repeat?: boolean;
   repeatMonths?: number;
+  DocumentType: "Invoice" | "Receipt" | "Quotation";
 }
 
 // Validate the request body
@@ -89,6 +90,7 @@ const schema = Joi.object({
     )
     .min(1)
     .required(),
+  DocumentType: Joi.string().valid( "Invoice", "Receipt", "Quotation").required()
 });
 
 //Create a New Bill - Post
@@ -213,7 +215,8 @@ const createBill = async (req: Request, res: Response) => {
                 businessAcc: billInput.businessAcc,
                 storeId: billInput.storeId,
                 image: req.file?.filename ?? "",
-                total
+                total,
+                DocumentType: billInput.DocumentType
               },
             });
             
@@ -256,7 +259,8 @@ const createBill = async (req: Request, res: Response) => {
             businessAcc: billInput.businessAcc,
             storeId: billInput.storeId,
             image: req.file?.filename ?? "",
-            total        
+            total,
+            DocumentType: billInput.DocumentType          
           },
         });
         
@@ -301,7 +305,8 @@ const getBills = async (req: Request, res: Response) => {
             unit: true
           },
         }, // Include product items
-        repeat :true
+        repeat :true,
+        DocumentType: true,
         
       
       },

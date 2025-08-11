@@ -107,7 +107,8 @@
       "loginButton": "เข้าสู่ระบบ",
       "validation": {
         "incomplete": "ข้อมูลไม่ครบถ้วน",
-        "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง"
+        "invalidData": "กรุณากรอกข้อมูลที่ถูกต้อง",
+        "selectDocumentType": "กรุณาเลือกประเภทเอกสารอย่างน้อย 1 ประเภท"
       },
       "alerts": {
         "success": "ลงทะเบียนสำเร็จ",
@@ -140,7 +141,14 @@
         "Tutor": "ติวเตอร์ / โค้ช",
         "Influencer": "อินฟลูเอนเซอร์",
         "Other": "อื่นๆ"
-      }
+      },
+      "documentTypes": "ประเภทเอกสารที่ใช้งาน",
+      "documentType": {
+        "Invoice": "ใบแจ้งหนี้",
+        "Receipt": "ใบเสร็จรับเงิน/ใบกำกับภาษี",
+        "Quotation": "ใบเสนอราคา"
+      },
+      "required": "จำเป็น"
     }
   },
   "product": {

@@ -158,7 +158,8 @@ exports.Prisma.BusinessAccScalarFieldEnum = {
   businessType: 'businessType',
   taxType: 'taxType',
   userId: 'userId',
-  memberId: 'memberId'
+  memberId: 'memberId',
+  DocumentType: 'DocumentType'
 };
 
 exports.Prisma.BillScalarFieldEnum = {
@@ -185,6 +186,7 @@ exports.Prisma.BillScalarFieldEnum = {
   repeatMonths: 'repeatMonths',
   note: 'note',
   TaxType: 'TaxType',
+  DocumentType: 'DocumentType',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'
@@ -423,6 +425,12 @@ exports.BusinessType = exports.$Enums.BusinessType = {
 exports.taxType = exports.$Enums.taxType = {
   Juristic: 'Juristic',
   Individual: 'Individual'
+};
+
+exports.DocumentType = exports.$Enums.DocumentType = {
+  Invoice: 'Invoice',
+  Receipt: 'Receipt',
+  Quotation: 'Quotation'
 };
 
 exports.Gender = exports.$Enums.Gender = {

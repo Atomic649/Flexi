@@ -147,6 +147,12 @@ enum OptionName {
   QuantityLimit
 }
 
+enum DocumentType {
+  Invoice
+  Receipt
+  Quotation
+}
+
 model User {
   id               Int           @id @default(autoincrement())
   email            String        @unique
@@ -197,22 +203,23 @@ model Member {
 }
 
 model BusinessAcc {
-  id               Int          @id @default(autoincrement())
-  createdAt        DateTime?    @default(now())
-  updatedAt        DateTime?    @updatedAt
-  businessName     String       @unique
-  businessUserName String?      @unique
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime?      @default(now())
+  updatedAt        DateTime?      @updatedAt
+  businessName     String         @unique
+  businessUserName String?        @unique
   businessAvatar   String?
   businessAddress  String?
   businessWebsite  String?
   businessPhone    String?
-  vat              Boolean?     @default(false)
-  vatId            String       @unique
-  businessType     BusinessType @default(OnlineSale)
-  taxType          taxType      @default(Individual)
+  vat              Boolean?       @default(false)
+  vatId            String         @unique
+  businessType     BusinessType   @default(OnlineSale)
+  taxType          taxType        @default(Individual)
   userId           Int
   memberId         String?
-  user             User         @relation(fields: [userId], references: [id])
+  DocumentType     DocumentType[] @default([Receipt])
+  user             User           @relation(fields: [userId], references: [id])
   AllMember        Member[]
   billRecord       Bill[]
   expenseRecord    Expense[]
@@ -247,13 +254,15 @@ model Bill {
   repeatMonths Int?          @default(0)
   note         String?
   TaxType      taxType?      @default(Individual)
+  DocumentType DocumentType? @default(Receipt)
+
   // Relation   
-  memberId     String
-  member       Member        @relation(fields: [memberId], references: [uniqueId])
-  businessAcc  Int
-  businessId   BusinessAcc   @relation(fields: [businessAcc], references: [id])
-  storeId      Int
-  store        Store         @relation(fields: [storeId], references: [id])
+  memberId    String
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  storeId     Int
+  store       Store       @relation(fields: [storeId], references: [id])
 }
 
 model ProductItem {

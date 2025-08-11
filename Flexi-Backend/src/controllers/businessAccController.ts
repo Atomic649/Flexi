@@ -30,6 +30,7 @@ interface businessAccInput {
   businessWebsite?: string;
   businessPhone?: string;
   vat?: boolean;
+  DocumentType?: ("Invoice" | "Receipt" | "Quotation")[];
 }
 
 // validate the request body
@@ -45,6 +46,10 @@ const schema = Joi.object({
   businessPhone: Joi.string(),
   buisnessWebsite: Joi.string(),
   vat: Joi.boolean().optional().default(false),
+  DocumentType: Joi.array()
+    .items(Joi.string().valid("Invoice", "Receipt", "Quotation"))
+    .optional()
+    .default(["Receipt"]),
 });
 
 // Create a Business Account - Post
@@ -70,6 +75,21 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         message: "business account already exists",
       });
     }
+
+    //List of DocumentType
+    const validDocumentTypes = ["Invoice", "Receipt", "Quotation"];
+    if (businessAccInput.DocumentType && businessAccInput.DocumentType.length > 0) {
+      const invalidTypes = businessAccInput.DocumentType.filter(
+        type => !validDocumentTypes.includes(type)
+      );
+      if (invalidTypes.length > 0) {
+        return res.status(400).json({
+          status: "error",
+          message: `Invalid DocumentType(s): ${invalidTypes.join(", ")}. Valid options are: ${validDocumentTypes.join(", ")}`,
+        });
+      }
+    }
+
     const businessAcc = await prisma.businessAcc.create({
       data: {
         businessName: businessAccInput.businessName,
@@ -80,6 +100,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         memberId: businessAccInput.memberId,
         businessWebsite: businessAccInput.businessWebsite,
         businessPhone: businessAccInput.businessPhone,
+        DocumentType: businessAccInput.DocumentType || ["Receipt"],
       },
     });
     res.json({

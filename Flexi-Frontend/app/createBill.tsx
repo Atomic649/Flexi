@@ -408,7 +408,8 @@ export default function CreateBill() {
           quantity: Number(item.quantity),
         })),
         repeat: isRepeat,
-        repeatMonths: isRepeat ? repeatMonths : 1
+        repeatMonths: isRepeat ? repeatMonths : 1,
+        DocumentType: "Bill", // Default to Bill, can be changed later
       });
 
       if (data.error) throw new Error(data.error);

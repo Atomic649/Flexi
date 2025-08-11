@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Text,
   Switch,
+  TouchableOpacity,
 } from "react-native";
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
@@ -20,6 +21,7 @@ import CallAPIBusiness from "@/api/business_api";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { useTheme } from "@/providers/ThemeProvider";
 import { CustomText } from "@/components/CustomText";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -32,6 +34,7 @@ export default function Register() {
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [isVatRegistered, setIsVatRegistered] = useState(false);
+  const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation")[]>(["Receipt"]);
   const [error, setError] = useState("");
 
   // Add alert config state
@@ -59,8 +62,8 @@ export default function Register() {
     if (!businessName || !taxType || !vatId || !businessType) {
       setAlertConfig({
         visible: true,
-        title: t("auth.register.validation.incomplete"),
-        message: t("auth.register.validation.invalidData"),
+        title: t("auth.businessRegister.validation.incomplete"),
+        message: t("auth.businessRegister.validation.invalidData"),
         buttons: [
           {
             text: t("common.ok"),
@@ -84,6 +87,7 @@ export default function Register() {
         taxType,
         userId: Number(userId),
         memberId: uniqueId,
+        DocumentType: documentTypes,
       });
 
       if (data.error) throw new Error(data.error);
@@ -109,6 +113,21 @@ export default function Register() {
       setError(error.message);
     }
   };
+
+  // Handle document type selection
+  const handleDocumentTypeToggle = (type: "Invoice" | "Receipt" | "Quotation") => {
+    // Don't allow unchecking Receipt as it's required
+    if (type === "Receipt") return;
+    
+    setDocumentTypes(prev => {
+      if (prev.includes(type)) {
+        return prev.filter(t => t !== type);
+      } else {
+        return [...prev, type];
+      }
+    });
+  };
+
  const scrollViewRef = useRef<ScrollView>(null);
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
@@ -235,8 +254,8 @@ export default function Register() {
                     value: "Cafe",
                   },
                   {
-                    label: t("auth.businessRegister.businessTypeOption.Hotel"),
-                    value: "Hotel",
+                    label: t("auth.businessRegister.businessTypeOption.Rental"),
+                    value: "Rental",
                   },
                   {
                     label: t("auth.businessRegister.businessTypeOption.Tutor"),
@@ -264,6 +283,58 @@ export default function Register() {
                 bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                 bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                 />
+
+              {/* Document Types Selection */}
+              <View style={{ marginTop: 28 }}>
+                <CustomText className={`text-base font-medium mb-3 ${useTextColorClass()}`}>
+                  {t("auth.businessRegister.documentTypes")}
+                </CustomText>
+                
+                {(["Quotation","Invoice", "Receipt" ] as const).map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 12,
+                      padding: 12,
+                      borderRadius: 8,
+                      backgroundColor: theme === "dark" ? "#2D2D2D" : "#f5f5f5",
+                    }}
+                    onPress={() => handleDocumentTypeToggle(type)}
+                    disabled={type === "Receipt"}
+                  >
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 4,
+                        borderWidth: 2,
+                        borderColor: documentTypes.includes(type) 
+                          ? "#0feac2" 
+                          : theme === "dark" ? "#666" : "#ccc",
+                        backgroundColor: documentTypes.includes(type) 
+                          ? "#0feac2" 
+                          : "transparent",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 12,
+                      }}
+                    >
+                      {documentTypes.includes(type) && (
+                        <Ionicons 
+                          name="checkmark" 
+                          size={16} 
+                          color="#fff" 
+                        />
+                      )}
+                    </View>
+                    <CustomText className={useTextColorClass()}>
+                      {t(`auth.businessRegister.documentType.${type}`)}
+                    </CustomText>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
               {error ? (
                 <Text className="text-red-500 mt-4">{error}</Text>

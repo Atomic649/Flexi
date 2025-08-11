@@ -65,6 +65,7 @@ Table BusinessAcc {
   taxType taxType [not null, default: 'Individual']
   userId Int [not null]
   memberId String
+  DocumentType DocumentType[] [not null]
   user User [not null]
   AllMember Member [not null]
   billRecord Bill [not null]
@@ -100,6 +101,7 @@ Table Bill {
   repeatMonths Int [default: 0]
   note String
   TaxType taxType [default: 'Individual']
+  DocumentType DocumentType [default: 'Receipt']
   memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
@@ -471,6 +473,12 @@ Enum OptionName {
   Flavor
   CreditLimit
   QuantityLimit
+}
+
+Enum DocumentType {
+  Invoice
+  Receipt
+  Quotation
 }
 
 Ref: Member.userId > User.id

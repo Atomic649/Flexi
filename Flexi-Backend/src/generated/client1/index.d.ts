@@ -287,6 +287,15 @@ export const OptionName: {
 
 export type OptionName = (typeof OptionName)[keyof typeof OptionName]
 
+
+export const DocumentType: {
+  Invoice: 'Invoice',
+  Receipt: 'Receipt',
+  Quotation: 'Quotation'
+};
+
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
+
 }
 
 export type Unit = $Enums.Unit
@@ -344,6 +353,10 @@ export const ProductType: typeof $Enums.ProductType
 export type OptionName = $Enums.OptionName
 
 export const OptionName: typeof $Enums.OptionName
+
+export type DocumentType = $Enums.DocumentType
+
+export const DocumentType: typeof $Enums.DocumentType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -6426,6 +6439,7 @@ export namespace Prisma {
     taxType: number
     userId: number
     memberId: number
+    DocumentType: number
     _all: number
   }
 
@@ -6492,6 +6506,7 @@ export namespace Prisma {
     taxType?: true
     userId?: true
     memberId?: true
+    DocumentType?: true
     _all?: true
   }
 
@@ -6597,6 +6612,7 @@ export namespace Prisma {
     taxType: $Enums.taxType
     userId: number
     memberId: string | null
+    DocumentType: $Enums.DocumentType[]
     _count: BusinessAccCountAggregateOutputType | null
     _avg: BusinessAccAvgAggregateOutputType | null
     _sum: BusinessAccSumAggregateOutputType | null
@@ -6634,6 +6650,7 @@ export namespace Prisma {
     taxType?: boolean
     userId?: boolean
     memberId?: boolean
+    DocumentType?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     AllMember?: boolean | BusinessAcc$AllMemberArgs<ExtArgs>
     billRecord?: boolean | BusinessAcc$billRecordArgs<ExtArgs>
@@ -6661,6 +6678,7 @@ export namespace Prisma {
     taxType?: boolean
     userId?: boolean
     memberId?: boolean
+    DocumentType?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["businessAcc"]>
 
@@ -6680,6 +6698,7 @@ export namespace Prisma {
     taxType?: boolean
     userId?: boolean
     memberId?: boolean
+    DocumentType?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["businessAcc"]>
 
@@ -6699,9 +6718,10 @@ export namespace Prisma {
     taxType?: boolean
     userId?: boolean
     memberId?: boolean
+    DocumentType?: boolean
   }
 
-  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "vatId" | "businessType" | "taxType" | "userId" | "memberId", ExtArgs["result"]["businessAcc"]>
+  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "vatId" | "businessType" | "taxType" | "userId" | "memberId" | "DocumentType", ExtArgs["result"]["businessAcc"]>
   export type BusinessAccInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     AllMember?: boolean | BusinessAcc$AllMemberArgs<ExtArgs>
@@ -6748,6 +6768,7 @@ export namespace Prisma {
       taxType: $Enums.taxType
       userId: number
       memberId: string | null
+      DocumentType: $Enums.DocumentType[]
     }, ExtArgs["result"]["businessAcc"]>
     composites: {}
   }
@@ -7194,6 +7215,7 @@ export namespace Prisma {
     readonly taxType: FieldRef<"BusinessAcc", 'taxType'>
     readonly userId: FieldRef<"BusinessAcc", 'Int'>
     readonly memberId: FieldRef<"BusinessAcc", 'String'>
+    readonly DocumentType: FieldRef<"BusinessAcc", 'DocumentType[]'>
   }
     
 
@@ -7828,6 +7850,7 @@ export namespace Prisma {
     repeatMonths: number | null
     note: string | null
     TaxType: $Enums.taxType | null
+    DocumentType: $Enums.DocumentType | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7857,6 +7880,7 @@ export namespace Prisma {
     repeatMonths: number | null
     note: string | null
     TaxType: $Enums.taxType | null
+    DocumentType: $Enums.DocumentType | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7886,6 +7910,7 @@ export namespace Prisma {
     repeatMonths: number
     note: number
     TaxType: number
+    DocumentType: number
     memberId: number
     businessAcc: number
     storeId: number
@@ -7933,6 +7958,7 @@ export namespace Prisma {
     repeatMonths?: true
     note?: true
     TaxType?: true
+    DocumentType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -7962,6 +7988,7 @@ export namespace Prisma {
     repeatMonths?: true
     note?: true
     TaxType?: true
+    DocumentType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -7991,6 +8018,7 @@ export namespace Prisma {
     repeatMonths?: true
     note?: true
     TaxType?: true
+    DocumentType?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8107,6 +8135,7 @@ export namespace Prisma {
     repeatMonths: number | null
     note: string | null
     TaxType: $Enums.taxType | null
+    DocumentType: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -8155,6 +8184,7 @@ export namespace Prisma {
     repeatMonths?: boolean
     note?: boolean
     TaxType?: boolean
+    DocumentType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8189,6 +8219,7 @@ export namespace Prisma {
     repeatMonths?: boolean
     note?: boolean
     TaxType?: boolean
+    DocumentType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8221,6 +8252,7 @@ export namespace Prisma {
     repeatMonths?: boolean
     note?: boolean
     TaxType?: boolean
+    DocumentType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8253,12 +8285,13 @@ export namespace Prisma {
     repeatMonths?: boolean
     note?: boolean
     TaxType?: boolean
+    DocumentType?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8309,6 +8342,7 @@ export namespace Prisma {
       repeatMonths: number | null
       note: string | null
       TaxType: $Enums.taxType | null
+      DocumentType: $Enums.DocumentType | null
       memberId: string
       businessAcc: number
       storeId: number
@@ -8762,6 +8796,7 @@ export namespace Prisma {
     readonly repeatMonths: FieldRef<"Bill", 'Int'>
     readonly note: FieldRef<"Bill", 'String'>
     readonly TaxType: FieldRef<"Bill", 'taxType'>
+    readonly DocumentType: FieldRef<"Bill", 'DocumentType'>
     readonly memberId: FieldRef<"Bill", 'String'>
     readonly businessAcc: FieldRef<"Bill", 'Int'>
     readonly storeId: FieldRef<"Bill", 'Int'>
@@ -29258,7 +29293,8 @@ export namespace Prisma {
     businessType: 'businessType',
     taxType: 'taxType',
     userId: 'userId',
-    memberId: 'memberId'
+    memberId: 'memberId',
+    DocumentType: 'DocumentType'
   };
 
   export type BusinessAccScalarFieldEnum = (typeof BusinessAccScalarFieldEnum)[keyof typeof BusinessAccScalarFieldEnum]
@@ -29288,6 +29324,7 @@ export namespace Prisma {
     repeatMonths: 'repeatMonths',
     note: 'note',
     TaxType: 'TaxType',
+    DocumentType: 'DocumentType',
     memberId: 'memberId',
     businessAcc: 'businessAcc',
     storeId: 'storeId'
@@ -29661,6 +29698,20 @@ export namespace Prisma {
    * Reference to a field of type 'taxType[]'
    */
   export type ListEnumtaxTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'taxType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DocumentType[]'
+   */
+  export type ListEnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DocumentType'
+   */
+  export type EnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType'>
     
 
 
@@ -30089,6 +30140,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntFilter<"BusinessAcc"> | number
     memberId?: StringNullableFilter<"BusinessAcc"> | string | null
+    DocumentType?: EnumDocumentTypeNullableListFilter<"BusinessAcc">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     AllMember?: MemberListRelationFilter
     billRecord?: BillListRelationFilter
@@ -30115,6 +30167,7 @@ export namespace Prisma {
     taxType?: SortOrder
     userId?: SortOrder
     memberId?: SortOrderInput | SortOrder
+    DocumentType?: SortOrder
     user?: UserOrderByWithRelationInput
     AllMember?: MemberOrderByRelationAggregateInput
     billRecord?: BillOrderByRelationAggregateInput
@@ -30144,6 +30197,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntFilter<"BusinessAcc"> | number
     memberId?: StringNullableFilter<"BusinessAcc"> | string | null
+    DocumentType?: EnumDocumentTypeNullableListFilter<"BusinessAcc">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     AllMember?: MemberListRelationFilter
     billRecord?: BillListRelationFilter
@@ -30170,6 +30224,7 @@ export namespace Prisma {
     taxType?: SortOrder
     userId?: SortOrder
     memberId?: SortOrderInput | SortOrder
+    DocumentType?: SortOrder
     _count?: BusinessAccCountOrderByAggregateInput
     _avg?: BusinessAccAvgOrderByAggregateInput
     _max?: BusinessAccMaxOrderByAggregateInput
@@ -30196,6 +30251,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeWithAggregatesFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntWithAggregatesFilter<"BusinessAcc"> | number
     memberId?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+    DocumentType?: EnumDocumentTypeNullableListFilter<"BusinessAcc">
   }
 
   export type BillWhereInput = {
@@ -30225,6 +30281,7 @@ export namespace Prisma {
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30258,6 +30315,7 @@ export namespace Prisma {
     repeatMonths?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     TaxType?: SortOrderInput | SortOrder
+    DocumentType?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30294,6 +30352,7 @@ export namespace Prisma {
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30327,6 +30386,7 @@ export namespace Prisma {
     repeatMonths?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     TaxType?: SortOrderInput | SortOrder
+    DocumentType?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30364,6 +30424,7 @@ export namespace Prisma {
     repeatMonths?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     note?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     TaxType?: EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
+    DocumentType?: EnumDocumentTypeNullableWithAggregatesFilter<"Bill"> | $Enums.DocumentType | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
     businessAcc?: IntWithAggregatesFilter<"Bill"> | number
     storeId?: IntWithAggregatesFilter<"Bill"> | number
@@ -31994,6 +32055,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -32020,6 +32082,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -32043,6 +32106,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -32069,6 +32133,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -32094,6 +32159,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
   }
 
   export type BusinessAccUpdateManyMutationInput = {
@@ -32110,6 +32176,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
   }
 
   export type BusinessAccUncheckedUpdateManyInput = {
@@ -32128,6 +32195,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
   }
 
   export type BillCreateInput = {
@@ -32153,6 +32221,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -32183,6 +32252,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32212,6 +32282,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -32242,6 +32313,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -32272,6 +32344,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32300,6 +32373,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   }
 
   export type BillUncheckedUpdateManyInput = {
@@ -32326,6 +32400,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -34154,6 +34229,14 @@ export namespace Prisma {
     not?: NestedEnumtaxTypeFilter<$PrismaModel> | $Enums.taxType
   }
 
+  export type EnumDocumentTypeNullableListFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    has?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    hasEvery?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    hasSome?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type BusinessAccCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -34170,6 +34253,7 @@ export namespace Prisma {
     taxType?: SortOrder
     userId?: SortOrder
     memberId?: SortOrder
+    DocumentType?: SortOrder
   }
 
   export type BusinessAccAvgOrderByAggregateInput = {
@@ -34279,6 +34363,13 @@ export namespace Prisma {
     not?: NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
   }
 
+  export type EnumDocumentTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
+  }
+
   export type ProductItemListRelationFilter = {
     every?: ProductItemWhereInput
     some?: ProductItemWhereInput
@@ -34328,6 +34419,7 @@ export namespace Prisma {
     repeatMonths?: SortOrder
     note?: SortOrder
     TaxType?: SortOrder
+    DocumentType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34365,6 +34457,7 @@ export namespace Prisma {
     repeatMonths?: SortOrder
     note?: SortOrder
     TaxType?: SortOrder
+    DocumentType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34394,6 +34487,7 @@ export namespace Prisma {
     repeatMonths?: SortOrder
     note?: SortOrder
     TaxType?: SortOrder
+    DocumentType?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34453,6 +34547,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
   }
 
   export type EnumUnitNullableFilter<$PrismaModel = never> = {
@@ -36411,6 +36515,10 @@ export namespace Prisma {
     deleteMany?: StoreScalarWhereInput | StoreScalarWhereInput[]
   }
 
+  export type BusinessAccCreateDocumentTypeInput = {
+    set: $Enums.DocumentType[]
+  }
+
   export type UserCreateNestedOneWithoutBusinessInput = {
     create?: XOR<UserCreateWithoutBusinessInput, UserUncheckedCreateWithoutBusinessInput>
     connectOrCreate?: UserCreateOrConnectWithoutBusinessInput
@@ -36525,6 +36633,11 @@ export namespace Prisma {
 
   export type EnumtaxTypeFieldUpdateOperationsInput = {
     set?: $Enums.taxType
+  }
+
+  export type BusinessAccUpdateDocumentTypeInput = {
+    set?: $Enums.DocumentType[]
+    push?: $Enums.DocumentType | $Enums.DocumentType[]
   }
 
   export type UserUpdateOneRequiredWithoutBusinessNestedInput = {
@@ -36781,6 +36894,10 @@ export namespace Prisma {
 
   export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
     set?: $Enums.taxType | null
+  }
+
+  export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.DocumentType | null
   }
 
   export type ProductItemUpdateManyWithoutBillNestedInput = {
@@ -38129,6 +38246,13 @@ export namespace Prisma {
     not?: NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
   }
 
+  export type NestedEnumDocumentTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
+  }
+
   export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -38175,6 +38299,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumtaxTypeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumUnitNullableFilter<$PrismaModel = never> = {
@@ -38387,6 +38521,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseCreateNestedManyWithoutBusinessIdInput
@@ -38411,6 +38546,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -38837,6 +38973,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntFilter<"BusinessAcc"> | number
     memberId?: StringNullableFilter<"BusinessAcc"> | string | null
+    DocumentType?: EnumDocumentTypeNullableListFilter<"BusinessAcc">
   }
 
   export type MemberUpsertWithWhereUniqueWithoutUserInput = {
@@ -39228,6 +39365,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseCreateNestedManyWithoutBusinessIdInput
@@ -39253,6 +39391,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -39289,6 +39428,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -39318,6 +39458,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     businessAcc: number
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -39613,6 +39754,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUpdateManyWithoutBusinessIdNestedInput
@@ -39638,6 +39780,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -39689,6 +39832,7 @@ export namespace Prisma {
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -39985,6 +40129,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40014,6 +40159,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -40470,6 +40616,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     expenseRecord?: ExpenseCreateNestedManyWithoutBusinessIdInput
@@ -40495,6 +40642,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -40630,6 +40778,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     expenseRecord?: ExpenseUpdateManyWithoutBusinessIdNestedInput
@@ -40655,6 +40804,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -40720,6 +40870,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40749,6 +40900,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -40837,6 +40989,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -40866,6 +41019,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -40998,6 +41152,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -41023,6 +41178,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -41180,6 +41336,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -41205,6 +41362,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -41277,6 +41435,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -41302,6 +41461,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -41375,6 +41535,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -41400,6 +41561,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -41494,6 +41656,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -41519,6 +41682,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -41608,6 +41772,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -41633,6 +41798,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -41705,6 +41871,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -41734,6 +41901,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -41763,6 +41931,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -41788,6 +41957,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -41877,6 +42047,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -41902,6 +42073,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -42056,6 +42228,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     user: UserCreateNestedOneWithoutBusinessInput
     AllMember?: MemberCreateNestedManyWithoutBusinessInput
     billRecord?: BillCreateNestedManyWithoutBusinessIdInput
@@ -42081,6 +42254,7 @@ export namespace Prisma {
     taxType?: $Enums.taxType
     userId: number
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
     billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
     expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
@@ -42192,6 +42366,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     user?: UserUpdateOneRequiredWithoutBusinessNestedInput
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
@@ -42217,6 +42392,7 @@ export namespace Prisma {
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -44550,6 +44726,7 @@ export namespace Prisma {
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
   }
 
   export type MemberCreateManyUserInput = {
@@ -44682,6 +44859,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUpdateManyWithoutBusinessIdNestedInput
@@ -44706,6 +44884,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
     AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
     billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
     expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
@@ -44730,6 +44909,7 @@ export namespace Prisma {
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
   }
 
   export type MemberUpdateWithoutUserInput = {
@@ -45124,6 +45304,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     businessAcc: number
     storeId: number
   }
@@ -45219,6 +45400,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45248,6 +45430,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45277,6 +45460,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -45521,6 +45705,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     storeId: number
   }
@@ -45655,6 +45840,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45684,6 +45870,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45713,6 +45900,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -46022,6 +46210,7 @@ export namespace Prisma {
     repeatMonths?: number | null
     note?: string | null
     TaxType?: $Enums.taxType | null
+    DocumentType?: $Enums.DocumentType | null
     memberId: string
     businessAcc: number
   }
@@ -46049,6 +46238,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -46078,6 +46268,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -46107,6 +46298,7 @@ export namespace Prisma {
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
