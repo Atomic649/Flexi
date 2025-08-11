@@ -428,7 +428,8 @@ const updateBill = async (req: Request, res: Response) => {
           image: req.file?.filename ?? "",
           total: total,
           note: billInput.note || "", // Optional note field
-          discount: billInput.discount || 0, // Optional discount field
+          discount: billInput.discount || 0, // Optional discount 
+          DocumentType: billInput.DocumentType, // Document type
 
         },
       });

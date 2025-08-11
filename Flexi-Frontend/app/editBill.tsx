@@ -69,6 +69,9 @@ export default function EditBill() {
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setCTaxId] = useState("");
 
+  // Note state
+  const [note, setNote] = useState("");
+
   // Payment information
   const [payment, setPayment] = useState("");
   const [cashStatus, setCashStatus] = useState(false);
@@ -108,6 +111,60 @@ export default function EditBill() {
   // Tax type state
   const [taxType, setTaxType] = useState<'Individual' | 'Juristic'>('Individual');
 
+  // Document type progression state
+  const [selectedDocumentType, setSelectedDocumentType] = useState<"QA" | "IV" | "RE">("QA");
+
+  // Helper functions for DocumentType progression UI
+  const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
+    const order = { QA: 1, IV: 2, RE: 3 };
+    return order[step];
+  };
+
+  const isStepCompleted = (step: "QA" | "IV" | "RE"): boolean => {
+    return getStepOrder(selectedDocumentType) >= getStepOrder(step);
+  };
+
+  const getStepOpacity = (step: "QA" | "IV" | "RE"): number => {
+    if (isStepCompleted(step)) return 1;
+    return 0.4;
+  };
+
+  const getStepIconColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return "#ffffff";
+    return theme === "dark" ? "#666" : "#999";
+  };
+
+  const getStepTextColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return "#0feac2";
+    return theme === "dark" ? "#666" : "#999";
+  };
+
+  const getStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
+    return theme === "dark" ? "#555" : "#bbb";
+  };
+
+  // Helper function to convert document type for API
+  const getDocumentTypeForAPI = (type: "QA" | "IV" | "RE"): "Quotation" | "Invoice" | "Receipt" => {
+    const mapping = {
+      QA: "Quotation" as const,
+      IV: "Invoice" as const,
+      RE: "Receipt" as const
+    };
+    return mapping[type];
+  };
+
+  // Helper function to convert API document type to internal format
+  const getDocumentTypeFromAPI = (type: "Quotation" | "Invoice" | "Receipt" | "Bill"): "QA" | "IV" | "RE" => {
+    const mapping = {
+      Quotation: "QA" as const,
+      Invoice: "IV" as const,
+      Receipt: "RE" as const,
+      Bill: "QA" as const // Default to Quotation for Bill type
+    };
+    return mapping[type];
+  };
+
   // Fetch bill data
   useEffect(() => {
     const fetchBillData = async () => {
@@ -127,6 +184,14 @@ export default function EditBill() {
         setStoreId(billData.storeId);
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
+        // Set note from bill data
+        if (billData.note) {
+          setNote(billData.note);
+        }
+        // Set document type from API data
+        if (billData.DocumentType) {
+          setSelectedDocumentType(getDocumentTypeFromAPI(billData.DocumentType));
+        }
         // Set taxType based on fields
         if (billData.cTaxId && billData.cTaxId.length > 0) {
           setTaxType('Juristic');
@@ -355,6 +420,8 @@ export default function EditBill() {
         businessAcc,
         storeId,
         image,
+        DocumentType: getDocumentTypeForAPI(selectedDocumentType),
+        note: note,
         productItems: productItems.map((item) => ({
           product: item.product,
           unit: item.unit,
@@ -447,6 +514,205 @@ export default function EditBill() {
       </Modal>
 
       <ScrollView>
+        {/* Enhanced DocumentType Progression */}
+        <View style={{               
+          backgroundColor: "#00000000"
+        }}>        
+          
+          {/* Enhanced Progress Container */}
+          <View style={{ 
+            backgroundColor: "transparent",
+            borderRadius: 20,
+            padding: 10,
+            marginVertical: 5,
+            borderWidth: 0,
+            borderColor: "transparent"
+          }}>
+            
+            {/* Progress Line Container */}
+            <View style={{ 
+              flexDirection: "row", 
+              alignItems: "center", 
+              justifyContent: "center",
+              backgroundColor: "transparent",
+              paddingVertical: 5
+            }}>
+              
+              {/* QA (Quotation) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => isEditMode ? setSelectedDocumentType("QA") : null}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("QA") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("QA"),
+                  shadowColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("QA") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={24}
+                    color={isStepCompleted("QA") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("QA")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("QA"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.quotation")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* Connection Line 1 - Dots */}
+              <View style={{
+                width: 60,
+                height: 4,
+                marginHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 5
+              }}>
+                {[...Array(5)].map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: 4,
+                      height: 4,
+                      borderRadius: 2,
+                      backgroundColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
+                    }}
+                  />
+                ))}
+              </View>
+
+              {/* IV (Invoice) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => isEditMode ? setSelectedDocumentType("IV") : null}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("IV"),
+                  shadowColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("IV") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="receipt-outline"
+                    size={24}
+                    color={isStepCompleted("IV") ?(theme === "dark" ? "#18181B" : "#ffffff")  : getStepIconColor("IV")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("IV"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.invoice")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* Connection Line 2 - Dots */}
+              <View style={{
+                width: 60,
+                height: 4,
+                marginHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 5
+              }}>
+                {[...Array(5)].map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: 4,
+                      height: 4,
+                      borderRadius: 2,
+                      backgroundColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
+                    }}
+                  />
+                ))}
+              </View>
+
+              {/* RE (Receipt) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => isEditMode ? setSelectedDocumentType("RE") : null}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("RE"),
+                  shadowColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("RE") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={24}
+                    color={isStepCompleted("RE") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("RE")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("RE"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.receipt")}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
         <View
           className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20"
           style={{
@@ -774,6 +1040,23 @@ export default function EditBill() {
             </View>
           </View>
 
+          {/* Note Section */}
+          <FormFieldClear
+            title={t("bill.note")}
+            value={note}
+            handleChangeText={setNote}
+            placeholder={t("bill.enterNote")}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+            maxLength={500}
+            multiline={true}
+            numberOfLines={3}
+            textAlignVertical="top"
+            editable={isEditMode}
+          />
+
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>
           ) : null}
@@ -848,7 +1131,7 @@ export default function EditBill() {
             <TouchableOpacity
               onPress={() => setIsEditMode((prev) => !prev)}
               style={{
-                backgroundColor: isEditMode ? "#ff8c00" : "#10f0d2",
+                backgroundColor: isEditMode ? "#ff8c00" : "#0feac2",
                 borderRadius: 20,
                 marginRight: 20,
                 marginBottom: 10,

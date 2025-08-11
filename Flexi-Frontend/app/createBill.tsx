@@ -608,7 +608,7 @@ export default function CreateBill() {
                   <Ionicons
                     name="document-text-outline"
                     size={24}
-                    color={isStepCompleted("QA") ? "#ffffff" : getStepIconColor("QA")}
+                    color={isStepCompleted("QA") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("QA")}
                   />
                 </View>
                 
@@ -673,7 +673,7 @@ export default function CreateBill() {
                   <Ionicons
                     name="receipt-outline"
                     size={24}
-                    color={isStepCompleted("IV") ? "#ffffff" : getStepIconColor("IV")}
+                    color={isStepCompleted("IV") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("IV")}
                   />
                 </View>
                 
@@ -738,7 +738,7 @@ export default function CreateBill() {
                   <Ionicons
                     name="checkmark-circle-outline"
                     size={24}
-                    color={isStepCompleted("RE") ? "#ffffff" : getStepIconColor("RE")}
+                    color={isStepCompleted("RE") ? (theme === "dark" ? "#18181B" : "#ffffff") : getStepIconColor("RE")}
                   />
                 </View>
                 
