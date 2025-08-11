@@ -1,6 +1,7 @@
 import {
     ScrollView,
     Dimensions, // Import Dimensions for responsive width
+    TouchableOpacity,
   } from "react-native";
   import { View } from "@/components/Themed";
   import { useRouter } from "expo-router";
@@ -10,13 +11,14 @@ import {
   import CustomAlert from "@/components/CustomAlert";
   import { CustomText } from "@/components/CustomText";
   import CallAPIBusiness from "@/api/business_api";
-  import { useBackgroundColorClass } from "@/utils/themeUtils";
+  import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
   import { useTheme } from "@/providers/ThemeProvider";
   import { getUserId } from "@/utils/utility";
   import Dropdown2 from "@/components/Dropdown2";
   import FormField2 from "@/components/FormField2";
   import { SafeAreaView } from "react-native-safe-area-context";
   import { useBusiness } from "@/providers/BusinessProvider";
+  import { Ionicons } from "@expo/vector-icons";
   
   export default function CreateBusiness() {
     const { theme } = useTheme();
@@ -27,6 +29,7 @@ import {
     const [taxType, settaxType] = useState("");
     const [vatId, setvatId] = useState("");
     const [businessType, setbusinessType] = useState("");
+    const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation")[]>(["Receipt"]);
     const [error, setError] = useState("");
   
     // Add alert config state
@@ -81,6 +84,7 @@ import {
           businessType,
           taxType,
           userId,
+          DocumentType: documentTypes,
         });
   
         if (data.error) throw new Error(data.error);
@@ -108,6 +112,20 @@ import {
       } catch (error: any) {
         setError(error.message);
       }
+    };
+  
+    // Handle document type selection
+    const handleDocumentTypeToggle = (type: "Invoice" | "Receipt" | "Quotation") => {
+      // Don't allow unchecking Receipt as it's required
+      if (type === "Receipt") return;
+      
+      setDocumentTypes(prev => {
+        if (prev.includes(type)) {
+          return prev.filter(t => t !== type);
+        } else {
+          return [...prev, type];
+        }
+      });
     };
   
     return (
@@ -227,6 +245,58 @@ import {
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             />
   
+            {/* Document Types Selection */}
+            <View style={{ marginTop: 28 }}>
+              <CustomText className={`text-base font-medium mb-3 ${useTextColorClass()}`}>
+                {t("auth.businessRegister.documentTypes")}
+              </CustomText>
+              
+              {(["Quotation","Invoice", "Receipt" ] as const).map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 12,
+                    padding: 12,
+                    borderRadius: 8,
+                    backgroundColor: theme === "dark" ? "#2D2D2D" : "#f5f5f5",
+                  }}
+                  onPress={() => handleDocumentTypeToggle(type)}
+                  disabled={type === "Receipt"}
+                >
+                  <View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 4,
+                      borderWidth: 2,
+                      borderColor: documentTypes.includes(type) 
+                        ? "#0feac2" 
+                        : theme === "dark" ? "#666" : "#ccc",
+                      backgroundColor: documentTypes.includes(type) 
+                        ? "#0feac2" 
+                        : "transparent",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: 12,
+                    }}
+                  >
+                    {documentTypes.includes(type) && (
+                      <Ionicons 
+                        name="checkmark" 
+                        size={16} 
+                        color="#fff" 
+                      />
+                    )}
+                  </View>
+                  <CustomText className={useTextColorClass()}>
+                    {t(`auth.businessRegister.documentType.${type}`)}
+                  </CustomText>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             {error ? (
               <CustomText className="text-red-500 mt-4">{error}</CustomText>
             ) : null}

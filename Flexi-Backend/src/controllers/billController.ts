@@ -51,6 +51,8 @@ interface billInput {
   repeat?: boolean;
   repeatMonths?: number;
   DocumentType: "Invoice" | "Receipt" | "Quotation";
+  note?: string; // Optional note 
+  discount?: number; // Optional discount field
 }
 
 // Validate the request body
@@ -90,7 +92,9 @@ const schema = Joi.object({
     )
     .min(1)
     .required(),
-  DocumentType: Joi.string().valid( "Invoice", "Receipt", "Quotation").required()
+  DocumentType: Joi.string().valid( "Invoice", "Receipt", "Quotation").required(),
+  note: Joi.string().allow("").optional(), // Optional note field
+  discount: Joi.number().min(0).optional(), // Optional discount field
 });
 
 //Create a New Bill - Post
@@ -215,8 +219,11 @@ const createBill = async (req: Request, res: Response) => {
                 businessAcc: billInput.businessAcc,
                 storeId: billInput.storeId,
                 image: req.file?.filename ?? "",
+                discount: billInput.discount || 0, // Include discount if provided
                 total,
-                DocumentType: billInput.DocumentType
+                DocumentType: billInput.DocumentType,
+                note: billInput.note || "", // Optional note field
+
               },
             });
             
@@ -259,8 +266,10 @@ const createBill = async (req: Request, res: Response) => {
             businessAcc: billInput.businessAcc,
             storeId: billInput.storeId,
             image: req.file?.filename ?? "",
+            discount: billInput.discount || 0, // Include discount if provided
             total,
-            DocumentType: billInput.DocumentType          
+            DocumentType: billInput.DocumentType     ,
+          note: billInput.note || "", // Optional note field     
           },
         });
         
@@ -295,6 +304,7 @@ const getBills = async (req: Request, res: Response) => {
        // cashStatus: true,       
         purchaseAt: true,             
         storeId: true,
+        discount: true, // Include discount
         total: true,
         platform : true,
         product: {
@@ -307,6 +317,7 @@ const getBills = async (req: Request, res: Response) => {
         }, // Include product items
         repeat :true,
         DocumentType: true,
+
         
       
       },
@@ -415,8 +426,10 @@ const updateBill = async (req: Request, res: Response) => {
           purchaseAt: billInput.purchaseAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
-          total
-        
+          total: total,
+          note: billInput.note || "", // Optional note field
+          discount: billInput.discount || 0, // Optional discount field
+
         },
       });
       res.json({

@@ -247,7 +247,7 @@ model Bill {
   total        Int
   purchaseAt   DateTime      @default(now())
   platform     IncomeChannel
-  cashStatus   Boolean       @default(false)
+  cashStatus   Boolean?      @default(false)
   image        String?
   deleted      Boolean?      @default(false)
   repeat       Boolean?      @default(false)
@@ -255,6 +255,8 @@ model Bill {
   note         String?
   TaxType      taxType?      @default(Individual)
   DocumentType DocumentType? @default(Receipt)
+  discount     Int?          @default(0)
+  expiredAt    DateTime? // Optional field for expiration date
 
   // Relation   
   memberId    String
@@ -336,7 +338,7 @@ model Platform {
 model Store {
   id           Int           @id @default(autoincrement())
   platform     IncomeChannel
-  accName      String        @unique
+  accName      String
   accId        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

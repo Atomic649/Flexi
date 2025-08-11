@@ -126,8 +126,8 @@
         "Juristic": "นิติบุคคล"
       },
       "chooseBusinessType": "เลือกประเภทธุรกิจ",
-      "businessPhone":"เบอร์ติดต่อ",
-      "vatRegistered":"จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)",
+      "businessPhone": "เบอร์ติดต่อ",
+      "vatRegistered": "จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)",
       "noVatRegistered": "ไม่จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)",
 
       "businessTypeOption": {
@@ -147,8 +147,7 @@
         "Invoice": "ใบแจ้งหนี้",
         "Receipt": "ใบเสร็จรับเงิน/ใบกำกับภาษี",
         "Quotation": "ใบเสนอราคา"
-      },
-      "required": "จำเป็น"
+      }
     }
   },
   "product": {
@@ -1141,13 +1140,13 @@
     }
   },
   "bill": {
-    "title": "การจัดการใบเสร็จ",
-    "createNewBill": "สร้างใบเสร็จใหม่",
-    "createBill": "สร้างใบเสร็จ",
-    "editBill": "แก้ไขใบเสร็จ",
-    "delete": "ลบใบเสร็จ",
-    "notfound": "ไม่พบใบเสร็จ",
-    "billNumber": "เลขที่ใบเสร็จ",
+    "title": "การจัดการเอกสาร",
+    "createNewBill": "สร้างเอกสารใหม่",
+    "createBill": "สร้างเอกสาร",
+    "editBill": "แก้ไขเอกสาร",
+    "delete": "ลบเอกสาร",
+    "notfound": "ไม่พบเอกสาร",
+    "billNumber": "เลขที่เอกสาร",
     "customerInfo": "ข้อมูลลูกค้า",
     "customerName": "ชื่อลูกค้า",
     "enterName": "กรอกชื่อ",
@@ -1155,14 +1154,19 @@
     "enterLastName": "กรอกนามสกุล",
     "customerPhone": "เบอร์โทรศัพท์",
     "customerGender": "เพศ",
+    "note":"หมายเหตุ",
+    "enterNote":"กรอกหมายเหตุ",
     "gender": {
       "male": "ชาย",
       "female": "หญิง",
       "notSpecified": "ไม่ระบุ"
     },
+    "invoice": "ใบแจ้งหนี้",
+    "receipt": "ใบเสร็จ/ใบกำกับภาษี",
+    "quotation": "ใบเสนอราคา",
     "clearFields": "CLEAR",
-    "repeatBill" :"ทำซ้ำทุกเดือน",
-    "repeatMonths":"จำนวนเดือน",
+    "repeatBill": "ทำซ้ำทุกเดือน",
+    "repeatMonths": "จำนวนเดือน",
     "customerTaxId": "เลขประจำตัวผู้เสียภาษี",
     "enterTaxId": "กรอกเลขประจำตัวผู้เสียภาษีลูกค้า",
     "addProductItem": "เพิ่มสินค้า",
@@ -1197,19 +1201,19 @@
     "selectStatus": "เลือกสถานะ",
     "store": "แพลตฟอร์ม",
     "selectStore": "เลือกแพลตฟอร์ม",
-    "createButton": "สร้างใบเสร็จ",
-    "updateButton": "อัพเดทใบเสร็จ",
+    "createButton": "สร้างเอกสาร",
+    "updateButton": "อัพเดทเอกสาร",
     "alerts": {
       "error": "ข้อผิดพลาด",
       "ok": "ตกลง",
       "success": "สำเร็จ",
-      "successTitle": "สร้างใบเสร็จสำเร็จ",
+      "successTitle": "สร้างเอกสารสำเร็จ",
       "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
-      "deleteTitle": "ลบใบเสร็จ",
-      "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบใบเสร็จนี้?",
-      "deleteSuccess": "ลบใบเสร็จสำเร็จ",
-      "deleteError": "ไม่สามารถลบใบเสร็จได้",
-      "repeatSuccessMessage": "ใบเสร็จนี้จะถูกทำซ้ำทุกเดือนตามที่คุณกำหนด" 
+      "deleteTitle": "ลบเอกสาร",
+      "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบเอกสารนี้?",
+      "deleteSuccess": "ลบเอกสารสำเร็จ",
+      "deleteError": "ไม่สามารถลบเอกสารได้",
+      "repeatSuccessMessage": "เอกสารนี้จะถูกทำซ้ำทุกเดือนตามที่คุณกำหนด"
     },
     "validation": {
       "incomplete": "ข้อมูลไม่ครบถ้วน",
@@ -1383,8 +1387,8 @@
     "paymentDetails": "รายละเอียดการชำระเงิน",
     "original": "ต้นฉบับ",
     "no": "ลำดับที่",
-    "contact":"ข้อมูลการติดต่อ",
-    "productDetails" : "รายละเอียดสินค้า"
+    "contact": "ข้อมูลการติดต่อ",
+    "productDetails": "รายละเอียดสินค้า"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",
@@ -1410,11 +1414,11 @@
     "reduct": "ค่าใช้จ่าย",
     "reduction": "(ค่าใช้จ่าย +",
     "reductMax": "ตามจริง",
-    "addMoreCar":"เพิ่ิมจำนวนรถ",
-    "yearIncome" :"รายได้ทั้งปี -",
-    "exemption":"ค่าลดหย่อน)",
+    "addMoreCar": "เพิ่ิมจำนวนรถ",
+    "yearIncome": "รายได้ทั้งปี -",
+    "exemption": "ค่าลดหย่อน)",
     "taxableIncome": "= รายได้สุทธิ",
-    "carRentalMaxAlert": "สรรพากรอนุญาตให้หักค่าใช้จ่ายสูงสุด 36,000 บาทต่อเดือน/คัน" ,
+    "carRentalMaxAlert": "สรรพากรอนุญาตให้หักค่าใช้จ่ายสูงสุด 36,000 บาทต่อเดือน/คัน",
     "individualTax": "ภาษีส่วนบุคคล :"
   },
   "Individual": "บุคคลธรรมดา",

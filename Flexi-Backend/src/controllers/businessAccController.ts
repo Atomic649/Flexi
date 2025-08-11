@@ -103,6 +103,18 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         DocumentType: businessAccInput.DocumentType || ["Receipt"],
       },
     });
+
+    // Create store as Offine for default
+    const store = await prisma.store.create({
+      data: {
+        accName: "Offline",
+        platform: "Offline" as any as import("../generated/client1").IncomeChannel,
+        memberId: businessAcc.memberId,
+        businessAcc: businessAcc.id,
+      },
+    });
+    console.log("store created", store);
+
     res.json({
       status: "ok",
       message: "business account created successfully",
@@ -116,6 +128,57 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         id: businessAcc.id,
       },
     });
+
+    // If businessType is "Influencer", create default products
+    if (businessAccInput.businessType === "Influencer") {
+      const defaultProducts = [
+      "Tiktok Affiliate",
+      "Shopee Affiliate",
+      "Clip",
+      "Live",
+      "Post"
+      ];
+
+      for (const name of defaultProducts) {
+      const product = await prisma.product.create({
+        data: {
+        name,
+        productType: "Service",
+        price: 0,
+        memberId: businessAcc.memberId,
+        stock: 0,
+        businessAcc: businessAcc.id        
+        },
+      });
+      console.log("product created", product);
+      }
+   }
+
+   // create store if businessType is "Influencer"
+   if (businessAccInput.businessType === "Influencer") {
+      const defaultProducts = [
+      "Tiktok",
+      "Shopee",
+      "Facebook",
+      "Instagram",
+      "X",
+      "Youtube",
+      "Line",    
+      ];
+
+      for (const name of defaultProducts) {
+     const store = await prisma.store.create({
+       data: {
+         accName: name,
+         platform: name as any as import("../generated/client1").IncomeChannel,
+         memberId: businessAcc.memberId,
+          businessAcc: businessAcc.id,
+        },
+      });
+      console.log("store created", store);
+    }
+  }
+
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to create business account" });
@@ -159,6 +222,20 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       });
     }
 
+    //List of DocumentType validation for AddMoreBusinessAcc
+    const validDocumentTypes = ["Invoice", "Receipt", "Quotation"];
+    if (businessAccInput.DocumentType && businessAccInput.DocumentType.length > 0) {
+      const invalidTypes = businessAccInput.DocumentType.filter(
+        type => !validDocumentTypes.includes(type)
+      );
+      if (invalidTypes.length > 0) {
+        return res.status(400).json({
+          status: "error",
+          message: `Invalid DocumentType(s): ${invalidTypes.join(", ")}. Valid options are: ${validDocumentTypes.join(", ")}`,
+        });
+      }
+    }
+
     // create memberId
     const memberId = await prisma.member.create({
       data: {
@@ -180,8 +257,21 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         memberId: memberId.uniqueId,
         businessAddress: businessAccInput.businessAddress,
         businessAvatar: businessAccInput.businessAvatar,
+        DocumentType: businessAccInput.DocumentType || ["Receipt"],
       },
     });
+
+    // Create store as Offline for default
+    const store = await prisma.store.create({
+      data: {
+        accName: "Offline",
+        platform: "Offline" as any as import("../generated/client1").IncomeChannel,
+        memberId: businessAcc.memberId,
+        businessAcc: businessAcc.id,
+      },
+    });
+    console.log("store created", store);
+
     res.json({
       status: "ok",
       message: "business account created successfully",
@@ -312,6 +402,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
         businessAvatar: true,
         vat: true,
         businessPhone: true,
+        DocumentType: true,
       },
     });
     res.json({
@@ -337,6 +428,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     businessWebsite,
     vat,
     businessAddress,
+    DocumentType,
   } = req.body;
 
   console.log("Update Business Details", {
@@ -349,6 +441,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     businessWebsite,
     vat,
     businessAddress,
+    DocumentType,
   });
 
   try {
@@ -365,6 +458,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         businessWebsite,
         businessAddress,
         vat,
+        DocumentType: DocumentType || ["Receipt"],
       },
     });
 

@@ -187,6 +187,8 @@ exports.Prisma.BillScalarFieldEnum = {
   note: 'note',
   TaxType: 'TaxType',
   DocumentType: 'DocumentType',
+  discount: 'discount',
+  expiredAt: 'expiredAt',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'

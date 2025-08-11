@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Text,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
@@ -64,6 +65,7 @@ export default function CreateBill() {
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setTaxId] = useState("");
+  const [note, setNote] = useState("");
 
   // Product information
   // [product, setProduct] = useState("");
@@ -103,6 +105,39 @@ export default function CreateBill() {
 
   // Business type state
   const [businessType, setBusinessType] = useState<string | null>(null);
+
+  // Document type progression state
+  const [selectedDocumentType, setSelectedDocumentType] = useState<"QA" | "IV" | "RE">("QA");
+
+  // Helper functions for DocumentType progression UI
+  const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
+    const order = { QA: 1, IV: 2, RE: 3 };
+    return order[step];
+  };
+
+  const isStepCompleted = (step: "QA" | "IV" | "RE"): boolean => {
+    return getStepOrder(selectedDocumentType) >= getStepOrder(step);
+  };
+
+  const getStepOpacity = (step: "QA" | "IV" | "RE"): number => {
+    if (isStepCompleted(step)) return 1;
+    return 0.4;
+  };
+
+  const getStepIconColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return "#ffffff";
+    return theme === "dark" ? "#666" : "#999";
+  };
+
+  const getStepTextColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return "#0feac2";
+    return theme === "dark" ? "#666" : "#999";
+  };
+
+  const getStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
+    return theme === "dark" ? "#555" : "#bbb";
+  };
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -155,7 +190,9 @@ export default function CreateBill() {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+          const response = await CallAPIBusiness.getBusinessDetailsAPI(
+            memberId
+          );
           if (response && response.businessType) {
             setBusinessType(response.businessType);
             console.log("Business type fetched:", response.businessType);
@@ -169,7 +206,6 @@ export default function CreateBill() {
     fetchBusinessDetails();
   }, []);
 
-  
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -358,7 +394,13 @@ export default function CreateBill() {
     }
 
     // Validate repeat months if repeat is enabled
-    if (isRepeat && (repeatMonths < 1 || repeatMonths > 12 || repeatMonthsInput === "" || isNaN(parseInt(repeatMonthsInput)))) {
+    if (
+      isRepeat &&
+      (repeatMonths < 1 ||
+        repeatMonths > 12 ||
+        repeatMonthsInput === "" ||
+        isNaN(parseInt(repeatMonthsInput)))
+    ) {
       // Ensure we have a valid value before submission
       if (repeatMonthsInput === "" || isNaN(parseInt(repeatMonthsInput))) {
         setRepeatMonthsInput("1");
@@ -367,7 +409,7 @@ export default function CreateBill() {
         setRepeatMonthsInput("12");
         setRepeatMonths(12);
       }
-      
+
       setAlertConfig({
         visible: true,
         title: t("bill.validation.invalidRepeat"),
@@ -407,6 +449,7 @@ export default function CreateBill() {
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
         })),
+        note,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: "Bill", // Default to Bill, can be changed later
@@ -417,8 +460,11 @@ export default function CreateBill() {
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.successTitle"),
-        message: isRepeat 
-          ? t("bill.alerts.repeatSuccessMessage").replace("{months}", repeatMonths.toString())
+        message: isRepeat
+          ? t("bill.alerts.repeatSuccessMessage").replace(
+              "{months}",
+              repeatMonths.toString()
+            )
           : t("bill.alerts.successMessage"),
         buttons: [
           {
@@ -458,6 +504,7 @@ export default function CreateBill() {
     setCAddress("");
     setCProvince("");
     setCPostId("");
+    setNote("");
     setPayment("");
     setCashStatus(false);
     setTaxType("Individual");
@@ -509,8 +556,207 @@ export default function CreateBill() {
       </Modal>
 
       <ScrollView>
+        {/* Enhanced DocumentType Progression */}
+        <View style={{               
+          backgroundColor: "#00000000"
+        }}>        
+          
+          {/* Enhanced Progress Container */}
+          <View style={{ 
+            backgroundColor: "transparent",
+            borderRadius: 20,
+            padding: 10,
+            marginVertical: 5,
+            borderWidth: 0,
+            borderColor: "transparent"
+          }}>
+            
+            {/* Progress Line Container */}
+            <View style={{ 
+              flexDirection: "row", 
+              alignItems: "center", 
+              justifyContent: "center",
+              backgroundColor: "transparent",
+              paddingVertical: 5
+            }}>
+              
+              {/* QA (Quotation) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => setSelectedDocumentType("QA")}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("QA") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("QA"),
+                  shadowColor: isStepCompleted("QA") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("QA") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={24}
+                    color={isStepCompleted("QA") ? "#ffffff" : getStepIconColor("QA")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("QA"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.quotation")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* Connection Line 1 - Dots */}
+              <View style={{
+                width: 60,
+                height: 4,
+                marginHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 5
+              }}>
+                {[...Array(5)].map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: 4,
+                      height: 4,
+                      borderRadius: 2,
+                      backgroundColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
+                    }}
+                  />
+                ))}
+              </View>
+
+              {/* IV (Invoice) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => setSelectedDocumentType("IV")}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("IV") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("IV"),
+                  shadowColor: isStepCompleted("IV") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("IV") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="receipt-outline"
+                    size={24}
+                    color={isStepCompleted("IV") ? "#ffffff" : getStepIconColor("IV")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("IV"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.invoice")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* Connection Line 2 - Dots */}
+              <View style={{
+                width: 60,
+                height: 4,
+                marginHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 5
+              }}>
+                {[...Array(5)].map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: 4,
+                      height: 4,
+                      borderRadius: 2,
+                      backgroundColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#444" : "#ddd"),
+                    }}
+                  />
+                ))}
+              </View>
+
+              {/* RE (Receipt) */}
+              <TouchableOpacity 
+                style={{ 
+                  alignItems: "center", 
+                  backgroundColor: "transparent"
+                }}
+                onPress={() => setSelectedDocumentType("RE")}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  backgroundColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
+                  borderWidth: 3,
+                  borderColor: isStepCompleted("RE") ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: getStepOpacity("RE"),
+                  shadowColor: isStepCompleted("RE") ? "#0feac2" : "transparent",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: isStepCompleted("RE") ? 8 : 0,
+                }}>
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={24}
+                    color={isStepCompleted("RE") ? "#ffffff" : getStepIconColor("RE")}
+                  />
+                </View>
+                
+                <CustomText style={{
+                  fontSize: 10,
+                  color: getStepDescriptionColor("RE"),
+                  textAlign: "center",
+                  marginTop: 5
+                }}>
+                  {t("bill.receipt")}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
         <View
-          className="flex-1 justify-center  h-full px-4 mt-5 mb-20 pb-20"
+          className="flex-1 justify-center  h-full px-4 mb-20 pb-20"
           style={{
             maxWidth: Platform.OS === "web" ? 600 : "100%",
             alignSelf: Platform.OS === "web" ? "center" : "auto",
@@ -519,18 +765,24 @@ export default function CreateBill() {
           {/* Clear Button in Top Right */}
           <View style={{ position: "absolute", top: 0, right: 0, zIndex: 10 }}>
             <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center" ,paddingHorizontal: 10}}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: 10,
+              }}
               onPress={handleClearFields}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >        
+            >
               <CustomText
                 weight="bold"
                 style={{
-                  color: theme === "dark" ? "#03dbc1": "#03dbc1",
+                  color: theme === "dark" ? "#03dbc1" : "#03dbc1",
                   fontSize: 18,
                   paddingHorizontal: 10,
                 }}
-              >{t("bill.clearFields")}</CustomText>
+              >
+                {t("bill.clearFields")}
+              </CustomText>
             </TouchableOpacity>
           </View>
 
@@ -541,13 +793,14 @@ export default function CreateBill() {
                   title={t("bill.store")}
                   options={stores.map((store) => ({
                     label: store.accName,
-                    value: store.id.toString()
+                    value: store.id.toString(),
                   }))}
                   placeholder={t("bill.selectStore")}
                   placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   selectedValue={
                     storeId
-                      ? stores.find((store) => store.id === storeId)?.accName || ""
+                      ? stores.find((store) => store.id === storeId)?.accName ||
+                        ""
                       : ""
                   }
                   onValueChange={(value: any) => setStoreId(Number(value))}
@@ -805,7 +1058,7 @@ export default function CreateBill() {
                 <FormFieldClear
                   title={
                     t("bill.amount") +
-                    (item.unit && (t(`product.unit.${item.unit}`))
+                    (item.unit && t(`product.unit.${item.unit}`)
                       ? ` (${t(`product.unit.${item.unit}`)})`
                       : "")
                   }
@@ -895,11 +1148,34 @@ export default function CreateBill() {
             </View>
           </View>
 
+          {/* Note Section */}
+          <FormFieldClear
+            title={t("bill.note")}
+            value={note}
+            handleChangeText={setNote}
+            placeholder={t("bill.enterNote")}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+            maxLength={500}
+            multiline={true}
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+
           {/* Repeat Bill Section - Only show for Rental business type */}
           {businessType === "Rental" && (
-            <View className="flex flex-row items-center mt-4 mb-2" style={{ backgroundColor: "transparent" }}>
+            <View
+              className="flex flex-row items-center mt-4 mb-2"
+              style={{ backgroundColor: "transparent" }}
+            >
               <TouchableOpacity
-                style={{ flexDirection: "row", alignItems: "center", marginRight: 20 }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
                 onPress={() => setIsRepeat(!isRepeat)}
               >
                 <Ionicons
@@ -914,7 +1190,7 @@ export default function CreateBill() {
                   {t("bill.repeatBill")}
                 </CustomText>
               </TouchableOpacity>
-              
+
               {isRepeat && (
                 <View className="flex-1 ml-4">
                   <FormFieldClear
@@ -923,7 +1199,7 @@ export default function CreateBill() {
                     handleChangeText={(value: string) => {
                       // Allow any input including empty string
                       setRepeatMonthsInput(value);
-                      
+
                       // Update the actual repeat months value if valid
                       if (value !== "") {
                         const num = parseInt(value);
@@ -933,12 +1209,16 @@ export default function CreateBill() {
                             setAlertConfig({
                               visible: true,
                               title: t("bill.validation.invalidRepeat"),
-                              message: "Please enter a number between 1 and 12 months only.",
+                              message:
+                                "Please enter a number between 1 and 12 months only.",
                               buttons: [
                                 {
                                   text: t("common.ok"),
                                   onPress: () => {
-                                    setAlertConfig((prev) => ({ ...prev, visible: false }));
+                                    setAlertConfig((prev) => ({
+                                      ...prev,
+                                      visible: false,
+                                    }));
                                     // Reset to maximum allowed value
                                     setRepeatMonthsInput("12");
                                     setRepeatMonths(12);
@@ -954,7 +1234,11 @@ export default function CreateBill() {
                     }}
                     onBlur={() => {
                       // When field loses focus, ensure it has a valid value
-                      if (repeatMonthsInput === "" || parseInt(repeatMonthsInput) < 1 || isNaN(parseInt(repeatMonthsInput))) {
+                      if (
+                        repeatMonthsInput === "" ||
+                        parseInt(repeatMonthsInput) < 1 ||
+                        isNaN(parseInt(repeatMonthsInput))
+                      ) {
                         setRepeatMonthsInput("2");
                         setRepeatMonths(1);
                       } else {
@@ -971,7 +1255,9 @@ export default function CreateBill() {
                     }}
                     placeholder="1-12"
                     borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#606060" : "#b1b1b1"
+                    }
                     textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     keyboardType="numeric"
                     maxLength={2}

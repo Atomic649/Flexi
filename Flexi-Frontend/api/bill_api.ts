@@ -66,6 +66,8 @@ class CallAPIBill {
         repeat: boolean;
         repeatMonths: number;
         DocumentType: "Bill" | "Invoice" | "Receipt" | "Quotation";
+        note?: string; // Optional note field
+        discount?: number; // Optional discount field
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -110,6 +112,8 @@ class CallAPIBill {
         repeat: boolean;
         repeatMonths: number;
         DocumentType: "Bill" | "Invoice" | "Receipt" | "Quotation";
+        note?: string; // Optional note field
+        discount?: number; // Optional discount field
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
