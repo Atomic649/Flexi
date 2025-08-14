@@ -464,7 +464,8 @@ exports.IncomeChannel = exports.$Enums.IncomeChannel = {
   KTB: 'KTB',
   BBL: 'BBL',
   TMB: 'TMB',
-  Affiliate: 'Affiliate'
+  Affiliate: 'Affiliate',
+  Offline: 'Offline'
 };
 
 exports.Unit = exports.$Enums.Unit = {

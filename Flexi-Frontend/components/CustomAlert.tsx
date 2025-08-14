@@ -81,54 +81,63 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
           <View className={`border-t ${
             theme === 'dark' ? 'border-zinc-700' : 'border-zinc-200'
           }`}>
-            {buttons.map((button, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && (
-                  <View className={
-                    theme === 'dark' ? 'border-t border-zinc-700' : 'border-t border-zinc-200'
-                  } />
-                )}
-                {Platform.OS === 'android' ? (
-                  <Pressable
-                    onPress={button.onPress}
-                    className="p-4"
-                    android_ripple={{ 
-                      color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-                    }}
-                  >
-                    <CustomText 
+            {buttons.map((button, index) => {
+              const isLastButton = index === buttons.length - 1;
+              const isOnlyButton = buttons.length === 1;
+              
+              return (
+                <React.Fragment key={index}>
+                  {index > 0 && (
+                    <View className={
+                      theme === 'dark' ? 'border-t border-zinc-700' : 'border-t border-zinc-200'
+                    } />
+                  )}
+                  {Platform.OS === 'android' ? (
+                    <Pressable
+                      onPress={button.onPress}
+                      className={`p-4 ${
+                        isLastButton || isOnlyButton ? 'rounded-b-2xl overflow-hidden' : ''
+                      }`}
+                      android_ripple={{ 
+                        color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <CustomText 
+                        weight={button.style === 'cancel' ? 'regular' : 'medium'}
+                        className={`text-center ${getButtonStyle(button.style)}`}
+                        style={{ 
+                          fontFamily: i18n.language === 'th' 
+                            ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
+                            : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
+                        }}
+                      >
+                        {button.text}
+                      </CustomText>
+                    </Pressable>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={button.onPress}
+                      className={`p-4 ${
+                      theme === 'dark' ? 'active:bg-zinc-700' : 'active:bg-zinc-300'
+                      } ${isLastButton || isOnlyButton ? 'rounded-b-2xl' : ''}`}
+                      activeOpacity={0.7}
+                    >
+                      <CustomText 
                       weight={button.style === 'cancel' ? 'regular' : 'medium'}
                       className={`text-center ${getButtonStyle(button.style)}`}
                       style={{ 
                         fontFamily: i18n.language === 'th' 
-                          ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
-                          : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
+                        ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
+                        : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
                       }}
-                    >
+                      >
                       {button.text}
-                    </CustomText>
-                  </Pressable>
-                ) : (
-                  <TouchableOpacity
-                    onPress={button.onPress}
-                    className="p-4 active:bg-zinc-600 dark:active:bg-zinc-700"
-                    activeOpacity={0.7}
-                  >
-                    <CustomText 
-                      weight={button.style === 'cancel' ? 'regular' : 'medium'}
-                      className={`text-center ${getButtonStyle(button.style)}`}
-                      style={{ 
-                        fontFamily: i18n.language === 'th' 
-                          ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
-                          : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
-                      }}
-                    >
-                      {button.text}
-                    </CustomText>
-                  </TouchableOpacity>
-                )}
-              </React.Fragment>
-            ))}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </View>
         </View>
       </Pressable>

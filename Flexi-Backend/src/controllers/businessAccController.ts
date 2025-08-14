@@ -236,105 +236,109 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       }
     }
 
-    // create memberId
-    const memberId = await prisma.member.create({
-      data: {
-        permission: "admin",
-        role: "owner",
-        userId: businessAccInput.userId,
-      },
-    });
+    // Use transaction to ensure atomicity - either everything succeeds or everything fails
+    const result = await prisma.$transaction(async (prisma) => {
+      // create memberId
+      const memberId = await prisma.member.create({
+        data: {
+          permission: "admin",
+          role: "owner",
+          userId: businessAccInput.userId,
+        },
+      });
 
-    console.log("memberId", memberId.uniqueId);
+      console.log("memberId", memberId.uniqueId);
 
-    const businessAcc = await prisma.businessAcc.create({
-      data: {
-        businessName: businessAccInput.businessName,
-        vatId: businessAccInput.vatId,
-        businessType: businessAccInput.businessType,
-        taxType: businessAccInput.taxType,
-        userId: businessAccInput.userId,
-        memberId: memberId.uniqueId,
-        businessAddress: businessAccInput.businessAddress,
-        businessAvatar: businessAccInput.businessAvatar,
-        DocumentType: businessAccInput.DocumentType || ["Receipt"],
-      },
-    });
+      const businessAcc = await prisma.businessAcc.create({
+        data: {
+          businessName: businessAccInput.businessName,
+          vatId: businessAccInput.vatId,
+          businessType: businessAccInput.businessType,
+          taxType: businessAccInput.taxType,
+          userId: businessAccInput.userId,
+          memberId: memberId.uniqueId,
+          businessAddress: businessAccInput.businessAddress,
+          businessAvatar: businessAccInput.businessAvatar,
+          DocumentType: businessAccInput.DocumentType || ["Receipt"],
+        },
+      });
 
-    // Create store as Offline for default
-    const store = await prisma.store.create({
-      data: {
-        accName: "Offline",
-        platform: "Offline" as any as import("../generated/client1").IncomeChannel,
-        memberId: businessAcc.memberId,
-        businessAcc: businessAcc.id,
-      },
+      // Create store as Offline for default
+      const store = await prisma.store.create({
+        data: {
+          accName: "Offline",
+          platform: "Offline" as any as import("../generated/client1").IncomeChannel,
+          memberId: businessAcc.memberId,
+          businessAcc: businessAcc.id,
+        },
+      });
+      console.log("store created", store);
+
+      // If businessType is "Influencer", create default products
+      if (businessAccInput.businessType === "Influencer") {
+        const defaultProducts = [
+        "Tiktok Affiliate",
+        "Shopee Affiliate",
+        "Clip",
+        "Live",
+        "Post"
+        ];
+
+        for (const name of defaultProducts) {
+        const product = await prisma.product.create({
+          data: {
+          name,
+          productType: "Service",
+          price: 0,
+          memberId: memberId.uniqueId,
+          stock: 0,
+          businessAcc: businessAcc.id        
+          },
+        });
+        console.log("product created", product);
+        }
+
+        // create additional stores if businessType is "Influencer"
+        const defaultStores = [
+        "Tiktok",
+        "Shopee",
+        "Facebook",
+        "Instagram",
+        "X",
+        "Youtube",
+        "Line",    
+        ];
+
+        for (const name of defaultStores) {
+       const influencerStore = await prisma.store.create({
+         data: {
+           accName: name,
+           platform: name as any as import("../generated/client1").IncomeChannel,
+           memberId: memberId.uniqueId,
+            businessAcc: businessAcc.id,
+          },
+        });
+        console.log("influencer store created", influencerStore);
+        }
+      }
+
+      return businessAcc;
     });
-    console.log("store created", store);
 
     res.json({
       status: "ok",
       message: "business account created successfully",
       businessAcc: {
-        businessName: businessAcc.businessName,
-        vatId: businessAcc.vatId,
-        businessType: businessAcc.businessType,
-        taxType: businessAcc.taxType,
-        userId: businessAcc.userId,
-        memberId: businessAcc.memberId,
-        id: businessAcc.id,
-        businessAvatar: businessAcc.businessAvatar,
+        businessName: result.businessName,
+        vatId: result.vatId,
+        businessType: result.businessType,
+        taxType: result.taxType,
+        userId: result.userId,
+        memberId: result.memberId,
+        id: result.id,
+        businessAvatar: result.businessAvatar,
       },
     });
-    // If businessType is "Influencer", create default products
-    if (businessAccInput.businessType === "Influencer") {
-      const defaultProducts = [
-      "Tiktok Affiliate",
-      "Shopee Affiliate",
-      "Clip",
-      "Live",
-      "Post"
-      ];
-
-      for (const name of defaultProducts) {
-      const product = await prisma.product.create({
-        data: {
-        name,
-        productType: "Service",
-        price: 0,
-        memberId: memberId.uniqueId,
-        stock: 0,
-        businessAcc: businessAcc.id        
-        },
-      });
-      console.log("product created", product);
-      }
-   }
-
-   // create store if businessType is "Influencer"
-   if (businessAccInput.businessType === "Influencer") {
-      const defaultProducts = [
-      "Tiktok",
-      "Shopee",
-      "Facebook",
-      "Instagram",
-      "X",
-      "Youtube",
-      "Line",    
-      ];
-
-      for (const name of defaultProducts) {
-     const store = await prisma.store.create({
-       data: {
-         accName: name,
-         platform: name as any as import("../generated/client1").IncomeChannel,
-         memberId: memberId.uniqueId,
-          businessAcc: businessAcc.id,
-        },
-      });
-      console.log("store created", store);
-    }
-  }
 
   } catch (e) {
     console.error(e);

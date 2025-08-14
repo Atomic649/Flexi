@@ -206,7 +206,8 @@ export const IncomeChannel: {
   KTB: 'KTB',
   BBL: 'BBL',
   TMB: 'TMB',
-  Affiliate: 'Affiliate'
+  Affiliate: 'Affiliate',
+  Offline: 'Offline'
 };
 
 export type IncomeChannel = (typeof IncomeChannel)[keyof typeof IncomeChannel]

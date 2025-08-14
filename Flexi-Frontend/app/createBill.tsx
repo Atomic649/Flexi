@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
+  KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";

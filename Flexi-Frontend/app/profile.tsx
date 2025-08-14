@@ -323,7 +323,7 @@ export default function Profile() {
         >
           {businessData.role}
         </Text>
-        {businessAccChoice.length < 3 && (
+        {businessAccChoice.length < 5 && (
           <TouchableOpacity
             onPress={() => router.push("/createBusiness")}
             className=" justify-center mt-10 flex-row items-center"

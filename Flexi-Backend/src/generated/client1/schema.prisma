@@ -90,6 +90,7 @@ enum IncomeChannel {
   BBL
   TMB
   Affiliate
+  Offline
 }
 
 enum Bank {
