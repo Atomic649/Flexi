@@ -1389,7 +1389,21 @@
     "original": "Original",
     "no": "No.",
     "contact": "Contact Info",
-    "productDetails": "Product Details"
+    "productDetails": "Product Details",
+    "sellerStamp": "Seller Stamp",
+    "customerStamp": "Customer Stamp", 
+    "sellerStampHere": "Seller Company Stamp Here",
+    "customerStampHere": "Customer Company Stamp Here",
+    "receivedBy": "Received By",  
+    "authorizedBy": "Authorized By",
+    "recipientSignature": "Recipient Signature",
+    "authorizedSignature": "Authorized Signature",
+    "payment": {
+      "Cash": "Cash",
+      "Transfer": "Transfer",
+      "Creditcard": "Credit Card",
+      "Cod": "Cash on Delivery"
+      }
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",

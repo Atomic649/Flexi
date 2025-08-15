@@ -1351,7 +1351,7 @@
     "pdfSharedMessage": "แชร์ PDF สำเร็จแล้ว",
     "pdfSharingError": "เกิดข้อผิดพลาดในการแชร์ PDF",
     "pdfSavedMessage": "บันทึก PDF ไปยังโฟลเดอร์เอกสารของคุณแล้ว",
-    "generatedOn": "สร้างเมื่อ",
+    "generatedOn": "เอกสารนี้สร้างโดย",
     "page": "หน้า",
     "continued": "ต่อ",
     "companyName": "ชื่อบริษัท",
@@ -1388,7 +1388,22 @@
     "original": "ต้นฉบับ",
     "no": "ลำดับที่",
     "contact": "ข้อมูลการติดต่อ",
-    "productDetails": "รายละเอียดสินค้า"
+    "productDetails": "รายละเอียดสินค้า",
+    "sellerStamp": "ตราประทับผู้ขาย",
+    "customerStamp": "ตราประทับลูกค้า",
+    "sellerStampHere": "ตราประทับบริษัทผู้ขายที่นี่",
+    "customerStampHere": "ตราประทับบริษัทลูกค้าที่นี่",
+    "receivedBy": "ผู้รับเอกสาร",
+    "authorizedBy": "ผู้อออกเอกสาร",
+    "recipientSignature": "ลายเซ็นผู้รับเอกสาร",
+    "authorizedSignature": "ลายเซ็นผู้ออกเอกสาร",
+    "payment":{
+      "Cash": "เงินสด",
+      "Transfer":"โอนเงินผ่านบัญชีธนาคาร",
+      "Creditcard":"เครดิิดการ์ด",
+      "Cod":"เก็บเงินปลายทาง"
+    }
+
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",
