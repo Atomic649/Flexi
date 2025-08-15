@@ -137,10 +137,6 @@ export default function EditBill() {
     return theme === "dark" ? "#666" : "#999";
   };
 
-  const getStepTextColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isStepCompleted(step)) return "#0feac2";
-    return theme === "dark" ? "#666" : "#999";
-  };
 
   const getStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
     if (isStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
@@ -651,35 +647,25 @@ export default function EditBill() {
                 
                 {getAvailableSteps().map((step, index) => {
                   const stepConfig = {
-                    QA: { 
-                      icon: "document-text-outline", 
-                      label: t("bill.quotation"),
-                      type: "Quotation"
-                    },
-                    IV: { 
-                      icon: "receipt-outline", 
-                      label: t("bill.invoice"),
-                      type: "Invoice"
-                    },
-                    RE: { 
-                      icon: "checkmark-circle-outline", 
-                      label: t("bill.receipt"),
-                      type: "Receipt"
-                    }
+                    QA: { icon: "document-text-outline", label: t("bill.quotation"), type: "Quotation" },
+                    IV: { icon: "receipt-outline", label: t("bill.invoice"), type: "Invoice" },
+                    RE: { icon: "checkmark-circle-outline", label: t("bill.receipt"), type: "Receipt" }
                   };
-                  
                   const availableSteps = getAvailableSteps();
                   const isLastStep = index === availableSteps.length - 1;
-                  
                   return (
                     <React.Fragment key={step}>
                       {/* Step Circle */}
-                      <TouchableOpacity 
-                        style={{ 
-                          alignItems: "center", 
-                          backgroundColor: "transparent"
+                      <TouchableOpacity
+                        style={{ alignItems: "center", backgroundColor: "transparent" }}
+                        onPress={() => {
+                          if (!isEditMode && step === "RE") {
+                            // Show PDF invoice using InvoiceTemplate.ts
+                            //openInvoicePDF(id);
+                          } else if (isEditMode) {
+                            setSelectedDocumentType(step);
+                          }
                         }}
-                        onPress={() => isEditMode ? setSelectedDocumentType(step) : null}
                         activeOpacity={0.7}
                       >
                         <View style={{
@@ -704,7 +690,6 @@ export default function EditBill() {
                             color={isStepCompleted(step) ?  (theme === "dark" ? "#18181b" : "#ffffff") : getStepIconColor(step)}
                           />
                         </View>
-                        
                         <CustomText style={{
                           fontSize: 10,
                           color: getStepDescriptionColor(step),
