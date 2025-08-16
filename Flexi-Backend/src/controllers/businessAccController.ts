@@ -597,6 +597,7 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
         businessName: true,
         businessType: true,
         DocumentType: true,
+        vat:true
       },
     });
     res.json({

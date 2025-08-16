@@ -1311,7 +1311,7 @@
     "taxInvoiceReceipt": "ใบเสร็จรับเงิน/ใบกำกับภาษี",
     "totalSales": "ยอดขายรวม",
     "totalOrders": "คำสั่งซื้อรวม",
-    "printInvoice": "พิมพ์ใบเสร็จรับเงิน/ใบกำกับภาษี",
+    "printInvoice": "พิมพ์ใบเสร็จรับเงิน",
     "printTaxInvoice": "พิมพ์ใบเสร็จรับเงิน/ใบกำกับภาษี",
     "billedTo": "ลูกค้า",
     "buyerInformation": "ข้อมูลผู้ซื้อ",

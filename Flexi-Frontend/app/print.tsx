@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   SafeAreaView,
@@ -102,7 +102,7 @@ const formatMonthYear = (date: Date, t: any) => {
 export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { businessName } = useBusiness();
+  const { businessName, vat } = useBusiness();
   const [activeTab, setActiveTab] = useState(TAB_INDICES.INDIVIDUAL_INVOICE);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [businessId, setBusinessId] = useState<number | null>(null);
@@ -124,8 +124,8 @@ export default function Print() {
     averageOrderValue: 0,
   });
 
-  // Check business is Vat registered
-  const isVatRegistered = businessDetails?.vat === true;
+  // Check business is Vat registered (use BusinessProvider vat value)
+  const isVatRegistered = vat === true;
 
   const printRef = useRef<any>(null);
 
@@ -1085,7 +1085,7 @@ export default function Print() {
 
             <View className="mt-4 flex-row justify-center">
               <CustomButton
-                title={t("print.printInvoice")}
+                title={isVatRegistered ? t("print.printTaxInvoice") : t("print.printInvoice")}
                 handlePress={handlePrintInvoice}
                 containerStyles="px-8"
                 textStyles="!text-white"
