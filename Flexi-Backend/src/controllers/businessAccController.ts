@@ -595,6 +595,8 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
       select: {
         businessAvatar: true,
         businessName: true,
+        businessType: true,
+        DocumentType: true,
       },
     });
     res.json({

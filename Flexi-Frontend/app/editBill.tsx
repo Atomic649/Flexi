@@ -18,7 +18,6 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
-import CallAPIBusiness from "@/api/business_api";
 import DropdownClear from "@/components/DropdownClear";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -27,6 +26,7 @@ import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/FormFieldClear";
 import icons from "@/constants/icons";
+import { useBusiness } from "@/providers/BusinessProvider";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -117,6 +117,9 @@ export default function EditBill() {
   const [showProgressSection, setShowProgressSection] = useState(true);
   const [availableDocumentTypes, setAvailableDocumentTypes] = useState<string[]>([]);
 
+  // Get Business context values
+  const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
+
   // Helper functions for DocumentType progression UI
   const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
     const order = { QA: 1, IV: 2, RE: 3 };
@@ -183,27 +186,16 @@ export default function EditBill() {
       if (!id) return;
       try {
         setIsLoading(true);
-        
-        // First fetch business details to get available document types
-        const memberId = await getMemberId();
+
+        // Use DocumentType from BusinessProvider context instead of calling API
         let businessDocTypes: string[] = [];
-        
-        if (memberId) {
-          try {
-            const businessResponse = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
-            if (businessResponse && businessResponse.DocumentType) {
-              if (Array.isArray(businessResponse.DocumentType)) {
-                businessDocTypes = businessResponse.DocumentType;
-              } else if (typeof businessResponse.DocumentType === 'string') {
-                businessDocTypes = [businessResponse.DocumentType];
-              }
-              setAvailableDocumentTypes(businessDocTypes);
-            }
-          } catch (error) {
-            console.error("Error fetching business details:", error);
-          }
+        if (contextDocumentTypes) {
+          businessDocTypes = Array.isArray(contextDocumentTypes)
+            ? contextDocumentTypes
+            : [contextDocumentTypes];
+          setAvailableDocumentTypes(businessDocTypes);
         }
-        
+
         // Then fetch bill data
         const billData = await CallAPIBill.getBillByIdAPI(Number(id));
         setCName(billData.cName);
@@ -240,7 +232,7 @@ export default function EditBill() {
             }
           }
         }
-        
+
         // Set progress section visibility based on business document types
         if (businessDocTypes.length === 1 && businessDocTypes[0] === "Receipt") {
           setShowProgressSection(false);
@@ -281,7 +273,7 @@ export default function EditBill() {
       }
     };
     fetchBillData();
-  }, [id]);
+  }, [id, contextDocumentTypes]); // depend on contextDocumentTypes so we have it when available
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -324,56 +316,38 @@ export default function EditBill() {
 
     fetchProductChoice();
 
-    // Fetch business details to get business type and document types
-    const fetchBusinessDetails = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIBusiness.getBusinessDetailsAPI(
-            memberId
-          );
-          
-          // Handle DocumentType from business details
-          if (response && response.DocumentType) {
-            console.log("DocumentType fetched:", response.DocumentType);
-            
-            let docTypes: string[] = [];
-            if (Array.isArray(response.DocumentType)) {
-              docTypes = response.DocumentType;
-            } else if (typeof response.DocumentType === 'string') {
-              docTypes = [response.DocumentType];
-            }
-            
-            setAvailableDocumentTypes(docTypes);
-            
-            // Check if DocumentType is only "Receipt"
-            if (docTypes.length === 1 && docTypes[0] === "Receipt") {
-              // Hide Progress Section and set DocumentType to Receipt
-              setShowProgressSection(false);
-              setSelectedDocumentType("RE");
-              console.log("Only Receipt document type available - hiding progress section");
-            } else {
-              // Show Progress Section for multiple document types
-              setShowProgressSection(true);
-              
-              // Set default selected document type to first available
-              if (docTypes.includes("Quotation")) {
-                setSelectedDocumentType("QA");
-              } else if (docTypes.includes("Invoice")) {
-                setSelectedDocumentType("IV");
-              } else if (docTypes.includes("Receipt")) {
-                setSelectedDocumentType("RE");
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching business details:", error);
-      }
-    };
-
-    fetchBusinessDetails();
+    // NOTE: Removed direct CallAPIBusiness.getBusinessDetailsAPI call here.
+    // Business DocumentType and businessType are sourced from BusinessProvider context instead.
   }, []);
+
+  // Sync document types and business type from BusinessProvider context
+  useEffect(() => {
+    if (contextBusinessType) {
+      // If you need to store businessType locally, you can add a state for it.
+    }
+
+    if (contextDocumentTypes) {
+      const docTypes = Array.isArray(contextDocumentTypes)
+        ? contextDocumentTypes
+        : [contextDocumentTypes];
+      setAvailableDocumentTypes(docTypes);
+
+      // If only Receipt is available, hide progression and default to Receipt
+      if (docTypes.length === 1 && docTypes[0] === "Receipt") {
+        setShowProgressSection(false);
+        setSelectedDocumentType("RE");
+      } else {
+        setShowProgressSection(true);
+        if (docTypes.includes("Quotation")) {
+          setSelectedDocumentType("QA");
+        } else if (docTypes.includes("Invoice")) {
+          setSelectedDocumentType("IV");
+        } else if (docTypes.includes("Receipt")) {
+          setSelectedDocumentType("RE");
+        }
+      }
+    }
+  }, [contextDocumentTypes, contextBusinessType]);
 
   // Product choice
   const [productChoice, setProductChoice] = useState<any[]>([]);
