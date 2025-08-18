@@ -7855,7 +7855,7 @@ export namespace Prisma {
     TaxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
-    expiredAt: Date | null
+    priceValid: Date | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7887,7 +7887,7 @@ export namespace Prisma {
     TaxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
-    expiredAt: Date | null
+    priceValid: Date | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7919,7 +7919,7 @@ export namespace Prisma {
     TaxType: number
     DocumentType: number
     discount: number
-    expiredAt: number
+    priceValid: number
     memberId: number
     businessAcc: number
     storeId: number
@@ -7971,7 +7971,7 @@ export namespace Prisma {
     TaxType?: true
     DocumentType?: true
     discount?: true
-    expiredAt?: true
+    priceValid?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8003,7 +8003,7 @@ export namespace Prisma {
     TaxType?: true
     DocumentType?: true
     discount?: true
-    expiredAt?: true
+    priceValid?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8035,7 +8035,7 @@ export namespace Prisma {
     TaxType?: true
     DocumentType?: true
     discount?: true
-    expiredAt?: true
+    priceValid?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8141,7 +8141,7 @@ export namespace Prisma {
     cProvince: string | null
     cPostId: string | null
     cTaxId: string | null
-    payment: $Enums.Payment
+    payment: $Enums.Payment | null
     total: number
     purchaseAt: Date
     platform: $Enums.IncomeChannel
@@ -8154,7 +8154,7 @@ export namespace Prisma {
     TaxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
-    expiredAt: Date | null
+    priceValid: Date | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -8205,7 +8205,7 @@ export namespace Prisma {
     TaxType?: boolean
     DocumentType?: boolean
     discount?: boolean
-    expiredAt?: boolean
+    priceValid?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8242,7 +8242,7 @@ export namespace Prisma {
     TaxType?: boolean
     DocumentType?: boolean
     discount?: boolean
-    expiredAt?: boolean
+    priceValid?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8277,7 +8277,7 @@ export namespace Prisma {
     TaxType?: boolean
     DocumentType?: boolean
     discount?: boolean
-    expiredAt?: boolean
+    priceValid?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8312,13 +8312,13 @@ export namespace Prisma {
     TaxType?: boolean
     DocumentType?: boolean
     discount?: boolean
-    expiredAt?: boolean
+    priceValid?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "expiredAt" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "priceValid" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8358,7 +8358,7 @@ export namespace Prisma {
       cProvince: string | null
       cPostId: string | null
       cTaxId: string | null
-      payment: $Enums.Payment
+      payment: $Enums.Payment | null
       total: number
       purchaseAt: Date
       platform: $Enums.IncomeChannel
@@ -8371,7 +8371,7 @@ export namespace Prisma {
       TaxType: $Enums.taxType | null
       DocumentType: $Enums.DocumentType | null
       discount: number | null
-      expiredAt: Date | null
+      priceValid: Date | null
       memberId: string
       businessAcc: number
       storeId: number
@@ -8827,7 +8827,7 @@ export namespace Prisma {
     readonly TaxType: FieldRef<"Bill", 'taxType'>
     readonly DocumentType: FieldRef<"Bill", 'DocumentType'>
     readonly discount: FieldRef<"Bill", 'Int'>
-    readonly expiredAt: FieldRef<"Bill", 'DateTime'>
+    readonly priceValid: FieldRef<"Bill", 'DateTime'>
     readonly memberId: FieldRef<"Bill", 'String'>
     readonly businessAcc: FieldRef<"Bill", 'Int'>
     readonly storeId: FieldRef<"Bill", 'Int'>
@@ -9285,6 +9285,7 @@ export namespace Prisma {
     id: number | null
     quantity: number | null
     unitPrice: number | null
+    unitDiscount: number | null
     billId: number | null
   }
 
@@ -9292,6 +9293,7 @@ export namespace Prisma {
     id: number | null
     quantity: number | null
     unitPrice: number | null
+    unitDiscount: number | null
     billId: number | null
   }
 
@@ -9300,6 +9302,7 @@ export namespace Prisma {
     product: string | null
     quantity: number | null
     unitPrice: number | null
+    unitDiscount: number | null
     billId: number | null
     unit: $Enums.Unit | null
   }
@@ -9309,6 +9312,7 @@ export namespace Prisma {
     product: string | null
     quantity: number | null
     unitPrice: number | null
+    unitDiscount: number | null
     billId: number | null
     unit: $Enums.Unit | null
   }
@@ -9318,6 +9322,7 @@ export namespace Prisma {
     product: number
     quantity: number
     unitPrice: number
+    unitDiscount: number
     billId: number
     unit: number
     _all: number
@@ -9328,6 +9333,7 @@ export namespace Prisma {
     id?: true
     quantity?: true
     unitPrice?: true
+    unitDiscount?: true
     billId?: true
   }
 
@@ -9335,6 +9341,7 @@ export namespace Prisma {
     id?: true
     quantity?: true
     unitPrice?: true
+    unitDiscount?: true
     billId?: true
   }
 
@@ -9343,6 +9350,7 @@ export namespace Prisma {
     product?: true
     quantity?: true
     unitPrice?: true
+    unitDiscount?: true
     billId?: true
     unit?: true
   }
@@ -9352,6 +9360,7 @@ export namespace Prisma {
     product?: true
     quantity?: true
     unitPrice?: true
+    unitDiscount?: true
     billId?: true
     unit?: true
   }
@@ -9361,6 +9370,7 @@ export namespace Prisma {
     product?: true
     quantity?: true
     unitPrice?: true
+    unitDiscount?: true
     billId?: true
     unit?: true
     _all?: true
@@ -9457,6 +9467,7 @@ export namespace Prisma {
     product: string
     quantity: number
     unitPrice: number
+    unitDiscount: number | null
     billId: number | null
     unit: $Enums.Unit | null
     _count: ProductItemCountAggregateOutputType | null
@@ -9485,6 +9496,7 @@ export namespace Prisma {
     product?: boolean
     quantity?: boolean
     unitPrice?: boolean
+    unitDiscount?: boolean
     billId?: boolean
     unit?: boolean
     bill?: boolean | ProductItem$billArgs<ExtArgs>
@@ -9496,6 +9508,7 @@ export namespace Prisma {
     product?: boolean
     quantity?: boolean
     unitPrice?: boolean
+    unitDiscount?: boolean
     billId?: boolean
     unit?: boolean
     bill?: boolean | ProductItem$billArgs<ExtArgs>
@@ -9507,6 +9520,7 @@ export namespace Prisma {
     product?: boolean
     quantity?: boolean
     unitPrice?: boolean
+    unitDiscount?: boolean
     billId?: boolean
     unit?: boolean
     bill?: boolean | ProductItem$billArgs<ExtArgs>
@@ -9518,11 +9532,12 @@ export namespace Prisma {
     product?: boolean
     quantity?: boolean
     unitPrice?: boolean
+    unitDiscount?: boolean
     billId?: boolean
     unit?: boolean
   }
 
-  export type ProductItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "product" | "quantity" | "unitPrice" | "billId" | "unit", ExtArgs["result"]["productItem"]>
+  export type ProductItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "product" | "quantity" | "unitPrice" | "unitDiscount" | "billId" | "unit", ExtArgs["result"]["productItem"]>
   export type ProductItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bill?: boolean | ProductItem$billArgs<ExtArgs>
     productList?: boolean | ProductDefaultArgs<ExtArgs>
@@ -9547,6 +9562,7 @@ export namespace Prisma {
       product: string
       quantity: number
       unitPrice: number
+      unitDiscount: number | null
       billId: number | null
       unit: $Enums.Unit | null
     }, ExtArgs["result"]["productItem"]>
@@ -9978,6 +9994,7 @@ export namespace Prisma {
     readonly product: FieldRef<"ProductItem", 'String'>
     readonly quantity: FieldRef<"ProductItem", 'Int'>
     readonly unitPrice: FieldRef<"ProductItem", 'Int'>
+    readonly unitDiscount: FieldRef<"ProductItem", 'Int'>
     readonly billId: FieldRef<"ProductItem", 'Int'>
     readonly unit: FieldRef<"ProductItem", 'Unit'>
   }
@@ -29357,7 +29374,7 @@ export namespace Prisma {
     TaxType: 'TaxType',
     DocumentType: 'DocumentType',
     discount: 'discount',
-    expiredAt: 'expiredAt',
+    priceValid: 'priceValid',
     memberId: 'memberId',
     businessAcc: 'businessAcc',
     storeId: 'storeId'
@@ -29371,6 +29388,7 @@ export namespace Prisma {
     product: 'product',
     quantity: 'quantity',
     unitPrice: 'unitPrice',
+    unitDiscount: 'unitDiscount',
     billId: 'billId',
     unit: 'unit'
   };
@@ -30303,7 +30321,7 @@ export namespace Prisma {
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
     cTaxId?: StringNullableFilter<"Bill"> | string | null
-    payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
+    payment?: EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
@@ -30316,7 +30334,7 @@ export namespace Prisma {
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
-    expiredAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30339,7 +30357,7 @@ export namespace Prisma {
     cProvince?: SortOrderInput | SortOrder
     cPostId?: SortOrderInput | SortOrder
     cTaxId?: SortOrderInput | SortOrder
-    payment?: SortOrder
+    payment?: SortOrderInput | SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
@@ -30352,7 +30370,7 @@ export namespace Prisma {
     TaxType?: SortOrderInput | SortOrder
     DocumentType?: SortOrderInput | SortOrder
     discount?: SortOrderInput | SortOrder
-    expiredAt?: SortOrderInput | SortOrder
+    priceValid?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30378,7 +30396,7 @@ export namespace Prisma {
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
     cTaxId?: StringNullableFilter<"Bill"> | string | null
-    payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
+    payment?: EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
@@ -30391,7 +30409,7 @@ export namespace Prisma {
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
-    expiredAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30414,7 +30432,7 @@ export namespace Prisma {
     cProvince?: SortOrderInput | SortOrder
     cPostId?: SortOrderInput | SortOrder
     cTaxId?: SortOrderInput | SortOrder
-    payment?: SortOrder
+    payment?: SortOrderInput | SortOrder
     total?: SortOrder
     purchaseAt?: SortOrder
     platform?: SortOrder
@@ -30427,7 +30445,7 @@ export namespace Prisma {
     TaxType?: SortOrderInput | SortOrder
     DocumentType?: SortOrderInput | SortOrder
     discount?: SortOrderInput | SortOrder
-    expiredAt?: SortOrderInput | SortOrder
+    priceValid?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30454,7 +30472,7 @@ export namespace Prisma {
     cProvince?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     cPostId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     cTaxId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
-    payment?: EnumPaymentWithAggregatesFilter<"Bill"> | $Enums.Payment
+    payment?: EnumPaymentNullableWithAggregatesFilter<"Bill"> | $Enums.Payment | null
     total?: IntWithAggregatesFilter<"Bill"> | number
     purchaseAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelWithAggregatesFilter<"Bill"> | $Enums.IncomeChannel
@@ -30467,7 +30485,7 @@ export namespace Prisma {
     TaxType?: EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableWithAggregatesFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
-    expiredAt?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+    priceValid?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
     businessAcc?: IntWithAggregatesFilter<"Bill"> | number
     storeId?: IntWithAggregatesFilter<"Bill"> | number
@@ -30481,6 +30499,7 @@ export namespace Prisma {
     product?: StringFilter<"ProductItem"> | string
     quantity?: IntFilter<"ProductItem"> | number
     unitPrice?: IntFilter<"ProductItem"> | number
+    unitDiscount?: IntNullableFilter<"ProductItem"> | number | null
     billId?: IntNullableFilter<"ProductItem"> | number | null
     unit?: EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
     bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
@@ -30492,6 +30511,7 @@ export namespace Prisma {
     product?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrderInput | SortOrder
     billId?: SortOrderInput | SortOrder
     unit?: SortOrderInput | SortOrder
     bill?: BillOrderByWithRelationInput
@@ -30506,6 +30526,7 @@ export namespace Prisma {
     product?: StringFilter<"ProductItem"> | string
     quantity?: IntFilter<"ProductItem"> | number
     unitPrice?: IntFilter<"ProductItem"> | number
+    unitDiscount?: IntNullableFilter<"ProductItem"> | number | null
     billId?: IntNullableFilter<"ProductItem"> | number | null
     unit?: EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
     bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
@@ -30517,6 +30538,7 @@ export namespace Prisma {
     product?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrderInput | SortOrder
     billId?: SortOrderInput | SortOrder
     unit?: SortOrderInput | SortOrder
     _count?: ProductItemCountOrderByAggregateInput
@@ -30534,6 +30556,7 @@ export namespace Prisma {
     product?: StringWithAggregatesFilter<"ProductItem"> | string
     quantity?: IntWithAggregatesFilter<"ProductItem"> | number
     unitPrice?: IntWithAggregatesFilter<"ProductItem"> | number
+    unitDiscount?: IntNullableWithAggregatesFilter<"ProductItem"> | number | null
     billId?: IntNullableWithAggregatesFilter<"ProductItem"> | number | null
     unit?: EnumUnitNullableWithAggregatesFilter<"ProductItem"> | $Enums.Unit | null
   }
@@ -32253,7 +32276,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -32266,7 +32289,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -32286,7 +32309,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -32299,7 +32322,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32318,7 +32341,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -32331,7 +32354,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -32351,7 +32374,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -32364,7 +32387,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -32384,7 +32407,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -32397,7 +32420,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32415,7 +32438,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -32428,7 +32451,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type BillUncheckedUpdateManyInput = {
@@ -32444,7 +32467,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -32457,7 +32480,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -32466,6 +32489,7 @@ export namespace Prisma {
   export type ProductItemCreateInput = {
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     unit?: $Enums.Unit | null
     bill?: BillCreateNestedOneWithoutProductInput
     productList: ProductCreateNestedOneWithoutBillRecordInput
@@ -32476,6 +32500,7 @@ export namespace Prisma {
     product: string
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     billId?: number | null
     unit?: $Enums.Unit | null
   }
@@ -32483,6 +32508,7 @@ export namespace Prisma {
   export type ProductItemUpdateInput = {
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
     bill?: BillUpdateOneWithoutProductNestedInput
     productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
@@ -32493,6 +32519,7 @@ export namespace Prisma {
     product?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     billId?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
@@ -32502,6 +32529,7 @@ export namespace Prisma {
     product: string
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     billId?: number | null
     unit?: $Enums.Unit | null
   }
@@ -32509,6 +32537,7 @@ export namespace Prisma {
   export type ProductItemUpdateManyMutationInput = {
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
 
@@ -32517,6 +32546,7 @@ export namespace Prisma {
     product?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     billId?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
@@ -34394,11 +34424,11 @@ export namespace Prisma {
     not?: NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
   }
 
-  export type EnumPaymentFilter<$PrismaModel = never> = {
-    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
-    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    not?: NestedEnumPaymentFilter<$PrismaModel> | $Enums.Payment
+  export type EnumPaymentNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPaymentNullableFilter<$PrismaModel> | $Enums.Payment | null
   }
 
   export type EnumIncomeChannelFilter<$PrismaModel = never> = {
@@ -34473,7 +34503,7 @@ export namespace Prisma {
     TaxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
-    expiredAt?: SortOrder
+    priceValid?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34514,7 +34544,7 @@ export namespace Prisma {
     TaxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
-    expiredAt?: SortOrder
+    priceValid?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34546,7 +34576,7 @@ export namespace Prisma {
     TaxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
-    expiredAt?: SortOrder
+    priceValid?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34571,14 +34601,14 @@ export namespace Prisma {
     _max?: NestedEnumGenderNullableFilter<$PrismaModel>
   }
 
-  export type EnumPaymentWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
-    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    not?: NestedEnumPaymentWithAggregatesFilter<$PrismaModel> | $Enums.Payment
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumPaymentFilter<$PrismaModel>
-    _max?: NestedEnumPaymentFilter<$PrismaModel>
+  export type EnumPaymentNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPaymentNullableWithAggregatesFilter<$PrismaModel> | $Enums.Payment | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPaymentNullableFilter<$PrismaModel>
+    _max?: NestedEnumPaymentNullableFilter<$PrismaModel>
   }
 
   export type EnumIncomeChannelWithAggregatesFilter<$PrismaModel = never> = {
@@ -34633,6 +34663,7 @@ export namespace Prisma {
     product?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrder
     billId?: SortOrder
     unit?: SortOrder
   }
@@ -34641,6 +34672,7 @@ export namespace Prisma {
     id?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrder
     billId?: SortOrder
   }
 
@@ -34649,6 +34681,7 @@ export namespace Prisma {
     product?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrder
     billId?: SortOrder
     unit?: SortOrder
   }
@@ -34658,6 +34691,7 @@ export namespace Prisma {
     product?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrder
     billId?: SortOrder
     unit?: SortOrder
   }
@@ -34666,6 +34700,7 @@ export namespace Prisma {
     id?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
+    unitDiscount?: SortOrder
     billId?: SortOrder
   }
 
@@ -35674,6 +35709,13 @@ export namespace Prisma {
     orderId?: SortOrder
   }
 
+  export type EnumPaymentFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentFilter<$PrismaModel> | $Enums.Payment
+  }
+
   export type CartCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -35714,6 +35756,16 @@ export namespace Prisma {
     id?: SortOrder
     orderId?: SortOrder
     total?: SortOrder
+  }
+
+  export type EnumPaymentWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentWithAggregatesFilter<$PrismaModel> | $Enums.Payment
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentFilter<$PrismaModel>
+    _max?: NestedEnumPaymentFilter<$PrismaModel>
   }
 
   export type BusinessAccCreateNestedManyWithoutUserInput = {
@@ -36945,8 +36997,8 @@ export namespace Prisma {
     set?: $Enums.Gender | null
   }
 
-  export type EnumPaymentFieldUpdateOperationsInput = {
-    set?: $Enums.Payment
+  export type NullableEnumPaymentFieldUpdateOperationsInput = {
+    set?: $Enums.Payment | null
   }
 
   export type EnumIncomeChannelFieldUpdateOperationsInput = {
@@ -37998,6 +38050,10 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type EnumPaymentFieldUpdateOperationsInput = {
+    set?: $Enums.Payment
+  }
+
   export type OrderUpdateManyWithoutCartNestedInput = {
     create?: XOR<OrderCreateWithoutCartInput, OrderUncheckedCreateWithoutCartInput> | OrderCreateWithoutCartInput[] | OrderUncheckedCreateWithoutCartInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCartInput | OrderCreateOrConnectWithoutCartInput[]
@@ -38285,11 +38341,11 @@ export namespace Prisma {
     not?: NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
   }
 
-  export type NestedEnumPaymentFilter<$PrismaModel = never> = {
-    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
-    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    not?: NestedEnumPaymentFilter<$PrismaModel> | $Enums.Payment
+  export type NestedEnumPaymentNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPaymentNullableFilter<$PrismaModel> | $Enums.Payment | null
   }
 
   export type NestedEnumIncomeChannelFilter<$PrismaModel = never> = {
@@ -38323,14 +38379,14 @@ export namespace Prisma {
     _max?: NestedEnumGenderNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumPaymentWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
-    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
-    not?: NestedEnumPaymentWithAggregatesFilter<$PrismaModel> | $Enums.Payment
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumPaymentFilter<$PrismaModel>
-    _max?: NestedEnumPaymentFilter<$PrismaModel>
+  export type NestedEnumPaymentNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPaymentNullableWithAggregatesFilter<$PrismaModel> | $Enums.Payment | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPaymentNullableFilter<$PrismaModel>
+    _max?: NestedEnumPaymentNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumIncomeChannelWithAggregatesFilter<$PrismaModel = never> = {
@@ -38570,6 +38626,23 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentFilter<$PrismaModel> | $Enums.Payment
+  }
+
+  export type NestedEnumPaymentWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Payment | EnumPaymentFieldRefInput<$PrismaModel>
+    in?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Payment[] | ListEnumPaymentFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentWithAggregatesFilter<$PrismaModel> | $Enums.Payment
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentFilter<$PrismaModel>
+    _max?: NestedEnumPaymentFilter<$PrismaModel>
   }
 
   export type BusinessAccCreateWithoutUserInput = {
@@ -39482,7 +39555,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -39495,7 +39568,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -39514,7 +39587,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -39527,7 +39600,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     businessAcc: number
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -39890,7 +39963,7 @@ export namespace Prisma {
     cProvince?: StringNullableFilter<"Bill"> | string | null
     cPostId?: StringNullableFilter<"Bill"> | string | null
     cTaxId?: StringNullableFilter<"Bill"> | string | null
-    payment?: EnumPaymentFilter<"Bill"> | $Enums.Payment
+    payment?: EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
     total?: IntFilter<"Bill"> | number
     purchaseAt?: DateTimeFilter<"Bill"> | Date | string
     platform?: EnumIncomeChannelFilter<"Bill"> | $Enums.IncomeChannel
@@ -39903,7 +39976,7 @@ export namespace Prisma {
     TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
-    expiredAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -40189,7 +40262,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -40202,7 +40275,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40221,7 +40294,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -40234,7 +40307,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -40620,6 +40693,7 @@ export namespace Prisma {
   export type ProductItemCreateWithoutBillInput = {
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     unit?: $Enums.Unit | null
     productList: ProductCreateNestedOneWithoutBillRecordInput
   }
@@ -40629,6 +40703,7 @@ export namespace Prisma {
     product: string
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     unit?: $Enums.Unit | null
   }
 
@@ -40783,6 +40858,7 @@ export namespace Prisma {
     product?: StringFilter<"ProductItem"> | string
     quantity?: IntFilter<"ProductItem"> | number
     unitPrice?: IntFilter<"ProductItem"> | number
+    unitDiscount?: IntNullableFilter<"ProductItem"> | number | null
     billId?: IntNullableFilter<"ProductItem"> | number | null
     unit?: EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
   }
@@ -40934,7 +41010,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -40947,7 +41023,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40966,7 +41042,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -40979,7 +41055,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -41057,7 +41133,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -41070,7 +41146,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -41089,7 +41165,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -41102,7 +41178,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -41943,7 +42019,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -41956,7 +42032,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -41975,7 +42051,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -41988,7 +42064,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     businessAcc: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -42213,6 +42289,7 @@ export namespace Prisma {
   export type ProductItemCreateWithoutProductListInput = {
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     unit?: $Enums.Unit | null
     bill?: BillCreateNestedOneWithoutProductInput
   }
@@ -42221,6 +42298,7 @@ export namespace Prisma {
     id?: number
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     billId?: number | null
     unit?: $Enums.Unit | null
   }
@@ -45380,7 +45458,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -45393,7 +45471,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     businessAcc: number
     storeId: number
   }
@@ -45478,7 +45556,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -45491,7 +45569,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45510,7 +45588,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -45523,7 +45601,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45542,7 +45620,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -45555,7 +45633,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -45789,7 +45867,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -45802,7 +45880,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     storeId: number
   }
@@ -45926,7 +46004,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -45939,7 +46017,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45958,7 +46036,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -45971,7 +46049,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45990,7 +46068,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -46003,7 +46081,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -46220,12 +46298,14 @@ export namespace Prisma {
     product: string
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     unit?: $Enums.Unit | null
   }
 
   export type ProductItemUpdateWithoutBillInput = {
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
     productList?: ProductUpdateOneRequiredWithoutBillRecordNestedInput
   }
@@ -46235,6 +46315,7 @@ export namespace Prisma {
     product?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
 
@@ -46243,6 +46324,7 @@ export namespace Prisma {
     product?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
 
@@ -46302,7 +46384,7 @@ export namespace Prisma {
     cProvince?: string | null
     cPostId?: string | null
     cTaxId?: string | null
-    payment: $Enums.Payment
+    payment?: $Enums.Payment | null
     total: number
     purchaseAt?: Date | string
     platform: $Enums.IncomeChannel
@@ -46315,7 +46397,7 @@ export namespace Prisma {
     TaxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
-    expiredAt?: Date | string | null
+    priceValid?: Date | string | null
     memberId: string
     businessAcc: number
   }
@@ -46332,7 +46414,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -46345,7 +46427,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -46364,7 +46446,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -46377,7 +46459,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -46396,7 +46478,7 @@ export namespace Prisma {
     cProvince?: NullableStringFieldUpdateOperationsInput | string | null
     cPostId?: NullableStringFieldUpdateOperationsInput | string | null
     cTaxId?: NullableStringFieldUpdateOperationsInput | string | null
-    payment?: EnumPaymentFieldUpdateOperationsInput | $Enums.Payment
+    payment?: NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
     total?: IntFieldUpdateOperationsInput | number
     purchaseAt?: DateTimeFieldUpdateOperationsInput | Date | string
     platform?: EnumIncomeChannelFieldUpdateOperationsInput | $Enums.IncomeChannel
@@ -46409,7 +46491,7 @@ export namespace Prisma {
     TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
-    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
@@ -46418,6 +46500,7 @@ export namespace Prisma {
     id?: number
     quantity: number
     unitPrice: number
+    unitDiscount?: number | null
     billId?: number | null
     unit?: $Enums.Unit | null
   }
@@ -46436,6 +46519,7 @@ export namespace Prisma {
   export type ProductItemUpdateWithoutProductListInput = {
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
     bill?: BillUpdateOneWithoutProductNestedInput
   }
@@ -46444,6 +46528,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     billId?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }
@@ -46452,6 +46537,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: IntFieldUpdateOperationsInput | number
+    unitDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     billId?: NullableIntFieldUpdateOperationsInput | number | null
     unit?: NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
   }

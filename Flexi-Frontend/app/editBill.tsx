@@ -69,6 +69,8 @@ export default function EditBill() {
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setCTaxId] = useState("");
+  const [priceValid, setPriceValid] = useState<Date | null>(null);
+  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(null);
 
   // Note state
   const [note, setNote] = useState("");
@@ -81,7 +83,7 @@ export default function EditBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1", unit: "" },
+    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -253,11 +255,31 @@ export default function EditBill() {
               product: item.product,
               price: item.unitPrice.toString(),
               quantity: item.quantity.toString(),
-              unit: item.unit || ""
+              unit: item.unit || "",
+              unitDiscount: item.unitDiscount ? item.unitDiscount.toString() : ""
             }))
           );
         } else {
-          setProductItems([{ product: "", price: "", quantity: "1", unit: "" }]);
+          setProductItems([{ product: "", price: "", quantity: "1", unit: "", unitDiscount: "" }]);
+        }
+        
+        // Set priceValid from billData
+        if (billData.priceValid) {
+          const priceValidDate = new Date(billData.priceValid);
+          setPriceValid(priceValidDate);
+          
+          // Calculate days difference to set priceValidDays
+          const now = new Date(billData.purchaseAt || Date.now());
+          const diffTime = priceValidDate.getTime() - now.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 7) {
+            setPriceValidDays(7);
+          } else if (diffDays === 15) {
+            setPriceValidDays(15);
+          } else if (diffDays === 30) {
+            setPriceValidDays(30);
+          }
         }
         // Set purchase date
         if (billData.purchaseAt) {
@@ -399,12 +421,20 @@ export default function EditBill() {
   const handleAddProductItem = () => {
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1", unit: "" },
+      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
     ]);
   };
 
   const handleRemoveProductItem = (index: number) => {
     setProductItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
+    setPriceValidDays(days);
+    
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + days);
+    setPriceValid(validDate);
   };
 
   const handleUpdateBill = async () => {
@@ -507,7 +537,9 @@ export default function EditBill() {
           unit: item.unit,
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
+          unitDiscount: Number(item.unitDiscount) || 0,
         })),
+        priceValid: priceValid || undefined,
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
       });
@@ -904,7 +936,7 @@ export default function EditBill() {
               key={idx}
               className="flex flex-row items-center mb-1 relative"
             >
-              <View className="w-1/2 pr-2">
+              <View className="w-2/5 pr-2">
                 <DropdownClear
                   title={t(`bill.productName`) + ` ${idx + 1}`}
                   options={productChoice.map((product) => ({
@@ -940,7 +972,25 @@ export default function EditBill() {
                   editable={isEditMode}
                 />
               </View>
-              <View className="w-1/4 pr-2" style={{ position: "relative" }}>
+              <View className="w-1/5 pr-2">
+                <FormFieldClear
+                  title={t("bill.discount")}
+                  value={item.unitDiscount}
+                  handleChangeText={(value: string) =>
+                    handleProductItemChange(idx, "unitDiscount", value)
+                  }
+                  placeholder="0"
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-1"
+                  keyboardType="numeric"
+                  editable={isEditMode}
+                />
+              </View>
+              <View className="w-1/6 pr-2" style={{ position: "relative" }}>
                 <FormFieldClear
                  title={
                     t("bill.amount") +
@@ -1051,6 +1101,101 @@ export default function EditBill() {
             textAlignVertical="top"
             editable={isEditMode}
           />
+
+          {/* Price Valid Section */}
+          {isEditMode && (
+            <View
+              className="flex flex-row items-center mt-2 mb-2"
+              style={{ backgroundColor: "transparent", marginBottom: 8 }}
+            >
+              <CustomText
+                className="mr-4"
+                style={{ 
+                  color: theme === "dark" ? "#b1b1b1" : "#606060",
+                  fontSize: 16,
+                  fontWeight: "500"
+                }}
+              >
+                {t("bill.priceValid")}
+              </CustomText>
+              
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
+                onPress={() => handlePriceValidDaysChange(7)}
+              >
+                <Ionicons
+                  name={priceValidDays === 7 ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  7 days
+                </CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
+                onPress={() => handlePriceValidDaysChange(15)}
+              >
+                <Ionicons
+                  name={priceValidDays === 15 ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  15 days
+                </CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center" }}
+                onPress={() => handlePriceValidDaysChange(30)}
+              >
+                <Ionicons
+                  name={priceValidDays === 30 ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  30 days
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+          {priceValid && (
+            <View className="mb-2 pt-2 flex-row item-center justify-center">
+                <CustomText
+                className="text-sm"
+                style={{ color: theme === "dark" ? "#888" : "#666" }}
+                >
+                {t("bill.validUntil")}
+                </CustomText>
+               <CustomText
+                className="text-sm"
+                style={{ color: theme === "dark" ? "#888" : "#666" }}
+              >
+              {formatDate(priceValid.toISOString())}
+              </CustomText>
+            </View>
+          )}
 
           {error ? (
             <CustomText className="text-red-500 mt-4">{error}</CustomText>

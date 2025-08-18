@@ -23,7 +23,8 @@
     "seeMore": "ดูเพิ่มเติม",
     "more": "เพิ่มเติม",
     "showLess": "ดูน้อยลง",
-    "future": "อนาคต"
+    "future": "อนาคต",
+    "days":"วัน"
   },
   "months": {
     "january": "มกราคม",
@@ -1183,6 +1184,9 @@
     "enterProductName": "กรอกชื่อสินค้า",
     "amount": "จำนวน",
     "price": "ราคา",
+    "discount": "ส่วนลด",
+    "priceValid":"ยืนราคา",
+    "validUntil":"ยืนราคาจนถึงวันที่ : ",
     "platform": "แพลตฟอร์ม",
     "selectPlatform": "เลือกแพลตฟอร์ม",
     "paymentMethod": "วิธีการชำระเงิน",
@@ -1326,6 +1330,10 @@
     "description": "รายละเอียด",
     "quantity": "จำนวน",
     "price": "ราคา",
+    "discount": "ส่วนลด",
+    "totalDiscount":"ส่วนลดรวม",
+    "priceValid":"ยืนราคา :",
+    "validUntil":"ยืนราคาไปจนถึง",
     "unitPrice": "ราคาต่อหน่วย",
     "total": "รวม",
     "amount": "จำนวนเงิน",

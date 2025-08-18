@@ -22,6 +22,7 @@ interface ProductItemInput {
   product: string;
   quantity: number;
   unitPrice: number;
+  unitDiscount?: number;
   unit: Unit;
 }
 
@@ -53,6 +54,7 @@ interface billInput {
   DocumentType: ("Invoice" | "Receipt" | "Quotation")[];
   note?: string; // Optional note 
   discount?: number; // Optional discount field
+  priceValid?: Date; // Optional price valid date
 }
 
 // Validate the request body
@@ -87,6 +89,7 @@ const schema = Joi.object({
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         unitPrice: Joi.number().min(0).required(),
+        unitDiscount: Joi.number().min(0).optional(),
         unit: Joi.string().optional(), // Optional field for unit
       })
     )
@@ -95,6 +98,7 @@ const schema = Joi.object({
   DocumentType: Joi.array().items(Joi.string().valid("Invoice", "Receipt", "Quotation")).min(1).required(),
   note: Joi.string().allow("").optional(), // Optional note field
   discount: Joi.number().min(0).optional(), // Optional discount field
+  priceValid: Joi.date().optional(), // Optional price valid date
 });
 
 //Create a New Bill - Post
@@ -154,6 +158,13 @@ const createBill = async (req: Request, res: Response) => {
       0
     );
 
+        // Calculate discount from all product items
+    const discount = billInput.productItems.reduce(
+      (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
+      0
+    );
+   
+
     // Handle repeat bills
     try {
       const createdBills = [];
@@ -208,6 +219,7 @@ const createBill = async (req: Request, res: Response) => {
                     product: item.product,
                     quantity: item.quantity,
                     unitPrice: item.unitPrice,
+                    unitDiscount: item.unitDiscount || 0,
                     unit: item.unit,
                   })),
                 },
@@ -219,7 +231,8 @@ const createBill = async (req: Request, res: Response) => {
                 businessAcc: billInput.businessAcc,
                 storeId: billInput.storeId,
                 image: req.file?.filename ?? "",
-                discount: billInput.discount || 0, // Include discount if provided
+                discount: discount, // Include discount if provided
+                priceValid: billInput.priceValid, // Include priceValid if provided
                 total,
                 DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
@@ -255,6 +268,7 @@ const createBill = async (req: Request, res: Response) => {
                 product: item.product,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
+                unitDiscount: item.unitDiscount || 0,
                 unit: item.unit,
               })),
             },
@@ -266,7 +280,8 @@ const createBill = async (req: Request, res: Response) => {
             businessAcc: billInput.businessAcc,
             storeId: billInput.storeId,
             image: req.file?.filename ?? "",
-            discount: billInput.discount || 0, // Include discount if provided
+            discount: discount, // Include discount if provided
+            priceValid: billInput.priceValid, // Include priceValid if provided
             total,
             DocumentType: billInput.DocumentType[0], // Take first element from array
           note: billInput.note || "", // Optional note field     
@@ -305,6 +320,7 @@ const getBills = async (req: Request, res: Response) => {
         purchaseAt: true,             
         storeId: true,
         discount: true, // Include discount
+        priceValid: true, // Include priceValid
         total: true,
         platform : true,
         product: {
@@ -312,6 +328,7 @@ const getBills = async (req: Request, res: Response) => {
             product: true,
             quantity: true, 
             unitPrice: true,
+            unitDiscount: true,
             unit: true
           },
         }, // Include product items
@@ -391,6 +408,11 @@ const updateBill = async (req: Request, res: Response) => {
       (sum, item) => sum + item.quantity * item.unitPrice,
       0
     );
+    // Calculate discount from all product items
+    const discount = billInput.productItems.reduce(
+      (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
+      0
+    );
     try {
       // Delete existing product items for this bill (to fully replace)
       await prisma.productItem.deleteMany({
@@ -415,6 +437,7 @@ const updateBill = async (req: Request, res: Response) => {
               product: item.product,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
+              unitDiscount: item.unitDiscount || 0,
               unit: item.unit
             })),
           },
@@ -428,7 +451,8 @@ const updateBill = async (req: Request, res: Response) => {
           image: req.file?.filename ?? "",
           total: total,
           note: billInput.note || "", // Optional note field
-          discount: billInput.discount || 0, // Optional discount 
+          discount: discount,
+          priceValid: billInput.priceValid, // Include priceValid if provided
           DocumentType: billInput.DocumentType[0], // Take first element from array
 
         },

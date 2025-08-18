@@ -20,10 +20,15 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
   // Use correct field from backend: invoice.product (array of ProductItem)
   const productItems = invoice.product || [];
   const isVatRegistered = businessDetails?.vat === true;
-  const subtotal = productItems.reduce(
+  const rawTotal = productItems.reduce(
     (sum: number, item: any) => sum + item.unitPrice * item.quantity,
     0
   );
+  const totalDiscount = productItems.reduce(
+    (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
+    0
+  );
+  const subtotal = rawTotal - totalDiscount;
   const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;
 
@@ -244,6 +249,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             border-bottom: none;
           }
           .summary-row.subtotal {
+            color: #6b7280;
+          }
+          .summary-row.discount {
             color: #6b7280;
           }
           .summary-row.tax {
@@ -507,7 +515,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             
             <div class="billing-section">
               <h3>${t("print.paymentDetails")}</h3>
-              <p><strong>${t("print.paymentMethod")}:</strong> ${t(`print.payment.${invoice.payment}`)}</p>
+              <p><strong>${t("print.paymentMethod")}:</strong> ${t(
+    `print.payment.${invoice.payment}`
+  )}</p>
               <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(
     invoice.purchaseAt
   )}</p>
@@ -536,6 +546,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   <th class="text-right" style="width: 17.5%;">${t(
                     "print.price"
                   )}</th>
+                    <th class="text-right" style="width: 13%;">${t("print.discount")}</th>
                   <th class="text-right" style="width: 17.5%;">${t(
                     "print.total"
                   )}</th>
@@ -555,8 +566,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     <td class="text-right">${formatCurrencyForPDF(
                       item.unitPrice
                     )}</td>
+                      <td class="text-right">${item.unitDiscount ? `${formatCurrencyForPDF(item.unitDiscount)}` : "-"}</td>
                     <td class="text-right font-bold">${formatCurrencyForPDF(
-                      item.unitPrice * item.quantity
+                      (item.unitPrice * item.quantity) - ((item.unitDiscount || 0) * item.quantity)
                     )}</td>
                   </tr>
                 `
@@ -572,6 +584,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               ${
                 isVatRegistered
                   ? `
+              ${totalDiscount > 0 ? `
+              <div class="summary-row discount">
+                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                <span class="summary-amount">-${formatCurrencyForPDF(
+                  totalDiscount
+                )}</span>
+              </div>
+              ` : ''}
               <div class="summary-row subtotal">
                 <span class="summary-label">${t("print.subtotal")}:</span>
                 <span class="summary-amount">${formatCurrencyForPDF(
@@ -585,7 +605,22 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 )}</span>
               </div>
               `
-                  : ""
+                  : `
+              ${totalDiscount > 0 ? `
+              <div class="summary-row discount">
+                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                <span class="summary-amount">-${formatCurrencyForPDF(
+                  totalDiscount
+                )}</span>
+              </div>
+              ` : ''}
+              <div class="summary-row subtotal">
+                <span class="summary-label">${t("print.subtotal")}:</span>
+                <span class="summary-amount">${formatCurrencyForPDF(
+                  subtotal
+                )}</span>
+              </div>
+              `
               }
               <div class="summary-row total">
                 <span class="summary-label">${t("print.grandTotal")}:</span>
@@ -605,9 +640,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="signature-name"> ${
                   businessDetails?.businessName || businessName
                 } </div>
-                <div class="signature-date">${t("print.date")}:${
-    invoice.date
-  }</div>
+
+<div class="signature-date">${t("print.date")}: ${formatDate(
+    invoice.purchaseAt
+  )}</div>
+
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">            
               <div class="business-stamp">

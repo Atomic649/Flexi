@@ -244,7 +244,7 @@ model Bill {
   cPostId      String?
   cTaxId       String?
   product      ProductItem[]
-  payment      Payment
+  payment      Payment?
   total        Int
   purchaseAt   DateTime      @default(now())
   platform     IncomeChannel
@@ -257,7 +257,7 @@ model Bill {
   TaxType      taxType?      @default(Individual)
   DocumentType DocumentType? @default(Receipt)
   discount     Int?          @default(0)
-  expiredAt    DateTime? // Optional field for expiration date
+  priceValid   DateTime? // Optional field for expiration date
 
   // Relation   
   memberId    String
@@ -269,12 +269,13 @@ model Bill {
 }
 
 model ProductItem {
-  id        Int    @id @default(autoincrement())
-  product   String
-  quantity  Int
-  unitPrice Int
-  billId    Int?
-  unit      Unit?
+  id           Int    @id @default(autoincrement())
+  product      String
+  quantity     Int
+  unitPrice    Int
+  unitDiscount Int?   @default(0)
+  billId       Int?
+  unit         Unit?
 
   // Relation
   bill        Bill?   @relation(fields: [billId], references: [id])

@@ -67,6 +67,8 @@ export default function CreateBill() {
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
+  const [priceValid, setPriceValid] = useState<Date | null>(null);
+  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(null);
 
 
   // Product information
@@ -90,7 +92,7 @@ export default function CreateBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1", unit: "" },
+    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
 
   const fieldStyles = "mt-2 mb-2";
@@ -343,7 +345,7 @@ export default function CreateBill() {
   const handleAddProductItem = () => {
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1", unit: "" },
+      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
     ]);
   };
 
@@ -484,9 +486,11 @@ export default function CreateBill() {
           product: item.product,
           unit: item.unit || undefined,
           unitPrice: Number(item.price),
+          unitDiscount: Number(item.unitDiscount) || 0,
           quantity: Number(item.quantity),
         })),
         note,
+        priceValid: priceValid || undefined,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
@@ -518,17 +522,18 @@ export default function CreateBill() {
     }
   };
 
-  const handleDatesChange = (dates: string[]) => {
-    setSelectedDates(dates);
-    console.log("Selected Dates:", dates);
-    setDate(dates); // Store the dates as an array
-
-    // Update purchaseAt with the selected date when a date is chosen
-    if (dates && dates.length > 0) {
-      setPurchaseAt(new Date(dates[0]));
-    }
-
+    const handleDatesChange = (selectedDates: string[]) => {
+    setSelectedDates(selectedDates);
+    setPurchaseAt(new Date(selectedDates[0]));
     setCalendarVisible(false);
+  };
+
+  const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
+    setPriceValidDays(days);
+    // Calculate the date from current date
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + days);
+    setPriceValid(validDate);
   }; // force to chose only one date
 
   // Clear all customer and bill fields
@@ -983,7 +988,7 @@ export default function CreateBill() {
               key={idx}
               className="flex flex-row items-center mb-1 relative"
             >
-              <View className="w-1/2 pr-2">
+              <View className="w-2/5 pr-2">
                 <DropdownClear
                   title={t(`bill.productName`) + ` ${idx + 1}`}
                   options={productChoice.map((product) => ({
@@ -1019,7 +1024,24 @@ export default function CreateBill() {
                   keyboardType="numeric"
                 />
               </View>
-              <View className="w-1/4 pr-2" style={{ position: "relative" }}>
+              <View className="w-1/5 pr-2">
+                <FormFieldClear
+                  title={t("bill.discount")}
+                  value={item.unitDiscount}
+                  handleChangeText={(value: string) =>
+                    handleProductItemChange(idx, "unitDiscount", value)
+                  }
+                  placeholder="0"
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-1"
+                  keyboardType="numeric"
+                />
+              </View>
+              <View className="w-1/6 pr-2" style={{ position: "relative" }}>
                 <FormFieldClear
                   title={
                     t("bill.amount") +
@@ -1128,6 +1150,99 @@ export default function CreateBill() {
             numberOfLines={3}
             textAlignVertical="top"
           />
+
+          {/* Price Valid Section */}
+          <View
+            className="flex flex-row items-center mt-2 mb-2"
+            style={{ backgroundColor: "transparent", marginBottom: 8 }}
+          >
+            <CustomText
+              className="mr-4"
+              style={{ 
+                color: theme === "dark" ? "#b1b1b1" : "#606060",
+                fontSize: 16,
+                fontWeight: "500"
+              }}
+            >
+              {t("bill.priceValid")}
+            </CustomText>
+            
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 20,
+              }}
+              onPress={() => handlePriceValidDaysChange(7)}
+            >
+              <Ionicons
+                name={priceValidDays === 7 ? "checkbox" : "square-outline"}
+                size={22}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
+              />
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                7 days
+              </CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 20,
+              }}
+              onPress={() => handlePriceValidDaysChange(15)}
+            >
+              <Ionicons
+                name={priceValidDays === 15 ? "checkbox" : "square-outline"}
+                size={22}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
+              />
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                15 days
+              </CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{ flexDirection: "row", alignItems: "center" }}
+              onPress={() => handlePriceValidDaysChange(30)}
+            >
+              <Ionicons
+                name={priceValidDays === 30 ? "checkbox" : "square-outline"}
+                size={22}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
+              />
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                30 days
+              </CustomText>
+            </TouchableOpacity>
+          </View>
+          
+          {priceValid && (
+            <View className="mb-2 pt-2 flex-row item-center justify-center">
+                <CustomText
+                className="text-sm"
+                style={{ color: theme === "dark" ? "#888" : "#666" }}
+                >
+                {t("bill.validUntil")}
+                </CustomText>
+               <CustomText
+                className="text-sm"
+                style={{ color: theme === "dark" ? "#888" : "#666" }}
+              >
+              {formatDate(priceValid.toISOString())}
+              </CustomText>
+            </View>
+          )}
 
           {/* Repeat Bill Section - Only show for Rental business type */}
           {businessType === "Rental" && (

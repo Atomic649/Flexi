@@ -23,7 +23,8 @@
     "seeMore": "See More",
     "more": "More",
     "showLess": "Show Less",
-    "future": "future"
+    "future": "future",
+    "days": "days"
   },
   "months": {
     "january": "January",
@@ -1185,6 +1186,10 @@
     "enterProductName": "Enter product name",
     "amount": "Quantity",
     "price": "Price",
+    "discount": "Discount",
+    "priceValid":"Price Valid ",
+    "validUntil":"Valid Until :",
+   
     "platform": "Platform",
     "selectPlatform": "Select platform",
     "paymentMethod": "Payment Method",
@@ -1327,6 +1332,10 @@
     "description": "Description",
     "quantity": "Quantity",
     "price": "Price",
+    "discount": "Discount",
+    "totalDiscount": "Total Discount",
+    "priceValid":" Price Valid :",
+    "validUntil":"Price Valid Until :",
     "unitPrice": "Unit Price",
     "total": "Total",
     "amount": "Amount",

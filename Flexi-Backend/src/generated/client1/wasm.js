@@ -188,7 +188,7 @@ exports.Prisma.BillScalarFieldEnum = {
   TaxType: 'TaxType',
   DocumentType: 'DocumentType',
   discount: 'discount',
-  expiredAt: 'expiredAt',
+  priceValid: 'priceValid',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'
@@ -199,6 +199,7 @@ exports.Prisma.ProductItemScalarFieldEnum = {
   product: 'product',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
+  unitDiscount: 'unitDiscount',
   billId: 'billId',
   unit: 'unit'
 };

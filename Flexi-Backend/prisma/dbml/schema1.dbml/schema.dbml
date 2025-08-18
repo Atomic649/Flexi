@@ -90,7 +90,7 @@ Table Bill {
   cPostId String
   cTaxId String
   product ProductItem [not null]
-  payment Payment [not null]
+  payment Payment
   total Int [not null]
   purchaseAt DateTime [default: `now()`, not null]
   platform IncomeChannel [not null]
@@ -103,7 +103,7 @@ Table Bill {
   TaxType taxType [default: 'Individual']
   DocumentType DocumentType [default: 'Receipt']
   discount Int [default: 0]
-  expiredAt DateTime
+  priceValid DateTime
   memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
@@ -117,6 +117,7 @@ Table ProductItem {
   product String [not null]
   quantity Int [not null]
   unitPrice Int [not null]
+  unitDiscount Int [default: 0]
   billId Int
   unit Unit
   bill Bill

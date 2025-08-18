@@ -62,12 +62,14 @@ class CallAPIBill {
             product: string;
             unitPrice: number;
             quantity: number;
+            unitDiscount?: number;
         }>;
         repeat: boolean;
         repeatMonths: number;
         DocumentType: ("Bill" | "Invoice" | "Receipt" | "Quotation")[];
         note?: string; // Optional note field
         discount?: number; // Optional discount field
+        priceValid?: Date; // Optional price validity field
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -108,12 +110,14 @@ class CallAPIBill {
             product: string;
             unitPrice: number;
             quantity: number;
+            unitDiscount?: number;
         }>;
         repeat: boolean;
         repeatMonths: number;
         DocumentType: ("Bill" | "Invoice" | "Receipt" | "Quotation")[];
         note?: string; // Optional note field
         discount?: number; // Optional discount field
+        priceValid?: Date; // Optional price validity field
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
