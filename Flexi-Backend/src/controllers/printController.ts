@@ -44,13 +44,23 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
     });
 
     // Calculate report statistics
-    const totalSales = bills.reduce(
+    const Sales = bills.reduce(
       (sum, bill) =>
         sum + (bill.product && Array.isArray(bill.product)
           ? bill.product.reduce((itemSum, item) => itemSum + Number(item.unitPrice) * Number(item.quantity), 0)
           : 0),
       0
     );
+
+  const Discount = bills.reduce(
+    (sum, bill) =>
+      sum + (bill.product && Array.isArray(bill.product)
+        ? bill.product.reduce((itemSum, item) => itemSum + Number(item.unitDiscount) * Number(item.quantity), 0)
+        : 0),
+    0
+  );
+
+  const totalSales = Sales - Discount;
 
     const paidBills = bills.filter((bill) => bill.cashStatus);
     const unpaidBills = bills.filter((bill) => !bill.cashStatus);

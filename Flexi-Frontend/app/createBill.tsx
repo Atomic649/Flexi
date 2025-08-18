@@ -1010,11 +1010,13 @@ export default function CreateBill() {
               <View className="w-1/4 pr-2">
                 <FormFieldClear
                   title={t("bill.price")}
-                  value={item.price}
-                  handleChangeText={(value: string) =>
-                    handleProductItemChange(idx, "price", value)
-                  }
-                  placeholder="1000"
+                  value={item.price ? Number(item.price).toLocaleString() : ""}
+                  handleChangeText={(value: string) => {
+                    // Remove commas and non-numeric characters except digits
+                    const numericValue = value.replace(/[^0-9]/g, "");
+                    handleProductItemChange(idx, "price", numericValue);
+                  }}
+                  placeholder="1,000"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
@@ -1027,10 +1029,12 @@ export default function CreateBill() {
               <View className="w-1/5 pr-2">
                 <FormFieldClear
                   title={t("bill.discount")}
-                  value={item.unitDiscount}
-                  handleChangeText={(value: string) =>
-                    handleProductItemChange(idx, "unitDiscount", value)
-                  }
+                  value={item.unitDiscount ? Number(item.unitDiscount).toLocaleString() : ""}
+                  handleChangeText={(value: string) => {
+                    // Remove commas and non-numeric characters except digits
+                    const numericValue = value.replace(/[^0-9]/g, "");
+                    handleProductItemChange(idx, "unitDiscount", numericValue);
+                  }}
                   placeholder="0"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
@@ -1086,54 +1090,58 @@ export default function CreateBill() {
               </View>
             </TouchableOpacity>
           </View>
-          <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
-              <DropdownClear
-                title={t("bill.paymentMethod")}
-                options={[
-                  { label: t("bill.payment.cod"), value: "COD" },
-                  { label: t("bill.payment.transfer"), value: "Transfer" },
-                  { label: t("bill.payment.creditcard"), value: "CreditCard" },
-                  { label: t("bill.payment.cash"), value: "Cash" },
-                ]}
-                placeholder={t("bill.selectPayment")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                selectedValue={
-                  payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
-                }
-                onValueChange={setPayment}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-              />
+
+          {/* Payment and Cash Status - Only show for Receipt */}
+          {selectedDocumentType === "RE" && (
+            <View className="flex flex-row justify-between">
+              <View className="w-1/2 pr-2">
+                <DropdownClear
+                  title={t("bill.paymentMethod")}
+                  options={[
+                    { label: t("bill.payment.cod"), value: "COD" },
+                    { label: t("bill.payment.transfer"), value: "Transfer" },
+                    { label: t("bill.payment.creditcard"), value: "CreditCard" },
+                    { label: t("bill.payment.cash"), value: "Cash" },
+                  ]}
+                  placeholder={t("bill.selectPayment")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={
+                    payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
+                  }
+                  onValueChange={setPayment}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
+                />
+              </View>
+              <View className="w-1/2 pr-2">
+                <DropdownClear
+                  title={t("bill.paymentStatus")}
+                  options={[
+                    { label: t("bill.status.paid"), value: "true" },
+                    { label: t("bill.status.unpaid"), value: "false" },
+                  ]}
+                  placeholder={t("bill.selectStatus")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={
+                    cashStatus === true
+                      ? t("bill.status.paid")
+                      : cashStatus === false && payment
+                      ? t("bill.status.unpaid")
+                      : ""
+                  }
+                  onValueChange={(value: string) =>
+                    setCashStatus(value === "true")
+                  }
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
+                />
+              </View>
             </View>
-            <View className="w-1/2 pr-2">
-              <DropdownClear
-                title={t("bill.paymentStatus")}
-                options={[
-                  { label: t("bill.status.paid"), value: "true" },
-                  { label: t("bill.status.unpaid"), value: "false" },
-                ]}
-                placeholder={t("bill.selectStatus")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                selectedValue={
-                  cashStatus === true
-                    ? t("bill.status.paid")
-                    : cashStatus === false && payment
-                    ? t("bill.status.unpaid")
-                    : ""
-                }
-                onValueChange={(value: string) =>
-                  setCashStatus(value === "true")
-                }
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-              />
-            </View>
-          </View>
+          )}
 
           {/* Note Section */}
           <FormFieldClear
@@ -1151,97 +1159,101 @@ export default function CreateBill() {
             textAlignVertical="top"
           />
 
-          {/* Price Valid Section */}
-          <View
-            className="flex flex-row items-center mt-2 mb-2"
-            style={{ backgroundColor: "transparent", marginBottom: 8 }}
-          >
-            <CustomText
-              className="mr-4"
-              style={{ 
-                color: theme === "dark" ? "#b1b1b1" : "#606060",
-                fontSize: 16,
-                fontWeight: "500"
-              }}
-            >
-              {t("bill.priceValid")}
-            </CustomText>
-            
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 20,
-              }}
-              onPress={() => handlePriceValidDaysChange(7)}
-            >
-              <Ionicons
-                name={priceValidDays === 7 ? "checkbox" : "square-outline"}
-                size={22}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <CustomText
-                className="ml-2"
-                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+          {/* Price Valid Section - Hide for Receipt */}
+          {selectedDocumentType !== "RE" && (
+            <>
+              <View
+                className="flex flex-row items-center mt-2 mb-2"
+                style={{ backgroundColor: "transparent", marginBottom: 8 }}
               >
-                7 days
-              </CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 20,
-              }}
-              onPress={() => handlePriceValidDaysChange(15)}
-            >
-              <Ionicons
-                name={priceValidDays === 15 ? "checkbox" : "square-outline"}
-                size={22}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <CustomText
-                className="ml-2"
-                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-              >
-                15 days
-              </CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center" }}
-              onPress={() => handlePriceValidDaysChange(30)}
-            >
-              <Ionicons
-                name={priceValidDays === 30 ? "checkbox" : "square-outline"}
-                size={22}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <CustomText
-                className="ml-2"
-                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-              >
-                30 days
-              </CustomText>
-            </TouchableOpacity>
-          </View>
-          
-          {priceValid && (
-            <View className="mb-2 pt-2 flex-row item-center justify-center">
                 <CustomText
-                className="text-sm"
-                style={{ color: theme === "dark" ? "#888" : "#666" }}
+                  className="mr-4"
+                  style={{ 
+                    color: theme === "dark" ? "#b1b1b1" : "#606060",
+                    fontSize: 16,
+                    fontWeight: "500"
+                  }}
                 >
-                {t("bill.validUntil")}
+                  {t("bill.priceValid")}
                 </CustomText>
-               <CustomText
-                className="text-sm"
-                style={{ color: theme === "dark" ? "#888" : "#666" }}
-              >
-              {formatDate(priceValid.toISOString())}
-              </CustomText>
-            </View>
+                
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 20,
+                  }}
+                  onPress={() => handlePriceValidDaysChange(7)}
+                >
+                  <Ionicons
+                    name={priceValidDays === 7 ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  <CustomText
+                    className="ml-2"
+                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  >
+                    7 days
+                  </CustomText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 20,
+                  }}
+                  onPress={() => handlePriceValidDaysChange(15)}
+                >
+                  <Ionicons
+                    name={priceValidDays === 15 ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  <CustomText
+                    className="ml-2"
+                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  >
+                    15 days
+                  </CustomText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => handlePriceValidDaysChange(30)}
+                >
+                  <Ionicons
+                    name={priceValidDays === 30 ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  <CustomText
+                    className="ml-2"
+                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  >
+                    30 days
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
+              
+              {priceValid && (
+                <View className="mb-2 pt-2 flex-row item-center justify-center">
+                    <CustomText
+                    className="text-sm"
+                    style={{ color: theme === "dark" ? "#888" : "#666" }}
+                    >
+                    {t("bill.validUntil")}
+                    </CustomText>
+                   <CustomText
+                    className="text-sm"
+                    style={{ color: theme === "dark" ? "#888" : "#666" }}
+                  >
+                  {formatDate(priceValid.toISOString())}
+                  </CustomText>
+                </View>
+              )}
+            </>
           )}
 
           {/* Repeat Bill Section - Only show for Rental business type */}

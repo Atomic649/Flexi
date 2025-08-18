@@ -15,6 +15,9 @@ const dailyReport = async (req: Request, res: Response) => {
        select: {
         purchaseAt: true,        
         total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
         product: true,
       },
       take: 100, // Limit to 100 records
@@ -40,6 +43,9 @@ const dailyReport = async (req: Request, res: Response) => {
           date: date,
           amount: 0,
           total: 0,
+          totalDiscount: 0,
+          billLevelDiscount: 0,
+          beforeDiscount: 0,
         };
       }
       // Sum amount from all product items (quantity)
@@ -47,6 +53,9 @@ const dailyReport = async (req: Request, res: Response) => {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
       acc[date].total += bill.total;
+      acc[date].totalDiscount += (bill.discount || 0);
+      acc[date].billLevelDiscount += (bill.billLevelDiscount || 0);
+      acc[date].beforeDiscount += (bill.beforeDiscount || 0);
       return acc;
     }, {});
 
@@ -79,6 +88,9 @@ const dailyReport = async (req: Request, res: Response) => {
         profit: profit,
         percentageAds: percentageAds,
         ROI: ROI,
+        totalDiscount: dailyBills[date].totalDiscount,
+        billLevelDiscount: dailyBills[date].billLevelDiscount,
+        beforeDiscount: dailyBills[date].beforeDiscount,
       };
     });
     console.log(" 🚀 result", result);
@@ -101,6 +113,9 @@ const monthlyReport = async (req: Request, res: Response) => {
       select: {
         purchaseAt: true,
         total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
         product: true,
       },
       take: 100, // Limit to 100 records
@@ -145,6 +160,9 @@ const monthlyReport = async (req: Request, res: Response) => {
           date: date,
           amount: 0,
           total: 0,
+          totalDiscount: 0,
+          billLevelDiscount: 0,
+          beforeDiscount: 0,
         };
       }
       // Sum amount from all product items (quantity)
@@ -152,6 +170,9 @@ const monthlyReport = async (req: Request, res: Response) => {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
       acc[date].total += bill.total;
+      acc[date].totalDiscount += (bill.discount || 0);
+      acc[date].billLevelDiscount += (bill.billLevelDiscount || 0);
+      acc[date].beforeDiscount += (bill.beforeDiscount || 0);
       return acc;
     }, {});
 
@@ -208,6 +229,9 @@ const monthlyReport = async (req: Request, res: Response) => {
         profit: profit,
         percentageAds: percentageAds,
         ROI: ROI,
+        totalDiscount: monthlyBills[date].totalDiscount,
+        billLevelDiscount: monthlyBills[date].billLevelDiscount,
+        beforeDiscount: monthlyBills[date].beforeDiscount,
       };
     });
 

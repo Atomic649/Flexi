@@ -65,8 +65,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Build store filter
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
 
-    // Get income from bills (multi-product support)
-    // Aggregate total from ProductItem (product) relation
+    // Get income from bills (use total field which already accounts for discounts)
     const billsAggregation = await prisma.bill.findMany({
       where: {
         memberId: memberId as string,
@@ -74,23 +73,31 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         purchaseAt: dateFilter,
         ...storeFilter
       },
-      include: {
+      select: {
+        total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
         product: productName
           ? { where: { product: productName as string } }
           : true
       }
     });
 
-    // Calculate income and orders from all product items
+    // Calculate income and orders from bills
     let income = 0;
     let orders = 0;
+    let totalDiscount = 0;
+    let totalBillLevelDiscount = 0;
+    let totalBeforeDiscount = 0;
+    
     billsAggregation.forEach(bill => {
-      if (bill.product && Array.isArray(bill.product)) {
-        bill.product.forEach(item => {
-          income += Number(item.unitPrice) * Number(item.quantity);
-          orders += 1;
-        });
-      }
+      // Use the total field which already has discounts applied
+      income += Number(bill.total);
+      orders += 1;
+      totalDiscount += Number(bill.discount || 0);
+      totalBillLevelDiscount += Number(bill.billLevelDiscount || 0);
+      totalBeforeDiscount += Number(bill.beforeDiscount || 0);
     });
 
     // Get expenses
@@ -125,7 +132,10 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       income,
       expense,
       profitloss,
-      orders
+      orders,
+      totalDiscount,
+      totalBillLevelDiscount,
+      totalBeforeDiscount
     });
 
   } catch (error) {
@@ -200,7 +210,12 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         purchaseAt: dateFilter,
         ...storeFilter
       },
-      include: {
+      select: {
+        purchaseAt: true,
+        total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
         product: productName
           ? { where: { product: productName as string } }
           : true
@@ -241,9 +256,19 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     const billsByDate = bills.reduce((acc: any, bill) => {
       const date = format(new Date(bill.purchaseAt), 'yyyy-MM-dd');
       if (!acc[date]) {
-        acc[date] = { income: 0, expense: 0 };
+        acc[date] = { 
+          income: 0, 
+          expense: 0, 
+          totalDiscount: 0, 
+          billLevelDiscount: 0, 
+          beforeDiscount: 0 
+        };
       }
-      acc[date].income += Number(bill.total) * Number(bill.total);
+      // Use bill.total which already has discounts applied
+      acc[date].income += Number(bill.total);
+      acc[date].totalDiscount += Number(bill.discount || 0);
+      acc[date].billLevelDiscount += Number(bill.billLevelDiscount || 0);
+      acc[date].beforeDiscount += Number(bill.beforeDiscount || 0);
       return acc;
     }, {});
 
@@ -251,7 +276,13 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     expenses.forEach(expense => {
       const date = format(new Date(expense.date), 'yyyy-MM-dd');
       if (!billsByDate[date]) {
-        billsByDate[date] = { income: 0, expense: 0 };
+        billsByDate[date] = { 
+          income: 0, 
+          expense: 0, 
+          totalDiscount: 0, 
+          billLevelDiscount: 0, 
+          beforeDiscount: 0 
+        };
       }
       billsByDate[date].expense += Number(expense.amount);
     });
@@ -260,7 +291,13 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     adsCosts.forEach(adsCost => {
       const date = format(new Date(adsCost.date), 'yyyy-MM-dd');
       if (!billsByDate[date]) {
-        billsByDate[date] = { income: 0, expense: 0 };
+        billsByDate[date] = { 
+          income: 0, 
+          expense: 0, 
+          totalDiscount: 0, 
+          billLevelDiscount: 0, 
+          beforeDiscount: 0 
+        };
       }
       billsByDate[date].expense += Number(adsCost.adsCost);
     });
@@ -270,7 +307,10 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       date,
       income: billsByDate[date].income,
       expense: billsByDate[date].expense,
-      profit: billsByDate[date].income - billsByDate[date].expense
+      profit: billsByDate[date].income - billsByDate[date].expense,
+      totalDiscount: billsByDate[date].totalDiscount,
+      billLevelDiscount: billsByDate[date].billLevelDiscount,
+      beforeDiscount: billsByDate[date].beforeDiscount
     })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     res.json(chartData);
@@ -346,32 +386,40 @@ export const getTopProducts = async (req: Request, res: Response) => {
         purchaseAt: dateFilter,
         ...storeFilter
       },
-      include: {
+      select: {
         product: true
       }
     });
 
-    // Flatten all product items
+    // Flatten all product items with discount consideration
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
       product: item.product,
       quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice)
+      unitPrice: Number(item.unitPrice),
+      unitDiscount: Number(item.unitDiscount || 0)
     })));
 
-    // Aggregate by product name
-    const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number }> = {};
+    // Aggregate by product name (account for unit discounts)
+    const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
     allProductItems.forEach(item => {
       if (!productMetrics[item.product]) {
         productMetrics[item.product] = {
           name: item.product,
           revenue: 0,
           sales: 0,
-          orders: 0
+          orders: 0,
+          totalDiscount: 0
         };
       }
-      productMetrics[item.product].revenue += item.unitPrice * item.quantity;
+      // Calculate revenue after unit discount
+      const grossRevenue = item.unitPrice * item.quantity;
+      const discountAmount = item.unitDiscount * item.quantity;
+      const netRevenue = grossRevenue - discountAmount;
+      
+      productMetrics[item.product].revenue += netRevenue;
       productMetrics[item.product].sales += item.quantity;
       productMetrics[item.product].orders += 1;
+      productMetrics[item.product].totalDiscount += discountAmount;
     });
 
     // Convert to array and sort by revenue
@@ -453,31 +501,50 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
       }
     });
 
-    // Flatten all product items with platform
-    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
+    // Get bills with product items and platform info
+    const platformBills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId as string,
+        deleted: false,
+        purchaseAt: dateFilter
+      },
+      select: {
+        platform: true,
+        product: true
+      }
+    });
+
+    // Flatten all product items with platform and discount info
+    const allProductItems = platformBills.flatMap(bill => bill.product.map(item => ({
       platform: bill.platform || 'Unknown',
       product: item.product,
       quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice)
-    })));
-
-    // Optionally filter by productName
+      unitPrice: Number(item.unitPrice),
+      unitDiscount: Number(item.unitDiscount || 0)
+    })));    // Optionally filter by productName
     const filteredItems = productName ? allProductItems.filter(item => item.product === productName) : allProductItems;
 
-    // Aggregate by platform
-    const platformMetrics: Record<string, { platform: string; revenue: number; sales: number; orders: number }> = {};
+    // Aggregate by platform (account for unit discounts)
+    const platformMetrics: Record<string, { platform: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
     filteredItems.forEach(item => {
       if (!platformMetrics[item.platform]) {
         platformMetrics[item.platform] = {
           platform: item.platform,
           revenue: 0,
           sales: 0,
-          orders: 0
+          orders: 0,
+          totalDiscount: 0
         };
       }
-      platformMetrics[item.platform].revenue += item.unitPrice * item.quantity;
+      // Calculate revenue after unit discount
+      const grossRevenue = item.unitPrice * item.quantity;
+      const discountAmount = item.unitDiscount * item.quantity;
+      const netRevenue = grossRevenue - discountAmount;
+      
+      platformMetrics[item.platform].revenue += netRevenue;
       platformMetrics[item.platform].sales += item.quantity;
       platformMetrics[item.platform].orders += 1;
+      platformMetrics[item.platform].totalDiscount += discountAmount;
     });
 
     // Convert to array and sort by revenue
@@ -698,15 +765,16 @@ export const getTopStores = async (req: Request, res: Response) => {
       return acc;
     }, {} as Record<number, { name: string; platform: string }>);
 
-    // Flatten all product items with storeId
+    // Flatten all product items with storeId and discount info
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
       storeId: bill.storeId,
       quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice)
+      unitPrice: Number(item.unitPrice),
+      unitDiscount: Number(item.unitDiscount || 0)
     })));
 
-    // Aggregate by storeId
-    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number }> = {};
+    // Aggregate by storeId (account for unit discounts)
+    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
     allProductItems.forEach(item => {
       const storeInfo = storeMap[item.storeId] || { name: 'Unknown Store', platform: 'Unknown' };
       if (!storeMetrics[item.storeId]) {
@@ -716,12 +784,19 @@ export const getTopStores = async (req: Request, res: Response) => {
           platform: storeInfo.platform,
           revenue: 0,
           sales: 0,
-          orders: 0
+          orders: 0,
+          totalDiscount: 0
         };
       }
-      storeMetrics[item.storeId].revenue += item.unitPrice * item.quantity;
+      // Calculate revenue after unit discount
+      const grossRevenue = item.unitPrice * item.quantity;
+      const discountAmount = item.unitDiscount * item.quantity;
+      const netRevenue = grossRevenue - discountAmount;
+      
+      storeMetrics[item.storeId].revenue += netRevenue;
       storeMetrics[item.storeId].sales += item.quantity;
       storeMetrics[item.storeId].orders += 1;
+      storeMetrics[item.storeId].totalDiscount += discountAmount;
     });
 
     // Convert to array and sort by revenue

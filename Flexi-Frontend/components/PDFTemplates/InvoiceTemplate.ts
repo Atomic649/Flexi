@@ -27,7 +27,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
   const totalDiscount = productItems.reduce(
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
     0
-  );
+  ) + (invoice.billLevelDiscount || 0);
   const subtotal = rawTotal - totalDiscount;
   const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;

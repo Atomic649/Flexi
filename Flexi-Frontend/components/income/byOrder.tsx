@@ -48,7 +48,8 @@ type Bill = {
   businessAcc: number;
   image: string;
   storeId: number;
-  unit: string; 
+  unit: string;
+  discount: number;
   product?: Array<{
     product : string;
     unitPrice: number;
@@ -407,7 +408,7 @@ const ByOrder = () => {
                       color: theme === "dark" ? "#b4b4b5" : undefined,
                       }}
                     >
-                      +{bill.total}
+                      +{(bill.total).toLocaleString()}
                     </Text>
                     <View className={`w-28 flex items-center justify-center`}>
                       {getPlatformIcon(bill.platform)}
@@ -486,6 +487,7 @@ const ByOrder = () => {
                   cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
                   getBorderColor={getBorderColor(bill.platform)}
                   unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
+                  discount={bill.discount}
                 />
               </TouchableOpacity>
             ))}

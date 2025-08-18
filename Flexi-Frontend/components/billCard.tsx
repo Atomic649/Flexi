@@ -44,6 +44,7 @@ export default function BillCard({
   cNameColor,
   onDelete,
   getBorderColor,
+  discount,
   unit,
 }: any) {
   return (
@@ -142,7 +143,7 @@ export default function BillCard({
               style={{ color: PriceColor }}
               numberOfLines={1}
             >
-              + {total}
+              + {total.toLocaleString()}
             </Text>
           </View>
         </View>

@@ -1038,6 +1038,17 @@ export default function Print() {
 
                 <View className="flex-row justify-end mt-2">
                   <View className="w-2/3">
+                    {/* Show discount if any discounts exist */}
+                    {(selectedInvoice.discount > 0 || selectedInvoice.billLevelDiscount > 0) && (
+                      <View className="flex-row justify-between mb-2">
+                        <CustomText weight="bold">
+                          {t("print.totalDiscount")}
+                        </CustomText>
+                        <CustomText>
+                          {formatCurrency((selectedInvoice.discount || 0) + (selectedInvoice.billLevelDiscount || 0))}
+                        </CustomText>
+                      </View>
+                    )}
                     {isVatRegistered && (
                       <View className="flex-row justify-between mb-2">
                         <CustomText weight="bold">

@@ -52,9 +52,10 @@ interface billInput {
   repeat?: boolean;
   repeatMonths?: number;
   DocumentType: ("Invoice" | "Receipt" | "Quotation")[];
-  note?: string; // Optional note 
+  note?: string; // Optional note
   discount?: number; // Optional discount field
-  priceValid?: Date; // Optional price valid date
+  priceValid?: Date; // Optional price valid 
+  beforeDiscount?: number; // Optional field for total before discount
 }
 
 // Validate the request body
@@ -67,7 +68,7 @@ const schema = Joi.object({
   cName: Joi.string().required(),
   cLastName: Joi.string().allow(""),
   cPhone: Joi.string().min(10).max(10).required(),
-  cGender: Joi.string().valid("Female", "Male","NotSpecified").required(),
+  cGender: Joi.string().valid("Female", "Male", "NotSpecified").required(),
   cAddress: Joi.string().required(),
   cProvince: Joi.string().required(),
   cPostId: Joi.string().required(),
@@ -95,10 +96,14 @@ const schema = Joi.object({
     )
     .min(1)
     .required(),
-  DocumentType: Joi.array().items(Joi.string().valid("Invoice", "Receipt", "Quotation")).min(1).required(),
+  DocumentType: Joi.array()
+    .items(Joi.string().valid("Invoice", "Receipt", "Quotation"))
+    .min(1)
+    .required(),
   note: Joi.string().allow("").optional(), // Optional note field
   discount: Joi.number().min(0).optional(), // Optional discount field
   priceValid: Joi.date().optional(), // Optional price valid date
+  beforeDiscount: Joi.number().optional(), // Optional field for total before discount
 });
 
 //Create a New Bill - Post
@@ -152,32 +157,49 @@ const createBill = async (req: Request, res: Response) => {
       }
     }
     billInput.billId = `INV${currentYear}/${runningNumber}`;
-    // Calculate total from all product items
-    const total = billInput.productItems.reduce(
-      (sum, item) => sum + item.quantity * item.unitPrice,
+    
+    // Calculate beforeDiscount (total before any discounts)
+    const beforeDiscount = billInput.productItems.reduce(
+      (sum, item) => sum + (item.quantity * item.unitPrice),
       0
     );
 
-        // Calculate discount from all product items
+    // Calculate discount from all product items (unit discounts only)
     const discount = billInput.productItems.reduce(
       (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
       0
     );
-   
+
+    // Get bill-level discount from input
+    const billLevelDiscount = billInput.discount || 0;
+
+    // Calculate total from all product items (subtract unit discounts and bill-level discount)
+    const total =
+      billInput.productItems.reduce(
+        (sum, item) =>
+          sum +
+          (item.quantity * item.unitPrice -
+            (item.unitDiscount || 0) * item.quantity),
+        0
+      ) - billLevelDiscount;
 
     // Handle repeat bills
     try {
       const createdBills = [];
       const currentDate = new Date();
       const originalDate = new Date(billInput.purchaseAt);
-      
-      if (billInput.repeat && billInput.repeatMonths && billInput.repeatMonths > 1) {
+
+      if (
+        billInput.repeat &&
+        billInput.repeatMonths &&
+        billInput.repeatMonths > 1
+      ) {
         // Create repeat bills for each month
         for (let i = 0; i < billInput.repeatMonths; i++) {
           // Calculate the date for each month (same day of month)
           const billDate = new Date(originalDate);
           billDate.setMonth(originalDate.getMonth() + i);
-          
+
           // Only create bills for future dates (don't create past bills)
           if (billDate >= currentDate || i === 0) {
             // Generate unique billId for each month
@@ -192,7 +214,7 @@ const createBill = async (req: Request, res: Response) => {
                 id: "desc",
               },
             });
-            
+
             let monthRunningNumber = 1;
             if (latestBillForYear && latestBillForYear.billId) {
               const match = latestBillForYear.billId.match(/INV\d{4}\/(\d+)/);
@@ -200,9 +222,9 @@ const createBill = async (req: Request, res: Response) => {
                 monthRunningNumber = parseInt(match[1], 10) + 1;
               }
             }
-            
+
             const monthBillId = `INV${billYear}/${monthRunningNumber}`;
-            
+
             const bill = await prisma.bill.create({
               data: {
                 billId: monthBillId,
@@ -231,24 +253,25 @@ const createBill = async (req: Request, res: Response) => {
                 businessAcc: billInput.businessAcc,
                 storeId: billInput.storeId,
                 image: req.file?.filename ?? "",
-                discount: discount, // Include discount if provided
+                discount: discount, // Unit discounts only
+                billLevelDiscount: billLevelDiscount, // Bill-level discount
                 priceValid: billInput.priceValid, // Include priceValid if provided
                 total,
+                beforeDiscount,
                 DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
-
               },
             });
-            
+
             createdBills.push(bill);
           }
         }
-        
+
         res.json({
           status: "ok",
           message: `Created ${createdBills.length} bills successfully for ${billInput.repeatMonths} months`,
           bills: createdBills,
-          totalBills: createdBills.length
+          totalBills: createdBills.length,
         });
       } else {
         // Create single bill
@@ -280,14 +303,16 @@ const createBill = async (req: Request, res: Response) => {
             businessAcc: billInput.businessAcc,
             storeId: billInput.storeId,
             image: req.file?.filename ?? "",
-            discount: discount, // Include discount if provided
+            discount: discount, // Unit discounts only
+            billLevelDiscount: billLevelDiscount, // Bill-level discount
             priceValid: billInput.priceValid, // Include priceValid if provided
             total,
+            beforeDiscount,
             DocumentType: billInput.DocumentType[0], // Take first element from array
-          note: billInput.note || "", // Optional note field     
+            note: billInput.note || "", // Optional note field
           },
         });
-        
+
         res.json({
           status: "ok",
           message: "Created bill successfully",
@@ -314,36 +339,29 @@ const getBills = async (req: Request, res: Response) => {
         billId: true,
         cName: true,
         cLastName: true,
-       // cPhone: true,       
+        // cPhone: true,
         payment: true,
-       // cashStatus: true,       
-        purchaseAt: true,             
+        // cashStatus: true,
+        purchaseAt: true,
         storeId: true,
         discount: true, // Include discount
         priceValid: true, // Include priceValid
         total: true,
-        platform : true,
+        platform: true,
         product: {
           select: {
             product: true,
-            quantity: true, 
+            quantity: true,
             unitPrice: true,
             unitDiscount: true,
-            unit: true
+            unit: true,
           },
         }, // Include product items
-        repeat :true,
+        repeat: true,
         DocumentType: true,
-
-        
-      
       },
       take: 100, // Limit to 100 records
     });
-
-    
-
-
 
     console.log("🚀 Get Bills API:", bills);
     res.json(bills);
@@ -365,7 +383,7 @@ const getBillById = async (req: Request, res: Response) => {
         product: true, // Include product items
       },
     });
- console.log("🚀 Get Bill by ID:", bill);
+    console.log("🚀 Get Bill by ID:", bill);
     res.json(bill);
   } catch (e) {
     console.error(e);
@@ -403,16 +421,31 @@ const updateBill = async (req: Request, res: Response) => {
     if (!store) {
       return res.status(404).json({ message: "Store not found" });
     }
-    // Calculate total from all product items
-    const total = billInput.productItems.reduce(
-      (sum, item) => sum + item.quantity * item.unitPrice,
+    
+    // Calculate beforeDiscount (total before any discounts)
+    const beforeDiscount = billInput.productItems.reduce(
+      (sum, item) => sum + (item.quantity * item.unitPrice),
       0
     );
-    // Calculate discount from all product items
+
+    // Calculate discount from all product items (unit discounts only)
     const discount = billInput.productItems.reduce(
       (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
       0
     );
+
+    // Get bill-level discount from input
+    const billLevelDiscount = billInput.discount || 0;
+
+    // Calculate total from all product items (subtract unit discounts and bill-level discount)
+    const total =
+      billInput.productItems.reduce(
+        (sum, item) =>
+          sum +
+          (item.quantity * item.unitPrice -
+            (item.unitDiscount || 0) * item.quantity),
+        0
+      ) - billLevelDiscount;
     try {
       // Delete existing product items for this bill (to fully replace)
       await prisma.productItem.deleteMany({
@@ -438,7 +471,7 @@ const updateBill = async (req: Request, res: Response) => {
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               unitDiscount: item.unitDiscount || 0,
-              unit: item.unit
+              unit: item.unit,
             })),
           },
           payment: billInput.payment,
@@ -451,10 +484,11 @@ const updateBill = async (req: Request, res: Response) => {
           image: req.file?.filename ?? "",
           total: total,
           note: billInput.note || "", // Optional note field
-          discount: discount,
+          discount: discount, // Unit discounts only
+          billLevelDiscount: billLevelDiscount, // Bill-level discount
+          beforeDiscount: beforeDiscount,
           priceValid: billInput.priceValid, // Include priceValid if provided
           DocumentType: billInput.DocumentType[0], // Take first element from array
-
         },
       });
       res.json({
@@ -555,7 +589,6 @@ const searchBill = async (req: Request, res: Response) => {
               contains: keyword,
             },
           },
-          
         ],
       },
       take: 100, // Limit to 100 records

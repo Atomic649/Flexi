@@ -448,7 +448,7 @@ export default function EditBill() {
     if (!cAddress) missingFields.push(t("bill.customerAddress"));
     if (!cPostId) missingFields.push(t("bill.customerPostal"));
     if (!cProvince) missingFields.push(t("bill.customerProvince"));
-    if (!payment) missingFields.push(t("bill.paymentMethod"));
+    if (selectedDocumentType === "RE" && !payment) missingFields.push(t("bill.paymentMethod"));
     if (!storeId) missingFields.push(t("bill.store"));
     // Validate product items
     if (
@@ -957,11 +957,13 @@ export default function EditBill() {
               <View className="w-1/4 pr-2">
                 <FormFieldClear
                   title={t("bill.price")}
-                  value={item.price}
-                  handleChangeText={(value: string) =>
-                    handleProductItemChange(idx, "price", value)
-                  }
-                  placeholder="1000"
+                  value={item.price ? Number(item.price).toLocaleString() : ""}
+                  handleChangeText={(value: string) => {
+                    // Remove commas and non-numeric characters except digits
+                    const numericValue = value.replace(/[^0-9]/g, "");
+                    handleProductItemChange(idx, "price", numericValue);
+                  }}
+                  placeholder="1,000"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
@@ -975,10 +977,12 @@ export default function EditBill() {
               <View className="w-1/5 pr-2">
                 <FormFieldClear
                   title={t("bill.discount")}
-                  value={item.unitDiscount}
-                  handleChangeText={(value: string) =>
-                    handleProductItemChange(idx, "unitDiscount", value)
-                  }
+                  value={item.unitDiscount ? Number(item.unitDiscount).toLocaleString() : ""}
+                  handleChangeText={(value: string) => {
+                    // Remove commas and non-numeric characters except digits
+                    const numericValue = value.replace(/[^0-9]/g, "");
+                    handleProductItemChange(idx, "unitDiscount", numericValue);
+                  }}
                   placeholder="0"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
@@ -1040,50 +1044,53 @@ export default function EditBill() {
             </View>
           )}
 
-          <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
-              <DropdownClear
-                title={t("bill.paymentMethod")}
-                options={[
-                  { label: t("bill.payment.cod"), value: "COD" },
-                  { label: t("bill.payment.transfer"), value: "Transfer" },
-                  { label: t("bill.payment.creditcard"), value: "CreditCard" },
-                  { label: t("bill.payment.cash"), value: "Cash" },
-                ]}
-                placeholder={t("bill.selectPayment")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                selectedValue={
-                  payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
-                }
-                onValueChange={setPayment}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-                disabled={!isEditMode}
-              />
+          {/* Payment and Cash Status Section - Only show for Receipt */}
+          {selectedDocumentType === "RE" && (
+            <View className="flex flex-row justify-between">
+              <View className="w-1/2 pr-2">
+                <DropdownClear
+                  title={t("bill.paymentMethod")}
+                  options={[
+                    { label: t("bill.payment.cod"), value: "COD" },
+                    { label: t("bill.payment.transfer"), value: "Transfer" },
+                    { label: t("bill.payment.creditcard"), value: "CreditCard" },
+                    { label: t("bill.payment.cash"), value: "Cash" },
+                  ]}
+                  placeholder={t("bill.selectPayment")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={
+                    payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
+                  }
+                  onValueChange={setPayment}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
+                  disabled={!isEditMode}
+                />
+              </View>
+              <View className="w-1/2 pr-2">
+                <DropdownClear
+                  title={t("bill.paymentStatus")}
+                  options={[
+                    { label: t("bill.status.paid"), value: "true" },
+                    { label: t("bill.status.unpaid"), value: "false" },
+                  ]}
+                  placeholder={t("bill.selectStatus")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={
+                    cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
+                  }
+                  onValueChange={(value: string) => setCashStatus(value === "true")}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
+                  disabled={!isEditMode}
+                />
+              </View>
             </View>
-            <View className="w-1/2 pr-2">
-              <DropdownClear
-                title={t("bill.paymentStatus")}
-                options={[
-                  { label: t("bill.status.paid"), value: "true" },
-                  { label: t("bill.status.unpaid"), value: "false" },
-                ]}
-                placeholder={t("bill.selectStatus")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                selectedValue={
-                  cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
-                }
-                onValueChange={(value: string) => setCashStatus(value === "true")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles="mt-2 mb-2"
-                disabled={!isEditMode}
-              />
-            </View>
-          </View>
+          )}
 
           {/* Note Section */}
           <FormFieldClear
@@ -1103,7 +1110,7 @@ export default function EditBill() {
           />
 
           {/* Price Valid Section */}
-          {isEditMode && (
+          {isEditMode && selectedDocumentType !== "RE" && (
             <View
               className="flex flex-row items-center mt-2 mb-2"
               style={{ backgroundColor: "transparent", marginBottom: 8 }}
@@ -1180,7 +1187,7 @@ export default function EditBill() {
             </View>
           )}
           
-          {priceValid && (
+          {priceValid && selectedDocumentType !== "RE" && (
             <View className="mb-2 pt-2 flex-row item-center justify-center">
                 <CustomText
                 className="text-sm"

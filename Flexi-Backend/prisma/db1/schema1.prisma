@@ -246,6 +246,7 @@ model Bill {
   product    ProductItem[]
   payment    Payment?
   total      Int
+  beforeDiscount Int?
   purchaseAt DateTime      @default(now())
   platform   IncomeChannel
   cashStatus Boolean?       @default(false)
@@ -257,6 +258,7 @@ model Bill {
   TaxType    taxType? @default(Individual)
   DocumentType DocumentType? @default(Receipt)
   discount   Int? @default(0)
+  billLevelDiscount Int? @default(0)
   priceValid DateTime? // Optional field for expiration date
   
 
