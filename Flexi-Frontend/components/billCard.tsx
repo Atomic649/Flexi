@@ -6,8 +6,9 @@ import {
   Alert,
   Platform,
   Linking,
+  Animated,
 } from "react-native";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
@@ -50,15 +51,64 @@ export default function BillCard({
 }: any) {
   const { t } = useTranslation();
 
+  // Ref for Swipeable component to control auto close
+  const swipeableRef = useRef<Swipeable>(null);
+
+  // Animation values for status change
+  const statusScaleAnim = useRef(new Animated.Value(1)).current;
+  const statusOpacityAnim = useRef(new Animated.Value(1)).current;
+
+  // Trigger status animation when currentDocumentType changes
+  useEffect(() => {
+    if (currentDocumentType) {
+      // Animate status change
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(statusScaleAnim, {
+            toValue: 1.2,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(statusOpacityAnim, {
+            toValue: 0.7,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.spring(statusScaleAnim, {
+            toValue: 1,
+            tension: 100,
+            friction: 5,
+            useNativeDriver: true,
+          }),
+          Animated.timing(statusOpacityAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    }
+  }, [currentDocumentType]);
+
   const handleCustomerConfirm = () => {
     if (onUpdateDocumentType) {
       onUpdateDocumentType(id, "Invoice");
+      // Auto close swipe after action
+      setTimeout(() => {
+        swipeableRef.current?.close();
+      }, 100);
     }
   };
 
   const handleCustomerPaid = () => {
     if (onUpdateDocumentType) {
       onUpdateDocumentType(id, "Receipt");
+      // Auto close swipe after action
+      setTimeout(() => {
+        swipeableRef.current?.close();
+      }, 100);
     }
   };
 
@@ -227,7 +277,13 @@ export default function BillCard({
             
             {/* DocumentType Status Box */}
             {currentDocumentType && (
-              <View className="mt-2">
+              <Animated.View 
+                className="mt-2"
+                style={{
+                  transform: [{ scale: statusScaleAnim }],
+                  opacity: statusOpacityAnim,
+                }}
+              >
                 <View
                   className="px-3 py-1 rounded-full"
                   style={{ 
@@ -246,7 +302,7 @@ export default function BillCard({
                     {getStatusText(currentDocumentType)}
                   </Text>
                 </View>
-              </View>
+              </Animated.View>
             )}
           </View>
         </View>
@@ -257,7 +313,10 @@ export default function BillCard({
   // Wrap in Swipeable if update function is provided and DocumentType is not "Receipt"
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
-      <Swipeable renderLeftActions={renderLeftActions}>
+      <Swipeable 
+        ref={swipeableRef}
+        renderLeftActions={renderLeftActions}
+      >
         {cardContent}
       </Swipeable>
     );
