@@ -26,6 +26,17 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useMarketing } from "@/providers/MarketingProvider";
 
+// Function to format numbers for display, handling the large values properly
+const formatNumberDisplay = (num: number) => {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M`;
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  } else {
+    return num.toString();
+  }
+};
+
 type MonthlyCardProps = {
   month: string;
   amount: number;
@@ -345,10 +356,10 @@ const monthly = () => {
             <MonthlyCard
               month={item.month}
               amount={item.amount}
-              sale={item.sale}
-              adsCost={item.adsCost}
+              sale={formatNumberDisplay(item.sale)}
+              adsCost={formatNumberDisplay(item.adsCost)}
               expenses={item.expenses}
-              profit={item.profit}
+              profit={formatNumberDisplay(item.profit)}
               percentageAds={item.percentageAds}
               ROI={item.ROI}
               tableColor={theme === "dark" ? "bg-gray-800" : "bg-white"}

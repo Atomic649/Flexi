@@ -28,6 +28,20 @@ const formatDate = (dateString: string) => {
   return monthNames[currentLang as keyof typeof monthNames][monthIndex] || month.toLocaleString("default", { month: "long" });
 };
 
+// Helper function to determine if a profit value is positive
+const isPositiveProfit = (profit: string | number): boolean => {
+  if (typeof profit === 'number') return profit >= 0;
+  
+  // If it's a string, handle potential suffixes like 'K'
+  const profitStr = String(profit).trim();
+  
+  // Check if it starts with a negative sign
+  if (profitStr.startsWith('-')) return false;
+  
+  // If it starts with a number or positive sign, it's positive
+  return true;
+};
+
 export default function MonthlyCard({
   month,
   amount,
@@ -127,7 +141,7 @@ export default function MonthlyCard({
             className="flex flex-col items-center"
           >
             <Text
-              className={`font-bold justify-end ${profit >= 0 ? 'text-teal-500' : 'text-[#FF006E]'}`}
+              className={`font-bold justify-end ${isPositiveProfit(profit) ? 'text-teal-500' : 'text-[#FF006E]'}`}
               style={{ fontSize: styles.bodyFontSize }}
               numberOfLines={1}
             >
