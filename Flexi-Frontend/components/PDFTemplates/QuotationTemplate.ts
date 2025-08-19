@@ -514,11 +514,9 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
               <div class="note-section">
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
-                  • ${t("print.quotationValidityNote")}<br>
-                  • ${t("print.pricesExcludeVat")}<br>
-                  • ${t("print.pricesSubjectToChange")}<br>
-                  • ${t("print.confirmationRequired")}<br>
+                  • ${t("print.validUntil")} ${quotation.priceValid ? formatDate(quotation.priceValid) : t("print.notSpecified")}<br>
                   ${quotation.paymentTermCondition ? `• ${quotation.paymentTermCondition}<br>` : ""}
+                  ${quotation.remark ? `• ${quotation.remark}` : ""}
                 </p>
               </div>
             </div>

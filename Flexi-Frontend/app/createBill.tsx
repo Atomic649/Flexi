@@ -100,6 +100,11 @@ export default function CreateBill() {
 
   const fieldStyles = "mt-2 mb-2";
 
+  // Focus state for multiline fields
+  const [isNoteFocused, setIsNoteFocused] = useState(false);
+  const [isPaymentTermFocused, setIsPaymentTermFocused] = useState(false);
+  const [isRemarkFocused, setIsRemarkFocused] = useState(false);
+
   // Tax type state
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
     "Individual"
@@ -1240,13 +1245,16 @@ export default function CreateBill() {
               otherStyles={fieldStyles}
               maxLength={500}
               multiline={true}
-              numberOfLines={3}
+              numberOfLines={4}
               textAlignVertical="top"
+              boxheight={isNoteFocused ? 110 : undefined}
               onFocus={() => {
+                setIsNoteFocused(true);
                 setTimeout(() => {
                   scrollViewRef.current?.scrollToEnd({ animated: true });
                 }, 200);
               }}
+              onBlur={() => setIsNoteFocused(false)}
             />
 
             {/* Payment Terms & Conditions Section - Only show for Quotation */}
@@ -1262,13 +1270,16 @@ export default function CreateBill() {
                 otherStyles={fieldStyles}
                 maxLength={300}
                 multiline={true}
-                numberOfLines={2}
+                numberOfLines={4}
                 textAlignVertical="top"
+                boxheight={isPaymentTermFocused ? 110 : undefined}
                 onFocus={() => {
+                  setIsPaymentTermFocused(true);
                   setTimeout(() => {
                     scrollViewRef.current?.scrollToEnd({ animated: true });
                   }, 200);
                 }}
+                onBlur={() => setIsPaymentTermFocused(false)}
               />
             )}
 
@@ -1284,13 +1295,16 @@ export default function CreateBill() {
               otherStyles={fieldStyles}
               maxLength={300}
               multiline={true}
-              numberOfLines={2}
+              numberOfLines={4}
               textAlignVertical="top"
+              boxheight={isRemarkFocused ? 110 : undefined}
               onFocus={() => {
+                setIsRemarkFocused(true);
                 setTimeout(() => {
                   scrollViewRef.current?.scrollToEnd({ animated: true });
                 }, 200);
               }}
+              onBlur={() => setIsRemarkFocused(false)}
             />
 
             {/* Price Valid Section - Hide for Receipt */}
