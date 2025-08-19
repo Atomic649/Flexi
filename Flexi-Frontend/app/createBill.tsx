@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -67,9 +67,12 @@ export default function CreateBill() {
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
+  const [paymentTermCondition, setPaymentTermCondition] = useState("");
+  const [remark, setRemark] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
-  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(null);
-
+  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
+    null
+  );
 
   // Product information
   // [product, setProduct] = useState("");
@@ -111,9 +114,13 @@ export default function CreateBill() {
   const [businessType, setBusinessType] = useState<string | null>(null);
 
   // Document type progression state
-  const [selectedDocumentType, setSelectedDocumentType] = useState<"QA" | "IV" | "RE">("QA");
+  const [selectedDocumentType, setSelectedDocumentType] = useState<
+    "QA" | "IV" | "RE"
+  >("QA");
   const [showProgressSection, setShowProgressSection] = useState(true);
-  const [availableDocumentTypes, setAvailableDocumentTypes] = useState<string[]>([]);
+  const [availableDocumentTypes, setAvailableDocumentTypes] = useState<
+    string[]
+  >([]);
 
   // Helper functions for DocumentType progression UI
   const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
@@ -135,7 +142,6 @@ export default function CreateBill() {
     return theme === "dark" ? "#666" : "#999";
   };
 
-
   const getStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
     if (isStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
     return theme === "dark" ? "#555" : "#bbb";
@@ -155,11 +161,13 @@ export default function CreateBill() {
   };
 
   // Helper function to convert internal document type to API format
-  const getDocumentTypeForAPI = (type: "QA" | "IV" | "RE"): "Quotation" | "Invoice" | "Receipt" => {
+  const getDocumentTypeForAPI = (
+    type: "QA" | "IV" | "RE"
+  ): "Quotation" | "Invoice" | "Receipt" => {
     const mapping = {
       QA: "Quotation" as const,
       IV: "Invoice" as const,
-      RE: "Receipt" as const
+      RE: "Receipt" as const,
     };
     return mapping[type];
   };
@@ -212,7 +220,10 @@ export default function CreateBill() {
   }, []);
 
   // Get document types and business type from BusinessProvider context
-  const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
+  const {
+    DocumentType: contextDocumentTypes,
+    businessType: contextBusinessType,
+  } = useBusiness();
 
   // Sync document types and business type from BusinessProvider context
   useEffect(() => {
@@ -301,7 +312,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
-        
+
           // Set storeId to the store with name "Tiktok Affiliate" if it exists
           const tiktokStore = stores.find(
             (store) => store.accName === "Tiktok"
@@ -327,7 +338,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
-  
+
           // Set storeId to the store with name "Shopee Affiliate" if it exists
           const shopeeStore = stores.find(
             (store) => store.accName === "Shopee"
@@ -490,6 +501,11 @@ export default function CreateBill() {
           quantity: Number(item.quantity),
         })),
         note,
+        paymentTermCondition:
+          selectedDocumentType === "QA" && paymentTermCondition
+            ? paymentTermCondition
+            : undefined,
+        remark: remark || undefined,
         priceValid: priceValid || undefined,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
@@ -522,7 +538,7 @@ export default function CreateBill() {
     }
   };
 
-    const handleDatesChange = (selectedDates: string[]) => {
+  const handleDatesChange = (selectedDates: string[]) => {
     setSelectedDates(selectedDates);
     setPurchaseAt(new Date(selectedDates[0]));
     setCalendarVisible(false);
@@ -547,6 +563,8 @@ export default function CreateBill() {
     setCProvince("");
     setCPostId("");
     setNote("");
+    setPaymentTermCondition("");
+    setRemark("");
     setPayment("");
     setCashStatus(false);
     setTaxType("Individual");
@@ -556,6 +574,8 @@ export default function CreateBill() {
     setRepeatMonths(1);
     setRepeatMonthsInput("1");
   };
+
+  const scrollViewRef = useRef<ScrollView>(null);
 
   return (
     <SafeAreaView
@@ -596,282 +616,307 @@ export default function CreateBill() {
           </View>
         </TouchableOpacity>
       </Modal>
-
-      <ScrollView>
-        {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
-        {showProgressSection && (
-          <View style={{               
-            backgroundColor: "#00000000"
-          }}>        
-            
-            {/* Enhanced Progress Container */}
-            <View style={{ 
-              backgroundColor: "transparent",
-              borderRadius: 20,
-              padding: 10,
-              marginVertical: 5,
-              borderWidth: 0,
-              borderColor: "transparent"
-            }}>
-              
-              {/* Progress Line Container */}
-              <View style={{ 
-                flexDirection: "row", 
-                alignItems: "center", 
-                justifyContent: "center",
-                backgroundColor: "transparent",
-                paddingVertical: 5
-              }}>
-                
-                {getAvailableSteps().map((step, index) => {
-                  const stepConfig = {
-                    QA: { 
-                      icon: "document-text-outline", 
-                      label: t("bill.quotation"),
-                      type: "Quotation"
-                    },
-                    IV: { 
-                      icon: "receipt-outline", 
-                      label: t("bill.invoice"),
-                      type: "Invoice"
-                    },
-                    RE: { 
-                      icon: "checkmark-circle-outline", 
-                      label: t("bill.receipt"),
-                      type: "Receipt"
-                    }
-                  };
-                  
-                  const availableSteps = getAvailableSteps();
-                  const isLastStep = index === availableSteps.length - 1;
-                  
-                  return (
-                    <React.Fragment key={step}>
-                      {/* Step Circle */}
-                      <TouchableOpacity 
-                        style={{ 
-                          alignItems: "center", 
-                          backgroundColor: "transparent"
-                        }}
-                        onPress={() => setSelectedDocumentType(step)}
-                        activeOpacity={0.7}
-                      >
-                        <View style={{
-                          width: 50,
-                          height: 50,
-                          borderRadius: 25,
-                          backgroundColor: isStepCompleted(step) ? "#0feac2" : "transparent",
-                          borderWidth: 3,
-                          borderColor: isStepCompleted(step) ? "#0feac2" : (theme === "dark" ? "#666" : "#ccc"),
-                          alignItems: "center",
-                          justifyContent: "center",
-                          opacity: getStepOpacity(step),
-                          shadowColor: isStepCompleted(step) ? "#0feac2" : "transparent",
-                          shadowOffset: { width: 0, height: 0 },
-                          shadowOpacity: 0.6,
-                          shadowRadius: 8,
-                          elevation: isStepCompleted(step) ? 8 : 0,
-                        }}>
-                          <Ionicons
-                            name={stepConfig[step].icon as any}
-                            size={24}
-                            color={isStepCompleted(step) ?  (theme === "dark" ? "#18181b" : "#ffffff") : getStepIconColor(step)}
-                          />
-                        </View>
-                        
-                        <CustomText style={{
-                          fontSize: 10,
-                          color: getStepDescriptionColor(step),
-                          textAlign: "center",
-                          marginTop: 5
-                        }}>
-                          {stepConfig[step].label}
-                        </CustomText>
-                      </TouchableOpacity>
-                      
-                      {/* Connection Line - Only show if not last step */}
-                      {!isLastStep && (
-                        <View style={{
-                          width: 60,
-                          height: 4,
-                          marginHorizontal: 10,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5
-                        }}>
-                          {[...Array(5)].map((_, dotIndex) => (
-                            <View
-                              key={dotIndex}
-                              style={{
-                                width: 4,
-                                height: 4,
-                                borderRadius: 2,
-                                backgroundColor: index < availableSteps.findIndex(s => s === selectedDocumentType) 
-                                  ? "#0feac2" 
-                                  : (theme === "dark" ? "#444" : "#ddd"),
-                              }}
-                            />
-                          ))}
-                        </View>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </View>
-
-            </View>
-          </View>
-        )}
-
-        {/* Main Content Area */}
-        <View
-          className="flex-1 justify-center  h-full px-4 mb-20 pb-20"
-          style={{
-            maxWidth: Platform.OS === "web" ? 600 : "100%",
-            alignSelf: Platform.OS === "web" ? "center" : "auto",
-          }}
-        >
-          {/* Clear Button in Top Right */}
-          <View style={{ position: "absolute", top: 0, right: 0, zIndex: 10 }}>
-            <TouchableOpacity
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        //  keyboardVerticalOffset={5}
+      >
+        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
+          {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
+          {showProgressSection && (
+            <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingHorizontal: 10,
+                backgroundColor: "#00000000",
               }}
-              onPress={handleClearFields}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <CustomText
-                weight="bold"
+              {/* Enhanced Progress Container */}
+              <View
                 style={{
-                  color: theme === "dark" ? "#03dbc1" : "#03dbc1",
-                  fontSize: 18,
-                  paddingHorizontal: 10,
+                  backgroundColor: "transparent",
+                  borderRadius: 20,
+                  padding: 10,
+                  marginVertical: 5,
+                  borderWidth: 0,
+                  borderColor: "transparent",
                 }}
               >
-                {t("bill.clearFields")}
-              </CustomText>
-            </TouchableOpacity>
-          </View>
-
-          <View className="flex flex-row justify-between items-center">
-            <View className="w-1/2 pr-2">
-              {stores.length > 0 ? (
-                <DropdownClear
-                  title={t("bill.store")}
-                  options={stores.map((store) => ({
-                    label: store.accName,
-                    value: store.id.toString(),
-                  }))}
-                  placeholder={t("bill.selectStore")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={
-                    storeId
-                      ? stores.find((store) => store.id === storeId)?.accName ||
-                        ""
-                      : ""
-                  }
-                  onValueChange={(value: any) => setStoreId(Number(value))}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-2 mb-2"
-                />
-              ) : null}
-            </View>
-            <View className="w-1/2 pr-2">
-              {/* Date selector */}
-              <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
-                <CustomText
-                  className={`text-base mx-2 ${
-                    theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                  }`}
+                {/* Progress Line Container */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "transparent",
+                    paddingVertical: 5,
+                  }}
                 >
-                  {SelectedDates.length > 0
-                    ? formatDate(SelectedDates[0])
-                    : t("dashboard.selectDate")}
-                </CustomText>
-                {/* icon Calendar */}
-                <Ionicons
-                  name="calendar"
-                  size={24}
-                  color={theme === "dark" ? "#ffffff" : "#444541"}
-                  onPress={() => setCalendarVisible(true)}
-                />
+                  {getAvailableSteps().map((step, index) => {
+                    const stepConfig = {
+                      QA: {
+                        icon: "document-text-outline",
+                        label: t("bill.quotation"),
+                        type: "Quotation",
+                      },
+                      IV: {
+                        icon: "receipt-outline",
+                        label: t("bill.invoice"),
+                        type: "Invoice",
+                      },
+                      RE: {
+                        icon: "checkmark-circle-outline",
+                        label: t("bill.receipt"),
+                        type: "Receipt",
+                      },
+                    };
+
+                    const availableSteps = getAvailableSteps();
+                    const isLastStep = index === availableSteps.length - 1;
+
+                    return (
+                      <React.Fragment key={step}>
+                        {/* Step Circle */}
+                        <TouchableOpacity
+                          style={{
+                            alignItems: "center",
+                            backgroundColor: "transparent",
+                          }}
+                          onPress={() => setSelectedDocumentType(step)}
+                          activeOpacity={0.7}
+                        >
+                          <View
+                            style={{
+                              width: 50,
+                              height: 50,
+                              borderRadius: 25,
+                              backgroundColor: isStepCompleted(step)
+                                ? "#0feac2"
+                                : "transparent",
+                              borderWidth: 3,
+                              borderColor: isStepCompleted(step)
+                                ? "#0feac2"
+                                : theme === "dark"
+                                ? "#666"
+                                : "#ccc",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              opacity: getStepOpacity(step),
+                              shadowColor: isStepCompleted(step)
+                                ? "#0feac2"
+                                : "transparent",
+                              shadowOffset: { width: 0, height: 0 },
+                              shadowOpacity: 0.6,
+                              shadowRadius: 8,
+                              elevation: isStepCompleted(step) ? 8 : 0,
+                            }}
+                          >
+                            <Ionicons
+                              name={stepConfig[step].icon as any}
+                              size={24}
+                              color={
+                                isStepCompleted(step)
+                                  ? theme === "dark"
+                                    ? "#18181b"
+                                    : "#ffffff"
+                                  : getStepIconColor(step)
+                              }
+                            />
+                          </View>
+
+                          <CustomText
+                            style={{
+                              fontSize: 10,
+                              color: getStepDescriptionColor(step),
+                              textAlign: "center",
+                              marginTop: 5,
+                            }}
+                          >
+                            {stepConfig[step].label}
+                          </CustomText>
+                        </TouchableOpacity>
+
+                        {/* Connection Line - Only show if not last step */}
+                        {!isLastStep && (
+                          <View
+                            style={{
+                              width: 60,
+                              height: 4,
+                              marginHorizontal: 10,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              paddingHorizontal: 5,
+                            }}
+                          >
+                            {[...Array(5)].map((_, dotIndex) => (
+                              <View
+                                key={dotIndex}
+                                style={{
+                                  width: 4,
+                                  height: 4,
+                                  borderRadius: 2,
+                                  backgroundColor:
+                                    index <
+                                    availableSteps.findIndex(
+                                      (s) => s === selectedDocumentType
+                                    )
+                                      ? "#0feac2"
+                                      : theme === "dark"
+                                      ? "#444"
+                                      : "#ddd",
+                                }}
+                              />
+                            ))}
+                          </View>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </View>
               </View>
             </View>
-          </View>
-          {/* Tax Type Checkboxes Row */}
-          <View
-            className="flex flex-row items-center mt-2 mb-2"
-            style={{ backgroundColor: "transparent", marginBottom: 8 }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 20,
-              }}
-              onPress={() => {
-                setTaxType("Individual");
-                setCGender(""); // Allow gender selection
-              }}
-            >
-              <Ionicons
-                name={taxType === "Individual" ? "checkbox" : "square-outline"}
-                size={22}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <CustomText
-                className="ml-2"
-                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-              >
-                {t("auth.businessRegister.taxTypeOption.Individual")}
-              </CustomText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center" }}
-              onPress={() => {
-                setTaxType("Juristic");
-                setCGender("NotSpecified"); // Always set gender to NotSpecified
-              }}
-            >
-              <Ionicons
-                name={taxType === "Juristic" ? "checkbox" : "square-outline"}
-                size={22}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <CustomText
-                className="ml-2"
-                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-              >
-                {t("auth.businessRegister.taxTypeOption.Juristic")}
-              </CustomText>
-            </TouchableOpacity>
-          </View>
+          )}
 
-          <View className="flex flex-row justify-between">
-            <View className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}>
-              <FormFieldClear
-                title={t("bill.customerName")}
-                value={cName}
-                handleChangeText={setCName}
-                placeholder={t("bill.enterName")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-              />
+          {/* Main Content Area */}
+          <View
+            className="flex-1 justify-center  h-full px-4 mb-20 pb-20"
+            style={{
+              maxWidth: Platform.OS === "web" ? 600 : "100%",
+              alignSelf: Platform.OS === "web" ? "center" : "auto",
+            }}
+          >
+            {/* Clear Button in Top Right */}
+            <View
+              style={{ position: "absolute", top: 0, right: 0, zIndex: 10 }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                }}
+                onPress={handleClearFields}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <CustomText
+                  weight="bold"
+                  style={{
+                    color: theme === "dark" ? "#03dbc1" : "#03dbc1",
+                    fontSize: 18,
+                    paddingHorizontal: 10,
+                  }}
+                >
+                  {t("bill.clearFields")}
+                </CustomText>
+              </TouchableOpacity>
             </View>
-            {taxType !== "Juristic" && (
+
+            <View className="flex flex-row justify-between items-center">
               <View className="w-1/2 pr-2">
+                {stores.length > 0 ? (
+                  <DropdownClear
+                    title={t("bill.store")}
+                    options={stores.map((store) => ({
+                      label: store.accName,
+                      value: store.id.toString(),
+                    }))}
+                    placeholder={t("bill.selectStore")}
+                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    selectedValue={
+                      storeId
+                        ? stores.find((store) => store.id === storeId)
+                            ?.accName || ""
+                        : ""
+                    }
+                    onValueChange={(value: any) => setStoreId(Number(value))}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-2 mb-2"
+                  />
+                ) : null}
+              </View>
+              <View className="w-1/2 pr-2">
+                {/* Date selector */}
+                <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
+                  <CustomText
+                    className={`text-base mx-2 ${
+                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
+                    }`}
+                  >
+                    {SelectedDates.length > 0
+                      ? formatDate(SelectedDates[0])
+                      : t("dashboard.selectDate")}
+                  </CustomText>
+                  {/* icon Calendar */}
+                  <Ionicons
+                    name="calendar"
+                    size={24}
+                    color={theme === "dark" ? "#ffffff" : "#444541"}
+                    onPress={() => setCalendarVisible(true)}
+                  />
+                </View>
+              </View>
+            </View>
+            {/* Tax Type Checkboxes Row */}
+            <View
+              className="flex flex-row items-center mt-2 mb-2"
+              style={{ backgroundColor: "transparent", marginBottom: 8 }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
+                onPress={() => {
+                  setTaxType("Individual");
+                  setCGender(""); // Allow gender selection
+                }}
+              >
+                <Ionicons
+                  name={
+                    taxType === "Individual" ? "checkbox" : "square-outline"
+                  }
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("auth.businessRegister.taxTypeOption.Individual")}
+                </CustomText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center" }}
+                onPress={() => {
+                  setTaxType("Juristic");
+                  setCGender("NotSpecified"); // Always set gender to NotSpecified
+                }}
+              >
+                <Ionicons
+                  name={taxType === "Juristic" ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("auth.businessRegister.taxTypeOption.Juristic")}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
+            <View className="flex flex-row justify-between">
+              <View
+                className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}
+              >
                 <FormFieldClear
-                  title={t("bill.customerLastName")}
-                  value={cLastName}
-                  handleChangeText={setCLastName}
-                  placeholder={t("bill.enterLastName")}
+                  title={t("bill.customerName")}
+                  value={cName}
+                  handleChangeText={setCName}
+                  placeholder={t("bill.enterName")}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
                     theme === "dark" ? "#606060" : "#b1b1b1"
@@ -880,498 +925,600 @@ export default function CreateBill() {
                   otherStyles={fieldStyles}
                 />
               </View>
-            )}
-          </View>
-          {taxType === "Juristic" && (
-            <FormFieldClear
-              title={t("bill.customerTaxId")}
-              value={cTaxId}
-              handleChangeText={setTaxId}
-              placeholder={t("bill.enterTaxId")}
-              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              otherStyles={fieldStyles}
-              keyboardType="numeric"
-              maxLength={13}
-            />
-          )}
-          <View className="flex flex-row justify-between">
-            <View className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}>
-              <FormFieldClear
-                title={t("bill.customerPhone")}
-                value={cPhone}
-                handleChangeText={setCPhone}
-                placeholder="0812345678"
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                keyboardType="numeric"
-                maxLength={10}
-              />
-            </View>
-            {taxType === "Individual" && (
-              <View className="w-1/2 pr-2">
-                <DropdownClear
-                  title={t("bill.customerGender")}
-                  options={[
-                    { label: t("bill.gender.male"), value: "Male" },
-                    { label: t("bill.gender.female"), value: "Female" },
-                    {
-                      label: t("bill.gender.notSpecified"),
-                      value: "NotSpecified",
-                    },
-                  ]}
-                  placeholder={t("bill.selectGender")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={
-                    cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
-                  }
-                  onValueChange={(value: string) => setCGender(value)}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-2 mb-2"
-                />
-              </View>
-            )}
-          </View>
-
-          {/* Address Fields Section */}
-          <FormFieldClear
-            title={t("bill.customerAddress")}
-            value={cAddress}
-            handleChangeText={setCAddress}
-            placeholder={t("bill.enterAddress")}
-            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-            maxLength={200}
-            multiline={true}
-            numberOfLines={4}
-            boxheight={110}
-          />
-          <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
-              <FormFieldClear
-                title={t("bill.customerProvince")}
-                value={cProvince}
-                handleChangeText={setCProvince}
-                placeholder={t("bill.enterProvince")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-              />
-            </View>
-            <View className="w-1/2 pr-2">
-              <FormFieldClear
-                title={t("bill.customerPostal")}
-                value={cPostId}
-                handleChangeText={setCPostId}
-                placeholder={t("bill.customerPostal")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                keyboardType="numeric"
-                maxLength={5}
-              />
-            </View>
-          </View>
-
-          {/* Product Items Section */}
-          {productItems.map((item, idx) => (
-            <View
-              key={idx}
-              className="flex flex-row items-center mb-1 relative"
-            >
-              <View className="w-2/5 pr-2">
-                <DropdownClear
-                  title={t(`bill.productName`) + ` ${idx + 1}`}
-                  options={productChoice.map((product) => ({
-                    label: product.name,
-                    value: product.name,
-                  }))}
-                  placeholder={t("bill.selectProduct")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={item.product}
-                  onValueChange={(value: string) =>
-                    handleProductItemChange(idx, "product", value)
-                  }
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-1 mb-1"
-                />
-              </View>
-              <View className="w-1/4 pr-2">
-                <FormFieldClear
-                  title={t("bill.price")}
-                  value={item.price ? Number(item.price).toLocaleString() : ""}
-                  handleChangeText={(value: string) => {
-                    // Remove commas and non-numeric characters except digits
-                    const numericValue = value.replace(/[^0-9]/g, "");
-                    handleProductItemChange(idx, "price", numericValue);
-                  }}
-                  placeholder="1,000"
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={
-                    theme === "dark" ? "#606060" : "#b1b1b1"
-                  }
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-1 mb-1"
-                  keyboardType="numeric"
-                />
-              </View>
-              <View className="w-1/5 pr-2">
-                <FormFieldClear
-                  title={t("bill.discount")}
-                  value={item.unitDiscount ? Number(item.unitDiscount).toLocaleString() : ""}
-                  handleChangeText={(value: string) => {
-                    // Remove commas and non-numeric characters except digits
-                    const numericValue = value.replace(/[^0-9]/g, "");
-                    handleProductItemChange(idx, "unitDiscount", numericValue);
-                  }}
-                  placeholder="0"
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={
-                    theme === "dark" ? "#606060" : "#b1b1b1"
-                  }
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-1 mb-1"
-                  keyboardType="numeric"
-                />
-              </View>
-              <View className="w-1/6 pr-2" style={{ position: "relative" }}>
-                <FormFieldClear
-                  title={
-                    t("bill.amount") +
-                    (item.unit && t(`product.unit.${item.unit}`)
-                      ? ` (${t(`product.unit.${item.unit}`)})`
-                      : "")
-                  }
-                  value={item.quantity}
-                  handleChangeText={(value: string) =>
-                    handleProductItemChange(idx, "quantity", value)
-                  }
-                  placeholder="1"
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={
-                    theme === "dark" ? "#606060" : "#b1b1b1"
-                  }
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-1 mb-1"
-                  keyboardType="numeric"
-                />
-                {idx !== 0 && (
-                  <TouchableOpacity
-                    onPress={() => handleRemoveProductItem(idx)}
-                    style={{
-                      position: "absolute",
-                      top: 17,
-                      right: -6,
-                      zIndex: 1,
-                    }}
-                  >
-                    <Ionicons name="remove-circle" size={22} color="#e74c3c" />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          ))}
-          <View className="flex flex-row justify-end mb-2">
-            <TouchableOpacity onPress={handleAddProductItem}>
-              <View className="flex flex-row items-center gap-2">
-                <Ionicons name="add-circle" size={28} color="#2ecc71" />
-                <CustomText>{t("bill.addProductItem")}</CustomText>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* Payment and Cash Status - Only show for Receipt */}
-          {selectedDocumentType === "RE" && (
-            <View className="flex flex-row justify-between">
-              <View className="w-1/2 pr-2">
-                <DropdownClear
-                  title={t("bill.paymentMethod")}
-                  options={[
-                    { label: t("bill.payment.cod"), value: "COD" },
-                    { label: t("bill.payment.transfer"), value: "Transfer" },
-                    { label: t("bill.payment.creditcard"), value: "CreditCard" },
-                    { label: t("bill.payment.cash"), value: "Cash" },
-                  ]}
-                  placeholder={t("bill.selectPayment")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={
-                    payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
-                  }
-                  onValueChange={setPayment}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-2 mb-2"
-                />
-              </View>
-              <View className="w-1/2 pr-2">
-                <DropdownClear
-                  title={t("bill.paymentStatus")}
-                  options={[
-                    { label: t("bill.status.paid"), value: "true" },
-                    { label: t("bill.status.unpaid"), value: "false" },
-                  ]}
-                  placeholder={t("bill.selectStatus")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  selectedValue={
-                    cashStatus === true
-                      ? t("bill.status.paid")
-                      : cashStatus === false && payment
-                      ? t("bill.status.unpaid")
-                      : ""
-                  }
-                  onValueChange={(value: string) =>
-                    setCashStatus(value === "true")
-                  }
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles="mt-2 mb-2"
-                />
-              </View>
-            </View>
-          )}
-
-          {/* Note Section */}
-          <FormFieldClear
-            title={t("bill.note")}
-            value={note}
-            handleChangeText={setNote}
-            placeholder={t("bill.enterNote")}
-            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            otherStyles={fieldStyles}
-            maxLength={500}
-            multiline={true}
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
-
-          {/* Price Valid Section - Hide for Receipt */}
-          {selectedDocumentType !== "RE" && (
-            <>
-              <View
-                className="flex flex-row items-center mt-2 mb-2"
-                style={{ backgroundColor: "transparent", marginBottom: 8 }}
-              >
-                <CustomText
-                  className="mr-4"
-                  style={{ 
-                    color: theme === "dark" ? "#b1b1b1" : "#606060",
-                    fontSize: 16,
-                    fontWeight: "500"
-                  }}
-                >
-                  {t("bill.priceValid")}
-                </CustomText>
-                
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 20,
-                  }}
-                  onPress={() => handlePriceValidDaysChange(7)}
-                >
-                  <Ionicons
-                    name={priceValidDays === 7 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
-                  <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                  >
-                    7 days
-                  </CustomText>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 20,
-                  }}
-                  onPress={() => handlePriceValidDaysChange(15)}
-                >
-                  <Ionicons
-                    name={priceValidDays === 15 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
-                  <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                  >
-                    15 days
-                  </CustomText>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={() => handlePriceValidDaysChange(30)}
-                >
-                  <Ionicons
-                    name={priceValidDays === 30 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
-                  <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                  >
-                    30 days
-                  </CustomText>
-                </TouchableOpacity>
-              </View>
-              
-              {priceValid && (
-                <View className="mb-2 pt-2 flex-row item-center justify-center">
-                    <CustomText
-                    className="text-sm"
-                    style={{ color: theme === "dark" ? "#888" : "#666" }}
-                    >
-                    {t("bill.validUntil")}
-                    </CustomText>
-                   <CustomText
-                    className="text-sm"
-                    style={{ color: theme === "dark" ? "#888" : "#666" }}
-                  >
-                  {formatDate(priceValid.toISOString())}
-                  </CustomText>
-                </View>
-              )}
-            </>
-          )}
-
-          {/* Repeat Bill Section - Only show for Rental business type */}
-          {businessType === "Rental" && (
-            <View
-              className="flex flex-row items-center mt-4 mb-2"
-              style={{ backgroundColor: "transparent" }}
-            >
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginRight: 20,
-                }}
-                onPress={() => setIsRepeat(!isRepeat)}
-              >
-                <Ionicons
-                  name={isRepeat ? "checkbox" : "square-outline"}
-                  size={22}
-                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                />
-                <CustomText
-                  className="ml-2"
-                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                >
-                  {t("bill.repeatBill")}
-                </CustomText>
-              </TouchableOpacity>
-
-              {isRepeat && (
-                <View className="flex-1 ml-4">
+              {taxType !== "Juristic" && (
+                <View className="w-1/2 pr-2">
                   <FormFieldClear
-                    title={t("bill.repeatMonths")}
-                    value={repeatMonthsInput}
-                    handleChangeText={(value: string) => {
-                      // Allow any input including empty string
-                      setRepeatMonthsInput(value);
-
-                      // Update the actual repeat months value if valid
-                      if (value !== "") {
-                        const num = parseInt(value);
-                        if (!isNaN(num)) {
-                          if (num > 12) {
-                            // Show alert if number is over 12
-                            setAlertConfig({
-                              visible: true,
-                              title: t("bill.validation.invalidRepeat"),
-                              message:
-                                "Please enter a number between 1 and 12 months only.",
-                              buttons: [
-                                {
-                                  text: t("common.ok"),
-                                  onPress: () => {
-                                    setAlertConfig((prev) => ({
-                                      ...prev,
-                                      visible: false,
-                                    }));
-                                    // Reset to maximum allowed value
-                                    setRepeatMonthsInput("12");
-                                    setRepeatMonths(12);
-                                  },
-                                },
-                              ],
-                            });
-                          } else if (num >= 1 && num <= 12) {
-                            setRepeatMonths(num);
-                          }
-                        }
-                      }
-                    }}
-                    onBlur={() => {
-                      // When field loses focus, ensure it has a valid value
-                      if (
-                        repeatMonthsInput === "" ||
-                        parseInt(repeatMonthsInput) < 1 ||
-                        isNaN(parseInt(repeatMonthsInput))
-                      ) {
-                        setRepeatMonthsInput("2");
-                        setRepeatMonths(1);
-                      } else {
-                        // Ensure the repeat months is synchronized
-                        const num = parseInt(repeatMonthsInput);
-                        if (num > 12) {
-                          // If over 12, set to 12
-                          setRepeatMonthsInput("12");
-                          setRepeatMonths(12);
-                        } else if (num >= 1 && num <= 12) {
-                          setRepeatMonths(num);
-                        }
-                      }
-                    }}
-                    placeholder="1-12"
+                    title={t("bill.customerLastName")}
+                    value={cLastName}
+                    handleChangeText={setCLastName}
+                    placeholder={t("bill.enterLastName")}
                     borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     placeholderTextColor={
                       theme === "dark" ? "#606060" : "#b1b1b1"
                     }
                     textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    otherStyles="mt-0 mb-0"
+                    otherStyles={fieldStyles}
                   />
                 </View>
               )}
             </View>
-          )}
+            {taxType === "Juristic" && (
+              <FormFieldClear
+                title={t("bill.customerTaxId")}
+                value={cTaxId}
+                handleChangeText={setTaxId}
+                placeholder={t("bill.enterTaxId")}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+                keyboardType="numeric"
+                maxLength={13}
+              />
+            )}
+            <View className="flex flex-row justify-between">
+              <View
+                className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}
+              >
+                <FormFieldClear
+                  title={t("bill.customerPhone")}
+                  value={cPhone}
+                  handleChangeText={setCPhone}
+                  placeholder="0812345678"
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles={fieldStyles}
+                  keyboardType="numeric"
+                  maxLength={10}
+                />
+              </View>
+              {taxType === "Individual" && (
+                <View className="w-1/2 pr-2">
+                  <DropdownClear
+                    title={t("bill.customerGender")}
+                    options={[
+                      { label: t("bill.gender.male"), value: "Male" },
+                      { label: t("bill.gender.female"), value: "Female" },
+                      {
+                        label: t("bill.gender.notSpecified"),
+                        value: "NotSpecified",
+                      },
+                    ]}
+                    placeholder={t("bill.selectGender")}
+                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    selectedValue={
+                      cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
+                    }
+                    onValueChange={(value: string) => setCGender(value)}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-2 mb-2"
+                  />
+                </View>
+              )}
+            </View>
 
-          {error ? (
-            <CustomText className="text-red-500 mt-4">{error}</CustomText>
-          ) : null}
+            {/* Address Fields Section */}
+            <FormFieldClear
+              title={t("bill.customerAddress")}
+              value={cAddress}
+              handleChangeText={setCAddress}
+              placeholder={t("bill.enterAddress")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={200}
+              multiline={true}
+              numberOfLines={4}
+              boxheight={110}
+            />
+            <View className="flex flex-row justify-between">
+              <View className="w-1/2 pr-2">
+                <FormFieldClear
+                  title={t("bill.customerProvince")}
+                  value={cProvince}
+                  handleChangeText={setCProvince}
+                  placeholder={t("bill.enterProvince")}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles={fieldStyles}
+                />
+              </View>
+              <View className="w-1/2 pr-2">
+                <FormFieldClear
+                  title={t("bill.customerPostal")}
+                  value={cPostId}
+                  handleChangeText={setCPostId}
+                  placeholder={t("bill.customerPostal")}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  placeholderTextColor={
+                    theme === "dark" ? "#606060" : "#b1b1b1"
+                  }
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles={fieldStyles}
+                  keyboardType="numeric"
+                  maxLength={5}
+                />
+              </View>
+            </View>
 
-          <CustomButton
-            title={t("bill.createButton")}
-            handlePress={handleCreateBill}
-            containerStyles="mt-5"
-            textStyles="!text-white"
-          />
-        </View>
-      </ScrollView>
+            {/* Product Items Section */}
+            {productItems.map((item, idx) => (
+              <View
+                key={idx}
+                className="flex flex-row items-center mb-1 relative"
+              >
+                <View className="w-2/5 pr-2">
+                  <DropdownClear
+                    title={t(`bill.productName`) + ` ${idx + 1}`}
+                    options={productChoice.map((product) => ({
+                      label: product.name,
+                      value: product.name,
+                    }))}
+                    placeholder={t("bill.selectProduct")}
+                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    selectedValue={item.product}
+                    onValueChange={(value: string) =>
+                      handleProductItemChange(idx, "product", value)
+                    }
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-1 mb-1"
+                  />
+                </View>
+                <View className="w-1/4 pr-2">
+                  <FormFieldClear
+                    title={t("bill.price")}
+                    value={
+                      item.price ? Number(item.price).toLocaleString() : ""
+                    }
+                    handleChangeText={(value: string) => {
+                      // Remove commas and non-numeric characters except digits
+                      const numericValue = value.replace(/[^0-9]/g, "");
+                      handleProductItemChange(idx, "price", numericValue);
+                    }}
+                    placeholder="1,000"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#606060" : "#b1b1b1"
+                    }
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-1 mb-1"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View className="w-1/5 pr-2">
+                  <FormFieldClear
+                    title={t("bill.discount")}
+                    value={
+                      item.unitDiscount
+                        ? Number(item.unitDiscount).toLocaleString()
+                        : ""
+                    }
+                    handleChangeText={(value: string) => {
+                      // Remove commas and non-numeric characters except digits
+                      const numericValue = value.replace(/[^0-9]/g, "");
+                      handleProductItemChange(
+                        idx,
+                        "unitDiscount",
+                        numericValue
+                      );
+                    }}
+                    placeholder="0"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#606060" : "#b1b1b1"
+                    }
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-1 mb-1"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View className="w-1/6 pr-2" style={{ position: "relative" }}>
+                  <FormFieldClear
+                    title={
+                      t("bill.amount") +
+                      (item.unit && t(`product.unit.${item.unit}`)
+                        ? ` (${t(`product.unit.${item.unit}`)})`
+                        : "")
+                    }
+                    value={item.quantity}
+                    handleChangeText={(value: string) =>
+                      handleProductItemChange(idx, "quantity", value)
+                    }
+                    placeholder="1"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#606060" : "#b1b1b1"
+                    }
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-1 mb-1"
+                    keyboardType="numeric"
+                  />
+                  {idx !== 0 && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveProductItem(idx)}
+                      style={{
+                        position: "absolute",
+                        top: 17,
+                        right: -6,
+                        zIndex: 1,
+                      }}
+                    >
+                      <Ionicons
+                        name="remove-circle"
+                        size={22}
+                        color="#e74c3c"
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            ))}
+            <View className="flex flex-row justify-end mb-2">
+              <TouchableOpacity onPress={handleAddProductItem}>
+                <View className="flex flex-row items-center gap-2">
+                  <Ionicons name="add-circle" size={28} color="#2ecc71" />
+                  <CustomText>{t("bill.addProductItem")}</CustomText>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {/* Payment and Cash Status - Only show for Receipt */}
+            {selectedDocumentType === "RE" && (
+              <View className="flex flex-row justify-between">
+                <View className="w-1/2 pr-2">
+                  <DropdownClear
+                    title={t("bill.paymentMethod")}
+                    options={[
+                      { label: t("bill.payment.cod"), value: "COD" },
+                      { label: t("bill.payment.transfer"), value: "Transfer" },
+                      {
+                        label: t("bill.payment.creditcard"),
+                        value: "CreditCard",
+                      },
+                      { label: t("bill.payment.cash"), value: "Cash" },
+                    ]}
+                    placeholder={t("bill.selectPayment")}
+                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    selectedValue={
+                      payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
+                    }
+                    onValueChange={setPayment}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-2 mb-2"
+                  />
+                </View>
+                <View className="w-1/2 pr-2">
+                  <DropdownClear
+                    title={t("bill.paymentStatus")}
+                    options={[
+                      { label: t("bill.status.paid"), value: "true" },
+                      { label: t("bill.status.unpaid"), value: "false" },
+                    ]}
+                    placeholder={t("bill.selectStatus")}
+                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    selectedValue={
+                      cashStatus === true
+                        ? t("bill.status.paid")
+                        : cashStatus === false && payment
+                        ? t("bill.status.unpaid")
+                        : ""
+                    }
+                    onValueChange={(value: string) =>
+                      setCashStatus(value === "true")
+                    }
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mt-2 mb-2"
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Note Section */}
+            <FormFieldClear
+              title={t("bill.note")}
+              value={note}
+              handleChangeText={setNote}
+              placeholder={t("bill.enterNote")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={500}
+              multiline={true}
+              numberOfLines={3}
+              textAlignVertical="top"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+            />
+
+            {/* Payment Terms & Conditions Section - Only show for Quotation */}
+            {selectedDocumentType === "QA" && (
+              <FormFieldClear
+                title={t("bill.paymentTermCondition")}
+                value={paymentTermCondition}
+                handleChangeText={setPaymentTermCondition}
+                placeholder={t("bill.enterPaymentTermCondition")}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+                maxLength={300}
+                multiline={true}
+                numberOfLines={2}
+                textAlignVertical="top"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 200);
+                }}
+              />
+            )}
+
+            {/* Remark Section */}
+            <FormFieldClear
+              title={t("bill.remark")}
+              value={remark}
+              handleChangeText={setRemark}
+              placeholder={t("bill.enterRemark")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={300}
+              multiline={true}
+              numberOfLines={2}
+              textAlignVertical="top"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+            />
+
+            {/* Price Valid Section - Hide for Receipt */}
+            {selectedDocumentType !== "RE" && (
+              <>
+                <View
+                  className="flex flex-row items-center mt-2 mb-2"
+                  style={{ backgroundColor: "transparent", marginBottom: 8 }}
+                >
+                  <CustomText
+                    className="mr-4"
+                    style={{
+                      color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      fontSize: 16,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {t("bill.priceValid")}
+                  </CustomText>
+
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
+                    onPress={() => handlePriceValidDaysChange(7)}
+                  >
+                    <Ionicons
+                      name={
+                        priceValidDays === 7 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      7 days
+                    </CustomText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
+                    onPress={() => handlePriceValidDaysChange(15)}
+                  >
+                    <Ionicons
+                      name={
+                        priceValidDays === 15 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      15 days
+                    </CustomText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                    onPress={() => handlePriceValidDaysChange(30)}
+                  >
+                    <Ionicons
+                      name={
+                        priceValidDays === 30 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      30 days
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
+
+                {priceValid && (
+                  <View className="mb-2 pt-2 flex-row item-center justify-center">
+                    <CustomText
+                      className="text-sm"
+                      style={{ color: theme === "dark" ? "#888" : "#666" }}
+                    >
+                      {t("bill.validUntil")}
+                    </CustomText>
+                    <CustomText
+                      className="text-sm"
+                      style={{ color: theme === "dark" ? "#888" : "#666" }}
+                    >
+                      {formatDate(priceValid.toISOString())}
+                    </CustomText>
+                  </View>
+                )}
+              </>
+            )}
+
+            {/* Repeat Bill Section - Only show for Rental business type */}
+            {businessType === "Rental" && (
+              <View
+                className="flex flex-row items-center mt-4 mb-2"
+                style={{ backgroundColor: "transparent" }}
+              >
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 20,
+                  }}
+                  onPress={() => setIsRepeat(!isRepeat)}
+                >
+                  <Ionicons
+                    name={isRepeat ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  <CustomText
+                    className="ml-2"
+                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  >
+                    {t("bill.repeatBill")}
+                  </CustomText>
+                </TouchableOpacity>
+
+                {isRepeat && (
+                  <View className="flex-1 ml-4">
+                    <FormFieldClear
+                      title={t("bill.repeatMonths")}
+                      value={repeatMonthsInput}
+                      handleChangeText={(value: string) => {
+                        // Allow any input including empty string
+                        setRepeatMonthsInput(value);
+
+                        // Update the actual repeat months value if valid
+                        if (value !== "") {
+                          const num = parseInt(value);
+                          if (!isNaN(num)) {
+                            if (num > 12) {
+                              // Show alert if number is over 12
+                              setAlertConfig({
+                                visible: true,
+                                title: t("bill.validation.invalidRepeat"),
+                                message:
+                                  "Please enter a number between 1 and 12 months only.",
+                                buttons: [
+                                  {
+                                    text: t("common.ok"),
+                                    onPress: () => {
+                                      setAlertConfig((prev) => ({
+                                        ...prev,
+                                        visible: false,
+                                      }));
+                                      // Reset to maximum allowed value
+                                      setRepeatMonthsInput("12");
+                                      setRepeatMonths(12);
+                                    },
+                                  },
+                                ],
+                              });
+                            } else if (num >= 1 && num <= 12) {
+                              setRepeatMonths(num);
+                            }
+                          }
+                        }
+                      }}
+                      onBlur={() => {
+                        // When field loses focus, ensure it has a valid value
+                        if (
+                          repeatMonthsInput === "" ||
+                          parseInt(repeatMonthsInput) < 1 ||
+                          isNaN(parseInt(repeatMonthsInput))
+                        ) {
+                          setRepeatMonthsInput("2");
+                          setRepeatMonths(1);
+                        } else {
+                          // Ensure the repeat months is synchronized
+                          const num = parseInt(repeatMonthsInput);
+                          if (num > 12) {
+                            // If over 12, set to 12
+                            setRepeatMonthsInput("12");
+                            setRepeatMonths(12);
+                          } else if (num >= 1 && num <= 12) {
+                            setRepeatMonths(num);
+                          }
+                        }
+                      }}
+                      placeholder="1-12"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      otherStyles="mt-0 mb-0"
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+
+            {error ? (
+              <CustomText className="text-red-500 mt-4">{error}</CustomText>
+            ) : null}
+
+            <CustomButton
+              title={t("bill.createButton")}
+              handlePress={handleCreateBill}
+              containerStyles="mt-5"
+              textStyles="!text-white"
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <CustomAlert
         visible={alertConfig.visible}
         title={alertConfig.title}

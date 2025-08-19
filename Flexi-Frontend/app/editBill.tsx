@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Linking,
+  KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -74,6 +75,8 @@ export default function EditBill() {
 
   // Note state
   const [note, setNote] = useState("");
+  const [paymentTermCondition, setPaymentTermCondition] = useState("");
+  const [remark, setRemark] = useState("");
 
   // Payment information
   const [payment, setPayment] = useState("");
@@ -121,6 +124,9 @@ export default function EditBill() {
 
   // Get Business context values
   const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
+
+  // Ref for scroll view
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Helper functions for DocumentType progression UI
   const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
@@ -215,6 +221,14 @@ export default function EditBill() {
         // Set note from bill data
         if (billData.note) {
           setNote(billData.note);
+        }
+        // Set paymentTermCondition from bill data
+        if (billData.paymentTermCondition) {
+          setPaymentTermCondition(billData.paymentTermCondition);
+        }
+        // Set remark from bill data
+        if (billData.remark) {
+          setRemark(billData.remark);
         }
         // Set document type from API data, but only if it's available in business
         if (billData.DocumentType) {
@@ -532,6 +546,8 @@ export default function EditBill() {
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
+        paymentTermCondition: selectedDocumentType === "QA" && paymentTermCondition ? paymentTermCondition : undefined,
+        remark: remark || undefined,
         productItems: productItems.map((item) => ({
           product: item.product,
           unit: item.unit,
@@ -625,7 +641,15 @@ export default function EditBill() {
         </TouchableOpacity>
       </Modal>
 
-      <ScrollView>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              style={{ flex: 1 }}
+              //  keyboardVerticalOffset={5}
+            >
+            
+
+      <ScrollView
+      ref={scrollViewRef} keyboardShouldPersistTaps="handled">
         {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
         {showProgressSection && (
           <View style={{               
@@ -1107,6 +1131,57 @@ export default function EditBill() {
             numberOfLines={3}
             textAlignVertical="top"
             editable={isEditMode}
+            onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+          />
+
+          {/* Payment Terms & Conditions Section - Only show for Quotation */}
+          {selectedDocumentType === "QA" && (
+            <FormFieldClear
+              title={t("bill.paymentTermCondition")}
+              value={paymentTermCondition}
+              handleChangeText={setPaymentTermCondition}
+              placeholder={t("bill.enterPaymentTermCondition")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={300}
+              multiline={true}
+              numberOfLines={2}
+              textAlignVertical="top"
+              editable={isEditMode}
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+            />
+          )}
+
+          {/* Remark Section */}
+          <FormFieldClear
+            title={t("bill.remark")}
+            value={remark}
+            handleChangeText={setRemark}
+            placeholder={t("bill.enterRemark")}
+            borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+            maxLength={300}
+            multiline={true}
+            numberOfLines={2}
+            textAlignVertical="top"
+            editable={isEditMode}
+            onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
           />
 
           {/* Price Valid Section */}
@@ -1306,6 +1381,8 @@ export default function EditBill() {
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
+
       <CustomAlert
         visible={alertConfig.visible}
         title={alertConfig.title}

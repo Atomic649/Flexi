@@ -274,6 +274,48 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             text-align: right;
           }
           
+          /* Notes and Summary Side by Side Container */
+          .notes-summary-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+          }
+          .notes-section {
+            flex: 1;
+            width: 50%;
+          }
+          .notes-section .note-section {
+            margin-bottom: 0;
+          }
+          .summary-section {
+            flex: 1;
+            width: 50%;
+            margin-bottom: 0;
+          }
+          
+          /* Note Section */
+          .note-section {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 3px solid #5e5e5e;
+          }
+          .note-section h3 {
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .note-section p {
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+          }
+          
           /* Footer */
           .invoice-footer {
             margin-top: 30px;
@@ -376,10 +418,6 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             }
             .company-logo-section h1 {
               font-size: 24px;
-            }
-            .business-details {
-              grid-template-columns: 1fr;
-              gap: 10px;
             }
             .billing-info {
               grid-template-columns: 1fr 1fr;
@@ -578,55 +616,73 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </table>
           </div>
 
-          <!-- Summary -->
-          <div class="summary-section">
-            <div class="summary-table">
-              ${
-                isVatRegistered
-                  ? `
-              ${totalDiscount > 0 ? `
-              <div class="summary-row discount">
-                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                <span class="summary-amount">-${formatCurrencyForPDF(
-                  totalDiscount
-                )}</span>
-              </div>
-              ` : ''}
-              <div class="summary-row subtotal">
-                <span class="summary-label">${t("print.subtotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  subtotal
-                )}</span>
-              </div>
-              <div class="summary-row tax">
-                <span class="summary-label">${t("print.tax")} (7%):</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  vatAmount
-                )}</span>
-              </div>
-              `
-                  : `
-              ${totalDiscount > 0 ? `
-              <div class="summary-row discount">
-                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                <span class="summary-amount">-${formatCurrencyForPDF(
-                  totalDiscount
-                )}</span>
-              </div>
-              ` : ''}
-              <div class="summary-row subtotal">
-                <span class="summary-label">${t("print.subtotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  subtotal
-                )}</span>
-              </div>
-              `
-              }
-              <div class="summary-row total">
-                <span class="summary-label">${t("print.grandTotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  grandTotal
-                )}</span>
+          <!-- Notes and Summary Side by Side -->
+          <div class="notes-summary-container">
+            <!-- Notes Section -->
+            <div class="notes-section">
+              ${invoice.note ? `
+                <div class="note-section">
+                  <h3>${t("print.notes")}</h3>
+                  <p>${invoice.note}</p>
+                </div>
+              ` : `
+                <div class="note-section">
+                  <h3>${t("print.notes")}</h3>
+                  <p>${t("print.noNotesProvided") || "No additional notes provided."}</p>
+                </div>
+              `}
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-section">
+              <div class="summary-table">
+                ${
+                  isVatRegistered
+                    ? `
+                ${totalDiscount > 0 ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount
+                  )}</span>
+                </div>
+                ` : ''}
+                <div class="summary-row subtotal">
+                  <span class="summary-label">${t("print.subtotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subtotal
+                  )}</span>
+                </div>
+                <div class="summary-row tax">
+                  <span class="summary-label">${t("print.vat")} (7%):</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    vatAmount
+                  )}</span>
+                </div>
+                `
+                    : `
+                ${totalDiscount > 0 ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount
+                  )}</span>
+                </div>
+                ` : ''}
+                <div class="summary-row subtotal">
+                  <span class="summary-label">${t("print.subtotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subtotal
+                  )}</span>
+                </div>
+                `
+                }
+                <div class="summary-row total">
+                  <span class="summary-label">${t("print.grandTotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    grandTotal
+                  )}</span>
+                </div>
               </div>
             </div>
           </div>

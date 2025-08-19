@@ -231,35 +231,37 @@ model BusinessAcc {
 }
 
 model Bill {
-  id                Int           @id @default(autoincrement())
-  billId            String
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  cName             String
-  cLastName         String?
-  cPhone            String?
-  cGender           Gender?
-  cAddress          String?
-  cProvince         String?
-  cPostId           String?
-  cTaxId            String?
-  product           ProductItem[]
-  payment           Payment?
-  total             Int
-  beforeDiscount    Int?
-  purchaseAt        DateTime      @default(now())
-  platform          IncomeChannel
-  cashStatus        Boolean?      @default(false)
-  image             String?
-  deleted           Boolean?      @default(false)
-  repeat            Boolean?      @default(false)
-  repeatMonths      Int?          @default(0)
-  note              String?
-  TaxType           taxType?      @default(Individual)
-  DocumentType      DocumentType? @default(Receipt)
-  discount          Int?          @default(0)
-  billLevelDiscount Int?          @default(0)
-  priceValid        DateTime? // Optional field for expiration date
+  id                   Int           @id @default(autoincrement())
+  billId               String
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  cName                String
+  cLastName            String?
+  cPhone               String?
+  cGender              Gender?
+  cAddress             String?
+  cProvince            String?
+  cPostId              String?
+  cTaxId               String?
+  product              ProductItem[]
+  payment              Payment?
+  total                Int
+  beforeDiscount       Int?
+  purchaseAt           DateTime      @default(now())
+  platform             IncomeChannel
+  cashStatus           Boolean?      @default(false)
+  image                String?
+  deleted              Boolean?      @default(false)
+  repeat               Boolean?      @default(false)
+  repeatMonths         Int?          @default(0)
+  note                 String?
+  TaxType              taxType?      @default(Individual)
+  DocumentType         DocumentType? @default(Receipt)
+  discount             Int?          @default(0)
+  billLevelDiscount    Int?          @default(0)
+  priceValid           DateTime? // Optional field for expiration
+  paymentTermCondition String? // Optional field for payment
+  remark               String?
 
   // Relation   
   memberId    String

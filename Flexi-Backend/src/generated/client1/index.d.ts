@@ -7862,6 +7862,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    paymentTermCondition: string | null
+    remark: string | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7896,6 +7898,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    paymentTermCondition: string | null
+    remark: string | null
     memberId: string | null
     businessAcc: number | null
     storeId: number | null
@@ -7930,6 +7934,8 @@ export namespace Prisma {
     discount: number
     billLevelDiscount: number
     priceValid: number
+    paymentTermCondition: number
+    remark: number
     memberId: number
     businessAcc: number
     storeId: number
@@ -7988,6 +7994,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    paymentTermCondition?: true
+    remark?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8022,6 +8030,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    paymentTermCondition?: true
+    remark?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8056,6 +8066,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    paymentTermCondition?: true
+    remark?: true
     memberId?: true
     businessAcc?: true
     storeId?: true
@@ -8177,6 +8189,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    paymentTermCondition: string | null
+    remark: string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -8230,6 +8244,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    paymentTermCondition?: boolean
+    remark?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8269,6 +8285,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    paymentTermCondition?: boolean
+    remark?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8306,6 +8324,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    paymentTermCondition?: boolean
+    remark?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
@@ -8343,12 +8363,14 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    paymentTermCondition?: boolean
+    remark?: boolean
     memberId?: boolean
     businessAcc?: boolean
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8404,6 +8426,8 @@ export namespace Prisma {
       discount: number | null
       billLevelDiscount: number | null
       priceValid: Date | null
+      paymentTermCondition: string | null
+      remark: string | null
       memberId: string
       businessAcc: number
       storeId: number
@@ -8862,6 +8886,8 @@ export namespace Prisma {
     readonly discount: FieldRef<"Bill", 'Int'>
     readonly billLevelDiscount: FieldRef<"Bill", 'Int'>
     readonly priceValid: FieldRef<"Bill", 'DateTime'>
+    readonly paymentTermCondition: FieldRef<"Bill", 'String'>
+    readonly remark: FieldRef<"Bill", 'String'>
     readonly memberId: FieldRef<"Bill", 'String'>
     readonly businessAcc: FieldRef<"Bill", 'Int'>
     readonly storeId: FieldRef<"Bill", 'Int'>
@@ -29411,6 +29437,8 @@ export namespace Prisma {
     discount: 'discount',
     billLevelDiscount: 'billLevelDiscount',
     priceValid: 'priceValid',
+    paymentTermCondition: 'paymentTermCondition',
+    remark: 'remark',
     memberId: 'memberId',
     businessAcc: 'businessAcc',
     storeId: 'storeId'
@@ -30373,6 +30401,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
+    remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30411,6 +30441,8 @@ export namespace Prisma {
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
     priceValid?: SortOrderInput | SortOrder
+    paymentTermCondition?: SortOrderInput | SortOrder
+    remark?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30452,6 +30484,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
+    remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -30490,6 +30524,8 @@ export namespace Prisma {
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
     priceValid?: SortOrderInput | SortOrder
+    paymentTermCondition?: SortOrderInput | SortOrder
+    remark?: SortOrderInput | SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -30532,6 +30568,8 @@ export namespace Prisma {
     discount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+    paymentTermCondition?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    remark?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
     businessAcc?: IntWithAggregatesFilter<"Bill"> | number
     storeId?: IntWithAggregatesFilter<"Bill"> | number
@@ -32338,6 +32376,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -32373,6 +32413,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32407,6 +32449,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -32442,6 +32486,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -32477,6 +32523,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -32510,6 +32558,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BillUncheckedUpdateManyInput = {
@@ -32541,6 +32591,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -34566,6 +34618,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    paymentTermCondition?: SortOrder
+    remark?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34611,6 +34665,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    paymentTermCondition?: SortOrder
+    remark?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -34645,6 +34701,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    paymentTermCondition?: SortOrder
+    remark?: SortOrder
     memberId?: SortOrder
     businessAcc?: SortOrder
     storeId?: SortOrder
@@ -39641,6 +39699,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -39675,6 +39735,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     businessAcc: number
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -40053,6 +40115,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
+    remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
     businessAcc?: IntFilter<"Bill"> | number
     storeId?: IntFilter<"Bill"> | number
@@ -40354,6 +40418,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -40388,6 +40454,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     storeId: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -41106,6 +41174,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
     store: StoreCreateNestedOneWithoutStorefrontIdInput
@@ -41140,6 +41210,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     businessAcc: number
     storeId: number
@@ -41233,6 +41305,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -41267,6 +41341,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
@@ -42123,6 +42199,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
     member: MemberCreateNestedOneWithoutBillInput
     businessId: BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -42157,6 +42235,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     businessAcc: number
     product?: ProductItemUncheckedCreateNestedManyWithoutBillInput
@@ -45566,6 +45646,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     businessAcc: number
     storeId: number
   }
@@ -45666,6 +45748,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -45700,6 +45784,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -45734,6 +45820,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -45983,6 +46071,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     storeId: number
   }
@@ -46122,6 +46212,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     store?: StoreUpdateOneRequiredWithoutStorefrontIdNestedInput
@@ -46156,6 +46248,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -46190,6 +46284,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     storeId?: IntFieldUpdateOperationsInput | number
   }
@@ -46508,6 +46604,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    paymentTermCondition?: string | null
+    remark?: string | null
     memberId: string
     businessAcc: number
   }
@@ -46540,6 +46638,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
     businessId?: BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -46574,6 +46674,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
     product?: ProductItemUncheckedUpdateManyWithoutBillNestedInput
@@ -46608,6 +46710,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
     businessAcc?: IntFieldUpdateOperationsInput | number
   }

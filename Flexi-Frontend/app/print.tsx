@@ -28,6 +28,8 @@ import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
+import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
+import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -715,6 +717,190 @@ export default function Print() {
     }
   };
 
+  // Handle print action for quotation
+  const handlePrintQuotation = () => {
+    if (!selectedInvoice) return;
+
+    if (Platform.OS === "web") {
+      printQuotationHTMLContent();
+    } else {
+      saveQuotationToPDF();
+    }
+  };
+
+  // Function to print quotation HTML content for web/desktop
+  const printQuotationHTMLContent = () => {
+    if (!selectedInvoice) return;
+
+    // Generate HTML content using the quotation template
+    const htmlContent = generateQuotationHTML({
+      quotation: selectedInvoice,
+      businessDetails,
+      businessName,
+      t,
+      formatCurrencyForPDF,
+      formatDate,
+    });
+
+    // Create a new window for printing
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+
+      // Wait for content to load, then print
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } else {
+      // Fallback: create a blob and open it
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `quotation_${selectedInvoice.id}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  // Function to save quotation as PDF for mobile
+  const saveQuotationToPDF = async () => {
+    if (!selectedInvoice) return;
+
+    setAlertConfig({
+      visible: true,
+      title: t("print.generating"),
+      message: t("print.generatingPdf"),
+      buttons: [],
+    });
+
+    try {
+      const htmlContent = generateQuotationHTML({
+        quotation: selectedInvoice,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+    } catch (error) {
+      console.error("Error generating quotation PDF:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  // Handle print action for receipt
+  const handlePrintReceipt = () => {
+    if (!selectedInvoice) return;
+
+    if (Platform.OS === "web") {
+      printReceiptHTMLContent();
+    } else {
+      saveReceiptToPDF();
+    }
+  };
+
+  // Function to print receipt HTML content for web/desktop
+  const printReceiptHTMLContent = () => {
+    if (!selectedInvoice) return;
+
+    // Generate HTML content using the receipt template
+    const htmlContent = generateReceiptHTML({
+      invoice: selectedInvoice,
+      businessDetails,
+      businessName,
+      t,
+      formatCurrencyForPDF,
+      formatDate,
+    });
+
+    // Create a new window for printing
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+
+      // Wait for content to load, then print
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } else {
+      // Fallback: create a blob and open it
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `receipt_${selectedInvoice.id}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  // Function to save receipt as PDF for mobile
+  const saveReceiptToPDF = async () => {
+    if (!selectedInvoice) return;
+
+    setAlertConfig({
+      visible: true,
+      title: t("print.generating"),
+      message: t("print.generatingPdf"),
+      buttons: [],
+    });
+
+    try {
+      const htmlContent = generateReceiptHTML({
+        invoice: selectedInvoice,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+    } catch (error) {
+      console.error("Error generating receipt PDF:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
   // Function to share PDF file
   const handleSharePdf = async (filePath: string) => {
     try {
@@ -1094,11 +1280,23 @@ export default function Print() {
               </View>
             )}
 
-            <View className="mt-4 flex-row justify-center">
+            <View className="mt-4 flex-row justify-center flex-wrap gap-2">
+              <CustomButton
+                title={t("print.printQuotation")}
+                handlePress={handlePrintQuotation}
+                containerStyles="px-4 mb-2"
+                textStyles="!text-white"
+              />
               <CustomButton
                 title={isVatRegistered ? t("print.printTaxInvoice") : t("print.printInvoice")}
                 handlePress={handlePrintInvoice}
-                containerStyles="px-8"
+                containerStyles="px-4 mb-2"
+                textStyles="!text-white"
+              />
+              <CustomButton
+                title={t("print.printReceipt")}
+                handlePress={handlePrintReceipt}
+                containerStyles="px-4 mb-2"
                 textStyles="!text-white"
               />
             </View>

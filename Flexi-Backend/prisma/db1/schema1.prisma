@@ -259,8 +259,9 @@ model Bill {
   DocumentType DocumentType? @default(Receipt)
   discount   Int? @default(0)
   billLevelDiscount Int? @default(0)
-  priceValid DateTime? // Optional field for expiration date
-  
+  priceValid DateTime? // Optional field for expiration
+  paymentTermCondition String? // Optional field for payment
+  remark    String?
 
   // Relation   
   memberId    String

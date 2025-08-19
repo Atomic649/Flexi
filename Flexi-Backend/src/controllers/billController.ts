@@ -57,6 +57,8 @@ interface billInput {
   discount?: number; // Optional discount field
   priceValid?: Date; // Optional price valid 
   beforeDiscount?: number; // Optional field for total before discount
+  paymentTermCondition?: string; // Optional payment term condition
+  remark?: string; // Optional remark
 }
 
 // Validate the request body
@@ -105,6 +107,8 @@ const schema = Joi.object({
   discount: Joi.number().min(0).optional(), // Optional discount field
   priceValid: Joi.date().optional(), // Optional price valid date
   beforeDiscount: Joi.number().optional(), // Optional field for total before discount
+  paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
+  remark: Joi.string().allow("").optional(), // Optional remark
 });
 
 //Create a New Bill - Post
@@ -261,6 +265,8 @@ const createBill = async (req: Request, res: Response) => {
                 beforeDiscount,
                 DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
+                paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+                remark: billInput.remark || "", // Optional remark
               },
             });
 
@@ -311,6 +317,8 @@ const createBill = async (req: Request, res: Response) => {
             beforeDiscount,
             DocumentType: billInput.DocumentType[0], // Take first element from array
             note: billInput.note || "", // Optional note field
+            paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+            remark: billInput.remark || "", // Optional remark
           },
         });
 
@@ -490,6 +498,8 @@ const updateBill = async (req: Request, res: Response) => {
           beforeDiscount: beforeDiscount,
           priceValid: billInput.priceValid, // Include priceValid if provided
           DocumentType: billInput.DocumentType[0], // Take first element from array
+          paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+          remark: billInput.remark || "", // Optional remark
         },
       });
       res.json({

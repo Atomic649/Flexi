@@ -70,6 +70,8 @@ class CallAPIBill {
         note?: string; // Optional note field
         discount?: number; // Optional discount field
         priceValid?: Date; // Optional price validity field
+        paymentTermCondition?: string; // Optional payment term condition
+        remark?: string; // Optional remark
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -118,6 +120,8 @@ class CallAPIBill {
         note?: string; // Optional note field
         discount?: number; // Optional discount field
         priceValid?: Date; // Optional price validity field
+        paymentTermCondition?: string; // Optional payment term condition
+        remark?: string; // Optional remark
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

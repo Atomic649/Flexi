@@ -191,6 +191,8 @@ exports.Prisma.BillScalarFieldEnum = {
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',
   priceValid: 'priceValid',
+  paymentTermCondition: 'paymentTermCondition',
+  remark: 'remark',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   storeId: 'storeId'
