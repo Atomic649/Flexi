@@ -5,6 +5,7 @@ import {
   PrismaClient as PrismaClient1,
   SocialMedia,
   Unit,
+  DocumentType,
 } from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
@@ -538,7 +539,52 @@ const updateCashStatusById = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a Bill - Delete
+const updateDocumentTypeById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { DocumentType } = req.body;
+
+  // validate the request body
+  const schema = Joi.object({
+    DocumentType: Joi.string().valid("Invoice", "Receipt", "Quotation").required(),
+  });
+
+  // If the request body is invalid, return error 400 Bad request
+  const { error } = schema.validate({ DocumentType });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    // Prepare update data
+    const updateData: any = {
+      DocumentType: DocumentType as DocumentType,
+    };
+
+    // Set cashStatus based on DocumentType
+    if (DocumentType === "Receipt") {
+      updateData.cashStatus = true;
+    } else {
+      updateData.cashStatus = false;
+    }
+
+    const bill = await prisma.bill.update({
+      where: {
+        id: Number(id),
+      },
+      data: updateData,
+    });
+    res.json({
+      id: bill.id,
+      DocumentType: bill.DocumentType,
+      cashStatus: bill.cashStatus,
+      message: `Updated document type successfully`,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to update document type" });
+  }
+};
+
 const deleteBill = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -643,5 +689,6 @@ export {
   updateBill,
   searchBill,
   updateCashStatusById,
+  updateDocumentTypeById,
   getthisYearSales,
 };

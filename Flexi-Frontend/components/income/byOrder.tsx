@@ -50,6 +50,7 @@ type Bill = {
   storeId: number;
   unit: string;
   discount: number;
+  DocumentType?: string; // Add DocumentType field
   product?: Array<{
     product : string;
     unitPrice: number;
@@ -152,6 +153,28 @@ const ByOrder = () => {
   };
 
   const handleDelete = async (id: number) => {};
+
+  // Handle document type updates
+  const handleUpdateDocumentType = async (billId: number, newDocumentType: string) => {
+    try {
+      // Call the new efficient API to update only document type
+      await CallAPIBill.updateDocumentTypeAPI(billId, newDocumentType);
+      
+      // Update local state
+      setBills(prevBills => 
+        prevBills.map(bill => 
+          bill.id === billId 
+            ? { ...bill, DocumentType: newDocumentType }
+            : bill
+        )
+      );
+      
+      console.log(`Bill ${billId} document type updated to ${newDocumentType}`);
+    } catch (error) {
+      console.error("Error updating document type:", error);
+      // You might want to show an error message to the user here
+    }
+  };
 
   // State to track expanded future bills
   const [showAllFuture, setShowAllFuture] = useState(false);
@@ -481,13 +504,16 @@ const ByOrder = () => {
                   cLastName={bill.cLastName}
                   total={bill.total}
                   purchaseAt={bill.purchaseAt}
-                  CardColor={theme === "dark" ? "#232425" : "#24232108"}
+                  CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
                   onDelete={handleDelete}
                   PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                   cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
                   getBorderColor={getBorderColor(bill.platform)}
                   unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
                   discount={bill.discount}
+                  currentDocumentType={bill.DocumentType}
+                  onUpdateDocumentType={handleUpdateDocumentType}
+                  iconColor={theme === "dark" ? "#232425" : "#ffffff"}
                 />
               </TouchableOpacity>
             ))}

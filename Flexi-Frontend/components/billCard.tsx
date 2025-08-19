@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
 import { router } from "expo-router";
 import { CustomText } from "./CustomText";
+import { useTranslation } from "react-i18next";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -42,12 +43,90 @@ export default function BillCard({
   CardColor,
   PriceColor,
   cNameColor,
-  onDelete,
+  iconColor,
   getBorderColor,
-  discount,
-  unit,
+  onUpdateDocumentType, // New prop for updating document type
+  currentDocumentType, // Current document type to show appropriate actions
 }: any) {
-  return (
+  const { t } = useTranslation();
+
+  const handleCustomerConfirm = () => {
+    if (onUpdateDocumentType) {
+      onUpdateDocumentType(id, "Invoice");
+    }
+  };
+
+  const handleCustomerPaid = () => {
+    if (onUpdateDocumentType) {
+      onUpdateDocumentType(id, "Receipt");
+    }
+  };
+
+  // Get status text based on DocumentType
+  const getStatusText = (docType: string) => {
+    switch (docType) {
+      case "Quotation":
+        return t("bill.status.waitingResponse") || "Waiting for response";
+      case "Invoice":
+        return t("bill.status.waitingPayment") || "Waiting for payment";
+      case "Receipt":
+        return t("bill.status.paid") || "Paid";
+      default:
+        return "";
+    }
+  };
+
+  // Get status color based on DocumentType
+  const getStatusColor = (docType: string) => {
+    switch (docType) {
+      case "Quotation":
+        return cNameColor; // Waiting for response
+      case "Invoice":
+        return "#ffa12e"; // Waiting for payment
+      case "Receipt":
+        return PriceColor; // Paid
+      default:
+        return "#6b7280"; // Gray - unknown
+    }
+  };
+
+  const renderLeftActions = () => {
+    // Don't show actions if no update function is provided or if DocumentType is "Receipt"
+    if (!onUpdateDocumentType || currentDocumentType === "Receipt") return null;
+
+    return (
+      <View className="flex-row">
+        {/* Customer Confirm - Update to Invoice */}
+        {currentDocumentType !== "Invoice" && (
+          <TouchableOpacity
+            onPress={handleCustomerConfirm}
+            className="bg-[#ffa12e] justify-center items-center w-20 rounded-lg mr-2"
+          >
+            <Ionicons name="checkmark-circle" size={24} color={iconColor} />
+            <Text className="text-xs font-semibold mt-1 text-center" style={{ color: iconColor }}>
+              {t("bill.confirm") || "Confirm"}
+            </Text>
+          </TouchableOpacity>
+        )}
+        
+        {/* Customer Paid - Update to Receipt */}
+        {currentDocumentType !== "Receipt" && (
+          <TouchableOpacity
+            onPress={handleCustomerPaid}
+            className="justify-center items-center w-20 rounded-lg"
+            style={{ backgroundColor: PriceColor }}
+          >
+            <Ionicons name="cash" size={24} color={iconColor} />
+            <Text className="text-xs font-semibold mt-1 text-center" style={{ color: iconColor }}>
+              {t("bill.paid") || "Paid"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  const cardContent = (
     <View
       className="flex "
       style={{
@@ -145,9 +224,45 @@ export default function BillCard({
             >
               + {total.toLocaleString()}
             </Text>
+            
+            {/* DocumentType Status Box */}
+            {currentDocumentType && (
+              <View className="mt-2">
+                <View
+                  className="px-3 py-1 rounded-full"
+                  style={{ 
+                    backgroundColor: getStatusColor(currentDocumentType),
+                  }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ 
+                      color: iconColor,
+                      fontSize: 10,
+                      textAlign: 'center'
+                    }}
+                    numberOfLines={1}
+                  >
+                    {getStatusText(currentDocumentType)}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         </View>
       </View>
     </View>
   );
+
+  // Wrap in Swipeable if update function is provided and DocumentType is not "Receipt"
+  if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
+    return (
+      <Swipeable renderLeftActions={renderLeftActions}>
+        {cardContent}
+      </Swipeable>
+    );
+  }
+
+  // Return plain card if no swipe functionality needed or if DocumentType is "Receipt"
+  return cardContent;
 }

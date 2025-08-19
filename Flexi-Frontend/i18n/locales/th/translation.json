@@ -1200,8 +1200,12 @@
     "paymentStatus": "สถานะการชำระเงิน",
     "status": {
       "paid": "ชำระแล้ว",
-      "unpaid": "ยังไม่ชำระ"
+      "unpaid": "ยังไม่ชำระ",
+      "waitingPayment": "รอการชำระเงิน",
+      "waitingResponse": "รอการตอบรับ"
     },
+    "confirm":"ลูกค้ารับดิล",
+    "paid": "ลูกค้าจ่ายเงิน",
     "selectStatus": "เลือกสถานะ",
     "store": "แพลตฟอร์ม",
     "selectStore": "เลือกแพลตฟอร์ม",

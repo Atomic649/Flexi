@@ -8,6 +8,7 @@ import {
   searchBill,
   getthisYearSales,
   updateCashStatusById,
+  updateDocumentTypeById,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -34,6 +35,9 @@ router.get("/:keyword", authenticateToken, searchBill);
 
 // Update Cash Status
 router.put("/cash/:id", authenticateToken, updateCashStatusById);
+
+// Update Document Type
+router.put("/document-type/:id", authenticateToken, updateDocumentTypeById);
 
 // Get Yearly Sales
 router.get("/yearly/sales", authenticateToken, getthisYearSales);

@@ -1203,7 +1203,9 @@
     "paymentStatus": "Payment Status",
     "status": {
       "paid": "Paid",
-      "unpaid": "Unpaid"
+      "unpaid": "Unpaid",
+      "waitingPayment": "Waiting for Payment",
+      "waitingResponse": "Waiting for Response"
     },
     "selectStatus": "Select status",
     "store": "Store",
