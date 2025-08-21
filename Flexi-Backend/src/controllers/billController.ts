@@ -80,7 +80,7 @@ const schema = Joi.object({
   payment: Joi.string()
     .valid("COD", "Transfer", "CreditCard", "Cash")
     .required(),
-  cashStatus: Joi.boolean().required(),
+  cashStatus: Joi.boolean().optional(),
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
   image: Joi.string().allow(""),
@@ -236,6 +236,11 @@ const createBill = async (req: Request, res: Response) => {
             const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
               ? 0 
               : total;
+            
+            // Set cashStatus based on DocumentType
+            const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+              ? false 
+              : true; // Receipt should always be true
 
             const bill = await prisma.bill.create({
               data: {
@@ -259,7 +264,7 @@ const createBill = async (req: Request, res: Response) => {
                 },
                 payment: billInput.payment,
                 platform: store.platform,
-                cashStatus: billInput.cashStatus,
+                cashStatus: finalCashStatus,
                 memberId: billInput.memberId,
                 purchaseAt: billDate,
                 businessAcc: billInput.businessAcc,
@@ -269,7 +274,7 @@ const createBill = async (req: Request, res: Response) => {
                 billLevelDiscount: billLevelDiscount, // Bill-level discount
                 priceValid: billInput.priceValid, // Include priceValid if provided
                 total: finalTotal,
-                totalQuotation: billInput.totalQuotation, // Include totalQuotation field
+                totalQuotation: total, // Include totalQuotation field
                 beforeDiscount,
                 DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
@@ -294,6 +299,11 @@ const createBill = async (req: Request, res: Response) => {
         const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
           ? 0 
           : total;
+        
+        // Set cashStatus based on DocumentType
+        const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+          ? false 
+          : true; // Receipt should always be true
 
         const bill = await prisma.bill.create({
           data: {
@@ -317,7 +327,7 @@ const createBill = async (req: Request, res: Response) => {
             },
             payment: billInput.payment,
             platform: store.platform,
-            cashStatus: billInput.cashStatus,
+            cashStatus: finalCashStatus,
             memberId: billInput.memberId,
             purchaseAt: billInput.purchaseAt,
             businessAcc: billInput.businessAcc,
@@ -327,7 +337,7 @@ const createBill = async (req: Request, res: Response) => {
             billLevelDiscount: billLevelDiscount, // Bill-level discount
             priceValid: billInput.priceValid, // Include priceValid if provided
             total: finalTotal,
-            totalQuotation: billInput.totalQuotation, // Include totalQuotation field
+            totalQuotation: total, // Include totalQuotation field
             beforeDiscount,
             DocumentType: billInput.DocumentType[0], // Take first element from array
             note: billInput.note || "", // Optional note field
@@ -480,6 +490,11 @@ const updateBill = async (req: Request, res: Response) => {
       const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
         ? 0 
         : total;
+      
+      // Set cashStatus based on DocumentType
+      const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+        ? false 
+        : true; // Receipt should always be true
         
       const bill = await prisma.bill.update({
         where: {
@@ -507,13 +522,13 @@ const updateBill = async (req: Request, res: Response) => {
           payment: billInput.payment,
           platform: store.platform, // IncomeChannel
           storeId: billInput.storeId,
-          cashStatus: billInput.cashStatus,
+          cashStatus: finalCashStatus,
           memberId: billInput.memberId,
           purchaseAt: billInput.purchaseAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
           total: finalTotal,
-          totalQuotation: billInput.totalQuotation, // Include totalQuotation field
+          totalQuotation: total, // Include totalQuotation field
           note: billInput.note || "", // Optional note field
           discount: discount, // Unit discounts only
           billLevelDiscount: billLevelDiscount, // Bill-level discount
