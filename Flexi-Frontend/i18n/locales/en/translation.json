@@ -1394,6 +1394,7 @@
     "customer": "Customer Information",
     "paid": "Paid",
     "unpaid": "Unpaid",
+    "totalUnpaidSales": "Total Unpaid Sales",
     "noInvoicesFound": "No tax invoices/receipts found for this period",
     "pdfPreview": "PDF Preview",
     "pdfReady": "PDF is ready!",

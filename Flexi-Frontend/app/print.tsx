@@ -140,6 +140,7 @@ export default function Print() {
   const [invoiceModalVisible, setInvoiceModalVisible] = useState(false);
   const [monthlyTotals, setMonthlyTotals] = useState({
     totalSales: 0,
+    totalUnpaidSales: 0,
     totalOrders: 0,
     paidOrders: 0,
     unpaidOrders: 0,
@@ -251,7 +252,24 @@ export default function Print() {
       // Calculate monthly totals
       if (response && response.length > 0) {
         const totalSales = response.reduce(
-          (sum: number, bill: any) => sum + calculateInvoiceTotal(bill),
+          (sum: number, bill: any) => {
+            // Include only bills that are paid OR are receipts
+            if (bill.cashStatus || bill.DocumentType === "Receipt") {
+              return sum + calculateInvoiceTotal(bill);
+            }
+            return sum;
+          },
+          0
+        );
+
+        const totalUnpaidSales = response.reduce(
+          (sum: number, bill: any) => {
+            // Include only bills that are unpaid AND not receipts
+            if (!bill.cashStatus && bill.DocumentType !== "Receipt") {
+              return sum + calculateInvoiceTotal(bill);
+            }
+            return sum;
+          },
           0
         );
 
@@ -262,6 +280,7 @@ export default function Print() {
 
         setMonthlyTotals({
           totalSales,
+          totalUnpaidSales,
           totalOrders: response.length,
           paidOrders,
           unpaidOrders,
@@ -270,6 +289,7 @@ export default function Print() {
       } else {
         setMonthlyTotals({
           totalSales: 0,
+          totalUnpaidSales: 0,
           totalOrders: 0,
           paidOrders: 0,
           unpaidOrders: 0,
@@ -1574,6 +1594,27 @@ export default function Print() {
                       <View
                         className={`w-1/2 p-4 ${
                           isMobile() ? "w-full" : "w-1/2 pl-2"
+                        } mb-4`}
+                      >
+                        <View
+                          style={{
+                            backgroundColor:
+                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
+                          }}
+                          className="p-4 rounded-lg"
+                        >
+                          <CustomText className=" mb-1">
+                            {t("print.totalUnpaidSales")}
+                          </CustomText>
+                          <CustomText weight="bold" className="text-xl">
+                            {formatCurrency(monthlyTotals.totalUnpaidSales)}
+                          </CustomText>
+                        </View>
+                      </View>
+
+                      <View
+                        className={`w-1/2 p-4 ${
+                          isMobile() ? "w-full" : "w-1/2 pr-2"
                         } mb-4`}
                       >
                         <View

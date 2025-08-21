@@ -50,6 +50,7 @@ type Bill = {
   storeId: number;
   unit: string;
   discount: number;
+  totalQuotation: number;
   DocumentType?: string; // Add DocumentType field
   product?: Array<{
     product : string;
@@ -160,14 +161,12 @@ const ByOrder = () => {
       // Call the new efficient API to update only document type
       await CallAPIBill.updateDocumentTypeAPI(billId, newDocumentType);
       
-      // Update local state
-      setBills(prevBills => 
-        prevBills.map(bill => 
-          bill.id === billId 
-            ? { ...bill, DocumentType: newDocumentType }
-            : bill
-        )
-      );
+      // Refresh all bills data from API to get updated totals and other fields
+      const memberId = await getMemberId();
+      if (memberId) {
+        const response = await CallAPIBill.getBillsAPI(memberId);
+        setBills(response);
+      }
       
       console.log(`Bill ${billId} document type updated to ${newDocumentType}`);
     } catch (error) {
@@ -503,6 +502,7 @@ const ByOrder = () => {
                   cName={bill.cName}
                   cLastName={bill.cLastName}
                   total={bill.total}
+                  totalQuotation={bill.totalQuotation}
                   purchaseAt={bill.purchaseAt}
                   CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
                   onDelete={handleDelete}

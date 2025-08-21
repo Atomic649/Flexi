@@ -8,7 +8,7 @@ import {
   Linking,
   Animated,
 } from "react-native";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
@@ -40,6 +40,7 @@ export default function BillCard({
   cLastName,
   product = [], // Expecting array of { product, quantity, unitPrice }
   total,
+  totalQuotation,
   purchaseAt,
   CardColor,
   PriceColor,
@@ -51,6 +52,9 @@ export default function BillCard({
 }: any) {
   const { t } = useTranslation();
 
+  // Local state to track immediate document type changes
+  const [localDocumentType, setLocalDocumentType] = useState(currentDocumentType);
+
   // Ref for Swipeable component to control auto close
   const swipeableRef = useRef<Swipeable>(null);
 
@@ -58,9 +62,14 @@ export default function BillCard({
   const statusScaleAnim = useRef(new Animated.Value(1)).current;
   const statusOpacityAnim = useRef(new Animated.Value(1)).current;
 
-  // Trigger status animation when currentDocumentType changes
+  // Update local state when currentDocumentType prop changes
   useEffect(() => {
-    if (currentDocumentType) {
+    setLocalDocumentType(currentDocumentType);
+  }, [currentDocumentType]);
+
+  // Trigger status animation when localDocumentType changes
+  useEffect(() => {
+    if (localDocumentType) {
       // Animate status change
       Animated.sequence([
         Animated.parallel([
@@ -90,11 +99,16 @@ export default function BillCard({
         ]),
       ]).start();
     }
-  }, [currentDocumentType]);
+  }, [localDocumentType]);
 
   const handleCustomerConfirm = () => {
     if (onUpdateDocumentType) {
+      // Immediately update local state for instant UI feedback
+      setLocalDocumentType("Invoice");
+      
+      // Call the API update function
       onUpdateDocumentType(id, "Invoice");
+      
       // Auto close swipe after action
       setTimeout(() => {
         swipeableRef.current?.close();
@@ -104,7 +118,12 @@ export default function BillCard({
 
   const handleCustomerPaid = () => {
     if (onUpdateDocumentType) {
+      // Immediately update local state for instant UI feedback
+      setLocalDocumentType("Receipt");
+      
+      // Call the API update function
       onUpdateDocumentType(id, "Receipt");
+      
       // Auto close swipe after action
       setTimeout(() => {
         swipeableRef.current?.close();
@@ -141,7 +160,7 @@ export default function BillCard({
   };
 
   const renderLeftActions = () => {
-    // Don't show actions if no update function is provided or if DocumentType is "Receipt"
+    // Don't show actions if no update function is provided or if currentDocumentType is "Receipt"
     if (!onUpdateDocumentType || currentDocumentType === "Receipt") return null;
 
     return (
@@ -269,14 +288,20 @@ export default function BillCard({
           <View className="pt-2 flex flex-col items-end">
             <Text
               className="text-xl font-bold justify-end"
-              style={{ color: PriceColor }}
+              style={{ 
+                color: localDocumentType === "Receipt"? PriceColor : getStatusColor(localDocumentType),
+                opacity: localDocumentType === "Receipt"
+                  ? 1 : 0.5,
+              }}
               numberOfLines={1}
             >
-              + {total.toLocaleString()}
+                {localDocumentType === "Receipt"
+                ? `+${total.toLocaleString()}`
+                : totalQuotation.toLocaleString()}
             </Text>
             
             {/* DocumentType Status Box */}
-            {currentDocumentType && (
+            {localDocumentType && (
               <Animated.View 
                 className="mt-2"
                 style={{
@@ -287,7 +312,7 @@ export default function BillCard({
                 <View
                   className="px-3 py-1 rounded-full"
                   style={{ 
-                    backgroundColor: getStatusColor(currentDocumentType),
+                    backgroundColor: getStatusColor(localDocumentType),
                   }}
                 >
                   <Text
@@ -299,7 +324,7 @@ export default function BillCard({
                     }}
                     numberOfLines={1}
                   >
-                    {getStatusText(currentDocumentType)}
+                    {getStatusText(localDocumentType)}
                   </Text>
                 </View>
               </Animated.View>
@@ -310,7 +335,7 @@ export default function BillCard({
     </View>
   );
 
-  // Wrap in Swipeable if update function is provided and DocumentType is not "Receipt"
+  // Wrap in Swipeable if update function is provided and currentDocumentType is not "Receipt"
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
       <Swipeable 
@@ -322,6 +347,6 @@ export default function BillCard({
     );
   }
 
-  // Return plain card if no swipe functionality needed or if DocumentType is "Receipt"
+  // Return plain card if no swipe functionality needed or if currentDocumentType is "Receipt"
   return cardContent;
 }
