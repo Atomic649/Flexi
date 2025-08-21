@@ -101,6 +101,26 @@ const formatMonthYear = (date: Date, t: any) => {
   return `${translatedMonth} ${year}`;
 };
 
+// Helper function to calculate total from items and discounts
+const calculateInvoiceTotal = (invoice: any) => {
+  let itemsTotal = 0;
+  
+  // Calculate total from product items
+  if (Array.isArray(invoice.product) && invoice.product.length > 0) {
+    itemsTotal = invoice.product.reduce((sum: number, item: any) => {
+      return sum + (item.unitPrice * item.quantity);
+    }, 0);
+  } else {
+    // For single product (legacy format)
+    itemsTotal = (invoice.price || 0) * (invoice.amount || 1);
+  }
+  
+  // Subtract total discounts
+  const totalDiscount = (invoice.discount || 0) + (invoice.billLevelDiscount || 0);
+  
+  return itemsTotal - totalDiscount;
+};
+
 export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -231,7 +251,7 @@ export default function Print() {
       // Calculate monthly totals
       if (response && response.length > 0) {
         const totalSales = response.reduce(
-          (sum: number, bill: any) => sum + Number(bill.total),
+          (sum: number, bill: any) => sum + calculateInvoiceTotal(bill),
           0
         );
 
@@ -245,7 +265,7 @@ export default function Print() {
           totalOrders: response.length,
           paidOrders,
           unpaidOrders,
-          averageOrderValue: totalSales / response.length,
+          averageOrderValue: paidOrders > 0 ? totalSales / paidOrders : 0,
         });
       } else {
         setMonthlyTotals({
@@ -981,7 +1001,7 @@ export default function Print() {
           </View>
           <View className="items-end">
             <CustomText weight="bold" className="text-base">
-              {formatCurrency(invoice.total)}
+              {formatCurrency(calculateInvoiceTotal(invoice))}
             </CustomText>
             <View
               className={`mt-2 p-1 px-2 rounded-full ${
@@ -1213,10 +1233,10 @@ export default function Print() {
                         {selectedInvoice.amount}
                       </CustomText>
                       <CustomText style={{ width: "20%", textAlign: "right" }}>
-                        {formatCurrency(selectedInvoice.total)}
+                        {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
                       </CustomText>
                       <CustomText style={{ width: "20%", textAlign: "right" }}>
-                        {formatCurrency(selectedInvoice.total)}
+                        {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
                       </CustomText>
                     </View>
                   )}
@@ -1241,7 +1261,7 @@ export default function Print() {
                           {t("print.subtotal")}
                         </CustomText>
                         <CustomText>
-                          {formatCurrency(selectedInvoice.total)}
+                          {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
                         </CustomText>
                       </View>
                     )}
@@ -1255,7 +1275,7 @@ export default function Print() {
                         </View>
 
                         <CustomText>
-                          {formatCurrency(selectedInvoice.total * 0.07)}
+                          {formatCurrency(calculateInvoiceTotal(selectedInvoice) * 0.07)}
                         </CustomText>
                       </View>
                     )}
@@ -1265,8 +1285,8 @@ export default function Print() {
                       </CustomText>
                       <CustomText weight="bold">
                         {isVatRegistered
-                          ? formatCurrency(selectedInvoice.total * 1.07)
-                          : formatCurrency(selectedInvoice.total)}
+                          ? formatCurrency(calculateInvoiceTotal(selectedInvoice) * 1.07)
+                          : formatCurrency(calculateInvoiceTotal(selectedInvoice))}
                       </CustomText>
                     </View>
                   </View>

@@ -544,7 +544,6 @@ export default function EditBill() {
         cProvince,
         cTaxId: cTaxId,
         payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash",
-        cashStatus,
         memberId: memberId || "",
         businessAcc,
         storeId,
@@ -1110,12 +1109,12 @@ export default function EditBill() {
                   selectedValue={
                     cashStatus ? t("bill.status.paid") : t("bill.status.unpaid")
                   }
-                  onValueChange={(value: string) => setCashStatus(value === "true")}
+                  onValueChange={() => {}} // Disabled - backend handles cashStatus automatically
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-2 mb-2"
-                  disabled={!isEditMode}
+                  disabled={true} // Always disabled - backend handles this automatically
                 />
               </View>
             </View>
