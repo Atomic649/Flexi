@@ -246,6 +246,7 @@ model Bill {
   product    ProductItem[]
   payment    Payment?
   total      Int
+  totalQuotation Int?
   beforeDiscount Int?
   purchaseAt DateTime      @default(now())
   platform   IncomeChannel

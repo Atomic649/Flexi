@@ -49,6 +49,7 @@ interface billInput {
   image: string;
   storeId: number;
   total?: number;
+  totalQuotation?: number; // Optional field for quotation total
   productItems: ProductItemInput[];
   repeat?: boolean;
   repeatMonths?: number;
@@ -85,6 +86,7 @@ const schema = Joi.object({
   image: Joi.string().allow(""),
   storeId: Joi.number(),
   total: Joi.number(),
+  totalQuotation: Joi.number().optional(), // Optional field for quotation total
   repeat: Joi.boolean().optional(),
   repeatMonths: Joi.number().min(1).max(12).optional(),
   productItems: Joi.array()
@@ -230,6 +232,11 @@ const createBill = async (req: Request, res: Response) => {
 
             const monthBillId = `INV${billYear}/${monthRunningNumber}`;
 
+            // Determine which total to use based on DocumentType
+            const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+              ? 0 
+              : total;
+
             const bill = await prisma.bill.create({
               data: {
                 billId: monthBillId,
@@ -261,7 +268,8 @@ const createBill = async (req: Request, res: Response) => {
                 discount: discount, // Unit discounts only
                 billLevelDiscount: billLevelDiscount, // Bill-level discount
                 priceValid: billInput.priceValid, // Include priceValid if provided
-                total,
+                total: finalTotal,
+                totalQuotation: billInput.totalQuotation, // Include totalQuotation field
                 beforeDiscount,
                 DocumentType: billInput.DocumentType[0], // Take first element from array
                 note: billInput.note || "", // Optional note field
@@ -282,6 +290,11 @@ const createBill = async (req: Request, res: Response) => {
         });
       } else {
         // Create single bill
+        // Determine which total to use based on DocumentType
+        const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+          ? 0 
+          : total;
+
         const bill = await prisma.bill.create({
           data: {
             billId: billInput.billId,
@@ -313,7 +326,8 @@ const createBill = async (req: Request, res: Response) => {
             discount: discount, // Unit discounts only
             billLevelDiscount: billLevelDiscount, // Bill-level discount
             priceValid: billInput.priceValid, // Include priceValid if provided
-            total,
+            total: finalTotal,
+            totalQuotation: billInput.totalQuotation, // Include totalQuotation field
             beforeDiscount,
             DocumentType: billInput.DocumentType[0], // Take first element from array
             note: billInput.note || "", // Optional note field
@@ -356,6 +370,7 @@ const getBills = async (req: Request, res: Response) => {
         discount: true, // Include discount
         priceValid: true, // Include priceValid
         total: true,
+        totalQuotation: true, // Include totalQuotation
         platform: true,
         product: {
           select: {
@@ -460,6 +475,12 @@ const updateBill = async (req: Request, res: Response) => {
       await prisma.productItem.deleteMany({
         where: { billId: Number(id) },
       });
+      
+      // Determine which total to use based on DocumentType
+      const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
+        ? 0 
+        : total;
+        
       const bill = await prisma.bill.update({
         where: {
           id: Number(id),
@@ -491,7 +512,8 @@ const updateBill = async (req: Request, res: Response) => {
           purchaseAt: billInput.purchaseAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
-          total: total,
+          total: finalTotal,
+          totalQuotation: billInput.totalQuotation, // Include totalQuotation field
           note: billInput.note || "", // Optional note field
           discount: discount, // Unit discounts only
           billLevelDiscount: billLevelDiscount, // Bill-level discount
@@ -565,16 +587,48 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
   }
 
   try {
+    // Get the current bill with product items to access totalQuotation and calculate total if needed
+    const currentBill = await prisma.bill.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        product: true, // Include product items for calculation
+      },
+    });
+
+    if (!currentBill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
     // Prepare update data
     const updateData: any = {
       DocumentType: DocumentType as DocumentType,
+      // Always preserve the original totalQuotation value - never change it
+      totalQuotation: currentBill.totalQuotation,
     };
 
-    // Set cashStatus based on DocumentType
+    // Set cashStatus and total based on DocumentType
     if (DocumentType === "Receipt") {
       updateData.cashStatus = true;
+      
+      // If changing to Receipt, use totalQuotation or calculate from products
+      if (currentBill.totalQuotation !== null && currentBill.totalQuotation !== undefined) {
+        updateData.total = currentBill.totalQuotation;
+      } else {
+        // Calculate total from product items if totalQuotation is not available
+        const calculatedTotal = currentBill.product.reduce(
+          (sum, item) =>
+            sum +
+            (item.quantity * item.unitPrice - (item.unitDiscount || 0) * item.quantity),
+          0
+        ) - (currentBill.billLevelDiscount || 0);
+        updateData.total = calculatedTotal;
+      }
     } else {
       updateData.cashStatus = false;
+      // If changing from Receipt to Invoice/Quotation, set total to 0 but keep totalQuotation unchanged
+      updateData.total = 0;
     }
 
     const bill = await prisma.bill.update({

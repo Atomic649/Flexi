@@ -177,6 +177,7 @@ exports.Prisma.BillScalarFieldEnum = {
   cTaxId: 'cTaxId',
   payment: 'payment',
   total: 'total',
+  totalQuotation: 'totalQuotation',
   beforeDiscount: 'beforeDiscount',
   purchaseAt: 'purchaseAt',
   platform: 'platform',

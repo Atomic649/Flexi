@@ -92,6 +92,7 @@ Table Bill {
   product ProductItem [not null]
   payment Payment
   total Int [not null]
+  totalQuotation Int
   beforeDiscount Int
   purchaseAt DateTime [default: `now()`, not null]
   platform IncomeChannel [not null]
