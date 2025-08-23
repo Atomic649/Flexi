@@ -19,6 +19,7 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
+import CallAPIBusiness from "@/api/business_api";
 import DropdownClear from "@/components/DropdownClear";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -28,6 +29,10 @@ import { isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/FormFieldClear";
 import icons from "@/constants/icons";
 import { useBusiness } from "@/providers/BusinessProvider";
+import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
+import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
+import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
+import * as ExpoPrint from "expo-print";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -47,6 +52,14 @@ const formatDate = (dateString: string) => {
   const minutes = String(parsedDate.getMinutes()).padStart(2, '0');
   
   return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+};
+
+// Format currency for PDF
+const formatCurrencyForPDF = (amount: number) => {
+  return amount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }) + ' THB';
 };
 
 export default function EditBill() {
@@ -127,6 +140,10 @@ export default function EditBill() {
   const [showProgressSection, setShowProgressSection] = useState(true);
   const [availableDocumentTypes, setAvailableDocumentTypes] = useState<string[]>([]);
 
+  // Business details for PDF generation
+  const [businessDetails, setBusinessDetails] = useState<any>(null);
+  const [businessName, setBusinessName] = useState<string>("");
+
   // Get Business context values
   const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
 
@@ -193,12 +210,411 @@ export default function EditBill() {
     return steps;
   };
 
+  // Document viewing functions
+  const viewQuotationDocument = async () => {
+    if (!businessDetails || !id) {
+      console.log("Missing businessDetails or id:", { businessDetails: !!businessDetails, id });
+      return;
+    }
+
+    if (Platform.OS === "web") {
+      // Use HTML content for web/desktop viewing
+      printQuotationHTMLContent();
+    } else {
+      // For mobile, directly save as PDF
+      saveQuotationToPDF();
+    }
+  };
+
+  const viewInvoiceDocument = async () => {
+    if (!businessDetails || !id) {
+      console.log("Missing businessDetails or id:", { businessDetails: !!businessDetails, id });
+      return;
+    }
+
+    if (Platform.OS === "web") {
+      // Use HTML content for web/desktop viewing
+      printInvoiceHTMLContent();
+    } else {
+      // For mobile, directly save as PDF
+      saveInvoiceToPDF();
+    }
+  };
+
+  const viewReceiptDocument = async () => {
+    if (!businessDetails || !id) {
+      console.log("Missing businessDetails or id:", { businessDetails: !!businessDetails, id });
+      return;
+    }
+
+    if (Platform.OS === "web") {
+      // Use HTML content for web/desktop viewing
+      printReceiptHTMLContent();
+    } else {
+      // For mobile, directly save as PDF
+      saveReceiptToPDF();
+    }
+  };
+
+  // Web viewing functions
+  const printQuotationHTMLContent = async () => {
+    try {
+      console.log("🚀 Starting printQuotationHTMLContent...");
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+      
+      // Generate HTML content for quotation
+      const htmlContent = generateQuotationHTML({
+        quotation: billData,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Create a new window for viewing
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        console.log("✅ Window opened successfully");
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+      } else {
+        console.log("⚠️ Window blocked, using blob download");
+        // Fallback: create a blob and download
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `quotation_${billData.billId || billData.id}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log("📥 File download initiated");
+      }
+    } catch (error) {
+      console.error("❌ Error viewing quotation:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: `Failed to view quotation: ${error instanceof Error ? error.message : String(error)}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  const printInvoiceHTMLContent = async () => {
+    try {
+      console.log("🚀 Starting printInvoiceHTMLContent...");
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+      
+      // Generate HTML content for invoice
+      const htmlContent = generateInvoiceHTML({
+        invoice: billData,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Create a new window for viewing
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        console.log("✅ Window opened successfully");
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+      } else {
+        console.log("⚠️ Window blocked, using blob download");
+        // Fallback: create a blob and download
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `invoice_${billData.billId || billData.id}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log("📥 File download initiated");
+      }
+    } catch (error) {
+      console.error("❌ Error viewing invoice:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: `Failed to view invoice: ${error instanceof Error ? error.message : String(error)}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  const printReceiptHTMLContent = async () => {
+    try {
+      console.log("🚀 Starting printReceiptHTMLContent...");
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+      
+      // Generate HTML content for receipt
+      const htmlContent = generateReceiptHTML({
+        invoice: billData, // Receipt template uses 'invoice' prop
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Create a new window for viewing
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        console.log("✅ Window opened successfully");
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+      } else {
+        console.log("⚠️ Window blocked, using blob download");
+        // Fallback: create a blob and download
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `receipt_${billData.billId || billData.id}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log("📥 File download initiated");
+      }
+    } catch (error) {
+      console.error("❌ Error viewing receipt:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: `Failed to view receipt: ${error instanceof Error ? error.message : String(error)}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  // Mobile PDF functions
+  const saveQuotationToPDF = async () => {
+    try {
+      console.log("🚀 Starting saveQuotationToPDF...");
+
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+
+      // Generate HTML content for quotation
+      const htmlContent = generateQuotationHTML({
+        quotation: billData,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Print the document (this opens the PDF viewer)
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      console.log("✅ PDF generated successfully");
+      
+    } catch (error) {
+      console.log("PDF generation cancelled or failed:", error);
+      
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        console.log("📝 User cancelled PDF generation");
+        // Don't show error alert for user cancellation
+        return;
+      }
+      
+      // Only show error for actual errors
+      console.error("❌ Error generating quotation PDF:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  const saveInvoiceToPDF = async () => {
+    try {
+      console.log("🚀 Starting saveInvoiceToPDF...");
+
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+
+      // Generate HTML content for invoice
+      const htmlContent = generateInvoiceHTML({
+        invoice: billData,
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Print the document (this opens the PDF viewer)
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      console.log("✅ PDF generated successfully");
+      
+    } catch (error) {
+      console.log("PDF generation cancelled or failed:", error);
+      
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        console.log("📝 User cancelled PDF generation");
+        // Don't show error alert for user cancellation
+        return;
+      }
+      
+      // Only show error for actual errors
+      console.error("❌ Error generating invoice PDF:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  const saveReceiptToPDF = async () => {
+    try {
+      console.log("🚀 Starting saveReceiptToPDF...");
+
+      // Get current bill data
+      const billData = await CallAPIBill.getBillByIdAPI(Number(id));
+      console.log("📄 Bill data received:", billData?.billId || billData?.id);
+
+      // Generate HTML content for receipt
+      const htmlContent = generateReceiptHTML({
+        invoice: billData, // Receipt template uses 'invoice' prop
+        businessDetails,
+        businessName,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+      });
+
+      console.log("📝 HTML content generated, length:", htmlContent.length);
+
+      // Print the document (this opens the PDF viewer)
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      console.log("✅ PDF generated successfully");
+      
+    } catch (error) {
+      console.log("PDF generation cancelled or failed:", error);
+      
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        console.log("📝 User cancelled PDF generation");
+        // Don't show error alert for user cancellation
+        return;
+      }
+      
+      // Only show error for actual errors
+      console.error("❌ Error generating receipt PDF:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
   // Fetch bill data
   useEffect(() => {
     const fetchBillData = async () => {
       if (!id) return;
       try {
         setIsLoading(true);
+
+        // Fetch business details for PDF generation
+        const memberId = await getMemberId();
+        if (memberId) {
+          try {
+            const businessData = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+            setBusinessDetails(businessData);
+            setBusinessName(businessData?.businessName || "");
+          } catch (error) {
+            console.error("Error fetching business details:", error);
+          }
+        }
 
         // Use DocumentType from BusinessProvider context instead of calling API
         let businessDocTypes: string[] = [];
@@ -693,10 +1109,27 @@ export default function EditBill() {
                       <TouchableOpacity
                         style={{ alignItems: "center", backgroundColor: "transparent" }}
                         onPress={() => {
-                          if (!isEditMode && step === "RE") {
-                            // Show PDF invoice using InvoiceTemplate.ts
-                            //openInvoicePDF(id);
-                          } else if (isEditMode) {
+                          console.log("🎯 Circle pressed:", step, "isEditMode:", isEditMode);
+                          if (!isEditMode) {
+                            // View document functionality when not in edit mode
+                            console.log("📋 Viewing document for step:", step);
+                            switch (step) {
+                              case "QA":
+                                console.log("🔄 Calling viewQuotationDocument");
+                                viewQuotationDocument();
+                                break;
+                              case "IV":
+                                console.log("🔄 Calling viewInvoiceDocument");
+                                viewInvoiceDocument();
+                                break;
+                              case "RE":
+                                console.log("🔄 Calling viewReceiptDocument");
+                                viewReceiptDocument();
+                                break;
+                            }
+                          } else {
+                            // Edit mode: allow changing document type
+                            console.log("✏️ Setting document type:", step);
                             setSelectedDocumentType(step);
                           }
                         }}
