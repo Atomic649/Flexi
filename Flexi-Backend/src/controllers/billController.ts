@@ -447,6 +447,22 @@ const updateBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    
+    // First, get the existing bill to check its current purchaseAt date
+    const existingBill = await prisma.bill.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        id: true,
+        purchaseAt: true,
+      },
+    });
+    
+    if (!existingBill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    
     const store = await prisma.store.findUnique({
       where: {
         id: billInput.storeId,
@@ -454,6 +470,22 @@ const updateBill = async (req: Request, res: Response) => {
     });
     if (!store) {
       return res.status(404).json({ message: "Store not found" });
+    }
+
+    // Check if bill can be updated based on purchaseAt date
+    // Bills cannot be updated after the 15th of the next month from the ORIGINAL purchaseAt
+    // Use the existing bill's purchaseAt date for cutoff calculation, not the new one
+    const originalPurchaseDate = new Date(existingBill.purchaseAt);
+    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const currentDate = new Date();
+    
+    if (currentDate > nextMonth) {
+      return res.status(403).json({ 
+        message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+        cutoffDate: nextMonth.toISOString(),
+        originalPurchaseDate: originalPurchaseDate.toISOString(),
+        currentDate: currentDate.toISOString()
+      });
     }
     
     // Calculate beforeDiscount (total before any discounts)
@@ -566,7 +598,38 @@ const updateCashStatusById = async (req: Request, res: Response) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
+  
   try {
+    // First, get the existing bill to check its purchaseAt date for update restrictions
+    const existingBill = await prisma.bill.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        id: true,
+        purchaseAt: true,
+      },
+    });
+    
+    if (!existingBill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
+    // Check if bill can be updated based on purchaseAt date
+    // Bills cannot be updated after the 15th of the next month from the original purchaseAt
+    const originalPurchaseDate = new Date(existingBill.purchaseAt);
+    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const currentDate = new Date();
+    
+    if (currentDate > nextMonth) {
+      return res.status(403).json({ 
+        message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+        cutoffDate: nextMonth.toISOString(),
+        originalPurchaseDate: originalPurchaseDate.toISOString(),
+        currentDate: currentDate.toISOString()
+      });
+    }
+    
     const bill = await prisma.bill.update({
       where: {
         id: Number(id),
@@ -614,6 +677,21 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
 
     if (!currentBill) {
       return res.status(404).json({ message: "Bill not found" });
+    }
+
+    // Check if bill can be updated based on purchaseAt date
+    // Bills cannot be updated after the 15th of the next month from the original purchaseAt
+    const originalPurchaseDate = new Date(currentBill.purchaseAt);
+    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const currentDate = new Date();
+    
+    if (currentDate > nextMonth) {
+      return res.status(403).json({ 
+        message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+        cutoffDate: nextMonth.toISOString(),
+        originalPurchaseDate: originalPurchaseDate.toISOString(),
+        currentDate: currentDate.toISOString()
+      });
     }
 
     // Prepare update data

@@ -124,7 +124,7 @@ const calculateInvoiceTotal = (invoice: any) => {
 export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { businessName, vat } = useBusiness();
+  const { businessName, vat, DocumentType: contextDocumentTypes } = useBusiness();
   const [activeTab, setActiveTab] = useState(TAB_INDICES.INDIVIDUAL_INVOICE);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [businessId, setBusinessId] = useState<number | null>(null);
@@ -138,6 +138,7 @@ export default function Print() {
   const [bills, setBills] = useState<any[]>([]);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [invoiceModalVisible, setInvoiceModalVisible] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key for component remount
   const [monthlyTotals, setMonthlyTotals] = useState({
     totalSales: 0,
     totalUnpaidSales: 0,
@@ -149,6 +150,61 @@ export default function Print() {
 
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
+
+  // Print progression state - start with first available type
+  const [selectedPrintType, setSelectedPrintType] = useState<"QA" | "IV" | "RE">("QA");
+
+  // Helper functions for Print progression UI
+  const getPrintStepOrder = (step: "QA" | "IV" | "RE"): number => {
+    const order = { QA: 1, IV: 2, RE: 3 };
+    return order[step];
+  };
+
+  const isPrintStepCompleted = (step: "QA" | "IV" | "RE"): boolean => {
+    return getPrintStepOrder(selectedPrintType) >= getPrintStepOrder(step);
+  };
+
+  const getPrintStepOpacity = (step: "QA" | "IV" | "RE"): number => {
+    if (isPrintStepCompleted(step)) return 1;
+    return 0.4;
+  };
+
+  const getPrintStepIconColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isPrintStepCompleted(step)) return theme === "dark" ? "#18181b" : "#ffffff";
+    return theme === "dark" ? "#666" : "#999";
+  };
+
+  const getPrintStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isPrintStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
+    return theme === "dark" ? "#555" : "#bbb";
+  };
+
+  const getPrintStepBackgroundColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isPrintStepCompleted(step)) return "#0feac2";
+    return "transparent";
+  };
+
+  const getPrintStepBorderColor = (step: "QA" | "IV" | "RE"): string => {
+    if (isPrintStepCompleted(step)) return "#0feac2";
+    return theme === "dark" ? "#666" : "#ccc";
+  };
+
+  // Helper functions to check document type availability
+  const isDocumentTypeAvailable = (type: string): boolean => {
+    if (!contextDocumentTypes) return false;
+    const docTypes = Array.isArray(contextDocumentTypes)
+      ? contextDocumentTypes
+      : [contextDocumentTypes];
+    return docTypes.includes(type);
+  };
+
+  const getAvailablePrintSteps = (): ("QA" | "IV" | "RE")[] => {
+    const steps: ("QA" | "IV" | "RE")[] = [];
+    if (isDocumentTypeAvailable("Quotation")) steps.push("QA");
+    if (isDocumentTypeAvailable("Invoice")) steps.push("IV");
+    if (isDocumentTypeAvailable("Receipt")) steps.push("RE");
+    return steps;
+  };
 
   const printRef = useRef<any>(null);
 
@@ -214,6 +270,30 @@ export default function Print() {
 
     fetchBusinessDetails();
   }, [memberId]);
+
+  // Initialize selectedPrintType based on selectedInvoice DocumentType
+  useEffect(() => {
+    if (selectedInvoice && selectedInvoice.DocumentType) {
+      const docType = Array.isArray(selectedInvoice.DocumentType) 
+        ? selectedInvoice.DocumentType[0] 
+        : selectedInvoice.DocumentType;
+      
+      // Map DocumentType to print step
+      if (docType === "Quotation") {
+        setSelectedPrintType("QA");
+      } else if (docType === "Invoice") {
+        setSelectedPrintType("IV");
+      } else if (docType === "Receipt") {
+        setSelectedPrintType("RE");
+      }
+    } else if (contextDocumentTypes) {
+      // Fallback to first available if no selectedInvoice
+      const availableSteps = getAvailablePrintSteps();
+      if (availableSteps.length > 0) {
+        setSelectedPrintType(availableSteps[0]);
+      }
+    }
+  }, [selectedInvoice, contextDocumentTypes]);
 
   // Handle date range selection for the calendar
   const handleDatesChange = (dates: string[]) => {
@@ -515,6 +595,22 @@ export default function Print() {
     setInvoiceModalVisible(true);
   };
 
+  // Centralized function to close modal and refresh component
+  const closeInvoiceModalAndRefresh = () => {
+    setInvoiceModalVisible(false);
+    // Clear any pending alerts when closing modal
+    setAlertConfig({
+      visible: false,
+      title: "",
+      message: "",
+      buttons: [],
+    });
+    setTimeout(() => {
+      setSelectedInvoice(null);
+      setRefreshKey(prev => prev + 1); // Force component refresh
+    }, 100);
+  };
+
   // Handle print action
   const handlePrint = () => {
     if (Platform.OS === "web") {
@@ -635,6 +731,8 @@ export default function Print() {
       printWindow.onload = () => {
         printWindow.print();
         printWindow.close();
+        // Close modal after printing
+        closeInvoiceModalAndRefresh(); // Use centralized function
       };
     } else {
       // Fallback: create a blob and open it
@@ -647,6 +745,8 @@ export default function Print() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      // Close modal after download
+      closeInvoiceModalAndRefresh(); // Use centralized function
     }
   };
 
@@ -707,9 +807,6 @@ export default function Print() {
   const saveInvoiceToPDF = async () => {
     if (!selectedInvoice) return;
 
-    // Close the initial alert
-    setAlertConfig((prev) => ({ ...prev, visible: false }));
-
     // Show loading indicator
     setAlertConfig({
       visible: true,
@@ -736,8 +833,10 @@ export default function Print() {
         html: htmlContent,
       });
 
-      // Hide loading indicator
+      // Hide loading indicator and close modal
       setAlertConfig((prev) => ({ ...prev, visible: false }));
+      closeInvoiceModalAndRefresh(); // Use centralized function
+      
     } catch (error) {
       console.error("Error generating individual invoice PDF:", error);
       setAlertConfig({
@@ -749,8 +848,10 @@ export default function Print() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              closeInvoiceModalAndRefresh(); // Use centralized function
+            },
           },
         ],
       });
@@ -792,6 +893,8 @@ export default function Print() {
       printWindow.onload = () => {
         printWindow.print();
         printWindow.close();
+        // Close modal after printing
+        closeInvoiceModalAndRefresh(); // Use centralized function
       };
     } else {
       // Fallback: create a blob and open it
@@ -804,6 +907,8 @@ export default function Print() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      // Close modal after download
+      closeInvoiceModalAndRefresh(); // Use centralized function
     }
   };
 
@@ -833,6 +938,8 @@ export default function Print() {
       });
 
       setAlertConfig((prev) => ({ ...prev, visible: false }));
+      closeInvoiceModalAndRefresh(); // Use centralized function
+      
     } catch (error) {
       console.error("Error generating quotation PDF:", error);
       setAlertConfig({
@@ -842,7 +949,10 @@ export default function Print() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              closeInvoiceModalAndRefresh(); // Use centralized function
+            },
           },
         ],
       });
@@ -884,6 +994,8 @@ export default function Print() {
       printWindow.onload = () => {
         printWindow.print();
         printWindow.close();
+        // Close modal after printing
+        closeInvoiceModalAndRefresh(); // Use centralized function
       };
     } else {
       // Fallback: create a blob and open it
@@ -896,6 +1008,8 @@ export default function Print() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      // Close modal after download
+      closeInvoiceModalAndRefresh(); // Use centralized function
     }
   };
 
@@ -925,6 +1039,8 @@ export default function Print() {
       });
 
       setAlertConfig((prev) => ({ ...prev, visible: false }));
+      closeInvoiceModalAndRefresh(); // Use centralized function
+      
     } catch (error) {
       console.error("Error generating receipt PDF:", error);
       setAlertConfig({
@@ -934,7 +1050,10 @@ export default function Print() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              closeInvoiceModalAndRefresh(); // Use centralized function
+            },
           },
         ],
       });
@@ -1045,6 +1164,7 @@ export default function Print() {
 
   return (
     <SafeAreaView
+      key={refreshKey} // Add key for component refresh
       className={`flex-1 ${useBackgroundColorClass()}`}
       style={{ paddingTop: Platform.OS === "web" ? 20 : 0 }}
     >
@@ -1085,17 +1205,15 @@ export default function Print() {
         visible={invoiceModalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setInvoiceModalVisible(false)}
+        onRequestClose={closeInvoiceModalAndRefresh} // Use centralized function
       >
-        <TouchableOpacity
+        <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.5)",
           }}
-          activeOpacity={1}
-          onPress={() => setInvoiceModalVisible(false)}
         >
           <View
             style={{
@@ -1125,7 +1243,7 @@ export default function Print() {
                     </View>
                   </View>
                   <TouchableOpacity
-                    onPress={() => setInvoiceModalVisible(false)}
+                    onPress={closeInvoiceModalAndRefresh} // Use centralized function
                     className="p-2"
                   >
                     <Ionicons
@@ -1311,37 +1429,149 @@ export default function Print() {
                     </View>
                   </View>
                 </View>
-
-                <View className="mt-8 items-center">
-                  <CustomText className="text-center text-xs text-zinc-500">
-                    {t("print.thankYou")}
-                  </CustomText>
                 </View>
-              </View>
             )}
 
-            <View className="mt-4 flex-row justify-center flex-wrap gap-2">
-              <CustomButton
-                title={t("print.printQuotation")}
-                handlePress={handlePrintQuotation}
-                containerStyles="px-4 mb-2"
-                textStyles="!text-white"
-              />
-              <CustomButton
-                title={isVatRegistered ? t("print.printTaxInvoice") : t("print.printInvoice")}
-                handlePress={handlePrintInvoice}
-                containerStyles="px-4 mb-2"
-                textStyles="!text-white"
-              />
-              <CustomButton
-                title={t("print.printReceipt")}
-                handlePress={handlePrintReceipt}
-                containerStyles="px-4 mb-2"
-                textStyles="!text-white"
-              />
+            {/* Print Options Progression UI */}
+            <View
+              style={{
+                backgroundColor: "transparent",
+                borderRadius: 15,
+                padding: 5,
+                marginVertical: 2,
+                borderWidth: 0,
+                borderColor: "transparent",
+              }}
+            >
+              {/* Progress Line Container */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "transparent",
+                  paddingVertical: 8,
+                }}
+              >
+                {getAvailablePrintSteps().map((step, index) => {
+                  const stepConfig = {
+                    QA: {
+                      icon: "document-text-outline",
+                      label: t("print.printQuotation"),
+                      type: "Quotation",
+                      onPress: () => {
+                        handlePrintQuotation();
+                      },
+                    },
+                    IV: {
+                      icon: "receipt-outline",
+                      label: isVatRegistered ? t("print.printTaxInvoice") : t("print.printInvoice"),
+                      type: "Invoice",
+                      onPress: () => {
+                        handlePrintInvoice();
+                      },
+                    },
+                    RE: {
+                      icon: "checkmark-circle-outline",
+                      label: t("print.printReceipt"),
+                      type: "Receipt",
+                      onPress: () => {
+                        handlePrintReceipt();
+                      },
+                    },
+                  };
+
+                  const availableSteps = getAvailablePrintSteps();
+                  const isLastStep = index === availableSteps.length - 1;
+                  const isStepActive = isPrintStepCompleted(step);
+
+                  return (
+                    <React.Fragment key={step}>
+                      {/* Step Circle */}
+                      <TouchableOpacity
+                        style={{
+                          alignItems: "center",
+                          backgroundColor: "transparent",
+                        }}
+                        onPress={isStepActive ? stepConfig[step].onPress : undefined}
+                        activeOpacity={isStepActive ? 0.7 : 1}
+                        disabled={!isStepActive}
+                      >
+                        <View
+                          style={{
+                            width: 45,
+                            height: 45,
+                            borderRadius: 22.5,
+                            backgroundColor: getPrintStepBackgroundColor(step),
+                            borderWidth: 3,
+                            borderColor: getPrintStepBorderColor(step),
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: getPrintStepOpacity(step),
+                            shadowColor: isPrintStepCompleted(step) ? "#0feac2" : "transparent",
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: isPrintStepCompleted(step) ? 0.6 : 0,
+                            shadowRadius: isPrintStepCompleted(step) ? 8 : 0,
+                            elevation: isPrintStepCompleted(step) ? 8 : 0,
+                          }}
+                        >
+                          <Ionicons
+                            name={stepConfig[step].icon as any}
+                            size={20}
+                            color={getPrintStepIconColor(step)}
+                          />
+                        </View>
+                        <CustomText
+                          style={{
+                            fontSize: 9,
+                            color: getPrintStepDescriptionColor(step),
+                            textAlign: "center",
+                            marginTop: 4,
+                            fontWeight: "500",
+                          }}
+                        >
+                          {stepConfig[step].label}
+                        </CustomText>
+                      </TouchableOpacity>
+
+                      {/* Connection Line - Only show if not last step */}
+                      {!isLastStep && (
+                        <View
+                          style={{
+                            width: 30,
+                            height: 3,
+                            marginHorizontal: 6,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 2,
+                          }}
+                        >
+                          {[...Array(3)].map((_, dotIndex) => (
+                            <View
+                              key={dotIndex}
+                              style={{
+                                width: 3,
+                                height: 3,
+                                borderRadius: 1.5,
+                                backgroundColor:
+                                  index < availableSteps.findIndex((s) => s === selectedPrintType)
+                                    ? "#0feac2"
+                                    : theme === "dark"
+                                    ? "#444"
+                                    : "#ddd",
+                              }}
+                            />
+                          ))}
+                        </View>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
 
       {/* PDF Preview Modal */}

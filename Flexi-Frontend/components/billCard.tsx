@@ -296,8 +296,8 @@ export default function BillCard({
               numberOfLines={1}
             >
                 {localDocumentType === "Receipt"
-                ? `+${total.toLocaleString()}`
-                : totalQuotation.toLocaleString()}
+                ? `+${(total || 0).toLocaleString()}`
+                : (totalQuotation || 0).toLocaleString()}
             </Text>
             
             {/* DocumentType Status Box */}
