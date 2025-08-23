@@ -752,7 +752,7 @@ export default function Print() {
 
   // Function to save HTML content as PDF
   const saveToPDF = async () => {
-    // Close the initial alert
+    // Hide any previous loading indicator before starting
     setAlertConfig((prev) => ({ ...prev, visible: false }));
 
     // Show loading indicator
@@ -781,17 +781,28 @@ export default function Print() {
       await ExpoPrint.printAsync({
         html: htmlContent,
       });
-
       // Hide loading indicator
       setAlertConfig((prev) => ({ ...prev, visible: false }));
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      // Always hide loading indicator first
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+      console.log("PDF generation cancelled or failed:", error);
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        // Do not show any alert
+        return;
+      }
+      // Only show error for actual errors
+      console.error("❌ Error generating monthly report PDF:", error);
       setAlertConfig({
         visible: true,
         title: t("print.error"),
-        message: `${t("print.pdfGenerationError")}: ${
-          (error as Error).message
-        }`,
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
         buttons: [
           {
             text: t("common.ok"),
@@ -838,13 +849,28 @@ export default function Print() {
       closeInvoiceModalAndRefresh(); // Use centralized function
       
     } catch (error) {
-      console.error("Error generating individual invoice PDF:", error);
+      console.log("PDF generation cancelled or failed:", error);
+      
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        console.log("📝 User cancelled PDF generation");
+        // Don't show error alert for user cancellation, just hide loading and close modal
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        closeInvoiceModalAndRefresh();
+        return;
+      }
+      
+      // Only show error for actual errors
+      console.error("❌ Error generating individual invoice PDF:", error);
       setAlertConfig({
         visible: true,
         title: t("print.error"),
-        message: `${t("print.pdfGenerationError")}: ${
-          (error as Error).message
-        }`,
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
         buttons: [
           {
             text: t("common.ok"),
@@ -941,11 +967,28 @@ export default function Print() {
       closeInvoiceModalAndRefresh(); // Use centralized function
       
     } catch (error) {
-      console.error("Error generating quotation PDF:", error);
+      console.log("PDF generation cancelled or failed:", error);
+      
+      // Check if it's a cancellation error (user dismissed the print dialog)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('cancelled') || 
+          errorMessage.includes('dismissed') || 
+          errorMessage.includes('user') ||
+          errorMessage.includes('Printing did not complete') ||
+          errorMessage.includes('did not complete')) {
+        console.log("📝 User cancelled PDF generation");
+        // Don't show error alert for user cancellation, just hide loading and close modal
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        closeInvoiceModalAndRefresh();
+        return;
+      }
+      
+      // Only show error for actual errors
+      console.error("❌ Error generating quotation PDF:", error);
       setAlertConfig({
         visible: true,
         title: t("print.error"),
-        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
         buttons: [
           {
             text: t("common.ok"),
@@ -1465,7 +1508,7 @@ export default function Print() {
                     },
                     IV: {
                       icon: "receipt-outline",
-                      label: isVatRegistered ? t("print.printTaxInvoice") : t("print.printInvoice"),
+                      label: t("print.printInvoice"),
                       type: "Invoice",
                       onPress: () => {
                         handlePrintInvoice();
@@ -1473,7 +1516,7 @@ export default function Print() {
                     },
                     RE: {
                       icon: "checkmark-circle-outline",
-                      label: t("print.printReceipt"),
+                      label: isVatRegistered ? t("print.printTaxInvoice") : t("print.printReceipt"),
                       type: "Receipt",
                       onPress: () => {
                         handlePrintReceipt();

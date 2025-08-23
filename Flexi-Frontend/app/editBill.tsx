@@ -1112,6 +1112,11 @@ export default function EditBill() {
                           console.log("🎯 Circle pressed:", step, "isEditMode:", isEditMode);
                           if (!isEditMode) {
                             // View document functionality when not in edit mode
+                            // Only allow viewing if the step is completed (active)
+                            if (!isStepCompleted(step)) {
+                              console.log("⛔ Cannot view inactive document type:", step);
+                              return;
+                            }
                             console.log("📋 Viewing document for step:", step);
                             switch (step) {
                               case "QA":
@@ -1133,7 +1138,7 @@ export default function EditBill() {
                             setSelectedDocumentType(step);
                           }
                         }}
-                        activeOpacity={0.7}
+                        activeOpacity={isStepCompleted(step) || isEditMode ? 0.7 : 1}
                       >
                         <View style={{
                           width: 50,
@@ -1357,7 +1362,7 @@ export default function EditBill() {
             maxLength={200}
             multiline={true}
             numberOfLines={4}
-            boxheight={110}
+            boxheight={cAddress ? Math.max(80, Math.min(110, cAddress.length * 0.6 + 50)) : 110}
             editable={isEditMode}
           />
 
@@ -1567,7 +1572,7 @@ export default function EditBill() {
             multiline={true}
             numberOfLines={3}
             textAlignVertical="top"
-            boxheight={isNoteFocused ? 110 : undefined}
+            boxheight={isNoteFocused ? 110 : (note ? Math.max(60, Math.min(110, note.length * 0.8 + 40)) : undefined)}
             editable={isEditMode}
             onFocus={() => {
                 setIsNoteFocused(true);
@@ -1593,7 +1598,7 @@ export default function EditBill() {
               multiline={true}
               numberOfLines={2}
               textAlignVertical="top"
-              boxheight={isPaymentTermFocused ? 110 : undefined}
+              boxheight={isPaymentTermFocused ? 110 : (paymentTermCondition ? Math.max(60, Math.min(110, paymentTermCondition.length * 0.8 + 40)) : undefined)}
               editable={isEditMode}
               onFocus={() => {
                 setIsPaymentTermFocused(true);
@@ -1619,7 +1624,7 @@ export default function EditBill() {
             multiline={true}
             numberOfLines={2}
             textAlignVertical="top"
-            boxheight={isRemarkFocused ? 110 : undefined}
+            boxheight={isRemarkFocused ? 110 : (remark ? Math.max(60, Math.min(110, remark.length * 0.8 + 40)) : undefined)}
             editable={isEditMode}
             onFocus={() => {
                 setIsRemarkFocused(true);
