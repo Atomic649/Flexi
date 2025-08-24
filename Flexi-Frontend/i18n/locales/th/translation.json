@@ -1424,6 +1424,7 @@
     "authorizedBy": "ผู้อออกเอกสาร",
     "recipientSignature": "ลายเซ็นผู้รับเอกสาร",
     "authorizedSignature": "ลายเซ็นผู้ออกเอกสาร",
+    "paymentMethods": "ช่องทางการชำระเงิน",
     "payment":{
       "Cash": "เงินสด",
       "Transfer":"โอนเงินผ่านบัญชีธนาคาร",

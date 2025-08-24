@@ -27,7 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     // Your i18next configuration
-    fallbackLng: 'en', 
+    fallbackLng: 'th', 
     resources: {
       en: { translation: require("@/i18n/locales/en/translation.json") },
       th: { translation: require("@/i18n/locales/th/translation.json") },

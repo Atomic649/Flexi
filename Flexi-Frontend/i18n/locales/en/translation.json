@@ -1424,6 +1424,7 @@
     "authorizedBy": "Authorized By",
     "recipientSignature": "Recipient Signature",
     "authorizedSignature": "Authorized Signature",
+    "paymentMethods": "Payment Methods",
     "payment": {
       "Cash": "Cash",
       "Transfer": "Transfer",

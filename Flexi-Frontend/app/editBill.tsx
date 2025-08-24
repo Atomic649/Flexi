@@ -865,11 +865,10 @@ export default function EditBill() {
   };
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
-    setPriceValidDays(days);
-    
-    const validDate = new Date();
-    validDate.setDate(validDate.getDate() + days);
-    setPriceValid(validDate);
+  setPriceValidDays(days);
+  const validDate = new Date(purchaseAt);
+  validDate.setDate(validDate.getDate() + days);
+  setPriceValid(validDate);
   };
 
   const handleUpdateBill = async () => {
@@ -966,7 +965,7 @@ export default function EditBill() {
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
-        paymentTermCondition: selectedDocumentType === "QA" && paymentTermCondition ? paymentTermCondition : undefined,
+  paymentTermCondition: (selectedDocumentType !== "RE" && paymentTermCondition) ? paymentTermCondition : undefined,
         remark: remark || undefined,
         productItems: productItems.map((item) => ({
           product: item.product,
@@ -1584,7 +1583,7 @@ export default function EditBill() {
           />
 
           {/* Payment Terms & Conditions Section - Only show for Quotation */}
-          {selectedDocumentType === "QA" && (
+            {(selectedDocumentType === "QA" || selectedDocumentType === "IV") && (
             <FormFieldClear
               title={t("bill.paymentTermCondition")}
               value={paymentTermCondition}
@@ -1608,7 +1607,7 @@ export default function EditBill() {
               }}
               onBlur={() => setIsPaymentTermFocused(false)}
             />
-          )}
+            )}
 
           {/* Remark Section */}
           <FormFieldClear

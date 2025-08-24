@@ -38,9 +38,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${
-          isVatRegistered ? t("print.taxInvoice") : t("print.receipt")
-        } #${invoice.id}</title>
+        <title>${t("print.invoice")} #${invoice.id}</title>
         <style>
           @page {
             margin: 8mm;
@@ -489,7 +487,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <div class="invoice-header">
             <div class="company-logo-section" style="display: flex; align-items: center; height: 100%;">
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${
-                isVatRegistered ? t("print.taxInvoice") : t("print.receipt")
+                 t("print.invoice") 
               }</h1>
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
@@ -553,20 +551,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             
             <div class="billing-section">
               <h3>${t("print.paymentDetails")}</h3>
-              <p><strong>${t("print.paymentMethod")}:</strong> ${t(
-    `print.payment.${invoice.payment}`
-  )}</p>
-              <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(
-    invoice.purchaseAt
-  )}</p>
-              <div class="payment-status">
-                <strong>${t("print.status")}:</strong>
-                <span class="status-badge ${
-                  invoice.cashStatus ? "status-paid" : "status-unpaid"
-                }">
-                  ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
-                </span>
-              </div>
+              <p><strong>${t("print.invoiceDate")}</strong>: ${formatDate(invoice.purchaseAt)}</p>
+              ${invoice.priceValid ? `<p><strong>${t("print.validUntil")}</strong>: ${formatDate(invoice.priceValid)}</p>` : ""}
+              ${invoice.paymentTermCondition ? `<p><strong>${t("print.paymentMethods")}</strong>: ${invoice.paymentTermCondition}</p>` : ""}
             </div>
           </div>
 
@@ -616,72 +603,47 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </table>
           </div>
 
-          <!-- Notes and Summary Side by Side -->
-          <div class="notes-summary-container">
-            <!-- Notes Section -->
-            <div class="notes-section">
-              ${invoice.note ? `
-                <div class="note-section">
-                  <h3>${t("print.notes")}</h3>
-                  <p>${invoice.note}</p>
-                </div>
-              ` : `
-                <div class="note-section">
-                  <h3>${t("print.notes")}</h3>
-                  <p>${t("print.noNotesProvided") || "No additional notes provided."}</p>
-                </div>
-              `}
+           <!-- Terms and Summary Side by Side -->
+          <div class="terms-summary-container" style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <!-- Payment Terms and Conditions -->
+            <div class="terms-section" style="flex: 1; width: 50%;">
+              <div class="note-section">
+                <h3>${t("print.termsAndConditions")}</h3>
+                <p>
+                  ${invoice.remark ? `• ${invoice.remark}` : ""}
+                </p>
+              </div>
             </div>
 
             <!-- Summary -->
-            <div class="summary-section">
+            <div class="summary-section" style="flex: 1; width: 50%; margin-bottom: 0;">
               <div class="summary-table">
-                ${
-                  isVatRegistered
-                    ? `
-                ${totalDiscount > 0 ? `
+                ${isVatRegistered
+                  ? `${totalDiscount > 0 ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
-                  )}</span>
-                </div>
-                ` : ''}
+                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
+                </div>` : ""}
                 <div class="summary-row subtotal">
-                  <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    subtotal
-                  )}</span>
+                  <span class="summary-label">${t("print.subtotal")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
                 </div>
                 <div class="summary-row tax">
-                  <span class="summary-label">${t("print.vat")} (7%):</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    vatAmount
-                  )}</span>
-                </div>
-                `
-                    : `
-                ${totalDiscount > 0 ? `
+                  <span class="summary-label">${t("print.vat")} (7%)</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+                </div>`
+                  : `${totalDiscount > 0 ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
-                  )}</span>
-                </div>
-                ` : ''}
+                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
+                </div>` : ""}
                 <div class="summary-row subtotal">
-                  <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    subtotal
-                  )}</span>
-                </div>
-                `
-                }
+                  <span class="summary-label">${t("print.subtotal")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                </div>`}
                 <div class="summary-row total">
-                  <span class="summary-label">${t("print.grandTotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    grandTotal
-                  )}</span>
+                  <span class="summary-label">${t("print.grandTotal")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(grandTotal)}</span>
                 </div>
               </div>
             </div>

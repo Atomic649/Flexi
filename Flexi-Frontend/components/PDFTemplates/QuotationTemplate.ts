@@ -471,7 +471,8 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
               <p><strong>${t("print.quotationNumber")}:</strong> ${quotation.billId || quotation.id}</p>
               <p><strong>${t("print.issueDate")}:</strong> ${formatDate(quotation.purchaseAt)}</p>
               ${quotation.priceValid ? `<p><strong>${t("print.validUntil")}:</strong> ${formatDate(quotation.priceValid)}</p>` : ""}
-</div>
+              ${quotation.paymentTermCondition ? `<p><strong>${t("print.paymentMethods")}</strong>: ${quotation.paymentTermCondition}</p>` : ""}
+            </div>
           </div>
 
           <!-- Items -->
@@ -514,8 +515,8 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
               <div class="note-section">
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
-                  • ${t("print.validUntil")} ${quotation.priceValid ? formatDate(quotation.priceValid) : t("print.notSpecified")}<br>
-                  ${quotation.paymentTermCondition ? `• ${quotation.paymentTermCondition}<br>` : ""}
+                  • ${t("print.priceValid")} 
+                  ${quotation.priceValid && quotation.purchaseAt ? `${Math.ceil((new Date(quotation.priceValid).getTime() - new Date(quotation.purchaseAt).getTime()) / (1000 * 60 * 60 * 24))} ${t("common.days")}` : t("print.notSpecified")}<br>
                   ${quotation.remark ? `• ${quotation.remark}` : ""}
                 </p>
               </div>
