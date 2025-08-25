@@ -45,7 +45,7 @@ const FormField = ({
         </CustomText>
       ) : null}
         {icons && (
-          <TouchableOpacity onPress={handlePress} disabled={editable}
+          <TouchableOpacity onPress={handlePress}
              style={{
             position: 'absolute',
             top: -12,

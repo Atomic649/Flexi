@@ -1162,6 +1162,10 @@
     "paymentTermCondition": "Payment Terms & Conditions",
     "enterPaymentTermCondition": "Enter payment terms & conditions",
     "remark": "Remark",
+    "remarkSaved": "Remark saved successfully",
+    "remarkSaveError": "Error saving remark",
+    "paymentTermSaved": "Payment terms and conditions saved successfully",
+    "paymentTermSaveError": "Error saving payment terms and conditions",
     "enterRemark": "Enter remark",
     "gender": {
       "male": "Male",

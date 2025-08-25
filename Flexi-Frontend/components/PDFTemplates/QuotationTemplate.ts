@@ -515,8 +515,6 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
               <div class="note-section">
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
-                  • ${t("print.priceValid")} 
-                  ${quotation.priceValid && quotation.purchaseAt ? `${Math.ceil((new Date(quotation.priceValid).getTime() - new Date(quotation.purchaseAt).getTime()) / (1000 * 60 * 60 * 24))} ${t("common.days")}` : t("print.notSpecified")}<br>
                   ${quotation.remark ? `• ${quotation.remark}` : ""}
                 </p>
               </div>
@@ -577,7 +575,7 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
                 <div class="signature-name"> ${quotation.cName} ${
     quotation.cLastName
   } </div>
-                <div class="signature-date">${t(
+                <div class= "signature-date">${t(
                   "print.date"
                 )}: _______________</div>
               </div>

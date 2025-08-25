@@ -11,6 +11,11 @@ import {
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
 import React, { useEffect, useRef, useState } from "react";
+import { saveRemark, getRemark } from "@/utils/utility";
+import {
+  savePaymentTermCondition,
+  getPaymentTermCondition,
+} from "@/utils/utility";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -49,6 +54,50 @@ const formatDate = (dateString: string) => {
 };
 
 export default function CreateBill() {
+  // Set default remark from AsyncStorage
+  useEffect(() => {
+    const fetchDefaultRemark = async () => {
+      if (memberId) {
+        const defaultRemark = await getRemark(memberId);
+        if (defaultRemark) setRemark(defaultRemark);
+      }
+    };
+    fetchDefaultRemark();
+  }, []);
+
+  // Handler to save remark to AsyncStorage
+  const handleSaveRemark = async () => {
+    try {
+      if (memberId) {
+        await saveRemark(remark, memberId);
+        setAlertConfig({
+          visible: true,
+          title: t("bill.alerts.success"),
+          message: t("bill.remarkSaved"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: t("bill.remarkSaveError"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [memberId, setMemberId] = useState<string | null>(null);
@@ -68,6 +117,53 @@ export default function CreateBill() {
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
+
+  // Set default paymentTermCondition from AsyncStorage
+  useEffect(() => {
+    const fetchDefaultPaymentTerm = async () => {
+      if (memberId) {
+        const defaultTerm = await getPaymentTermCondition(memberId);
+        if (defaultTerm !== null && defaultTerm !== undefined) {
+          setPaymentTermCondition(defaultTerm);
+        }
+      }
+    };
+    fetchDefaultPaymentTerm();
+  }, [memberId]);
+
+  // Handler to save payment terms to AsyncStorage
+  const handleSavePaymentTerms = async () => {
+    try {
+      if (memberId) {
+        await savePaymentTermCondition(paymentTermCondition, memberId);
+        setAlertConfig({
+          visible: true,
+          title: t("bill.alerts.success"),
+          message: t("bill.paymentTermSaved"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: t("bill.paymentTermSaveError"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
   const [remark, setRemark] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
@@ -104,6 +200,7 @@ export default function CreateBill() {
   const [isNoteFocused, setIsNoteFocused] = useState(false);
   const [isPaymentTermFocused, setIsPaymentTermFocused] = useState(false);
   const [isRemarkFocused, setIsRemarkFocused] = useState(false);
+  const [isAddressFocused, setIsAddressFocused] = useState(false);
 
   // Tax type state
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
@@ -1019,7 +1116,17 @@ export default function CreateBill() {
               maxLength={200}
               multiline={true}
               numberOfLines={4}
-              boxheight={110}
+              boxheight={
+                isAddressFocused
+                  ? 110
+                  : cAddress
+                  ? Math.max(60, Math.min(110, cAddress.length * 0.8 + 40))
+                  : undefined
+              }
+              focus={() => {
+                setIsAddressFocused(true);
+              }}
+              onBlur={() => setIsAddressFocused(false)}
             />
             <View className="flex flex-row justify-between">
               <View className="w-1/2 pr-2">
@@ -1231,6 +1338,76 @@ export default function CreateBill() {
               </View>
             )}
 
+            {/* Payment Terms & Conditions Section - Only show for Quotation */}
+            {(selectedDocumentType === "QA" ||
+              selectedDocumentType === "IV") && (
+              <FormFieldClear
+                title={t("bill.paymentTermCondition")}
+                value={paymentTermCondition}
+                icons={"save"}
+                handleChangeText={setPaymentTermCondition}
+                handlePress={handleSavePaymentTerms}
+                placeholder={t("bill.enterPaymentTermCondition")}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles={fieldStyles}
+                maxLength={300}
+                multiline={true}
+                numberOfLines={4}
+                textAlignVertical="top"
+                boxheight={
+                  isPaymentTermFocused
+                    ? 110
+                    : paymentTermCondition
+                    ? Math.max(
+                        60,
+                        Math.min(110, paymentTermCondition.length * 0.8 + 40)
+                      )
+                    : undefined
+                }
+                onFocus={() => {
+                  setIsPaymentTermFocused(true);
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 200);
+                }}
+                onBlur={() => setIsPaymentTermFocused(false)}
+              />
+            )}
+
+            {/* Remark Section */}
+            <FormFieldClear
+              title={t("bill.remark")}
+              value={remark}
+              icons={"save"}
+              handleChangeText={setRemark}
+              handlePress={handleSaveRemark}
+              placeholder={t("bill.enterRemark")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={300}
+              multiline={true}
+              numberOfLines={4}
+              textAlignVertical="top"
+              boxheight={
+                isRemarkFocused
+                  ? 110
+                  : remark
+                  ? Math.max(60, Math.min(110, remark.length * 0.8 + 40))
+                  : undefined
+              }
+              onFocus={() => {
+                setIsRemarkFocused(true);
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 200);
+              }}
+              onBlur={() => setIsRemarkFocused(false)}
+            />
+
             {/* Note Section */}
             <FormFieldClear
               title={t("bill.note")}
@@ -1253,56 +1430,6 @@ export default function CreateBill() {
                 }, 200);
               }}
               onBlur={() => setIsNoteFocused(false)}
-            />
-
-            {/* Payment Terms & Conditions Section - Only show for Quotation */}
-            {selectedDocumentType === "QA" && (
-              <FormFieldClear
-                title={t("bill.paymentTermCondition")}
-                value={paymentTermCondition}
-                handleChangeText={setPaymentTermCondition}
-                placeholder={t("bill.enterPaymentTermCondition")}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-                maxLength={300}
-                multiline={true}
-                numberOfLines={4}
-                textAlignVertical="top"
-                boxheight={isPaymentTermFocused ? 110 : undefined}
-                onFocus={() => {
-                  setIsPaymentTermFocused(true);
-                  setTimeout(() => {
-                    scrollViewRef.current?.scrollToEnd({ animated: true });
-                  }, 200);
-                }}
-                onBlur={() => setIsPaymentTermFocused(false)}
-              />
-            )}
-
-            {/* Remark Section */}
-            <FormFieldClear
-              title={t("bill.remark")}
-              value={remark}
-              handleChangeText={setRemark}
-              placeholder={t("bill.enterRemark")}
-              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-              otherStyles={fieldStyles}
-              maxLength={300}
-              multiline={true}
-              numberOfLines={4}
-              textAlignVertical="top"
-              boxheight={isRemarkFocused ? 110 : undefined}
-              onFocus={() => {
-                setIsRemarkFocused(true);
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 200);
-              }}
-              onBlur={() => setIsRemarkFocused(false)}
             />
 
             {/* Price Valid Section - Hide for Receipt */}

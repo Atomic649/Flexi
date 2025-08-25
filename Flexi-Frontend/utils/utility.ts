@@ -143,3 +143,67 @@ export const removeBusinessId = async () => {
     console.error('Error removing businessId:', error);
   }
 }
+
+//Function to save paymentTermCondition
+export const savePaymentTermCondition = async (paymentTermCondition: string, memberId: string) => {
+  try {
+    await AsyncStorage.setItem(`paymentTermCondition_${memberId}`, paymentTermCondition);
+    console.log(`💾 paymentTermCondition saved for member ${memberId}:`, paymentTermCondition);
+  } catch (error) {
+    console.error('Error saving paymentTermCondition:', error);
+  }
+}
+
+// Function to get paymentTermCondition from AsyncStorage
+export const getPaymentTermCondition = async (memberId: string): Promise<string | null> => {
+  try {
+    const paymentTermCondition = await AsyncStorage.getItem(`paymentTermCondition_${memberId}`);
+    console.log(`✅ paymentTermCondition Get for member ${memberId}:`, paymentTermCondition);
+    return paymentTermCondition;
+  } catch (error) {
+    console.error('Error getting paymentTermCondition:', error);
+    return null;
+  }
+}
+
+// Function to remove paymentTermCondition from AsyncStorage
+export const removePaymentTermCondition = async (memberId: string) => {
+  try {
+    await AsyncStorage.removeItem(`paymentTermCondition_${memberId}`);
+    console.log(`🗑️ paymentTermCondition removed for member ${memberId}`);
+  } catch (error) {
+    console.error('Error removing paymentTermCondition:', error);
+  }
+}
+
+//Function to save remark
+export const saveRemark = async (remark: string, memberId: string) => {
+  try {
+    await AsyncStorage.setItem(`remark_${memberId}`, remark);
+    console.log(`💾 remark saved for member ${memberId}:`, remark);
+  } catch (error) {
+    console.error('Error saving remark:', error);
+  }
+}
+
+// Function to get remark from AsyncStorage
+export const getRemark = async (memberId: string): Promise<string | null> => {
+  try {
+    const remark = await AsyncStorage.getItem(`remark_${memberId}`);
+    console.log(`✅ remark Get for member ${memberId}:`, remark);
+    return remark;
+  } catch (error) {
+    console.error('Error getting remark:', error);
+    return null;
+  }
+}
+
+// Function to remove remark from AsyncStorage
+export const removeRemark = async (memberId: string) => {
+  try {
+    await AsyncStorage.removeItem(`remark_${memberId}`);
+    console.log(`🗑️ remark removed for member ${memberId}`);
+  } catch (error) {
+    console.error('Error removing remark:', error);
+  }
+}
