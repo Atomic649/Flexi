@@ -54,16 +54,26 @@ const formatDate = (dateString: string) => {
 };
 
 export default function CreateBill() {
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const { theme } = useTheme();
+  const [storeId, setStoreId] = useState<number>(0);
+  const [stores, setStores] = useState<any[]>([]);
+  const [error, setError] = useState("");
+  const [purchaseAt, setPurchaseAt] = useState(new Date());
+
   // Set default remark from AsyncStorage
   useEffect(() => {
     const fetchDefaultRemark = async () => {
       if (memberId) {
         const defaultRemark = await getRemark(memberId);
-        if (defaultRemark) setRemark(defaultRemark);
+        if (defaultRemark !== null && defaultRemark !== undefined) {
+          setRemark(defaultRemark);
+        }
       }
     };
     fetchDefaultRemark();
-  }, []);
+  }, [memberId]);
 
   // Handler to save remark to AsyncStorage
   const handleSaveRemark = async () => {
@@ -98,13 +108,6 @@ export default function CreateBill() {
       });
     }
   };
-  const { t } = useTranslation();
-  const { theme } = useTheme();
-  const [memberId, setMemberId] = useState<string | null>(null);
-  const [storeId, setStoreId] = useState<number>(0);
-  const [stores, setStores] = useState<any[]>([]);
-  const [error, setError] = useState("");
-  const [purchaseAt, setPurchaseAt] = useState(new Date());
 
   // Customer information
   const [cName, setCName] = useState("");
@@ -171,12 +174,9 @@ export default function CreateBill() {
   );
 
   // Product information
-  // [product, setProduct] = useState("");
   const [payment, setPayment] = useState("");
   const [amount, setAmount] = useState("1");
-  // [platform, setPlatform] = useState("");
   const [cashStatus, setCashStatus] = useState(false);
-  //const [price, setPrice] = useState("");
   const [businessAcc, setBusinessAcc] = useState(0);
   const [image, setImage] = useState("");
 

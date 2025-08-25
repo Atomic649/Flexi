@@ -530,7 +530,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <!-- Billing Information -->
           <div class="billing-info">
             <div class="billing-section">
-              <h3>${t("print.billedTo")}</h3>
+              <h3 style="font-family: 'IBMPlexSansThai', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400;">${t("print.billedTo")}</h3>
               <p class="customer-name">${invoice.cName} ${invoice.cLastName}</p>
               ${
                 invoice.cTaxId
@@ -550,7 +550,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </div>
             
             <div class="billing-section">
-              <h3>${t("print.paymentDetails")}</h3>
+              <h3 style="font-family: 'IBMPlexSansThai', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight:400;">${t("print.paymentDetails")}</h3>
               <p><strong>${t("print.invoiceDate")}</strong>: ${formatDate(invoice.purchaseAt)}</p>
               ${invoice.priceValid ? `<p><strong>${t("print.validUntil")}</strong>: ${formatDate(invoice.priceValid)}</p>` : ""}
               ${invoice.paymentTermCondition ? `<p><strong>${t("print.paymentMethods")}</strong>: ${invoice.paymentTermCondition}</p>` : ""}
