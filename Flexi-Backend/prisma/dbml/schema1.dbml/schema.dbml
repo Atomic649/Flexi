@@ -161,6 +161,9 @@ Table Expense {
   code String
   vat Boolean [default: false]
   vatAmount Decimal [default: 0]
+  withHoldingTax Boolean [default: false]
+  WHTpercent Decimal [default: 0]
+  WHTAmount Decimal [default: 0]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]

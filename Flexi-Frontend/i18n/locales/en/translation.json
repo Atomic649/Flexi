@@ -729,7 +729,10 @@
       "note": "Note",
       "exclVat": "Excl. VAT",
       "vat": "VAT",
-      "vatIncluded": "VAT Included",   
+      "vatIncluded": "VAT Included",
+      "withHoldingTax": "Withholding Tax",
+      "WHTpercent": "WHT %",
+      "WHTAmount": "WHT Amount",
       "group": {
         "marketing": "Marketing",
         "transport": "Transport",

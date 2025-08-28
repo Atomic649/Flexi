@@ -306,27 +306,29 @@ model AdsCost {
 }
 
 model Expense {
-  date      DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  id        Int      @id @default(autoincrement())
-  amount    Decimal
-  group     String?
-  image     String?
-  note      String?
-  desc      String?
-  deleted   Boolean? @default(false)
-  save      Boolean? @default(false)
-  channel   Bank?
-  code      String?
-  vat       Boolean? @default(false)
-  vatAmount Decimal? @default(0)
-
+  date           DateTime
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  id             Int         @id @default(autoincrement())
+  amount         Decimal
+  group          String?
+  image          String?
+  note           String?
+  desc           String?
+  deleted        Boolean?    @default(false)
+  save           Boolean?    @default(false)
+  channel        Bank?
+  code           String?
+  vat            Boolean?    @default(false)
+  vatAmount      Decimal?    @default(0)
+  withHoldingTax Boolean?    @default(false)
+  WHTpercent     Decimal?    @default(0)
+  WHTAmount      Decimal?    @default(0)
   // Relation
-  businessAcc Int
-  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  memberId    String
-  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc    Int
+  businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])
+  memberId       String
+  member         Member      @relation(fields: [memberId], references: [uniqueId])
 }
 
 model Platform {

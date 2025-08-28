@@ -15,6 +15,7 @@ const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface Expense {
+  WHTpercent?: number;
   date: Date;
   amount: number;
   group: string;
@@ -24,23 +25,28 @@ interface Expense {
   note: string;
   desc: string;
   channel: Bank;
-  vat : boolean;
-  vatAmount : number;
+  vat: boolean;
+  vatAmount: number;
+  withHoldingTax?: boolean;
+  WHTAmount?: number;
 }
 
 // Validate the request body
 const schema = Joi.object({
+  WHTpercent: Joi.number().optional(),
   date: Joi.date().required(),
   amount: Joi.number().required(),
   group: Joi.string(),
-  desc: Joi.string(),
-  image: Joi.string(),
+  desc: Joi.string().allow(""),
+  image: Joi.string().allow(""),
   memberId: Joi.string().required(),
   businessAcc: Joi.number(),
   note: Joi.string(),
   channel: Joi.string(),
   vat: Joi.boolean().optional(),
   vatAmount: Joi.number().optional(),
+  withHoldingTax: Joi.boolean().optional(),
+  WHTAmount: Joi.number().optional(),
 });
 
 //  create a new expense - Post
@@ -53,15 +59,14 @@ const createExpense = async (req: Request, res: Response) => {
     // Debugging: Log the uploaded file details
     console.log("Uploaded file:", req.file);
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "File upload failed. No file received." });
-    }
     // Merge the uploaded file S3 URL key into the expense object
+    // Convert string 'true'/'false' to boolean for vat and withHoldingTax
     const expenseInput: Expense = {
       ...req.body,
-      image: (req.file as any)?.location ?? "", // Use type assertion for custom property
+      vat: req.body.vat === "true" ? true : false,
+      withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
+      image: req.file ? (req.file as any)?.location ?? "" : req.body.image ?? "",
+      desc: req.body.desc ?? "",
     };
 
     console.log("Input", expenseInput);
@@ -99,6 +104,11 @@ const createExpense = async (req: Request, res: Response) => {
       expenseInput.vatAmount = expenseInput.amount * 0.07;
     } 
 
+    // Calculate WHTAmount form withHoldingTax and WHTpercent
+    if (expenseInput.withHoldingTax) {
+      expenseInput.WHTAmount = expenseInput.amount * (expenseInput.WHTpercent ?? 0) / 100;
+    }
+
     try {
       const expense = await prisma.expense.create({
         data: {
@@ -113,7 +123,10 @@ const createExpense = async (req: Request, res: Response) => {
           channel: expenseInput.channel,
           save: false,
           vat: expenseInput.vat,
-          vatAmount: expenseInput.vatAmount
+          vatAmount: expenseInput.vatAmount,
+          withHoldingTax: expenseInput.withHoldingTax ?? false,
+          WHTAmount: expenseInput.WHTAmount ?? 0,
+          WHTpercent: expenseInput.WHTpercent ?? 0
         },
       });
       res.json(expense);
@@ -150,6 +163,19 @@ const getExpenseById = async (req: Request, res: Response) => {
       where: {
         id: Number(id),
       },
+      select: {
+        date: true,
+        note: true,
+        desc: true,
+        amount: true,
+        image: true,
+        group: true,
+        vat: true,
+        vatAmount: true,
+  withHoldingTax: true,
+  WHTAmount: true,
+  WHTpercent: true
+      }
     });
     res.json(expense);
   } catch (e) {
@@ -186,8 +212,11 @@ const updateExpenseById = async (req: Request, res: Response) => {
     }
 
     // Merge the uploaded file S3 URL key into the expense object
+    // Convert string 'true'/'false' to boolean for vat and withHoldingTax
     const expenseInput: Expense = {
       ...req.body,
+      vat: req.body.vat === "true" ? true : false,
+      withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
     };
     const { id } = req.params;
@@ -214,6 +243,9 @@ const updateExpenseById = async (req: Request, res: Response) => {
           memberId: expenseInput.memberId,
           vat: expenseInput.vat,
           vatAmount: expenseInput.vatAmount,
+          withHoldingTax: expenseInput.withHoldingTax ?? false,
+          WHTAmount: expenseInput.WHTAmount ?? 0,
+          WHTpercent: expenseInput.WHTpercent ?? 0
         },
       });
       res.json(expense);

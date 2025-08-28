@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -76,6 +76,12 @@ export default function CreateExpense({
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
   ]);
+  const [vatIncluded, setVatIncluded] = useState(false);
+  const [vatAmount, setVatAmount] = useState(0);
+  const [withHoldingTax, setWithHoldingTax] = useState(false);
+  const [WHTpercent, setWHTpercent] = useState(3);
+  const [WHTAmount, setWHTAmount] = useState(0);
+  
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -144,15 +150,14 @@ export default function CreateExpense({
     }
 
     try {
-      const memberId = await getMemberId(); // Assuming getMemberId is a function that fetches the memberId
-
+      const memberId = await getMemberId();
       const formattedDate = format(
         new Date(date[0]),
         "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
       );
 
       const formData = new FormData();
-      formData.append("date", formattedDate); // Use the formatted date
+      formData.append("date", formattedDate);
       formData.append("note", note);
       formData.append("amount", amount);
       formData.append("desc", desc);
@@ -164,6 +169,9 @@ export default function CreateExpense({
         } as unknown as Blob);
       }
       formData.append("group", group || "");
+  formData.append("vat", vatIncluded ? "true" : "false");
+  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+  formData.append("WHTpercent", WHTpercent.toString());
       if (memberId) {
         formData.append("memberId", memberId);
       } else {
@@ -173,6 +181,19 @@ export default function CreateExpense({
       const data = await CallAPIExpense.createAExpenseAPI(formData);
       if (data.error) throw new Error(data.error);
 
+      // Set vatAmount from backend response if available
+      if (data.vatAmount !== undefined) {
+        setVatAmount(data.vatAmount);
+      }
+
+      // Set vatAmount from backend response if available
+      if (data.vatAmount !== undefined) {
+        setVatAmount(data.vatAmount);
+      }
+      // Set WHTAmount from backend response if available
+      if (data.WHTAmount !== undefined) {
+        setWHTAmount(data.WHTAmount);
+      }
       clearForm();
       onClose();
       success();
@@ -279,17 +300,135 @@ export default function CreateExpense({
                 placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
               />
 
+
               <TextInput
                 className={`text-center text-2xl font-bold py-3 ${
                   theme === "dark" ? "text-secondary-100" : "text-secondary"
                 }`}
-                value={amount}
-                onChangeText={setAmount}
+                value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                onChangeText={val => {
+                  const raw = val.replace(/,/g, "");
+                  setAmount(raw);
+                  setWHTAmount(raw ? Number(raw) * WHTpercent / 100 : 0);
+                }}
                 placeholder="0.00"
                 placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
                 keyboardType="numeric"
               />
 
+
+              {(vatIncluded || withHoldingTax) && (
+                <View
+                  style={{
+                    marginTop: 8,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <View
+                    style={{ flexDirection: "column", alignItems: "flex-end" }}
+                  >
+                    {vatIncluded && (
+                      <>
+                        <CustomText style={{ textAlign: "right" }}>
+                          {t("expense.detail.exclVat") + " :"}
+                        </CustomText>
+                        <CustomText style={{ textAlign: "right" }}>
+                          {t("expense.detail.vat") + " :"}
+                        </CustomText>
+                      </>
+                    )}
+                    {withHoldingTax && (
+                      <CustomText style={{ textAlign: "right" }}>
+                        {t("expense.detail.WHTAmount") + " :"}
+                      </CustomText>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      marginLeft: 12,
+                    }}
+                  >
+                    {vatIncluded && (
+                      <>
+                        <CustomText style={{ textAlign: "left" }}>
+                          {(Number(amount) / 1.07)
+                            .toFixed(2)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </CustomText>
+                        <CustomText style={{ textAlign: "left" }}>
+                          {(Number(amount) * 0.07)
+                            .toFixed(2)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </CustomText>
+                      </>
+                    )}
+                    {withHoldingTax && (
+                      <CustomText style={{ textAlign: "left" }}>
+                        {typeof WHTAmount === "number" && !isNaN(WHTAmount)
+                          ? WHTAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                          : "0.00"}
+                      </CustomText>
+                    )}
+                  </View>
+                </View>
+              )}
+
+
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", marginTop: 8 }}>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center", marginRight: 24 }}
+                  onPress={() => setVatIncluded(!vatIncluded)}
+                >
+                  <Ionicons
+                    name={vatIncluded ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                  />
+                  <CustomText className="ml-2">
+                    {t("expense.detail.vatIncluded")}
+                  </CustomText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}
+                  onPress={() => setWithHoldingTax(!withHoldingTax)}
+                >
+                  <Ionicons
+                    name={withHoldingTax ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                  />
+                  <CustomText style={{ textAlign: "right", marginLeft: 8 }}>
+                    {t("expense.detail.withHoldingTax")}
+                  </CustomText>
+                </TouchableOpacity>
+                <TextInput
+                  style={{
+                    width: 60,
+                    borderWidth: 1,
+                    borderColor: theme === "dark" ? "#444" : "#ccc",
+                    borderRadius: 8,
+                    padding: 4,
+                    color: theme === "dark" ? "#fff" : "#000",
+                    textAlign: "center",
+                  }}
+                  value={WHTpercent.toString()}
+                  onChangeText={val => {
+                    const num = parseFloat(val);
+                    setWHTpercent(isNaN(num) ? 0 : num);
+                    setWHTAmount(Number(amount) ? Number(amount) * (isNaN(num) ? 0 : num) / 100 : 0);
+                  }}
+                  placeholder={t("expense.detail.percent")}
+                  keyboardType="numeric"
+                />
+                <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+              </View>
+
+
+           
               <TextInput
                 className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
                   theme === "dark"

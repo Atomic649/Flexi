@@ -322,7 +322,9 @@ model Expense {
   code      String?
   vat       Boolean? @default(false)
   vatAmount Decimal? @default(0)
-
+  withHoldingTax Boolean? @default(false)
+  WHTpercent Decimal? @default(0)
+  WHTAmount Decimal? @default(0)
   // Relation
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
