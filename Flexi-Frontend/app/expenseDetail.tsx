@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -25,19 +25,19 @@ import i18n from "@/i18n";
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
   const parsedDate = new Date(dateString);
-  const day = String(parsedDate.getDate()).padStart(2, '0');
-  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
   const year = parsedDate.getFullYear();
-  
+
   // Get hours in 12-hour format
   let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  
+
   // Get minutes
-  const minutes = String(parsedDate.getMinutes()).padStart(2, '0');
-  
+  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+
   return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
 };
 
@@ -52,6 +52,8 @@ interface ExpenseDetailProps {
     image: string;
     id: number;
     group: string;
+    vat: boolean;
+    vatAmount: number;
   };
 }
 
@@ -72,6 +74,8 @@ export default function ExpenseDetail({
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isVisible, setIsVisible] = useState(visible);
+  const [vatIncluded, setVatIncluded] = useState(expense.vat);
+  const [vatAmount, setVatAmount] = useState(expense.vatAmount);
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -259,7 +263,8 @@ export default function ExpenseDetail({
           <TouchableOpacity
             activeOpacity={1}
             style={{
-              flex: Platform.OS === "web" ? (image ? 0.8 : 0.4) : (image ? 0.2 : 0.1),
+              flex:
+                Platform.OS === "web" ? (image ? 0.8 : 0.4) : image ? 0.2 : 0.1,
               justifyContent: "center",
               width: "100%",
               backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
@@ -284,9 +289,10 @@ export default function ExpenseDetail({
 
               <TextInput
                 style={{
-                   fontFamily: i18n.language === "th"
-                    ? "IBMPlexSansThai-Medium"
-                    : "Poppins-Regular",
+                  fontFamily:
+                    i18n.language === "th"
+                      ? "IBMPlexSansThai-Medium"
+                      : "Poppins-Regular",
                   textAlign: "center",
                   fontSize: 16,
                   color: theme === "dark" ? "#818181" : "#68655f",
@@ -306,15 +312,68 @@ export default function ExpenseDetail({
                 placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
                 keyboardType="numeric"
               />
+
+              {vatIncluded && (
+                <View
+                  style={{
+                    marginTop: 8,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+                    <CustomText style={{ textAlign: "right" }} >
+                      {t("expense.detail.exclVat") + " :"}
+                    </CustomText>
+                    <CustomText style={{ textAlign: "right" }} >
+                      {t("expense.detail.vat") + " :"}
+                    </CustomText></View>
+                  <View style={{ flexDirection: "column", alignItems: "flex-end", marginLeft: 12 }}>
+                    <CustomText style={{ textAlign: "left",
+                    }}>
+                      {(Number(amount) / 1.07).toFixed(2)}
+                    </CustomText>
+                    <CustomText style={{ textAlign: "left" }} >
+                      {(Number(amount) * 0.07).toFixed(2)}
+                    </CustomText>
+                  </View>
+                </View>
+              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 8,
+                }}
+              >
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() => setVatIncluded(!vatIncluded)}
+                >
+                  <Ionicons
+                    name={vatIncluded ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                  />
+                  <CustomText className="ml-2">
+                     {t("expense.detail.vatIncluded")} 
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
               <TextInput
                 className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
                   theme === "dark"
                     ? "bg-primary-100 border-black-200"
                     : "bg-white border-gray-100"
                 }`}
-                style={{  fontFamily: i18n.language === "th"
-                    ? "IBMPlexSansThai-Medium"
-                    : "Poppins-Regular",color: theme === "dark" ? "#ffffff" : "#000000" }}
+                style={{
+                  fontFamily:
+                    i18n.language === "th"
+                      ? "IBMPlexSansThai-Medium"
+                      : "Poppins-Regular",
+                  color: theme === "dark" ? "#ffffff" : "#000000",
+                }}
                 value={note}
                 onChangeText={setNote}
                 placeholder={t("expense.detail.note")}
@@ -408,11 +467,7 @@ export default function ExpenseDetail({
                   onPress={() => deleteExpense()}
                   className=" items-center justify-center"
                 >
-                  <Ionicons
-                    name="trash-outline"
-                    size={24}
-                    color="#999999"
-                  />
+                  <Ionicons name="trash-outline" size={24} color="#999999" />
                   <CustomText className="text-center mt-1">
                     {t("common.delete")}
                   </CustomText>

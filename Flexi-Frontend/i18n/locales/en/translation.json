@@ -727,6 +727,9 @@
       "description": "Description (optional)",
       "amount": "Amount",
       "note": "Note",
+      "exclVat": "Excl. VAT",
+      "vat": "VAT",
+      "vatIncluded": "VAT Included",   
       "group": {
         "marketing": "Marketing",
         "transport": "Transport",

@@ -24,6 +24,8 @@ interface Expense {
   note: string;
   desc: string;
   channel: Bank;
+  vat : boolean;
+  vatAmount : number;
 }
 
 // Validate the request body
@@ -37,6 +39,8 @@ const schema = Joi.object({
   businessAcc: Joi.number(),
   note: Joi.string(),
   channel: Joi.string(),
+  vat: Joi.boolean().optional(),
+  vatAmount: Joi.number().optional(),
 });
 
 //  create a new expense - Post
@@ -90,6 +94,11 @@ const createExpense = async (req: Request, res: Response) => {
     );
     console.log("Formatted Date", formattedDate);
 
+    // Calcalate vatAmount form 7% of amount
+    if (expenseInput.vat) {
+      expenseInput.vatAmount = expenseInput.amount * 0.07;
+    } 
+
     try {
       const expense = await prisma.expense.create({
         data: {
@@ -103,6 +112,8 @@ const createExpense = async (req: Request, res: Response) => {
           note: expenseInput.note,
           channel: expenseInput.channel,
           save: false,
+          vat: expenseInput.vat,
+          vatAmount: expenseInput.vatAmount
         },
       });
       res.json(expense);
@@ -182,6 +193,11 @@ const updateExpenseById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { memberId } = req.body;
 
+    // Recalculate vatAmount if vat is true and amount is present
+    if (expenseInput.vat && expenseInput.amount) {
+      expenseInput.vatAmount = expenseInput.amount * 0.07;
+    }
+
     try {
       const expense = await prisma.expense.update({
         where: {
@@ -196,6 +212,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
           note: expenseInput.note,
           image: expenseInput.image,
           memberId: expenseInput.memberId,
+          vat: expenseInput.vat,
+          vatAmount: expenseInput.vatAmount,
         },
       });
       res.json(expense);

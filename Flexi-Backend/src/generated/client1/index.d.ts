@@ -11702,12 +11702,14 @@ export namespace Prisma {
   export type ExpenseAvgAggregateOutputType = {
     id: number | null
     amount: Decimal | null
+    vatAmount: Decimal | null
     businessAcc: number | null
   }
 
   export type ExpenseSumAggregateOutputType = {
     id: number | null
     amount: Decimal | null
+    vatAmount: Decimal | null
     businessAcc: number | null
   }
 
@@ -11725,6 +11727,8 @@ export namespace Prisma {
     save: boolean | null
     channel: $Enums.Bank | null
     code: string | null
+    vat: boolean | null
+    vatAmount: Decimal | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11743,6 +11747,8 @@ export namespace Prisma {
     save: boolean | null
     channel: $Enums.Bank | null
     code: string | null
+    vat: boolean | null
+    vatAmount: Decimal | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11761,6 +11767,8 @@ export namespace Prisma {
     save: number
     channel: number
     code: number
+    vat: number
+    vatAmount: number
     businessAcc: number
     memberId: number
     _all: number
@@ -11770,12 +11778,14 @@ export namespace Prisma {
   export type ExpenseAvgAggregateInputType = {
     id?: true
     amount?: true
+    vatAmount?: true
     businessAcc?: true
   }
 
   export type ExpenseSumAggregateInputType = {
     id?: true
     amount?: true
+    vatAmount?: true
     businessAcc?: true
   }
 
@@ -11793,6 +11803,8 @@ export namespace Prisma {
     save?: true
     channel?: true
     code?: true
+    vat?: true
+    vatAmount?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11811,6 +11823,8 @@ export namespace Prisma {
     save?: true
     channel?: true
     code?: true
+    vat?: true
+    vatAmount?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11829,6 +11843,8 @@ export namespace Prisma {
     save?: true
     channel?: true
     code?: true
+    vat?: true
+    vatAmount?: true
     businessAcc?: true
     memberId?: true
     _all?: true
@@ -11934,6 +11950,8 @@ export namespace Prisma {
     save: boolean | null
     channel: $Enums.Bank | null
     code: string | null
+    vat: boolean | null
+    vatAmount: Decimal | null
     businessAcc: number
     memberId: string
     _count: ExpenseCountAggregateOutputType | null
@@ -11971,6 +11989,8 @@ export namespace Prisma {
     save?: boolean
     channel?: boolean
     code?: boolean
+    vat?: boolean
+    vatAmount?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -11991,6 +12011,8 @@ export namespace Prisma {
     save?: boolean
     channel?: boolean
     code?: boolean
+    vat?: boolean
+    vatAmount?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12011,6 +12033,8 @@ export namespace Prisma {
     save?: boolean
     channel?: boolean
     code?: boolean
+    vat?: boolean
+    vatAmount?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12031,11 +12055,13 @@ export namespace Prisma {
     save?: boolean
     channel?: boolean
     code?: boolean
+    vat?: boolean
+    vatAmount?: boolean
     businessAcc?: boolean
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12069,6 +12095,8 @@ export namespace Prisma {
       save: boolean | null
       channel: $Enums.Bank | null
       code: string | null
+      vat: boolean | null
+      vatAmount: Prisma.Decimal | null
       businessAcc: number
       memberId: string
     }, ExtArgs["result"]["expense"]>
@@ -12509,6 +12537,8 @@ export namespace Prisma {
     readonly save: FieldRef<"Expense", 'Boolean'>
     readonly channel: FieldRef<"Expense", 'Bank'>
     readonly code: FieldRef<"Expense", 'String'>
+    readonly vat: FieldRef<"Expense", 'Boolean'>
+    readonly vatAmount: FieldRef<"Expense", 'Decimal'>
     readonly businessAcc: FieldRef<"Expense", 'Int'>
     readonly memberId: FieldRef<"Expense", 'String'>
   }
@@ -29507,6 +29537,8 @@ export namespace Prisma {
     save: 'save',
     channel: 'channel',
     code: 'code',
+    vat: 'vat',
+    vatAmount: 'vatAmount',
     businessAcc: 'businessAcc',
     memberId: 'memberId'
   };
@@ -30771,6 +30803,8 @@ export namespace Prisma {
     save?: BoolNullableFilter<"Expense"> | boolean | null
     channel?: EnumBankNullableFilter<"Expense"> | $Enums.Bank | null
     code?: StringNullableFilter<"Expense"> | string | null
+    vat?: BoolNullableFilter<"Expense"> | boolean | null
+    vatAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30791,6 +30825,8 @@ export namespace Prisma {
     save?: SortOrderInput | SortOrder
     channel?: SortOrderInput | SortOrder
     code?: SortOrderInput | SortOrder
+    vat?: SortOrderInput | SortOrder
+    vatAmount?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     businessId?: BusinessAccOrderByWithRelationInput
@@ -30814,6 +30850,8 @@ export namespace Prisma {
     save?: BoolNullableFilter<"Expense"> | boolean | null
     channel?: EnumBankNullableFilter<"Expense"> | $Enums.Bank | null
     code?: StringNullableFilter<"Expense"> | string | null
+    vat?: BoolNullableFilter<"Expense"> | boolean | null
+    vatAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30834,6 +30872,8 @@ export namespace Prisma {
     save?: SortOrderInput | SortOrder
     channel?: SortOrderInput | SortOrder
     code?: SortOrderInput | SortOrder
+    vat?: SortOrderInput | SortOrder
+    vatAmount?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     _count?: ExpenseCountOrderByAggregateInput
@@ -30860,6 +30900,8 @@ export namespace Prisma {
     save?: BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
     channel?: EnumBankNullableWithAggregatesFilter<"Expense"> | $Enums.Bank | null
     code?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    vat?: BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
+    vatAmount?: DecimalNullableWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntWithAggregatesFilter<"Expense"> | number
     memberId?: StringWithAggregatesFilter<"Expense"> | string
   }
@@ -32783,6 +32825,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
     member: MemberCreateNestedOneWithoutExpenseInput
   }
@@ -32801,6 +32845,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessAcc: number
     memberId: string
   }
@@ -32818,6 +32864,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
@@ -32836,6 +32884,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -32854,6 +32904,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessAcc: number
     memberId: string
   }
@@ -32871,6 +32923,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
   }
 
   export type ExpenseUncheckedUpdateManyInput = {
@@ -32887,6 +32941,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -34966,6 +35022,17 @@ export namespace Prisma {
     not?: NestedEnumBankNullableFilter<$PrismaModel> | $Enums.Bank | null
   }
 
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type ExpenseCountOrderByAggregateInput = {
     date?: SortOrder
     createdAt?: SortOrder
@@ -34980,6 +35047,8 @@ export namespace Prisma {
     save?: SortOrder
     channel?: SortOrder
     code?: SortOrder
+    vat?: SortOrder
+    vatAmount?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -34987,6 +35056,7 @@ export namespace Prisma {
   export type ExpenseAvgOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    vatAmount?: SortOrder
     businessAcc?: SortOrder
   }
 
@@ -35004,6 +35074,8 @@ export namespace Prisma {
     save?: SortOrder
     channel?: SortOrder
     code?: SortOrder
+    vat?: SortOrder
+    vatAmount?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35022,6 +35094,8 @@ export namespace Prisma {
     save?: SortOrder
     channel?: SortOrder
     code?: SortOrder
+    vat?: SortOrder
+    vatAmount?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35029,6 +35103,7 @@ export namespace Prisma {
   export type ExpenseSumOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    vatAmount?: SortOrder
     businessAcc?: SortOrder
   }
 
@@ -35040,6 +35115,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumBankNullableFilter<$PrismaModel>
     _max?: NestedEnumBankNullableFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type EnumSocialMediaFilter<$PrismaModel = never> = {
@@ -37342,6 +37433,14 @@ export namespace Prisma {
     set?: $Enums.Bank | null
   }
 
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput = {
     create?: XOR<BusinessAccCreateWithoutExpenseRecordInput, BusinessAccUncheckedCreateWithoutExpenseRecordInput>
     connectOrCreate?: BusinessAccCreateOrConnectWithoutExpenseRecordInput
@@ -38633,6 +38732,17 @@ export namespace Prisma {
     not?: NestedEnumBankNullableFilter<$PrismaModel> | $Enums.Bank | null
   }
 
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type NestedEnumBankNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Bank | EnumBankFieldRefInput<$PrismaModel> | null
     in?: $Enums.Bank[] | ListEnumBankFieldRefInput<$PrismaModel> | null
@@ -38641,6 +38751,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumBankNullableFilter<$PrismaModel>
     _max?: NestedEnumBankNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumSocialMediaFilter<$PrismaModel = never> = {
@@ -39833,6 +39959,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
   }
 
@@ -39850,6 +39978,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessAcc: number
   }
 
@@ -40224,6 +40354,8 @@ export namespace Prisma {
     save?: BoolNullableFilter<"Expense"> | boolean | null
     channel?: EnumBankNullableFilter<"Expense"> | $Enums.Bank | null
     code?: StringNullableFilter<"Expense"> | string | null
+    vat?: BoolNullableFilter<"Expense"> | boolean | null
+    vatAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
   }
@@ -40524,6 +40656,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     member: MemberCreateNestedOneWithoutExpenseInput
   }
 
@@ -40541,6 +40675,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     memberId: string
   }
 
@@ -45724,6 +45860,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     businessAcc: number
   }
 
@@ -45921,6 +46059,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   }
 
@@ -45938,6 +46078,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -45955,6 +46097,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -46142,6 +46286,8 @@ export namespace Prisma {
     save?: boolean | null
     channel?: $Enums.Bank | null
     code?: string | null
+    vat?: boolean | null
+    vatAmount?: Decimal | DecimalJsLike | number | string | null
     memberId: string
   }
 
@@ -46357,6 +46503,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
 
@@ -46374,6 +46522,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -46391,6 +46541,8 @@ export namespace Prisma {
     save?: NullableBoolFieldUpdateOperationsInput | boolean | null
     channel?: NullableEnumBankFieldUpdateOperationsInput | $Enums.Bank | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    vatAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 

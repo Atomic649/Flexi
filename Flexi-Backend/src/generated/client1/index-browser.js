@@ -235,6 +235,8 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   save: 'save',
   channel: 'channel',
   code: 'code',
+  vat: 'vat',
+  vatAmount: 'vatAmount',
   businessAcc: 'businessAcc',
   memberId: 'memberId'
 };

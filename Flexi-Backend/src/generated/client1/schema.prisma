@@ -319,6 +319,8 @@ model Expense {
   save      Boolean? @default(false)
   channel   Bank?
   code      String?
+  vat       Boolean? @default(false)
+  vatAmount Decimal? @default(0)
 
   // Relation
   businessAcc Int

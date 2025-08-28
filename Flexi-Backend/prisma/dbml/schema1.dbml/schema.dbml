@@ -159,6 +159,8 @@ Table Expense {
   save Boolean [default: false]
   channel Bank
   code String
+  vat Boolean [default: false]
+  vatAmount Decimal [default: 0]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
