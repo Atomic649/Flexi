@@ -734,6 +734,7 @@
       "withHoldingTax": "Withholding Tax",
       "WHTpercent": "WHT %",
       "WHTAmount": "WHT Amount",
+      "downloadWHTDoc": "Download WHT Document",
       "group": {
         "marketing": "Marketing",
         "transport": "Transport",

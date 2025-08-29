@@ -1,3 +1,5 @@
+import { fillWHTTemplateWithThaiFont } from "../utils/pdfWHTTemplateThai";
+import path from "path";
 import { Request, Response } from "express";
 import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
 import Joi from "joi";
@@ -65,7 +67,9 @@ const createExpense = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
-      image: req.file ? (req.file as any)?.location ?? "" : req.body.image ?? "",
+      image: req.file
+        ? (req.file as any)?.location ?? ""
+        : req.body.image ?? "",
       desc: req.body.desc ?? "",
     };
 
@@ -102,11 +106,12 @@ const createExpense = async (req: Request, res: Response) => {
     // Calcalate vatAmount form 7% of amount
     if (expenseInput.vat) {
       expenseInput.vatAmount = expenseInput.amount * 0.07;
-    } 
+    }
 
     // Calculate WHTAmount form withHoldingTax and WHTpercent
     if (expenseInput.withHoldingTax) {
-      expenseInput.WHTAmount = expenseInput.amount * (expenseInput.WHTpercent ?? 0) / 100;
+      expenseInput.WHTAmount =
+        (expenseInput.amount * (expenseInput.WHTpercent ?? 0)) / 100;
     }
 
     try {
@@ -126,7 +131,7 @@ const createExpense = async (req: Request, res: Response) => {
           vatAmount: expenseInput.vatAmount,
           withHoldingTax: expenseInput.withHoldingTax ?? false,
           WHTAmount: expenseInput.WHTAmount ?? 0,
-          WHTpercent: expenseInput.WHTpercent ?? 0
+          WHTpercent: expenseInput.WHTpercent ?? 0,
         },
       });
       res.json(expense);
@@ -172,10 +177,10 @@ const getExpenseById = async (req: Request, res: Response) => {
         group: true,
         vat: true,
         vatAmount: true,
-  withHoldingTax: true,
-  WHTAmount: true,
-  WHTpercent: true
-      }
+        withHoldingTax: true,
+        WHTAmount: true,
+        WHTpercent: true,
+      },
     });
     res.json(expense);
   } catch (e) {
@@ -229,7 +234,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
 
     // Recalculate WHTAmount if withHoldingTax is true and WHTpercent is present
     if (expenseInput.withHoldingTax && expenseInput.WHTpercent) {
-      expenseInput.WHTAmount = (expenseInput.amount * expenseInput.WHTpercent) / 100;
+      expenseInput.WHTAmount =
+        (expenseInput.amount * expenseInput.WHTpercent) / 100;
     }
 
     try {
@@ -250,7 +256,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           vatAmount: expenseInput.vatAmount,
           withHoldingTax: expenseInput.withHoldingTax ?? false,
           WHTAmount: expenseInput.WHTAmount ?? 0,
-          WHTpercent: expenseInput.WHTpercent ?? 0
+          WHTpercent: expenseInput.WHTpercent ?? 0,
         },
       });
       res.json(expense);
@@ -345,18 +351,20 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
     }
     const expense = await prisma.expense.aggregate({
       _sum: {
-      amount: true,
+        amount: true,
       },
       where: {
-      memberId: memberId as string,
-      date: {
-        gte: new Date(new Date().getFullYear(), 0, 1),
-        lte: new Date(new Date().getFullYear(), 11, 31),
-      },
+        memberId: memberId as string,
+        date: {
+          gte: new Date(new Date().getFullYear(), 0, 1),
+          lte: new Date(new Date().getFullYear(), 11, 31),
+        },
       },
     });
     if (!expense || !expense._sum.amount) {
-      return res.status(404).json({ message: "No expenses found for this year" });
+      return res
+        .status(404)
+        .json({ message: "No expenses found for this year" });
     }
     const amountNumber = Number(expense._sum.amount);
     const anualExpenseM = amountNumber.toFixed(2); // Format to 2 decimal places
@@ -364,11 +372,39 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Expense API:", anualExpenseM);
     res.json({
-      anualExpenseM
+      anualExpenseM,
     });
-    } catch (e) {
+  } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to get this year expense" });
+  }
+};
+
+// API endpoint to fill WHTTemplate.pdf with Thai font and return the filled PDF (stream, no save)
+const generateWHTDocument = async (req: Request, res: Response) => {
+  try {
+    const { taxpayerName, taxpayerId, amount, date } = req.body;
+    const positions = {
+      taxpayerName: { x: 100, y: 700, size: 14 },
+      taxpayerId: { x: 100, y: 680, size: 12 },
+      amount: { x: 400, y: 650, size: 12 },
+      date: { x: 400, y: 630, size: 12 },
+    };
+    const fields = { taxpayerName, taxpayerId, amount, date };
+    const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
+    const thaiFontPath = path.resolve(__dirname, "../../fonts/THSarabunNew.ttf");
+    const pdfBuffer = await fillWHTTemplateWithThaiFont({
+      templatePath,
+      fields,
+      positions,
+      thaiFontPath,
+    });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=WHTDocument.pdf");
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to generate WHT document" });
   }
 };
 
@@ -380,5 +416,6 @@ export {
   searchExpenseByDate,
   autoDeleteExpense,
   deleteExpenseById,
-  getThisYearExpensesAPI
+  getThisYearExpensesAPI,
+  generateWHTDocument,
 };

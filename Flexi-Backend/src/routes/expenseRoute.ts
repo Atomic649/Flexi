@@ -6,7 +6,8 @@ import {
   updateExpenseById, 
   searchExpenseByDate,
   getThisYearExpensesAPI,
-  deleteExpenseById
+  deleteExpenseById,
+  generateWHTDocument
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -30,9 +31,9 @@ router.get("/search/:date", authenticateToken, searchExpenseByDate);
 // Delete a Expense by ID
 router.delete("/:id", authenticateToken, deleteExpenseById);
 
-
 // Get this year's expenses by memberId
 router.get("/year/expense", authenticateToken, getThisYearExpensesAPI);
 
+router.post("/generate-wht-document", authenticateToken, generateWHTDocument);
 
 export default router;

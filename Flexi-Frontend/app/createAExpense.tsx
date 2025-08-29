@@ -396,30 +396,34 @@ export default function CreateExpense({
                         {t("expense.detail.withHoldingTax")}
                       </CustomText>
                     </TouchableOpacity>
-                    <TextInput
-                      style={{
-                        width: 60,
-                        borderWidth: 1,
-                        borderColor: theme === "dark" ? "#444" : "#ccc",
-                        borderRadius: 8,
-                        padding: 4,
-                        color: theme === "dark" ? "#fff" : "#000",
-                        textAlign: "center",
-                      }}
-                      value={WHTpercent.toString()}
-                      onChangeText={(val) => {
-                        const num = parseFloat(val);
-                        setWHTpercent(isNaN(num) ? 0 : num);
-                        setWHTAmount(
-                          Number(amount)
-                            ? (Number(amount) * (isNaN(num) ? 0 : num)) / 100
-                            : 0
-                        );
-                      }}
-                      placeholder={t("expense.detail.percent")}
-                      keyboardType="numeric"
-                    />
-                    <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                    {withHoldingTax && (
+                      <>
+                        <TextInput
+                          style={{
+                            width: 60,
+                            borderWidth: 1,
+                            borderColor: theme === "dark" ? "#444" : "#ccc",
+                            borderRadius: 8,
+                            padding: 4,
+                            color: theme === "dark" ? "#fff" : "#000",
+                            textAlign: "center",
+                          }}
+                          value={WHTpercent.toString()}
+                          onChangeText={(val) => {
+                            const num = parseFloat(val);
+                            setWHTpercent(isNaN(num) ? 0 : num);
+                            setWHTAmount(
+                              Number(amount)
+                                ? (Number(amount) * (isNaN(num) ? 0 : num)) / 100
+                                : 0
+                            );
+                          }}
+                          placeholder={t("expense.detail.percent")}
+                          keyboardType="numeric"
+                        />
+                        <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                      </>
+                    )}
                   </>
                 )}
               </View>

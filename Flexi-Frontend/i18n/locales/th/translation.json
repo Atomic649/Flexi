@@ -733,7 +733,7 @@
       "withHoldingTax": "หัก ณ ที่จ่าย",
       "WHTpercent": " % หัก ณ ที่จ่าย",
       "WHTAmount": "หัก ณ ที่จ่าย",
-
+      "downloadWHTDoc": "หนังสือรับรองการหักภาษี ณ ที่จ่าย",
       "group": {
         "marketing": "การตลาด",
         "transport": "ค่าขนส่ง",

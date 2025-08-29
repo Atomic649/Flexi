@@ -8,6 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { View } from "@/components/Themed";
+import * as Print from "expo-print";
 import CustomButton from "@/components/CustomButton";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -275,6 +276,59 @@ export default function ExpenseDetail({
         : "bg-zinc-200"
     }`;
 
+  async function downloadWHTDoc(): Promise<void> {
+    try {
+      // Prepare data for WHT document
+      const taxpayerName = note || "";
+      const taxpayerId = group || "";
+      const amountStr = amount ? amount.toString() : "";
+      const dateStr = date ? formatDate(date) : "";
+      // Call API to get WHT document PDF blob
+      const pdfBlob = await CallAPIExpense.downloadWHTDocAPI({
+        taxpayerName,
+        taxpayerId,
+        amount: amountStr,
+        date: dateStr,
+      });
+      const fileName = `WHTDocument_${expense.id}.pdf`;
+      let fileUri: string;
+      if (Platform.OS === "web") {
+        // For web, create object URL and print
+        fileUri = window.URL.createObjectURL(pdfBlob);
+        await Print.printAsync({ uri: fileUri });
+        window.URL.revokeObjectURL(fileUri);
+      } else {
+        // For mobile, save and print
+        fileUri = `${require("expo-file-system").documentDirectory}${fileName}`;
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const resultStr =
+            typeof reader.result === "string" ? reader.result : "";
+          const base64 = resultStr.split(",")[1] || "";
+          await require("expo-file-system").writeAsStringAsync(
+            fileUri,
+            base64,
+            { encoding: require("expo-file-system").EncodingType.Base64 }
+          );
+          await Print.printAsync({ uri: fileUri });
+        };
+        reader.readAsDataURL(pdfBlob);
+      }
+    } catch (error: any) {
+      setAlertConfig({
+        visible: true,
+        title: t("expense.detail.downloadWHTDoc"),
+        message: error.message || t("expense.detail.downloadWHTDocError"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  }
   return (
     <Modal
       visible={isVisible}
@@ -357,7 +411,10 @@ export default function ExpenseDetail({
                 keyboardType="numeric"
               />
 
-              {((vat && vatIncluded) || (DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax)) && (
+              {((vat && vatIncluded) ||
+                (DocumentType &&
+                  DocumentType.includes("WithholdingTax") &&
+                  withHoldingTax)) && (
                 <View
                   style={{
                     marginTop: 8,
@@ -366,7 +423,9 @@ export default function ExpenseDetail({
                     alignItems: "flex-start",
                   }}
                 >
-                  <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+                  <View
+                    style={{ flexDirection: "column", alignItems: "flex-end" }}
+                  >
                     {vat && vatIncluded && (
                       <>
                         <CustomText style={{ textAlign: "right" }}>
@@ -377,13 +436,21 @@ export default function ExpenseDetail({
                         </CustomText>
                       </>
                     )}
-                    {DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax && (
-                      <CustomText style={{ textAlign: "right" }}>
-                        {t("expense.detail.WHTAmount") + " :"}
-                      </CustomText>
-                    )}
+                    {DocumentType &&
+                      DocumentType.includes("WithholdingTax") &&
+                      withHoldingTax && (
+                        <CustomText style={{ textAlign: "right" }}>
+                          {t("expense.detail.WHTAmount") + " :"}
+                        </CustomText>
+                      )}
                   </View>
-                  <View style={{ flexDirection: "column", alignItems: "flex-end", marginLeft: 12 }}>
+                  <View
+                    style={{
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      marginLeft: 12,
+                    }}
+                  >
                     {vat && vatIncluded && (
                       <>
                         <CustomText style={{ textAlign: "left" }}>
@@ -398,13 +465,18 @@ export default function ExpenseDetail({
                         </CustomText>
                       </>
                     )}
-                    {DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax && (
-                      <CustomText style={{ textAlign: "left" }}>
-                        {typeof WHTAmount === "number" && !isNaN(WHTAmount)
-                          ? WHTAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                          : "0.00"}
-                      </CustomText>
-                    )}
+                    {DocumentType &&
+                      DocumentType.includes("WithholdingTax") &&
+                      withHoldingTax && (
+                        <CustomText style={{ textAlign: "left" }}>
+                          {typeof WHTAmount === "number" && !isNaN(WHTAmount)
+                            ? WHTAmount.toFixed(2).replace(
+                                /\B(?=(\d{3})+(?!\d))/g,
+                                ","
+                              )
+                            : "0.00"}
+                        </CustomText>
+                      )}
                   </View>
                 </View>
               )}
@@ -455,25 +527,29 @@ export default function ExpenseDetail({
                         {t("expense.detail.withHoldingTax")}
                       </CustomText>
                     </TouchableOpacity>
-                    <TextInput
-                      style={{
-                        width: 60,
-                        borderWidth: 1,
-                        borderColor: theme === "dark" ? "#444" : "#ccc",
-                        borderRadius: 8,
-                        padding: 4,
-                        color: theme === "dark" ? "#fff" : "#000",
-                        textAlign: "center",
-                      }}
-                      value={WHTpercent.toString()}
-                      onChangeText={(val) => {
-                        const num = parseFloat(val);
-                        setWHTpercent(isNaN(num) ? 0 : num);
-                      }}
-                      placeholder={t("expense.detail.percent")}
-                      keyboardType="numeric"
-                    />
-                    <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                    {withHoldingTax && (
+                      <>
+                        <TextInput
+                          style={{
+                            width: 60,
+                            borderWidth: 1,
+                            borderColor: theme === "dark" ? "#444" : "#ccc",
+                            borderRadius: 8,
+                            padding: 4,
+                            color: theme === "dark" ? "#fff" : "#000",
+                            textAlign: "center",
+                          }}
+                          value={WHTpercent.toString()}
+                          onChangeText={(val) => {
+                            const num = parseFloat(val);
+                            setWHTpercent(isNaN(num) ? 0 : num);
+                          }}
+                          placeholder={t("expense.detail.percent")}
+                          keyboardType="numeric"
+                        />
+                        <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                      </>
+                    )}
                   </>
                 )}
               </View>
@@ -615,6 +691,25 @@ export default function ExpenseDetail({
                   textStyles="!text-white"
                 />
               </View>
+
+              {/* Download WHT Doc & Preview */}
+              {withHoldingTax && WHTAmount > 0 && (
+                <View className="flex-row justify-evenly mt-2">
+                  <TouchableOpacity
+                    onPress={() => downloadWHTDoc()}
+                    className=" items-center justify-center"
+                  >
+                    <CustomText
+                      className="text-center mt-1"
+                      weight="bold"
+                      link={true}
+                    >
+                      {t("expense.detail.downloadWHTDoc")}
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {/* PDF Preview Modal removed: printing is now direct on both web and mobile */}
             </View>
           </TouchableOpacity>
         </ScrollView>
