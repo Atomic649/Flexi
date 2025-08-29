@@ -1,0 +1,287 @@
+import { format } from "date-fns";
+
+interface MonthlyReportData {
+  selectedMonth: Date;
+  businessDetails: any;
+  businessName: string | null;
+  monthlyTotals: {
+    totalSales: number;
+    totalOrders: number;
+    paidOrders: number;
+    unpaidOrders: number;
+    averageOrderValue: number;
+  };
+  expenses: any[]; // Renamed from bills to expenses
+  t: any;
+  formatCurrencyForPDF: (amount: number) => string;
+  formatDate: (dateString: string) => string;
+  formatMonthYear: (date: Date, t: any) => string;
+}
+
+export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
+  const {
+    selectedMonth,
+    businessDetails,
+    businessName,
+    monthlyTotals,
+    expenses, // Renamed from bills to expenses
+    t,
+    formatCurrencyForPDF,
+    formatDate,
+    formatMonthYear,
+  } = data;
+
+  // Only include expenses with DocumentType === 'Receipt'
+  const receiptExpenses = expenses.filter(expense => {
+    if (Array.isArray(expense.DocumentType)) {
+      return expense.DocumentType.includes('Receipt');
+    }
+    return expense.DocumentType === 'Receipt';
+  });
+
+  // Recalculate monthlyTotals based on receiptExpenses
+  const totalSales = receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0);
+  const totalOrders = receiptExpenses.length;
+  const paidOrders = receiptExpenses.filter((expense: any) => expense.cashStatus).length;
+  const unpaidOrders = receiptExpenses.filter((expense: any) => !expense.cashStatus).length;
+  const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
+  const filteredMonthlyTotals = {
+    totalSales,
+    totalOrders,
+    paidOrders,
+    unpaidOrders,
+    averageOrderValue,
+  };
+
+  // Check if business is VAT registered
+  const isVatRegistered = businessDetails?.vat === true;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>${isVatRegistered  ? t("print.salesTaxVatSummary"): t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
+        <style>
+          @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+          }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            padding: 0; 
+            font-size: 12px;
+            line-height: 1.4;
+          }
+          .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+          }
+          h1 { 
+            font-size: 24px; 
+            margin-bottom: 10px; 
+            text-align: center;
+            color: #333;
+          }
+          h2 { 
+            font-size: 18px; 
+            margin-bottom: 15px; 
+            text-align: center;
+            color: #555;
+          }
+          h3 { 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            color: #333;
+            border-bottom: 2px solid #5e5e5e;
+            padding-bottom: 5px;
+          }
+          p { 
+            font-size: 12px; 
+            line-height: 1.6; 
+            margin: 5px 0; 
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            font-size: 11px;
+          }
+          th, td { 
+            padding: 8px; 
+            text-align: left; 
+            border: 1px solid #ddd; 
+          }
+          th { 
+            background-color: #5e5e5e; 
+            color: white;
+            font-weight: bold;
+          }
+          tr:nth-child(even) { 
+            background-color: #f9f9f9; 
+          }
+          .text-center { text-align: center; }
+          .text-right { text-align: right; }
+          .bold { font-weight: bold; }
+          .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+          }
+          .summary-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f9fa;
+          }
+          .summary-card .label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+          }
+          .summary-card .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+          }
+          .company-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+          }
+          .footer { 
+            margin-top: 30px;
+            text-align: center; 
+            font-size: 10px; 
+            color: #888; 
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+          }
+          .status-paid { 
+            color: #059669; 
+            font-weight: bold; 
+          }
+          .status-unpaid { 
+            color: #dc2626; 
+            font-weight: bold; 
+          }
+          .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>${isVatRegistered ? t("print.salesTaxVatSummary") : t("print.salesTaxSummary")}</h1>
+          <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
+
+          <div class="company-info">
+            <h3>${businessDetails?.taxType === "Juristic" ? t("print.companyInformation") : t("print.storeInformation")}</h3>
+            <p><strong>${businessDetails?.taxType === "Juristic" ? t("print.companyName") : t("print.storeName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
+            <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
+            <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
+          </div>
+
+          <h3>${t("print.monthlySummary")}</h3>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="label">${t("print.totalSales")}</div>
+              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales)}</div>
+            </div>
+            <div class="summary-card">
+              <div class="label">${t("print.totalOrders")}</div>
+              <div class="value">${filteredMonthlyTotals.totalOrders}</div>
+            </div>
+            <div class="summary-card">
+              <div class="label">${t("print.paidOrders")}</div>
+              <div class="value">${filteredMonthlyTotals.paidOrders} (${filteredMonthlyTotals.totalOrders > 0 ? Math.round((filteredMonthlyTotals.paidOrders / filteredMonthlyTotals.totalOrders) * 100) : 0}%)</div>
+            </div>
+            <div class="summary-card">
+              <div class="label">${t("print.unpaidOrders")}</div>
+              <div class="value">${filteredMonthlyTotals.unpaidOrders} (${filteredMonthlyTotals.totalOrders > 0 ? Math.round((filteredMonthlyTotals.unpaidOrders / filteredMonthlyTotals.totalOrders) * 100) : 0}%)</div>
+            </div>
+            <div class="summary-card">
+              <div class="label">${t("print.avgOrderValue")}</div>
+              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.averageOrderValue)}</div>
+            </div>
+            ${isVatRegistered ? `
+            <div class="summary-card">
+              <div class="label">${t("print.vatAmount")} (7%)</div>
+              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales * 0.07)}</div>
+            </div>
+            ` : ''}
+          </div>
+
+          <h3>${isVatRegistered ? t("print.taxInvoiceList") : t("print.receiptList")}</h3>
+          ${receiptExpenses.length > 0 ? `
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>${t("print.date")}</th>
+                  <th>${t("print.invoiceNo")}</th>
+                  <th>${t("print.customer")}</th>
+                  <th>${t("print.productDetails")}</th>
+                  <th class="text-right">${t("print.price")}</th>
+                  ${isVatRegistered ? `<th class="text-right">VAT (7%)</th>
+                  <th class="text-right">${t("print.total")}</th>` : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${receiptExpenses.map((expense: any, index: number) => {
+                  // Multi-product: sum all product items for this expense
+                  const productItems = expense.product || [];
+                  const subtotal = productItems.reduce((sum: number, item: any) => sum + (item.unitPrice * item.quantity), 0);
+                  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
+                  const total = subtotal + vatAmount;
+                  return `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${formatDate(expense.purchaseAt)}</td>
+                      <td>#${expense.billId}</td>
+                      <td>${expense.cName || ''} ${expense.cLastName || ''}</td>
+                      <td>
+                        <ul style="margin:0; padding-left:16px;">
+                          ${productItems.map((item: any, idx: any) =>
+                            `<li>${item.product || '-'} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ''}` : ''} </li>`
+                          ).join('')}
+                        </ul>
+                      </td>
+                      <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
+                      ${isVatRegistered ? `<td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(total)}</td>` : ''}
+                    </tr>
+                  `;
+                }).join('')}
+                <tr style="background-color: #e5e7eb; font-weight: bold;">
+                  <td colspan="5" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0))}</td>
+                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)) * 0.07, 0))}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => {
+                    const subtotal = (expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0);
+                    const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
+                    return sum + subtotal + vatAmount;
+                  }, 0))}</td>` : ''}
+                </tr>
+              </tbody>
+            </table>
+          ` : `
+            <div class="no-data">
+              ${t("print.noInvoicesFound")}
+            </div>
+          `}
+
+          <div class="footer">
+            ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business Hub
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+};

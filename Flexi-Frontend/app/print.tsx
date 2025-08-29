@@ -27,6 +27,7 @@ import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
+import {generateExpenseReportHTML} from "@/components/PDFTemplates/MonthlyExpenseReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
@@ -147,6 +148,9 @@ export default function Print() {
     unpaidOrders: 0,
     averageOrderValue: 0,
   });
+
+  // Add expenses state
+  const [expenses, setExpenses] = useState<any[]>([]);
 
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
@@ -620,14 +624,22 @@ export default function Print() {
       // Show options for mobile: "Save as PDF" or "Cancel"
       setAlertConfig({
         visible: true,
-        title: t("print.mobileOptions"),
+        title: t("print.saveAsPdf"),
         message: t("print.saveAsPdfOption"),
         buttons: [
           {
-            text: t("print.saveAsPdf"),
+            text: t("print.incomeReport"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              saveToPDF();
+              saveIncomeReportToPDF();
+            },
+           
+          },
+          {
+            text: t("print.expenseReport"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              saveExpenseReportToPDF();
             },
           },
           {
@@ -751,7 +763,7 @@ export default function Print() {
   };
 
   // Function to save HTML content as PDF
-  const saveToPDF = async () => {
+  const saveIncomeReportToPDF = async () => {
     // Hide any previous loading indicator before starting
     setAlertConfig((prev) => ({ ...prev, visible: false }));
 
@@ -813,6 +825,64 @@ export default function Print() {
       });
     }
   };
+
+  const saveExpenseReportToPDF = async () =>{
+        // Hide any previous loading indicator before starting
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+
+    // Show loading indicator
+    setAlertConfig({
+      visible: true,
+      title: t("print.generating"),
+      message: t("print.generatingPdf"),
+      buttons: [],
+    });
+
+    try {
+      // Generate HTML content for expense report
+      const htmlContent = generateExpenseReportHTML({
+        selectedMonth,
+        businessDetails,
+        businessName,
+        monthlyTotals,
+        expenses,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+        formatMonthYear,
+      });
+
+      await ExpoPrint.printAsync({
+        html: htmlContent,
+      });
+
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+    } catch (error) {
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (
+        errorMessage.includes("cancelled") ||
+        errorMessage.includes("dismissed") ||
+        errorMessage.includes("user") ||
+        errorMessage.includes("Printing did not complete") ||
+        errorMessage.includes("did not complete")
+      ) {
+        return;
+      }
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${errorMessage}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  }
 
   // Function to handle saving individual invoice as PDF for mobile
   const saveInvoiceToPDF = async () => {
@@ -1162,12 +1232,7 @@ export default function Print() {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <View className="flex-row">
-              {/* <CustomText weight="bold" className="mb-4 text-lg">
-                {isVatRegistered
-                  ? t("print.monthlyTaxInvoices")
-                  : t("print.monthlyReceipts")}
-              </CustomText> */}
+            <View className="flex-row">           
               <CustomText className="mb-1">#</CustomText>
               <CustomText weight="bold" className="mb-1 text-base">
                 {invoice.billId}
@@ -1721,7 +1786,7 @@ export default function Print() {
                   color={theme === "dark" ? "#ffffff" : "#393838"}
                   style={{ marginRight: 8 }}
                 />
-                <CustomText>{t("print.incomeReport")}</CustomText>
+                <CustomText>{t("print.monthlyReport")}</CustomText>
               </TouchableOpacity>
             )}
           </View>
