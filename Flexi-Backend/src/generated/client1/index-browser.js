@@ -443,7 +443,10 @@ exports.taxType = exports.$Enums.taxType = {
 exports.DocumentType = exports.$Enums.DocumentType = {
   Invoice: 'Invoice',
   Receipt: 'Receipt',
-  Quotation: 'Quotation'
+  Quotation: 'Quotation',
+  DebitNote: 'DebitNote',
+  CreditNote: 'CreditNote',
+  WithholdingTax: 'WithholdingTax'
 };
 
 exports.Gender = exports.$Enums.Gender = {

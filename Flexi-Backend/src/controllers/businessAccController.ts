@@ -30,7 +30,7 @@ interface businessAccInput {
   businessWebsite?: string;
   businessPhone?: string;
   vat?: boolean;
-  DocumentType?: ("Invoice" | "Receipt" | "Quotation")[];
+  DocumentType?: ("Invoice" | "Receipt" | "Quotation"|"WithholdingTax")[];
 }
 
 // validate the request body
@@ -47,7 +47,7 @@ const schema = Joi.object({
   buisnessWebsite: Joi.string(),
   vat: Joi.boolean().optional().default(false),
   DocumentType: Joi.array()
-    .items(Joi.string().valid("Invoice", "Receipt", "Quotation"))
+    .items(Joi.string().valid("Invoice", "Receipt", "Quotation", "WithholdingTax"))
     .optional()
     .default(["Receipt"]),
 });

@@ -493,6 +493,9 @@ Enum DocumentType {
   Invoice
   Receipt
   Quotation
+  DebitNote
+  CreditNote
+  WithholdingTax
 }
 
 Ref: Member.userId > User.id

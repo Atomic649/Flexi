@@ -146,7 +146,8 @@
       "documentType": {
         "Invoice": "Invoice",
         "Receipt": "Receipt/Tax Invoice",
-        "Quotation": "Quotation"
+        "Quotation": "Quotation",
+        "WithholdingTax": "Withholding Tax Document"
       }
     }
   },

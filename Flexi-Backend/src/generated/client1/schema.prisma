@@ -152,6 +152,9 @@ enum DocumentType {
   Invoice
   Receipt
   Quotation
+  DebitNote
+  CreditNote
+  WithholdingTax
 }
 
 model User {

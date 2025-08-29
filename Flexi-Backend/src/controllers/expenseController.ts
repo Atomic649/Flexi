@@ -227,6 +227,11 @@ const updateExpenseById = async (req: Request, res: Response) => {
       expenseInput.vatAmount = expenseInput.amount * 0.07;
     }
 
+    // Recalculate WHTAmount if withHoldingTax is true and WHTpercent is present
+    if (expenseInput.withHoldingTax && expenseInput.WHTpercent) {
+      expenseInput.WHTAmount = (expenseInput.amount * expenseInput.WHTpercent) / 100;
+    }
+
     try {
       const expense = await prisma.expense.update({
         where: {

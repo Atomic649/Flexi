@@ -119,7 +119,7 @@ class CallAPIBusiness {
       businessType: string;
       taxType: string;
       vat: boolean;
-      DocumentType?: ("Invoice" | "Receipt" | "Quotation")[];
+      DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
     }
   ): Promise<any> {
     try {

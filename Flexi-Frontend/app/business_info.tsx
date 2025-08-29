@@ -24,7 +24,8 @@ export default function BusinessInfo() {
   const [vatId, setvatId] = useState("");
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
-  const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation")[]>(["Receipt"]);
+  type DocumentTypeOption = "Invoice" | "Receipt" | "Quotation" | "WithholdingTax";
+  const [documentTypes, setDocumentTypes] = useState<DocumentTypeOption[]>(["Receipt"]);
   const [error, setError] = useState("");
 
   // Add alert config state
@@ -48,10 +49,9 @@ export default function BusinessInfo() {
   const [businessAddress, setBusinessAddress] = useState("");
 
   // Handle document type selection
-  const handleDocumentTypeToggle = (type: "Invoice" | "Receipt" | "Quotation") => {
+  const handleDocumentTypeToggle = (type: DocumentTypeOption) => {
     // Don't allow unchecking Receipt as it's required
     if (type === "Receipt") return;
-    
     setDocumentTypes(prev => {
       if (prev.includes(type)) {
         return prev.filter(t => t !== type);
@@ -356,7 +356,7 @@ export default function BusinessInfo() {
                 {t("auth.businessRegister.documentTypes")}
               </CustomText>
               
-              {(["Quotation","Invoice", "Receipt" ] as const).map((type) => (
+              {(["Quotation","Invoice", "Receipt", "WithholdingTax" ] as DocumentTypeOption[]).map((type) => (
                 <TouchableOpacity
                   key={type}
                   style={{

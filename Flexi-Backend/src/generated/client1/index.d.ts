@@ -292,7 +292,10 @@ export type OptionName = (typeof OptionName)[keyof typeof OptionName]
 export const DocumentType: {
   Invoice: 'Invoice',
   Receipt: 'Receipt',
-  Quotation: 'Quotation'
+  Quotation: 'Quotation',
+  DebitNote: 'DebitNote',
+  CreditNote: 'CreditNote',
+  WithholdingTax: 'WithholdingTax'
 };
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]

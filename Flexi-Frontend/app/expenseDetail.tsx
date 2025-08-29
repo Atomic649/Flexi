@@ -19,6 +19,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import i18n from "@/i18n";
+import { useBusiness } from "@/providers/BusinessProvider";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -76,6 +77,7 @@ export default function ExpenseDetail({
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isVisible, setIsVisible] = useState(visible);
+  const { vat, DocumentType } = useBusiness();
   const [vatIncluded, setVatIncluded] = useState(expense.vat);
   const [vatAmount, setVatAmount] = useState(expense.vatAmount);
   const [withHoldingTax, setWithHoldingTax] = useState(
@@ -242,6 +244,9 @@ export default function ExpenseDetail({
       formData.append("amount", amount);
       formData.append("group", group);
       formData.append("vat", vatIncluded ? "true" : "false");
+      // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
+      formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+      formData.append("WHTpercent", WHTpercent.toString());
       if (image) {
         formData.append("image", {
           uri: image,
@@ -352,9 +357,7 @@ export default function ExpenseDetail({
                 keyboardType="numeric"
               />
 
-            
-
-              {(vatIncluded || withHoldingTax) && (
+              {((vat && vatIncluded) || (DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax)) && (
                 <View
                   style={{
                     marginTop: 8,
@@ -363,10 +366,8 @@ export default function ExpenseDetail({
                     alignItems: "flex-start",
                   }}
                 >
-                  <View
-                    style={{ flexDirection: "column", alignItems: "flex-end" }}
-                  >
-                    {vatIncluded && (
+                  <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+                    {vat && vatIncluded && (
                       <>
                         <CustomText style={{ textAlign: "right" }}>
                           {t("expense.detail.exclVat") + " :"}
@@ -376,20 +377,14 @@ export default function ExpenseDetail({
                         </CustomText>
                       </>
                     )}
-                    {withHoldingTax && (
+                    {DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax && (
                       <CustomText style={{ textAlign: "right" }}>
                         {t("expense.detail.WHTAmount") + " :"}
                       </CustomText>
                     )}
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      marginLeft: 12,
-                    }}
-                  >
-                    {vatIncluded && (
+                  <View style={{ flexDirection: "column", alignItems: "flex-end", marginLeft: 12 }}>
+                    {vat && vatIncluded && (
                       <>
                         <CustomText style={{ textAlign: "left" }}>
                           {(Number(amount) / 1.07)
@@ -403,7 +398,7 @@ export default function ExpenseDetail({
                         </CustomText>
                       </>
                     )}
-                    {withHoldingTax && (
+                    {DocumentType && DocumentType.includes("WithholdingTax") && withHoldingTax && (
                       <CustomText style={{ textAlign: "left" }}>
                         {typeof WHTAmount === "number" && !isNaN(WHTAmount)
                           ? WHTAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -414,58 +409,74 @@ export default function ExpenseDetail({
                 </View>
               )}
 
-
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", marginTop: 8 }}>
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center", marginRight: 24 }}
-                  onPress={() => setVatIncluded(!vatIncluded)}
-                >
-                  <Ionicons
-                    name={vatIncluded ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
-                  />
-                  <CustomText className="ml-2">
-                    {t("expense.detail.vatIncluded")}
-                  </CustomText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}
-                  onPress={() => setWithHoldingTax(!withHoldingTax)}
-                >
-                  <Ionicons
-                    name={withHoldingTax ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
-                  />
-                  <CustomText style={{ textAlign: "right", marginLeft: 8 }}>
-                    {t("expense.detail.withHoldingTax")}
-                  </CustomText>
-                </TouchableOpacity>
-                <TextInput
-                  style={{
-                    width: 60,
-                    borderWidth: 1,
-                    borderColor: theme === "dark" ? "#444" : "#ccc",
-                    borderRadius: 8,
-                    padding: 4,
-                    color: theme === "dark" ? "#fff" : "#000",
-                    textAlign: "center",
-                  }}
-                  value={WHTpercent.toString()}
-                  onChangeText={(val) => {
-                    const num = parseFloat(val);
-                    setWHTpercent(isNaN(num) ? 0 : num);
-                  }}
-                  placeholder={t("expense.detail.percent")}
-                  keyboardType="numeric"
-                />
-                <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginTop: 8,
+                }}
+              >
+                {vat && (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 24,
+                    }}
+                    onPress={() => setVatIncluded(!vatIncluded)}
+                  >
+                    <Ionicons
+                      name={vatIncluded ? "checkbox" : "square-outline"}
+                      size={22}
+                      color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                    />
+                    <CustomText className="ml-2">
+                      {t("expense.detail.vatIncluded")}
+                    </CustomText>
+                  </TouchableOpacity>
+                )}
+                {DocumentType && DocumentType.includes("WithholdingTax") && (
+                  <>
+                    <TouchableOpacity
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 8,
+                      }}
+                      onPress={() => setWithHoldingTax(!withHoldingTax)}
+                    >
+                      <Ionicons
+                        name={withHoldingTax ? "checkbox" : "square-outline"}
+                        size={22}
+                        color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                      />
+                      <CustomText style={{ textAlign: "right", marginLeft: 8 }}>
+                        {t("expense.detail.withHoldingTax")}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <TextInput
+                      style={{
+                        width: 60,
+                        borderWidth: 1,
+                        borderColor: theme === "dark" ? "#444" : "#ccc",
+                        borderRadius: 8,
+                        padding: 4,
+                        color: theme === "dark" ? "#fff" : "#000",
+                        textAlign: "center",
+                      }}
+                      value={WHTpercent.toString()}
+                      onChangeText={(val) => {
+                        const num = parseFloat(val);
+                        setWHTpercent(isNaN(num) ? 0 : num);
+                      }}
+                      placeholder={t("expense.detail.percent")}
+                      keyboardType="numeric"
+                    />
+                    <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                  </>
+                )}
               </View>
-              
-
-             
-
 
               <TextInput
                 className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
