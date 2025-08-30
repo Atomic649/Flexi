@@ -18,17 +18,18 @@ import { getAxiosWithAuth } from "@/utils/axiosInstance";
 
 class CallAPIExpense {
   // Download WHT Document PDF from backend
-  async downloadWHTDocAPI({ taxpayerName, taxpayerId, amount, date }: {
-    taxpayerName: string;
-    taxpayerId: string;
+  async downloadWHTDocAPI({ sName, sTaxId, amount, date, taxInvoiceNo }: {
+    sName: string;
+    sTaxId: string;
     amount: string;
     date: string;
+    taxInvoiceNo: string;
   }): Promise<Blob> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(
         `/expense/generate-wht-document`,
-        { taxpayerName, taxpayerId, amount, date },
+        { sName, sTaxId, amount, date, taxInvoiceNo },
         { responseType: 'blob' }
       );
       return response.data;

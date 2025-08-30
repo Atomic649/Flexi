@@ -164,6 +164,9 @@ Table Expense {
   withHoldingTax Boolean [default: false]
   WHTpercent Decimal [default: 0]
   WHTAmount Decimal [default: 0]
+  sName String
+  sTaxId String
+  taxInvoiceNo String
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]

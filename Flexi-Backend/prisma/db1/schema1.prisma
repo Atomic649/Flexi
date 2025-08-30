@@ -24,15 +24,15 @@ generator dbml {
   output   = "../dbml/schema1.dbml"
 }
 
-enum Unit{
+enum Unit {
   Piece
   Hour
-  Course  
+  Course
   List
   Box
   Pack
   Set
-  Dozen  
+  Dozen
   NotSpecified
 }
 
@@ -148,7 +148,7 @@ enum OptionName {
   QuantityLimit
 }
 
-enum DocumentType {  
+enum DocumentType {
   Invoice
   Receipt
   Quotation
@@ -207,23 +207,23 @@ model Member {
 }
 
 model BusinessAcc {
-  id               Int          @id @default(autoincrement())
-  createdAt        DateTime?    @default(now())
-  updatedAt        DateTime?    @updatedAt
-  businessName     String       @unique
-  businessUserName String?      @unique
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime?      @default(now())
+  updatedAt        DateTime?      @updatedAt
+  businessName     String         @unique
+  businessUserName String?        @unique
   businessAvatar   String?
   businessAddress  String?
   businessWebsite  String?
-  businessPhone      String?
-  vat              Boolean?    @default(false)
-  vatId            String       @unique
-  businessType     BusinessType @default(OnlineSale)
-  taxType          taxType      @default(Individual)
+  businessPhone    String?
+  vat              Boolean?       @default(false)
+  vatId            String         @unique
+  businessType     BusinessType   @default(OnlineSale)
+  taxType          taxType        @default(Individual)
   userId           Int
   memberId         String?
   DocumentType     DocumentType[] @default([Receipt])
-  user             User         @relation(fields: [userId], references: [id])
+  user             User           @relation(fields: [userId], references: [id])
   AllMember        Member[]
   billRecord       Bill[]
   expenseRecord    Expense[]
@@ -234,38 +234,38 @@ model BusinessAcc {
 }
 
 model Bill {
-  id         Int           @id @default(autoincrement())
-  billId     String        
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  cName      String
-  cLastName  String?
-  cPhone     String?
-  cGender    Gender?
-  cAddress   String?
-  cProvince  String?
-  cPostId    String?
-  cTaxId     String?
-  product    ProductItem[]
-  payment    Payment?
-  total      Int
-  totalQuotation Int?
-  beforeDiscount Int?
-  purchaseAt DateTime      @default(now())
-  platform   IncomeChannel
-  cashStatus Boolean?       @default(false)
-  image      String?
-  deleted    Boolean?      @default(false)
-  repeat     Boolean?      @default(false)
-  repeatMonths Int?        @default(0)
-  note       String?
-  TaxType    taxType? @default(Individual)
-  DocumentType DocumentType? @default(Receipt)
-  discount   Int? @default(0)
-  billLevelDiscount Int? @default(0)
-  priceValid DateTime? // Optional field for expiration
+  id                   Int           @id @default(autoincrement())
+  billId               String
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  cName                String
+  cLastName            String?
+  cPhone               String?
+  cGender              Gender?
+  cAddress             String?
+  cProvince            String?
+  cPostId              String?
+  cTaxId               String?
+  product              ProductItem[]
+  payment              Payment?
+  total                Int
+  totalQuotation       Int?
+  beforeDiscount       Int?
+  purchaseAt           DateTime      @default(now())
+  platform             IncomeChannel
+  cashStatus           Boolean?      @default(false)
+  image                String?
+  deleted              Boolean?      @default(false)
+  repeat               Boolean?      @default(false)
+  repeatMonths         Int?          @default(0)
+  note                 String?
+  TaxType              taxType?      @default(Individual)
+  DocumentType         DocumentType? @default(Receipt)
+  discount             Int?          @default(0)
+  billLevelDiscount    Int?          @default(0)
+  priceValid           DateTime? // Optional field for expiration
   paymentTermCondition String? // Optional field for payment
-  remark    String?
+  remark               String?
 
   // Relation   
   memberId    String
@@ -274,20 +274,19 @@ model Bill {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   storeId     Int
   store       Store       @relation(fields: [storeId], references: [id])
-
-
 }
+
 model ProductItem {
-  id        Int      @id @default(autoincrement())
-  product   String
-  quantity  Int
-  unitPrice Int
-  unitDiscount Int? @default(0)
-  billId    Int?
-  unit      Unit? 
+  id           Int    @id @default(autoincrement())
+  product      String
+  quantity     Int
+  unitPrice    Int
+  unitDiscount Int?   @default(0)
+  billId       Int?
+  unit         Unit?
 
   // Relation
-  bill Bill? @relation(fields: [billId], references: [id])
+  bill        Bill?   @relation(fields: [billId], references: [id])
   productList Product @relation(fields: [product], references: [name])
 }
 
@@ -310,29 +309,32 @@ model AdsCost {
 }
 
 model Expense {
-  date      DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  id        Int      @id @default(autoincrement())
-  amount    Decimal
-  group     String?
-  image     String?
-  note      String?
-  desc      String?
-  deleted   Boolean? @default(false)
-  save      Boolean? @default(false)
-  channel   Bank?
-  code      String?
-  vat       Boolean? @default(false)
-  vatAmount Decimal? @default(0)
-  withHoldingTax Boolean? @default(false)
-  WHTpercent Decimal? @default(0)
-  WHTAmount Decimal? @default(0)
+  date           DateTime
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  id             Int         @id @default(autoincrement())
+  amount         Decimal
+  group          String?
+  image          String?
+  note           String?
+  desc           String?
+  deleted        Boolean?    @default(false)
+  save           Boolean?    @default(false)
+  channel        Bank?
+  code           String?
+  vat            Boolean?    @default(false)
+  vatAmount      Decimal?    @default(0)
+  withHoldingTax Boolean?    @default(false)
+  WHTpercent     Decimal?    @default(0)
+  WHTAmount      Decimal?    @default(0)
+  sName          String?
+  sTaxId         String?
+  taxInvoiceNo   String?
   // Relation
-  businessAcc Int
-  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  memberId    String
-  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc    Int
+  businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])
+  memberId       String
+  member         Member      @relation(fields: [memberId], references: [uniqueId])
 }
 
 model Platform {
@@ -353,7 +355,7 @@ model Platform {
 model Store {
   id           Int           @id @default(autoincrement())
   platform     IncomeChannel
-  accName      String        
+  accName      String
   accId        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -366,9 +368,9 @@ model Store {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  unit        Unit?    
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  unit        Unit?
   productType ProductType? @default(Product)
   description String?
   barcode     String?
@@ -378,16 +380,16 @@ model Product {
   categoryId  Int?
   memberId    String
   statusId    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deleted     Boolean? @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deleted     Boolean?     @default(false)
 
   // relation
   billRecord  ProductItem[]
   adsRecord   AdsCost[]
-  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  member      Member        @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
-  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])
 }
 
 model Credit {

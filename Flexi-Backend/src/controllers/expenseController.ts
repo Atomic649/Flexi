@@ -383,14 +383,15 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
 // API endpoint to fill WHTTemplate.pdf with Thai font and return the filled PDF (stream, no save)
 const generateWHTDocument = async (req: Request, res: Response) => {
   try {
-    const { taxpayerName, taxpayerId, amount, date } = req.body;
+    const { cName, sTaxId, amount, date, taxInvoiceNo } = req.body;
     const positions = {
-      taxpayerName: { x: 100, y: 700, size: 14 },
-      taxpayerId: { x: 100, y: 680, size: 12 },
+      cName: { x: 100, y: 700, size: 14 },
+      sTaxId: { x: 100, y: 680, size: 12 },
       amount: { x: 400, y: 650, size: 12 },
       date: { x: 400, y: 630, size: 12 },
+      taxInvoiceNo: { x: 400, y: 610, size: 12 },
     };
-    const fields = { taxpayerName, taxpayerId, amount, date };
+    const fields = { cName, sTaxId, amount, date, taxInvoiceNo };
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(__dirname, "../../fonts/THSarabunNew.ttf");
     const pdfBuffer = await fillWHTTemplateWithThaiFont({

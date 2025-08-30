@@ -327,6 +327,9 @@ model Expense {
   withHoldingTax Boolean?    @default(false)
   WHTpercent     Decimal?    @default(0)
   WHTAmount      Decimal?    @default(0)
+  sName          String?
+  sTaxId         String?
+  taxInvoiceNo   String?
   // Relation
   businessAcc    Int
   businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])

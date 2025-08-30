@@ -11739,6 +11739,9 @@ export namespace Prisma {
     withHoldingTax: boolean | null
     WHTpercent: Decimal | null
     WHTAmount: Decimal | null
+    sName: string | null
+    sTaxId: string | null
+    taxInvoiceNo: string | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11762,6 +11765,9 @@ export namespace Prisma {
     withHoldingTax: boolean | null
     WHTpercent: Decimal | null
     WHTAmount: Decimal | null
+    sName: string | null
+    sTaxId: string | null
+    taxInvoiceNo: string | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11785,6 +11791,9 @@ export namespace Prisma {
     withHoldingTax: number
     WHTpercent: number
     WHTAmount: number
+    sName: number
+    sTaxId: number
+    taxInvoiceNo: number
     businessAcc: number
     memberId: number
     _all: number
@@ -11828,6 +11837,9 @@ export namespace Prisma {
     withHoldingTax?: true
     WHTpercent?: true
     WHTAmount?: true
+    sName?: true
+    sTaxId?: true
+    taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11851,6 +11863,9 @@ export namespace Prisma {
     withHoldingTax?: true
     WHTpercent?: true
     WHTAmount?: true
+    sName?: true
+    sTaxId?: true
+    taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11874,6 +11889,9 @@ export namespace Prisma {
     withHoldingTax?: true
     WHTpercent?: true
     WHTAmount?: true
+    sName?: true
+    sTaxId?: true
+    taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
     _all?: true
@@ -11984,6 +12002,9 @@ export namespace Prisma {
     withHoldingTax: boolean | null
     WHTpercent: Decimal | null
     WHTAmount: Decimal | null
+    sName: string | null
+    sTaxId: string | null
+    taxInvoiceNo: string | null
     businessAcc: number
     memberId: string
     _count: ExpenseCountAggregateOutputType | null
@@ -12026,6 +12047,9 @@ export namespace Prisma {
     withHoldingTax?: boolean
     WHTpercent?: boolean
     WHTAmount?: boolean
+    sName?: boolean
+    sTaxId?: boolean
+    taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12051,6 +12075,9 @@ export namespace Prisma {
     withHoldingTax?: boolean
     WHTpercent?: boolean
     WHTAmount?: boolean
+    sName?: boolean
+    sTaxId?: boolean
+    taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12076,6 +12103,9 @@ export namespace Prisma {
     withHoldingTax?: boolean
     WHTpercent?: boolean
     WHTAmount?: boolean
+    sName?: boolean
+    sTaxId?: boolean
+    taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12101,11 +12131,14 @@ export namespace Prisma {
     withHoldingTax?: boolean
     WHTpercent?: boolean
     WHTAmount?: boolean
+    sName?: boolean
+    sTaxId?: boolean
+    taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "taxInvoiceNo" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12144,6 +12177,9 @@ export namespace Prisma {
       withHoldingTax: boolean | null
       WHTpercent: Prisma.Decimal | null
       WHTAmount: Prisma.Decimal | null
+      sName: string | null
+      sTaxId: string | null
+      taxInvoiceNo: string | null
       businessAcc: number
       memberId: string
     }, ExtArgs["result"]["expense"]>
@@ -12589,6 +12625,9 @@ export namespace Prisma {
     readonly withHoldingTax: FieldRef<"Expense", 'Boolean'>
     readonly WHTpercent: FieldRef<"Expense", 'Decimal'>
     readonly WHTAmount: FieldRef<"Expense", 'Decimal'>
+    readonly sName: FieldRef<"Expense", 'String'>
+    readonly sTaxId: FieldRef<"Expense", 'String'>
+    readonly taxInvoiceNo: FieldRef<"Expense", 'String'>
     readonly businessAcc: FieldRef<"Expense", 'Int'>
     readonly memberId: FieldRef<"Expense", 'String'>
   }
@@ -29592,6 +29631,9 @@ export namespace Prisma {
     withHoldingTax: 'withHoldingTax',
     WHTpercent: 'WHTpercent',
     WHTAmount: 'WHTAmount',
+    sName: 'sName',
+    sTaxId: 'sTaxId',
+    taxInvoiceNo: 'taxInvoiceNo',
     businessAcc: 'businessAcc',
     memberId: 'memberId'
   };
@@ -30861,6 +30903,9 @@ export namespace Prisma {
     withHoldingTax?: BoolNullableFilter<"Expense"> | boolean | null
     WHTpercent?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
+    sName?: StringNullableFilter<"Expense"> | string | null
+    sTaxId?: StringNullableFilter<"Expense"> | string | null
+    taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30886,6 +30931,9 @@ export namespace Prisma {
     withHoldingTax?: SortOrderInput | SortOrder
     WHTpercent?: SortOrderInput | SortOrder
     WHTAmount?: SortOrderInput | SortOrder
+    sName?: SortOrderInput | SortOrder
+    sTaxId?: SortOrderInput | SortOrder
+    taxInvoiceNo?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     businessId?: BusinessAccOrderByWithRelationInput
@@ -30914,6 +30962,9 @@ export namespace Prisma {
     withHoldingTax?: BoolNullableFilter<"Expense"> | boolean | null
     WHTpercent?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
+    sName?: StringNullableFilter<"Expense"> | string | null
+    sTaxId?: StringNullableFilter<"Expense"> | string | null
+    taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30939,6 +30990,9 @@ export namespace Prisma {
     withHoldingTax?: SortOrderInput | SortOrder
     WHTpercent?: SortOrderInput | SortOrder
     WHTAmount?: SortOrderInput | SortOrder
+    sName?: SortOrderInput | SortOrder
+    sTaxId?: SortOrderInput | SortOrder
+    taxInvoiceNo?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     _count?: ExpenseCountOrderByAggregateInput
@@ -30970,6 +31024,9 @@ export namespace Prisma {
     withHoldingTax?: BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
     WHTpercent?: DecimalNullableWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: DecimalNullableWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
+    sName?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    sTaxId?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    taxInvoiceNo?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     businessAcc?: IntWithAggregatesFilter<"Expense"> | number
     memberId?: StringWithAggregatesFilter<"Expense"> | string
   }
@@ -32898,6 +32955,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
     member: MemberCreateNestedOneWithoutExpenseInput
   }
@@ -32921,6 +32981,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessAcc: number
     memberId: string
   }
@@ -32943,6 +33006,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
@@ -32966,6 +33032,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -32989,6 +33058,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessAcc: number
     memberId: string
   }
@@ -33011,6 +33083,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ExpenseUncheckedUpdateManyInput = {
@@ -33032,6 +33107,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -35141,6 +35219,9 @@ export namespace Prisma {
     withHoldingTax?: SortOrder
     WHTpercent?: SortOrder
     WHTAmount?: SortOrder
+    sName?: SortOrder
+    sTaxId?: SortOrder
+    taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35173,6 +35254,9 @@ export namespace Prisma {
     withHoldingTax?: SortOrder
     WHTpercent?: SortOrder
     WHTAmount?: SortOrder
+    sName?: SortOrder
+    sTaxId?: SortOrder
+    taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35196,6 +35280,9 @@ export namespace Prisma {
     withHoldingTax?: SortOrder
     WHTpercent?: SortOrder
     WHTAmount?: SortOrder
+    sName?: SortOrder
+    sTaxId?: SortOrder
+    taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -40066,6 +40153,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
   }
 
@@ -40088,6 +40178,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessAcc: number
   }
 
@@ -40467,6 +40560,9 @@ export namespace Prisma {
     withHoldingTax?: BoolNullableFilter<"Expense"> | boolean | null
     WHTpercent?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
+    sName?: StringNullableFilter<"Expense"> | string | null
+    sTaxId?: StringNullableFilter<"Expense"> | string | null
+    taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
   }
@@ -40772,6 +40868,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     member: MemberCreateNestedOneWithoutExpenseInput
   }
 
@@ -40794,6 +40893,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     memberId: string
   }
 
@@ -45982,6 +46084,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     businessAcc: number
   }
 
@@ -46184,6 +46289,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   }
 
@@ -46206,6 +46314,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -46228,6 +46339,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -46420,6 +46534,9 @@ export namespace Prisma {
     withHoldingTax?: boolean | null
     WHTpercent?: Decimal | DecimalJsLike | number | string | null
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
+    sName?: string | null
+    sTaxId?: string | null
+    taxInvoiceNo?: string | null
     memberId: string
   }
 
@@ -46640,6 +46757,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
 
@@ -46662,6 +46782,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -46684,6 +46807,9 @@ export namespace Prisma {
     withHoldingTax?: NullableBoolFieldUpdateOperationsInput | boolean | null
     WHTpercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    sName?: NullableStringFieldUpdateOperationsInput | string | null
+    sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 

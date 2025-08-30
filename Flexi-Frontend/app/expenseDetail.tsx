@@ -58,6 +58,9 @@ interface ExpenseDetailProps {
     withHoldingTax: boolean;
     WHTpercent: number;
     WHTAmount: number;
+    sTaxId?: string;
+    sName?: string;
+    taxInvoiceNo?: string;
   };
 }
 
@@ -87,6 +90,10 @@ export default function ExpenseDetail({
   const [WHTpercent, setWHTpercent] = useState(expense.WHTpercent || 0);
   const [WHTAmount, setWHTAmount] = useState(expense.WHTAmount || 0);
 
+  const [sTaxId, setSTaxId] = useState(expense.sTaxId || "");
+  const [sName, setSName] = useState(expense.sName || "");
+  const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
+
   useEffect(() => {
     const fetchExpense = async () => {
       try {
@@ -106,6 +113,9 @@ export default function ExpenseDetail({
         setWithHoldingTax(fetchedExpense.withHoldingTax || false);
         setWHTpercent(fetchedExpense.WHTpercent || 0);
         setWHTAmount(fetchedExpense.WHTAmount || 0);
+        setSTaxId(fetchedExpense.sTaxId || "");
+        setSName(fetchedExpense.sName || "");
+        setTaxInvoiceNo(fetchedExpense.taxInvoiceNo || "");
       } catch (error) {
         console.error("Error fetching expense:", error);
       }
@@ -127,7 +137,10 @@ export default function ExpenseDetail({
         vatAmount !== expense.vatAmount ||
         withHoldingTax !== (expense.withHoldingTax || false) ||
         WHTpercent !== (expense.WHTpercent || 0) ||
-        WHTAmount !== (expense.WHTAmount || 0)
+        WHTAmount !== (expense.WHTAmount || 0) ||
+        sTaxId !== (expense.sTaxId || "") ||
+        sName !== (expense.sName || "") ||
+        taxInvoiceNo !== (expense.taxInvoiceNo || "")
       ) {
         setHasChanges(true);
       } else {
@@ -147,6 +160,9 @@ export default function ExpenseDetail({
     withHoldingTax,
     WHTpercent,
     WHTAmount,
+    sTaxId,
+    sName,
+    taxInvoiceNo,
   ]);
   // Update WHTAmount when amount or WHTpercent changes
   useEffect(() => {
@@ -248,6 +264,9 @@ export default function ExpenseDetail({
       // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
       formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("sTaxId", sTaxId);
+      formData.append("sName", sName);
+      formData.append("taxInvoiceNo", taxInvoiceNo);
       if (image) {
         formData.append("image", {
           uri: image,
@@ -279,16 +298,18 @@ export default function ExpenseDetail({
   async function downloadWHTDoc(): Promise<void> {
     try {
       // Prepare data for WHT document
-      const taxpayerName = note || "";
-      const taxpayerId = group || "";
+      const sName = note || "";
+      const sTaxId = group || "";
+      ``;
       const amountStr = amount ? amount.toString() : "";
       const dateStr = date ? formatDate(date) : "";
       // Call API to get WHT document PDF blob
       const pdfBlob = await CallAPIExpense.downloadWHTDocAPI({
-        taxpayerName,
-        taxpayerId,
+        sName,
+        sTaxId,
         amount: amountStr,
         date: dateStr,
+        taxInvoiceNo,
       });
       const fileName = `WHTDocument_${expense.id}.pdf`;
       let fileUri: string;
@@ -571,6 +592,51 @@ export default function ExpenseDetail({
                 onChangeText={setNote}
                 placeholder={t("expense.detail.note")}
               />
+
+              {(vatIncluded || withHoldingTax) && (
+                <>
+                  <TextInput
+                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                      theme === "dark"
+                        ? "bg-primary-100 border-black-200"
+                        : "bg-white border-zinc-300"
+                    }`}
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      color: theme === "dark" ? "#ffffff" : "#000000",
+                    }}
+                    value={sName}
+                    onChangeText={setSName}
+                    placeholder={t("expense.detail.sName")}
+                    placeholderTextColor={
+                      theme === "dark" ? "#504f4d" : "#c0beb5"
+                    }
+                  />
+                  <TextInput
+                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                      theme === "dark"
+                        ? "bg-primary-100 border-black-200"
+                        : "bg-white border-zinc-300"
+                    }`}
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      color: theme === "dark" ? "#ffffff" : "#000000",
+                    }}
+                    value={sTaxId}
+                    onChangeText={setSTaxId}
+                    placeholder={t("expense.detail.sTaxId")}
+                    placeholderTextColor={
+                      theme === "dark" ? "#504f4d" : "#c0beb5"
+                    }
+                  />
+                </>
+              )}
               <View className="flex-row justify-evenly items-center">
                 <ScrollView
                   horizontal

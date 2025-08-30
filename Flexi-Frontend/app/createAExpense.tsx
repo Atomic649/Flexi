@@ -77,12 +77,14 @@ export default function CreateExpense({
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
   ]);
-  const { vat , DocumentType} = useBusiness();
+  const { vat, DocumentType } = useBusiness();
   const [vatIncluded, setVatIncluded] = useState(false);
   const [vatAmount, setVatAmount] = useState(0);
   const [withHoldingTax, setWithHoldingTax] = useState(false);
   const [WHTpercent, setWHTpercent] = useState(3);
   const [WHTAmount, setWHTAmount] = useState(0);
+  const [sName, setSName] = useState<string>("");
+  const [sTaxId, setSTaxId] = useState<string>("");
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -317,7 +319,6 @@ export default function CreateExpense({
                 keyboardType="numeric"
               />
 
-
               {vat && vatIncluded && (
                 <View
                   style={{
@@ -327,7 +328,9 @@ export default function CreateExpense({
                     alignItems: "flex-start",
                   }}
                 >
-                  <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+                  <View
+                    style={{ flexDirection: "column", alignItems: "flex-end" }}
+                  >
                     <CustomText style={{ textAlign: "right" }}>
                       {t("expense.detail.exclVat") + " :"}
                     </CustomText>
@@ -335,7 +338,13 @@ export default function CreateExpense({
                       {t("expense.detail.vat") + " :"}
                     </CustomText>
                   </View>
-                  <View style={{ flexDirection: "column", alignItems: "flex-end", marginLeft: 12 }}>
+                  <View
+                    style={{
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      marginLeft: 12,
+                    }}
+                  >
                     <CustomText style={{ textAlign: "left" }}>
                       {(Number(amount) / 1.07)
                         .toFixed(2)
@@ -414,7 +423,8 @@ export default function CreateExpense({
                             setWHTpercent(isNaN(num) ? 0 : num);
                             setWHTAmount(
                               Number(amount)
-                                ? (Number(amount) * (isNaN(num) ? 0 : num)) / 100
+                                ? (Number(amount) * (isNaN(num) ? 0 : num)) /
+                                    100
                                 : 0
                             );
                           }}
@@ -427,25 +437,66 @@ export default function CreateExpense({
                   </>
                 )}
               </View>
-
               <TextInput
-                className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                  theme === "dark"
-                    ? "bg-primary-100 border-black-200"
-                    : "bg-white border-zinc-300"
-                }`}
-                style={{
-                  fontFamily:
-                    i18n.language === "th"
-                      ? "IBMPlexSansThai-Medium"
-                      : "Poppins-Regular",
-                  color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-                value={note}
-                onChangeText={setNote}
-                placeholder={t("expense.detail.note")}
-                placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
-              />
+                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                      theme === "dark"
+                        ? "bg-primary-100 border-black-200"
+                        : "bg-white border-zinc-300"
+                    }`}
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      color: theme === "dark" ? "#ffffff" : "#000000",
+                    }}
+                    value={note}
+                    onChangeText={setNote}
+                    placeholder={t("expense.detail.note")}
+                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
+                  />
+                  
+
+              {(vatIncluded || withHoldingTax) && (
+                <>
+                  <TextInput
+                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                      theme === "dark"
+                        ? "bg-primary-100 border-black-200"
+                        : "bg-white border-zinc-300"
+                    }`}
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      color: theme === "dark" ? "#ffffff" : "#000000",
+                    }}
+                    value={sName}
+                    onChangeText={setSName}
+                    placeholder={t("expense.detail.sName")}
+                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
+                  />
+                  <TextInput
+                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                      theme === "dark"
+                        ? "bg-primary-100 border-black-200"
+                        : "bg-white border-zinc-300"
+                    }`}
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      color: theme === "dark" ? "#ffffff" : "#000000",
+                    }}
+                    value={sTaxId}
+                    onChangeText={setSTaxId}
+                    placeholder={t("expense.detail.sTaxId")}
+                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
+                  />
+                </>
+              )}
               <View className="flex-row justify-evenly items-center">
                 <ScrollView
                   horizontal
