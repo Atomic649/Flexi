@@ -508,6 +508,7 @@ export default function ExpenseDetail({
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginTop: 8,
+                  marginBottom: 4
                 }}
               >
                 {vat && (
@@ -575,66 +576,178 @@ export default function ExpenseDetail({
                 )}
               </View>
 
-              <TextInput
-                className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                  theme === "dark"
-                    ? "bg-primary-100 border-black-200"
-                    : "bg-white border-gray-100"
-                }`}
-                style={{
-                  fontFamily:
-                    i18n.language === "th"
-                      ? "IBMPlexSansThai-Medium"
-                      : "Poppins-Regular",
-                  color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-                value={note}
-                onChangeText={setNote}
-                placeholder={t("expense.detail.note")}
-              />
+              <View style={{ position: "relative", marginVertical: 8  }}>
+                {note.length > 0 && (
+                  <CustomText
+                    style={{
+                      position: "absolute",
+                      left: 16,
+                      top: -10,
+                      backgroundColor: theme === "dark" ? "#232323" : "#fff",
+                      fontSize: 12,
+                      color: theme === "dark" ? "#222222" : "#c0beb5",
+                      zIndex: 1,
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    {t("expense.detail.note")}
+                  </CustomText>
+                )}
+                <TextInput
+                  className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                    theme === "dark"
+                      ? "bg-primary-100 border-black-200"
+                      : "bg-white border-zinc-300"
+                  }`}
+                  style={{
+                    fontFamily:
+                      i18n.language === "th"
+                        ? "IBMPlexSansThai-Medium"
+                        : "Poppins-Regular",
+                    color: theme === "dark" ? "#ffffff" : "#000000",
+                  }}
+                  value={note}
+                  onChangeText={setNote}
+                  placeholder={t("expense.detail.note")}
+                />
+              </View>
 
               {(vatIncluded || withHoldingTax) && (
                 <>
-                  <TextInput
-                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                      theme === "dark"
-                        ? "bg-primary-100 border-black-200"
-                        : "bg-white border-zinc-300"
-                    }`}
+                  <View style={{ position: "relative", marginVertical: 8 }}>
+                    {sName.length > 0 && (
+                      <CustomText
+                        style={{
+                          position: "absolute",
+                          left: 16,
+                          top: -10,
+                          backgroundColor: theme === "dark" ? "#232323" : "#fff",
+                          fontSize: 12,
+                          color: theme === "dark" ? "#222222" : "#c0beb5",
+                          zIndex: 1,
+                          paddingHorizontal: 4,
+                        }}
+                      >
+                        {t("expense.detail.sName")}
+                      </CustomText>
+                    )}
+                    <TextInput
+                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                        theme === "dark"
+                          ? "bg-primary-100 border-black-200"
+                          : "bg-white border-zinc-300"
+                      }`}
+                      style={{
+                        fontFamily:
+                          i18n.language === "th"
+                            ? "IBMPlexSansThai-Medium"
+                            : "Poppins-Regular",
+                        color: theme === "dark" ? "#ffffff" : "#000000",
+                      }}
+                      value={sName}
+                      onChangeText={setSName}
+                      placeholder={t("expense.detail.sName")}
+                      placeholderTextColor={
+                        theme === "dark" ? "#504f4d" : "#c0beb5"
+                      }
+                    />
+                  </View>
+                  <View
                     style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      color: theme === "dark" ? "#ffffff" : "#000000",
+                      flexDirection: "row",
+                      gap: 8,
+                      marginBottom: 6,
+                      marginHorizontal: 6,
+                      paddingEnd: 6,
                     }}
-                    value={sName}
-                    onChangeText={setSName}
-                    placeholder={t("expense.detail.sName")}
-                    placeholderTextColor={
-                      theme === "dark" ? "#504f4d" : "#c0beb5"
-                    }
-                  />
-                  <TextInput
-                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                      theme === "dark"
-                        ? "bg-primary-100 border-black-200"
-                        : "bg-white border-zinc-300"
-                    }`}
-                    style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      color: theme === "dark" ? "#ffffff" : "#000000",
-                    }}
-                    value={sTaxId}
-                    onChangeText={setSTaxId}
-                    placeholder={t("expense.detail.sTaxId")}
-                    placeholderTextColor={
-                      theme === "dark" ? "#504f4d" : "#c0beb5"
-                    }
-                  />
+                  >
+                    {/* sTaxId Input with float label */}
+                    <View
+                      style={{ flex: 1, position: "relative", minWidth: "48%" }}
+                    >
+                      {sTaxId.length > 0 && (
+                        <CustomText
+                          style={{
+                            position: "absolute",
+                            top: -12,
+                            left: 12,
+                            backgroundColor:
+                              theme === "dark" ? "#232323" : "#fff",
+                            paddingHorizontal: 4,
+                            fontSize: 12,
+                            color: theme === "dark" ? "#222222" : "#c0beb5",
+                            zIndex: 1,
+                          }}
+                        >
+                          {t("expense.detail.sTaxId")}
+                        </CustomText>
+                      )}
+                      <TextInput
+                        className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                          theme === "dark"
+                            ? "bg-primary-100 border-black-200"
+                            : "bg-white border-zinc-300"
+                        }`}
+                        style={{
+                          width: "100%",
+                          fontFamily:
+                            i18n.language === "th"
+                              ? "IBMPlexSansThai-Medium"
+                              : "Poppins-Regular",
+                          color: theme === "dark" ? "#ffffff" : "#000000",
+                        }}
+                        value={sTaxId}
+                        onChangeText={setSTaxId}
+                        placeholder={t("expense.detail.sTaxId")}
+                        placeholderTextColor={
+                          theme === "dark" ? "#504f4d" : "#c0beb5"
+                        }
+                      />
+                    </View>
+                    {/* taxInvoiceNo Input with float label */}
+                    <View
+                      style={{ flex: 1, position: "relative", minWidth: "48%" }}
+                    >
+                      {taxInvoiceNo.length > 0 && (
+                        <CustomText
+                          style={{
+                            position: "absolute",
+                            top: -12,
+                            left: 12,
+                            backgroundColor:
+                              theme === "dark" ? "#232323" : "#fff",
+                            paddingHorizontal: 4,
+                            fontSize: 12,
+                            color: theme === "dark" ? "#222222" : "#c0beb5",
+                            zIndex: 1,
+                          }}
+                        >
+                          {t("expense.detail.taxInvoiceNo")}
+                        </CustomText>
+                      )}
+                      <TextInput
+                        className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                          theme === "dark"
+                            ? "bg-primary-100 border-black-200"
+                            : "bg-white border-zinc-300"
+                        }`}
+                        style={{
+                          width: "100%",
+                          fontFamily:
+                            i18n.language === "th"
+                              ? "IBMPlexSansThai-Medium"
+                              : "Poppins-Regular",
+                          color: theme === "dark" ? "#ffffff" : "#000000",
+                        }}
+                        value={taxInvoiceNo}
+                        onChangeText={setTaxInvoiceNo}
+                        placeholder={t("expense.detail.taxInvoiceNo")}
+                        placeholderTextColor={
+                          theme === "dark" ? "#504f4d" : "#c0beb5"
+                        }
+                      />
+                    </View>
+                  </View>
                 </>
               )}
               <View className="flex-row justify-evenly items-center">

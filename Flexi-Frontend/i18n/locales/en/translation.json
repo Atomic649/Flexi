@@ -735,6 +735,11 @@
       "WHTpercent": "WHT %",
       "WHTAmount": "WHT Amount",
       "downloadWHTDoc": "Download WHT Document",
+      "sName": "Service Provider Name",
+      "sTaxId": "Tax ID",
+      "taxInvoiceNo": "Tax Invoice No.",
+      "sAddress": "Seller/Service Provider Address",
+
       "group": {
         "marketing": "Marketing",
         "transport": "Transport",

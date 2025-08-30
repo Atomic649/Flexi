@@ -85,6 +85,7 @@ export default function CreateExpense({
   const [WHTAmount, setWHTAmount] = useState(0);
   const [sName, setSName] = useState<string>("");
   const [sTaxId, setSTaxId] = useState<string>("");
+  const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -438,24 +439,23 @@ export default function CreateExpense({
                 )}
               </View>
               <TextInput
-                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                      theme === "dark"
-                        ? "bg-primary-100 border-black-200"
-                        : "bg-white border-zinc-300"
-                    }`}
-                    style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      color: theme === "dark" ? "#ffffff" : "#000000",
-                    }}
-                    value={note}
-                    onChangeText={setNote}
-                    placeholder={t("expense.detail.note")}
-                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
-                  />
-                  
+                className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
+                  theme === "dark"
+                    ? "bg-primary-100 border-black-200"
+                    : "bg-white border-zinc-300"
+                }`}
+                style={{
+                  fontFamily:
+                    i18n.language === "th"
+                      ? "IBMPlexSansThai-Medium"
+                      : "Poppins-Regular",
+                  color: theme === "dark" ? "#ffffff" : "#000000",
+                }}
+                value={note}
+                onChangeText={setNote}
+                placeholder={t("expense.detail.note")}
+                placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
+              />
 
               {(vatIncluded || withHoldingTax) && (
                 <>
@@ -475,26 +475,63 @@ export default function CreateExpense({
                     value={sName}
                     onChangeText={setSName}
                     placeholder={t("expense.detail.sName")}
-                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#504f4d" : "#c0beb5"
+                    }
                   />
-                  <TextInput
-                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                      theme === "dark"
-                        ? "bg-primary-100 border-black-200"
-                        : "bg-white border-zinc-300"
-                    }`}
+                  <View
                     style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      color: theme === "dark" ? "#ffffff" : "#000000",
+                      flexDirection: "row",
+                      gap: 8,
+                      marginTop: 12,
+                      marginBottom: 8,
+                      marginHorizontal: 6,
+                      paddingEnd: 4,
                     }}
-                    value={sTaxId}
-                    onChangeText={setSTaxId}
-                    placeholder={t("expense.detail.sTaxId")}
-                    placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
-                  />
+                  >
+                    <TextInput
+                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                        theme === "dark"
+                          ? "bg-primary-100 border-black-200"
+                          : "bg-white border-zinc-300"
+                      }`}
+                      style={{
+                        width: "50%",
+                        fontFamily:
+                          i18n.language === "th"
+                            ? "IBMPlexSansThai-Medium"
+                            : "Poppins-Regular",
+                        color: theme === "dark" ? "#ffffff" : "#000000",
+                      }}
+                      value={sTaxId}
+                      onChangeText={setSTaxId}
+                      placeholder={t("expense.detail.sTaxId")}
+                      placeholderTextColor={
+                        theme === "dark" ? "#504f4d" : "#c0beb5"
+                      }
+                    />
+                    <TextInput
+                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+                        theme === "dark"
+                          ? "bg-primary-100 border-black-200"
+                          : "bg-white border-zinc-300"
+                      }`}
+                      style={{
+                        width: "50%",
+                        fontFamily:
+                          i18n.language === "th"
+                            ? "IBMPlexSansThai-Medium"
+                            : "Poppins-Regular",
+                        color: theme === "dark" ? "#ffffff" : "#000000",
+                      }}
+                      value={taxInvoiceNo}
+                      onChangeText={setTaxInvoiceNo}
+                      placeholder={t("expense.detail.taxInvoiceNo")}
+                      placeholderTextColor={
+                        theme === "dark" ? "#504f4d" : "#c0beb5"
+                      }
+                    />
+                  </View>
                 </>
               )}
               <View className="flex-row justify-evenly items-center">

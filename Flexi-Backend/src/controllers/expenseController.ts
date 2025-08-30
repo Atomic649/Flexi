@@ -31,6 +31,9 @@ interface Expense {
   vatAmount: number;
   withHoldingTax?: boolean;
   WHTAmount?: number;
+  sName?: string;
+  taxInvoiceNo?: string;
+  sTaxId?: string;
 }
 
 // Validate the request body
@@ -49,6 +52,9 @@ const schema = Joi.object({
   vatAmount: Joi.number().optional(),
   withHoldingTax: Joi.boolean().optional(),
   WHTAmount: Joi.number().optional(),
+  sName: Joi.string().optional(),
+  taxInvoiceNo: Joi.string().optional(),
+  sTaxId: Joi.string().optional(),
 });
 
 //  create a new expense - Post
@@ -132,6 +138,9 @@ const createExpense = async (req: Request, res: Response) => {
           withHoldingTax: expenseInput.withHoldingTax ?? false,
           WHTAmount: expenseInput.WHTAmount ?? 0,
           WHTpercent: expenseInput.WHTpercent ?? 0,
+          sName: expenseInput.sName ?? "",
+          taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
+          sTaxId: expenseInput.sTaxId ?? "",
         },
       });
       res.json(expense);
@@ -180,6 +189,9 @@ const getExpenseById = async (req: Request, res: Response) => {
         withHoldingTax: true,
         WHTAmount: true,
         WHTpercent: true,
+        sName: true,
+        taxInvoiceNo: true,
+        sTaxId: true,
       },
     });
     res.json(expense);
@@ -257,6 +269,9 @@ const updateExpenseById = async (req: Request, res: Response) => {
           withHoldingTax: expenseInput.withHoldingTax ?? false,
           WHTAmount: expenseInput.WHTAmount ?? 0,
           WHTpercent: expenseInput.WHTpercent ?? 0,
+          sName: expenseInput.sName ?? "",
+          taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
+          sTaxId: expenseInput.sTaxId ?? "",
         },
       });
       res.json(expense);
@@ -382,8 +397,17 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
 
 // API endpoint to fill WHTTemplate.pdf with Thai font and return the filled PDF (stream, no save)
 const generateWHTDocument = async (req: Request, res: Response) => {
+  
+
   try {
     const { cName, sTaxId, amount, date, taxInvoiceNo } = req.body;
+    // Coverse all req to String
+    const cNameStr = String(cName);
+    const sTaxIdStr = String(sTaxId);
+    const amountStr = String(amount);
+    const dateStr = String(date);
+    const taxInvoiceNoStr = String(taxInvoiceNo);
+
     const positions = {
       cName: { x: 100, y: 700, size: 14 },
       sTaxId: { x: 100, y: 680, size: 12 },
@@ -391,7 +415,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       date: { x: 400, y: 630, size: 12 },
       taxInvoiceNo: { x: 400, y: 610, size: 12 },
     };
-    const fields = { cName, sTaxId, amount, date, taxInvoiceNo };
+    const fields = { cName: cNameStr, sTaxId: sTaxIdStr, amount: amountStr, date: dateStr, taxInvoiceNo: taxInvoiceNoStr };
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(__dirname, "../../fonts/THSarabunNew.ttf");
     const pdfBuffer = await fillWHTTemplateWithThaiFont({
