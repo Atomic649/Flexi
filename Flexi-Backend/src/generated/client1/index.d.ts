@@ -11741,6 +11741,7 @@ export namespace Prisma {
     WHTAmount: Decimal | null
     sName: string | null
     sTaxId: string | null
+    sAddress: string | null
     taxInvoiceNo: string | null
     businessAcc: number | null
     memberId: string | null
@@ -11767,6 +11768,7 @@ export namespace Prisma {
     WHTAmount: Decimal | null
     sName: string | null
     sTaxId: string | null
+    sAddress: string | null
     taxInvoiceNo: string | null
     businessAcc: number | null
     memberId: string | null
@@ -11793,6 +11795,7 @@ export namespace Prisma {
     WHTAmount: number
     sName: number
     sTaxId: number
+    sAddress: number
     taxInvoiceNo: number
     businessAcc: number
     memberId: number
@@ -11839,6 +11842,7 @@ export namespace Prisma {
     WHTAmount?: true
     sName?: true
     sTaxId?: true
+    sAddress?: true
     taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
@@ -11865,6 +11869,7 @@ export namespace Prisma {
     WHTAmount?: true
     sName?: true
     sTaxId?: true
+    sAddress?: true
     taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
@@ -11891,6 +11896,7 @@ export namespace Prisma {
     WHTAmount?: true
     sName?: true
     sTaxId?: true
+    sAddress?: true
     taxInvoiceNo?: true
     businessAcc?: true
     memberId?: true
@@ -12004,6 +12010,7 @@ export namespace Prisma {
     WHTAmount: Decimal | null
     sName: string | null
     sTaxId: string | null
+    sAddress: string | null
     taxInvoiceNo: string | null
     businessAcc: number
     memberId: string
@@ -12049,6 +12056,7 @@ export namespace Prisma {
     WHTAmount?: boolean
     sName?: boolean
     sTaxId?: boolean
+    sAddress?: boolean
     taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
@@ -12077,6 +12085,7 @@ export namespace Prisma {
     WHTAmount?: boolean
     sName?: boolean
     sTaxId?: boolean
+    sAddress?: boolean
     taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
@@ -12105,6 +12114,7 @@ export namespace Prisma {
     WHTAmount?: boolean
     sName?: boolean
     sTaxId?: boolean
+    sAddress?: boolean
     taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
@@ -12133,12 +12143,13 @@ export namespace Prisma {
     WHTAmount?: boolean
     sName?: boolean
     sTaxId?: boolean
+    sAddress?: boolean
     taxInvoiceNo?: boolean
     businessAcc?: boolean
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "taxInvoiceNo" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12179,6 +12190,7 @@ export namespace Prisma {
       WHTAmount: Prisma.Decimal | null
       sName: string | null
       sTaxId: string | null
+      sAddress: string | null
       taxInvoiceNo: string | null
       businessAcc: number
       memberId: string
@@ -12627,6 +12639,7 @@ export namespace Prisma {
     readonly WHTAmount: FieldRef<"Expense", 'Decimal'>
     readonly sName: FieldRef<"Expense", 'String'>
     readonly sTaxId: FieldRef<"Expense", 'String'>
+    readonly sAddress: FieldRef<"Expense", 'String'>
     readonly taxInvoiceNo: FieldRef<"Expense", 'String'>
     readonly businessAcc: FieldRef<"Expense", 'Int'>
     readonly memberId: FieldRef<"Expense", 'String'>
@@ -29633,6 +29646,7 @@ export namespace Prisma {
     WHTAmount: 'WHTAmount',
     sName: 'sName',
     sTaxId: 'sTaxId',
+    sAddress: 'sAddress',
     taxInvoiceNo: 'taxInvoiceNo',
     businessAcc: 'businessAcc',
     memberId: 'memberId'
@@ -30905,6 +30919,7 @@ export namespace Prisma {
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     sName?: StringNullableFilter<"Expense"> | string | null
     sTaxId?: StringNullableFilter<"Expense"> | string | null
+    sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
@@ -30933,6 +30948,7 @@ export namespace Prisma {
     WHTAmount?: SortOrderInput | SortOrder
     sName?: SortOrderInput | SortOrder
     sTaxId?: SortOrderInput | SortOrder
+    sAddress?: SortOrderInput | SortOrder
     taxInvoiceNo?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
@@ -30964,6 +30980,7 @@ export namespace Prisma {
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     sName?: StringNullableFilter<"Expense"> | string | null
     sTaxId?: StringNullableFilter<"Expense"> | string | null
+    sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
@@ -30992,6 +31009,7 @@ export namespace Prisma {
     WHTAmount?: SortOrderInput | SortOrder
     sName?: SortOrderInput | SortOrder
     sTaxId?: SortOrderInput | SortOrder
+    sAddress?: SortOrderInput | SortOrder
     taxInvoiceNo?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
@@ -31026,6 +31044,7 @@ export namespace Prisma {
     WHTAmount?: DecimalNullableWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     sName?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     sTaxId?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    sAddress?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     businessAcc?: IntWithAggregatesFilter<"Expense"> | number
     memberId?: StringWithAggregatesFilter<"Expense"> | string
@@ -32957,6 +32976,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
     member: MemberCreateNestedOneWithoutExpenseInput
@@ -32983,6 +33003,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessAcc: number
     memberId: string
@@ -33008,6 +33029,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
@@ -33034,6 +33056,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
@@ -33060,6 +33083,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessAcc: number
     memberId: string
@@ -33085,6 +33109,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -33109,6 +33134,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
@@ -35221,6 +35247,7 @@ export namespace Prisma {
     WHTAmount?: SortOrder
     sName?: SortOrder
     sTaxId?: SortOrder
+    sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
@@ -35256,6 +35283,7 @@ export namespace Prisma {
     WHTAmount?: SortOrder
     sName?: SortOrder
     sTaxId?: SortOrder
+    sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
@@ -35282,6 +35310,7 @@ export namespace Prisma {
     WHTAmount?: SortOrder
     sName?: SortOrder
     sTaxId?: SortOrder
+    sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
@@ -40155,6 +40184,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
   }
@@ -40180,6 +40210,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessAcc: number
   }
@@ -40562,6 +40593,7 @@ export namespace Prisma {
     WHTAmount?: DecimalNullableFilter<"Expense"> | Decimal | DecimalJsLike | number | string | null
     sName?: StringNullableFilter<"Expense"> | string | null
     sTaxId?: StringNullableFilter<"Expense"> | string | null
+    sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
@@ -40870,6 +40902,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     member: MemberCreateNestedOneWithoutExpenseInput
   }
@@ -40895,6 +40928,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     memberId: string
   }
@@ -46086,6 +46120,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     businessAcc: number
   }
@@ -46291,6 +46326,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   }
@@ -46316,6 +46352,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
@@ -46341,6 +46378,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
@@ -46536,6 +46574,7 @@ export namespace Prisma {
     WHTAmount?: Decimal | DecimalJsLike | number | string | null
     sName?: string | null
     sTaxId?: string | null
+    sAddress?: string | null
     taxInvoiceNo?: string | null
     memberId: string
   }
@@ -46759,6 +46798,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
@@ -46784,6 +46824,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -46809,6 +46850,7 @@ export namespace Prisma {
     WHTAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     sName?: NullableStringFieldUpdateOperationsInput | string | null
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
+    sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
   }

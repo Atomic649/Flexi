@@ -34,6 +34,7 @@ interface Expense {
   sName?: string;
   taxInvoiceNo?: string;
   sTaxId?: string;
+  sAddress?: string;
 }
 
 // Validate the request body
@@ -55,6 +56,7 @@ const schema = Joi.object({
   sName: Joi.string().optional(),
   taxInvoiceNo: Joi.string().optional(),
   sTaxId: Joi.string().optional(),
+  sAddress: Joi.string().optional(),
 });
 
 //  create a new expense - Post
@@ -141,6 +143,7 @@ const createExpense = async (req: Request, res: Response) => {
           sName: expenseInput.sName ?? "",
           taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
           sTaxId: expenseInput.sTaxId ?? "",
+          sAddress: expenseInput.sAddress ?? "",
         },
       });
       res.json(expense);
@@ -192,6 +195,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         sName: true,
         taxInvoiceNo: true,
         sTaxId: true,
+        sAddress: true,
       },
     });
     res.json(expense);
@@ -272,6 +276,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           sName: expenseInput.sName ?? "",
           taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
           sTaxId: expenseInput.sTaxId ?? "",
+          sAddress: expenseInput.sAddress ?? "",
         },
       });
       res.json(expense);

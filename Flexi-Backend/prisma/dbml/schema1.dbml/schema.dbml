@@ -166,6 +166,7 @@ Table Expense {
   WHTAmount Decimal [default: 0]
   sName String
   sTaxId String
+  sAddress String
   taxInvoiceNo String
   businessAcc Int [not null]
   businessId BusinessAcc [not null]

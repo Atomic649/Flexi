@@ -329,6 +329,7 @@ model Expense {
   WHTAmount      Decimal?    @default(0)
   sName          String?
   sTaxId         String?
+  sAddress       String?
   taxInvoiceNo   String?
   // Relation
   businessAcc    Int

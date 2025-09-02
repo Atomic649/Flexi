@@ -21,6 +21,7 @@ class CallAPIExpense {
   async downloadWHTDocAPI({ sName, sTaxId, amount, date, taxInvoiceNo }: {
     sName: string;
     sTaxId: string;
+    sAddress: string;
     amount: string;
     date: string;
     taxInvoiceNo: string;

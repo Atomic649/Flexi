@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
@@ -14,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
+import { FloatingLabelInput } from "@/components/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -61,6 +63,7 @@ interface ExpenseDetailProps {
     sTaxId?: string;
     sName?: string;
     taxInvoiceNo?: string;
+    sAddress?: string;
   };
 }
 
@@ -93,6 +96,7 @@ export default function ExpenseDetail({
   const [sTaxId, setSTaxId] = useState(expense.sTaxId || "");
   const [sName, setSName] = useState(expense.sName || "");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
+  const [sAddress, setSAddress] = useState(expense.sAddress || "");
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -116,6 +120,7 @@ export default function ExpenseDetail({
         setSTaxId(fetchedExpense.sTaxId || "");
         setSName(fetchedExpense.sName || "");
         setTaxInvoiceNo(fetchedExpense.taxInvoiceNo || "");
+        setSAddress(fetchedExpense.sAddress || "");
       } catch (error) {
         console.error("Error fetching expense:", error);
       }
@@ -140,7 +145,8 @@ export default function ExpenseDetail({
         WHTAmount !== (expense.WHTAmount || 0) ||
         sTaxId !== (expense.sTaxId || "") ||
         sName !== (expense.sName || "") ||
-        taxInvoiceNo !== (expense.taxInvoiceNo || "")
+        taxInvoiceNo !== (expense.taxInvoiceNo || "") ||
+        sAddress !== (expense.sAddress || "")
       ) {
         setHasChanges(true);
       } else {
@@ -163,6 +169,7 @@ export default function ExpenseDetail({
     sTaxId,
     sName,
     taxInvoiceNo,
+    sAddress,
   ]);
   // Update WHTAmount when amount or WHTpercent changes
   useEffect(() => {
@@ -267,6 +274,7 @@ export default function ExpenseDetail({
       formData.append("sTaxId", sTaxId);
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
+      formData.append("sAddress", sAddress);
       if (image) {
         formData.append("image", {
           uri: image,
@@ -307,9 +315,11 @@ export default function ExpenseDetail({
       const pdfBlob = await CallAPIExpense.downloadWHTDocAPI({
         sName,
         sTaxId,
+        sAddress,
         amount: amountStr,
         date: dateStr,
         taxInvoiceNo,
+
       });
       const fileName = `WHTDocument_${expense.id}.pdf`;
       let fileUri: string;
@@ -367,18 +377,24 @@ export default function ExpenseDetail({
         activeOpacity={1}
         onPressOut={onClose}
       >
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 20,
-          }}
-          style={{
-            width: Platform.OS === "web" ? "50%" : "100%",
-            alignSelf: "center",
-          }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
         >
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 20,
+            }}
+            style={{
+              width: Platform.OS === "web" ? "50%" : "100%",
+              alignSelf: "center",
+            }}
+            keyboardShouldPersistTaps="handled"
+          >
           <TouchableOpacity
             activeOpacity={1}
             style={{
@@ -576,178 +592,46 @@ export default function ExpenseDetail({
                 )}
               </View>
 
-              <View style={{ position: "relative", marginVertical: 8  }}>
-                {note.length > 0 && (
-                  <CustomText
-                    style={{
-                      position: "absolute",
-                      left: 16,
-                      top: -10,
-                      backgroundColor: theme === "dark" ? "#232323" : "#fff",
-                      fontSize: 12,
-                      color: theme === "dark" ? "#222222" : "#c0beb5",
-                      zIndex: 1,
-                      paddingHorizontal: 4,
-                    }}
-                  >
-                    {t("expense.detail.note")}
-                  </CustomText>
-                )}
-                <TextInput
-                  className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                    theme === "dark"
-                      ? "bg-primary-100 border-black-200"
-                      : "bg-white border-zinc-300"
-                  }`}
-                  style={{
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
-                    color: theme === "dark" ? "#ffffff" : "#000000",
-                  }}
-                  value={note}
-                  onChangeText={setNote}
-                  placeholder={t("expense.detail.note")}
-                />
-              </View>
+              <FloatingLabelInput
+                label={t("expense.detail.note")}
+                value={note}
+                onChangeText={setNote}
+              />
 
               {(vatIncluded || withHoldingTax) && (
                 <>
-                  <View style={{ position: "relative", marginVertical: 8 }}>
-                    {sName.length > 0 && (
-                      <CustomText
-                        style={{
-                          position: "absolute",
-                          left: 16,
-                          top: -10,
-                          backgroundColor: theme === "dark" ? "#232323" : "#fff",
-                          fontSize: 12,
-                          color: theme === "dark" ? "#222222" : "#c0beb5",
-                          zIndex: 1,
-                          paddingHorizontal: 4,
-                        }}
-                      >
-                        {t("expense.detail.sName")}
-                      </CustomText>
-                    )}
-                    <TextInput
-                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                        theme === "dark"
-                          ? "bg-primary-100 border-black-200"
-                          : "bg-white border-zinc-300"
-                      }`}
-                      style={{
-                        fontFamily:
-                          i18n.language === "th"
-                            ? "IBMPlexSansThai-Medium"
-                            : "Poppins-Regular",
-                        color: theme === "dark" ? "#ffffff" : "#000000",
-                      }}
-                      value={sName}
-                      onChangeText={setSName}
-                      placeholder={t("expense.detail.sName")}
-                      placeholderTextColor={
-                        theme === "dark" ? "#504f4d" : "#c0beb5"
-                      }
-                    />
-                  </View>
+                  <FloatingLabelInput
+                    label={t("expense.detail.sName")}
+                    value={sName}
+                    onChangeText={setSName}
+                  />
                   <View
                     style={{
                       flexDirection: "row",
                       gap: 8,
-                      marginBottom: 6,
-                      marginHorizontal: 6,
-                      paddingEnd: 6,
+                      marginTop: 8,
+                      marginBottom: 8,
+                      marginHorizontal: 0,
                     }}
                   >
-                    {/* sTaxId Input with float label */}
-                    <View
-                      style={{ flex: 1, position: "relative", minWidth: "48%" }}
-                    >
-                      {sTaxId.length > 0 && (
-                        <CustomText
-                          style={{
-                            position: "absolute",
-                            top: -12,
-                            left: 12,
-                            backgroundColor:
-                              theme === "dark" ? "#232323" : "#fff",
-                            paddingHorizontal: 4,
-                            fontSize: 12,
-                            color: theme === "dark" ? "#222222" : "#c0beb5",
-                            zIndex: 1,
-                          }}
-                        >
-                          {t("expense.detail.sTaxId")}
-                        </CustomText>
-                      )}
-                      <TextInput
-                        className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                          theme === "dark"
-                            ? "bg-primary-100 border-black-200"
-                            : "bg-white border-zinc-300"
-                        }`}
-                        style={{
-                          width: "100%",
-                          fontFamily:
-                            i18n.language === "th"
-                              ? "IBMPlexSansThai-Medium"
-                              : "Poppins-Regular",
-                          color: theme === "dark" ? "#ffffff" : "#000000",
-                        }}
-                        value={sTaxId}
-                        onChangeText={setSTaxId}
-                        placeholder={t("expense.detail.sTaxId")}
-                        placeholderTextColor={
-                          theme === "dark" ? "#504f4d" : "#c0beb5"
-                        }
-                      />
-                    </View>
-                    {/* taxInvoiceNo Input with float label */}
-                    <View
-                      style={{ flex: 1, position: "relative", minWidth: "48%" }}
-                    >
-                      {taxInvoiceNo.length > 0 && (
-                        <CustomText
-                          style={{
-                            position: "absolute",
-                            top: -12,
-                            left: 12,
-                            backgroundColor:
-                              theme === "dark" ? "#232323" : "#fff",
-                            paddingHorizontal: 4,
-                            fontSize: 12,
-                            color: theme === "dark" ? "#222222" : "#c0beb5",
-                            zIndex: 1,
-                          }}
-                        >
-                          {t("expense.detail.taxInvoiceNo")}
-                        </CustomText>
-                      )}
-                      <TextInput
-                        className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                          theme === "dark"
-                            ? "bg-primary-100 border-black-200"
-                            : "bg-white border-zinc-300"
-                        }`}
-                        style={{
-                          width: "100%",
-                          fontFamily:
-                            i18n.language === "th"
-                              ? "IBMPlexSansThai-Medium"
-                              : "Poppins-Regular",
-                          color: theme === "dark" ? "#ffffff" : "#000000",
-                        }}
-                        value={taxInvoiceNo}
-                        onChangeText={setTaxInvoiceNo}
-                        placeholder={t("expense.detail.taxInvoiceNo")}
-                        placeholderTextColor={
-                          theme === "dark" ? "#504f4d" : "#c0beb5"
-                        }
-                      />
-                    </View>
+                    <FloatingLabelInput
+                      label={t("expense.detail.sTaxId")}
+                      value={sTaxId}
+                      onChangeText={setSTaxId}
+                      containerStyle={{ flex: 1, marginVertical: 0 }}
+                    />
+                    <FloatingLabelInput
+                      label={t("expense.detail.taxInvoiceNo")}
+                      value={taxInvoiceNo}
+                      onChangeText={setTaxInvoiceNo}
+                      containerStyle={{ flex: 1, marginVertical: 0 }}
+                    />
                   </View>
+                  <FloatingLabelInput
+                    label={t("expense.detail.sAddress")}
+                    value={sAddress}
+                    onChangeText={setSAddress}
+                  />
                 </>
               )}
               <View className="flex-row justify-evenly items-center">
@@ -892,6 +776,7 @@ export default function ExpenseDetail({
             </View>
           </TouchableOpacity>
         </ScrollView>
+        </KeyboardAvoidingView>
 
         {/* Modal to view image */}
         <Modal
