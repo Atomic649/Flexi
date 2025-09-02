@@ -201,6 +201,31 @@ export default function ExpenseDetail({
     }
   };
 
+  // Function to show delete confirmation
+  const showDeleteConfirmation = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("common.delete"),
+      message: t("expense.detail.deleteConfirmation") || "Are you sure you want to delete this expense?",
+      buttons: [
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            deleteExpense();
+          },
+        },
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+          onPress: () =>
+            setAlertConfig((prev) => ({ ...prev, visible: false })),
+        },
+      ],
+    });
+  };
+
   // Function to delete expense
   const deleteExpense = async () => {
     // get memberId from local storage
@@ -720,7 +745,7 @@ export default function ExpenseDetail({
               </View>
               <View className="flex-row justify-evenly mt-2">
                 <TouchableOpacity
-                  onPress={() => deleteExpense()}
+                  onPress={() => showDeleteConfirmation()}
                   className=" items-center justify-center"
                 >
                   <Ionicons name="trash-outline" size={24} color="#999999" />
