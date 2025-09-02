@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import CustomButton from "@/components/CustomButton";
@@ -13,6 +14,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
+import { FloatingLabelInput } from "@/components/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -86,6 +88,7 @@ export default function CreateExpense({
   const [sName, setSName] = useState<string>("");
   const [sTaxId, setSTaxId] = useState<string>("");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
+  const [sAddress, setSAddress] = useState<string>("");
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -126,6 +129,13 @@ export default function CreateExpense({
     setDate([new Date().toISOString()]);
     setSelectedDates([new Date().toISOString()]);
     setError("");
+    setVatIncluded(false);
+    setWithHoldingTax(false);
+    setWHTpercent(3);
+    setSName("");
+    setSTaxId("");
+    setTaxInvoiceNo("");
+    setSAddress("");
   };
 
   const handleClose = () => {
@@ -176,6 +186,10 @@ export default function CreateExpense({
       formData.append("vat", vatIncluded ? "true" : "false");
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
       formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("sTaxId", sTaxId);
+      formData.append("sName", sName);
+      formData.append("taxInvoiceNo", taxInvoiceNo);
+      formData.append("sAddress", sAddress);
       if (memberId) {
         formData.append("memberId", memberId);
       } else {
@@ -241,415 +255,399 @@ export default function CreateExpense({
         activeOpacity={1}
         onPressOut={handleClose}
       >
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          style={{ width: Platform.OS === "web" ? "50%" : "100%" }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
         >
-          <TouchableOpacity
-            activeOpacity={1}
-            style={{
-              flex: Platform.OS === "web" ? 0.4 : 0.1,
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
               justifyContent: "center",
-              width: Platform.OS === "web" ? "100%" : "90%",
-              backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
-              borderRadius: 10,
+              alignItems: "center",
+              padding: 20,
             }}
-            onPress={() => {}}
+            style={{
+              width: Platform.OS === "web" ? "50%" : "100%",
+              alignSelf: "center",
+            }}
+            keyboardShouldPersistTaps="handled"
           >
-            <View className=" flex-1 justify-center h-full py-6 px-4 rounded-lg">
-              <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                {image && (
-                  <Image
-                    source={{ uri: image }}
-                    style={{ width: 300, height: 300 }}
-                    className="mt-4 mb-6 self-center rounded-md"
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{
+                flex:
+                  Platform.OS === "web"
+                    ? image
+                      ? 0.8
+                      : 0.4
+                    : image
+                    ? 0.2
+                    : 0.1,
+                justifyContent: "center",
+                width: "100%" ,
+                backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
+                borderRadius: 10,
+                padding: Platform.OS === "web" ? 20 : 0,
+              }}
+              onPress={() => {}}
+            >
+              <View className=" flex-1 justify-center h-full py-6 px-4 rounded-lg">
+                <TouchableOpacity onPress={() => setImageModalVisible(true)}>
+                  {image && (
+                    <Image
+                      source={{ uri: image }}
+                      style={{ width: 300, height: 300 }}
+                      className="mt-4 mb-6 self-center rounded-md"
+                    />
+                  )}
+                </TouchableOpacity>
+
+                <View className="flex-row items-center justify-center bg-transparent  rounded-full p-2 ml-2">
+                  <CustomText
+                    className={`text-base mx-2 ${
+                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
+                    }`}
+                  >
+                    {SelectedDates.length > 0
+                      ? formatDate(SelectedDates[0])
+                      : t("dashboard.selectDate")}
+                  </CustomText>
+                  {/* icon Calendar */}
+                  <Ionicons
+                    name="calendar"
+                    size={24}
+                    color={theme === "dark" ? "#ffffff" : "#444541"}
+                    onPress={() => setCalendarVisible(true)}
                   />
-                )}
-              </TouchableOpacity>
-
-              <View className="flex-row items-center justify-center bg-transparent  rounded-full p-2 ml-2">
-                <CustomText
-                  className={`text-base mx-2 ${
-                    theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                  }`}
-                >
-                  {SelectedDates.length > 0
-                    ? formatDate(SelectedDates[0])
-                    : t("dashboard.selectDate")}
-                </CustomText>
-                {/* icon Calendar */}
-                <Ionicons
-                  name="calendar"
-                  size={24}
-                  color={theme === "dark" ? "#ffffff" : "#444541"}
-                  onPress={() => setCalendarVisible(true)}
+                </View>
+                <TextInput
+                  style={{
+                    fontFamily:
+                      i18n.language === "th"
+                        ? "IBMPlexSansThai-Medium"
+                        : "Poppins-Regular",
+                    textAlign: "center",
+                    fontSize: 16,
+                    color: theme === "dark" ? "#818181" : "#68655f",
+                  }}
+                  value={desc}
+                  onChangeText={setDesc}
+                  placeholder={t("expense.detail.description")}
+                  placeholderTextColor={
+                    theme === "dark" ? "#6d6c67" : "#adaaa6"
+                  }
                 />
-              </View>
-              <TextInput
-                style={{
-                  fontFamily:
-                    i18n.language === "th"
-                      ? "IBMPlexSansThai-Medium"
-                      : "Poppins-Regular",
-                  textAlign: "center",
-                  fontSize: 16,
-                  color: theme === "dark" ? "#818181" : "#68655f",
-                }}
-                value={desc}
-                onChangeText={setDesc}
-                placeholder={t("expense.detail.description")}
-                placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
-              />
 
-              <TextInput
-                className={`text-center text-2xl font-bold py-3 ${
-                  theme === "dark" ? "text-secondary-100" : "text-secondary"
-                }`}
-                value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                onChangeText={(val) => {
-                  const raw = val.replace(/,/g, "");
-                  setAmount(raw);
-                  setWHTAmount(raw ? (Number(raw) * WHTpercent) / 100 : 0);
-                }}
-                placeholder="0.00"
-                placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
-                keyboardType="numeric"
-              />
+                <TextInput
+                  className={`text-center text-2xl font-bold py-3 ${
+                    theme === "dark" ? "text-secondary-100" : "text-secondary"
+                  }`}
+                  value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  onChangeText={(val) => {
+                    const raw = val.replace(/,/g, "");
+                    setAmount(raw);
+                    setWHTAmount(raw ? (Number(raw) * WHTpercent) / 100 : 0);
+                  }}
+                  placeholder="0.00"
+                  placeholderTextColor={
+                    theme === "dark" ? "#6d6c67" : "#adaaa6"
+                  }
+                  keyboardType="numeric"
+                />
 
-              {vat && vatIncluded && (
+                {vat && vatIncluded && (
+                  <View
+                    style={{
+                      marginTop: 8,
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                      }}
+                    >
+                      <CustomText style={{ textAlign: "right" }}>
+                        {t("expense.detail.exclVat") + " :"}
+                      </CustomText>
+                      <CustomText style={{ textAlign: "right" }}>
+                        {t("expense.detail.vat") + " :"}
+                      </CustomText>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        marginLeft: 12,
+                      }}
+                    >
+                      <CustomText style={{ textAlign: "left" }}>
+                        {(Number(amount) / 1.07)
+                          .toFixed(2)
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                      </CustomText>
+                      <CustomText style={{ textAlign: "left" }}>
+                        {(Number(amount) * 0.07)
+                          .toFixed(2)
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                      </CustomText>
+                    </View>
+                  </View>
+                )}
+
                 <View
                   style={{
-                    marginTop: 8,
                     flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "flex-start",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    marginTop: 8,
                   }}
                 >
-                  <View
-                    style={{ flexDirection: "column", alignItems: "flex-end" }}
-                  >
-                    <CustomText style={{ textAlign: "right" }}>
-                      {t("expense.detail.exclVat") + " :"}
-                    </CustomText>
-                    <CustomText style={{ textAlign: "right" }}>
-                      {t("expense.detail.vat") + " :"}
-                    </CustomText>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      marginLeft: 12,
-                    }}
-                  >
-                    <CustomText style={{ textAlign: "left" }}>
-                      {(Number(amount) / 1.07)
-                        .toFixed(2)
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                    </CustomText>
-                    <CustomText style={{ textAlign: "left" }}>
-                      {(Number(amount) * 0.07)
-                        .toFixed(2)
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                    </CustomText>
-                  </View>
-                </View>
-              )}
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  marginTop: 8,
-                }}
-              >
-                {vat && (
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginRight: 24,
-                    }}
-                    onPress={() => setVatIncluded(!vatIncluded)}
-                  >
-                    <Ionicons
-                      name={vatIncluded ? "checkbox" : "square-outline"}
-                      size={22}
-                      color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
-                    />
-                    <CustomText className="ml-2">
-                      {t("expense.detail.vatIncluded")}
-                    </CustomText>
-                  </TouchableOpacity>
-                )}
-                {DocumentType && DocumentType.includes("WithholdingTax") && (
-                  <>
+                  {vat && (
                     <TouchableOpacity
                       style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        marginRight: 8,
+                        marginRight: 24,
                       }}
-                      onPress={() => setWithHoldingTax(!withHoldingTax)}
+                      onPress={() => setVatIncluded(!vatIncluded)}
                     >
                       <Ionicons
-                        name={withHoldingTax ? "checkbox" : "square-outline"}
+                        name={vatIncluded ? "checkbox" : "square-outline"}
                         size={22}
                         color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                       />
-                      <CustomText style={{ textAlign: "right", marginLeft: 8 }}>
-                        {t("expense.detail.withHoldingTax")}
+                      <CustomText className="ml-2">
+                        {t("expense.detail.vatIncluded")}
                       </CustomText>
                     </TouchableOpacity>
-                    {withHoldingTax && (
-                      <>
-                        <TextInput
-                          style={{
-                            width: 60,
-                            borderWidth: 1,
-                            borderColor: theme === "dark" ? "#444" : "#ccc",
-                            borderRadius: 8,
-                            padding: 4,
-                            color: theme === "dark" ? "#fff" : "#000",
-                            textAlign: "center",
-                          }}
-                          value={WHTpercent.toString()}
-                          onChangeText={(val) => {
-                            const num = parseFloat(val);
-                            setWHTpercent(isNaN(num) ? 0 : num);
-                            setWHTAmount(
-                              Number(amount)
-                                ? (Number(amount) * (isNaN(num) ? 0 : num)) /
-                                    100
-                                : 0
-                            );
-                          }}
-                          placeholder={t("expense.detail.percent")}
-                          keyboardType="numeric"
+                  )}
+                  {DocumentType && DocumentType.includes("WithholdingTax") && (
+                    <>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 8,
+                        }}
+                        onPress={() => setWithHoldingTax(!withHoldingTax)}
+                      >
+                        <Ionicons
+                          name={withHoldingTax ? "checkbox" : "square-outline"}
+                          size={22}
+                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                         />
-                        <CustomText style={{ marginLeft: 4 }}>%</CustomText>
-                      </>
-                    )}
+                        <CustomText
+                          style={{ textAlign: "right", marginLeft: 8 }}
+                        >
+                          {t("expense.detail.withHoldingTax")}
+                        </CustomText>
+                      </TouchableOpacity>
+                      {withHoldingTax && (
+                        <>
+                          <TextInput
+                            style={{
+                              width: 60,
+                              borderWidth: 1,
+                              borderColor: theme === "dark" ? "#444" : "#ccc",
+                              borderRadius: 8,
+                              padding: 4,
+                              color: theme === "dark" ? "#fff" : "#000",
+                              textAlign: "center",
+                            }}
+                            value={WHTpercent.toString()}
+                            onChangeText={(val) => {
+                              const num = parseFloat(val);
+                              setWHTpercent(isNaN(num) ? 0 : num);
+                              setWHTAmount(
+                                Number(amount)
+                                  ? (Number(amount) * (isNaN(num) ? 0 : num)) /
+                                      100
+                                  : 0
+                              );
+                            }}
+                            placeholder={t("expense.detail.percent")}
+                            keyboardType="numeric"
+                          />
+                          <CustomText style={{ marginLeft: 4 }}>%</CustomText>
+                        </>
+                      )}
+                    </>
+                  )}
+                </View>
+                <FloatingLabelInput
+                  label={t("expense.detail.note")}
+                  value={note}
+                  onChangeText={setNote}
+                />
+
+                {(vatIncluded || withHoldingTax) && (
+                  <>
+                    <FloatingLabelInput
+                      label={t("expense.detail.sName")}
+                      value={sName}
+                      onChangeText={setSName}
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 8,
+                        marginTop: 8,
+                        marginBottom: 8,
+                        marginHorizontal: 0,
+                      }}
+                    >
+                      <FloatingLabelInput
+                        label={t("expense.detail.sTaxId")}
+                        value={sTaxId}
+                        onChangeText={setSTaxId}
+                        containerStyle={{ flex: 1, marginVertical: 0 }}
+                      />
+                      <FloatingLabelInput
+                        label={t("expense.detail.taxInvoiceNo")}
+                        value={taxInvoiceNo}
+                        onChangeText={setTaxInvoiceNo}
+                        containerStyle={{ flex: 1, marginVertical: 0 }}
+                      />
+                    </View>
+                    <FloatingLabelInput
+                      label={t("expense.detail.sAddress")}
+                      value={sAddress}
+                      onChangeText={setSAddress}
+                    />
                   </>
                 )}
-              </View>
-              <TextInput
-                className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                  theme === "dark"
-                    ? "bg-primary-100 border-black-200"
-                    : "bg-white border-zinc-300"
-                }`}
-                style={{
-                  fontFamily:
-                    i18n.language === "th"
-                      ? "IBMPlexSansThai-Medium"
-                      : "Poppins-Regular",
-                  color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-                value={note}
-                onChangeText={setNote}
-                placeholder={t("expense.detail.note")}
-                placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
-              />
+                <View className="flex-row justify-evenly items-center">
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    className="flex-row m-1 "
+                  >
+                    <TouchableOpacity
+                      onPress={() => setGroup("Marketing")}
+                      className={groupButtonClass("Marketing")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.marketing")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-              {(vatIncluded || withHoldingTax) && (
-                <>
-                  <TextInput
-                    className={`mt-3 mb-2 mx-1 h-14  px-4 rounded-2xl border-2 focus:border-secondary ${
-                      theme === "dark"
-                        ? "bg-primary-100 border-black-200"
-                        : "bg-white border-zinc-300"
-                    }`}
-                    style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      color: theme === "dark" ? "#ffffff" : "#000000",
-                    }}
-                    value={sName}
-                    onChangeText={setSName}
-                    placeholder={t("expense.detail.sName")}
-                    placeholderTextColor={
-                      theme === "dark" ? "#504f4d" : "#c0beb5"
-                    }
-                  />
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 8,
-                      marginTop: 12,
-                      marginBottom: 8,
-                      marginHorizontal: 6,
-                      paddingEnd: 4,
-                    }}
-                  >
-                    <TextInput
-                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                        theme === "dark"
-                          ? "bg-primary-100 border-black-200"
-                          : "bg-white border-zinc-300"
-                      }`}
-                      style={{
-                        width: "50%",
-                        fontFamily:
-                          i18n.language === "th"
-                            ? "IBMPlexSansThai-Medium"
-                            : "Poppins-Regular",
-                        color: theme === "dark" ? "#ffffff" : "#000000",
-                      }}
-                      value={sTaxId}
-                      onChangeText={setSTaxId}
-                      placeholder={t("expense.detail.sTaxId")}
-                      placeholderTextColor={
-                        theme === "dark" ? "#504f4d" : "#c0beb5"
-                      }
-                    />
-                    <TextInput
-                      className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
-                        theme === "dark"
-                          ? "bg-primary-100 border-black-200"
-                          : "bg-white border-zinc-300"
-                      }`}
-                      style={{
-                        width: "50%",
-                        fontFamily:
-                          i18n.language === "th"
-                            ? "IBMPlexSansThai-Medium"
-                            : "Poppins-Regular",
-                        color: theme === "dark" ? "#ffffff" : "#000000",
-                      }}
-                      value={taxInvoiceNo}
-                      onChangeText={setTaxInvoiceNo}
-                      placeholder={t("expense.detail.taxInvoiceNo")}
-                      placeholderTextColor={
-                        theme === "dark" ? "#504f4d" : "#c0beb5"
-                      }
-                    />
-                  </View>
-                </>
-              )}
-              <View className="flex-row justify-evenly items-center">
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  className="flex-row m-1 "
-                >
-                  <TouchableOpacity
-                    onPress={() => setGroup("Marketing")}
-                    className={groupButtonClass("Marketing")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.marketing")}
-                    </CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Transport")}
+                      className={groupButtonClass("Transport")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.transport")}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Taxation")}
+                      className={groupButtonClass("Taxation")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.taxation")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Transport")}
-                    className={groupButtonClass("Transport")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.transport")}
-                    </CustomText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setGroup("Taxation")}
-                    className={groupButtonClass("Taxation")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.taxation")}
-                    </CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Office")}
+                      className={groupButtonClass("Office")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.office")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Office")}
-                    className={groupButtonClass("Office")}
-                  >
-                    <CustomText>{t("expense.detail.group.office")}</CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Employee")}
+                      className={groupButtonClass("Employee")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.employee")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Employee")}
-                    className={groupButtonClass("Employee")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.employee")}
-                    </CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Product")}
+                      className={groupButtonClass("Product")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.product")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Product")}
-                    className={groupButtonClass("Product")}
-                  >
-                    <CustomText>{t("expense.detail.group.product")}</CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Packing")}
+                      className={groupButtonClass("Packing")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.packing")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Packing")}
-                    className={groupButtonClass("Packing")}
-                  >
-                    <CustomText>{t("expense.detail.group.packing")}</CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Utilities")}
+                      className={groupButtonClass("Utilities")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.utility")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Utilities")}
-                    className={groupButtonClass("Utilities")}
-                  >
-                    <CustomText>{t("expense.detail.group.utility")}</CustomText>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Account")}
+                      className={groupButtonClass("Account")}
+                    >
+                      <CustomText>
+                        {t("expense.detail.group.account")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => setGroup("Account")}
-                    className={groupButtonClass("Account")}
-                  >
-                    <CustomText>{t("expense.detail.group.account")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Others")}
-                    className={groupButtonClass("Others")}
-                  >
-                    <CustomText>{t("expense.detail.group.other")}</CustomText>
-                  </TouchableOpacity>
-                </ScrollView>
-              </View>
-
-              {error ? (
-                <View className="items-center">
-                  <Text className="text-secondary mt-3">{error}</Text>
+                    <TouchableOpacity
+                      onPress={() => setGroup("Others")}
+                      className={groupButtonClass("Others")}
+                    >
+                      <CustomText>{t("expense.detail.group.other")}</CustomText>
+                    </TouchableOpacity>
+                  </ScrollView>
                 </View>
-              ) : null}
 
-              <View className="flex-row justify-evenly">
-                <TouchableOpacity
-                  onPress={() => pickImage()}
-                  className=" items-center justify-center"
-                >
-                  <Ionicons
-                    name="document-text-outline"
-                    size={26}
-                    color="#999999"
+                {error ? (
+                  <View className="items-center">
+                    <Text className="text-secondary mt-3">{error}</Text>
+                  </View>
+                ) : null}
+
+                <View className="flex-row justify-evenly">
+                  <TouchableOpacity
+                    onPress={() => pickImage()}
+                    className=" items-center justify-center"
+                  >
+                    <Ionicons
+                      name="document-text-outline"
+                      size={26}
+                      color="#999999"
+                    />
+                    <CustomText className="text-center mt-1">
+                      {t("expense.detail.attachBill")}
+                    </CustomText>
+                  </TouchableOpacity>
+
+                  <CustomButton
+                    title={t("common.save")}
+                    handlePress={handleCreateExpense}
+                    containerStyles="px-12 mt-2"
+                    textStyles="!text-white"
                   />
-                  <CustomText className="text-center mt-1">
-                    {t("expense.detail.attachBill")}
-                  </CustomText>
-                </TouchableOpacity>
-
-                <CustomButton
-                  title={t("common.save")}
-                  handlePress={handleCreateExpense}
-                  containerStyles="px-12 mt-2"
-                  textStyles="!text-white"
-                />
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
 
         {/* Modal to view image */}
         <Modal
