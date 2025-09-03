@@ -30,7 +30,7 @@ export default function Register() {
   const { userId, uniqueId } = useLocalSearchParams();
   const [businessName, setbusinessName] = useState("");
   const [taxType, settaxType] = useState("");
-  const [vatId, setvatId] = useState("");
+  const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [isVatRegistered, setIsVatRegistered] = useState(false);
@@ -59,7 +59,7 @@ export default function Register() {
     setError("");
 
     // Check if all fields are filled
-    if (!businessName || !taxType || !vatId || !businessType) {
+    if (!businessName || !taxType || !taxId || !businessType) {
       setAlertConfig({
         visible: true,
         title: t("auth.businessRegister.validation.incomplete"),
@@ -82,7 +82,7 @@ export default function Register() {
       // Call the register API
       const data = await CallAPIBusiness.RegisterAPI({
         businessName,
-        vatId,
+        taxId,
         businessType,
         taxType,
         userId: Number(userId),
@@ -213,10 +213,10 @@ export default function Register() {
               </View>
 
               <FormField
-                title={t("auth.businessRegister.vatId")}
+                title={t("auth.businessRegister.taxId")}
                 placeholder={t("0000000000000")}
-                value={vatId}
-                handleChangeText={setvatId}
+                value={taxId}
+                handleChangeText={settaxId}
                 otherStyles="mt-7"
                 keyboardType="number-pad"
                  onFocus={() => {

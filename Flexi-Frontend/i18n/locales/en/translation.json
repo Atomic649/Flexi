@@ -118,7 +118,7 @@
       },
       "businessName": "Business Name",
       "taxType": "Tax Type",
-      "vatId": "VAT ID",
+      "taxId": "VAT ID",
       "businessType": "Business Type",
       "businessAddress": "Business Address",
       "taxTypeOption": {
@@ -750,7 +750,18 @@
         "packing": "Packing",
         "utility": "Utility",
         "other": "Other",
-        "account": "Account"
+        "account": "Account",
+        "freelancer": "Freelancer",
+        "influencer": "Influencer",
+        "officeRental": "Office Rental",
+        "carRental": "Car Rental",
+        "commission": "Commission",
+        "advertising": "Advertising",
+        "copyright": "Copyright",
+        "dividend": "Dividend",
+        "interest": "Interest",
+        "accounting": "Accounting",
+        "legal": "Legal"
       },
       "attachBill": "Attach Bill"
     },

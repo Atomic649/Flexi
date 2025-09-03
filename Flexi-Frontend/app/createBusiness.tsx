@@ -27,7 +27,7 @@ export default function CreateBusiness() {
   const { triggerFetch } = useBusiness();
   const [businessName, setbusinessName] = useState("");
   const [taxType, settaxType] = useState("");
-  const [vatId, setvatId] = useState("");
+  const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
   type DocumentTypeOption =
     | "Invoice"
@@ -61,7 +61,7 @@ export default function CreateBusiness() {
     setError("");
 
     // Check if all fields are filled
-    if (!businessName || !taxType || !vatId || !businessType) {
+    if (!businessName || !taxType || !taxId || !businessType) {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
@@ -87,7 +87,7 @@ export default function CreateBusiness() {
 
       const data = await CallAPIBusiness.CreateMoreBusinessAPI({
         businessName,
-        vatId,
+        taxId,
         businessType,
         taxType,
         userId,
@@ -190,10 +190,10 @@ export default function CreateBusiness() {
           />
 
           <FormField2
-            title={t("auth.businessRegister.vatId")}
+            title={t("auth.businessRegister.taxId")}
             placeholder={t("0000000000000")}
-            value={vatId}
-            handleChangeText={setvatId}
+            value={taxId}
+            handleChangeText={settaxId}
             otherStyles="mt-7"
             keyboardType="number-pad"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}

@@ -7,7 +7,7 @@ class CallAPIBusiness {
   // Register Member API
   async RegisterAPI(data: {
     businessName: string;
-    vatId: string;
+    taxId: string;
     businessType: string;
     taxType: string;
     userId: number;
@@ -54,7 +54,7 @@ class CallAPIBusiness {
   // Create More Business Acc
   async CreateMoreBusinessAPI(data: {
     businessName: string;
-    vatId: string;
+    taxId: string;
     businessType: string;
     taxType: string;
     userId: number;
@@ -115,7 +115,7 @@ class CallAPIBusiness {
       businessName: string;
       businessPhone?: string;
       businessAddress: string;
-      vatId: string;
+      taxId: string;
       businessType: string;
       taxType: string;
       vat: boolean;

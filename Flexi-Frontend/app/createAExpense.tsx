@@ -285,7 +285,7 @@ export default function CreateExpense({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: "100%" ,
+                width: "100%",
                 backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 20 : 0,
@@ -527,92 +527,90 @@ export default function CreateExpense({
                     showsHorizontalScrollIndicator={false}
                     className="flex-row m-1 "
                   >
-                    <TouchableOpacity
-                      onPress={() => setGroup("Marketing")}
-                      className={groupButtonClass("Marketing")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.marketing")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Transport")}
-                      className={groupButtonClass("Transport")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.transport")}
-                      </CustomText>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => setGroup("Taxation")}
-                      className={groupButtonClass("Taxation")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.taxation")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Office")}
-                      className={groupButtonClass("Office")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.office")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Employee")}
-                      className={groupButtonClass("Employee")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.employee")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Product")}
-                      className={groupButtonClass("Product")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.product")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Packing")}
-                      className={groupButtonClass("Packing")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.packing")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Utilities")}
-                      className={groupButtonClass("Utilities")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.utility")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Account")}
-                      className={groupButtonClass("Account")}
-                    >
-                      <CustomText>
-                        {t("expense.detail.group.account")}
-                      </CustomText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setGroup("Others")}
-                      className={groupButtonClass("Others")}
-                    >
-                      <CustomText>{t("expense.detail.group.other")}</CustomText>
-                    </TouchableOpacity>
+                    {[
+                      {
+                        key: "Employee",
+                        label: t("expense.detail.group.employee"),
+                      },
+                      {
+                        key: "Freelancer",
+                        label: t("expense.detail.group.freelancer"),
+                      },
+                      {
+                        key: "Office",
+                        label: t("expense.detail.group.office"),
+                      },
+                      {
+                        key: "OfficeRental",
+                        label: t("expense.detail.group.officeRental"),
+                      },
+                      {
+                        key: "CarRental",
+                        label: t("expense.detail.group.carRental"),
+                      },
+                      {
+                        key: "Commission",
+                        label: t("expense.detail.group.commission"),
+                      },
+                      {
+                        key: "Advertising",
+                        label: t("expense.detail.group.advertising"),
+                      },
+                      {
+                        key: "Marketing",
+                        label: t("expense.detail.group.marketing"),
+                      },
+                      {
+                        key: "Copyright",
+                        label: t("expense.detail.group.copyright"),
+                      },
+                      {
+                        key: "Dividend",
+                        label: t("expense.detail.group.dividend"),
+                      },
+                      {
+                        key: "Interest",
+                        label: t("expense.detail.group.interest"),
+                      },
+                      {
+                        key: "Influencer",
+                        label: t("expense.detail.group.influencer"),
+                      },
+                      {
+                        key: "Accounting",
+                        label: t("expense.detail.group.accounting"),
+                      },
+                      { key: "Legal", label: t("expense.detail.group.legal") },
+                      {
+                        key: "Taxation",
+                        label: t("expense.detail.group.taxation"),
+                      },
+                      {
+                        key: "Transport",
+                        label: t("expense.detail.group.transport"),
+                      },
+                      {
+                        key: "Product",
+                        label: t("expense.detail.group.product"),
+                      },
+                      {
+                        key: "Packing",
+                        label: t("expense.detail.group.packing"),
+                      },
+                      {
+                        key: "Utilities",
+                        label: t("expense.detail.group.utility"),
+                      },
+                      { key: "Others", label: t("expense.detail.group.other") },
+                    ].map(({ key, label }) => (
+                      <TouchableOpacity
+                        key={key}
+                        onPress={() => setGroup(key)}
+                        className={groupButtonClass(key)}
+                      >
+                        <CustomText>{label}</CustomText>
+                      </TouchableOpacity>
+                    ))}
                   </ScrollView>
                 </View>
 

@@ -53,7 +53,7 @@ export const getUserByID = async (req: Request, res: Response) => {
       select: {
         businessName: true,
         businessAddress: true,
-        vatId: true,
+        taxId: true,
       },
     });
     if (!businessName) {
@@ -71,7 +71,7 @@ export const getUserByID = async (req: Request, res: Response) => {
       bio : user.bio,
       username : user.username,
       businessAddress: businessName[0].businessAddress,
-      vatId: businessName[0].vatId,
+      taxId: businessName[0].taxId,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });

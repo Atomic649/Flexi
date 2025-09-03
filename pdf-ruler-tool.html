@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Ruler Tool - WHTTemplate Position Helper</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .file-input {
+            margin-bottom: 10px;
+        }
+        
+        .grid-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .pdf-container {
+            position: relative;
+            border: 2px solid #ddd;
+            margin: 20px auto;
+            display: inline-block;
+            background: white;
+        }
+        
+        #pdf-canvas {
+            display: block;
+            max-width: 100%;
+        }
+        
+        .ruler-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .coordinates {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+        
+        .current-fields {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .field-item {
+            margin: 5px 0;
+            font-family: monospace;
+            background: white;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        input[type="range"] {
+            width: 100px;
+        }
+        
+        input[type="color"] {
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .click-marker {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: red;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+        
+        .click-label {
+            position: absolute;
+            background: rgba(255,0,0,0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 101;
+            transform: translate(10px, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📐 PDF Ruler Tool - WHTTemplate Position Helper</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li><strong>Load PDF:</strong> Click "Choose File" and select your WHTTemplate.pdf</li>
+                <li><strong>A4 Format:</strong> The tool automatically scales to A4 size (595 × 842 points)</li>
+                <li><strong>Enable Grid:</strong> Toggle the ruler grid overlay with PDF coordinates</li>
+                <li><strong>Click Positions:</strong> Click anywhere on the PDF to mark field positions</li>
+                <li><strong>Copy Coordinates:</strong> Use the coordinates displayed for your generateWHTDocument function</li>
+                <li><strong>Note:</strong> All coordinates are automatically converted to PDF A4 format</li>
+            </ol>
+            <div style="background: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                <strong>📏 A4 Dimensions:</strong> 595 × 842 points (210mm × 297mm)<br>
+                <strong>🎯 Coordinate System:</strong> Origin (0,0) at bottom-left corner
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="file-input">
+                <input type="file" id="pdfFile" accept=".pdf" />
+                <button onclick="loadPDF()">Load PDF</button>
+            </div>
+            
+            <div class="grid-controls">
+                <label>
+                    <input type="checkbox" id="showGrid" onchange="toggleGrid()" checked> Show Ruler Grid
+                </label>
+                
+                <label>
+                    Grid Spacing: <input type="range" id="gridSpacing" min="10" max="50" value="25" onchange="updateGrid()"> 
+                    <span id="spacingValue">25px</span>
+                </label>
+                
+                <label>
+                    Grid Color: <input type="color" id="gridColor" value="#007bff" onchange="updateGrid()">
+                </label>
+                
+                <button onclick="clearMarkers()">Clear Markers</button>
+                
+                <button onclick="exportCoordinates()">Export Coordinates</button>
+            </div>
+        </div>
+        
+        <div class="pdf-container" id="pdfContainer">
+            <canvas id="pdf-canvas"></canvas>
+            <svg class="ruler-overlay" id="ruler-overlay"></svg>
+            <div class="coordinates" id="coordinates">
+                Canvas: (0, 0)<br>
+                PDF A4: (0, 842)
+            </div>
+        </div>
+        
+        <div class="current-fields">
+            <h4>Current Field Positions (from your code):</h4>
+            <div class="field-item">sName: { x: 100, y: 700, size: 14 }</div>
+            <div class="field-item">sTaxId: { x: 100, y: 680, size: 12 }</div>
+            <div class="field-item">amount: { x: 400, y: 650, size: 12 }</div>
+            <div class="field-item">date: { x: 400, y: 630, size: 12 }</div>
+            <div class="field-item">taxInvoiceNo: { x: 400, y: 610, size: 12 }</div>
+            <div class="field-item">sAddress: { x: 100, y: 590, size: 12 }</div>
+        </div>
+        
+        <div id="clickedCoordinates" class="current-fields" style="display: none;">
+            <h4>Clicked Coordinates:</h4>
+            <div id="coordinatesList"></div>
+        </div>
+    </div>
+
+    <!-- Include PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <script>
+        // Configure PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        let pdfDoc = null;
+        let canvas = document.getElementById('pdf-canvas');
+        let ctx = canvas.getContext('2d');
+        let clickMarkers = [];
+        
+        // Load PDF function
+        async function loadPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a PDF file first!');
+                return;
+            }
+            
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
+                console.log('PDF loaded successfully');
+                renderPage();
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                alert('Error loading PDF: ' + error.message);
+            }
+        }
+        
+        // Render PDF page
+        async function renderPage() {
+            if (!pdfDoc) return;
+            
+            const page = await pdfDoc.getPage(1);
+            
+            // A4 dimensions in points: 595 × 842
+            const A4_WIDTH = 595;
+            const A4_HEIGHT = 842;
+            
+            // Calculate scale to fit A4 proportions while being readable
+            const containerWidth = Math.min(window.innerWidth - 100, 800);
+            const scaleToFit = containerWidth / A4_WIDTH;
+            const finalScale = Math.max(scaleToFit, 0.8); // Minimum scale for readability
+            
+            const viewport = page.getViewport({ scale: finalScale });
+            
+            // Ensure A4 proportions
+            canvas.width = A4_WIDTH * finalScale;
+            canvas.height = A4_HEIGHT * finalScale;
+            
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: page.getViewport({ scale: finalScale })
+            };
+            
+            await page.render(renderContext).promise;
+            console.log('Page rendered at A4 dimensions:', canvas.width, 'x', canvas.height);
+            console.log('A4 scale factor:', finalScale);
+            
+            // Update ruler overlay size
+            updateGrid();
+            setupClickHandler();
+        }
+        
+        // Setup click handler for coordinate detection
+        function setupClickHandler() {
+            canvas.addEventListener('click', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = e.clientX - rect.left;
+                const canvasY = e.clientY - rect.top;
+                
+                // Convert canvas coordinates to actual PDF coordinates (A4: 595x842)
+                const scaleX = 595 / canvas.width;
+                const scaleY = 842 / canvas.height;
+                
+                const pdfX = Math.round(canvasX * scaleX);
+                const pdfY = Math.round(842 - (canvasY * scaleY)); // Flip Y axis for PDF coordinates
+                
+                addClickMarker(canvasX, canvasY, pdfX, pdfY);
+            });
+            
+            // Mouse move for coordinate display
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = e.clientX - rect.left;
+                const canvasY = e.clientY - rect.top;
+                
+                // Convert to PDF coordinates
+                const scaleX = 595 / canvas.width;
+                const scaleY = 842 / canvas.height;
+                
+                const pdfX = Math.round(canvasX * scaleX);
+                const pdfY = Math.round(842 - (canvasY * scaleY));
+                
+                document.getElementById('coordinates').innerHTML = 
+                    `Canvas: (${Math.round(canvasX)}, ${Math.round(canvasY)})<br>PDF A4: (${pdfX}, ${pdfY})`;
+            });
+        }
+        
+        // Add click marker
+        function addClickMarker(canvasX, canvasY, pdfX, pdfY) {
+            const container = document.getElementById('pdfContainer');
+            
+            // Create marker dot
+            const marker = document.createElement('div');
+            marker.className = 'click-marker';
+            marker.style.left = canvasX + 'px';
+            marker.style.top = canvasY + 'px';
+            
+            // Create label
+            const label = document.createElement('div');
+            label.className = 'click-label';
+            label.style.left = canvasX + 'px';
+            label.style.top = canvasY + 'px';
+            label.textContent = `(${pdfX}, ${pdfY})`;
+            
+            container.appendChild(marker);
+            container.appendChild(label);
+            
+            clickMarkers.push({ element: marker, label: label, x: pdfX, y: pdfY });
+            
+            updateCoordinatesList();
+        }
+        
+        // Clear all markers
+        function clearMarkers() {
+            clickMarkers.forEach(marker => {
+                marker.element.remove();
+                marker.label.remove();
+            });
+            clickMarkers = [];
+            updateCoordinatesList();
+        }
+        
+        // Update coordinates list
+        function updateCoordinatesList() {
+            const container = document.getElementById('clickedCoordinates');
+            const list = document.getElementById('coordinatesList');
+            
+            if (clickMarkers.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            list.innerHTML = '';
+            
+            clickMarkers.forEach((marker, index) => {
+                const item = document.createElement('div');
+                item.className = 'field-item';
+                item.innerHTML = `Point ${index + 1}: { x: ${marker.x}, y: ${marker.y} }`;
+                list.appendChild(item);
+            });
+        }
+        
+        // Export coordinates
+        function exportCoordinates() {
+            if (clickMarkers.length === 0) {
+                alert('No coordinates to export. Click on the PDF to mark positions first.');
+                return;
+            }
+            
+            let output = 'const positions = {\n';
+            clickMarkers.forEach((marker, index) => {
+                output += `  field${index + 1}: { x: ${marker.x}, y: ${marker.y}, size: 12 },\n`;
+            });
+            output += '};';
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(output).then(() => {
+                alert('Coordinates copied to clipboard!');
+            }).catch(() => {
+                // Fallback - show in alert
+                alert('Coordinates:\n\n' + output);
+            });
+        }
+        
+        // Toggle grid
+        function toggleGrid() {
+            const show = document.getElementById('showGrid').checked;
+            const overlay = document.getElementById('ruler-overlay');
+            overlay.style.display = show ? 'block' : 'none';
+        }
+        
+        // Update grid
+        function updateGrid() {
+            const overlay = document.getElementById('ruler-overlay');
+            const spacing = parseInt(document.getElementById('gridSpacing').value);
+            const color = document.getElementById('gridColor').value;
+            
+            document.getElementById('spacingValue').textContent = spacing + 'px';
+            
+            // Clear existing grid
+            overlay.innerHTML = '';
+            
+            if (!canvas.width || !canvas.height) return;
+            
+            overlay.setAttribute('width', canvas.width);
+            overlay.setAttribute('height', canvas.height);
+            
+            let gridHTML = '';
+            
+            // Calculate PDF coordinate scales
+            const scaleX = 595 / canvas.width;
+            const scaleY = 842 / canvas.height;
+            
+            // Vertical lines
+            for (let x = 0; x <= canvas.width; x += spacing) {
+                gridHTML += `<line x1="${x}" y1="0" x2="${x}" y2="${canvas.height}" stroke="${color}" stroke-width="0.5" opacity="0.7"/>`;
+                if (x % (spacing * 4) === 0) {
+                    const pdfX = Math.round(x * scaleX);
+                    gridHTML += `<text x="${x + 2}" y="15" fill="${color}" font-size="10" font-family="monospace">${pdfX}</text>`;
+                }
+            }
+            
+            // Horizontal lines
+            for (let y = 0; y <= canvas.height; y += spacing) {
+                gridHTML += `<line x1="0" y1="${y}" x2="${canvas.width}" y2="${y}" stroke="${color}" stroke-width="0.5" opacity="0.7"/>`;
+                if (y % (spacing * 4) === 0) {
+                    const pdfY = Math.round(842 - (y * scaleY));
+                    gridHTML += `<text x="5" y="${y - 2}" fill="${color}" font-size="10" font-family="monospace">${pdfY}</text>`;
+                }
+            }
+            
+            overlay.innerHTML = gridHTML;
+        }
+        
+        // Initialize
+        window.addEventListener('load', function() {
+            updateGrid();
+        });
+    </script>
+</body>
+</html>

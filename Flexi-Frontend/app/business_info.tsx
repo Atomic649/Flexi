@@ -21,7 +21,7 @@ export default function BusinessInfo() {
   const router = useRouter();
   const [businessName, setbusinessName] = useState("");
   const [taxType, settaxType] = useState("");
-  const [vatId, setvatId] = useState("");
+  const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   type DocumentTypeOption = "Invoice" | "Receipt" | "Quotation" | "WithholdingTax";
@@ -74,7 +74,7 @@ export default function BusinessInfo() {
 
       setbusinessName(data.businessName || "");
       settaxType(data.taxType || "");
-      setvatId(data.vatId || "");
+      settaxId(data.taxId || "");
       setbusinessType(data.businessType || "");
       setBusinessPhone(data.businessPhone || "");
       setIsVatRegistered(!!data.vat); // handle exited data
@@ -97,7 +97,7 @@ export default function BusinessInfo() {
     setError("");
 
     // Check if all fields are filled
-    if (!businessName || !taxType || !vatId || !businessType || !businessAddress) {
+    if (!businessName || !taxType || !taxId || !businessType || !businessAddress) {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
@@ -130,7 +130,7 @@ export default function BusinessInfo() {
       // Use memberId directly for the update API call
       const data = await CallAPIBusiness.UpdateBusinessDetailsAPI(memberId, {
         businessName,
-        vatId,
+        taxId,
         businessType,
         taxType,
         businessPhone,
@@ -247,10 +247,10 @@ export default function BusinessInfo() {
             </View>
 
             <FormField2
-              title={t("auth.businessRegister.vatId")}
+              title={t("auth.businessRegister.taxId")}
               placeholder={t("0000000000000")}
-              value={vatId} // Pre-fill with existing data
-              handleChangeText={setvatId}
+              value={taxId} // Pre-fill with existing data
+              handleChangeText={settaxId}
               otherStyles="mt-7"
               keyboardType="number-pad"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -408,7 +408,7 @@ export default function BusinessInfo() {
 
             <CustomButton
               title={
-                businessName || taxType || vatId || businessType
+                businessName || taxType || taxId || businessType
                   ? t("auth.update.button") // Show "Update" if data exists
                   : t("auth.register.button") // Show "Register" if no data exists
               }

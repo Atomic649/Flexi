@@ -60,7 +60,7 @@ Table BusinessAcc {
   businessWebsite String
   businessPhone String
   vat Boolean [default: false]
-  vatId String [unique, not null]
+  taxId String [unique, not null]
   businessType BusinessType [not null, default: 'OnlineSale']
   taxType taxType [not null, default: 'Individual']
   userId Int [not null]
@@ -151,7 +151,7 @@ Table Expense {
   updatedAt DateTime [not null]
   id Int [pk, increment]
   amount Decimal [not null]
-  group String
+  group ExpenseGroup
   image String
   note String
   desc String
@@ -500,6 +500,28 @@ Enum DocumentType {
   DebitNote
   CreditNote
   WithholdingTax
+}
+
+Enum ExpenseGroup {
+  Employee
+  Freelancer
+  Office
+  OfficeRental
+  CarRental
+  Commission
+  Advertising
+  Marketing
+  Copyright
+  Dividend
+  Interest
+  Influencer
+  Accounting
+  Legal
+  Taxation
+  Transport
+  Product
+  Packing
+  Utilities
 }
 
 Ref: Member.userId > User.id

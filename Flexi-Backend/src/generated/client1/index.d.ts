@@ -300,6 +300,31 @@ export const DocumentType: {
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
 
+
+export const ExpenseGroup: {
+  Employee: 'Employee',
+  Freelancer: 'Freelancer',
+  Office: 'Office',
+  OfficeRental: 'OfficeRental',
+  CarRental: 'CarRental',
+  Commission: 'Commission',
+  Advertising: 'Advertising',
+  Marketing: 'Marketing',
+  Copyright: 'Copyright',
+  Dividend: 'Dividend',
+  Interest: 'Interest',
+  Influencer: 'Influencer',
+  Accounting: 'Accounting',
+  Legal: 'Legal',
+  Taxation: 'Taxation',
+  Transport: 'Transport',
+  Product: 'Product',
+  Packing: 'Packing',
+  Utilities: 'Utilities'
+};
+
+export type ExpenseGroup = (typeof ExpenseGroup)[keyof typeof ExpenseGroup]
+
 }
 
 export type Unit = $Enums.Unit
@@ -361,6 +386,10 @@ export const OptionName: typeof $Enums.OptionName
 export type DocumentType = $Enums.DocumentType
 
 export const DocumentType: typeof $Enums.DocumentType
+
+export type ExpenseGroup = $Enums.ExpenseGroup
+
+export const ExpenseGroup: typeof $Enums.ExpenseGroup
 
 /**
  * ##  Prisma Client ʲˢ
@@ -6402,7 +6431,7 @@ export namespace Prisma {
     businessWebsite: string | null
     businessPhone: string | null
     vat: boolean | null
-    vatId: string | null
+    taxId: string | null
     businessType: $Enums.BusinessType | null
     taxType: $Enums.taxType | null
     userId: number | null
@@ -6420,7 +6449,7 @@ export namespace Prisma {
     businessWebsite: string | null
     businessPhone: string | null
     vat: boolean | null
-    vatId: string | null
+    taxId: string | null
     businessType: $Enums.BusinessType | null
     taxType: $Enums.taxType | null
     userId: number | null
@@ -6438,7 +6467,7 @@ export namespace Prisma {
     businessWebsite: number
     businessPhone: number
     vat: number
-    vatId: number
+    taxId: number
     businessType: number
     taxType: number
     userId: number
@@ -6469,7 +6498,7 @@ export namespace Prisma {
     businessWebsite?: true
     businessPhone?: true
     vat?: true
-    vatId?: true
+    taxId?: true
     businessType?: true
     taxType?: true
     userId?: true
@@ -6487,7 +6516,7 @@ export namespace Prisma {
     businessWebsite?: true
     businessPhone?: true
     vat?: true
-    vatId?: true
+    taxId?: true
     businessType?: true
     taxType?: true
     userId?: true
@@ -6505,7 +6534,7 @@ export namespace Prisma {
     businessWebsite?: true
     businessPhone?: true
     vat?: true
-    vatId?: true
+    taxId?: true
     businessType?: true
     taxType?: true
     userId?: true
@@ -6611,7 +6640,7 @@ export namespace Prisma {
     businessWebsite: string | null
     businessPhone: string | null
     vat: boolean | null
-    vatId: string
+    taxId: string
     businessType: $Enums.BusinessType
     taxType: $Enums.taxType
     userId: number
@@ -6649,7 +6678,7 @@ export namespace Prisma {
     businessWebsite?: boolean
     businessPhone?: boolean
     vat?: boolean
-    vatId?: boolean
+    taxId?: boolean
     businessType?: boolean
     taxType?: boolean
     userId?: boolean
@@ -6677,7 +6706,7 @@ export namespace Prisma {
     businessWebsite?: boolean
     businessPhone?: boolean
     vat?: boolean
-    vatId?: boolean
+    taxId?: boolean
     businessType?: boolean
     taxType?: boolean
     userId?: boolean
@@ -6697,7 +6726,7 @@ export namespace Prisma {
     businessWebsite?: boolean
     businessPhone?: boolean
     vat?: boolean
-    vatId?: boolean
+    taxId?: boolean
     businessType?: boolean
     taxType?: boolean
     userId?: boolean
@@ -6717,7 +6746,7 @@ export namespace Prisma {
     businessWebsite?: boolean
     businessPhone?: boolean
     vat?: boolean
-    vatId?: boolean
+    taxId?: boolean
     businessType?: boolean
     taxType?: boolean
     userId?: boolean
@@ -6725,7 +6754,7 @@ export namespace Prisma {
     DocumentType?: boolean
   }
 
-  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "vatId" | "businessType" | "taxType" | "userId" | "memberId" | "DocumentType", ExtArgs["result"]["businessAcc"]>
+  export type BusinessAccOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "taxId" | "businessType" | "taxType" | "userId" | "memberId" | "DocumentType", ExtArgs["result"]["businessAcc"]>
   export type BusinessAccInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     AllMember?: boolean | BusinessAcc$AllMemberArgs<ExtArgs>
@@ -6767,7 +6796,7 @@ export namespace Prisma {
       businessWebsite: string | null
       businessPhone: string | null
       vat: boolean | null
-      vatId: string
+      taxId: string
       businessType: $Enums.BusinessType
       taxType: $Enums.taxType
       userId: number
@@ -7214,7 +7243,7 @@ export namespace Prisma {
     readonly businessWebsite: FieldRef<"BusinessAcc", 'String'>
     readonly businessPhone: FieldRef<"BusinessAcc", 'String'>
     readonly vat: FieldRef<"BusinessAcc", 'Boolean'>
-    readonly vatId: FieldRef<"BusinessAcc", 'String'>
+    readonly taxId: FieldRef<"BusinessAcc", 'String'>
     readonly businessType: FieldRef<"BusinessAcc", 'BusinessType'>
     readonly taxType: FieldRef<"BusinessAcc", 'taxType'>
     readonly userId: FieldRef<"BusinessAcc", 'Int'>
@@ -11726,7 +11755,7 @@ export namespace Prisma {
     updatedAt: Date | null
     id: number | null
     amount: Decimal | null
-    group: string | null
+    group: $Enums.ExpenseGroup | null
     image: string | null
     note: string | null
     desc: string | null
@@ -11753,7 +11782,7 @@ export namespace Prisma {
     updatedAt: Date | null
     id: number | null
     amount: Decimal | null
-    group: string | null
+    group: $Enums.ExpenseGroup | null
     image: string | null
     note: string | null
     desc: string | null
@@ -11995,7 +12024,7 @@ export namespace Prisma {
     updatedAt: Date
     id: number
     amount: Decimal
-    group: string | null
+    group: $Enums.ExpenseGroup | null
     image: string | null
     note: string | null
     desc: string | null
@@ -12175,7 +12204,7 @@ export namespace Prisma {
       updatedAt: Date
       id: number
       amount: Prisma.Decimal
-      group: string | null
+      group: $Enums.ExpenseGroup | null
       image: string | null
       note: string | null
       desc: string | null
@@ -12624,7 +12653,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Expense", 'DateTime'>
     readonly id: FieldRef<"Expense", 'Int'>
     readonly amount: FieldRef<"Expense", 'Decimal'>
-    readonly group: FieldRef<"Expense", 'String'>
+    readonly group: FieldRef<"Expense", 'ExpenseGroup'>
     readonly image: FieldRef<"Expense", 'String'>
     readonly note: FieldRef<"Expense", 'String'>
     readonly desc: FieldRef<"Expense", 'String'>
@@ -29546,7 +29575,7 @@ export namespace Prisma {
     businessWebsite: 'businessWebsite',
     businessPhone: 'businessPhone',
     vat: 'vat',
-    vatId: 'vatId',
+    taxId: 'taxId',
     businessType: 'businessType',
     taxType: 'taxType',
     userId: 'userId',
@@ -30060,6 +30089,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ExpenseGroup'
+   */
+  export type EnumExpenseGroupFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExpenseGroup'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExpenseGroup[]'
+   */
+  export type ListEnumExpenseGroupFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExpenseGroup[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Bank'
    */
   export type EnumBankFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bank'>
@@ -30409,7 +30452,7 @@ export namespace Prisma {
     businessWebsite?: StringNullableFilter<"BusinessAcc"> | string | null
     businessPhone?: StringNullableFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableFilter<"BusinessAcc"> | boolean | null
-    vatId?: StringFilter<"BusinessAcc"> | string
+    taxId?: StringFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeFilter<"BusinessAcc"> | $Enums.BusinessType
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntFilter<"BusinessAcc"> | number
@@ -30436,7 +30479,7 @@ export namespace Prisma {
     businessWebsite?: SortOrderInput | SortOrder
     businessPhone?: SortOrderInput | SortOrder
     vat?: SortOrderInput | SortOrder
-    vatId?: SortOrder
+    taxId?: SortOrder
     businessType?: SortOrder
     taxType?: SortOrder
     userId?: SortOrder
@@ -30456,7 +30499,7 @@ export namespace Prisma {
     id?: number
     businessName?: string
     businessUserName?: string
-    vatId?: string
+    taxId?: string
     AND?: BusinessAccWhereInput | BusinessAccWhereInput[]
     OR?: BusinessAccWhereInput[]
     NOT?: BusinessAccWhereInput | BusinessAccWhereInput[]
@@ -30480,7 +30523,7 @@ export namespace Prisma {
     platform?: PlatformListRelationFilter
     storefront?: StoreListRelationFilter
     product?: ProductListRelationFilter
-  }, "id" | "businessName" | "businessUserName" | "vatId">
+  }, "id" | "businessName" | "businessUserName" | "taxId">
 
   export type BusinessAccOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30493,7 +30536,7 @@ export namespace Prisma {
     businessWebsite?: SortOrderInput | SortOrder
     businessPhone?: SortOrderInput | SortOrder
     vat?: SortOrderInput | SortOrder
-    vatId?: SortOrder
+    taxId?: SortOrder
     businessType?: SortOrder
     taxType?: SortOrder
     userId?: SortOrder
@@ -30520,7 +30563,7 @@ export namespace Prisma {
     businessWebsite?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
     businessPhone?: StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableWithAggregatesFilter<"BusinessAcc"> | boolean | null
-    vatId?: StringWithAggregatesFilter<"BusinessAcc"> | string
+    taxId?: StringWithAggregatesFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeWithAggregatesFilter<"BusinessAcc"> | $Enums.BusinessType
     taxType?: EnumtaxTypeWithAggregatesFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntWithAggregatesFilter<"BusinessAcc"> | number
@@ -30904,7 +30947,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
     id?: IntFilter<"Expense"> | number
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
-    group?: StringNullableFilter<"Expense"> | string | null
+    group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
@@ -30965,7 +31008,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Expense"> | Date | string
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
-    group?: StringNullableFilter<"Expense"> | string | null
+    group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
@@ -31029,7 +31072,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Expense"> | Date | string
     id?: IntWithAggregatesFilter<"Expense"> | number
     amount?: DecimalWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string
-    group?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    group?: EnumExpenseGroupNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     note?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     desc?: StringNullableWithAggregatesFilter<"Expense"> | string | null
@@ -32410,7 +32453,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -32436,7 +32479,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -32461,7 +32504,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32487,7 +32530,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -32513,7 +32556,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -32531,7 +32574,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32549,7 +32592,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -32961,7 +33004,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -32988,7 +33031,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -33014,7 +33057,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33041,7 +33084,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33068,7 +33111,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -33094,7 +33137,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33119,7 +33162,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34726,7 +34769,7 @@ export namespace Prisma {
     businessWebsite?: SortOrder
     businessPhone?: SortOrder
     vat?: SortOrder
-    vatId?: SortOrder
+    taxId?: SortOrder
     businessType?: SortOrder
     taxType?: SortOrder
     userId?: SortOrder
@@ -34750,7 +34793,7 @@ export namespace Prisma {
     businessWebsite?: SortOrder
     businessPhone?: SortOrder
     vat?: SortOrder
-    vatId?: SortOrder
+    taxId?: SortOrder
     businessType?: SortOrder
     taxType?: SortOrder
     userId?: SortOrder
@@ -34768,7 +34811,7 @@ export namespace Prisma {
     businessWebsite?: SortOrder
     businessPhone?: SortOrder
     vat?: SortOrder
-    vatId?: SortOrder
+    taxId?: SortOrder
     businessType?: SortOrder
     taxType?: SortOrder
     userId?: SortOrder
@@ -35208,6 +35251,13 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type EnumExpenseGroupNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpenseGroup | EnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumExpenseGroupNullableFilter<$PrismaModel> | $Enums.ExpenseGroup | null
+  }
+
   export type EnumBankNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Bank | EnumBankFieldRefInput<$PrismaModel> | null
     in?: $Enums.Bank[] | ListEnumBankFieldRefInput<$PrismaModel> | null
@@ -35323,6 +35373,16 @@ export namespace Prisma {
     WHTpercent?: SortOrder
     WHTAmount?: SortOrder
     businessAcc?: SortOrder
+  }
+
+  export type EnumExpenseGroupNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpenseGroup | EnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumExpenseGroupNullableWithAggregatesFilter<$PrismaModel> | $Enums.ExpenseGroup | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumExpenseGroupNullableFilter<$PrismaModel>
+    _max?: NestedEnumExpenseGroupNullableFilter<$PrismaModel>
   }
 
   export type EnumBankNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -37647,6 +37707,10 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput
   }
 
+  export type NullableEnumExpenseGroupFieldUpdateOperationsInput = {
+    set?: $Enums.ExpenseGroup | null
+  }
+
   export type NullableEnumBankFieldUpdateOperationsInput = {
     set?: $Enums.Bank | null
   }
@@ -38943,6 +39007,13 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type NestedEnumExpenseGroupNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpenseGroup | EnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumExpenseGroupNullableFilter<$PrismaModel> | $Enums.ExpenseGroup | null
+  }
+
   export type NestedEnumBankNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Bank | EnumBankFieldRefInput<$PrismaModel> | null
     in?: $Enums.Bank[] | ListEnumBankFieldRefInput<$PrismaModel> | null
@@ -38959,6 +39030,16 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type NestedEnumExpenseGroupNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpenseGroup | EnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ExpenseGroup[] | ListEnumExpenseGroupFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumExpenseGroupNullableWithAggregatesFilter<$PrismaModel> | $Enums.ExpenseGroup | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumExpenseGroupNullableFilter<$PrismaModel>
+    _max?: NestedEnumExpenseGroupNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumBankNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -39162,7 +39243,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -39187,7 +39268,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -39613,7 +39694,7 @@ export namespace Prisma {
     businessWebsite?: StringNullableFilter<"BusinessAcc"> | string | null
     businessPhone?: StringNullableFilter<"BusinessAcc"> | string | null
     vat?: BoolNullableFilter<"BusinessAcc"> | boolean | null
-    vatId?: StringFilter<"BusinessAcc"> | string
+    taxId?: StringFilter<"BusinessAcc"> | string
     businessType?: EnumBusinessTypeFilter<"BusinessAcc"> | $Enums.BusinessType
     taxType?: EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
     userId?: IntFilter<"BusinessAcc"> | number
@@ -40006,7 +40087,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -40031,7 +40112,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -40169,7 +40250,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -40195,7 +40276,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -40427,7 +40508,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40452,7 +40533,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -40578,7 +40659,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
     id?: IntFilter<"Expense"> | number
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
-    group?: StringNullableFilter<"Expense"> | string | null
+    group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
@@ -40887,7 +40968,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -40913,7 +40994,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -41339,7 +41420,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -41364,7 +41445,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -41502,7 +41583,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41527,7 +41608,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -41904,7 +41985,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -41929,7 +42010,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -42088,7 +42169,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42113,7 +42194,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -42187,7 +42268,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -42212,7 +42293,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -42287,7 +42368,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42312,7 +42393,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -42408,7 +42489,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -42433,7 +42514,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -42524,7 +42605,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42549,7 +42630,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -42697,7 +42778,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -42722,7 +42803,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -42813,7 +42894,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42838,7 +42919,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -42996,7 +43077,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -43021,7 +43102,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     userId: number
@@ -43134,7 +43215,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43159,7 +43240,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     userId?: IntFieldUpdateOperationsInput | number
@@ -45494,7 +45575,7 @@ export namespace Prisma {
     businessWebsite?: string | null
     businessPhone?: string | null
     vat?: boolean | null
-    vatId: string
+    taxId: string
     businessType?: $Enums.BusinessType
     taxType?: $Enums.taxType
     memberId?: string | null
@@ -45627,7 +45708,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45652,7 +45733,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45677,7 +45758,7 @@ export namespace Prisma {
     businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
     businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
     vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    vatId?: StringFieldUpdateOperationsInput | string
+    taxId?: StringFieldUpdateOperationsInput | string
     businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
     taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
     memberId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46105,7 +46186,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -46311,7 +46392,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46337,7 +46418,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46363,7 +46444,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46559,7 +46640,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     id?: number
     amount: Decimal | DecimalJsLike | number | string
-    group?: string | null
+    group?: $Enums.ExpenseGroup | null
     image?: string | null
     note?: string | null
     desc?: string | null
@@ -46783,7 +46864,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46809,7 +46890,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46835,7 +46916,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    group?: NullableStringFieldUpdateOperationsInput | string | null
+    group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null

@@ -1,7 +1,11 @@
 import { fillWHTTemplateWithThaiFont } from "../utils/pdfWHTTemplateThai";
 import path from "path";
 import { Request, Response } from "express";
-import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
+import {
+  Bank,
+  ExpenseGroup,
+  PrismaClient as PrismaClient1,
+} from "../generated/client1";
 import Joi from "joi";
 import { format } from "date-fns-tz";
 import multer from "multer";
@@ -20,7 +24,7 @@ interface Expense {
   WHTpercent?: number;
   date: Date;
   amount: number;
-  group: string;
+  group: ExpenseGroup;
   image: string;
   memberId: string;
   businessAcc: number;
@@ -42,7 +46,29 @@ const schema = Joi.object({
   WHTpercent: Joi.number().optional(),
   date: Joi.date().required(),
   amount: Joi.number().required(),
-  group: Joi.string(),
+  group: Joi.string()
+    .valid(
+      "Employee",
+      "Freelancer",
+      "Office",
+      "OfficeRental",
+      "CarRental",
+      "Commission",
+      "Advertising",
+      "Marketing",
+      "Copyright",
+      "Dividend",
+      "Interest",
+      "Influencer",
+      "Accounting",
+      "Legal",
+      "Taxation",
+      "Transport",
+      "Product",
+      "Packing",
+      "Utilities"
+    )
+    .required(),
   desc: Joi.string().allow(""),
   image: Joi.string().allow(""),
   memberId: Joi.string().required(),
@@ -402,35 +428,143 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
 
 // API endpoint to fill WHTTemplate.pdf with Thai font and return the filled PDF (stream, no save)
 const generateWHTDocument = async (req: Request, res: Response) => {
-  
-
   try {
-    const { cName, sTaxId, amount, date, taxInvoiceNo } = req.body;
+    const {
+      sName,
+      sTaxId,
+      amount,
+      date,
+      taxInvoiceNo,
+      sAddress,
+      memberId,
+      WHTAmount,
+      group,
+    } = req.body;
+
+    // Debug: Log what we received
+    console.log("🔍 Received WHTAmount:", WHTAmount, "Type:", typeof WHTAmount);
+    console.log("🔍 Full request body:", req.body);
+    console.log("🔍 Received group:", group);
+
+    // if business detail with memberId
+    const businessDetail = await prisma.businessAcc.findFirst({
+      where: {
+        memberId: memberId,
+      },
+      select: {
+        businessName: true,
+        taxId: true,
+        businessAddress: true,
+      },
+    });
+
+    // If business details are found, use them
+    const businessName = businessDetail?.businessName || "";
+    const taxId = businessDetail?.taxId || "";
+    const businessAddress = businessDetail?.businessAddress || "";
+
     // Coverse all req to String
-    const cNameStr = String(cName);
-    const sTaxIdStr = String(sTaxId);
-    const amountStr = String(amount);
-    const dateStr = String(date);
-    const taxInvoiceNoStr = String(taxInvoiceNo);
+    const sNameStr = String(sName || "");
+    const sTaxIdStr = String(sTaxId || "");
+
+    // Format amount to 2 decimal places
+    const amountNum = Number(amount) || 0;
+    const amountStr = amountNum.toFixed(2);
+
+    const dateStr = format(new Date(date), "dd/MM/yyyy");
+    const taxInvoiceNoStr = String(taxInvoiceNo || "");
+    const sAddressStr = String(sAddress || "");
+
+    // Format WHTAmount to 2 decimal places
+    const WHTAmountNum = Number(WHTAmount) || 0;
+    const WHTAmountStr = WHTAmountNum.toFixed(2);
+
+    // Conditional positioning based on group
+    const isEmployee = group === "Employee";
+    const isFreelancerOrCommission =
+      group === "Freelancer" || group === "Commission";
+    const isRentalMarketingTransport =
+      group === "CarRental" ||
+      group === "OfficeRental" ||
+      group === "Marketing" ||
+      group === "Advertising" ||
+      group === "Influencer" ||
+      group === "Transport";
+    const isCopyright = group === "Copyright";
+    const isInterest = group === "Interest";
+
+    let amountY, WHTAmountY, dateY;
+
+    if (isEmployee) {
+      amountY = 537;
+      WHTAmountY = 537;
+      dateY = 537;
+    } else if (isFreelancerOrCommission) {
+      amountY = 522;
+      WHTAmountY = 522;
+      dateY = 522;
+    } else if (isCopyright) {
+      amountY = 508;
+      WHTAmountY = 508;
+      dateY = 508;
+    } else if (isInterest) {
+      amountY = 493;
+      WHTAmountY = 493;
+      dateY = 493;
+    } else if (isRentalMarketingTransport) {
+      amountY = 218;
+      WHTAmountY = 218;
+      dateY = 218;
+    } else {
+      amountY = 202;
+      WHTAmountY = 202;
+      dateY = 202;
+    }
 
     const positions = {
-      cName: { x: 100, y: 700, size: 14 },
-      sTaxId: { x: 100, y: 680, size: 12 },
-      amount: { x: 400, y: 650, size: 12 },
-      date: { x: 400, y: 630, size: 12 },
-      taxInvoiceNo: { x: 400, y: 610, size: 12 },
+      sName: { x: 65, y: 658, size: 14, align: "left" },
+      sTaxId: { x: 380, y: 748, size: 14, align: "left" },
+      //   taxInvoiceNo: { x: 400, y: 610, size: 14 },
+      sAddress: { x: 67, y: 632, size: 14, align: "left" },
+
+      businessName: { x: 65, y: 732, size: 14, align: "left" },
+      taxId: { x: 380, y: 679, size: 14, align: "left" },
+      businessAddress: { x: 67, y: 708, size: 14, align: "left" },
+
+      // Decimal point centered at specified coordinates - conditional based on group
+      amount: { x: 474, y: amountY, size: 14, align: "decimal" },
+      WHTAmount: { x: 545, y: WHTAmountY, size: 14, align: "decimal" },
+      date: { x: 340, y: dateY, size: 14, align: "left" },
     };
-    const fields = { cName: cNameStr, sTaxId: sTaxIdStr, amount: amountStr, date: dateStr, taxInvoiceNo: taxInvoiceNoStr };
+    const fields = {
+      sName: sNameStr,
+      sTaxId: sTaxIdStr,
+      amount: amountStr,
+      date: dateStr,
+      //   taxInvoiceNo: taxInvoiceNoStr,
+      sAddress: sAddressStr,
+      businessName: businessName,
+      taxId: taxId,
+      businessAddress: businessAddress,
+      WHTAmount: WHTAmountStr,
+    };
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
-    const thaiFontPath = path.resolve(__dirname, "../../fonts/THSarabunNew.ttf");
+    const thaiFontPath = path.resolve(
+      __dirname,
+      "../../fonts/THSarabunNew.ttf"
+    );
     const pdfBuffer = await fillWHTTemplateWithThaiFont({
       templatePath,
       fields,
       positions,
       thaiFontPath,
     });
+    console.log(fields);
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=WHTDocument.pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=WHTDocument.pdf"
+    );
     res.send(pdfBuffer);
   } catch (error) {
     console.error(error);

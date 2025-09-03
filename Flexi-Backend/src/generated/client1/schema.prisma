@@ -157,6 +157,28 @@ enum DocumentType {
   WithholdingTax
 }
 
+enum ExpenseGroup {
+  Employee
+  Freelancer
+  Office
+  OfficeRental
+  CarRental
+  Commission
+  Advertising
+  Marketing
+  Copyright
+  Dividend
+  Interest
+  Influencer
+  Accounting
+  Legal
+  Taxation
+  Transport
+  Product
+  Packing
+  Utilities
+}
+
 model User {
   id               Int           @id @default(autoincrement())
   email            String        @unique
@@ -217,7 +239,7 @@ model BusinessAcc {
   businessWebsite  String?
   businessPhone    String?
   vat              Boolean?       @default(false)
-  vatId            String         @unique
+  taxId            String         @unique
   businessType     BusinessType   @default(OnlineSale)
   taxType          taxType        @default(Individual)
   userId           Int
@@ -310,32 +332,32 @@ model AdsCost {
 
 model Expense {
   date           DateTime
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  id             Int         @id @default(autoincrement())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
   amount         Decimal
-  group          String?
+  group          ExpenseGroup?
   image          String?
   note           String?
   desc           String?
-  deleted        Boolean?    @default(false)
-  save           Boolean?    @default(false)
+  deleted        Boolean?      @default(false)
+  save           Boolean?      @default(false)
   channel        Bank?
   code           String?
-  vat            Boolean?    @default(false)
-  vatAmount      Decimal?    @default(0)
-  withHoldingTax Boolean?    @default(false)
-  WHTpercent     Decimal?    @default(0)
-  WHTAmount      Decimal?    @default(0)
+  vat            Boolean?      @default(false)
+  vatAmount      Decimal?      @default(0)
+  withHoldingTax Boolean?      @default(false)
+  WHTpercent     Decimal?      @default(0)
+  WHTAmount      Decimal?      @default(0)
   sName          String?
   sTaxId         String?
   sAddress       String?
   taxInvoiceNo   String?
   // Relation
   businessAcc    Int
-  businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])
+  businessId     BusinessAcc   @relation(fields: [businessAcc], references: [id])
   memberId       String
-  member         Member      @relation(fields: [memberId], references: [uniqueId])
+  member         Member        @relation(fields: [memberId], references: [uniqueId])
 }
 
 model Platform {

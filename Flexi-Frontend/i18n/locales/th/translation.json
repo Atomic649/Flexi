@@ -118,7 +118,7 @@
       },
       "businessName": "ชื่อธุรกิจ",
       "taxType": "ประเภทภาษี",
-      "vatId": "หมายเลขผู้เสียภาษี",
+      "taxId": "หมายเลขผู้เสียภาษี",
       "businessType": "ประเภทธุรกิจ",
       "businessAddress": "ที่อยู่ธุรกิจ",
       "taxTypeOption": {
@@ -749,7 +749,18 @@
         "packing": "บรรจุภัณฑ์",
         "utility": "สาธารณูปโภค",
         "other": "อื่นๆ",
-        "account": "บัญชี"
+        "account": "บัญชี",
+        "freelancer": "ฟรีแลนซ์",
+        "influencer": "อินฟลูเอนเซอร์",
+        "officeRental": "ค่าเช่าสำนักงาน",
+        "carRental": "ค่าเช่ารถ",
+        "commission": "ค่าคอมมิชชั่น",
+        "advertising": "ค่าโฆษณา",
+        "copyright": "ลิขสิทธิ์",
+        "dividend": "เงินปันผล",
+        "interest": "ดอกเบี้ย",
+        "accounting": "บัญชี",
+        "legal": "กฎหมาย"
       },
       "attachBill": "แนบใบเสร็จ"
     },

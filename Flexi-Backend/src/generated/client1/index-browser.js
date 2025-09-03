@@ -154,7 +154,7 @@ exports.Prisma.BusinessAccScalarFieldEnum = {
   businessWebsite: 'businessWebsite',
   businessPhone: 'businessPhone',
   vat: 'vat',
-  vatId: 'vatId',
+  taxId: 'taxId',
   businessType: 'businessType',
   taxType: 'taxType',
   userId: 'userId',
@@ -496,6 +496,28 @@ exports.Unit = exports.$Enums.Unit = {
   Set: 'Set',
   Dozen: 'Dozen',
   NotSpecified: 'NotSpecified'
+};
+
+exports.ExpenseGroup = exports.$Enums.ExpenseGroup = {
+  Employee: 'Employee',
+  Freelancer: 'Freelancer',
+  Office: 'Office',
+  OfficeRental: 'OfficeRental',
+  CarRental: 'CarRental',
+  Commission: 'Commission',
+  Advertising: 'Advertising',
+  Marketing: 'Marketing',
+  Copyright: 'Copyright',
+  Dividend: 'Dividend',
+  Interest: 'Interest',
+  Influencer: 'Influencer',
+  Accounting: 'Accounting',
+  Legal: 'Legal',
+  Taxation: 'Taxation',
+  Transport: 'Transport',
+  Product: 'Product',
+  Packing: 'Packing',
+  Utilities: 'Utilities'
 };
 
 exports.Bank = exports.$Enums.Bank = {

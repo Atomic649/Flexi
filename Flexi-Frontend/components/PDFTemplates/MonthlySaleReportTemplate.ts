@@ -185,7 +185,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             <h3>${businessDetails?.taxType === "Juristic" ? t("print.companyInformation") : t("print.storeInformation")}</h3>
             <p><strong>${businessDetails?.taxType === "Juristic" ? t("print.companyName") : t("print.storeName")}:</strong> ${businessDetails?.businessName || businessName || "Your Business Name"}</p>
             <p><strong>${t("print.address")}:</strong> ${businessDetails?.businessAddress || "Not specified"}</p>
-            <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.vatId || "Not specified"}</p>
+            <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.taxId || "Not specified"}</p>
           </div>
 
           <h3>${t("print.monthlySummary")}</h3>

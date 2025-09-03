@@ -19,7 +19,7 @@ export async function fillWHTTemplateWithThaiFont({
 }: {
   templatePath: string;
   fields: Record<string, string>;
-  positions: Record<string, { x: number; y: number; size?: number }>;
+  positions: Record<string, { x: number; y: number; size?: number; align?: string }>;
   thaiFontPath: string;
 }): Promise<Buffer> {
   // Load the template and Thai font
@@ -34,12 +34,28 @@ export async function fillWHTTemplateWithThaiFont({
   Object.entries(fields).forEach(([key, value]) => {
     const pos = positions[key];
     if (pos) {
+      let xPosition = pos.x;
+      const fontSize = pos.size || 12;
+      
+      // Handle different alignment types
+      if (pos.align === 'decimal' && value.includes('.')) {
+        // For decimal alignment, position so the decimal point is at the specified x coordinate
+        const beforeDecimal = value.substring(0, value.indexOf('.'));
+        const beforeDecimalWidth = thaiFont.widthOfTextAtSize(beforeDecimal, fontSize);
+        xPosition = pos.x - beforeDecimalWidth;
+      } else if (pos.align === 'right') {
+        // For right alignment, position so the text ends at the specified x coordinate
+        const textWidth = thaiFont.widthOfTextAtSize(value, fontSize);
+        xPosition = pos.x - textWidth;
+      }
+      // For 'left' or undefined alignment, use x position as is
+      
       page.drawText(value, {
-        x: pos.x,
+        x: xPosition,
         y: pos.y,
-        size: pos.size || 12,
+        size: fontSize,
         font: thaiFont,
-        color: rgb(1, 0, 0), // Red for development visibility
+        color: rgb(1, 0, 0), // Black color for production
       });
     }
   });

@@ -72,6 +72,9 @@ export default function ExpenseDetail({
   onClose,
   expense,
 }: ExpenseDetailProps) {
+  console.log("🔍 Initial expense prop:", expense);
+  console.log("🔍 Initial expense.group:", expense.group);
+  
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [date, setDate] = useState(expense.date);
@@ -97,6 +100,7 @@ export default function ExpenseDetail({
   const [sName, setSName] = useState(expense.sName || "");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
   const [sAddress, setSAddress] = useState(expense.sAddress || "");
+  
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -331,19 +335,30 @@ export default function ExpenseDetail({
   async function downloadWHTDoc(): Promise<void> {
     try {
       // Prepare data for WHT document
-      const sName = note || "";
-      const sTaxId = group || "";
-      ``;
+      const supplierName = sName || "";
+      const supplierTaxId = sTaxId || "";
+      const supplierAddress = sAddress || "";
       const amountStr = amount ? amount.toString() : "";
       const dateStr = date ? formatDate(date) : "";
+      const memberId = String(await getMemberId());
+
+      // Debug: Check WHTAmount value
+      console.log("🔍 Debug WHTAmount in downloadWHTDoc:", WHTAmount, typeof WHTAmount);
+      console.log("🔍 Debug group in downloadWHTDoc:", group, typeof group);
+
+      
+   
       // Call API to get WHT document PDF blob
       const pdfBlob = await CallAPIExpense.downloadWHTDocAPI({
-        sName,
-        sTaxId,
-        sAddress,
+        sName: supplierName,
+        sTaxId: supplierTaxId,
+        sAddress: supplierAddress,
         amount: amountStr,
         date: dateStr,
-        taxInvoiceNo,
+        taxInvoiceNo: taxInvoiceNo || "",
+        memberId: memberId || "",
+        WHTAmount: WHTAmount !== undefined && WHTAmount !== null ? WHTAmount.toString() : "0",
+        group: group || expense?.group || "",
 
       });
       const fileName = `WHTDocument_${expense.id}.pdf`;
@@ -665,83 +680,36 @@ export default function ExpenseDetail({
                   showsHorizontalScrollIndicator={false}
                   className="flex-row m-1 "
                 >
-                  <TouchableOpacity
-                    onPress={() => setGroup("Marketing")}
-                    className={groupButtonClass("Marketing")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.marketing")}
-                    </CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Transport")}
-                    className={groupButtonClass("Transport")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.transport")}
-                    </CustomText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setGroup("Taxation")}
-                    className={groupButtonClass("Taxation")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.taxation")}
-                    </CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Office")}
-                    className={groupButtonClass("Office")}
-                  >
-                    <CustomText>{t("expense.detail.group.office")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Employee")}
-                    className={groupButtonClass("Employee")}
-                  >
-                    <CustomText>
-                      {t("expense.detail.group.employee")}
-                    </CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Product")}
-                    className={groupButtonClass("Product")}
-                  >
-                    <CustomText>{t("expense.detail.group.product")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Packing")}
-                    className={groupButtonClass("Packing")}
-                  >
-                    <CustomText>{t("expense.detail.group.packing")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Utilities")}
-                    className={groupButtonClass("Utilities")}
-                  >
-                    <CustomText>{t("expense.detail.group.utility")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Account")}
-                    className={groupButtonClass("Account")}
-                  >
-                    <CustomText>{t("expense.detail.group.account")}</CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setGroup("Others")}
-                    className={groupButtonClass("Others")}
-                  >
-                    <CustomText>{t("expense.detail.group.other")}</CustomText>
-                  </TouchableOpacity>
-                </ScrollView>
+                    {[
+                    { key: "Employee", label: t("expense.detail.group.employee") },
+                    { key: "Freelancer", label: t("expense.detail.group.freelancer") },
+                    { key: "Office", label: t("expense.detail.group.office") },
+                    { key: "OfficeRental", label: t("expense.detail.group.officeRental") },
+                    { key: "CarRental", label: t("expense.detail.group.carRental") },
+                    { key: "Commission", label: t("expense.detail.group.commission") },
+                    { key: "Advertising", label: t("expense.detail.group.advertising") },
+                    { key: "Marketing", label: t("expense.detail.group.marketing") },
+                    { key: "Copyright", label: t("expense.detail.group.copyright") },
+                    { key: "Dividend", label: t("expense.detail.group.dividend") },
+                    { key: "Interest", label: t("expense.detail.group.interest") },
+                    { key: "Influencer", label: t("expense.detail.group.influencer") },
+                    { key: "Accounting", label: t("expense.detail.group.accounting") },
+                    { key: "Legal", label: t("expense.detail.group.legal") },
+                    { key: "Taxation", label: t("expense.detail.group.taxation") },
+                    { key: "Transport", label: t("expense.detail.group.transport") },
+                    { key: "Product", label: t("expense.detail.group.product") },
+                    { key: "Packing", label: t("expense.detail.group.packing") },
+                    { key: "Utilities", label: t("expense.detail.group.utility") },
+                    { key: "Others", label: t("expense.detail.group.other") },
+                    ].map(({ key, label }) => (
+                    <TouchableOpacity
+                      key={key}
+                      onPress={() => setGroup(key)}
+                      className={groupButtonClass(key)}
+                    >
+                      <CustomText>{label}</CustomText>
+                    </TouchableOpacity>
+                    ))}</ScrollView>
               </View>
               <View className="flex-row justify-evenly mt-2">
                 <TouchableOpacity

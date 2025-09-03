@@ -76,7 +76,7 @@ CREATE TABLE "BusinessAcc" (
     "businessUserName" TEXT,
     "businessAvatar" TEXT,
     "businessAddress" TEXT,
-    "vatId" TEXT NOT NULL,
+    "taxId" TEXT NOT NULL,
     "businessType" "BusinessType" NOT NULL DEFAULT 'OnlineSale',
     "taxType" "taxType" NOT NULL DEFAULT 'Individual',
     "userId" INTEGER NOT NULL,
@@ -363,7 +363,7 @@ CREATE UNIQUE INDEX "BusinessAcc_businessName_key" ON "BusinessAcc"("businessNam
 CREATE UNIQUE INDEX "BusinessAcc_businessUserName_key" ON "BusinessAcc"("businessUserName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BusinessAcc_vatId_key" ON "BusinessAcc"("vatId");
+CREATE UNIQUE INDEX "BusinessAcc_taxId_key" ON "BusinessAcc"("taxId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Bill_memberId_key" ON "Bill"("memberId");

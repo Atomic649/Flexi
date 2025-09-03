@@ -19,7 +19,7 @@ const prisma = new PrismaClient1();
 // Interface for request body from client
 interface businessAccInput {
   businessName: string;
-  vatId: string;
+  taxId: string;
   businessType: BusinessType;
   taxType: taxType;
   userId: number;
@@ -36,7 +36,7 @@ interface businessAccInput {
 // validate the request body
 const schema = Joi.object({
   businessName: Joi.string().required(),
-  vatId: Joi.string().min(13).max(13).required(),
+  taxId: Joi.string().min(13).max(13).required(),
   businessType: Joi.string().required(),
   taxType: Joi.string().valid("Juristic", "Individual").required(),
   userId: Joi.number().required(),
@@ -66,7 +66,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     const existingBusinessAcc = await prisma.businessAcc.findUnique({
       where: {
         businessName: businessAccInput.businessName,
-        vatId: businessAccInput.vatId,
+        taxId: businessAccInput.taxId,
       },
     });
     if (existingBusinessAcc) {
@@ -93,7 +93,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     const businessAcc = await prisma.businessAcc.create({
       data: {
         businessName: businessAccInput.businessName,
-        vatId: businessAccInput.vatId,
+        taxId: businessAccInput.taxId,
         businessType: businessAccInput.businessType,
         taxType: businessAccInput.taxType,
         userId: businessAccInput.userId,
@@ -120,7 +120,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
       message: "business account created successfully",
       businessAcc: {
         businessName: businessAcc.businessName,
-        vatId: businessAcc.vatId,
+        taxId: businessAcc.taxId,
         businessType: businessAcc.businessType,
         taxType: businessAcc.taxType,
         userId: businessAcc.userId,
@@ -199,7 +199,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
     const existingBusinessAcc = await prisma.businessAcc.findUnique({
       where: {
         businessName: businessAccInput.businessName,
-        vatId: businessAccInput.vatId,
+        taxId: businessAccInput.taxId,
       },
     });
     if (existingBusinessAcc) {
@@ -209,13 +209,13 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       });
     }
 
-    // Check if vatId is already used by another business account
-    const existingVatId = await prisma.businessAcc.findUnique({
+    // Check if taxId is already used by another business account
+    const existingtaxId = await prisma.businessAcc.findUnique({
       where: {
-        vatId: businessAccInput.vatId,
+        taxId: businessAccInput.taxId,
       },
     });
-    if (existingVatId) {
+    if (existingtaxId) {
       return res.status(400).json({
         status: "error",
         message: "This Tax Id already used by another business account",
@@ -252,7 +252,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       const businessAcc = await prisma.businessAcc.create({
         data: {
           businessName: businessAccInput.businessName,
-          vatId: businessAccInput.vatId,
+          taxId: businessAccInput.taxId,
           businessType: businessAccInput.businessType,
           taxType: businessAccInput.taxType,
           userId: businessAccInput.userId,
@@ -330,7 +330,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       message: "business account created successfully",
       businessAcc: {
         businessName: result.businessName,
-        vatId: result.vatId,
+        taxId: result.taxId,
         businessType: result.businessType,
         taxType: result.taxType,
         userId: result.userId,
@@ -399,7 +399,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
       select: {
         id: true,
         businessName: true,
-        vatId: true,
+        taxId: true,
         taxType: true,
         businessAddress: true,
         businessType: true,
@@ -425,7 +425,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   const {
     businessName,
-    vatId,
+    taxId,
     businessType,
     taxType,
     businessPhone,
@@ -438,7 +438,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   console.log("Update Business Details", {
     memberId,
     businessName,
-    vatId,
+    taxId,
     businessType,
     taxType,
     businessPhone,
@@ -455,7 +455,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
       },
       data: {
         businessName,
-        vatId,
+        taxId,
         businessType,
         taxType,
         businessPhone,
@@ -513,7 +513,7 @@ const searchBusinessAcc = async (req: Request, res: Response) => {
             },
           },
           {
-            vatId: {
+            taxId: {
               contains: keyword,
             },
           },
