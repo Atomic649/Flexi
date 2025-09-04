@@ -31,6 +31,11 @@ const formatDate = (date: string) => {
   return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
 };
 
+const formatNumber = (number: number | string) => {
+  const num = typeof number === 'string' ? parseFloat(number) : number;
+  return num.toLocaleString('en-US');
+};
+
 export default function ExpenseCard({
   id,
   date,
@@ -162,7 +167,7 @@ export default function ExpenseCard({
                   style={{ color: getExpenseTextColor(type) }}
                   numberOfLines={1}
                 >
-                  -{expenses}
+                  -{formatNumber(expenses)}
                 </Text>
               
               </View>
@@ -229,7 +234,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                  {expenses}
+                  {formatNumber(expenses)}
                 </Text>
                 <Text
                   style={{

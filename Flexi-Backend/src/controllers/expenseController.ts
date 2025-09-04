@@ -8,6 +8,7 @@ import {
 } from "../generated/client1";
 import Joi from "joi";
 import { format } from "date-fns-tz";
+import { th } from "date-fns/locale";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { deleteFromS3, extractS3Key } from "../services/imageService";
@@ -460,24 +461,59 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
     // If business details are found, use them
     const businessName = businessDetail?.businessName || "";
-    const taxId = businessDetail?.taxId || "";
+    const rawTaxId = businessDetail?.taxId || "";
     const businessAddress = businessDetail?.businessAddress || "";
+
+    // Function to create individual digit positions for Thai Tax ID
+    const createTaxIdDigitPositions = (taxId: string, yPosition: number) => {
+      const xPositions = [378, 396, 408, 420, 432, 451, 462, 475, 486, 499, 518, 529, 548];
+      const cleanTaxId = taxId.replace(/[\s-]/g, '').padEnd(13, ' ');
+      const positions: Record<string, { x: number; y: number; size: number; align: string }> = {};
+      
+      for (let i = 0; i < 13; i++) {
+        const digit = cleanTaxId[i] || '';
+        if (digit && digit !== ' ') {
+          positions[`digit${i + 1}`] = {
+            x: xPositions[i],
+            y: yPosition,
+            size: 14,
+            align: "center"
+          };
+        }
+      }
+      
+      return { positions, digits: cleanTaxId.split('') };
+    };
 
     // Coverse all req to String
     const sNameStr = String(sName || "");
-    const sTaxIdStr = String(sTaxId || "");
+    const rawSTaxId = String(sTaxId || "");
+    const rawBusinessTaxId = rawTaxId;
+
+    // Create digit positions for both tax IDs
+    const sTaxIdMapping = createTaxIdDigitPositions(rawSTaxId, 748);
+    const taxIdMapping = createTaxIdDigitPositions(rawBusinessTaxId, 679);
 
     // Format amount to 2 decimal places
     const amountNum = Number(amount) || 0;
     const amountStr = amountNum.toFixed(2);
 
-    const dateStr = format(new Date(date), "dd/MM/yyyy");
+    const dateObj = new Date(date);
+    const buddhistYear = dateObj.getFullYear() + 543;
+    const dateStr = `${format(dateObj, "dd/MM")}/${buddhistYear} `;
+    const ThaiMonth = format(dateObj, "MMMM", { locale: th });
+    const dateNumber = `${format(dateObj, "dd")}`;    
+
     const taxInvoiceNoStr = String(taxInvoiceNo || "");
     const sAddressStr = String(sAddress || "");
 
     // Format WHTAmount to 2 decimal places
     const WHTAmountNum = Number(WHTAmount) || 0;
     const WHTAmountStr = WHTAmountNum.toFixed(2);
+
+    const fullThaiTextLetterWHTAmount = convertNumberToThaiText(WHTAmountStr);
+
+    const zero = "0.00";
 
     // Conditional positioning based on group
     const isEmployee = group === "Employee";
@@ -522,42 +558,90 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     }
 
     const positions = {
-      sName: { x: 65, y: 658, size: 14, align: "left" },
-      sTaxId: { x: 380, y: 748, size: 14, align: "left" },
+      sName: { x: 65, y: 658, size: 12, align: "left" },
       //   taxInvoiceNo: { x: 400, y: 610, size: 14 },
-      sAddress: { x: 67, y: 632, size: 14, align: "left" },
+      sAddress: { x: 67, y: 632, size: 12, align: "left" },
 
-      businessName: { x: 65, y: 732, size: 14, align: "left" },
-      taxId: { x: 380, y: 679, size: 14, align: "left" },
-      businessAddress: { x: 67, y: 708, size: 14, align: "left" },
+      businessName: { x: 65, y: 732, size: 12, align: "left" },
+      businessAddress: { x: 67, y: 708, size: 12, align: "left" },
+
+      // Individual digit positions for sTaxId (y=748)
+      ...Object.fromEntries(
+        Object.entries(sTaxIdMapping.positions).map(([key, pos]) => [`sTaxId_${key}`, pos])
+      ),
+
+      // Individual digit positions for taxId (y=679)
+      ...Object.fromEntries(
+        Object.entries(taxIdMapping.positions).map(([key, pos]) => [`taxId_${key}`, pos])
+      ),
 
       // Decimal point centered at specified coordinates - conditional based on group
-      amount: { x: 474, y: amountY, size: 14, align: "decimal" },
-      WHTAmount: { x: 545, y: WHTAmountY, size: 14, align: "decimal" },
-      date: { x: 340, y: dateY, size: 14, align: "left" },
+      amount: { x: 474, y: amountY, size: 12, align: "decimal" },
+      WHTAmount: { x: 545, y: WHTAmountY, size: 12, align: "decimal" },
+
+      totalAmount: { x: 474, y: 183, size: 12, align: "decimal" },
+      totalWHTAmount: { x: 545, y: 183, size: 12, align: "decimal" },
+
+      date: { x: 340, y: dateY, size: 12, align: "left" },
+      dateNumber: { x: 347, y: 77, size: 12, align: "center" },
+      ThaiMonth: { x: 380, y: 77, size: 12, align: "center" },
+      BuddhistYear: { x: 435, y: 77, size: 12, align: "center" },
+
+      fullThaiTextLetterWHTAmount: { x: 205, y: 162, size: 12, align: "left" },
+
+      checkmark: { x: 86, y: 122, size: 10, align: "center" },
+
+      zero1: { x: 248, y: 145, size: 12, align: "left" },
+      zero2: { x: 373, y: 145, size: 12, align: "left" },
+      zero3: { x: 512, y: 145, size: 12, align: "left" }
     };
     const fields = {
       sName: sNameStr,
-      sTaxId: sTaxIdStr,
       amount: amountStr,
       date: dateStr,
+      fullThaiTextLetterWHTAmount: fullThaiTextLetterWHTAmount,
       //   taxInvoiceNo: taxInvoiceNoStr,
       sAddress: sAddressStr,
       businessName: businessName,
-      taxId: taxId,
       businessAddress: businessAddress,
       WHTAmount: WHTAmountStr,
+      totalAmount: amountStr,
+      totalWHTAmount: WHTAmountStr,
+      checkmark: "✓",
+      zero1: zero,
+      zero2: zero,
+      zero3: zero,
+      dateNumber: dateNumber,
+      ThaiMonth: ThaiMonth,
+      BuddhistYear: String(buddhistYear),
+
+      // Individual digits for sTaxId
+      ...Object.fromEntries(
+        sTaxIdMapping.digits.map((digit, index) => [`sTaxId_digit${index + 1}`, digit])
+      ),
+
+      // Individual digits for taxId
+      ...Object.fromEntries(
+        taxIdMapping.digits.map((digit, index) => [`taxId_digit${index + 1}`, digit])
+      ),
+
+    
     };
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(
       __dirname,
       "../../fonts/THSarabunNew.ttf"
     );
+    const checkmarkFontPath = path.resolve(
+      __dirname,
+      "../../fonts/NotoSansSC-Bold.ttf"
+    );
     const pdfBuffer = await fillWHTTemplateWithThaiFont({
       templatePath,
       fields,
       positions,
       thaiFontPath,
+      checkmarkFontPath,
     });
     console.log(fields);
     res.setHeader("Content-Type", "application/pdf");
@@ -583,3 +667,85 @@ export {
   getThisYearExpensesAPI,
   generateWHTDocument,
 };
+  function convertNumberToThaiText(input: string | number): string {
+    // Converts a number or string to Thai text representation (words)
+    const thaiNumbers = [
+      "ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"
+    ];
+    
+    const thaiUnits = [
+      "", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"
+    ];
+
+    let numberStr = String(input);
+    
+    // Check if it's a currency amount (has decimal point)
+    if (numberStr.includes('.')) {
+      const [bahtPart, satangPart] = numberStr.split('.');
+      const baht = parseInt(bahtPart) || 0;
+      const satang = parseInt(satangPart.padEnd(2, '0').slice(0, 2)) || 0;
+      
+      let result = "";
+      
+      if (baht > 0) {
+        result += convertThaiYear(baht) + "บาท";
+      }
+      
+      if (satang > 0) {
+        if (result) result += "";
+        result += convertThaiYear(satang) + "สตางค์";
+      } else if (baht > 0) {
+        result += "ถ้วน";
+      }
+      
+      return result || "ศูนย์บาท";
+    }
+    
+    // Extract only the year part (last 4 digits) if it's a date string
+    const yearMatch = numberStr.match(/(\d{4})/);
+    
+    if (yearMatch) {
+      const year = parseInt(yearMatch[1]);
+      return convertThaiYear(year);
+    }
+    
+    // If it's just a number, convert normally
+    const num = parseInt(String(input).replace(/\D/g, ''));
+    if (isNaN(num) || num === 0) return "ศูนย์";
+    
+    return convertThaiYear(num);
+    
+    function convertThaiYear(num: number): string {
+      if (num === 0) return "ศูนย์";
+      
+      const digits = num.toString().split('').reverse();
+      let result = "";
+      
+      for (let i = 0; i < digits.length; i++) {
+        const digit = parseInt(digits[i]);
+        
+        if (digit === 0) continue;
+        
+        let digitText = "";
+        
+        // Special cases for Thai number reading
+        if (i === 1 && digit === 1) {
+          // For tens place, 1 becomes "สิบ" not "หนึ่งสิบ"
+          digitText = thaiUnits[1];
+        } else if (i === 1 && digit === 2) {
+          // For 20-29, use "ยี่สิบ" instead of "สองสิบ"
+          digitText = "ยี่" + thaiUnits[1];
+        } else if (i === 0 && digit === 1 && digits.length > 1) {
+          // For ones place, if there are other digits and it's 1, use "เอ็ด"
+          digitText = "เอ็ด";
+        } else {
+          digitText = thaiNumbers[digit] + (i > 0 ? thaiUnits[i] : "");
+        }
+        
+        result = digitText + result;
+      }
+      
+      return result;
+    }
+  }
+
