@@ -11772,6 +11772,8 @@ export namespace Prisma {
     sTaxId: string | null
     sAddress: string | null
     taxInvoiceNo: string | null
+    branch: string | null
+    taxType: $Enums.taxType | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11799,6 +11801,8 @@ export namespace Prisma {
     sTaxId: string | null
     sAddress: string | null
     taxInvoiceNo: string | null
+    branch: string | null
+    taxType: $Enums.taxType | null
     businessAcc: number | null
     memberId: string | null
   }
@@ -11826,6 +11830,8 @@ export namespace Prisma {
     sTaxId: number
     sAddress: number
     taxInvoiceNo: number
+    branch: number
+    taxType: number
     businessAcc: number
     memberId: number
     _all: number
@@ -11873,6 +11879,8 @@ export namespace Prisma {
     sTaxId?: true
     sAddress?: true
     taxInvoiceNo?: true
+    branch?: true
+    taxType?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11900,6 +11908,8 @@ export namespace Prisma {
     sTaxId?: true
     sAddress?: true
     taxInvoiceNo?: true
+    branch?: true
+    taxType?: true
     businessAcc?: true
     memberId?: true
   }
@@ -11927,6 +11937,8 @@ export namespace Prisma {
     sTaxId?: true
     sAddress?: true
     taxInvoiceNo?: true
+    branch?: true
+    taxType?: true
     businessAcc?: true
     memberId?: true
     _all?: true
@@ -12041,6 +12053,8 @@ export namespace Prisma {
     sTaxId: string | null
     sAddress: string | null
     taxInvoiceNo: string | null
+    branch: string | null
+    taxType: $Enums.taxType | null
     businessAcc: number
     memberId: string
     _count: ExpenseCountAggregateOutputType | null
@@ -12087,6 +12101,8 @@ export namespace Prisma {
     sTaxId?: boolean
     sAddress?: boolean
     taxInvoiceNo?: boolean
+    branch?: boolean
+    taxType?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12116,6 +12132,8 @@ export namespace Prisma {
     sTaxId?: boolean
     sAddress?: boolean
     taxInvoiceNo?: boolean
+    branch?: boolean
+    taxType?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12145,6 +12163,8 @@ export namespace Prisma {
     sTaxId?: boolean
     sAddress?: boolean
     taxInvoiceNo?: boolean
+    branch?: boolean
+    taxType?: boolean
     businessAcc?: boolean
     memberId?: boolean
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
@@ -12174,11 +12194,13 @@ export namespace Prisma {
     sTaxId?: boolean
     sAddress?: boolean
     taxInvoiceNo?: boolean
+    branch?: boolean
+    taxType?: boolean
     businessAcc?: boolean
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12221,6 +12243,8 @@ export namespace Prisma {
       sTaxId: string | null
       sAddress: string | null
       taxInvoiceNo: string | null
+      branch: string | null
+      taxType: $Enums.taxType | null
       businessAcc: number
       memberId: string
     }, ExtArgs["result"]["expense"]>
@@ -12670,6 +12694,8 @@ export namespace Prisma {
     readonly sTaxId: FieldRef<"Expense", 'String'>
     readonly sAddress: FieldRef<"Expense", 'String'>
     readonly taxInvoiceNo: FieldRef<"Expense", 'String'>
+    readonly branch: FieldRef<"Expense", 'String'>
+    readonly taxType: FieldRef<"Expense", 'taxType'>
     readonly businessAcc: FieldRef<"Expense", 'Int'>
     readonly memberId: FieldRef<"Expense", 'String'>
   }
@@ -29677,6 +29703,8 @@ export namespace Prisma {
     sTaxId: 'sTaxId',
     sAddress: 'sAddress',
     taxInvoiceNo: 'taxInvoiceNo',
+    branch: 'branch',
+    taxType: 'taxType',
     businessAcc: 'businessAcc',
     memberId: 'memberId'
   };
@@ -30964,6 +30992,8 @@ export namespace Prisma {
     sTaxId?: StringNullableFilter<"Expense"> | string | null
     sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
+    branch?: StringNullableFilter<"Expense"> | string | null
+    taxType?: EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -30993,6 +31023,8 @@ export namespace Prisma {
     sTaxId?: SortOrderInput | SortOrder
     sAddress?: SortOrderInput | SortOrder
     taxInvoiceNo?: SortOrderInput | SortOrder
+    branch?: SortOrderInput | SortOrder
+    taxType?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     businessId?: BusinessAccOrderByWithRelationInput
@@ -31025,6 +31057,8 @@ export namespace Prisma {
     sTaxId?: StringNullableFilter<"Expense"> | string | null
     sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
+    branch?: StringNullableFilter<"Expense"> | string | null
+    taxType?: EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
     businessId?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
@@ -31054,6 +31088,8 @@ export namespace Prisma {
     sTaxId?: SortOrderInput | SortOrder
     sAddress?: SortOrderInput | SortOrder
     taxInvoiceNo?: SortOrderInput | SortOrder
+    branch?: SortOrderInput | SortOrder
+    taxType?: SortOrderInput | SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
     _count?: ExpenseCountOrderByAggregateInput
@@ -31089,6 +31125,8 @@ export namespace Prisma {
     sTaxId?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     sAddress?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    branch?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    taxType?: EnumtaxTypeNullableWithAggregatesFilter<"Expense"> | $Enums.taxType | null
     businessAcc?: IntWithAggregatesFilter<"Expense"> | number
     memberId?: StringWithAggregatesFilter<"Expense"> | string
   }
@@ -33021,6 +33059,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
     member: MemberCreateNestedOneWithoutExpenseInput
   }
@@ -33048,6 +33088,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessAcc: number
     memberId: string
   }
@@ -33074,6 +33116,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
@@ -33101,6 +33145,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -33128,6 +33174,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessAcc: number
     memberId: string
   }
@@ -33154,6 +33202,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   }
 
   export type ExpenseUncheckedUpdateManyInput = {
@@ -33179,6 +33229,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
     memberId?: StringFieldUpdateOperationsInput | string
   }
@@ -35299,6 +35351,8 @@ export namespace Prisma {
     sTaxId?: SortOrder
     sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
+    branch?: SortOrder
+    taxType?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35335,6 +35389,8 @@ export namespace Prisma {
     sTaxId?: SortOrder
     sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
+    branch?: SortOrder
+    taxType?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -35362,6 +35418,8 @@ export namespace Prisma {
     sTaxId?: SortOrder
     sAddress?: SortOrder
     taxInvoiceNo?: SortOrder
+    branch?: SortOrder
+    taxType?: SortOrder
     businessAcc?: SortOrder
     memberId?: SortOrder
   }
@@ -40267,6 +40325,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessId: BusinessAccCreateNestedOneWithoutExpenseRecordInput
   }
 
@@ -40293,6 +40353,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessAcc: number
   }
 
@@ -40676,6 +40738,8 @@ export namespace Prisma {
     sTaxId?: StringNullableFilter<"Expense"> | string | null
     sAddress?: StringNullableFilter<"Expense"> | string | null
     taxInvoiceNo?: StringNullableFilter<"Expense"> | string | null
+    branch?: StringNullableFilter<"Expense"> | string | null
+    taxType?: EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
     businessAcc?: IntFilter<"Expense"> | number
     memberId?: StringFilter<"Expense"> | string
   }
@@ -40985,6 +41049,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     member: MemberCreateNestedOneWithoutExpenseInput
   }
 
@@ -41011,6 +41077,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     memberId: string
   }
 
@@ -46203,6 +46271,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     businessAcc: number
   }
 
@@ -46409,6 +46479,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessId?: BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   }
 
@@ -46435,6 +46507,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -46461,6 +46535,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     businessAcc?: IntFieldUpdateOperationsInput | number
   }
 
@@ -46657,6 +46733,8 @@ export namespace Prisma {
     sTaxId?: string | null
     sAddress?: string | null
     taxInvoiceNo?: string | null
+    branch?: string | null
+    taxType?: $Enums.taxType | null
     memberId: string
   }
 
@@ -46881,6 +46959,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     member?: MemberUpdateOneRequiredWithoutExpenseNestedInput
   }
 
@@ -46907,6 +46987,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -46933,6 +47015,8 @@ export namespace Prisma {
     sTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     sAddress?: NullableStringFieldUpdateOperationsInput | string | null
     taxInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: NullableStringFieldUpdateOperationsInput | string | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     memberId?: StringFieldUpdateOperationsInput | string
   }
 

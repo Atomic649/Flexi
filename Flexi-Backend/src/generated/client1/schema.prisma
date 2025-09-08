@@ -353,6 +353,8 @@ model Expense {
   sTaxId         String?
   sAddress       String?
   taxInvoiceNo   String?
+  branch         String?
+  taxType        taxType?      @default(Individual)
   // Relation
   businessAcc    Int
   businessId     BusinessAcc   @relation(fields: [businessAcc], references: [id])

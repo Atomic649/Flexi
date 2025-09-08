@@ -244,6 +244,8 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   sTaxId: 'sTaxId',
   sAddress: 'sAddress',
   taxInvoiceNo: 'taxInvoiceNo',
+  branch: 'branch',
+  taxType: 'taxType',
   businessAcc: 'businessAcc',
   memberId: 'memberId'
 };

@@ -5,6 +5,7 @@ import {
   Bank,
   ExpenseGroup,
   PrismaClient as PrismaClient1,
+  taxType,
 } from "../generated/client1";
 import Joi from "joi";
 import { format } from "date-fns-tz";
@@ -40,6 +41,8 @@ interface Expense {
   taxInvoiceNo?: string;
   sTaxId?: string;
   sAddress?: string;
+  branch?: string;
+  taxType?: taxType;
 }
 
 // Validate the request body
@@ -84,6 +87,8 @@ const schema = Joi.object({
   taxInvoiceNo: Joi.string().optional(),
   sTaxId: Joi.string().optional(),
   sAddress: Joi.string().optional(),
+  branch: Joi.string().optional(),
+  taxType: Joi.string().valid("Individual", "Juristic").optional(),
 });
 
 //  create a new expense - Post
@@ -106,6 +111,7 @@ const createExpense = async (req: Request, res: Response) => {
         ? (req.file as any)?.location ?? ""
         : req.body.image ?? "",
       desc: req.body.desc ?? "",
+      taxType: req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
 
     console.log("Input", expenseInput);
@@ -171,6 +177,8 @@ const createExpense = async (req: Request, res: Response) => {
           taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
           sTaxId: expenseInput.sTaxId ?? "",
           sAddress: expenseInput.sAddress ?? "",
+          branch: expenseInput.branch ?? "",
+          taxType: expenseInput.taxType ?? taxType.Individual,
         },
       });
       res.json(expense);
@@ -223,6 +231,8 @@ const getExpenseById = async (req: Request, res: Response) => {
         taxInvoiceNo: true,
         sTaxId: true,
         sAddress: true,
+        branch: true,
+        taxType: true,
       },
     });
     res.json(expense);
@@ -266,6 +276,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
+      taxType: req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
     const { id } = req.params;
     const { memberId } = req.body;
@@ -304,6 +315,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
           taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
           sTaxId: expenseInput.sTaxId ?? "",
           sAddress: expenseInput.sAddress ?? "",
+          branch: expenseInput.branch ?? "",
+          taxType: expenseInput.taxType ?? taxType.Individual,
         },
       });
       res.json(expense);

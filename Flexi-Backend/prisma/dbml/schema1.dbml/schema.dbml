@@ -168,6 +168,8 @@ Table Expense {
   sTaxId String
   sAddress String
   taxInvoiceNo String
+  branch String
+  taxType taxType [default: 'Individual']
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
