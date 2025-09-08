@@ -324,14 +324,14 @@ export default function ExpenseDetail({
 
   // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
-    `px-4 py-2 rounded-lg mx-1 ${
+    `px-4 py-2 rounded-lg mx-1 border-2 ${
       group === groupName
         ? theme === "dark"
-          ? "bg-[#4d4d4d]"
-          : "bg-secondary"
+          ? "bg-zinc-800 border-secondary"
+          : "bg-zinc-200 border-secondary"
         : theme === "dark"
-        ? "bg-zinc-800"
-        : "bg-zinc-200"
+        ? "bg-zinc-800 border-transparent"
+        : "bg-zinc-200 border-transparent"
     }`;
 
   async function downloadWHTDoc(): Promise<void> {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextInput, View, TextInputProps } from "react-native";
 import { CustomText } from "@/components/CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -20,9 +20,22 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   containerStyle,
   inputStyle,
   labelStyle,
+  onFocus,
+  onBlur,
   ...textInputProps
 }) => {
   const { theme } = useTheme();
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = (e: any) => {
+    setIsFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    onBlur?.(e);
+  };
 
   return (
     <View style={[{ position: "relative", marginVertical: 8 }, containerStyle]}>
@@ -58,13 +71,16 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
                 ? "IBMPlexSansThai-Medium"
                 : "Poppins-Regular",
             color: theme === "dark" ? "#ffffff" : "#000000",
-            borderColor: theme === "dark" ? "#2c2c2cff" : "#c0beb550",
-            focusBorderColor: "#FF9C01",
+            borderColor: isFocused 
+              ? "#FF9C01" 
+              : theme === "dark" ? "#2c2c2cff" : "#c0beb550",
           },
           inputStyle,
         ]}
         value={value}
         onChangeText={onChangeText}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         placeholder={label}
         placeholderTextColor={theme === "dark" ? "#504f4d" : "#c0beb5"}
         {...textInputProps}

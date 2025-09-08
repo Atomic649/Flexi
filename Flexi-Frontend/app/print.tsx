@@ -15,7 +15,7 @@ import { CustomText } from "@/components/CustomText";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import FormField2 from "@/components/FormField2";
 import Dropdown2 from "@/components/Dropdown2";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import CallAPIPrint from "@/api/print_api";
 import { getMemberId, getBusinessId } from "@/utils/utility";

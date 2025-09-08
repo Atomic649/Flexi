@@ -456,6 +456,13 @@ export default function CreateBill() {
   };
 
   const handleAddProductItem = () => {
+    // Check if no products are available
+    if (!productChoice || productChoice.length === 0) {
+      // Navigate to create product page
+      router.push("/createproduct");
+      return;
+    }
+    
     setProductItems((prev) => [
       ...prev,
       { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },

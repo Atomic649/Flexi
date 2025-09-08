@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import { CustomButton } from "@/components/CustomButton";
+import { SecondaryButton } from "@/components/CustomButton";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -219,16 +219,16 @@ export default function CreateExpense({
       setError(error.message);
     }
   };
-  // Setting Button Group of Expense
+// Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
-    `px-4 py-2 rounded-lg mx-1 ${
+    `px-4 py-2 rounded-lg mx-1 border-2 ${
       group === groupName
         ? theme === "dark"
-          ? "bg-zinc-500"
-          : "bg-secondary"
+          ? "bg-zinc-800 border-secondary"
+          : "bg-zinc-200 border-secondary"
         : theme === "dark"
-        ? "bg-zinc-800"
-        : "bg-zinc-200"
+        ? "bg-zinc-800 border-transparent"
+        : "bg-zinc-200 border-transparent"
     }`;
 
   const handleDatesChange = (dates: string[]) => {
@@ -635,7 +635,7 @@ export default function CreateExpense({
                     </CustomText>
                   </TouchableOpacity>
 
-                  <CustomButton
+                  <SecondaryButton
                     title={t("common.save")}
                     handlePress={handleCreateExpense}
                     containerStyles="px-12 mt-2"
