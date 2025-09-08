@@ -7,10 +7,9 @@ import {
   SafeAreaView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton, Button } from "@/components/CustomButton";
 import FormField from "@/components/FormField";
 import { useRef, useState } from "react";
-import Button from "@/components/Button";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/CustomAlert";

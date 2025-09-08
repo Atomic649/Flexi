@@ -1,7 +1,7 @@
 import { Dimensions, SafeAreaView, ScrollView, Switch, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -241,7 +241,7 @@ export default function BusinessInfo() {
               <Switch
                 value={isVatRegistered}
                 onValueChange={setIsVatRegistered}
-                trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#0feac2" }}
+                trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#04ecc1" }}
                 thumbColor={isVatRegistered ? "#009688" : theme === "dark" ? "#222" : "#fff"}
               />
             </View>
@@ -377,10 +377,10 @@ export default function BusinessInfo() {
                       borderRadius: 4,
                       borderWidth: 2,
                       borderColor: documentTypes.includes(type) 
-                        ? "#0feac2" 
+                        ? "#04ecc1" 
                         : theme === "dark" ? "#666" : "#ccc",
                       backgroundColor: documentTypes.includes(type) 
-                        ? "#0feac2" 
+                        ? "#04ecc1" 
                         : "transparent",
                       alignItems: "center",
                       justifyContent: "center",

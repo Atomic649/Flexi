@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -288,12 +288,12 @@ export default function CreateBusiness() {
                     borderRadius: 4,
                     borderWidth: 2,
                     borderColor: documentTypes.includes(type)
-                      ? "#0feac2"
+                      ? "#04ecc1"
                       : theme === "dark"
                       ? "#666"
                       : "#ccc",
                     backgroundColor: documentTypes.includes(type)
-                      ? "#0feac2"
+                      ? "#04ecc1"
                       : "transparent",
                     alignItems: "center",
                     justifyContent: "center",

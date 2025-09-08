@@ -33,9 +33,9 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
               position: "absolute",
               left: 16,
               top: -10,
-              backgroundColor: theme === "dark" ? "#232323" : "#fff",
+              backgroundColor: theme === "dark" ? "#181818" : "#fff",
               fontSize: 12,
-              color: theme === "dark" ? "#222222" : "#c0beb5",
+              color: theme === "dark" ? "#504f4d" : "#c0beb5",
               zIndex: 1,
               paddingHorizontal: 4,
             },
@@ -46,10 +46,10 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         </CustomText>
       )}
       <TextInput
-        className={`h-14 px-4 rounded-2xl border-2 focus:border-secondary ${
+        className={`h-14 px-4 rounded-2xl border-2  ${
           theme === "dark"
-            ? "bg-primary-100 border-black-200"
-            : "bg-white border-zinc-300"
+            ? "bg-transparent"
+            : "bg-white"
         }`}
         style={[
           {
@@ -58,6 +58,8 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
                 ? "IBMPlexSansThai-Medium"
                 : "Poppins-Regular",
             color: theme === "dark" ? "#ffffff" : "#000000",
+            borderColor: theme === "dark" ? "#2c2c2cff" : "#c0beb550",
+            focusBorderColor: "#FF9C01",
           },
           inputStyle,
         ]}

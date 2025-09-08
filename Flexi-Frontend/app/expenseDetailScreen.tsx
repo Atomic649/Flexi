@@ -66,18 +66,27 @@ export default function ExpenseDetailScreen() {
   return (
     <View className={`flex-1 ${useBackgroundColorClass()}`}>
       <ExpenseDetail
-        visible={isVisible}
-        onClose={handleClose}
-        expense={{
-          id,
-          date,
-          amount: expenses,
-          note,
-          desc,
-          image,
-          group: '' // The group might not be passed through params, get it from the API call
-        }}
+      visible={isVisible}
+      onClose={handleClose}
+      expense={{
+        id,
+        date,
+        amount: expenses,
+        note,
+        desc,
+        image,
+        group: '', // The group might not be passed through params, get it from the API call
+        vat: false,
+        vatAmount: 0,
+        withHoldingTax: false,
+        WHTpercent: 0,
+        WHTAmount: 0,
+        sTaxId: undefined,
+        sName: undefined,
+        taxInvoiceNo: undefined,
+        sAddress: undefined,
+      }}
       />
     </View>
-  );
+  )
 }

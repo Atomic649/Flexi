@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -1248,11 +1248,11 @@ export default function EditBill() {
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : "transparent",
                               borderWidth: 3,
                               borderColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : theme === "dark"
                                 ? "#666"
                                 : "#ccc",
@@ -1260,7 +1260,7 @@ export default function EditBill() {
                               justifyContent: "center",
                               opacity: getStepOpacity(step),
                               shadowColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : "transparent",
                               shadowOffset: { width: 0, height: 0 },
                               shadowOpacity: 0.6,
@@ -1317,7 +1317,7 @@ export default function EditBill() {
                                     availableSteps.findIndex(
                                       (s) => s === selectedDocumentType
                                     )
-                                      ? "#0feac2"
+                                      ? "#04ecc1"
                                       : theme === "dark"
                                       ? "#444"
                                       : "#ddd",
@@ -2005,7 +2005,7 @@ export default function EditBill() {
               <TouchableOpacity
                 onPress={() => setIsEditMode((prev) => !prev)}
                 style={{
-                  backgroundColor: isEditMode ? "#ff8c00" : "#0feac2",
+                  backgroundColor: isEditMode ? "#ff8c00" : "#04ecc1",
                   borderRadius: 20,
                   marginRight: 20,
                   marginBottom: 10,

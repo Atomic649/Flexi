@@ -257,7 +257,7 @@ export default function DetectExpense() {
         <TouchableOpacity
           className="items-center justify-center "
           style={{
-            backgroundColor: theme === "dark" ? "#0feac2" : "#0feac2",
+            backgroundColor: theme === "dark" ? "#04ecc1" : "#04ecc1",
             width: "33%",
             height: 50,
             alignSelf: "center",

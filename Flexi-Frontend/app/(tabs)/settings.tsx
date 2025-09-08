@@ -6,13 +6,12 @@ import {
   Switch,
   Platform,
   Dimensions,
-  DeviceEventEmitter,
 } from "react-native";
 import { View } from "@/components/Themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
 import Animated from "react-native-reanimated";
@@ -32,9 +31,15 @@ import {
 const getSwitchPlatformColors = (theme: string, value: boolean) => ({
   trackColor: {
     false: theme === "dark" ? "#4B5563" : "#D1D5DB",
-    true: theme === "dark" ? "#0feac2" : "#0feac2",
+    true: theme === "dark" ? "#04ecc1" : "#04ecc1",
   },
-  thumbColor: value ? "#ffffff" : "#71717a",
+  thumbColor: value
+    ? theme === "dark"
+      ? "#ffffff"
+      : "#ffffff"
+    : theme === "dark"
+      ? "#71717a"
+      : "#75726a",
 });
 
 // Utility constant for toggle scaling

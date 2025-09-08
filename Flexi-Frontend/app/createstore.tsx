@@ -1,6 +1,6 @@
 import { Dimensions, Platform, ScrollView } from "react-native";
 import { View } from "@/components/Themed";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";

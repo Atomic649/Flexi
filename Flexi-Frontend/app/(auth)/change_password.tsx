@@ -146,7 +146,7 @@ export default function ChangePassword() {
                 >
                   <ShieldCheck
                     size={40}
-                    color={theme === "dark" ? "#0feac2" : "#0feac2"}
+                    color={theme === "dark" ? "#04ecc1" : "#04ecc1"}
                   />
                 </View>
 

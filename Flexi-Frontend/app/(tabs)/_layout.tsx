@@ -82,7 +82,7 @@ export default function TabLayout() {
   // Define colors based on theme
   const tabBarBackgroundColor = theme === "dark" ? "#18181b" : "#ffffff";
   const tabBarBorderColor = theme === "dark" ? "#232533" : "#e0e0e0";
-  const tabBarActiveTintColor = theme === "dark" ? "#03dcc7" : "#04ecd5";
+  const tabBarActiveTintColor = theme === "dark" ? "#04ecc1" : "#04ecc1";
   const tabBarInactiveTintColor = theme === "dark" ? "#a1a1a1" : "#4e4b47";
 
   return (

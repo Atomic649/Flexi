@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { ScrollView, View, Text, Platform } from "react-native";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import FormField2 from "@/components/FormField2";
 import Dropdown2 from "@/components/Dropdown2";

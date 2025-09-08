@@ -184,12 +184,12 @@ export default function Print() {
   };
 
   const getPrintStepBackgroundColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isPrintStepCompleted(step)) return "#0feac2";
+    if (isPrintStepCompleted(step)) return "#04ecc1";
     return "transparent";
   };
 
   const getPrintStepBorderColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isPrintStepCompleted(step)) return "#0feac2";
+    if (isPrintStepCompleted(step)) return "#04ecc1";
     return theme === "dark" ? "#666" : "#ccc";
   };
 
@@ -1616,7 +1616,7 @@ export default function Print() {
                             alignItems: "center",
                             justifyContent: "center",
                             opacity: getPrintStepOpacity(step),
-                            shadowColor: isPrintStepCompleted(step) ? "#0feac2" : "transparent",
+                            shadowColor: isPrintStepCompleted(step) ? "#04ecc1" : "transparent",
                             shadowOffset: { width: 0, height: 0 },
                             shadowOpacity: isPrintStepCompleted(step) ? 0.6 : 0,
                             shadowRadius: isPrintStepCompleted(step) ? 8 : 0,
@@ -1664,7 +1664,7 @@ export default function Print() {
                                 borderRadius: 1.5,
                                 backgroundColor:
                                   index < availableSteps.findIndex((s) => s === selectedPrintType)
-                                    ? "#0feac2"
+                                    ? "#04ecc1"
                                     : theme === "dark"
                                     ? "#444"
                                     : "#ddd",
@@ -1808,7 +1808,7 @@ export default function Print() {
                   activeTab === TAB_INDICES.MONTHLY_REPORT ? 2 : 0,
                 borderBottomColor:
                   activeTab === TAB_INDICES.MONTHLY_REPORT
-                    ? "#0feac2"
+                    ? "#04ecc1"
                     : "transparent",
               }}
               onPress={() => {
@@ -1843,7 +1843,7 @@ export default function Print() {
                   activeTab === TAB_INDICES.INDIVIDUAL_INVOICE ? 2 : 0,
                 borderBottomColor:
                   activeTab === TAB_INDICES.INDIVIDUAL_INVOICE
-                    ? "#0feac2"
+                    ? "#04ecc1"
                     : "transparent",
               }}
               onPress={() => setActiveTab(TAB_INDICES.INDIVIDUAL_INVOICE)}
@@ -1902,7 +1902,7 @@ export default function Print() {
 
                 {isLoading ? (
                   <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#0feac2" />
+                    <ActivityIndicator size="large" color="#04ecc1" />
                   </View>
                 ) : (
                   <>
@@ -2182,7 +2182,7 @@ export default function Print() {
 
                 {isLoading ? (
                   <View className="flex-1 justify-center items-center py-10">
-                    <ActivityIndicator size="large" color="#0feac2" />
+                    <ActivityIndicator size="large" color="#04ecc1" />
                   </View>
                 ) : (
                   <>

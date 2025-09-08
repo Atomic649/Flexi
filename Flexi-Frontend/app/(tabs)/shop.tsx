@@ -56,7 +56,7 @@ const shop = () => {
                   }
                 : { backgroundColor: "#4e4b47" }
             }
-            indicatorStyle={{ backgroundColor: "#1afee0", height: 3 }}
+            indicatorStyle={{ backgroundColor: "#04ecc1", height: 3 }}
             renderTabBarItem={({ route, key }) => (
               <View
                 className="flex-row items-center my-5 "

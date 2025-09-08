@@ -207,7 +207,7 @@ export default function Register() {
                 <Switch
                   value={isVatRegistered}
                   onValueChange={setIsVatRegistered}
-                  trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#0feac2" }}
+                  trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#04ecc1" }}
                   thumbColor={isVatRegistered ? "#009688" : theme === "dark" ? "#222" : "#fff"}
                 />
               </View>
@@ -311,10 +311,10 @@ export default function Register() {
                         borderRadius: 4,
                         borderWidth: 2,
                         borderColor: documentTypes.includes(type) 
-                          ? "#0feac2" 
+                          ? "#04ecc1" 
                           : theme === "dark" ? "#666" : "#ccc",
                         backgroundColor: documentTypes.includes(type) 
-                          ? "#0feac2" 
+                          ? "#04ecc1" 
                           : "transparent",
                         alignItems: "center",
                         justifyContent: "center",

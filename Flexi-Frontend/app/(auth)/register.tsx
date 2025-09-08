@@ -11,9 +11,7 @@ import {
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
 import { router } from "expo-router";
-import Button from "@/components/Button";
-import CustomButton from "@/components/CustomButton";
-import { images } from "@/constants";
+import { CustomButton, Button } from "@/components/CustomButton";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -41,13 +39,13 @@ export default function Register() {
   useEffect(() => {
     const loadVisitedStatus = async () => {
       try {
-        const termsStatus = await AsyncStorage.getItem('termsVisited');
-        const privacyStatus = await AsyncStorage.getItem('privacyVisited');
-        
-        if (termsStatus === 'true') setTermsVisited(true);
-        if (privacyStatus === 'true') setPrivacyVisited(true);
+        const termsStatus = await AsyncStorage.getItem("termsVisited");
+        const privacyStatus = await AsyncStorage.getItem("privacyVisited");
+
+        if (termsStatus === "true") setTermsVisited(true);
+        if (privacyStatus === "true") setPrivacyVisited(true);
       } catch (error) {
-        console.error('Error loading visited status:', error);
+        console.error("Error loading visited status:", error);
       }
     };
 
@@ -73,7 +71,7 @@ export default function Register() {
 
   // Navigate to Terms and mark as visited
   const handleViewTerms = () => {
-    AsyncStorage.setItem('termsVisited', 'true').then(() => {
+    AsyncStorage.setItem("termsVisited", "true").then(() => {
       setTermsVisited(true);
       router.push("/term");
     });
@@ -81,7 +79,7 @@ export default function Register() {
 
   // Navigate to Privacy Policy and mark as visited
   const handleViewPrivacy = () => {
-    AsyncStorage.setItem('privacyVisited', 'true').then(() => {
+    AsyncStorage.setItem("privacyVisited", "true").then(() => {
       setPrivacyVisited(true);
       router.push("/privacy");
     });
@@ -113,7 +111,10 @@ export default function Register() {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
-        message: t("auth.register.validation.termsRequired", "You must accept the Terms of Service and Privacy Policy to continue"),
+        message: t(
+          "auth.register.validation.termsRequired",
+          "You must accept the Terms of Service and Privacy Policy to continue"
+        ),
         buttons: [
           {
             text: t("common.ok"),
@@ -162,7 +163,10 @@ export default function Register() {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.readRequired", "Reading Required"),
-        message: t("auth.register.validation.readTermsFirst", "You must read the Terms of Service before accepting."),
+        message: t(
+          "auth.register.validation.readTermsFirst",
+          "You must read the Terms of Service before accepting."
+        ),
         buttons: [
           {
             text: t("auth.register.readNow", "Read Now"),
@@ -174,7 +178,8 @@ export default function Register() {
           {
             text: t("common.cancel"),
             style: "cancel",
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
           },
         ],
       });
@@ -201,7 +206,8 @@ export default function Register() {
           {
             text: t("common.cancel"),
             style: "cancel",
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
           },
         ],
       });
@@ -221,38 +227,59 @@ export default function Register() {
   }> = ({ checked, onPress, label, linkText, linkRoute, visited }) => {
     return (
       <RNView className="flex-row items-start mb-3">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onPress}
-          className={`w-5 h-5 mt-1 border rounded ${checked 
-            ? 'bg-[#0feac2] border-[#0feac2]' 
-            : visited 
-              ? 'border-gray-400' 
-              : 'border-gray-600 bg-gray-200'}`}
+          className={`w-5 h-5 mt-1 border rounded ${
+            checked
+              ? "bg-[#04ecc1] border-[#04ecc1]"
+              : visited
+              ? "border-gray-400"
+              : "border-gray-600 bg-gray-200"
+          }`}
         >
           {checked && (
             <RNView className="flex-1 items-center justify-center">
-              <CustomText weight="bold" className="text-white text-xs">✓</CustomText>
+              <CustomText weight="bold" className="text-white text-xs">
+                ✓
+              </CustomText>
             </RNView>
           )}
         </TouchableOpacity>
         <RNView className="flex-row flex-wrap ml-2">
-          <CustomText className={`text-sm ${visited ? 'text-gray-500' : 'text-gray-600'}`}>{label}</CustomText>
-          <TouchableOpacity onPress={linkRoute === "/term" ? handleViewTerms : handleViewPrivacy}>
+          <CustomText
+            className={`text-sm ${visited ? "text-gray-500" : "text-gray-600"}`}
+          >
+            {label}
+          </CustomText>
+          <TouchableOpacity
+            onPress={
+              linkRoute === "/term" ? handleViewTerms : handleViewPrivacy
+            }
+          >
             <RNView className="flex-row items-center">
-              <CustomText className="text-sm text-[#0feac2] ml-1">{linkText}</CustomText>
-              {!visited && <Ionicons name="arrow-forward" size={12} color="#0feac2" style={{ marginLeft: 4 }} />}
+              <CustomText className="text-sm text-[#04ecc1] ml-1">
+                {linkText}
+              </CustomText>
+              {!visited && (
+                <Ionicons
+                  name="arrow-forward"
+                  size={12}
+                  color="#04ecc1"
+                  style={{ marginLeft: 4 }}
+                />
+              )}
             </RNView>
           </TouchableOpacity>
         </RNView>
         {visited && (
           <RNView className="ml-1 mt-1">
-            <Ionicons name="checkmark-circle" size={14} color="#0feac2" />
+            <Ionicons name="checkmark-circle" size={14} color="#04ecc1" />
           </RNView>
         )}
       </RNView>
     );
   };
-const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
@@ -260,9 +287,7 @@ const scrollViewRef = useRef<ScrollView>(null);
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView
-           ref={scrollViewRef}
-          keyboardShouldPersistTaps="handled">
+        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
           <View
             className="w-full flex justify-center h-full px-4 py-10"
             style={{
@@ -272,11 +297,13 @@ const scrollViewRef = useRef<ScrollView>(null);
           >
             <View
               style={{
-                width: Dimensions.get("window").width > 768  ? "40%" : "100%",
+                width: Dimensions.get("window").width > 768 ? "40%" : "100%",
                 maxWidth: 600,
               }}
             >
-              <CustomText className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}>
+              <CustomText
+                className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}
+              >
                 {t("auth.register.title")}
               </CustomText>
 
@@ -313,10 +340,10 @@ const scrollViewRef = useRef<ScrollView>(null);
                 otherStyles="mt-7"
                 keyboardType="email-address"
                 onFocus={() => {
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 200);
-              }}
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 200);
+                }}
               />
 
               <FormField
@@ -327,10 +354,10 @@ const scrollViewRef = useRef<ScrollView>(null);
                 otherStyles="mt-7"
                 secureTextEntry
                 onFocus={() => {
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 200);
-              }}
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 200);
+                }}
               />
 
               <RNView className="mt-5">
@@ -342,7 +369,7 @@ const scrollViewRef = useRef<ScrollView>(null);
                   linkRoute="/term"
                   visited={termsVisited}
                 />
-                
+
                 <Checkbox
                   checked={privacyAccepted}
                   onPress={togglePrivacyAccepted}
@@ -353,7 +380,9 @@ const scrollViewRef = useRef<ScrollView>(null);
                 />
               </RNView>
 
-              {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
+              {error ? (
+                <CustomText className="text-red-500 mt-4">{error}</CustomText>
+              ) : null}
 
               <CustomButton
                 title={t("auth.register.button")}

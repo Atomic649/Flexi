@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import React, { useEffect, useRef, useState } from "react";
 import { saveRemark, getRemark } from "@/utils/utility";
 import {
@@ -790,11 +790,11 @@ export default function CreateBill() {
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : "transparent",
                               borderWidth: 3,
                               borderColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : theme === "dark"
                                 ? "#666"
                                 : "#ccc",
@@ -802,7 +802,7 @@ export default function CreateBill() {
                               justifyContent: "center",
                               opacity: getStepOpacity(step),
                               shadowColor: isStepCompleted(step)
-                                ? "#0feac2"
+                                ? "#04ecc1"
                                 : "transparent",
                               shadowOffset: { width: 0, height: 0 },
                               shadowOpacity: 0.6,
@@ -860,7 +860,7 @@ export default function CreateBill() {
                                     availableSteps.findIndex(
                                       (s) => s === selectedDocumentType
                                     )
-                                      ? "#0feac2"
+                                      ? "#04ecc1"
                                       : theme === "dark"
                                       ? "#444"
                                       : "#ddd",
