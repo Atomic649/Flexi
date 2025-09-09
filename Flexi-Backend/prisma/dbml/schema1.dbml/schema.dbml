@@ -524,6 +524,7 @@ Enum ExpenseGroup {
   Product
   Packing
   Utilities
+  Fuel
 }
 
 Ref: Member.userId > User.id

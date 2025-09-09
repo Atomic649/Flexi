@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import { SecondaryButton } from "@/components/CustomButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -90,6 +90,17 @@ export default function CreateExpense({
   const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
   const [sAddress, setSAddress] = useState<string>("");
 
+  // Reset VAT and WHT when Fuel group is selected
+  useEffect(() => {
+    if (group === "Fuel") {
+      setVatIncluded(false);
+      setWithHoldingTax(false);
+      setWHTpercent(3);
+      setVatAmount(0);
+      setWHTAmount(0);
+    }
+  }, [group]);
+
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -151,7 +162,7 @@ export default function CreateExpense({
       setAlertConfig({
         visible: true,
         title: t("expense.create.error"),
-        message: t("expense.create.error.message"),
+        message: t("expense.create.message"),
         buttons: [
           {
             text: t("common.ok"),
@@ -413,8 +424,14 @@ export default function CreateExpense({
                         flexDirection: "row",
                         alignItems: "center",
                         marginRight: 24,
+                        opacity: group === "Fuel" ? 0.5 : 1,
                       }}
-                      onPress={() => setVatIncluded(!vatIncluded)}
+                      onPress={() => {
+                        if (group !== "Fuel") {
+                          setVatIncluded(!vatIncluded);
+                        }
+                      }}
+                      disabled={group === "Fuel"}
                     >
                       <Ionicons
                         name={vatIncluded ? "checkbox" : "square-outline"}
@@ -433,8 +450,14 @@ export default function CreateExpense({
                           flexDirection: "row",
                           alignItems: "center",
                           marginRight: 8,
+                          opacity: group === "Fuel" ? 0.5 : 1,
                         }}
-                        onPress={() => setWithHoldingTax(!withHoldingTax)}
+                        onPress={() => {
+                          if (group !== "Fuel") {
+                            setWithHoldingTax(!withHoldingTax);
+                          }
+                        }}
+                        disabled={group === "Fuel"}
                       >
                         <Ionicons
                           name={withHoldingTax ? "checkbox" : "square-outline"}
@@ -458,20 +481,24 @@ export default function CreateExpense({
                               padding: 4,
                               color: theme === "dark" ? "#fff" : "#000",
                               textAlign: "center",
+                              opacity: group === "Fuel" ? 0.5 : 1,
                             }}
                             value={WHTpercent.toString()}
                             onChangeText={(val) => {
-                              const num = parseFloat(val);
-                              setWHTpercent(isNaN(num) ? 0 : num);
-                              setWHTAmount(
-                                Number(amount)
-                                  ? (Number(amount) * (isNaN(num) ? 0 : num)) /
-                                      100
-                                  : 0
-                              );
+                              if (group !== "Fuel") {
+                                const num = parseFloat(val);
+                                setWHTpercent(isNaN(num) ? 0 : num);
+                                setWHTAmount(
+                                  Number(amount)
+                                    ? (Number(amount) * (isNaN(num) ? 0 : num)) /
+                                        100
+                                    : 0
+                                );
+                              }
                             }}
                             placeholder={t("expense.detail.percent")}
                             keyboardType="numeric"
+                            editable={group !== "Fuel"}
                           />
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
                         </>
@@ -596,6 +623,10 @@ export default function CreateExpense({
                       {
                         key: "Packing",
                         label: t("expense.detail.group.packing"),
+                      },
+                      {
+                        key: "Fuel",
+                        label: t("expense.detail.group.fuel"),
                       },
                       {
                         key: "Utilities",

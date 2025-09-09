@@ -177,6 +177,7 @@ enum ExpenseGroup {
   Product
   Packing
   Utilities
+  Fuel
 }
 
 model User {

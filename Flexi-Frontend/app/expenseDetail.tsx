@@ -64,6 +64,8 @@ interface ExpenseDetailProps {
     sName?: string;
     taxInvoiceNo?: string;
     sAddress?: string;
+    branch?: string;
+    taxType?: "Individual" | "Juristic";
   };
 }
 
@@ -95,7 +97,10 @@ export default function ExpenseDetail({
   );
   const [WHTpercent, setWHTpercent] = useState(expense.WHTpercent || 0);
   const [WHTAmount, setWHTAmount] = useState(expense.WHTAmount || 0);
-
+  const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
+    "Individual"
+  );
+  const [branch, setBranch] = useState<string>("headOffice");
   const [sTaxId, setSTaxId] = useState(expense.sTaxId || "");
   const [sName, setSName] = useState(expense.sName || "");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
@@ -125,6 +130,8 @@ export default function ExpenseDetail({
         setSName(fetchedExpense.sName || "");
         setTaxInvoiceNo(fetchedExpense.taxInvoiceNo || "");
         setSAddress(fetchedExpense.sAddress || "");
+        setTaxType(fetchedExpense.taxType || "Individual");
+        setBranch(fetchedExpense.branch || "");
       } catch (error) {
         console.error("Error fetching expense:", error);
       }
@@ -150,6 +157,8 @@ export default function ExpenseDetail({
         sTaxId !== (expense.sTaxId || "") ||
         sName !== (expense.sName || "") ||
         taxInvoiceNo !== (expense.taxInvoiceNo || "") ||
+        branch !== (expense.branch || "") ||
+        taxType !== (expense.taxType || "Individual") ||
         sAddress !== (expense.sAddress || "")
       ) {
         setHasChanges(true);
@@ -174,6 +183,8 @@ export default function ExpenseDetail({
     sName,
     taxInvoiceNo,
     sAddress,
+    taxType,
+    branch,
   ]);
   // Update WHTAmount when amount or WHTpercent changes
   useEffect(() => {
@@ -185,6 +196,17 @@ export default function ExpenseDetail({
       setWHTAmount(0);
     }
   }, [amount, WHTpercent, withHoldingTax]);
+
+  // Handle group changes - disable VAT and WHT for Fuel group
+  useEffect(() => {
+    if (group === "Fuel") {
+      setVatIncluded(false);
+      setWithHoldingTax(false);
+      setWHTpercent(0);
+      setWHTAmount(0);
+      setVatAmount(0);
+    }
+  }, [group]);
 
   // Update modal visibility when prop changes
   useEffect(() => {
@@ -306,6 +328,8 @@ export default function ExpenseDetail({
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
       formData.append("sAddress", sAddress);
+      formData.append("taxType", taxType);
+      formData.append("branch", branch);
       if (image) {
         formData.append("image", {
           uri: image,
@@ -598,15 +622,39 @@ export default function ExpenseDetail({
                         flexDirection: "row",
                         alignItems: "center",
                         marginRight: 24,
+                        opacity: group === "Fuel" ? 0.5 : 1,
                       }}
-                      onPress={() => setVatIncluded(!vatIncluded)}
+                      onPress={() => {
+                        if (group !== "Fuel") {
+                          setVatIncluded(!vatIncluded);
+                        }
+                      }}
+                      disabled={group === "Fuel"}
                     >
                       <Ionicons
                         name={vatIncluded ? "checkbox" : "square-outline"}
                         size={22}
-                        color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                        color={
+                          group === "Fuel"
+                            ? theme === "dark"
+                              ? "#666666"
+                              : "#999999"
+                            : theme === "dark"
+                            ? "#d0d0d0"
+                            : "#c1c1c1"
+                        }
                       />
-                      <CustomText className="ml-2">
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color:
+                            group === "Fuel"
+                              ? theme === "dark"
+                                ? "#666666"
+                                : "#999999"
+                              : undefined,
+                        }}
+                      >
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
                     </TouchableOpacity>
@@ -618,16 +666,39 @@ export default function ExpenseDetail({
                           flexDirection: "row",
                           alignItems: "center",
                           marginRight: 8,
+                          opacity: group === "Fuel" ? 0.5 : 1,
                         }}
-                        onPress={() => setWithHoldingTax(!withHoldingTax)}
+                        onPress={() => {
+                          if (group !== "Fuel") {
+                            setWithHoldingTax(!withHoldingTax);
+                          }
+                        }}
+                        disabled={group === "Fuel"}
                       >
                         <Ionicons
                           name={withHoldingTax ? "checkbox" : "square-outline"}
                           size={22}
-                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                          color={
+                            group === "Fuel"
+                              ? theme === "dark"
+                                ? "#666666"
+                                : "#999999"
+                              : theme === "dark"
+                              ? "#d0d0d0"
+                              : "#c1c1c1"
+                          }
                         />
                         <CustomText
-                          style={{ textAlign: "right", marginLeft: 8 }}
+                          style={{
+                            textAlign: "right",
+                            marginLeft: 8,
+                            color:
+                              group === "Fuel"
+                                ? theme === "dark"
+                                  ? "#666666"
+                                  : "#999999"
+                                : undefined,
+                          }}
                         >
                           {t("expense.detail.withHoldingTax")}
                         </CustomText>
@@ -643,13 +714,21 @@ export default function ExpenseDetail({
                               padding: 4,
                               color: theme === "dark" ? "#fff" : "#000",
                               textAlign: "center",
+                              opacity: group === "Fuel" ? 0.5 : 1,
+                              fontFamily:
+                                i18n.language === "th"
+                                  ? "IBMPlexSansThai-Medium"
+                                  : "Poppins-Regular",
                             }}
                             value={WHTpercent.toString()}
                             onChangeText={(val) => {
-                              const num = parseFloat(val);
-                              setWHTpercent(isNaN(num) ? 0 : num);
+                              if (group !== "Fuel") {
+                                const num = parseFloat(val);
+                                setWHTpercent(isNaN(num) ? 0 : num);
+                              }
                             }}
                             placeholder={t("expense.detail.percent")}
+                            editable={group !== "Fuel"}
                             keyboardType="numeric"
                           />
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
@@ -672,6 +751,101 @@ export default function ExpenseDetail({
                       value={sName}
                       onChangeText={setSName}
                     />
+                    {/* Tax Type Checkboxes Row */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        marginTop: 8,
+                        marginBottom: 8,
+                        backgroundColor: "transparent",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 24,
+                        }}
+                        onPress={() => {
+                          setTaxType("Individual");
+                          setBranch("");
+                        }}
+                      >
+                        <Ionicons
+                          name={
+                            taxType === "Individual"
+                              ? "checkbox"
+                              : "square-outline"
+                          }
+                          size={22}
+                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                        />
+                        <CustomText className="ml-2">
+                          {t("auth.businessRegister.taxTypeOption.Individual")}
+                        </CustomText>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 8,
+                        }}
+                        onPress={() => {
+                          setTaxType("Juristic");
+                          setBranch("headOffice");
+                        }}
+                      >
+                        <Ionicons
+                          name={
+                            taxType === "Juristic"
+                              ? "checkbox"
+                              : "square-outline"
+                          }
+                          size={22}
+                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                        />
+                        <CustomText className="ml-2">
+                          {t("auth.businessRegister.taxTypeOption.Juristic")}
+                        </CustomText>
+                      </TouchableOpacity>
+                      {taxType === "Juristic" && (
+                        <>
+                          <TextInput
+                            style={{
+                              width: 90,
+                              borderWidth: 1,
+                              borderColor: theme === "dark" ? "#444" : "#ccc",
+                              borderRadius: 8,
+                              padding: 4,
+                              color: theme === "dark" ? "#fff" : "#000",
+                              textAlign: "center",
+                              marginLeft: 8,
+                              fontFamily:
+                                i18n.language === "th"
+                                  ? "IBMPlexSansThai-Medium"
+                                  : "Poppins-Regular",
+                              fontSize: 11,
+                            }}
+                            value={
+                              branch === "headOffice"
+                                ? t("expense.detail.headOffice")
+                                : branch
+                            }
+                            onChangeText={(text) => {
+                              // If user clears the field or types something different, store the raw text
+                              if (text === t("expense.detail.headOffice")) {
+                                setBranch("headOffice");
+                              } else {
+                                setBranch(text);
+                              }
+                            }}
+                            placeholder={t("expense.detail.branch")}
+                          />
+                        </>
+                      )}
+                    </View>
                     <View
                       style={{
                         flexDirection: "row",
@@ -687,6 +861,7 @@ export default function ExpenseDetail({
                         onChangeText={setSTaxId}
                         containerStyle={{ flex: 1, marginVertical: 0 }}
                       />
+
                       <FloatingLabelInput
                         label={t("expense.detail.taxInvoiceNo")}
                         value={taxInvoiceNo}
@@ -776,6 +951,10 @@ export default function ExpenseDetail({
                       {
                         key: "Packing",
                         label: t("expense.detail.group.packing"),
+                      },
+                      {
+                        key: "Fuel",
+                        label: t("expense.detail.group.fuel"),
                       },
                       {
                         key: "Utilities",

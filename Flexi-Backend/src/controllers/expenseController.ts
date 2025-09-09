@@ -70,6 +70,7 @@ const schema = Joi.object({
       "Transport",
       "Product",
       "Packing",
+      "Fuel",
       "Utilities"
     )
     .required(),
@@ -83,11 +84,11 @@ const schema = Joi.object({
   vatAmount: Joi.number().optional(),
   withHoldingTax: Joi.boolean().optional(),
   WHTAmount: Joi.number().optional(),
-  sName: Joi.string().optional(),
-  taxInvoiceNo: Joi.string().optional(),
-  sTaxId: Joi.string().optional(),
-  sAddress: Joi.string().optional(),
-  branch: Joi.string().optional(),
+  sName: Joi.string().optional().allow(''),
+  taxInvoiceNo: Joi.string().optional().allow(''),
+  sTaxId: Joi.string().optional().allow(''),
+  sAddress: Joi.string().optional().allow(''),
+  branch: Joi.string().optional().allow(''),
   taxType: Joi.string().valid("Individual", "Juristic").optional(),
 });
 

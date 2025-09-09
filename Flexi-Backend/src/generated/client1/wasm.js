@@ -519,7 +519,8 @@ exports.ExpenseGroup = exports.$Enums.ExpenseGroup = {
   Transport: 'Transport',
   Product: 'Product',
   Packing: 'Packing',
-  Utilities: 'Utilities'
+  Utilities: 'Utilities',
+  Fuel: 'Fuel'
 };
 
 exports.Bank = exports.$Enums.Bank = {
