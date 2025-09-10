@@ -174,7 +174,7 @@ export default function CreateBill() {
   );
 
   // Product information
-  const [payment, setPayment] = useState("");
+  const [payment, setPayment] = useState("NotSpecified");
   const [amount, setAmount] = useState("1");
   const [cashStatus, setCashStatus] = useState(false);
   const [businessAcc, setBusinessAcc] = useState(0);
@@ -596,7 +596,7 @@ export default function CreateBill() {
         cPostId,
         cProvince,
         cTaxId: String(cTaxId),
-        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash",
+        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified",
         memberId: memberId || "",
         businessAcc,
         storeId,

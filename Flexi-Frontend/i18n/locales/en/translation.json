@@ -4,6 +4,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "loading": "Loading...",
+    "creatingDocument": "Creating Document...",
     "error": "Error",
     "success": "Success",
     "clear": "Clear",
@@ -1232,7 +1233,8 @@
       "cod": "Cash on Delivery",
       "transfer": "Bank Transfer",
       "creditcard": "Credit Card",
-      "cash": "Cash"
+      "cash": "Cash",
+      "NotSpecified": "-"
     },
     "selectPayment": "Select payment method",
     "paymentStatus": "Payment Status",

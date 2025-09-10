@@ -4,6 +4,7 @@
     "cancel": "ยกเลิก",
     "confirm": "ยืนยัน",
     "loading": "กำลังโหลด...",
+    "creatingDocument": "กำลังสร้างเอกสาร...",
     "error": "ข้อผิดพลาด",
     "success": "สำเร็จ",
     "clear": "ล้าง",
@@ -1228,7 +1229,8 @@
       "cod": "เก็บเงินปลายทาง",
       "transfer": "โอนเงินผ่านธนาคาร",
       "creditcard": "บัตรเครดิต",
-      "cash": "เงินสด"
+      "cash": "เงินสด",
+      "NotSpecified": "-"
     },
     "selectPayment": "เลือกวิธีการชำระเงิน",
     "paymentStatus": "สถานะการชำระเงิน",

@@ -1032,7 +1032,7 @@ export default function ExpenseDetail({
                         }}
                       >
                         {isDownloadingWHT
-                          ? t("common.loading") || "Loading..."
+                          ? t("common.creatingDocument") || "Creating Document..."
                           : t("expense.detail.downloadWHTDoc")}
                       </CustomText>
                     </TouchableOpacity>

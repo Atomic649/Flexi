@@ -78,7 +78,7 @@ const schema = Joi.object({
   cPostId: Joi.string().required(),
   cTaxId: Joi.string().allow("").optional(),
   payment: Joi.string()
-    .valid("COD", "Transfer", "CreditCard", "Cash")
+    .valid("COD", "Transfer", "CreditCard", "Cash", "NotSpecified")
     .required(),
   cashStatus: Joi.boolean().optional(),
   memberId: Joi.string().required(),

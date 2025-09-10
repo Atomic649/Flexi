@@ -52,7 +52,7 @@ class CallAPIBill {
         cPostId: string;
         cTaxId: string;
         cProvince: string;
-        payment: "COD" | "Transfer" | "CreditCard" | "Cash";
+        payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
         businessAcc: number;
         storeId: number;
@@ -101,7 +101,7 @@ class CallAPIBill {
         cPostId: string;
         cProvince: string;
         cTaxId : string;
-        payment: "COD" | "Transfer" | "CreditCard" | "Cash";
+        payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
         businessAcc: number;
         storeId: number;

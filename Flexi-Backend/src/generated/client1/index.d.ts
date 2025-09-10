@@ -169,7 +169,8 @@ export const Payment: {
   COD: 'COD',
   Transfer: 'Transfer',
   CreditCard: 'CreditCard',
-  Cash: 'Cash'
+  Cash: 'Cash',
+  NotSpecified: 'NotSpecified'
 };
 
 export type Payment = (typeof Payment)[keyof typeof Payment]

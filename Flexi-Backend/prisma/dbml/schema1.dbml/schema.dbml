@@ -406,6 +406,7 @@ Enum Payment {
   Transfer
   CreditCard
   Cash
+  NotSpecified
 }
 
 Enum SocialMedia {
