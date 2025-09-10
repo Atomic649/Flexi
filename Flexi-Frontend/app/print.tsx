@@ -44,30 +44,6 @@ const TAB_INDICES = {
   INDIVIDUAL_INVOICE: 1,
 };
 
-// Format currency
-const formatCurrency = (amount: number) => {
-  // Original formatting that causes encoding issues: return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(amount);
-  // Instead format without currency symbol and add THB manually
-  return (
-    new Intl.NumberFormat("th-TH", {
-      style: "decimal",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount) + " THB"
-  );
-};
-
-// Format currency specifically for PDF to avoid Thai Baht symbol encoding issues
-const formatCurrencyForPDF = (amount: number) => {
-  return (
-    new Intl.NumberFormat("en-US", {
-      style: "decimal",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount) + " THB"
-  );
-};
-
 // Format date in DD/MM/YYYY format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
@@ -161,6 +137,30 @@ export default function Print() {
 
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
+
+  // Format currency with translation
+  const formatCurrency = (amount: number) => {
+    // Original formatting that causes encoding issues: return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(amount);
+    // Instead format without currency symbol and add THB manually using translation
+    return (
+      new Intl.NumberFormat("th-TH", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount) + " " + t("common.THB")
+    );
+  };
+
+  // Format currency specifically for PDF with translation to avoid Thai Baht symbol encoding issues
+  const formatCurrencyForPDF = (amount: number) => {
+    return (
+      new Intl.NumberFormat("en-US", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount) + " " + t("common.THB")
+    );
+  };
 
   // Print progression state - start with first available type
   const [selectedPrintType, setSelectedPrintType] = useState<"QA" | "IV" | "RE">("QA");

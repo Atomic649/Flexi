@@ -744,13 +744,14 @@ export default function ExpenseDetail({
                   onChangeText={setNote}
                 />
 
+                <FloatingLabelInput
+                  label={t("expense.detail.sName")}
+                  value={sName}
+                  onChangeText={setSName}
+                />
+
                 {(vatIncluded || withHoldingTax) && (
                   <>
-                    <FloatingLabelInput
-                      label={t("expense.detail.sName")}
-                      value={sName}
-                      onChangeText={setSName}
-                    />
                     {/* Tax Type Checkboxes Row */}
                     <View
                       style={{
@@ -1032,7 +1033,8 @@ export default function ExpenseDetail({
                         }}
                       >
                         {isDownloadingWHT
-                          ? t("common.creatingDocument") || "Creating Document..."
+                          ? t("common.creatingDocument") ||
+                            "Creating Document..."
                           : t("expense.detail.downloadWHTDoc")}
                       </CustomText>
                     </TouchableOpacity>

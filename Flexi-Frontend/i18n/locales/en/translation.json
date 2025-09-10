@@ -25,7 +25,8 @@
     "more": "More",
     "showLess": "Show Less",
     "future": "future",
-    "days": "days"
+    "days": "days",
+    "THB": "THB"
   },
   "months": {
     "january": "January",
@@ -1223,9 +1224,9 @@
     "amount": "Quantity",
     "price": "Price",
     "discount": "Discount",
-    "priceValid":"Price Valid ",
-    "validUntil":"Valid Until :",
-   
+    "priceValid": "Price Valid ",
+    "validUntil": "Valid Until :",
+
     "platform": "Platform",
     "selectPlatform": "Select platform",
     "paymentMethod": "Payment Method",
@@ -1375,8 +1376,8 @@
     "price": "Price",
     "discount": "Discount",
     "totalDiscount": "Total Discount",
-    "priceValid":" Price Valid :",
-    "validUntil":"Price Valid Until :",
+    "priceValid": " Price Valid :",
+    "validUntil": "Price Valid Until :",
     "unitPrice": "Unit Price",
     "total": "Total",
     "amount": "Amount",
@@ -1451,10 +1452,10 @@
     "contact": "Contact Info",
     "productDetails": "Product Details",
     "sellerStamp": "Seller Stamp",
-    "customerStamp": "Customer Stamp", 
+    "customerStamp": "Customer Stamp",
     "sellerStampHere": "Seller Company Stamp Here",
     "customerStampHere": "Customer Company Stamp Here",
-    "receivedBy": "Received By",  
+    "receivedBy": "Received By",
     "authorizedBy": "Authorized By",
     "recipientSignature": "Recipient Signature",
     "authorizedSignature": "Authorized Signature",
@@ -1463,8 +1464,30 @@
       "Cash": "Cash",
       "Transfer": "Transfer",
       "Creditcard": "Credit Card",
-      "Cod": "Cash on Delivery"
-      }
+      "Cod": "Cash on Delivery",
+      "NotSpecified": "-"
+    },
+    "branch": "Branch",
+    "supplier": "Supplier/Service Provider",
+    "taxInvoiceNo": "Tax Invoice No.",
+    "whtPercent": "WHT Percent",
+    "whtAmount": "WHT Amount",
+    "amountExpense":"Amount of goods/services",
+    "totalExpense": "Total Expense",
+    "totalTaxExpense": "Total Tax Expense",
+    "totalWht": "Total WHT",
+    "totalVat": "Total VAT",
+    "monthlyExpenseReport": "Monthly Expense Report",
+    "expenseSummary": "Expense Summary",
+    "expenseByCategory": "Expense by Category",
+    "expenseList": "Expense List",
+    "whtDetailList": "WHT Detail List",
+    "vatDetailList": "VAT Detail List",
+    "category": "Category",
+    "percentage": "Percentage",
+    "expenseNo":" Document No.",
+    "amountIncVat": "Amount Inc. VAT"
+
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",

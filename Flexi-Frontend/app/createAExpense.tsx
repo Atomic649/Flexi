@@ -520,14 +520,14 @@ export default function CreateExpense({
                   value={note}
                   onChangeText={setNote}
                 />
+                <FloatingLabelInput
+                  label={t("expense.detail.sName")}
+                  value={sName}
+                  onChangeText={setSName}
+                />
 
                 {(vatIncluded || withHoldingTax) && (
                   <>
-                    <FloatingLabelInput
-                      label={t("expense.detail.sName")}
-                      value={sName}
-                      onChangeText={setSName}
-                    />
                     {/* Tax Type Checkboxes Row */}
                     <View
                       style={{

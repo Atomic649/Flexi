@@ -25,7 +25,8 @@
     "more": "เพิ่มเติม",
     "showLess": "ดูน้อยลง",
     "future": "อนาคต",
-    "days":"วัน"
+    "days":"วัน",
+    "THB": "บาท"
   },
   "months": {
     "january": "มกราคม",
@@ -1462,9 +1463,29 @@
       "Cash": "เงินสด",
       "Transfer":"โอนเงินผ่านบัญชีธนาคาร",
       "Creditcard":"เครดิิดการ์ด",
-      "Cod":"เก็บเงินปลายทาง"
-    }
-
+      "Cod":"เก็บเงินปลายทาง",
+      "NotSpecified":"-"
+    },
+    "branch": "สาขา",
+    "supplier": "ผู้จำหน่าย/ผู้ให้บริการ",
+    "taxInvoiceNo": "เลขที่ใบกำกับภาษี",
+    "whtPercent": "เปอร์เซ็นต์ที่หักไว้",
+    "whtAmount": "จำนวนภาษีที่หักไว้",
+    "amountExpense": "มูลค่าสินค้าและบริการ",
+    "totalExpenses": "ค่าใช้จ่ายทางบัญชีรวม",
+    "totalTaxExpenses": "ค่าใช้จ่ายทางภาษีรวม",
+    "totalWht": "ภาษีหัก ณ ที่จ่ายรวม",
+    "totalVat": "ภาษีมูลค่าเพิ่มรวม",
+    "monthlyExpenseReport": "รายงานค่าใช้จ่ายประจำเดือน",
+    "expenseSummary": "สรุปค่าใช้จ่าย",
+    "expensesByCategory": "ค่าใช้จ่ายตามหมวดหมู่",
+    "expenseList": "รายการค่าใช้จ่ายทางภาษีทั้งหมด",
+    "whtDetailList": "รายการภาษีหัก ณ ที่จ่าย",
+    "vatDetailList": "รายการภาษีมูลค่าเพิ่ม",
+    "category": "หมวดหมู่",
+    "percentage": "เปอร์เซ็นต์",
+    "expenseNo":"เลขที่เอกสาร",
+    "amountIncVat":"จำนวนเงินรวม VAT"
   },
   "taxDoc": {
     "vatTitle": "แจ้งเตือนจดภาษีมูลค่าเพิ่ม (VAT)",

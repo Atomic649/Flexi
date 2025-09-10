@@ -43,6 +43,7 @@ interface Expense {
   sAddress?: string;
   branch?: string;
   taxType?: taxType;
+  expNo?: string;
 }
 
 // Validate the request body
@@ -90,6 +91,7 @@ const schema = Joi.object({
   sAddress: Joi.string().optional().allow(''),
   branch: Joi.string().optional().allow(''),
   taxType: Joi.string().valid("Individual", "Juristic").optional(),
+  expNo: Joi.string().optional().allow(''),
 });
 
 //  create a new expense - Post
@@ -156,6 +158,11 @@ const createExpense = async (req: Request, res: Response) => {
         (expenseInput.amount * (expenseInput.WHTpercent ?? 0)) / 100;
     }
 
+    // generate expNo in format EXPYYYYMMDDXXXX
+    const datePart = format(new Date(), "yyyyMMdd");
+    const randomPart = Math.floor(1000 + Math.random() * 9000); // Random 4 digit number
+    expenseInput.expNo = `EXP${datePart}${randomPart}`;
+
     try {
       const expense = await prisma.expense.create({
         data: {
@@ -180,6 +187,7 @@ const createExpense = async (req: Request, res: Response) => {
           sAddress: expenseInput.sAddress ?? "",
           branch: expenseInput.branch ?? "",
           taxType: expenseInput.taxType ?? taxType.Individual,
+          expNo: expenseInput.expNo ?? "",
         },
       });
       res.json(expense);
@@ -234,6 +242,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         sAddress: true,
         branch: true,
         taxType: true,
+        expNo: true,
       },
     });
     res.json(expense);

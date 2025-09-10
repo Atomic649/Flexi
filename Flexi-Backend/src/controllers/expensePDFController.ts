@@ -5,6 +5,7 @@ import pdfParse from "pdf-parse";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { decrypt } from "node-qpdf2"; // Replace hummus-recipe with node-qpdf2
+import { format } from "date-fns-tz";
 
 const upload = multer(multerConfig.pdfMulterConfig.config).single(
   multerConfig.pdfMulterConfig.keyUpload
@@ -23,6 +24,7 @@ interface Expense {
   note: string;
   desc: string;
   channel: Bank;
+  expNo?: string;
 }
 
 // Add this helper function at the top of the file
@@ -153,6 +155,12 @@ export const pdfExtract = async (
       });
       console.log("🔥codeAmount", codeAmount);
 
+      // generate expNo in format EXPYYYYMMDDXXXX
+      const datePart = format(new Date(), "yyyyMMdd");
+      const randomPart = Math.floor(1000 + Math.random() * 9000); // Random 4 digit number
+      const expNo = `EXP${datePart}${randomPart}`;
+      
+
       // Create a table Expense in the database with the following columns: dateTime, code, amount, desc, note using prisma
       const createExpenses = async () => {
         const expense: Expense = req.body;
@@ -192,6 +200,7 @@ export const pdfExtract = async (
               note: item.note,
               memberId: expense.memberId,
               businessAcc: businessAcc?.id ?? 0,
+              expNo: expNo,
             },
           });
         }

@@ -11756,6 +11756,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     id: number | null
+    expNo: string | null
     amount: Decimal | null
     group: $Enums.ExpenseGroup | null
     image: string | null
@@ -11785,6 +11786,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     id: number | null
+    expNo: string | null
     amount: Decimal | null
     group: $Enums.ExpenseGroup | null
     image: string | null
@@ -11814,6 +11816,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     id: number
+    expNo: number
     amount: number
     group: number
     image: number
@@ -11863,6 +11866,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     id?: true
+    expNo?: true
     amount?: true
     group?: true
     image?: true
@@ -11892,6 +11896,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     id?: true
+    expNo?: true
     amount?: true
     group?: true
     image?: true
@@ -11921,6 +11926,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     id?: true
+    expNo?: true
     amount?: true
     group?: true
     image?: true
@@ -12037,6 +12043,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     id: number
+    expNo: string | null
     amount: Decimal
     group: $Enums.ExpenseGroup | null
     image: string | null
@@ -12085,6 +12092,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     id?: boolean
+    expNo?: boolean
     amount?: boolean
     group?: boolean
     image?: boolean
@@ -12116,6 +12124,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     id?: boolean
+    expNo?: boolean
     amount?: boolean
     group?: boolean
     image?: boolean
@@ -12147,6 +12156,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     id?: boolean
+    expNo?: boolean
     amount?: boolean
     group?: boolean
     image?: boolean
@@ -12178,6 +12188,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     id?: boolean
+    expNo?: boolean
     amount?: boolean
     group?: boolean
     image?: boolean
@@ -12202,7 +12213,7 @@ export namespace Prisma {
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "expNo" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12227,6 +12238,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       id: number
+      expNo: string | null
       amount: Prisma.Decimal
       group: $Enums.ExpenseGroup | null
       image: string | null
@@ -12678,6 +12690,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Expense", 'DateTime'>
     readonly updatedAt: FieldRef<"Expense", 'DateTime'>
     readonly id: FieldRef<"Expense", 'Int'>
+    readonly expNo: FieldRef<"Expense", 'String'>
     readonly amount: FieldRef<"Expense", 'Decimal'>
     readonly group: FieldRef<"Expense", 'ExpenseGroup'>
     readonly image: FieldRef<"Expense", 'String'>
@@ -29687,6 +29700,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     id: 'id',
+    expNo: 'expNo',
     amount: 'amount',
     group: 'group',
     image: 'image',
@@ -30976,6 +30990,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Expense"> | Date | string
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
     id?: IntFilter<"Expense"> | number
+    expNo?: StringNullableFilter<"Expense"> | string | null
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
@@ -31007,6 +31022,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
+    expNo?: SortOrderInput | SortOrder
     amount?: SortOrder
     group?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
@@ -31041,6 +31057,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Expense"> | Date | string
     createdAt?: DateTimeFilter<"Expense"> | Date | string
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
+    expNo?: StringNullableFilter<"Expense"> | string | null
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
@@ -31072,6 +31089,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
+    expNo?: SortOrderInput | SortOrder
     amount?: SortOrder
     group?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
@@ -31109,6 +31127,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Expense"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Expense"> | Date | string
     id?: IntWithAggregatesFilter<"Expense"> | number
+    expNo?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     amount?: DecimalWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableWithAggregatesFilter<"Expense"> | string | null
@@ -33043,6 +33062,7 @@ export namespace Prisma {
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -33072,6 +33092,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -33100,6 +33121,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33129,6 +33151,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33158,6 +33181,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -33186,6 +33210,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33213,6 +33238,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35335,6 +35361,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
+    expNo?: SortOrder
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
@@ -35373,6 +35400,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
+    expNo?: SortOrder
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
@@ -35402,6 +35430,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     id?: SortOrder
+    expNo?: SortOrder
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
@@ -40309,6 +40338,7 @@ export namespace Prisma {
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -40337,6 +40367,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -40722,6 +40753,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Expense"> | Date | string
     updatedAt?: DateTimeFilter<"Expense"> | Date | string
     id?: IntFilter<"Expense"> | number
+    expNo?: StringNullableFilter<"Expense"> | string | null
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
@@ -41033,6 +41065,7 @@ export namespace Prisma {
     date: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -41061,6 +41094,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -46255,6 +46289,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -46463,6 +46498,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46491,6 +46527,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46519,6 +46556,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46717,6 +46755,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     id?: number
+    expNo?: string | null
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
@@ -46943,6 +46982,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46971,6 +47011,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46999,6 +47040,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     id?: IntFieldUpdateOperationsInput | number
+    expNo?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null

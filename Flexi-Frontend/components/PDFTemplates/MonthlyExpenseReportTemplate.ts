@@ -24,7 +24,6 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
     selectedMonth,
     businessDetails,
     businessName,
-    monthlyTotals,
     expenses,
     t,
     formatCurrencyForPDF,
@@ -47,6 +46,13 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
     sum + (expense.vat ? (Number(expense.vatAmount) || 0) : 0), 0);
   const totalWhtAmount = actualExpenses.reduce((sum: number, expense: any) => 
     sum + (expense.withHoldingTax ? (Number(expense.WHTAmount) || 0) : 0), 0);
+
+  // Calculate total tax expenses (amount - vatAmount)
+  const totalTaxExpenses = actualExpenses.reduce((sum: number, expense: any) => {
+    const totalAmount = Number(expense.amount) || 0;
+    const vatAmount = expense.vat ? (Number(expense.vatAmount) || 0) : 0;
+    return sum + (totalAmount - vatAmount);
+  }, 0);
 
   // Group expenses by category
   const expensesByGroup: { [key: string]: { count: number, amount: number } } = {};
@@ -120,8 +126,8 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
             border: 1px solid #ddd; 
           }
           th { 
-            background-color: #dc2626; 
-            color: white;
+            background-color: #fef2f2; 
+            color: #dc2626;
             font-weight: bold;
           }
           tr:nth-child(even) { 
@@ -132,7 +138,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
           .bold { font-weight: bold; }
           .summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin: 20px 0;
           }
@@ -191,7 +197,8 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
             margin: 20px 0;
           }
           .category-table th {
-            background-color: #374151;
+            background-color: #fef2f2;
+            color: #dc2626;
           }
         </style>
       </head>
@@ -214,24 +221,16 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
               <div class="value">${formatCurrencyForPDF(totalExpenses)}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.expenseCount")}</div>
-              <div class="value">${totalExpenseCount}</div>
+              <div class="label">${t("print.totalTaxExpenses")}</div>
+              <div class="value">${formatCurrencyForPDF(totalTaxExpenses)}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.avgExpenseAmount")}</div>
-              <div class="value">${formatCurrencyForPDF(averageExpenseAmount)}</div>
+              <div class="label">${t("print.totalVat")}</div>
+              <div class="value"> ${formatCurrencyForPDF(totalVatAmount)}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.vatIncludedExpenses")}</div>
-              <div class="value">${vatExpenses} (${formatCurrencyForPDF(totalVatAmount)})</div>
-            </div>
-            <div class="summary-card">
-              <div class="label">${t("print.whtIncludedExpenses")}</div>
-              <div class="value">${whtExpenses} (${formatCurrencyForPDF(totalWhtAmount)})</div>
-            </div>
-            <div class="summary-card">
-              <div class="label">${t("print.netExpenseAmount")}</div>
-              <div class="value">${formatCurrencyForPDF(totalExpenses - totalWhtAmount)}</div>
+              <div class="label">${t("print.totalWht")}</div>
+              <div class="value"> ${formatCurrencyForPDF(totalWhtAmount)}</div>
             </div>
           </div>
 
@@ -240,7 +239,6 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
             <thead>
               <tr>
                 <th>${t("print.category")}</th>
-                <th class="text-center">${t("print.count")}</th>
                 <th class="text-right">${t("print.amount")}</th>
                 <th class="text-right">${t("print.percentage")}</th>
               </tr>
@@ -248,70 +246,160 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
             <tbody>
               ${Object.entries(expensesByGroup).map(([group, data]) => `
                 <tr>
-                  <td><span class="expense-group">${t(`expense.group.${group.toLowerCase()}`) || group}</span></td>
-                  <td class="text-center">${data.count}</td>
+                  <td><span class="expense-group">${t(`expense.detail.group.${group.toLowerCase()}`) || group}</span></td>
                   <td class="text-right">${formatCurrencyForPDF(data.amount)}</td>
                   <td class="text-right">${totalExpenses > 0 ? Math.round((data.amount / totalExpenses) * 100) : 0}%</td>
                 </tr>
               `).join('')}
-              <tr style="background-color: #e5e7eb; font-weight: bold;">
+              <tr style="background-color: #f8f9fa; font-weight: bold;">
                 <td class="bold">${t("print.total")}</td>
-                <td class="text-center bold">${totalExpenseCount}</td>
                 <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
                 <td class="text-right bold">100%</td>
               </tr>
             </tbody>
           </table>
 
-          <h3>${t("print.expenseDetailList")}</h3>
-          ${actualExpenses.length > 0 ? `
+          <h3>${t("print.whtDetailList")}</h3>
+          ${actualExpenses.filter((expense: any) => expense.withHoldingTax).length > 0 ? `
             <table>
               <thead>
                 <tr>
                   <th>#</th>
                   <th>${t("print.date")}</th>
-                  <th>${t("print.description")}</th>
-                  <th>${t("print.category")}</th>
                   <th>${t("print.supplier")}</th>
+                  <th>${t("print.taxId")}</th>
+                  <th>${t("print.category")}</th>
+                  <th class="text-center">${t("print.whtPercent")}</th>
                   <th class="text-right">${t("print.amount")}</th>
-                  <th class="text-center">${t("print.vat")}</th>
-                  <th class="text-center">${t("print.wht")}</th>
-                  <th class="text-right">${t("print.netAmount")}</th>
+                  <th class="text-right">${t("print.whtAmount")}</th>
                 </tr>
               </thead>
               <tbody>
-                ${actualExpenses.map((expense: any, index: number) => {
-                  const vatAmount = expense.vat ? (expense.vatAmount || 0) : 0;
-                  const whtAmount = expense.withHoldingTax ? (expense.WHTAmount || 0) : 0;
-                  const netAmount = (expense.amount || 0) - whtAmount;
+                ${actualExpenses.filter((expense: any) => expense.withHoldingTax).map((expense: any, index: number) => {
+                  const whtAmount = Number(expense.WHTAmount) || 0;
+                  const netAmount = (Number(expense.amount) || 0) - whtAmount;
+                  const whtPercent = Number(expense.WHTpercent) || 0;
                   return `
                     <tr>
                       <td>${index + 1}</td>
                       <td>${formatDate(expense.date)}</td>
-                      <td>${expense.desc || '-'}</td>
-                      <td><span class="expense-group">${t(`expense.group.${(expense.group || 'other').toLowerCase()}`) || expense.group || 'Other'}</span></td>
                       <td>${expense.sName || '-'}</td>
-                      <td class="text-right">${formatCurrencyForPDF(expense.amount || 0)}</td>
-                      <td class="text-center">${expense.vat ? `<span class="vat-included">✓</span>` : '-'}</td>
-                      <td class="text-center">${expense.withHoldingTax ? `<span class="wht-included">✓</span>` : '-'}</td>
-                      <td class="text-right">${formatCurrencyForPDF(netAmount)}</td>
+                      <td>${expense.sTaxId || '-'}</td>
+                      <td><span class="expense-group">${t(`expense.detail.group.${expense.group?.toLowerCase()}`) || expense.group || '-'}</span></td>
+                      <td class="text-center">${whtPercent}%</td>
+                      <td class="text-right">${formatCurrencyForPDF(Number(expense.amount) || 0)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(whtAmount)}</td>
                     </tr>
                   `;
                 }).join('')}
-                <tr style="background-color: #fee2e2; font-weight: bold;">
-                  <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
-                  <td class="text-center bold">${formatCurrencyForPDF(totalVatAmount)}</td>
-                  <td class="text-center bold">${formatCurrencyForPDF(totalWhtAmount)}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(totalExpenses - totalWhtAmount)}</td>
+                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                  <td colspan="6" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(
+                    actualExpenses.filter((expense: any) => expense.withHoldingTax)
+                      .reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0)
+                  )}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(totalWhtAmount)}</td>
                 </tr>
               </tbody>
             </table>
           ` : `
             <div class="no-data">
-              ${t("print.noExpensesFound")}
+              ${t("print.noWhtExpensesFound")}
             </div>
           `}
+
+          <h3>${t("print.vatDetailList")}</h3>
+          ${actualExpenses.filter((expense: any) => expense.vat).length > 0 ? `
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>${t("print.date")}</th>
+                  <th>${t("print.taxInvoiceNo")}</th>
+                  <th>${t("print.supplier")}</th>
+                  <th>${t("print.taxId")}</th>
+                  <th>${t("print.branch")}</th>
+                  <th class="text-right">${t("print.amountExpense")}</th>
+                  <th class="text-right">${t("print.vatAmount")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${actualExpenses.filter((expense: any) => expense.vat).map((expense: any, index: number) => {
+                  const totalAmount = Number(expense.amount) || 0;
+                  const vatAmount = Number(expense.vatAmount) || 0;
+                  const amountExclVat = totalAmount - vatAmount;
+                  return `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${formatDate(expense.date)}</td>
+                      <td>${expense.taxInvoiceNo || '-'}</td>
+                      <td>${expense.sName || '-'}</td>
+                      <td>${expense.sTaxId || '-'}</td>
+                      <td>${(() => {
+                        if (!expense.branch || expense.branch === '-') return '-';
+                        if (expense.branch === 'headOffice') return '00000';
+                        // Convert branch to number and pad with zeros
+                        const branchNum = parseInt(expense.branch) || 0;
+                        return branchNum.toString().padStart(5, '0');
+                      })()}</td>
+                      <td class="text-right">${formatCurrencyForPDF(totalAmount)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
+                    </tr>
+                  `;
+                }).join('')}
+                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                  <td colspan="6" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(
+                    actualExpenses.filter((expense: any) => expense.vat)
+                      .reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0)
+                  )}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(totalVatAmount)}</td>
+                </tr>
+              </tbody>
+            </table>
+          ` : `
+            <div class="no-data">
+              ${t("print.noVatExpensesFound")}
+            </div>
+          `}
+
+          <h3>${t("print.expenseList")}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>${t("print.date")}</th>
+                <th>${t("print.expenseNo")}</th>
+                <th>${t("print.supplier")}</th>
+                <th>${t("expense.detail.note")}</th>
+                <th class="text-right">${t("print.amountIncVat")}</th>
+                <th class="text-right">${t("print.amount")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${actualExpenses.map((expense: any, index: number) => {
+                const totalAmount = Number(expense.amount) || 0;
+                const vatAmount = expense.vat ? (Number(expense.vatAmount) || 0) : 0;
+                const netAmount = totalAmount - vatAmount;
+                return `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.expNo || '-'}</td>
+                    <td>${expense.sName || '-'}</td>
+                    <td>${expense.note || '-'}</td>
+                    <td class="text-right">${formatCurrencyForPDF(totalAmount)}</td>
+                    <td class="text-right">${formatCurrencyForPDF(netAmount)}</td>
+                  </tr>
+                `;
+              }).join('')}
+              <tr style="background-color: #f8f9fa; font-weight: bold;">
+                <td colspan="5" class="text-right bold">${t("print.total")}</td>
+                <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
+                <td class="text-right bold">${formatCurrencyForPDF(totalTaxExpenses)}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <div class="footer">
             ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business Hub
