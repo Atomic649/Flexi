@@ -89,6 +89,10 @@ export default function CreateExpense({
   const [sTaxId, setSTaxId] = useState<string>("");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
   const [sAddress, setSAddress] = useState<string>("");
+  const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
+    "Individual"
+  );
+  const [branch, setBranch] = useState<string>("headOffice");
 
   // Reset VAT and WHT when Fuel group is selected
   useEffect(() => {
@@ -147,6 +151,8 @@ export default function CreateExpense({
     setSTaxId("");
     setTaxInvoiceNo("");
     setSAddress("");
+    setBranch("");
+    setTaxType("Individual");
   };
 
   const handleClose = () => {
@@ -201,6 +207,8 @@ export default function CreateExpense({
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
       formData.append("sAddress", sAddress);
+      formData.append("branch", branch);
+      formData.append("taxType", taxType);
       if (memberId) {
         formData.append("memberId", memberId);
       } else {
@@ -230,7 +238,7 @@ export default function CreateExpense({
       setError(error.message);
     }
   };
-// Setting Button Group of Expense
+  // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
     `px-4 py-2 rounded-lg mx-1 border-2 ${
       group === groupName
@@ -490,7 +498,8 @@ export default function CreateExpense({
                                 setWHTpercent(isNaN(num) ? 0 : num);
                                 setWHTAmount(
                                   Number(amount)
-                                    ? (Number(amount) * (isNaN(num) ? 0 : num)) /
+                                    ? (Number(amount) *
+                                        (isNaN(num) ? 0 : num)) /
                                         100
                                     : 0
                                 );
@@ -519,6 +528,102 @@ export default function CreateExpense({
                       value={sName}
                       onChangeText={setSName}
                     />
+                    {/* Tax Type Checkboxes Row */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        marginTop: 8,
+                        marginBottom: 8,
+                        backgroundColor: "transparent",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 24,
+                        }}
+                        onPress={() => {
+                          setTaxType("Individual");
+                          setBranch("");
+                        }}
+                      >
+                        <Ionicons
+                          name={
+                            taxType === "Individual"
+                              ? "checkbox"
+                              : "square-outline"
+                          }
+                          size={22}
+                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                        />
+                        <CustomText className="ml-2">
+                          {t("auth.businessRegister.taxTypeOption.Individual")}
+                        </CustomText>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 8,
+                        }}
+                        onPress={() => {
+                          setTaxType("Juristic");
+                          setBranch("headOffice");
+                        }}
+                      >
+                        <Ionicons
+                          name={
+                            taxType === "Juristic"
+                              ? "checkbox"
+                              : "square-outline"
+                          }
+                          size={22}
+                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                        />
+                        <CustomText className="ml-2">
+                          {t("auth.businessRegister.taxTypeOption.Juristic")}
+                        </CustomText>
+                      </TouchableOpacity>
+                      {taxType === "Juristic" && (
+                        <>
+                          <TextInput
+                            style={{
+                              width: 90,
+                              borderWidth: 1,
+                              borderColor: theme === "dark" ? "#444" : "#ccc",
+                              borderRadius: 8,
+                              padding: 4,
+                              color: theme === "dark" ? "#fff" : "#000",
+                              textAlign: "center",
+                              marginLeft: 8,
+                              fontFamily:
+                                i18n.language === "th"
+                                  ? "IBMPlexSansThai-Medium"
+                                  : "Poppins-Regular",
+                              fontSize: 11,
+                            }}
+                            value={
+                              branch === "headOffice"
+                                ? t("expense.detail.headOffice")
+                                : branch
+                            }
+                            onChangeText={(text) => {
+                              // If user clears the field or types something different, store the raw text
+                              if (text === t("expense.detail.headOffice")) {
+                                setBranch("headOffice");
+                              } else {
+                                setBranch(text);
+                              }
+                            }}
+                            placeholder={t("expense.detail.branch")}
+                          />
+                        </>
+                      )}
+                    </View>
+
                     <View
                       style={{
                         flexDirection: "row",
