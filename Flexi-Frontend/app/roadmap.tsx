@@ -7,7 +7,7 @@ import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

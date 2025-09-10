@@ -8,7 +8,7 @@ import { CustomText } from "@/components/CustomText";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { images } from "@/constants";
 import { router } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import {CustomButton} from "@/components/CustomButton";
 
 export default function Phase2() {
   const { t } = useTranslation();
@@ -98,8 +98,7 @@ export default function Phase2() {
               title=""
               handlePress={() => router.back()}
               containerStyles="p-2 mr-4"
-              textStyles=""
-              icon={<Ionicons name="arrow-back" size={24} color={textPrimaryColor} />}
+              textStyles=""               
             />
             <View className="flex-1 flex-row items-center justify-center">
               <Ionicons 
