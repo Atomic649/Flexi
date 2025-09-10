@@ -125,6 +125,48 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
   }
 };
 
+// get Expense by date range
+export const getExpenseByDateRange = async (req: Request, res: Response) => {
+  try {
+    const { memberId, startDate, endDate } = req.query;
+
+    if (!memberId || !startDate || !endDate) {
+      return res.status(400).json({
+        error: "Member ID, start date, and end date are required",
+      });
+    }
+
+    console.log("startDate:", startDate, "endDate:", endDate);
+
+    // Ensure full day coverage for the date range
+    const start = new Date(`${startDate}T00:00:00.000Z`);
+    const end = new Date(`${endDate}T23:59:59.999Z`);
+
+    // Get expenses within the date range
+    const expenses = await prisma.expense.findMany({
+      where: {
+        memberId: memberId as string,
+        date: {
+          gte: start,
+          lte: end,
+        },
+        save: true, // Only fetch saved expenses
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    console.log("🚀 Get Expenses By Date Range API:", expenses);
+    return res.status(200).json(expenses);
+  } catch (error) {
+    console.error("Error fetching expenses by date range:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch expenses by date range" });
+  }
+};
+
 // Search bills by customer name or partial name
 export const searchBillsByCustomer = async (req: Request, res: Response) => {
   try {

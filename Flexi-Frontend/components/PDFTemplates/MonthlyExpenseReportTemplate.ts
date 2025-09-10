@@ -1,57 +1,63 @@
 import { format } from "date-fns";
 
-interface MonthlyReportData {
+interface MonthlyExpenseReportData {
   selectedMonth: Date;
   businessDetails: any;
   businessName: string | null;
   monthlyTotals: {
-    totalSales: number;
-    totalOrders: number;
-    paidOrders: number;
-    unpaidOrders: number;
-    averageOrderValue: number;
+    totalExpenses: number;
+    totalExpenseCount: number;
+    vatExpenses: number;
+    whtExpenses: number;
+    averageExpenseAmount: number;
+    expensesByGroup: { [key: string]: number };
   };
-  expenses: any[]; // Renamed from bills to expenses
+  expenses: any[];
   t: any;
   formatCurrencyForPDF: (amount: number) => string;
   formatDate: (dateString: string) => string;
   formatMonthYear: (date: Date, t: any) => string;
 }
 
-export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
+export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): string => {
   const {
     selectedMonth,
     businessDetails,
     businessName,
     monthlyTotals,
-    expenses, // Renamed from bills to expenses
+    expenses,
     t,
     formatCurrencyForPDF,
     formatDate,
     formatMonthYear,
   } = data;
 
-  // Only include expenses with DocumentType === 'Receipt'
-  const receiptExpenses = expenses.filter(expense => {
-    if (Array.isArray(expense.DocumentType)) {
-      return expense.DocumentType.includes('Receipt');
-    }
-    return expense.DocumentType === 'Receipt';
-  });
+  // Use all expenses (including drafts) for expense reporting
+  const actualExpenses = expenses;
 
-  // Recalculate monthlyTotals based on receiptExpenses
-  const totalSales = receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0);
-  const totalOrders = receiptExpenses.length;
-  const paidOrders = receiptExpenses.filter((expense: any) => expense.cashStatus).length;
-  const unpaidOrders = receiptExpenses.filter((expense: any) => !expense.cashStatus).length;
-  const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
-  const filteredMonthlyTotals = {
-    totalSales,
-    totalOrders,
-    paidOrders,
-    unpaidOrders,
-    averageOrderValue,
-  };
+  // Recalculate totals based on all expenses
+  const totalExpenses = actualExpenses.reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0);
+  const totalExpenseCount = actualExpenses.length;
+  const vatExpenses = actualExpenses.filter((expense: any) => expense.vat).length;
+  const whtExpenses = actualExpenses.filter((expense: any) => expense.withHoldingTax).length;
+  const averageExpenseAmount = totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
+
+  // Calculate total VAT and WHT amounts
+  const totalVatAmount = actualExpenses.reduce((sum: number, expense: any) => 
+    sum + (expense.vat ? (Number(expense.vatAmount) || 0) : 0), 0);
+  const totalWhtAmount = actualExpenses.reduce((sum: number, expense: any) => 
+    sum + (expense.withHoldingTax ? (Number(expense.WHTAmount) || 0) : 0), 0);
+
+  // Group expenses by category
+  const expensesByGroup: { [key: string]: { count: number, amount: number } } = {};
+  actualExpenses.forEach((expense: any) => {
+    const group = expense.group || 'Other';
+    if (!expensesByGroup[group]) {
+      expensesByGroup[group] = { count: 0, amount: 0 };
+    }
+    expensesByGroup[group].count++;
+    expensesByGroup[group].amount += expense.amount || 0;
+  });
 
   // Check if business is VAT registered
   const isVatRegistered = businessDetails?.vat === true;
@@ -61,7 +67,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
     <html>
       <head>
         <meta charset="UTF-8">
-        <title>${isVatRegistered  ? t("print.salesTaxVatSummary"): t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
+        <title>${t("print.monthlyExpenseReport")} - ${formatMonthYear(selectedMonth, t)}</title>
         <style>
           @media print {
             body { margin: 0; }
@@ -94,7 +100,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             font-size: 16px; 
             margin-bottom: 10px; 
             color: #333;
-            border-bottom: 2px solid #5e5e5e;
+            border-bottom: 2px solid #dc2626;
             padding-bottom: 5px;
           }
           p { 
@@ -114,7 +120,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             border: 1px solid #ddd; 
           }
           th { 
-            background-color: #5e5e5e; 
+            background-color: #dc2626; 
             color: white;
             font-weight: bold;
           }
@@ -126,7 +132,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
           .bold { font-weight: bold; }
           .summary-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin: 20px 0;
           }
@@ -134,7 +140,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 15px;
-            background-color: #f8f9fa;
+            background-color: #fef2f2;
           }
           .summary-card .label {
             font-size: 11px;
@@ -144,7 +150,7 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
           .summary-card .value {
             font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: #dc2626;
           }
           .company-info {
             background-color: #f8f9fa;
@@ -160,12 +166,19 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             border-top: 1px solid #ddd;
             padding-top: 10px;
           }
-          .status-paid { 
+          .expense-group {
+            background-color: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+          }
+          .vat-included { 
             color: #059669; 
             font-weight: bold; 
           }
-          .status-unpaid { 
-            color: #dc2626; 
+          .wht-included { 
+            color: #7c2d12; 
             font-weight: bold; 
           }
           .no-data {
@@ -174,11 +187,17 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             font-style: italic;
             padding: 20px;
           }
+          .category-table {
+            margin: 20px 0;
+          }
+          .category-table th {
+            background-color: #374151;
+          }
         </style>
       </head>
       <body>
         <div class="container">
-          <h1>${isVatRegistered ? t("print.salesTaxVatSummary") : t("print.salesTaxSummary")}</h1>
+          <h1>${t("print.monthlyExpenseReport")}</h1>
           <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 
           <div class="company-info">
@@ -188,92 +207,109 @@ export const generateExpenseReportHTML = (data: MonthlyReportData): string => {
             <p><strong>${t("print.taxId")}:</strong> ${businessDetails?.taxId || "Not specified"}</p>
           </div>
 
-          <h3>${t("print.monthlySummary")}</h3>
+          <h3>${t("print.expenseSummary")}</h3>
           <div class="summary-grid">
             <div class="summary-card">
-              <div class="label">${t("print.totalSales")}</div>
-              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales)}</div>
+              <div class="label">${t("print.totalExpenses")}</div>
+              <div class="value">${formatCurrencyForPDF(totalExpenses)}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.totalOrders")}</div>
-              <div class="value">${filteredMonthlyTotals.totalOrders}</div>
+              <div class="label">${t("print.expenseCount")}</div>
+              <div class="value">${totalExpenseCount}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.paidOrders")}</div>
-              <div class="value">${filteredMonthlyTotals.paidOrders} (${filteredMonthlyTotals.totalOrders > 0 ? Math.round((filteredMonthlyTotals.paidOrders / filteredMonthlyTotals.totalOrders) * 100) : 0}%)</div>
+              <div class="label">${t("print.avgExpenseAmount")}</div>
+              <div class="value">${formatCurrencyForPDF(averageExpenseAmount)}</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.unpaidOrders")}</div>
-              <div class="value">${filteredMonthlyTotals.unpaidOrders} (${filteredMonthlyTotals.totalOrders > 0 ? Math.round((filteredMonthlyTotals.unpaidOrders / filteredMonthlyTotals.totalOrders) * 100) : 0}%)</div>
+              <div class="label">${t("print.vatIncludedExpenses")}</div>
+              <div class="value">${vatExpenses} (${formatCurrencyForPDF(totalVatAmount)})</div>
             </div>
             <div class="summary-card">
-              <div class="label">${t("print.avgOrderValue")}</div>
-              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.averageOrderValue)}</div>
+              <div class="label">${t("print.whtIncludedExpenses")}</div>
+              <div class="value">${whtExpenses} (${formatCurrencyForPDF(totalWhtAmount)})</div>
             </div>
-            ${isVatRegistered ? `
             <div class="summary-card">
-              <div class="label">${t("print.vatAmount")} (7%)</div>
-              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales * 0.07)}</div>
+              <div class="label">${t("print.netExpenseAmount")}</div>
+              <div class="value">${formatCurrencyForPDF(totalExpenses - totalWhtAmount)}</div>
             </div>
-            ` : ''}
           </div>
 
-          <h3>${isVatRegistered ? t("print.taxInvoiceList") : t("print.receiptList")}</h3>
-          ${receiptExpenses.length > 0 ? `
+          <h3>${t("print.expensesByCategory")}</h3>
+          <table class="category-table">
+            <thead>
+              <tr>
+                <th>${t("print.category")}</th>
+                <th class="text-center">${t("print.count")}</th>
+                <th class="text-right">${t("print.amount")}</th>
+                <th class="text-right">${t("print.percentage")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.entries(expensesByGroup).map(([group, data]) => `
+                <tr>
+                  <td><span class="expense-group">${t(`expense.group.${group.toLowerCase()}`) || group}</span></td>
+                  <td class="text-center">${data.count}</td>
+                  <td class="text-right">${formatCurrencyForPDF(data.amount)}</td>
+                  <td class="text-right">${totalExpenses > 0 ? Math.round((data.amount / totalExpenses) * 100) : 0}%</td>
+                </tr>
+              `).join('')}
+              <tr style="background-color: #e5e7eb; font-weight: bold;">
+                <td class="bold">${t("print.total")}</td>
+                <td class="text-center bold">${totalExpenseCount}</td>
+                <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
+                <td class="text-right bold">100%</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>${t("print.expenseDetailList")}</h3>
+          ${actualExpenses.length > 0 ? `
             <table>
               <thead>
                 <tr>
                   <th>#</th>
                   <th>${t("print.date")}</th>
-                  <th>${t("print.invoiceNo")}</th>
-                  <th>${t("print.customer")}</th>
-                  <th>${t("print.productDetails")}</th>
-                  <th class="text-right">${t("print.price")}</th>
-                  ${isVatRegistered ? `<th class="text-right">VAT (7%)</th>
-                  <th class="text-right">${t("print.total")}</th>` : ''}
+                  <th>${t("print.description")}</th>
+                  <th>${t("print.category")}</th>
+                  <th>${t("print.supplier")}</th>
+                  <th class="text-right">${t("print.amount")}</th>
+                  <th class="text-center">${t("print.vat")}</th>
+                  <th class="text-center">${t("print.wht")}</th>
+                  <th class="text-right">${t("print.netAmount")}</th>
                 </tr>
               </thead>
               <tbody>
-                ${receiptExpenses.map((expense: any, index: number) => {
-                  // Multi-product: sum all product items for this expense
-                  const productItems = expense.product || [];
-                  const subtotal = productItems.reduce((sum: number, item: any) => sum + (item.unitPrice * item.quantity), 0);
-                  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-                  const total = subtotal + vatAmount;
+                ${actualExpenses.map((expense: any, index: number) => {
+                  const vatAmount = expense.vat ? (expense.vatAmount || 0) : 0;
+                  const whtAmount = expense.withHoldingTax ? (expense.WHTAmount || 0) : 0;
+                  const netAmount = (expense.amount || 0) - whtAmount;
                   return `
                     <tr>
                       <td>${index + 1}</td>
-                      <td>${formatDate(expense.purchaseAt)}</td>
-                      <td>#${expense.billId}</td>
-                      <td>${expense.cName || ''} ${expense.cLastName || ''}</td>
-                      <td>
-                        <ul style="margin:0; padding-left:16px;">
-                          ${productItems.map((item: any, idx: any) =>
-                            `<li>${item.product || '-'} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ''}` : ''} </li>`
-                          ).join('')}
-                        </ul>
-                      </td>
-                      <td class="text-right">${formatCurrencyForPDF(subtotal)}</td>
-                      ${isVatRegistered ? `<td class="text-right">${formatCurrencyForPDF(vatAmount)}</td>
-                      <td class="text-right">${formatCurrencyForPDF(total)}</td>` : ''}
+                      <td>${formatDate(expense.date)}</td>
+                      <td>${expense.desc || '-'}</td>
+                      <td><span class="expense-group">${t(`expense.group.${(expense.group || 'other').toLowerCase()}`) || expense.group || 'Other'}</span></td>
+                      <td>${expense.sName || '-'}</td>
+                      <td class="text-right">${formatCurrencyForPDF(expense.amount || 0)}</td>
+                      <td class="text-center">${expense.vat ? `<span class="vat-included">✓</span>` : '-'}</td>
+                      <td class="text-center">${expense.withHoldingTax ? `<span class="wht-included">✓</span>` : '-'}</td>
+                      <td class="text-right">${formatCurrencyForPDF(netAmount)}</td>
                     </tr>
                   `;
                 }).join('')}
-                <tr style="background-color: #e5e7eb; font-weight: bold;">
+                <tr style="background-color: #fee2e2; font-weight: bold;">
                   <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0))}</td>
-                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => sum + ((expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)) * 0.07, 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(receiptExpenses.reduce((sum: number, expense: any) => {
-                    const subtotal = (expense.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0);
-                    const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-                    return sum + subtotal + vatAmount;
-                  }, 0))}</td>` : ''}
+                  <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
+                  <td class="text-center bold">${formatCurrencyForPDF(totalVatAmount)}</td>
+                  <td class="text-center bold">${formatCurrencyForPDF(totalWhtAmount)}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(totalExpenses - totalWhtAmount)}</td>
                 </tr>
               </tbody>
             </table>
           ` : `
             <div class="no-data">
-              ${t("print.noInvoicesFound")}
+              ${t("print.noExpensesFound")}
             </div>
           `}
 

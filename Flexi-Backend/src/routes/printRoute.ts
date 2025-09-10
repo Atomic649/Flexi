@@ -5,6 +5,7 @@ import {
   searchBillsByCustomer,
   generateInvoicePDF,
   searchBillById,
+  getExpenseByDateRange
 } from "../controllers/printController";
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.get("/invoice/:billId", generateInvoicePDF);
 
 // Search bill by bill ID
 router.get("/search-by-bill-id", searchBillById);
+
+// Get expenses by date range
+router.get("/expenses-by-date", getExpenseByDateRange);
 
 export default router;

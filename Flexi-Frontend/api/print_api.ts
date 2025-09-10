@@ -53,6 +53,33 @@ class CallAPIPrint {
     }
   }
 
+  //getExpenseByDateRange
+  async getExpenseByDateRangeAPI(memberId: string, startDate: string, endDate: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/print/expenses-by-date`, {
+        params: {
+          memberId,
+          startDate,
+          endDate
+        }
+      });
+
+      console.log("🚀 Get Expense By Date Range API:", response.data);
+      console.log("startDate:", startDate, "endDate:", endDate);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Expense By Date Range API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+
   // Search Bills By Customer
   async searchBillsByCustomerAPI(memberId: string, customerName: string): Promise<any> {
     try {

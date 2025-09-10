@@ -1028,7 +1028,7 @@ export default function EditBill() {
         cPostId,
         cProvince,
         cTaxId: cTaxId,
-        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash",
+        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified",
         memberId: memberId || "",
         businessAcc,
         storeId,

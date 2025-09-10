@@ -147,6 +147,13 @@ export default function Print() {
     paidOrders: 0,
     unpaidOrders: 0,
     averageOrderValue: 0,
+    // Add expense-specific totals
+    totalExpenses: 0,
+    totalExpenseCount: 0,
+    vatExpenses: 0,
+    whtExpenses: 0,
+    averageExpenseAmount: 0,
+    expensesByGroup: {} as { [key: string]: number },
   });
 
   // Add expenses state
@@ -369,6 +376,12 @@ export default function Print() {
           paidOrders,
           unpaidOrders,
           averageOrderValue: paidOrders > 0 ? totalSales / paidOrders : 0,
+          totalExpenses: 0,
+          totalExpenseCount: 0,
+          vatExpenses: 0,
+          whtExpenses: 0,
+          averageExpenseAmount: 0,
+          expensesByGroup: {},
         });
       } else {
         setMonthlyTotals({
@@ -378,6 +391,12 @@ export default function Print() {
           paidOrders: 0,
           unpaidOrders: 0,
           averageOrderValue: 0,
+          totalExpenses: 0,
+          totalExpenseCount: 0,
+          vatExpenses: 0,
+          whtExpenses: 0,
+          averageExpenseAmount: 0,
+          expensesByGroup: {},
         });
       }
     } catch (error) {
@@ -839,13 +858,55 @@ export default function Print() {
     });
 
     try {
+      // Call api getExpenseByDateRangeAPI
+      if (!memberId) throw new Error("Member ID is null");
+      const startDate = startOfMonth(selectedMonth);
+      const endDate = endOfMonth(selectedMonth);
+
+      const response = await CallAPIPrint.getExpenseByDateRangeAPI(
+        memberId,
+        format(startDate, "yyyy-MM-dd"),
+        format(endDate, "yyyy-MM-dd")
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      setExpenses(response);
+      console.log("Expenses for the month:", response);
+
+      // Calculate expense totals from the response
+      const actualExpenses = response; // Include all expenses (including drafts)
+      const totalExpenses = actualExpenses.reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0);
+      const totalExpenseCount = actualExpenses.length;
+      const vatExpenses = actualExpenses.filter((expense: any) => expense.vat).length;
+      const whtExpenses = actualExpenses.filter((expense: any) => expense.withHoldingTax).length;
+      const averageExpenseAmount = totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
+
+      // Group expenses by category
+      const expensesByGroup: { [key: string]: number } = {};
+      actualExpenses.forEach((expense: any) => {
+        const group = expense.group || 'Other';
+        expensesByGroup[group] = (expensesByGroup[group] || 0) + (Number(expense.amount) || 0);
+      });
+
+      const expenseMonthlyTotals = {
+        totalExpenses,
+        totalExpenseCount,
+        vatExpenses,
+        whtExpenses,
+        averageExpenseAmount,
+        expensesByGroup,
+      };
+
       // Generate HTML content for expense report
       const htmlContent = generateExpenseReportHTML({
         selectedMonth,
         businessDetails,
         businessName,
-        monthlyTotals,
-        expenses,
+        monthlyTotals: expenseMonthlyTotals,
+        expenses: response,
         t,
         formatCurrencyForPDF,
         formatDate,
