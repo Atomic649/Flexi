@@ -23,6 +23,7 @@ import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
+import { getWHTPercentage } from "@/components/TaxVariable";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -197,7 +198,7 @@ export default function ExpenseDetail({
     }
   }, [amount, WHTpercent, withHoldingTax]);
 
-  // Handle group changes - disable VAT and WHT for Fuel group
+  // Handle group changes - disable VAT and WHT for Fuel group, set WHT percentage for other groups
   useEffect(() => {
     if (group === "Fuel") {
       setVatIncluded(false);
@@ -205,8 +206,12 @@ export default function ExpenseDetail({
       setWHTpercent(0);
       setWHTAmount(0);
       setVatAmount(0);
+    } else if (withHoldingTax) {
+      // Auto-set WHT percentage using TaxVariable component
+      const autoWHTPercent = getWHTPercentage(group, taxType);
+      setWHTpercent(autoWHTPercent);
     }
-  }, [group]);
+  }, [group, taxType, withHoldingTax]);
 
   // Update modal visibility when prop changes
   useEffect(() => {
