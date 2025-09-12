@@ -766,7 +766,8 @@
         "interest": "Interest",
         "accounting": "Accounting",
         "legal": "Legal",
-        "fuel": "Fuel"
+        "fuel": "Fuel",
+        "maintenance": "Repair & Maintenance"
       },
       "attachBill": "Attach Bill"
     },

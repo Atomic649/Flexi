@@ -739,6 +739,10 @@ export default function CreateExpense({
                         label: t("expense.detail.group.fuel"),
                       },
                       {
+                        key:"Maintenance",
+                        label: t("expense.detail.group.maintenance")
+                      },
+                      {
                         key: "Utilities",
                         label: t("expense.detail.group.utility"),
                       },

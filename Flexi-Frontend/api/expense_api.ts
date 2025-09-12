@@ -1,24 +1,10 @@
-// Download WHT Document PDF from backend
-export async function downloadWHTDocAPI({ taxpayerName, taxpayerId, amount, date }: {
-  taxpayerName: string;
-  taxpayerId: string;
-  amount: string;
-  date: string;
-}) {
-  const response = await fetch("http://localhost:3001/api/expense/generate-wht-document", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ taxpayerName, taxpayerId, amount, date }),
-  });
-  if (!response.ok) throw new Error("Failed to download WHT document");
-  return await response.blob();
-}
+
 import axios from "axios";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
 
 class CallAPIExpense {
   // Download WHT Document PDF from backend
-  async downloadWHTDocAPI({ sName, sTaxId, sAddress, amount, date, taxInvoiceNo,memberId,WHTAmount,group }: {
+  async downloadWHTDocAPI({ sName, sTaxId, sAddress, amount, date, taxInvoiceNo,memberId,WHTAmount,group,taxType }: {
     sName: string;
     sTaxId: string;
     sAddress: string;
@@ -28,12 +14,13 @@ class CallAPIExpense {
     memberId: string;
     WHTAmount: string;
     group:string;
+    taxType: string;
   }): Promise<Blob> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(
         `/expense/generate-wht-document`,
-        { sName, sTaxId, sAddress, amount, date, taxInvoiceNo, memberId, WHTAmount, group },
+        { sName, sTaxId, sAddress, amount, date, taxInvoiceNo, memberId, WHTAmount, group, taxType },
         { responseType: 'blob' }
       );
       return response.data;

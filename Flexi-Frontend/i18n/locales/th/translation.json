@@ -745,7 +745,7 @@
       "deleteConfirmation": "คุณแน่ใจหรือไม่ที่จะลบรายการนี้?",
       "group": {
         "marketing": "การตลาด",
-        "transport": "ค่าขนส่ง",
+        "transport": "ขนส่ง",
         "taxation": "ภาษี",
         "office": "สำนักงาน",
         "employee": "พนักงาน",
@@ -756,16 +756,17 @@
         "account": "บัญชี",
         "freelancer": "ฟรีแลนซ์",
         "influencer": "อินฟลูเอนเซอร์",
-        "officeRental": "ค่าเช่าสำนักงาน",
-        "carRental": "ค่าเช่ารถ",
-        "commission": "ค่าคอมมิชชั่น",
-        "advertising": "ค่าโฆษณา",
+        "officeRental": "เช่าสำนักงาน",
+        "carRental": "เช่ารถ",
+        "commission": "คอมมิชชั่น",
+        "advertising": "โฆษณา",
         "copyright": "ลิขสิทธิ์",
         "dividend": "เงินปันผล",
         "interest": "ดอกเบี้ย",
         "accounting": "บัญชี",
         "legal": "กฎหมาย",
-        "fuel": "น้ำมัน"       
+        "fuel": "เชื้อเพลิงรถ",
+        "maintenance": "ค่าซ่อมบำรุง"
       },
       "attachBill": "แนบใบเสร็จ"
     },

@@ -32,9 +32,10 @@ export async function fillWHTTemplateWithThaiFont({
   pdfDoc.registerFontkit(fontkit);
   const thaiFont = await pdfDoc.embedFont(fontBytes);
   
-  // Load checkmark font only if needed and path provided
+  // Load checkmark font if needed and path provided
   let checkmarkFont = thaiFont;
-  if (checkmarkFontPath && fields.checkmark) {
+  const hasCheckmarkFields = Object.keys(fields).some(key => key.startsWith('checkmark') && fields[key]?.trim());
+  if (checkmarkFontPath && hasCheckmarkFields) {
     try {
       const checkmarkFontBytes = fs.readFileSync(checkmarkFontPath);
       checkmarkFont = await pdfDoc.embedFont(checkmarkFontBytes);
@@ -57,8 +58,8 @@ export async function fillWHTTemplateWithThaiFont({
     let xPosition = pos.x;
     const fontSize = pos.size || 12;
     
-    // Choose font based on field name (optimized check)
-    const font = key === 'checkmark' ? checkmarkFont : thaiFont;
+    // Choose font based on field name (use checkmark font for all checkmark fields)
+    const font = key.startsWith('checkmark') ? checkmarkFont : thaiFont;
     
     // Handle different alignment types
     if (pos.align === 'decimal' && value.includes('.')) {
@@ -86,22 +87,3 @@ export async function fillWHTTemplateWithThaiFont({
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
 }
-
-// Example usage:
-// fillWHTTemplateWithThaiFont({
-//   templatePath: path.resolve(__dirname, '../../WHTTemplate.pdf'),
-//   outputPath: path.resolve(__dirname, '../../uploads/pdf/WHTDocument_filled.pdf'),
-//   fields: {
-//     taxpayerName: 'ชื่อผู้เสียภาษี',
-//     taxpayerId: '1234567890',
-//     amount: '1000.00',
-//     date: '29/08/2025',
-//   },
-//   positions: {
-//     taxpayerName: { x: 100, y: 700, size: 14 },
-//     taxpayerId: { x: 100, y: 680, size: 12 },
-//     amount: { x: 400, y: 650, size: 12 },
-//     date: { x: 400, y: 630, size: 12 },
-//   },
-//   thaiFontPath: path.resolve(__dirname, '../../fonts/THSarabunNew.ttf'),
-// });

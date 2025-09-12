@@ -206,6 +206,15 @@ export default function ExpenseDetail({
       setWHTpercent(0);
       setWHTAmount(0);
       setVatAmount(0);
+      // For Fuel group, set taxType to Juristic by default but keep it editable
+      setTaxType("Juristic");
+    } else if (group === "Employee") {
+      // For Employee group, force taxType to Individual
+      setTaxType("Individual");
+      if (withHoldingTax) {
+        const autoWHTPercent = getWHTPercentage(group, "Individual");
+        setWHTpercent(autoWHTPercent);
+      }
     } else if (withHoldingTax) {
       // Auto-set WHT percentage using TaxVariable component
       const autoWHTPercent = getWHTPercentage(group, taxType);
@@ -396,6 +405,7 @@ export default function ExpenseDetail({
             ? WHTAmount.toString()
             : "0",
         group: group || expense?.group || "",
+        taxType: taxType || "Individual",
       });
       const fileName = `WHTDocument_${expense.id}.pdf`;
       let fileUri: string;
@@ -755,7 +765,7 @@ export default function ExpenseDetail({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax) && (
+                {(vatIncluded || withHoldingTax || group === "Fuel") && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View
@@ -792,30 +802,32 @@ export default function ExpenseDetail({
                           {t("auth.businessRegister.taxTypeOption.Individual")}
                         </CustomText>
                       </TouchableOpacity>
-                      <TouchableOpacity
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          marginRight: 8,
-                        }}
-                        onPress={() => {
-                          setTaxType("Juristic");
-                          setBranch("headOffice");
-                        }}
-                      >
-                        <Ionicons
-                          name={
-                            taxType === "Juristic"
-                              ? "checkbox"
-                              : "square-outline"
-                          }
-                          size={22}
-                          color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
-                        />
-                        <CustomText className="ml-2">
-                          {t("auth.businessRegister.taxTypeOption.Juristic")}
-                        </CustomText>
-                      </TouchableOpacity>
+                      {group !== "Employee" && (
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginRight: 8,
+                          }}
+                          onPress={() => {
+                            setTaxType("Juristic");
+                            setBranch("headOffice");
+                          }}
+                        >
+                          <Ionicons
+                            name={
+                              taxType === "Juristic"
+                                ? "checkbox"
+                                : "square-outline"
+                            }
+                            size={22}
+                            color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
+                          />
+                          <CustomText className="ml-2">
+                            {t("auth.businessRegister.taxTypeOption.Juristic")}
+                          </CustomText>
+                        </TouchableOpacity>
+                      )}
                       {taxType === "Juristic" && (
                         <>
                           <TextInput
@@ -961,6 +973,10 @@ export default function ExpenseDetail({
                       {
                         key: "Fuel",
                         label: t("expense.detail.group.fuel"),
+                      },
+                      {
+                        key:"Maintenance",
+                        label: t("expense.detail.group.maintenance")
                       },
                       {
                         key: "Utilities",

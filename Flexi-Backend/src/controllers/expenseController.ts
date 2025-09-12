@@ -72,7 +72,8 @@ const schema = Joi.object({
       "Product",
       "Packing",
       "Fuel",
-      "Utilities"
+      "Utilities",
+      "Maintenance"
     )
     .required(),
   desc: Joi.string().allow(""),
@@ -463,6 +464,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       memberId,
       WHTAmount,
       group,
+      taxType,
     } = req.body;
 
     // Debug: Log what we received
@@ -548,9 +550,13 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       group === "Marketing" ||
       group === "Advertising" ||
       group === "Influencer" ||
+      group === "Product" ||
+      group === "Packing" ||
+      group === "Office" ||
       group === "Transport";
     const isCopyright = group === "Copyright";
     const isInterest = group === "Interest";
+    const isDividend = group === "Dividend";
 
     let amountY, WHTAmountY, dateY;
 
@@ -566,6 +572,10 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       amountY = 508;
       WHTAmountY = 508;
       dateY = 508;
+    } else if (isDividend) {
+      amountY = 392;
+      WHTAmountY = 392;
+      dateY = 392;
     } else if (isInterest) {
       amountY = 493;
       WHTAmountY = 493;
@@ -614,10 +624,32 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
       checkmark: { x: 86, y: 122, size: 10, align: "center" },
 
+      // Conditional checkmarks based on group and taxType
+      checkmark_employee: { x: 212, y: 605, size: 10, align: "center" }, // Employee group
+      checkmark_interest_dividend: { x: 398, y: 605, size: 10, align: "center" }, // Interest or Dividend
+      checkmark_juristic: { x: 398, y: 586, size: 10, align: "center" }, // Other groups + Juristic
+      checkmark_individual: { x: 475, y: 605, size: 10, align: "center" }, // Other groups + Individual
+
       zero1: { x: 248, y: 145, size: 12, align: "left" },
       zero2: { x: 373, y: 145, size: 12, align: "left" },
       zero3: { x: 512, y: 145, size: 12, align: "left" }
     };
+
+    // Determine which checkmarks to show based on conditions
+    const shouldShowEmployeeCheckmark = group === "Employee";
+    const shouldShowInterestDividendCheckmark = group === "Interest" || group === "Dividend";
+    const shouldShowJuristicCheckmark = !shouldShowEmployeeCheckmark && !shouldShowInterestDividendCheckmark && taxType === "Juristic";
+    const shouldShowIndividualCheckmark = !shouldShowEmployeeCheckmark && !shouldShowInterestDividendCheckmark && taxType === "Individual";
+
+    // Debug logging
+    console.log("🔍 Debug checkmark conditions:");
+    console.log("  group:", group);
+    console.log("  taxType:", taxType);
+    console.log("  shouldShowEmployeeCheckmark:", shouldShowEmployeeCheckmark);
+    console.log("  shouldShowInterestDividendCheckmark:", shouldShowInterestDividendCheckmark);
+    console.log("  shouldShowJuristicCheckmark:", shouldShowJuristicCheckmark);
+    console.log("  shouldShowIndividualCheckmark:", shouldShowIndividualCheckmark);
+
     const fields = {
       sName: sNameStr,
       amount: amountStr,
@@ -631,6 +663,13 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       totalAmount: amountStr,
       totalWHTAmount: WHTAmountStr,
       checkmark: "✓",
+      
+      // Conditional checkmarks based on group and taxType
+      checkmark_employee: shouldShowEmployeeCheckmark ? "✓" : "",
+      checkmark_interest_dividend: shouldShowInterestDividendCheckmark ? "✓" : "",
+      checkmark_juristic: shouldShowJuristicCheckmark ? "✓" : "",
+      checkmark_individual: shouldShowIndividualCheckmark ? "✓" : "",
+      
       zero1: zero,
       zero2: zero,
       zero3: zero,
@@ -650,6 +689,13 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
     
     };
+
+    // Debug logging for checkmark fields
+    console.log("🔍 Debug checkmark fields:");
+    console.log("  checkmark_employee:", fields.checkmark_employee);
+    console.log("  checkmark_interest_dividend:", fields.checkmark_interest_dividend);
+    console.log("  checkmark_juristic:", fields.checkmark_juristic);
+    console.log("  checkmark_individual:", fields.checkmark_individual);
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(
       __dirname,
