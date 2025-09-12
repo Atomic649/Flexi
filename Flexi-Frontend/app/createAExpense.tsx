@@ -24,6 +24,7 @@ import { getMemberId } from "@/utils/utility";
 import { format } from "date-fns";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
+import { getWHTPercentage } from "@/components/TaxVariable";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -83,7 +84,7 @@ export default function CreateExpense({
   const [vatIncluded, setVatIncluded] = useState(false);
   const [vatAmount, setVatAmount] = useState(0);
   const [withHoldingTax, setWithHoldingTax] = useState(false);
-  const [WHTpercent, setWHTpercent] = useState(3);
+  const [WHTpercent, setWHTpercent] = useState(0);
   const [WHTAmount, setWHTAmount] = useState(0);
   const [sName, setSName] = useState<string>("");
   const [sTaxId, setSTaxId] = useState<string>("");
@@ -94,16 +95,20 @@ export default function CreateExpense({
   );
   const [branch, setBranch] = useState<string>("headOffice");
 
-  // Reset VAT and WHT when Fuel group is selected
+  // Reset VAT and WHT when Fuel group is selected, set WHT percentage for other groups
   useEffect(() => {
     if (group === "Fuel") {
       setVatIncluded(false);
       setWithHoldingTax(false);
-      setWHTpercent(3);
+      setWHTpercent(0);
       setVatAmount(0);
       setWHTAmount(0);
+    } else if (withHoldingTax && group) {
+      // Auto-set WHT percentage using TaxVariable component
+      const autoWHTPercent = getWHTPercentage(group, taxType);
+      setWHTpercent(autoWHTPercent);
     }
-  }, [group]);
+  }, [group, taxType, withHoldingTax]);
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -146,7 +151,7 @@ export default function CreateExpense({
     setError("");
     setVatIncluded(false);
     setWithHoldingTax(false);
-    setWHTpercent(3);
+    setWHTpercent(0);
     setSName("");
     setSTaxId("");
     setTaxInvoiceNo("");
