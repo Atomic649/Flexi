@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIBill from "@/api/bill_api";
 import { getMemberId } from "@/utils/utility";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BillCard from "../billCard";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
@@ -24,7 +23,6 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { router } from "expo-router";
 import { getResponsiveStyles, isDesktop, isMobileWeb } from "@/utils/responsive";
-import shop from "../../app/(tabs)/shop";
 import icons from "@/constants/icons";
 
 type Bill = {
@@ -562,14 +560,13 @@ const ByOrder = () => {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
-        <TouchableOpacity
-          style={{
-            position: "static",
-            backgroundColor: theme === "dark" ? "#302f2f00" : "#ffffff",
-            borderRadius: 12,
-            padding: 10,
+    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+      <TouchableOpacity
+        style={{
+          position: "static",
+          backgroundColor: theme === "dark" ? "#302f2f00" : "#ffffff",
+          borderRadius: 12,
+          padding: 10,
             elevation: 5,
           }}
           onPress={() => {
@@ -584,11 +581,8 @@ const ByOrder = () => {
             }}
             color={theme === "dark" ? "#ffffff" : "#444541"}
           />
-        </TouchableOpacity>
-        {isDesktop() ? renderTableView() : renderCardView()}
-      </SafeAreaView>
-    </GestureHandlerRootView>
+      </TouchableOpacity>
+      {isDesktop() ? renderTableView() : renderCardView()}
+    </SafeAreaView>
   );
-};
-
-export default ByOrder;
+};export default ByOrder;

@@ -7,7 +7,8 @@ import {
   searchExpenseByDate,
   getThisYearExpensesAPI,
   deleteExpenseById,
-  generateWHTDocument
+  generateWHTDocument,
+  updateExpenseWithOCRData
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -35,5 +36,8 @@ router.delete("/:id", authenticateToken, deleteExpenseById);
 router.get("/year/expense", authenticateToken, getThisYearExpensesAPI);
 
 router.post("/generate-wht-document", authenticateToken, generateWHTDocument);
+
+// Update expense with selected OCR data
+router.put("/update-ocr/:id", authenticateToken, updateExpenseWithOCRData);
 
 export default router;

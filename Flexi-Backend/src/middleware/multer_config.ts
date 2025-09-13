@@ -29,9 +29,20 @@ const storageImageS3 = multerS3({
   },
 })
 
+const storageImageMemory = multer.memoryStorage()
+
 export const multerConfigImage = {
   config: {
     storage: storageImageS3,
+    limits: { fileSize: 1024 * 1024 * 10 }, 
+    fileFilter: imageFileFilter,
+  },
+  keyUpload: "image",
+}
+
+export const multerConfigImageMemory = {
+  config: {
+    storage: storageImageMemory,
     limits: { fileSize: 1024 * 1024 * 10 }, 
     fileFilter: imageFileFilter,
   },
@@ -110,4 +121,4 @@ export const pdfMulterConfig = {
 
 
 
-export default { multerConfigImage, pdfMulterConfig, multerConfigAvatar }
+export default { multerConfigImage, pdfMulterConfig, multerConfigAvatar, multerConfigImageMemory }

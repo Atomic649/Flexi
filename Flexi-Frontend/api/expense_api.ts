@@ -205,7 +205,11 @@ class CallAPIExpense {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("🚀CreateExpenseAPI:", response.data);
+      console.log("🚀CreateExpenseAPI - Full Response:", response.data);
+      console.log("🔍 OCR Alert in API Response:", response.data.ocrAlert ? "Present" : "Missing");
+      if (response.data.ocrAlert) {
+        console.log("📋 OCR Alert Details:", JSON.stringify(response.data.ocrAlert, null, 2));
+      }
 
       return response.data;
     } catch (error) {
@@ -244,6 +248,36 @@ class CallAPIExpense {
     }
   }
  
+  // Update expense with selected OCR data
+  async updateExpenseWithOCRDataAPI(expenseId: number, selectedData: {
+    sName?: string;
+    sTaxId?: string;
+    amount?: string;
+    date?: string;
+    address?: string;
+  }): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/expense/update-ocr-data`, {
+        expenseId,
+        selectedData
+      });
+
+      console.log("🚀 Update Expense with OCR Data API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Update Expense with OCR Data API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          throw new Error("API endpoint not found (404)");
+        }
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
 }
 
 export default new CallAPIExpense();

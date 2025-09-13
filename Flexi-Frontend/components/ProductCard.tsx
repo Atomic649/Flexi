@@ -6,13 +6,13 @@ import {
   useWindowDimensions,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { router } from "expo-router";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import CustomAlert from "@/components/CustomAlert";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "./CustomText";
+import { SafeSwipeable } from "./SafeSwipeable";
 
 export default function ProductCard({
   id,
@@ -46,7 +46,7 @@ export default function ProductCard({
     buttons: [],
   });
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     setAlertConfig({
       visible: true,
       title: t("product.deleteAlert.title") || "Delete Product",
@@ -70,29 +70,32 @@ export default function ProductCard({
         },
       ],
     });
-  };
+  }, [t, onDelete, id]);
 
-  const renderRightActions = () => (
+  const renderRightActions = useCallback(() => (
     <TouchableOpacity
       onPress={handleDelete}
-      className="bg-[#ff2a00] justify-center items-center w-20 rounded-lg"
+      className="bg-red-500 justify-center items-center w-20 rounded-lg"
+      style={{
+        backgroundColor: '#ff4444', // Ensure red background
+        width: '100%',
+        height: '100%',
+      }}
     >
       <Ionicons name="trash" size={24} color="white" />
     </TouchableOpacity>
-  );
+  ), [handleDelete]);
 
   return (
     <>
-      <Swipeable renderRightActions={renderRightActions}>
-        <View
-        className="p-2"
-        >
-        <Pressable
-          android_ripple={{ color: "#e0f7fa" }}
-          style={({ pressed }) => [
-            {
-              opacity: pressed ? 0.85 : 1,
-            },
+      <SafeSwipeable renderRightActions={renderRightActions}>
+        <View className="p-2">
+          <Pressable
+            android_ripple={{ color: "#e0f7fa" }}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.85 : 1,
+              },
             // Tailwind classes
             {
               flex: 1,
@@ -152,7 +155,7 @@ export default function ProductCard({
           </View>
         </Pressable>
         </View>
-      </Swipeable>
+      </SafeSwipeable>
 
       <CustomAlert
         visible={alertConfig.visible}

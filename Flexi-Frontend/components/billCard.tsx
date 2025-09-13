@@ -9,7 +9,7 @@ import {
   Animated,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
-import Swipeable from "react-native-gesture-handler/Swipeable";
+import { SafeSwipeable } from "./SafeSwipeable";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
 import { router } from "expo-router";
@@ -54,9 +54,6 @@ export default function BillCard({
 
   // Local state to track immediate document type changes
   const [localDocumentType, setLocalDocumentType] = useState(currentDocumentType);
-
-  // Ref for Swipeable component to control auto close
-  const swipeableRef = useRef<Swipeable>(null);
 
   // Animation values for status change
   const statusScaleAnim = useRef(new Animated.Value(1)).current;
@@ -109,10 +106,7 @@ export default function BillCard({
       // Call the API update function
       onUpdateDocumentType(id, "Invoice");
       
-      // Auto close swipe after action
-      setTimeout(() => {
-        swipeableRef.current?.close();
-      }, 100);
+      // Note: Auto close functionality removed as SafeSwipeable doesn't support refs
     }
   };
 
@@ -124,10 +118,7 @@ export default function BillCard({
       // Call the API update function
       onUpdateDocumentType(id, "Receipt");
       
-      // Auto close swipe after action
-      setTimeout(() => {
-        swipeableRef.current?.close();
-      }, 100);
+      // Note: Auto close functionality removed as SafeSwipeable doesn't support refs
     }
   };
 
@@ -335,15 +326,14 @@ export default function BillCard({
     </View>
   );
 
-  // Wrap in Swipeable if update function is provided and currentDocumentType is not "Receipt"
+  // Wrap in SafeSwipeable if update function is provided and currentDocumentType is not "Receipt"
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
-      <Swipeable 
-        ref={swipeableRef}
+      <SafeSwipeable 
         renderLeftActions={renderLeftActions}
       >
         {cardContent}
-      </Swipeable>
+      </SafeSwipeable>
     );
   }
 

@@ -1,4 +1,5 @@
 import { fillWHTTemplateWithThaiFont } from "../utils/pdfWHTTemplateThai";
+import { extractTextFromImage, detectDataPresence } from "../utils/ocrUtils";
 import path from "path";
 import { Request, Response } from "express";
 import {
@@ -12,10 +13,14 @@ import { format } from "date-fns-tz";
 import { th } from "date-fns/locale";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
-import { deleteFromS3, extractS3Key } from "../services/imageService";
+import {
+  deleteFromS3,
+  extractS3Key,
+  uploadToS3,
+} from "../services/imageService";
 
-const upload = multer(multerConfig.multerConfigImage.config).single(
-  multerConfig.multerConfigImage.keyUpload
+const upload = multer(multerConfig.multerConfigImageMemory.config).single(
+  multerConfig.multerConfigImageMemory.keyUpload
 );
 
 //Create  instance of PrismaClient
@@ -86,13 +91,13 @@ const schema = Joi.object({
   vatAmount: Joi.number().optional(),
   withHoldingTax: Joi.boolean().optional(),
   WHTAmount: Joi.number().optional(),
-  sName: Joi.string().optional().allow(''),
-  taxInvoiceNo: Joi.string().optional().allow(''),
-  sTaxId: Joi.string().optional().allow(''),
-  sAddress: Joi.string().optional().allow(''),
-  branch: Joi.string().optional().allow(''),
+  sName: Joi.string().optional().allow(""),
+  taxInvoiceNo: Joi.string().optional().allow(""),
+  sTaxId: Joi.string().optional().allow(""),
+  sAddress: Joi.string().optional().allow(""),
+  branch: Joi.string().optional().allow(""),
   taxType: Joi.string().valid("Individual", "Juristic").optional(),
-  expNo: Joi.string().optional().allow(''),
+  expNo: Joi.string().optional().allow(""),
 });
 
 //  create a new expense - Post
@@ -103,22 +108,228 @@ const createExpense = async (req: Request, res: Response) => {
       return res.status(400).json({ message: err.message });
     }
     // Debugging: Log the uploaded file details
-    console.log("Uploaded file:", req.file);
+    console.log("Uploaded file:", req.file ? "File received" : "No file");
 
-    // Merge the uploaded file S3 URL key into the expense object
-    // Convert string 'true'/'false' to boolean for vat and withHoldingTax
-    const expenseInput: Expense = {
+    let imageUrl = req.body.image ?? "";
+
+    // Initialize expenseInput with form data
+    let expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
-      image: req.file
-        ? (req.file as any)?.location ?? ""
-        : req.body.image ?? "",
+      image: imageUrl,
       desc: req.body.desc ?? "",
-      taxType: req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+      taxType:
+        req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
 
-    console.log("Input", expenseInput);
+    // Initialize OCR alert variable
+    let ocrAlert = null;
+
+    // Process OCR if an image was uploaded
+    if (req.file && req.file.buffer) {
+      console.log("Processing OCR for uploaded image...");
+      try {
+        console.log("Image buffer size:", req.file.buffer.length);
+
+        // Detect data presence in the uploaded image
+        const detectionResult = await extractTextFromImage(req.file.buffer);
+        console.log("Detection result:", detectionResult);
+
+        // Report OCR detection results
+        console.log("📊 OCR DETECTION REPORT:");
+
+        if (detectionResult.summary.hasAtLeast2Names) {
+          console.log(
+            "✅ NAMES: PASS - Found",
+            detectionResult.namesFound.length,
+            "names"
+          );
+          detectionResult.namesFound.forEach((name, index) => {
+            console.log(`   ${index + 1}. ${name}`);
+          });
+        } else {
+          console.log(
+            "❌ NAMES: FAIL - Found",
+            detectionResult.namesFound.length,
+            "names (need ≥2)"
+          );
+        }
+
+        if (detectionResult.summary.hasAtLeast1TaxId) {
+          console.log(
+            "✅ TAX IDs: PASS - Found",
+            detectionResult.taxIdsFound.length,
+            "tax IDs"
+          );
+          detectionResult.taxIdsFound.forEach((taxId, index) => {
+            console.log(`   ${index + 1}. ${taxId}`);
+          });
+        } else {
+          console.log("❌ TAX IDs: FAIL - No tax IDs found");
+        }
+
+        console.log(
+          `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
+            detectionResult.summary.hasAmount ? "PASS" : "FAIL"
+          }`
+        );
+        console.log(
+          `${detectionResult.summary.hasDate ? "✅" : "❌"} DATE: ${
+            detectionResult.summary.hasDate ? "PASS" : "FAIL"
+          }`
+        );
+        console.log(
+          `${detectionResult.summary.hasAddress ? "✅" : "❌"} ADDRESS: ${
+            detectionResult.summary.hasAddress ? "PASS" : "FAIL"
+          }`
+        );
+        console.log(
+          `${
+            detectionResult.summary.hasReceiptTitle ? "✅" : "❌"
+          } RECEIPT TITLE: ${
+            detectionResult.summary.hasReceiptTitle ? "PASS" : "FAIL"
+          }`
+        );
+
+        // Calculate overall detection status
+        const allRequirementsMet =
+          detectionResult.summary.hasAtLeast2Names &&
+          detectionResult.summary.hasAtLeast1TaxId &&
+          detectionResult.summary.hasAmount &&
+          detectionResult.summary.hasDate &&
+          detectionResult.summary.hasAddress &&
+          detectionResult.summary.hasReceiptTitle;
+
+        // Prepare OCR alert for frontend
+        if (!allRequirementsMet) {
+          const failedRequirements = [];
+          
+          if (!detectionResult.summary.hasAtLeast2Names) {
+            failedRequirements.push(`Names (found ${detectionResult.namesFound.length}, need ≥2)`);
+          }
+          if (!detectionResult.summary.hasAtLeast1TaxId) {
+            failedRequirements.push(`Tax IDs (found ${detectionResult.taxIdsFound.length}, need ≥1)`);
+          }
+          if (!detectionResult.summary.hasAmount) {
+            failedRequirements.push("Amount (not detected)");
+          }
+          if (!detectionResult.summary.hasDate) {
+            failedRequirements.push("Date (not detected)");
+          }
+          if (!detectionResult.summary.hasAddress) {
+            failedRequirements.push("Address with Thai province (not detected)");
+          }
+          if (!detectionResult.summary.hasReceiptTitle) {
+            failedRequirements.push("Receipt title (need: ใบเสร็จ, ใบกำกับภาษี, etc.)");
+          }
+
+          ocrAlert = {
+            type: 'warning',
+            title: 'OCR Detection Alert',
+            message: 'Some required data elements are missing from the uploaded image',
+            details: {
+              status: 'partial',
+              failedRequirements,
+              detectedData: {
+                names: detectionResult.namesFound,
+                taxIds: detectionResult.taxIdsFound,
+                hasAmount: detectionResult.summary.hasAmount,
+                hasDate: detectionResult.summary.hasDate,
+                hasAddress: detectionResult.summary.hasAddress,
+                hasReceiptTitle: detectionResult.summary.hasReceiptTitle
+              },
+              // Add selectable options for frontend
+              selectableOptions: {
+                names: detectionResult.namesFound || [],
+                taxIds: detectionResult.taxIdsFound || [],
+                amounts: detectionResult.amountsDetected || [],
+                dates: detectionResult.datesDetected || [],
+                addresses: detectionResult.addressesDetected || [],
+                provinces: detectionResult.provincesDetected || []
+              }
+            }
+          };
+        } else {
+          ocrAlert = {
+            type: 'success',
+            title: 'OCR Detection Success',
+            message: 'All required data elements detected in the uploaded image',
+            details: {
+              status: 'success',
+              detectedData: {
+                names: detectionResult.namesFound,
+                taxIds: detectionResult.taxIdsFound,
+                hasAmount: detectionResult.summary.hasAmount,
+                hasDate: detectionResult.summary.hasDate,
+                hasAddress: detectionResult.summary.hasAddress,
+                hasReceiptTitle: detectionResult.summary.hasReceiptTitle
+              },
+              // Add selectable options for frontend (even for success)
+              selectableOptions: {
+                names: detectionResult.namesFound || [],
+                taxIds: detectionResult.taxIdsFound || [],
+                amounts: detectionResult.amountsDetected || [],
+                dates: detectionResult.datesDetected || [],
+                addresses: detectionResult.addressesDetected || [],
+                provinces: detectionResult.provincesDetected || []
+              }
+            }
+          };
+        }
+
+        if (allRequirementsMet) {
+          console.log("🎉 OCR DETECTION SUCCESS - All requirements met!");
+        } else {
+          console.log("⚠️  OCR DETECTION PARTIAL - Some requirements missing");
+          console.log("🚨 OCR Alert created:", ocrAlert?.type);
+        }
+
+        console.log(
+          "Final expense input (form data only - OCR is detection-only):",
+          {
+            sName: expenseInput.sName,
+            sAddress: expenseInput.sAddress,
+            sTaxId: expenseInput.sTaxId,
+            amount: expenseInput.amount,
+            date: expenseInput.date,
+            desc: expenseInput.desc,
+          }
+        );
+
+        // Now upload the image to S3
+        console.log("Uploading image to S3...");
+        imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+        expenseInput.image = imageUrl;
+        console.log("Image uploaded to S3:", imageUrl);
+      } catch (ocrError) {
+        console.warn("OCR processing failed:", ocrError);
+        
+        // Set OCR failure alert
+        ocrAlert = {
+          type: 'error',
+          title: 'OCR Processing Failed',
+          message: 'Unable to process the uploaded image for data detection',
+          details: {
+            status: 'error',
+            error: 'OCR processing encountered an error. The image was uploaded but data detection could not be performed.'
+          }
+        };
+
+        // Still upload the image to S3 even if OCR fails
+        try {
+          console.log("Uploading image to S3 (OCR failed)...");
+          imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+          expenseInput.image = imageUrl;
+          console.log("Image uploaded to S3:", imageUrl);
+        } catch (uploadError) {
+          console.error("S3 upload also failed:", uploadError);
+          return res.status(500).json({ message: "Failed to upload image" });
+        }
+      }
+    }
+
+    console.log("Final Input", expenseInput);
 
     // Validate the request body
     const { error } = schema.validate(expenseInput);
@@ -191,7 +402,15 @@ const createExpense = async (req: Request, res: Response) => {
           expNo: expenseInput.expNo ?? "",
         },
       });
-      res.json(expense);
+      
+      // Include OCR alert in response if present
+      const response = ocrAlert ? { ...expense, ocrAlert } : expense;
+      
+      // Debug logging for OCR alert
+      console.log("🔍 Final OCR Alert being sent to frontend:", ocrAlert);
+      console.log("📤 Full response object:", ocrAlert ? "Contains ocrAlert" : "No ocrAlert");
+      
+      res.json(response);
     } catch (e) {
       console.error(e);
       res.status(500).json({ message: "Failed to create expense" });
@@ -287,7 +506,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
-      taxType: req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+      taxType:
+        req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
     const { id } = req.params;
     const { memberId } = req.body;
@@ -491,23 +711,28 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
     // Function to create individual digit positions for Thai Tax ID
     const createTaxIdDigitPositions = (taxId: string, yPosition: number) => {
-      const xPositions = [378, 396, 408, 420, 432, 451, 462, 475, 486, 499, 518, 529, 548];
-      const cleanTaxId = taxId.replace(/[\s-]/g, '').padEnd(13, ' ');
-      const positions: Record<string, { x: number; y: number; size: number; align: string }> = {};
-      
+      const xPositions = [
+        378, 396, 408, 420, 432, 451, 462, 475, 486, 499, 518, 529, 548,
+      ];
+      const cleanTaxId = taxId.replace(/[\s-]/g, "").padEnd(13, " ");
+      const positions: Record<
+        string,
+        { x: number; y: number; size: number; align: string }
+      > = {};
+
       for (let i = 0; i < 13; i++) {
-        const digit = cleanTaxId[i] || '';
-        if (digit && digit !== ' ') {
+        const digit = cleanTaxId[i] || "";
+        if (digit && digit !== " ") {
           positions[`digit${i + 1}`] = {
             x: xPositions[i],
             y: yPosition,
             size: 14,
-            align: "center"
+            align: "center",
           };
         }
       }
-      
-      return { positions, digits: cleanTaxId.split('') };
+
+      return { positions, digits: cleanTaxId.split("") };
     };
 
     // Coverse all req to String
@@ -527,7 +752,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     const buddhistYear = dateObj.getFullYear() + 543;
     const dateStr = `${format(dateObj, "dd/MM")}/${buddhistYear} `;
     const ThaiMonth = format(dateObj, "MMMM", { locale: th });
-    const dateNumber = `${format(dateObj, "dd")}`;    
+    const dateNumber = `${format(dateObj, "dd")}`;
 
     const taxInvoiceNoStr = String(taxInvoiceNo || "");
     const sAddressStr = String(sAddress || "");
@@ -600,12 +825,18 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
       // Individual digit positions for sTaxId (y=748)
       ...Object.fromEntries(
-        Object.entries(sTaxIdMapping.positions).map(([key, pos]) => [`sTaxId_${key}`, pos])
+        Object.entries(sTaxIdMapping.positions).map(([key, pos]) => [
+          `sTaxId_${key}`,
+          pos,
+        ])
       ),
 
       // Individual digit positions for taxId (y=679)
       ...Object.fromEntries(
-        Object.entries(taxIdMapping.positions).map(([key, pos]) => [`taxId_${key}`, pos])
+        Object.entries(taxIdMapping.positions).map(([key, pos]) => [
+          `taxId_${key}`,
+          pos,
+        ])
       ),
 
       // Decimal point centered at specified coordinates - conditional based on group
@@ -626,29 +857,47 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
       // Conditional checkmarks based on group and taxType
       checkmark_employee: { x: 212, y: 605, size: 10, align: "center" }, // Employee group
-      checkmark_interest_dividend: { x: 398, y: 605, size: 10, align: "center" }, // Interest or Dividend
+      checkmark_interest_dividend: {
+        x: 398,
+        y: 605,
+        size: 10,
+        align: "center",
+      }, // Interest or Dividend
       checkmark_juristic: { x: 398, y: 586, size: 10, align: "center" }, // Other groups + Juristic
       checkmark_individual: { x: 475, y: 605, size: 10, align: "center" }, // Other groups + Individual
 
       zero1: { x: 248, y: 145, size: 12, align: "left" },
       zero2: { x: 373, y: 145, size: 12, align: "left" },
-      zero3: { x: 512, y: 145, size: 12, align: "left" }
+      zero3: { x: 512, y: 145, size: 12, align: "left" },
     };
 
     // Determine which checkmarks to show based on conditions
     const shouldShowEmployeeCheckmark = group === "Employee";
-    const shouldShowInterestDividendCheckmark = group === "Interest" || group === "Dividend";
-    const shouldShowJuristicCheckmark = !shouldShowEmployeeCheckmark && !shouldShowInterestDividendCheckmark && taxType === "Juristic";
-    const shouldShowIndividualCheckmark = !shouldShowEmployeeCheckmark && !shouldShowInterestDividendCheckmark && taxType === "Individual";
+    const shouldShowInterestDividendCheckmark =
+      group === "Interest" || group === "Dividend";
+    const shouldShowJuristicCheckmark =
+      !shouldShowEmployeeCheckmark &&
+      !shouldShowInterestDividendCheckmark &&
+      taxType === "Juristic";
+    const shouldShowIndividualCheckmark =
+      !shouldShowEmployeeCheckmark &&
+      !shouldShowInterestDividendCheckmark &&
+      taxType === "Individual";
 
     // Debug logging
     console.log("🔍 Debug checkmark conditions:");
     console.log("  group:", group);
     console.log("  taxType:", taxType);
     console.log("  shouldShowEmployeeCheckmark:", shouldShowEmployeeCheckmark);
-    console.log("  shouldShowInterestDividendCheckmark:", shouldShowInterestDividendCheckmark);
+    console.log(
+      "  shouldShowInterestDividendCheckmark:",
+      shouldShowInterestDividendCheckmark
+    );
     console.log("  shouldShowJuristicCheckmark:", shouldShowJuristicCheckmark);
-    console.log("  shouldShowIndividualCheckmark:", shouldShowIndividualCheckmark);
+    console.log(
+      "  shouldShowIndividualCheckmark:",
+      shouldShowIndividualCheckmark
+    );
 
     const fields = {
       sName: sNameStr,
@@ -663,13 +912,15 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       totalAmount: amountStr,
       totalWHTAmount: WHTAmountStr,
       checkmark: "✓",
-      
+
       // Conditional checkmarks based on group and taxType
       checkmark_employee: shouldShowEmployeeCheckmark ? "✓" : "",
-      checkmark_interest_dividend: shouldShowInterestDividendCheckmark ? "✓" : "",
+      checkmark_interest_dividend: shouldShowInterestDividendCheckmark
+        ? "✓"
+        : "",
       checkmark_juristic: shouldShowJuristicCheckmark ? "✓" : "",
       checkmark_individual: shouldShowIndividualCheckmark ? "✓" : "",
-      
+
       zero1: zero,
       zero2: zero,
       zero3: zero,
@@ -679,15 +930,19 @@ const generateWHTDocument = async (req: Request, res: Response) => {
 
       // Individual digits for sTaxId
       ...Object.fromEntries(
-        sTaxIdMapping.digits.map((digit, index) => [`sTaxId_digit${index + 1}`, digit])
+        sTaxIdMapping.digits.map((digit, index) => [
+          `sTaxId_digit${index + 1}`,
+          digit,
+        ])
       ),
 
       // Individual digits for taxId
       ...Object.fromEntries(
-        taxIdMapping.digits.map((digit, index) => [`taxId_digit${index + 1}`, digit])
+        taxIdMapping.digits.map((digit, index) => [
+          `taxId_digit${index + 1}`,
+          digit,
+        ])
       ),
-
-    
     };
 
     // Debug logging for checkmark fields
@@ -696,7 +951,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     // console.log("  checkmark_interest_dividend:", fields.checkmark_interest_dividend);
     // console.log("  checkmark_juristic:", fields.checkmark_juristic);
     // console.log("  checkmark_individual:", fields.checkmark_individual);
-    
+
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(
       __dirname,
@@ -726,6 +981,41 @@ const generateWHTDocument = async (req: Request, res: Response) => {
   }
 };
 
+  
+
+
+// Update expense with selected OCR data
+const updateExpenseWithOCRData = async (req: Request, res: Response) => {
+  try {
+    const { expenseId, selectedData } = req.body;
+    
+    // Validate required fields
+    if (!expenseId || !selectedData) {
+      return res.status(400).json({ message: "Expense ID and selected data are required" });
+    }
+
+    const { sName, sTaxId, amount, date, address } = selectedData;
+
+    // Update the expense with selected OCR data
+    const updatedExpense = await prisma.expense.update({
+      where: { id: Number(expenseId) },
+      data: {
+        ...(sName && { sName }),
+        ...(sTaxId && { sTaxId }),
+        ...(amount && { amount: Number(amount) }),
+        ...(date && { date }),
+        ...(address && { sAddress: address }),
+      }
+    });
+
+    console.log("✅ Expense updated with OCR data:", updatedExpense.id);
+    res.json({ success: true, expense: updatedExpense });
+  } catch (error) {
+    console.error("❌ Error updating expense with OCR data:", error);
+    res.status(500).json({ message: "Failed to update expense with OCR data" });
+  }
+};
+
 export {
   createExpense,
   getExpenses,
@@ -736,86 +1026,93 @@ export {
   deleteExpenseById,
   getThisYearExpensesAPI,
   generateWHTDocument,
+  updateExpenseWithOCRData,
 };
-  function convertNumberToThaiText(input: string | number): string {
-    // Converts a number or string to Thai text representation (words)
-    const thaiNumbers = [
-      "ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"
-    ];
-    
-    const thaiUnits = [
-      "", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"
-    ];
+function convertNumberToThaiText(input: string | number): string {
+  // Converts a number or string to Thai text representation (words)
+  const thaiNumbers = [
+    "ศูนย์",
+    "หนึ่ง",
+    "สอง",
+    "สาม",
+    "สี่",
+    "ห้า",
+    "หก",
+    "เจ็ด",
+    "แปด",
+    "เก้า",
+  ];
 
-    let numberStr = String(input);
-    
-    // Check if it's a currency amount (has decimal point)
-    if (numberStr.includes('.')) {
-      const [bahtPart, satangPart] = numberStr.split('.');
-      const baht = parseInt(bahtPart) || 0;
-      const satang = parseInt(satangPart.padEnd(2, '0').slice(0, 2)) || 0;
-      
-      let result = "";
-      
-      if (baht > 0) {
-        result += convertThaiYear(baht) + "บาท";
-      }
-      
-      if (satang > 0) {
-        if (result) result += "";
-        result += convertThaiYear(satang) + "สตางค์";
-      } else if (baht > 0) {
-        result += "ถ้วน";
-      }
-      
-      return result || "ศูนย์บาท";
+  const thaiUnits = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+
+  let numberStr = String(input);
+
+  // Check if it's a currency amount (has decimal point)
+  if (numberStr.includes(".")) {
+    const [bahtPart, satangPart] = numberStr.split(".");
+    const baht = parseInt(bahtPart) || 0;
+    const satang = parseInt(satangPart.padEnd(2, "0").slice(0, 2)) || 0;
+
+    let result = "";
+
+    if (baht > 0) {
+      result += convertThaiYear(baht) + "บาท";
     }
-    
-    // Extract only the year part (last 4 digits) if it's a date string
-    const yearMatch = numberStr.match(/(\d{4})/);
-    
-    if (yearMatch) {
-      const year = parseInt(yearMatch[1]);
-      return convertThaiYear(year);
+
+    if (satang > 0) {
+      if (result) result += "";
+      result += convertThaiYear(satang) + "สตางค์";
+    } else if (baht > 0) {
+      result += "ถ้วน";
     }
-    
-    // If it's just a number, convert normally
-    const num = parseInt(String(input).replace(/\D/g, ''));
-    if (isNaN(num) || num === 0) return "ศูนย์";
-    
-    return convertThaiYear(num);
-    
-    function convertThaiYear(num: number): string {
-      if (num === 0) return "ศูนย์";
-      
-      const digits = num.toString().split('').reverse();
-      let result = "";
-      
-      for (let i = 0; i < digits.length; i++) {
-        const digit = parseInt(digits[i]);
-        
-        if (digit === 0) continue;
-        
-        let digitText = "";
-        
-        // Special cases for Thai number reading
-        if (i === 1 && digit === 1) {
-          // For tens place, 1 becomes "สิบ" not "หนึ่งสิบ"
-          digitText = thaiUnits[1];
-        } else if (i === 1 && digit === 2) {
-          // For 20-29, use "ยี่สิบ" instead of "สองสิบ"
-          digitText = "ยี่" + thaiUnits[1];
-        } else if (i === 0 && digit === 1 && digits.length > 1) {
-          // For ones place, if there are other digits and it's 1, use "เอ็ด"
-          digitText = "เอ็ด";
-        } else {
-          digitText = thaiNumbers[digit] + (i > 0 ? thaiUnits[i] : "");
-        }
-        
-        result = digitText + result;
-      }
-      
-      return result;
-    }
+
+    return result || "ศูนย์บาท";
   }
 
+  // Extract only the year part (last 4 digits) if it's a date string
+  const yearMatch = numberStr.match(/(\d{4})/);
+
+  if (yearMatch) {
+    const year = parseInt(yearMatch[1]);
+    return convertThaiYear(year);
+  }
+
+  // If it's just a number, convert normally
+  const num = parseInt(String(input).replace(/\D/g, ""));
+  if (isNaN(num) || num === 0) return "ศูนย์";
+
+  return convertThaiYear(num);
+
+  function convertThaiYear(num: number): string {
+    if (num === 0) return "ศูนย์";
+
+    const digits = num.toString().split("").reverse();
+    let result = "";
+
+    for (let i = 0; i < digits.length; i++) {
+      const digit = parseInt(digits[i]);
+
+      if (digit === 0) continue;
+
+      let digitText = "";
+
+      // Special cases for Thai number reading
+      if (i === 1 && digit === 1) {
+        // For tens place, 1 becomes "สิบ" not "หนึ่งสิบ"
+        digitText = thaiUnits[1];
+      } else if (i === 1 && digit === 2) {
+        // For 20-29, use "ยี่สิบ" instead of "สองสิบ"
+        digitText = "ยี่" + thaiUnits[1];
+      } else if (i === 0 && digit === 1 && digits.length > 1) {
+        // For ones place, if there are other digits and it's 1, use "เอ็ด"
+        digitText = "เอ็ด";
+      } else {
+        digitText = thaiNumbers[digit] + (i > 0 ? thaiUnits[i] : "");
+      }
+
+      result = digitText + result;
+    }
+
+    return result;
+  }
+}

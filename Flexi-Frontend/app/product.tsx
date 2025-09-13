@@ -16,7 +16,6 @@ import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { getMemberId } from "@/utils/utility";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import CustomAlert from "@/components/CustomAlert";
@@ -130,14 +129,13 @@ export default function Home() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
-        className={`h-full ${useBackgroundColorClass()}`}
-        style={{
-          flex: 1,
-          paddingHorizontal: 16,
-          alignItems: "center", // Center horizontally
-        }}
+    <SafeAreaView
+      className={`h-full ${useBackgroundColorClass()}`}
+      style={{
+        flex: 1,
+        paddingHorizontal: 16,
+        alignItems: "center", // Center horizontally
+      }}
       >
         <View
           style={{
@@ -228,6 +226,5 @@ export default function Home() {
           onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
         />
       </SafeAreaView>
-    </GestureHandlerRootView>
   );
 }

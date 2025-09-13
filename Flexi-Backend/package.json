@@ -46,6 +46,8 @@
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "prisma-dbml-generator": "^0.12.0",
+    "sharp": "^0.34.3",
+    "tesseract.js": "^6.0.1",
     "ts-node-register": "^1.0.0"
   },
   "devDependencies": {
