@@ -205,6 +205,38 @@ export const pdfExtract = async (
       const datePart = format(new Date(), "yyyyMMdd");
       const randomPart = Math.floor(1000 + Math.random() * 9000); // Random 4 digit number
       const expNo = `EXP${datePart}${randomPart}`;
+
+      // detect sName from desc for each transaction individually
+      const codeAmountWithSName = codeAmount?.map((item) => {
+        let sName = null;
+        
+        if (item.desc) {
+          // Check if desc contains the keywords
+          const containsKeywords = /(?:โอน(?:เงิน)?|โอนไป|จ่ายบิล|PromptPay)/.test(item.desc);
+          
+          if (containsKeywords) {
+            // Updated regex to capture everything after the keyword + space
+            const sNameMatch = item.desc.match(/(?:โอน(?:เงิน)?|โอนไป|จ่ายบิล|PromptPay)\s+(.*)/);
+            if (sNameMatch) {
+              let extractedName = sNameMatch[1].trim();
+              // Remove bank codes like "SCB x1937" or just "x1937" from the name
+              extractedName = extractedName.replace(/\b\w+\s+x\d{4}\s*/, "").replace(/\bx\d{4}\s*/, "").trim();
+              sName = extractedName;
+              console.log(`🔍 Extracted sName for "${item.desc}": "${sName}"`);
+            }
+          } else {
+            console.log(`🔍 No keywords found in desc: "${item.desc}"`);
+          }
+        }
+        
+        return {
+          ...item,
+          sName: sName
+        };
+      });
+      
+      console.log("🔥codeAmountWithSName", codeAmountWithSName);
+     
       
 
       // Create a table Expense in the database with the following columns: dateTime, code, amount, desc, note using prisma
@@ -218,8 +250,8 @@ export const pdfExtract = async (
           select: { id: true },
         });
 
-        if (!codeAmount) {
-          throw new Error("No codeAmount data found");
+        if (!codeAmountWithSName) {
+          throw new Error("No codeAmountWithSName data found");
         }
 
         // check duplicate data before creating
@@ -227,7 +259,7 @@ export const pdfExtract = async (
           where: {
             memberId: expense.memberId,
             date: {
-              in: codeAmount.map((item) => item.dateTime),
+              in: codeAmountWithSName.map((item) => item.dateTime),
             },
           },
         });
@@ -236,7 +268,7 @@ export const pdfExtract = async (
           throw new Error("Duplicate data found");
         }
 
-        for (const item of codeAmount) {
+        for (const item of codeAmountWithSName) {
           await prisma.expense.create({
             data: {
               date: item.dateTime,
@@ -247,6 +279,7 @@ export const pdfExtract = async (
               memberId: expense.memberId,
               businessAcc: businessAcc?.id ?? 0,
               expNo: expNo,
+              sName: item.sName,
             },
           });
         }
