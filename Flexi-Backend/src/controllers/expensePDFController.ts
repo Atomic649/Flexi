@@ -96,18 +96,64 @@ export const pdfExtract = async (
         /\b(\d{2}\/\d{2}\/\d{2})\s+(\d{2}:\d{2})\s+X[2]\/ENET\d{1,3}(?:,\d{3})*\.\d{2}\d{1,3}(?:,\d{3})*\.\d{2}\b/g;
       const matches = text.match(pattern);
 
-      // Extract DESC and note
-      const descNotePattern =
-        /(\d{2}\/\d{2}\/\d{2}\s+\d{2}:\d{2}\s+X2\/ENET\d{1,3}(?:,\d{3})*\.\d{2}\d{1,3}(?:,\d{3})*\.\d{2})\s+(.+?)\s+(-)/g;
+      // Extract DESC and note - updated to handle the specific format
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
       const descNoteMatches: {
         transaction: string;
         desc: string;
         note: string;
       }[] = [];
-      let match;
-      while ((match = descNotePattern.exec(text)) !== null) {
-        const [_, transaction, desc, note] = match;
-        descNoteMatches.push({ transaction, desc, note });
+      
+      // Find lines that match the main pattern
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        console.log(`🔍 Checking line ${i}: "${line}"`);
+        
+        // Match the transaction pattern - simplified to match actual format
+        // Looking for: DD/MM/YY on one line, then HH:MM on next line, then X2/ENET... on third line
+        const dateMatch = line.match(/^\d{2}\/\d{2}\/\d{2}$/);
+        
+        if (dateMatch && i + 2 < lines.length) {
+          const timeLine = lines[i + 1];
+          const transactionLine = lines[i + 2];
+          
+          console.log(`🔍 Found date: "${line}"`);
+          console.log(`🔍 Time line: "${timeLine}"`);
+          console.log(`🔍 Transaction line: "${transactionLine}"`);
+          
+          // Check if next line is time format and third line has transaction
+          const timeMatch = timeLine.match(/^\d{2}:\d{2}$/);
+          const transMatch = transactionLine.match(/^X[12]\/(?:ENET|ATS)/);
+          
+          if (timeMatch && transMatch) {
+            const transaction = `${line} ${timeLine} ${transactionLine}`;
+            let desc = '';
+            let note = '';
+            
+            console.log(`🔍 Found transaction: "${transaction}"`);
+            
+            // Look for desc on the line after transaction (i+3)
+            if (i + 3 < lines.length) {
+              const descLine = lines[i + 3];
+              if (descLine !== '-' && !descLine.startsWith('DESC :') && !descLine.startsWith('NOTE :')) {
+                desc = descLine;
+                console.log(`🔍 Found desc: "${desc}"`);
+                
+                // Look for note on the line after desc (i+4)
+                if (i + 4 < lines.length) {
+                  const noteLine = lines[i + 4];
+                  if (noteLine !== '-' && !noteLine.startsWith('DESC :') && !noteLine.startsWith('NOTE :')) {
+                    note = noteLine;
+                    console.log(`🔍 Found note: "${note}"`);
+                  }
+                }
+              }
+            }
+            
+            console.log(`🔍 Final result - transaction: "${transaction}", desc: "${desc}", note: "${note}"`);
+            descNoteMatches.push({ transaction, desc, note });
+          }
+        }
       }
       console.log("🔥descNoteMatches", descNoteMatches);
 

@@ -468,9 +468,9 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     } = req.body;
 
     // Debug: Log what we received
-    console.log("🔍 Received WHTAmount:", WHTAmount, "Type:", typeof WHTAmount);
-    console.log("🔍 Full request body:", req.body);
-    console.log("🔍 Received group:", group);
+    // console.log("🔍 Received WHTAmount:", WHTAmount, "Type:", typeof WHTAmount);
+    // console.log("🔍 Full request body:", req.body);
+    // console.log("🔍 Received group:", group);
 
     // if business detail with memberId
     const businessDetail = await prisma.businessAcc.findFirst({
@@ -691,11 +691,12 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     };
 
     // Debug logging for checkmark fields
-    console.log("🔍 Debug checkmark fields:");
-    console.log("  checkmark_employee:", fields.checkmark_employee);
-    console.log("  checkmark_interest_dividend:", fields.checkmark_interest_dividend);
-    console.log("  checkmark_juristic:", fields.checkmark_juristic);
-    console.log("  checkmark_individual:", fields.checkmark_individual);
+    // console.log("🔍 Debug checkmark fields:");
+    // console.log("  checkmark_employee:", fields.checkmark_employee);
+    // console.log("  checkmark_interest_dividend:", fields.checkmark_interest_dividend);
+    // console.log("  checkmark_juristic:", fields.checkmark_juristic);
+    // console.log("  checkmark_individual:", fields.checkmark_individual);
+    
     const templatePath = path.resolve(__dirname, "../../WHTTemplate.pdf");
     const thaiFontPath = path.resolve(
       __dirname,
