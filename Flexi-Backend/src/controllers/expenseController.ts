@@ -98,6 +98,8 @@ const schema = Joi.object({
   branch: Joi.string().optional().allow(""),
   taxType: Joi.string().valid("Individual", "Juristic").optional(),
   expNo: Joi.string().optional().allow(""),
+  ocrDataApplied: Joi.string().optional().allow(""), // Flag to indicate OCR data resubmission
+  expenseId: Joi.number().optional(), // ID of existing expense to update
 });
 
 //  create a new expense - Post
@@ -126,14 +128,80 @@ const createExpense = async (req: Request, res: Response) => {
     // Initialize OCR alert variable
     let ocrAlert = null;
 
-    // Process OCR if an image was uploaded
-    if (req.file && req.file.buffer) {
+    // Check if this is a resubmission with OCR data applied
+    const ocrDataApplied = req.body.ocrDataApplied === 'true';
+    
+    // Process OCR if an image was uploaded and it's not a resubmission with OCR data
+    if (req.file && req.file.buffer && !ocrDataApplied) {
       console.log("Processing OCR for uploaded image...");
       try {
         console.log("Image buffer size:", req.file.buffer.length);
 
+        // Get user's business account information to filter out from OCR results
+        const memberId = req.body.memberId;
+        const businessAcc = await prisma.businessAcc.findFirst({
+          where: {
+            memberId: memberId,
+          },
+          select: {
+            id: true,
+            businessName: true,
+            taxId: true,
+          },
+        });
+
         // Detect data presence in the uploaded image
         const detectionResult = await extractTextFromImage(req.file.buffer);
+        
+        // Filter out user's business information from OCR results
+        if (businessAcc) {
+          console.log("🔍 Filtering out user's business information:");
+          console.log(`   Business Name: ${businessAcc.businessName}`);
+          console.log(`   Tax ID: ${businessAcc.taxId}`);
+          
+          // Filter out business name from names
+          const originalNamesCount = detectionResult.namesFound.length;
+          const filteredNames = detectionResult.namesFound.filter(name => {
+            const nameToCheck = name.toLowerCase().trim();
+            const businessNameToCheck = businessAcc.businessName.toLowerCase().trim();
+            
+            // Check if the detected name contains the business name or vice versa
+            const isBusinessName = nameToCheck.includes(businessNameToCheck) || 
+                                   businessNameToCheck.includes(nameToCheck) ||
+                                   name.trim() === businessAcc.businessName.trim();
+            
+            if (isBusinessName) {
+              console.log(`   🚫 Filtered out business name: "${name}"`);
+              return false;
+            }
+            return true;
+          });
+          detectionResult.namesFound = filteredNames;
+          
+          // Filter out business tax ID from tax IDs
+          const originalTaxIdsCount = detectionResult.taxIdsFound.length;
+          const filteredTaxIds = detectionResult.taxIdsFound.filter(taxId => {
+            const isBusinessTaxId = taxId.trim() === businessAcc.taxId.trim();
+            if (isBusinessTaxId) {
+              console.log(`   🚫 Filtered out business tax ID: "${taxId}"`);
+              return false;
+            }
+            return true;
+          });
+          detectionResult.taxIdsFound = filteredTaxIds;
+          
+          console.log(`🚫 Filtered out ${originalNamesCount - filteredNames.length} business names`);
+          console.log(`🚫 Filtered out ${originalTaxIdsCount - filteredTaxIds.length} business tax IDs`);
+          
+          // Update summary counts after filtering
+          detectionResult.summary.hasAtLeast2Names = filteredNames.length >= 2;
+          detectionResult.summary.hasAtLeast1TaxId = filteredTaxIds.length >= 1;
+          
+          console.log(`✅ Final filtered results:`);
+          console.log(`   Names remaining: ${filteredNames.length} (${filteredNames.join(', ')})`);
+          console.log(`   Tax IDs remaining: ${filteredTaxIds.length} (${filteredTaxIds.join(', ')})`);
+        }
+        
         console.log("Detection result:", detectionResult);
 
         // Report OCR detection results
@@ -327,6 +395,18 @@ const createExpense = async (req: Request, res: Response) => {
           return res.status(500).json({ message: "Failed to upload image" });
         }
       }
+    } else if (req.file && req.file.buffer && ocrDataApplied) {
+      // If this is a resubmission with OCR data, just upload the image without processing OCR
+      console.log("Skipping OCR processing - using selected OCR data from frontend");
+      try {
+        console.log("Uploading image to S3 (OCR data already selected)...");
+        imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+        expenseInput.image = imageUrl;
+        console.log("Image uploaded to S3:", imageUrl);
+      } catch (uploadError) {
+        console.error("S3 upload failed:", uploadError);
+        return res.status(500).json({ message: "Failed to upload image" });
+      }
     }
 
     console.log("Final Input", expenseInput);
@@ -376,32 +456,66 @@ const createExpense = async (req: Request, res: Response) => {
     expenseInput.expNo = `EXP${datePart}${randomPart}`;
 
     try {
-      const expense = await prisma.expense.create({
-        data: {
-          date: formattedDate,
-          amount: expenseInput.amount,
-          desc: expenseInput.desc,
-          group: expenseInput.group,
-          image: expenseInput.image,
-          memberId: expenseInput.memberId,
-          businessAcc: businessAcc.id,
-          note: expenseInput.note,
-          channel: expenseInput.channel,
-          save: false,
-          vat: expenseInput.vat,
-          vatAmount: expenseInput.vatAmount,
-          withHoldingTax: expenseInput.withHoldingTax ?? false,
-          WHTAmount: expenseInput.WHTAmount ?? 0,
-          WHTpercent: expenseInput.WHTpercent ?? 0,
-          sName: expenseInput.sName ?? "",
-          taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
-          sTaxId: expenseInput.sTaxId ?? "",
-          sAddress: expenseInput.sAddress ?? "",
-          branch: expenseInput.branch ?? "",
-          taxType: expenseInput.taxType ?? taxType.Individual,
-          expNo: expenseInput.expNo ?? "",
-        },
-      });
+      let expense;
+      
+      // If this is a resubmission with OCR data and we have an expense ID, update the existing expense
+      if (ocrDataApplied && req.body.expenseId) {
+        console.log("🔄 Updating existing expense with ID:", req.body.expenseId);
+        expense = await prisma.expense.update({
+          where: {
+            id: parseInt(req.body.expenseId)
+          },
+          data: {
+            date: formattedDate,
+            amount: expenseInput.amount,
+            desc: expenseInput.desc,
+            group: expenseInput.group,
+            image: expenseInput.image,
+            note: expenseInput.note,
+            channel: expenseInput.channel,
+            vat: expenseInput.vat,
+            vatAmount: expenseInput.vatAmount,
+            withHoldingTax: expenseInput.withHoldingTax ?? false,
+            WHTAmount: expenseInput.WHTAmount ?? 0,
+            WHTpercent: expenseInput.WHTpercent ?? 0,
+            sName: expenseInput.sName ?? "",
+            taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
+            sTaxId: expenseInput.sTaxId ?? "",
+            sAddress: expenseInput.sAddress ?? "",
+            branch: expenseInput.branch ?? "",
+            taxType: expenseInput.taxType ?? taxType.Individual,
+          },
+        });
+        console.log("✅ Successfully updated expense with OCR data");
+      } else {
+        // Create new expense (original flow)
+        expense = await prisma.expense.create({
+          data: {
+            date: formattedDate,
+            amount: expenseInput.amount,
+            desc: expenseInput.desc,
+            group: expenseInput.group,
+            image: expenseInput.image,
+            memberId: expenseInput.memberId,
+            businessAcc: businessAcc.id,
+            note: expenseInput.note,
+            channel: expenseInput.channel,
+            save: false,
+            vat: expenseInput.vat,
+            vatAmount: expenseInput.vatAmount,
+            withHoldingTax: expenseInput.withHoldingTax ?? false,
+            WHTAmount: expenseInput.WHTAmount ?? 0,
+            WHTpercent: expenseInput.WHTpercent ?? 0,
+            sName: expenseInput.sName ?? "",
+            taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
+            sTaxId: expenseInput.sTaxId ?? "",
+            sAddress: expenseInput.sAddress ?? "",
+            branch: expenseInput.branch ?? "",
+            taxType: expenseInput.taxType ?? taxType.Individual,
+            expNo: expenseInput.expNo ?? "",
+          },
+        });
+      }
       
       // Include OCR alert in response if present
       const response = ocrAlert ? { ...expense, ocrAlert } : expense;

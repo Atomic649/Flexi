@@ -787,35 +787,10 @@ export default function CreateExpense({
                             {/* Use Selected Data Button */}
                             <TouchableOpacity
                               onPress={async () => {
-                                console.log("🚀 Using selected OCR data:", selectedOCRData);
+                                console.log("🚀 Resubmitting form with selected OCR data:", selectedOCRData);
                                 
                                 try {
-                                  // Update expense with selected OCR data if we have an expense ID
-                                  if (createdExpenseId && Object.keys(selectedOCRData).some(key => selectedOCRData[key as keyof typeof selectedOCRData])) {
-                                    console.log("🔄 Updating expense with ID:", createdExpenseId);
-                                    
-                                    // Prepare update data - only include selected fields
-                                    const updateData: any = {};
-                                    if (selectedOCRData.selectedName) updateData.sName = selectedOCRData.selectedName;
-                                    if (selectedOCRData.selectedTaxId) updateData.sTaxId = selectedOCRData.selectedTaxId;
-                                    if (selectedOCRData.selectedAmount) updateData.amount = selectedOCRData.selectedAmount;
-                                    if (selectedOCRData.selectedDate) updateData.date = selectedOCRData.selectedDate;
-                                    if (selectedOCRData.selectedAddress) updateData.sAddress = selectedOCRData.selectedAddress;
-                                    
-                                    console.log("📝 Update data to send:", updateData);
-                                    
-                                    // Call update API
-                                    const updateResult = await CallAPIExpense.updateExpenseWithOCRDataAPI(createdExpenseId, updateData);
-                                    
-                                    if (updateResult.error) {
-                                      console.error("❌ Failed to update expense with OCR data:", updateResult.error);
-                                      // Could show an error message here
-                                    } else {
-                                      console.log("✅ Successfully updated expense with OCR data");
-                                    }
-                                  }
-                                  
-                                  // Apply selected data to form for visual feedback (optional)
+                                  // Apply selected data to form fields
                                   if (selectedOCRData.selectedName) {
                                     setSName(selectedOCRData.selectedName);
                                   }
@@ -826,9 +801,7 @@ export default function CreateExpense({
                                     setAmount(selectedOCRData.selectedAmount.toString());
                                   }
                                   if (selectedOCRData.selectedDate) {
-                                    // Convert selected date to proper format
                                     try {
-                                      const dateObj = new Date(selectedOCRData.selectedDate);
                                       setSelectedDates([selectedOCRData.selectedDate]);
                                       setDate([selectedOCRData.selectedDate]);
                                     } catch (error) {
@@ -839,8 +812,92 @@ export default function CreateExpense({
                                     setSAddress(selectedOCRData.selectedAddress);
                                   }
                                   
+                                  // Create new FormData with selected OCR data
+                                  const formData = new FormData();
+                                  formData.append("amount", selectedOCRData.selectedAmount?.toString() || amount);
+                                  formData.append("desc", desc);
+                                  formData.append("note", note);
+                                  
+                                  // Convert date format if OCR date is selected
+                                  let dateToSubmit = Array.isArray(date) ? date[0] : date;
+                                  if (selectedOCRData.selectedDate) {
+                                    // Convert DD/MM/YYYY to YYYY-MM-DD format or proper Date format
+                                    try {
+                                      const dateParts = selectedOCRData.selectedDate.split('/');
+                                      if (dateParts.length === 3) {
+                                        // Assuming DD/MM/YYYY format
+                                        const day = dateParts[0];
+                                        const month = dateParts[1];
+                                        const year = dateParts[2];
+                                        // Convert to YYYY-MM-DD format
+                                        dateToSubmit = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                                        console.log(`📅 Converted date from ${selectedOCRData.selectedDate} to ${dateToSubmit}`);
+                                      } else {
+                                        console.warn("⚠️ Unexpected date format, using original:", selectedOCRData.selectedDate);
+                                        dateToSubmit = selectedOCRData.selectedDate;
+                                      }
+                                    } catch (error) {
+                                      console.error("❌ Date conversion error:", error);
+                                      dateToSubmit = Array.isArray(date) ? date[0] : date; // Fallback to original date
+                                    }
+                                  }
+                                  
+                                  formData.append("date", dateToSubmit);
+                                  
+                                  // Add selected OCR data or original form data
+                                  formData.append("sName", selectedOCRData.selectedName || sName);
+                                  formData.append("sTaxId", selectedOCRData.selectedTaxId || sTaxId);
+                                  formData.append("sAddress", selectedOCRData.selectedAddress || sAddress);
+                                  formData.append("taxInvoiceNo", taxInvoiceNo);
+                                  formData.append("branch", branch);
+                                  formData.append("taxType", taxType);
+                                  
+                                  // Add image if exists
+                                  if (image) {
+                                    formData.append("image", {
+                                      uri: image,
+                                      name: "image.jpg",
+                                      type: "image/jpeg",
+                                    } as unknown as Blob);
+                                  }
+                                  
+                                  formData.append("group", group || "");
+                                  formData.append("vat", vatIncluded ? "true" : "false");
+                                  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+                                  formData.append("WHTpercent", WHTpercent.toString());
+                                  
+                                  const memberId = await getMemberId();
+                                  if (memberId) {
+                                    formData.append("memberId", memberId);
+                                  } else {
+                                    throw new Error("Member ID is null or undefined");
+                                  }
+                                  
+                                  // Add flag to indicate this is a resubmission with OCR data
+                                  formData.append("ocrDataApplied", "true");
+                                  
+                                  // Add the original expense ID for updating
+                                  if (createdExpenseId) {
+                                    formData.append("expenseId", createdExpenseId.toString());
+                                    console.log("📝 Adding expense ID for update:", createdExpenseId);
+                                  }
+                                  
+                                  console.log("📤 Resubmitting expense with OCR data to backend...");
+                                  
+                                  // Call create expense API again with selected data
+                                  const updateResult = await CallAPIExpense.createAExpenseAPI(formData);
+                                  
+                                  if (updateResult.error) {
+                                    console.error("❌ Failed to resubmit expense with OCR data:", updateResult.error);
+                                    throw new Error(updateResult.error);
+                                  } else {
+                                    console.log("✅ Successfully resubmitted expense with OCR data");
+                                  }
+                                  
                                 } catch (error) {
-                                  console.error("❌ Error updating expense with OCR data:", error);
+                                  console.error("❌ Error resubmitting expense with OCR data:", error);
+                                  setError("Failed to update expense with selected data");
+                                  return;
                                 }
                                 
                                 // Close OCR indicator
@@ -864,7 +921,7 @@ export default function CreateExpense({
                                 onClose();
                                 success();
                                 
-                                console.log("✅ OCR data applied and expense updated successfully");
+                                console.log("✅ OCR data applied and expense resubmitted successfully");
                               }}
                               style={{
                                 backgroundColor: '#22c55e',
