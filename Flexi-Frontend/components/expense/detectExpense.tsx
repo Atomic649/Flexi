@@ -15,7 +15,7 @@ import {
 
 import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
