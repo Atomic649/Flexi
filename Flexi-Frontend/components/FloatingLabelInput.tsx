@@ -11,6 +11,7 @@ interface FloatingLabelInputProps extends TextInputProps {
   containerStyle?: object;
   inputStyle?: object;
   labelStyle?: object;
+  required?: boolean; // Add required prop
 }
 
 export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
@@ -20,6 +21,7 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   containerStyle,
   inputStyle,
   labelStyle,
+  required = false, // Default to false
   onFocus,
   onBlur,
   ...textInputProps
@@ -36,6 +38,9 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
     setIsFocused(false);
     onBlur?.(e);
   };
+
+  // Determine if field should have error styling (required but empty)
+  const hasError = required && !value.trim();
 
   return (
     <View style={[{ position: "relative", marginVertical: 8 }, containerStyle]}>
@@ -71,9 +76,12 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
                 ? "IBMPlexSansThai-Medium"
                 : "Poppins-Regular",
             color: theme === "dark" ? "#ffffff" : "#000000",
-            borderColor: isFocused 
+            borderColor: hasError 
+              ? "#FF9C01" // border for required but empty fields
+              : isFocused 
               ? "#FF9C01" 
-              : theme === "dark" ? "#2c2c2cff" : "#c0beb550",
+              : theme === "dark" ? "#2c2c2cff" : "#c0beb550",           
+            cursorColor: "#FF9C01",
           },
           inputStyle,
         ]}

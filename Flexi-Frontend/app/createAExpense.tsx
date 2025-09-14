@@ -1555,7 +1555,7 @@ export default function CreateExpense({
                                 // Close OCR indicator
                                 setIsProcessingOCR(false);
                                 setShowOCRResult(false);
-                                setOCRProgress(0);
+                                setOCRProgress(100);
                                 setOCRAlert(null);
                                 setCreatedExpenseId(null);
 
@@ -1850,6 +1850,7 @@ export default function CreateExpense({
                   label={t("expense.detail.note")}
                   value={note}
                   onChangeText={setNote}
+                  required={ocrProgress === 100}
                 />
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
