@@ -105,6 +105,7 @@ export default function CreateExpense({
     selectedName?: string;
     selectedTaxId?: string;
     selectedTaxInvoiceId?: string;
+    selectedVatAmount?: string;
     selectedAmount?: number;
     selectedDate?: string;
     selectedAddress?: string;
@@ -256,6 +257,7 @@ export default function CreateExpense({
       }
       formData.append("group", group || "");
       formData.append("vat", vatIncluded ? "true" : "false");
+      formData.append("vatAmount", vatAmount.toString());
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
       formData.append("WHTpercent", WHTpercent.toString());
       formData.append("sTaxId", sTaxId);
@@ -384,7 +386,7 @@ export default function CreateExpense({
               alignSelf: "center",
             }}
             keyboardShouldPersistTaps="handled"
-            scrollEnabled={false}
+            scrollEnabled={!showOCRResult}
           >
             <TouchableOpacity
               activeOpacity={1}
@@ -853,6 +855,93 @@ export default function CreateExpense({
                                     </View>
                                   )}
 
+                                {/* VAT Amounts Selection */}
+                                {ocrAlert.details.selectableOptions.vatAmounts &&
+                                  ocrAlert.details.selectableOptions.vatAmounts
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
+                                        style={{
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
+                                        }}
+                                      >
+                                        💰 VAT Amounts (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .vatAmounts.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.vatAmounts.map(
+                                        (vatAmount: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedVatAmount: vatAmount,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected vatAmount:",
+                                                vatAmount
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedVatAmount ===
+                                                vatAmount
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedVatAmount ===
+                                                vatAmount
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedVatAmount ===
+                                                vatAmount
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedVatAmount ===
+                                                  vatAmount
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedVatAmount ===
+                                              vatAmount
+                                                ? "✓ "
+                                                : "○ "}
+                                              {vatAmount}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Amounts Selection */}
                                 {ocrAlert.details.selectableOptions.amounts &&
                                   ocrAlert.details.selectableOptions.amounts
@@ -1146,6 +1235,11 @@ export default function CreateExpense({
                                   if (selectedOCRData.selectedTaxInvoiceId) {
                                     setTaxInvoiceNo(selectedOCRData.selectedTaxInvoiceId);
                                   }
+                                  if (selectedOCRData.selectedVatAmount) {
+                                    setVatAmount(Number(selectedOCRData.selectedVatAmount));
+                                    // Also set VAT as included if a VAT amount is selected
+                                    setVatIncluded(true);
+                                  }
                                   if (selectedOCRData.selectedAmount) {
                                     setAmount(
                                       selectedOCRData.selectedAmount.toString()
@@ -1258,6 +1352,10 @@ export default function CreateExpense({
                                     vatIncluded ? "true" : "false"
                                   );
                                   formData.append(
+                                    "vatAmount",
+                                    vatAmount.toString()
+                                  );
+                                  formData.append(
                                     "withHoldingTax",
                                     withHoldingTax ? "true" : "false"
                                   );
@@ -1334,6 +1432,7 @@ export default function CreateExpense({
                                   selectedName: "",
                                   selectedTaxId: "",
                                   selectedTaxInvoiceId: "",
+                                  selectedVatAmount: "",
                                   selectedAmount: undefined,
                                   selectedDate: "",
                                   selectedAddress: "",
@@ -1385,6 +1484,7 @@ export default function CreateExpense({
                                   selectedName: "",
                                   selectedTaxId: "",
                                   selectedTaxInvoiceId: "",
+                                  selectedVatAmount: "",
                                   selectedAmount: undefined,
                                   selectedDate: "",
                                   selectedAddress: "",

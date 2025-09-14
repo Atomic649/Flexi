@@ -19,20 +19,24 @@ export interface OCRDetectionResult {
   namesFound: string[];
   taxIdsFound: string[];
   taxInvoiceIdsFound: string[];
+  vatAmountsFound: string[];
   amountFound: boolean;
   dateFound: boolean;
   addressFound: boolean;
   receiptTitleFound: boolean;
+  vatAmountFound: boolean;
   // Add detailed detection results
   amountsDetected: string[];
   datesDetected: string[];
   addressesDetected: string[];
   provincesDetected: string[];
   taxInvoiceIdsDetected: string[];
+  vatAmountsDetected: string[];
   summary: {
     hasAtLeast2Names: boolean;
     hasAtLeast1TaxId: boolean;
     hasTaxInvoiceId: boolean;
+    hasVatAmount: boolean;
     hasAmount: boolean;
     hasDate: boolean;
     hasAddress: boolean;
@@ -376,19 +380,23 @@ export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDete
       namesFound: [],
       taxIdsFound: [],
       taxInvoiceIdsFound: [],
+      vatAmountsFound: [],
       amountFound: false,
       dateFound: false,
       addressFound: false,
       receiptTitleFound: false,
+      vatAmountFound: false,
       amountsDetected: [],
       datesDetected: [],
       addressesDetected: [],
       provincesDetected: [],
       taxInvoiceIdsDetected: [],
+      vatAmountsDetected: [],
       summary: {
         hasAtLeast2Names: false,
         hasAtLeast1TaxId: false,
         hasTaxInvoiceId: false,
+        hasVatAmount: false,
         hasAmount: false,
         hasDate: false,
         hasAddress: false,
@@ -642,7 +650,202 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     console.log('❌ AMOUNT NOT DETECTED');
   }
 
-  // 4. Detect Date
+  // 5. Detect VAT Amount
+  const vatAmountPatterns = [
+    // MOST SPECIFIC PATTERNS FIRST - End of line VAT amounts (highest priority)
+    /(?:ภาษีมูลค่าเพิ่ม)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // VAT amount at end of line
+    /(?:จำนวนภาษีมูลค่าเพิ่ม)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // VAT amount at end of line
+    /(?:ภาษี)\s*(?:\(7%\))\s*:\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "ภาษี (7%):" at end of line
+    /(?:ภาษี)\s*(?:\(๗%\))\s*:\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "ภาษี (๗%):" at end of line
+    /(?:VAT|vat|Vat)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // English VAT at end of line
+    /(?:VAT)\s*(?:\(7%\))\s*:\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "VAT (7%):" at end of line
+    
+    // SPECIFIC PATTERN - VAT amount preceded by lots of spaces (receipt formatting)
+    /(?:ภาษีมูลค่าเพิ่ม)\s{20,}([0-9,]+\.?\d*)/gi, // VAT with 20+ spaces before amount
+    /(?:จำนวนภาษีมูลค่าเพิ่ม)\s{20,}([0-9,]+\.?\d*)/gi, // VAT with 20+ spaces before amount
+    /(?:ภาษี)\s*(?:\(7%\))\s*:\s{10,}([0-9,]+\.?\d*)/gi, // "ภาษี (7%):" with significant spacing
+    /(?:ภาษี)\s*(?:\(๗%\))\s*:\s{10,}([0-9,]+\.?\d*)/gi, // "ภาษี (๗%):" with significant spacing
+    
+    // Short VAT patterns with colon - high confidence
+    /(?:ภาษี)\s*(?:\(7%\))\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี (7%): amount"
+    /(?:ภาษี)\s*(?:\(๗%\))\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี (๗%): amount"
+    /(?:ภาษี)\s*(?:\( 7% \))\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี ( 7% ): amount"
+    /(?:ภาษี)\s*(?:\( ๗% \))\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี ( ๗% ): amount"
+    /(?:ภาษี)\s*7%\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี 7%: amount"
+    /(?:ภาษี)\s*๗%\s*:\s*([0-9,]+\.?\d*)/gi, // "ภาษี ๗%: amount"
+    
+    // English VAT patterns with immediate following
+    /(?:VAT|vat|Vat)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:VAT|vat|Vat)\s*(?:\(7%\))?\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:VAT|vat|Vat)\s*(?:\(VAT7%\))?\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // VAT abbreviation patterns - high confidence
+    /(?:VAT\s*Amt\.?)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "VAT Amt." at end of line
+    /(?:VAT\s*Amount)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "VAT Amount" at end of line
+    /(?:Vat\s*Amt\.?)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "Vat Amt." at end of line
+    /(?:vat\s*amt\.?)\s*([0-9,]+\.?\d*)\s*(?:THB)?\s*$/gim, // "vat amt." at end of line
+    /(?:VAT\s*Amt\.?)\s{5,}([0-9,]+\.?\d*)/gi, // "VAT Amt." with significant spacing
+    /(?:VAT\s*Amount)\s{5,}([0-9,]+\.?\d*)/gi, // "VAT Amount" with significant spacing
+    /(?:VAT\s*Amt\.?)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Amt." with optional colon
+    /(?:VAT\s*Amount)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Amount" with optional colon
+    /(?:Vat\s*Amt\.?)\s*:?\s*([0-9,]+\.?\d*)/gi, // "Vat Amt." with optional colon
+    /(?:vat\s*amt\.?)\s*:?\s*([0-9,]+\.?\d*)/gi, // "vat amt." with optional colon
+    
+    // Thai VAT patterns - with colon (more specific)
+    /(?:จำนวนภาษีมูลค่าเพิ่ม)\s*:\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*:\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่มรวม)\s*:\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่มทั้งหมด)\s*:\s*([0-9,]+\.?\d*)/gi,
+    
+    // Thai VAT patterns - with percentage indication
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(vat\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(7%\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(vat7%\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(VAT\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(VAT7%\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // Additional Thai VAT patterns
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:7%)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:๗%)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษี)\s*(?:มูลค่าเพิ่ม)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ม\.ค\.)\s*:?\s*([0-9,]+\.?\d*)/gi, // Common abbreviation for ภาษีมูลค่าเพิ่ม
+    
+    // VAT with Thai numbers
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:เจ็ดเปอร์เซ็นต์)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // Mixed language patterns
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:VAT)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:VAT)\s*(?:ภาษีมูลค่าเพิ่ม)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // Common variations with spaces and formatting
+    /(?:ภาษี\s*มูลค่า\s*เพิ่ม)\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // Format with currency symbols
+    /(?:VAT|vat|ภาษีมูลค่าเพิ่ม)\s*:?\s*฿\s*([0-9,]+\.?\d*)/gi,
+    
+    // Additional English VAT abbreviations and variations
+    /(?:VAT\s*Total)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Total"
+    /(?:Total\s*VAT)\s*:?\s*([0-9,]+\.?\d*)/gi, // "Total VAT"
+    /(?:VAT\s*Tax)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Tax"
+    /(?:Tax\s*VAT)\s*:?\s*([0-9,]+\.?\d*)/gi, // "Tax VAT"
+    /(?:VAT\s*Charge)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Charge"
+    /(?:VAT\s*Fee)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT Fee"
+    
+    // Handle spacing variations for VAT Amt.
+    /(?:VAT)\s+(?:Amt\.?)\s*([0-9,]+\.?\d*)/gi, // "VAT Amt." with space
+    /(?:VAT)(?:Amt\.?)\s*([0-9,]+\.?\d*)/gi, // "VATAmt." without space
+    
+    // Case variations
+    /(?:VAT\s*AMT\.?)\s*:?\s*([0-9,]+\.?\d*)/gi, // "VAT AMT."
+    /(?:Vat\s*Amount)\s*:?\s*([0-9,]+\.?\d*)/gi, // "Vat Amount"
+    
+    // Additional pattern for 7% indication variations
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\(7 %\))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*(?:\( 7% \))\s*:?\s*([0-9,]+\.?\d*)/gi,
+    
+    // LESS SPECIFIC PATTERNS (lower priority) - only if no specific matches found
+    /(?:จำนวนภาษีมูลค่าเพิ่ม)\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่ม)\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่มรวม)\s*([0-9,]+\.?\d*)/gi,
+    /(?:ภาษีมูลค่าเพิ่มทั้งหมด)\s*([0-9,]+\.?\d*)/gi,
+    
+    // Generic "ภาษี" patterns (lowest priority) - should catch "ภาษี (7%): 27.65 THB"
+    /(?:ภาษี)\s*(?:\([0-9๗]+%\))?\s*:?\s*([0-9,]+\.?\d*)/gi // Generic tax with optional percentage
+  ];
+
+  const vatAmountsFound: string[] = [];
+  const detectedVatAmounts: string[] = [];
+  let vatAmountFound = false;
+  
+  // Process patterns with priority - stop after finding high-confidence matches
+  let highConfidenceFound = false;
+  
+  for (let i = 0; i < vatAmountPatterns.length; i++) {
+    const pattern = vatAmountPatterns[i];
+    const matches = cleanText.matchAll(pattern);
+    let foundInThisPattern = false;
+    
+    for (const match of matches) {
+      if (match && match[1]) {
+        const vatAmountStr = match[1].replace(/,/g, '').trim();
+        const vatAmount = parseFloat(vatAmountStr);
+        
+        if (!isNaN(vatAmount) && vatAmount >= 0) {
+          const formattedVatAmount = vatAmount.toString();
+          const fullMatch = match[0];
+          
+          // Determine confidence level based on pattern index and characteristics
+          const isHighConfidence = i < 5 || // First 5 patterns are high confidence
+            fullMatch.includes(':') || // Has colon separator
+            /\s{10,}/.test(fullMatch) || // Has significant spacing (receipt formatting)
+            /\$$/.test(fullMatch); // At end of line
+          
+          // Additional validation to avoid false positives
+          const isValidVatAmount = (amount: number, matchText: string): boolean => {
+            // Skip if amount is too large (likely total amount, not VAT)
+            if (amount > 10000) return false;
+            
+            // Skip if the match context suggests it's not VAT
+            const beforeMatch = cleanText.substring(match.index! - 50, match.index!);
+            const afterMatch = cleanText.substring(match.index! + matchText.length, match.index! + matchText.length + 50);
+            
+            // Check for context that suggests this is NOT a VAT amount
+            const nonVatIndicators = [
+              /ราคา.*ภาษีมูลค่าเพิ่ม/i, // "ราคาภาษีมูลค่าเพิ่ม" (price including VAT)
+              /รวมภาษีมูลค่าเพิ่ม/i,   // "รวมภาษีมูลค่าเพิ่ม" (total including VAT)
+              /ก่อนภาษีมูลค่าเพิ่ม/i,   // "ก่อนภาษีมูลค่าเพิ่ม" (before VAT)
+              /สินค้า.*ภาษีมูลค่าเพิ่ม/i // Product with VAT context
+            ];
+            
+            if (nonVatIndicators.some(indicator => 
+              indicator.test(beforeMatch + matchText + afterMatch))) {
+              return false;
+            }
+            
+            return true;
+          };
+          
+          if (isValidVatAmount(vatAmount, fullMatch)) {
+            // Avoid duplicates
+            if (!vatAmountsFound.includes(formattedVatAmount)) {
+              vatAmountFound = true;
+              vatAmountsFound.push(formattedVatAmount);
+              detectedVatAmounts.push(formattedVatAmount);
+              foundInThisPattern = true;
+              
+              console.log(`🔍 VAT AMOUNT DETECTED: ${vatAmount} (${match[1]}) from pattern ${i+1}: ${pattern.source.substring(0, 50)}... [${isHighConfidence ? 'HIGH' : 'LOW'} confidence]`);
+              
+              if (isHighConfidence) {
+                highConfidenceFound = true;
+              }
+            }
+          } else {
+            console.log(`⚠️ VAT AMOUNT FILTERED OUT: ${vatAmount} (${match[1]}) - failed validation`);
+          }
+        }
+      }
+    }
+    
+    pattern.lastIndex = 0; // Reset regex state
+    
+    // If we found high-confidence matches and this was a high-confidence pattern, 
+    // we can stop processing less specific patterns
+    if (highConfidenceFound && i >= 4 && foundInThisPattern) {
+      console.log(`🎯 Stopping VAT detection - found high-confidence matches from specific patterns`);
+      break;
+    }
+  }
+
+  if (!vatAmountFound) {
+    console.log('❌ VAT AMOUNT NOT DETECTED');
+  } else {
+    console.log(`✅ VAT AMOUNTS FOUND: ${vatAmountsFound.length} amounts`);
+    vatAmountsFound.forEach((vatAmount, index) => {
+      console.log(`   ${index + 1}. ${vatAmount}`);
+    });
+  }
+
+  // 6. Detect Date
   const datePatterns = [
     /(?:วันที่|Date|date)\s*:?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/gi,
     /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})\b/g
@@ -832,6 +1035,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     hasAtLeast2Names: namesFound.length >= 2,
     hasAtLeast1TaxId: taxIdsFound.length >= 1,
     hasTaxInvoiceId: taxInvoiceIdsFound.length >= 1,
+    hasVatAmount: vatAmountFound,
     hasAmount: amountFound,
     hasDate: dateFound,
     hasAddress: addressFound,
@@ -842,6 +1046,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   console.log(`✅ Names: ${namesFound.length >= 2 ? 'PASS' : 'FAIL'} (Found ${namesFound.length}, need ≥2)`);
   console.log(`✅ Tax IDs: ${taxIdsFound.length >= 1 ? 'PASS' : 'FAIL'} (Found ${taxIdsFound.length}, need ≥1)`);
   console.log(`✅ Tax Invoice IDs: ${taxInvoiceIdsFound.length >= 1 ? 'PASS' : 'FAIL'} (Found ${taxInvoiceIdsFound.length})`);
+  console.log(`✅ VAT Amount: ${vatAmountFound ? 'PASS' : 'FAIL'} (Found ${vatAmountsFound.length})`);
   console.log(`✅ Amount: ${amountFound ? 'PASS' : 'FAIL'}`);
   console.log(`✅ Date: ${dateFound ? 'PASS' : 'FAIL'}`);
   console.log(`✅ Address: ${addressFound ? 'PASS' : 'FAIL'}`);
@@ -851,16 +1056,19 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     namesFound,
     taxIdsFound,
     taxInvoiceIdsFound,
+    vatAmountsFound,
     amountFound,
     dateFound,
     addressFound,
     receiptTitleFound,
+    vatAmountFound,
     // Return the actual collected values instead of placeholder text
     amountsDetected: detectedAmounts,
     datesDetected: detectedDates,
     addressesDetected: detectedAddresses,
     provincesDetected: detectedProvinces,
     taxInvoiceIdsDetected: detectedTaxInvoiceIds,
+    vatAmountsDetected: detectedVatAmounts,
     summary
   };
 };

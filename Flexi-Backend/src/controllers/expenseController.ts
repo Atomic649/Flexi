@@ -310,6 +310,19 @@ const createExpense = async (req: Request, res: Response) => {
           console.log("❌ TAX INVOICE IDs: FAIL - No tax invoice IDs found");
         }
 
+        if (detectionResult.summary.hasVatAmount) {
+          console.log(
+            "✅ VAT AMOUNTS: PASS - Found",
+            detectionResult.vatAmountsFound.length,
+            "VAT amounts"
+          );
+          detectionResult.vatAmountsFound.forEach((vatAmount, index) => {
+            console.log(`   ${index + 1}. ${vatAmount}`);
+          });
+        } else {
+          console.log("❌ VAT AMOUNTS: FAIL - No VAT amounts found");
+        }
+
         console.log(
           `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
             detectionResult.summary.hasAmount ? "PASS" : "FAIL"
@@ -380,6 +393,7 @@ const createExpense = async (req: Request, res: Response) => {
                 names: detectionResult.namesFound,
                 taxIds: detectionResult.taxIdsFound,
                 taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
+                vatAmounts: detectionResult.vatAmountsFound,
                 hasAmount: detectionResult.summary.hasAmount,
                 hasDate: detectionResult.summary.hasDate,
                 hasAddress: detectionResult.summary.hasAddress,
@@ -390,6 +404,7 @@ const createExpense = async (req: Request, res: Response) => {
                 names: detectionResult.namesFound || [],
                 taxIds: detectionResult.taxIdsFound || [],
                 taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
+                vatAmounts: detectionResult.vatAmountsFound || [],
                 amounts: detectionResult.amountsDetected || [],
                 dates: detectionResult.datesDetected || [],
                 addresses: detectionResult.addressesDetected || [],
@@ -408,6 +423,7 @@ const createExpense = async (req: Request, res: Response) => {
                 names: detectionResult.namesFound,
                 taxIds: detectionResult.taxIdsFound,
                 taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
+                vatAmounts: detectionResult.vatAmountsFound,
                 hasAmount: detectionResult.summary.hasAmount,
                 hasDate: detectionResult.summary.hasDate,
                 hasAddress: detectionResult.summary.hasAddress,
@@ -418,6 +434,7 @@ const createExpense = async (req: Request, res: Response) => {
                 names: detectionResult.namesFound || [],
                 taxIds: detectionResult.taxIdsFound || [],
                 taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
+                vatAmounts: detectionResult.vatAmountsFound || [],
                 amounts: detectionResult.amountsDetected || [],
                 dates: detectionResult.datesDetected || [],
                 addresses: detectionResult.addressesDetected || [],
@@ -1257,7 +1274,13 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Expense ID and selected data are required" });
     }
 
-    const { sName, sTaxId, taxInvoiceId, amount, date, address } = selectedData;
+    const { sName, sTaxId, taxInvoiceId, vatAmount, amount, date, address } = selectedData;
+
+    // Determine if VAT should be set to true based on vatAmount
+    const vatAmountNumber = vatAmount ? Number(vatAmount) : 0;
+    const shouldSetVat = vatAmountNumber > 0;
+
+    console.log(`🔍 VAT Amount processing: ${vatAmount} -> ${vatAmountNumber}, setting vat to: ${shouldSetVat}`);
 
     // Update the expense with selected OCR data
     const updatedExpense = await prisma.expense.update({
@@ -1266,6 +1289,10 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
         ...(sName && { sName }),
         ...(sTaxId && { sTaxId }),
         ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
+        ...(vatAmount && { 
+          vatAmount: vatAmountNumber,
+          vat: shouldSetVat  // Set vat to true if vatAmount > 0
+        }),
         ...(amount && { amount: Number(amount) }),
         ...(date && { date }),
         ...(address && { sAddress: address }),
@@ -1277,6 +1304,10 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
       ...(sName && { sName }),
       ...(sTaxId && { sTaxId }),
       ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
+      ...(vatAmount && { 
+        vatAmount: vatAmountNumber,
+        vat: shouldSetVat 
+      }),
       ...(amount && { amount: Number(amount) }),
       ...(date && { date }),
       ...(address && { sAddress: address }),
