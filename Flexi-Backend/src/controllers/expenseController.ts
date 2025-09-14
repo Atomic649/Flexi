@@ -297,6 +297,19 @@ const createExpense = async (req: Request, res: Response) => {
           console.log("❌ TAX IDs: FAIL - No tax IDs found");
         }
 
+        if (detectionResult.summary.hasTaxInvoiceId) {
+          console.log(
+            "✅ TAX INVOICE IDs: PASS - Found",
+            detectionResult.taxInvoiceIdsFound.length,
+            "tax invoice IDs"
+          );
+          detectionResult.taxInvoiceIdsFound.forEach((taxInvoiceId, index) => {
+            console.log(`   ${index + 1}. ${taxInvoiceId}`);
+          });
+        } else {
+          console.log("❌ TAX INVOICE IDs: FAIL - No tax invoice IDs found");
+        }
+
         console.log(
           `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
             detectionResult.summary.hasAmount ? "PASS" : "FAIL"
@@ -324,6 +337,7 @@ const createExpense = async (req: Request, res: Response) => {
         const allRequirementsMet =
           detectionResult.summary.hasAtLeast2Names &&
           detectionResult.summary.hasAtLeast1TaxId &&
+          detectionResult.summary.hasTaxInvoiceId &&
           detectionResult.summary.hasAmount &&
           detectionResult.summary.hasDate &&
           detectionResult.summary.hasAddress &&
@@ -338,6 +352,9 @@ const createExpense = async (req: Request, res: Response) => {
           }
           if (!detectionResult.summary.hasAtLeast1TaxId) {
             failedRequirements.push(`Tax IDs (found ${detectionResult.taxIdsFound.length}, need ≥1)`);
+          }
+          if (!detectionResult.summary.hasTaxInvoiceId) {
+            failedRequirements.push(`Tax Invoice IDs (found ${detectionResult.taxInvoiceIdsFound.length}, need ≥1)`);
           }
           if (!detectionResult.summary.hasAmount) {
             failedRequirements.push("Amount (not detected)");
@@ -362,6 +379,7 @@ const createExpense = async (req: Request, res: Response) => {
               detectedData: {
                 names: detectionResult.namesFound,
                 taxIds: detectionResult.taxIdsFound,
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
                 hasAmount: detectionResult.summary.hasAmount,
                 hasDate: detectionResult.summary.hasDate,
                 hasAddress: detectionResult.summary.hasAddress,
@@ -371,6 +389,7 @@ const createExpense = async (req: Request, res: Response) => {
               selectableOptions: {
                 names: detectionResult.namesFound || [],
                 taxIds: detectionResult.taxIdsFound || [],
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
                 amounts: detectionResult.amountsDetected || [],
                 dates: detectionResult.datesDetected || [],
                 addresses: detectionResult.addressesDetected || [],
@@ -388,6 +407,7 @@ const createExpense = async (req: Request, res: Response) => {
               detectedData: {
                 names: detectionResult.namesFound,
                 taxIds: detectionResult.taxIdsFound,
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
                 hasAmount: detectionResult.summary.hasAmount,
                 hasDate: detectionResult.summary.hasDate,
                 hasAddress: detectionResult.summary.hasAddress,
@@ -397,6 +417,7 @@ const createExpense = async (req: Request, res: Response) => {
               selectableOptions: {
                 names: detectionResult.namesFound || [],
                 taxIds: detectionResult.taxIdsFound || [],
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
                 amounts: detectionResult.amountsDetected || [],
                 dates: detectionResult.datesDetected || [],
                 addresses: detectionResult.addressesDetected || [],
@@ -1236,7 +1257,7 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Expense ID and selected data are required" });
     }
 
-    const { sName, sTaxId, amount, date, address } = selectedData;
+    const { sName, sTaxId, taxInvoiceId, amount, date, address } = selectedData;
 
     // Update the expense with selected OCR data
     const updatedExpense = await prisma.expense.update({
@@ -1244,6 +1265,7 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
       data: {
         ...(sName && { sName }),
         ...(sTaxId && { sTaxId }),
+        ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
         ...(amount && { amount: Number(amount) }),
         ...(date && { date }),
         ...(address && { sAddress: address }),
@@ -1251,6 +1273,14 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
     });
 
     console.log("✅ Expense updated with OCR data:", updatedExpense.id);
+    console.log("📝 Updated fields:", {
+      ...(sName && { sName }),
+      ...(sTaxId && { sTaxId }),
+      ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
+      ...(amount && { amount: Number(amount) }),
+      ...(date && { date }),
+      ...(address && { sAddress: address }),
+    });
     res.json({ success: true, expense: updatedExpense });
   } catch (error) {
     console.error("❌ Error updating expense with OCR data:", error);

@@ -104,6 +104,7 @@ export default function CreateExpense({
   const [selectedOCRData, setSelectedOCRData] = useState<{
     selectedName?: string;
     selectedTaxId?: string;
+    selectedTaxInvoiceId?: string;
     selectedAmount?: number;
     selectedDate?: string;
     selectedAddress?: string;
@@ -765,6 +766,93 @@ export default function CreateExpense({
                                     </View>
                                   )}
 
+                                {/* Tax Invoice IDs Selection */}
+                                {ocrAlert.details.selectableOptions.taxInvoiceIds &&
+                                  ocrAlert.details.selectableOptions.taxInvoiceIds
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
+                                        style={{
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
+                                        }}
+                                      >
+                                        🧾 Tax Invoice IDs (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .taxInvoiceIds.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.taxInvoiceIds.map(
+                                        (taxInvoiceId: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedTaxInvoiceId: taxInvoiceId,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected taxInvoiceId:",
+                                                taxInvoiceId
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedTaxInvoiceId ===
+                                                taxInvoiceId
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedTaxInvoiceId ===
+                                                taxInvoiceId
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedTaxInvoiceId ===
+                                                taxInvoiceId
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedTaxInvoiceId ===
+                                                  taxInvoiceId
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedTaxInvoiceId ===
+                                              taxInvoiceId
+                                                ? "✓ "
+                                                : "○ "}
+                                              {taxInvoiceId}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Amounts Selection */}
                                 {ocrAlert.details.selectableOptions.amounts &&
                                   ocrAlert.details.selectableOptions.amounts
@@ -1055,6 +1143,9 @@ export default function CreateExpense({
                                   if (selectedOCRData.selectedTaxId) {
                                     setSTaxId(selectedOCRData.selectedTaxId);
                                   }
+                                  if (selectedOCRData.selectedTaxInvoiceId) {
+                                    setTaxInvoiceNo(selectedOCRData.selectedTaxInvoiceId);
+                                  }
                                   if (selectedOCRData.selectedAmount) {
                                     setAmount(
                                       selectedOCRData.selectedAmount.toString()
@@ -1145,7 +1236,10 @@ export default function CreateExpense({
                                     "sAddress",
                                     selectedOCRData.selectedAddress || sAddress
                                   );
-                                  formData.append("taxInvoiceNo", taxInvoiceNo);
+                                  formData.append(
+                                    "taxInvoiceNo", 
+                                    selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo
+                                  );
                                   formData.append("branch", branch);
                                   formData.append("taxType", taxType);
 
@@ -1239,6 +1333,7 @@ export default function CreateExpense({
                                 setSelectedOCRData({
                                   selectedName: "",
                                   selectedTaxId: "",
+                                  selectedTaxInvoiceId: "",
                                   selectedAmount: undefined,
                                   selectedDate: "",
                                   selectedAddress: "",
@@ -1289,6 +1384,7 @@ export default function CreateExpense({
                                 setSelectedOCRData({
                                   selectedName: "",
                                   selectedTaxId: "",
+                                  selectedTaxInvoiceId: "",
                                   selectedAmount: undefined,
                                   selectedDate: "",
                                   selectedAddress: "",

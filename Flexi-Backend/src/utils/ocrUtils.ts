@@ -18,6 +18,7 @@ export interface ExtractedData {
 export interface OCRDetectionResult {
   namesFound: string[];
   taxIdsFound: string[];
+  taxInvoiceIdsFound: string[];
   amountFound: boolean;
   dateFound: boolean;
   addressFound: boolean;
@@ -27,31 +28,11 @@ export interface OCRDetectionResult {
   datesDetected: string[];
   addressesDetected: string[];
   provincesDetected: string[];
+  taxInvoiceIdsDetected: string[];
   summary: {
     hasAtLeast2Names: boolean;
     hasAtLeast1TaxId: boolean;
-    hasAmount: boolean;
-    hasDate: boolean;
-    hasAddress: boolean;
-    hasReceiptTitle: boolean;
-  };
-}
-
-export interface OCRDetectionResult {
-  namesFound: string[];
-  taxIdsFound: string[];
-  amountFound: boolean;
-  dateFound: boolean;
-  addressFound: boolean;
-  receiptTitleFound: boolean;
-  // Add detailed detection results
-  amountsDetected: string[];
-  datesDetected: string[];
-  addressesDetected: string[];
-  provincesDetected: string[];
-  summary: {
-    hasAtLeast2Names: boolean;
-    hasAtLeast1TaxId: boolean;
+    hasTaxInvoiceId: boolean;
     hasAmount: boolean;
     hasDate: boolean;
     hasAddress: boolean;
@@ -107,11 +88,11 @@ const extractFullAddressLines = (text: string): string[] => {
               match.toLowerCase().includes(keyword.toLowerCase())
             ) || containsProvince; // Province already counts as address keyword
             
-            console.log(`      🔍 VALIDATING ADDRESS: "${match}"`);
-            console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
-            console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
-            console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
-            console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+            // console.log(`      🔍 VALIDATING ADDRESS: "${match}"`);
+            // console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+            // console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+            // console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+            // console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
             
             // Only proceed if ALL 4 conditions are met
             if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
@@ -191,11 +172,11 @@ const extractFullAddressLines = (text: string): string[] => {
               address.toLowerCase().includes(keyword.toLowerCase())
             ) || containsProvince; // Province already counts as address keyword
             
-            console.log(`      🔍 VALIDATING SPECIFIC ADDRESS: "${address}"`);
-            console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
-            console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
-            console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
-            console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+            // console.log(`      🔍 VALIDATING SPECIFIC ADDRESS: "${address}"`);
+            // console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+            // console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+            // console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+            // console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
             
             // Only proceed if ALL 4 conditions are met
             if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
@@ -299,7 +280,7 @@ const extractFullAddressLines = (text: string): string[] => {
         'แขวง', 'เขต', 'อำเภอ', 'ตำบล'
       ].some(location => line.toLowerCase().includes(location.toLowerCase()));
       
-      console.log(`      Location indicator: ${hasLocationIndicator ? '✅' : '❌'}`);
+      // console.log(`      Location indicator: ${hasLocationIndicator ? '✅' : '❌'}`);
       
       if (hasIndicators && hasLocationIndicator) {
         // Apply 4-condition validation for addresses:
@@ -319,11 +300,11 @@ const extractFullAddressLines = (text: string): string[] => {
           line.toLowerCase().includes(keyword.toLowerCase())
         ) || containsProvince; // Province already counts as address keyword
         
-        console.log(`      🔍 VALIDATING SHORT LINE ADDRESS: "${line}"`);
-        console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
-        console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
-        console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
-        console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+        // console.log(`      🔍 VALIDATING SHORT LINE ADDRESS: "${line}"`);
+        // console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+        // console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+        // console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+        // console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
         
         // Only proceed if ALL 4 conditions are met
         if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
@@ -394,6 +375,7 @@ export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDete
     return {
       namesFound: [],
       taxIdsFound: [],
+      taxInvoiceIdsFound: [],
       amountFound: false,
       dateFound: false,
       addressFound: false,
@@ -402,9 +384,11 @@ export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDete
       datesDetected: [],
       addressesDetected: [],
       provincesDetected: [],
+      taxInvoiceIdsDetected: [],
       summary: {
         hasAtLeast2Names: false,
         hasAtLeast1TaxId: false,
+        hasTaxInvoiceId: false,
         hasAmount: false,
         hasDate: false,
         hasAddress: false,
@@ -427,6 +411,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   const detectedDates: string[] = [];
   const detectedAddresses: string[] = [];
   const detectedProvinces: string[] = [];
+  const detectedTaxInvoiceIds: string[] = [];
   
   // 1. Detect Names
   const namePatterns = [
@@ -557,7 +542,78 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     console.log(`   ${index + 1}. ${taxId}`);
   });
 
-  // 3. Detect Amount
+  // 3. Detect Tax Invoice IDs
+  const taxInvoiceIdPatterns = [
+    // English patterns
+    /(?:ID|id|Id)\s*:?\s*([A-Za-z0-9\-\_\/]+)/gi,
+    /(?:id\s*-|ID\s*-)\s*([A-Za-z0-9\-\_\/]+)/gi,
+    /(?:billid|bill\s*id)\s*:?\s*([A-Za-z0-9\-\_\/]+)/gi,
+    /(?:no\.|number\s*id)\s*:?\s*([A-Za-z0-9\-\_\/]+)/gi,
+    
+    // Thai patterns
+    /(?:เลขที่)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    /(?:บิลเลขที่)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    /(?:เลขที่บิล)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    /(?:เลขที่เอกสาร)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    /(?:เอกสารเลขที่)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    /(?:เล่มที่\/เลขที่)\s*:?\s*([A-Za-z0-9ก-๙\-\_\/\s]+)/gi,
+    
+    // General pattern for invoice numbers (letters + numbers)
+    /\b([A-Za-z]{1,4}\d{4,}|\d{4,}[A-Za-z]{1,4}|[A-Za-z0-9]{6,})\b/g
+  ];
+
+  const taxInvoiceIdsFound: string[] = [];
+
+  for (const pattern of taxInvoiceIdPatterns) {
+    let match;
+    while ((match = pattern.exec(cleanText)) !== null) {
+      if (match && match[1]) {
+        let invoiceId = match[1].trim();
+        
+        // Clean up the invoice ID
+        invoiceId = invoiceId.replace(/\s+/g, ' ').trim();
+        
+        // Filter out obvious non-invoice IDs (like tax IDs, phone numbers, etc.)
+        const isValidInvoiceId = (id: string): boolean => {
+          // Skip if it doesn't contain any numbers
+          if (!/\d/.test(id)) return false;
+          
+          // Skip if it's a 13-digit tax ID
+          if (/^\d{13}$/.test(id.replace(/[\s\-]/g, ''))) return false;
+          
+          // Skip if it's a phone number pattern
+          if (/^0\d{9,10}$/.test(id.replace(/[\s\-]/g, ''))) return false;
+          
+          // Skip if it's a postal code
+          if (/^\d{5}$/.test(id)) return false;
+          
+          // Skip if it's too short or too long
+          if (id.length < 3 || id.length > 50) return false;
+          
+          // Skip if it's just numbers and looks like amount/date
+          if (/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(id)) return false;
+          if (/^\d+\.\d{2}$/.test(id)) return false;
+          
+          return true;
+        };
+        
+        if (isValidInvoiceId(invoiceId)) {
+          if (!taxInvoiceIdsFound.includes(invoiceId)) {
+            taxInvoiceIdsFound.push(invoiceId);
+            detectedTaxInvoiceIds.push(invoiceId); // Also add to detected array
+          }
+        }
+      }
+    }
+    pattern.lastIndex = 0;
+  }
+
+  console.log(`🔍 TAX INVOICE IDs DETECTED: ${taxInvoiceIdsFound.length} invoice IDs found`);
+  taxInvoiceIdsFound.forEach((invoiceId, index) => {
+    console.log(`   ${index + 1}. ${invoiceId}`);
+  });
+
+  // 4. Detect Amount
   const amountPatterns = [
     /(?:Total|ทั้งหมด|รวม|รวมทั้งหมด|ยอดรวม|จำนวนเงินทั้งสิ้น|จำนวนเงินรวม)\s*:?\s*([0-9,]+\.?\d*)/gi,
     /(?:Total|ทั้งหมด|รวม|รวมทั้งหมด|ยอดรวม|จำนวนเงินทั้งสิ้น|จำนวนเงินรวม)\s*:?\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/gi,
@@ -775,6 +831,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   const summary = {
     hasAtLeast2Names: namesFound.length >= 2,
     hasAtLeast1TaxId: taxIdsFound.length >= 1,
+    hasTaxInvoiceId: taxInvoiceIdsFound.length >= 1,
     hasAmount: amountFound,
     hasDate: dateFound,
     hasAddress: addressFound,
@@ -784,6 +841,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   console.log('\n📊 DETECTION SUMMARY:');
   console.log(`✅ Names: ${namesFound.length >= 2 ? 'PASS' : 'FAIL'} (Found ${namesFound.length}, need ≥2)`);
   console.log(`✅ Tax IDs: ${taxIdsFound.length >= 1 ? 'PASS' : 'FAIL'} (Found ${taxIdsFound.length}, need ≥1)`);
+  console.log(`✅ Tax Invoice IDs: ${taxInvoiceIdsFound.length >= 1 ? 'PASS' : 'FAIL'} (Found ${taxInvoiceIdsFound.length})`);
   console.log(`✅ Amount: ${amountFound ? 'PASS' : 'FAIL'}`);
   console.log(`✅ Date: ${dateFound ? 'PASS' : 'FAIL'}`);
   console.log(`✅ Address: ${addressFound ? 'PASS' : 'FAIL'}`);
@@ -792,6 +850,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   return {
     namesFound,
     taxIdsFound,
+    taxInvoiceIdsFound,
     amountFound,
     dateFound,
     addressFound,
@@ -801,6 +860,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     datesDetected: detectedDates,
     addressesDetected: detectedAddresses,
     provincesDetected: detectedProvinces,
+    taxInvoiceIdsDetected: detectedTaxInvoiceIds,
     summary
   };
 };
