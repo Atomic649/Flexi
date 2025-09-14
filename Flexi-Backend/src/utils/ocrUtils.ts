@@ -1,5 +1,10 @@
 import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
+import { 
+  thaiProvinces, 
+  generalAddressKeywords, 
+  receiptTitleKeywords 
+} from './ocrKeywords';
 
 export interface ExtractedData {
   sName?: string;
@@ -55,6 +60,301 @@ export interface OCRDetectionResult {
 }
 
 export interface OCRResult extends ExtractedData {}
+
+/**
+ * Extract full address lines from OCR text
+ * Looks for complete address patterns that include house numbers, streets, districts, and provinces
+ */
+const extractFullAddressLines = (text: string): string[] => {
+  const addresses: string[] = [];
+  
+  // Split text into lines for better address extraction
+  const lines = text.split(/[\n\r]+/).map(line => line.trim()).filter(line => line.length > 0);
+  
+  console.log(`🔍 ANALYZING ${lines.length} lines for address extraction:`);
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    console.log(`   Line ${i+1}: LENGTH ${line.length}`);
+    
+    // If line is too long (likely entire OCR text in one line), extract addresses using regex
+    if (line.length > 300) {
+      console.log(`      📝 LONG LINE DETECTED - Extracting addresses with regex patterns:`);
+      
+      // Extract Thai addresses using comprehensive patterns with 4 conditions
+      const addressPatterns = [/(\d+(?:\/\d+)?[^\n\r]*?\d{5})/g
+      ];
+      
+      for (const pattern of addressPatterns) {
+        const matches = line.match(pattern);
+        if (matches) {
+          matches.forEach(match => {
+            // Apply 4-condition validation for addresses:
+            // 1. Must start with number (with or without /)
+            const startsWithNumber = /^\d+(?:\/\d+)?/.test(match.trim());
+            
+            // 2. Must end with 5-digit postal code
+            const endsWithPostalCode = /\d{5}$/.test(match.trim());
+            
+            // 3. Must contain Thai province
+            const containsProvince = thaiProvinces.some(province => 
+              match.toLowerCase().includes(province.toLowerCase())
+            );
+            
+            // 4. Must contain at least one address keyword (generalAddressKeywords or thaiProvinces)
+            const containsAddressKeyword = generalAddressKeywords.some(keyword => 
+              match.toLowerCase().includes(keyword.toLowerCase())
+            ) || containsProvince; // Province already counts as address keyword
+            
+            console.log(`      🔍 VALIDATING ADDRESS: "${match}"`);
+            console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+            console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+            console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+            console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+            
+            // Only proceed if ALL 4 conditions are met
+            if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
+              console.log(`      ✅ ADDRESS VALIDATION PASSED`);
+              
+              // Clean up the match - remove unwanted elements
+              let cleanAddress = match
+                .replace(/^fog:\s*/i, '')                                    // Remove fog: prefix
+                .replace(/^\d+\.\s*/, '')                                    // Remove number prefixes like "1. "
+                .replace(/^[ก-ฮ]\s+\d+\s*/, '')                              // Remove "ก 2" style prefixes
+                .replace(/ข้อมูล.*?:/gi, '')                                 // Remove "ข้อมูลบริษัท:" style prefixes
+                .replace(/ที่อยู่.*?:/gi, '')                                // Remove "ที่อยู่:" prefixes
+                // Remove datetime patterns
+                .replace(/\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s+[APap][Mm]/g, '') // Remove "10/09/2025 11:58 AM"
+                .replace(/\d{1,2}\/\d{1,2}\/\d{4}/g, '')                     // Remove date patterns
+                .replace(/\d{1,2}:\d{2}(?:\s*[APap][Mm])?/g, '')             // Remove time patterns
+                // Remove phone numbers
+                .replace(/\b0\d{9,10}\b/g, '')                               // Remove Thai phone numbers (0854635486)
+                .replace(/\b\d{3}-\d{3}-\d{4}\b/g, '')                       // Remove formatted phone numbers
+                .replace(/\b\d{10,11}\b/g, '')                               // Remove long number sequences (likely phones)
+                // Remove status codes and random text
+                .replace(/สถานะ\d+/g, '')                                    // Remove "สถานะ1"
+                .replace(/\bEE\b/g, '')                                      // Remove "EE"
+                .replace(/=\s*/g, '')                                        // Remove "=" symbols
+                .replace(/\b[A-Z]{1,3}\b(?!\s*[ก-ฮ])/g, '')                  // Remove standalone capital letters
+                .replace(/\s+/g, ' ')                                        // Normalize spaces
+                .trim();
+              
+              // Further clean - ensure it starts with address number and contains essential address components
+              // Look for house number pattern (77/24), building pattern (313 อาคาร), or any number starting pattern
+              const houseMatch = cleanAddress.match(/(\d+\/\d+.*)/);
+              const buildingMatch = cleanAddress.match(/(\d+\s*อาคาร.*)/);
+              const numberStartMatch = cleanAddress.match(/(\d+[^.\n\r]*\d{5})/); // Any number start + postal code
+              
+              if (houseMatch) {
+                cleanAddress = houseMatch[1].trim();
+              } else if (buildingMatch) {
+                cleanAddress = buildingMatch[1].trim();
+              } else if (numberStartMatch) {
+                cleanAddress = numberStartMatch[1].trim();
+              }
+              
+              if (cleanAddress.length >= 20) {
+                addresses.push(cleanAddress);
+                console.log(`      🎯 REGEX EXTRACTED: "${cleanAddress}"`);
+              }
+            } else {
+              console.log(`      ❌ ADDRESS VALIDATION FAILED - Skipping: "${match}"`);
+            }
+          });
+        }
+      }
+      
+      // Also try to extract by looking for specific sequences
+      const specificMatches = [
+        // SMART PATTERN: Any text starting with number and ending with 5-digit postal code
+        line.match(/\d+(?:\/\d+)?[^.\n\r]*?\d{5}/g)
+      ].filter(match => match);
+      
+      specificMatches.forEach(matchArray => {
+        if (matchArray) {
+          matchArray.forEach(address => {
+            // Apply 4-condition validation for addresses:
+            // 1. Must start with number (with or without /)
+            const startsWithNumber = /^\d+(?:\/\d+)?/.test(address.trim());
+            
+            // 2. Must end with 5-digit postal code
+            const endsWithPostalCode = /\d{5}$/.test(address.trim());
+            
+            // 3. Must contain Thai province
+            const containsProvince = thaiProvinces.some(province => 
+              address.toLowerCase().includes(province.toLowerCase())
+            );
+            
+            // 4. Must contain at least one address keyword (generalAddressKeywords or thaiProvinces)
+            const containsAddressKeyword = generalAddressKeywords.some(keyword => 
+              address.toLowerCase().includes(keyword.toLowerCase())
+            ) || containsProvince; // Province already counts as address keyword
+            
+            console.log(`      🔍 VALIDATING SPECIFIC ADDRESS: "${address}"`);
+            console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+            console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+            console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+            console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+            
+            // Only proceed if ALL 4 conditions are met
+            if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
+              console.log(`      ✅ SPECIFIC ADDRESS VALIDATION PASSED`);
+              
+              // Enhanced cleaning for specific matches
+              let cleanAddress = address
+                // Remove datetime patterns
+                .replace(/\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s+[APap][Mm]/g, '')
+                .replace(/\d{1,2}\/\d{1,2}\/\d{4}/g, '')
+                .replace(/\d{1,2}:\d{2}(?:\s*[APap][Mm])?/g, '')
+                // Remove phone numbers
+                .replace(/\b0\d{9,10}\b/g, '')
+                .replace(/\b\d{3}-\d{3}-\d{4}\b/g, '')
+                .replace(/\b\d{10,11}\b/g, '')
+                // Remove status codes
+                .replace(/สถานะ\d+/g, '')
+                .replace(/\bEE\b/g, '')
+                .replace(/=\s*/g, '')
+                .replace(/\b[A-Z]{1,3}\b(?!\s*[ก-ฮ])/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+              
+              // Find the house number, building number, or any number start and start from there
+              const houseMatch = cleanAddress.match(/(\d+\/\d+.*)/);
+              const buildingMatch = cleanAddress.match(/(\d+\s*อาคาร.*)/);
+              const numberStartMatch = cleanAddress.match(/(\d+[^.\n\r]*\d{5})/); // Any number start + postal code
+              
+              if (houseMatch) {
+                cleanAddress = houseMatch[1].trim();
+              } else if (buildingMatch) {
+                cleanAddress = buildingMatch[1].trim();
+              } else if (numberStartMatch) {
+                cleanAddress = numberStartMatch[1].trim();
+              }
+              
+              if (cleanAddress.length >= 20 && !addresses.includes(cleanAddress)) {
+                addresses.push(cleanAddress);
+                console.log(`      🎯 SPECIFIC PATTERN EXTRACTED: "${cleanAddress}"`);
+              }
+            } else {
+              console.log(`      ❌ SPECIFIC ADDRESS VALIDATION FAILED - Skipping: "${address}"`);
+            }
+          });
+        }
+      });
+      
+    } else {
+      // Original logic for normal-length lines
+      // Skip lines that are clearly not addresses
+      if (line.length < 10) {
+        console.log(`   Line ${i+1}: SKIPPED (too short): "${line}"`);
+        continue;
+      }
+      
+      console.log(`   Line ${i+1}: CHECKING: "${line}"`);
+      
+      // Address indicators that suggest this line contains an address
+      const hasAddressIndicators = [
+        /^\d+(?:\/\d+)?.*\d{5}$/,                      // BROAD: Starts with number (with/without /) and ends with 5-digit postal code
+        /\d+\/\d+/,                                    // House numbers like 77/24, 555/39
+        /อาคาร[ก-ฮa-zA-Z\d\s\.\-]{1,50}/,             // อาคาร + building name (like อาคาร ซี.พี.ทาวเวอร์)
+        /ชั้น[\d]+/,                                   // ชั้น + floor number (like ชั้น24)
+        /ชั้นที่[\d]+/,                                // ชั้นที่ + floor number
+        /ห้อง[\d]+/,                                   // ห้อง + room number
+        /\d+\s*อาคาร/,                                 // Number + อาคาร (like 313 อาคาร)
+        /ซอย.{1,50}[\d]+/,                             // Soi + name + number (with or without spaces)
+        /ซอย[ก-ฮa-zA-Z\d\s]{1,50}/,                   // More flexible soi pattern
+        /แขวง[ก-ฮ\s]{1,30}/,                           // แขวง + subdistrict (with spaces)
+        /แขวง[ก-ฮ]{3,30}/,                             // แขวง + subdistrict (without spaces)
+        /เขต[ก-ฮ\s]{1,30}/,                            // เขต + district (with spaces) 
+        /เขต[ก-ฮ]{3,30}/,                              // เขต + district (without spaces)
+        /อำเภอ[ก-ฮ\s]{1,30}/,                          // อำเภอ + district
+        /อำเภอ[ก-ฮ]{3,30}/,                            // อำเภอ + district (no spaces)
+        /ตำบล[ก-ฮ\s]{1,30}/,                           // ตำบล + subdistrict
+        /ตำบล[ก-ฮ]{3,30}/,                             // ตำบล + subdistrict (no spaces)
+        /จังหวัด[ก-ฮ\s]{1,30}/,                        // จังหวัด + province
+        /จังหวัด[ก-ฮ]{3,30}/,                          // จังหวัด + province (no spaces)
+        /กรุงเทพมหานคร/,                               // Bangkok
+        /\d{5}$/,                                      // Ends with postal code
+        /ถนน[ก-ฮ\s]{1,30}/,                            // ถนน + street name (with spaces)
+        /ถนน[ก-ฮ]{3,30}/,                              // ถนน + street name (without spaces)
+      ];
+      
+      // Check which patterns match for debugging
+      const matchingPatterns = hasAddressIndicators.filter(pattern => pattern.test(line));
+      const hasIndicators = matchingPatterns.length > 0;
+      
+      if (hasIndicators) {
+        console.log(`      ✅ HAS ADDRESS INDICATORS (${matchingPatterns.length} patterns matched)`);
+        matchingPatterns.forEach((pattern, idx) => {
+          console.log(`         Pattern ${idx+1}: ${pattern.source}`);
+        });
+      } else {
+        console.log(`      ❌ NO ADDRESS INDICATORS`);
+      }
+      
+      // Additional check: must contain at least one province or Bangkok area
+      const hasLocationIndicator = [
+        ...thaiProvinces,
+        'แขวง', 'เขต', 'อำเภอ', 'ตำบล'
+      ].some(location => line.toLowerCase().includes(location.toLowerCase()));
+      
+      console.log(`      Location indicator: ${hasLocationIndicator ? '✅' : '❌'}`);
+      
+      if (hasIndicators && hasLocationIndicator) {
+        // Apply 4-condition validation for addresses:
+        // 1. Must start with number (with or without /)
+        const startsWithNumber = /^\d+(?:\/\d+)?/.test(line.trim());
+        
+        // 2. Must end with 5-digit postal code
+        const endsWithPostalCode = /\d{5}$/.test(line.trim());
+        
+        // 3. Must contain Thai province
+        const containsProvince = thaiProvinces.some(province => 
+          line.toLowerCase().includes(province.toLowerCase())
+        );
+        
+        // 4. Must contain at least one address keyword (generalAddressKeywords or thaiProvinces)
+        const containsAddressKeyword = generalAddressKeywords.some(keyword => 
+          line.toLowerCase().includes(keyword.toLowerCase())
+        ) || containsProvince; // Province already counts as address keyword
+        
+        console.log(`      🔍 VALIDATING SHORT LINE ADDRESS: "${line}"`);
+        console.log(`         Condition 1 - Starts with number: ${startsWithNumber ? '✅' : '❌'}`);
+        console.log(`         Condition 2 - Ends with postal: ${endsWithPostalCode ? '✅' : '❌'}`);
+        console.log(`         Condition 3 - Contains province: ${containsProvince ? '✅' : '❌'}`);
+        console.log(`         Condition 4 - Contains address keyword: ${containsAddressKeyword ? '✅' : '❌'}`);
+        
+        // Only proceed if ALL 4 conditions are met
+        if (startsWithNumber && endsWithPostalCode && containsProvince && containsAddressKeyword) {
+          console.log(`      ✅ SHORT LINE ADDRESS VALIDATION PASSED`);
+          
+          // Clean up the address line
+          let cleanAddress = line
+            .replace(/^fog:\s*/i, '')                    // Remove fog: prefix
+            .replace(/^\d+\.\s*/, '')                    // Remove number prefixes like "1. "
+            .replace(/^[ก-ฮ]\s+\d+\s*/, '')              // Remove "ก 2" style prefixes
+            .replace(/ข้อมูล.*?:/gi, '')                 // Remove "ข้อมูลบริษัท:" style prefixes
+            .replace(/ที่อยู่.*?:/gi, '')                // Remove "ที่อยู่:" prefixes
+            .trim();
+          
+          // Only add if it's a substantial address (not just a fragment)
+          if (cleanAddress.length >= 20 && cleanAddress.includes(' ')) {
+            addresses.push(cleanAddress);
+            console.log(`      🏠 EXTRACTED: "${cleanAddress}"`);
+          } else {
+            console.log(`      ⚠️ TOO SHORT OR NO SPACES (length: ${cleanAddress.length}): "${cleanAddress}"`);
+          }
+        } else {
+          console.log(`      ❌ SHORT LINE ADDRESS VALIDATION FAILED - Skipping: "${line}"`);
+        }
+      }
+    }
+  }
+  
+  console.log(`🔍 TOTAL ADDRESSES EXTRACTED: ${addresses.length}`);
+  return addresses;
+};
 
 export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDetectionResult> => {
   try {
@@ -130,14 +430,16 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   
   // 1. Detect Names
   const namePatterns = [
-    // Company names with prefixes and endings
-    /(?:ห้างหุ้นส่วนจำกัด|ห้างหุ้นส่วนจํากัด|บจก\.?|บมจ\.?)\s*([^.\n\r;,]*?)(?:จำกัด\s*มหาชน|จํากัด\s*มหาชน|จำกัด|จํากัด)/gi,
+    // Company names with prefixes and endings - Enhanced for บมจ. ซีพี ออลล์
+    /(?:ห้างหุ้นส่วนจำกัด|ห้างหุ้นส่วนจํากัด|บจก\.?\s*|บมจ\.?\s*)\s*([^.\n\r;,]*?)(?:\s*จำกัด\s*(?:มหาชน)?|\s*จํากัด\s*(?:มหาชน)?|$)/gi,
     // Personal names with titles
     /(?:จำกัด|จํากัด|นาง|นาย|นางสาว|นส\.?|คุณ)\s?([^\n\r.;,]+)/gi,
-    // บริษัท pattern
-    /บริษัท\s+([^.\n\r;,]*?)(?:จำกัด\s*มหาชน|จํากัด\s*มหาชน|จำกัด|จํากัด)/gi,
-    // ชื่อบริษัท pattern
-    /ชื่อบริษัท:\s*บริษัท\s+([^.\n\r;,]*?)(?:จำกัด\s*มหาชน|จํากัด\s*มหาชน|จำกัด|จํากัด)/gi,
+    // บริษัท pattern - Enhanced to capture FULL company name including บริษัท prefix
+    /(บริษัท\s+[^.\n\r;,]*?(?:\s*จำกัด\s*(?:มหาชน|\(มหาชน\))?|\s*จํากัด\s*(?:มหาชน|\(มหาชน\))?|$))/gi,
+    // ชื่อบริษัท pattern - also capture full name
+    /ชื่อบริษัท:\s*(บริษัท\s+[^.\n\r;,]*?(?:จำกัด\s*(?:มหาชน|\(มหาชน\))?|จํากัด\s*(?:มหาชน|\(มหาชน\))?))/gi,
+    // Digitally Signed By pattern - extract company name from digital signatures
+    /Digitally\s+Signed\s+By\s+(บริษัท\s+[^.\n\r;,]*?(?:\s*จำกัด\s*(?:มหาชน|\(มหาชน\))?|\s*จํากัด\s*(?:มหาชน|\(มหาชน\))?)?)/gi,
     // Individual customer names after ลูกค้า
     /ลูกค้า[^ก-๙a-zA-Z]*([ก-๙]+\s+[ก-๙]+)(?:\s+การ|\s+\d|\s+วันที่|$)/gi
   ];
@@ -197,7 +499,14 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
             namesFound.push(fullName);
           }
         } else if (isAddress) {
-          console.log(`🚫 Filtered out address detected as name: ${fullName}`);
+          // Instead of just filtering out, collect as address
+          // Clean up the address by removing "fog:" prefix
+          let cleanAddress = fullName.replace(/^fog:\s*/i, '').trim();
+          
+          if (!detectedAddresses.includes(cleanAddress)) {
+            detectedAddresses.push(cleanAddress);
+          }
+          console.log(`🏠 Collected address: ${cleanAddress}`);
         }
       }
     }
@@ -305,25 +614,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   }
 
   // 5. Detect Address Keywords
-  const generalAddressKeywords = [
-    'แขวง', 'เขต', 'อำเภอ', 'ตำบล', 'จังหวัด', 'หมู่บ้าน', 'หมู่',
-    'ข.', 'ต.', 'จ.', 'อ.', 'บ้านเลขที่', 'เลขที่', 'ซอย', 'ถนน', 'ถ.'
-  ];
-
-  const thaiProvinces = [
-    // All 76 Thai provinces
-    'กรุงเทพมหานคร', 'กระบี่', 'กาญจนบุรี', 'กาฬสินธุ์', 'กำแพงเพชร', 'ขอนแก่น', 'จันทบุรี', 'ฉะเชิงเทรา',
-    'ชลบุรี', 'ชัยนาท', 'ชัยภูมิ', 'ชุมพร', 'เชียงราย', 'เชียงใหม่', 'ตรัง', 'ตราด', 'ตาก', 'นครนายก',
-    'นครปฐม', 'นครพนม', 'นครราชสีมา', 'นครศรีธรรมราช', 'นครสวรรค์', 'นนทบุรี', 'นราธิวาส', 'น่าน',
-    'บึงกาฬ', 'บุรีรัมย์', 'ปทุมธานี', 'ประจวบคีรีขันธ์', 'ปราจีนบุรี', 'ปัตตานี', 'พระนครศรีอยุธยา', 'พะเยา',
-    'พังงา', 'พัทลุง', 'พิจิตร', 'พิษณุโลก', 'เพชรบุรี', 'เพชรบูรณ์', 'แพร่', 'ภูเก็ต', 'มหาสารคาม',
-    'มุกดาหาร', 'แม่ฮ่องสอน', 'ยโสธร', 'ยะลา', 'ร้อยเอ็ด', 'ระนอง', 'ระยอง', 'ราชบุรี', 'ลพบุรี',
-    'ลำปาง', 'ลำพูน', 'เลย', 'ศรีสะเกษ', 'สกลนคร', 'สงขลา', 'สตูล', 'สมุทรปราการ', 'สมุทรสงคราม',
-    'สมุทรสาคร', 'สระแก้ว', 'สระบุรี', 'สิงห์บุรี', 'สุโขทัย', 'สุพรรณบุรี', 'สุราษฎร์ธานี', 'สุรินทร์',
-    'หนองคาย', 'หนองบัวลำภู', 'อ่างทอง', 'อำนาจเจริญ', 'อุดรธานี', 'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี',
-    // Common abbreviations of provinces
-    'กทม.', 'นม.', 'นบ.', 'ปท.', 'สป.', 'สค.', 'สส.'
-  ];
+  // Using imported keywords from ocrKeywords.ts
 
   let addressFound = false;
   let provinceFound = '';
@@ -376,11 +667,19 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     const addressPatterns = [
       /\d+\/\d+/,                                    // House number patterns like "123/45"
       /เลขที่\s*\d+/,                                // เลขที่ 123
-      /ถนน[ก-ฮ\s]+/,                                  // ถนน + street name
-      /ซอย[ก-ฮ\s\d]+/,                               // ซอย + soi name
+      /ถนน[ก-ฮ\s]{1,30}/,                            // ถนน + street name (with spaces)
+      /ถนน[ก-ฮ]{3,30}/,                              // ถนน + street name (no spaces)  
+      /ซอย[ก-ฮ\s\d]{1,50}/,                         // ซอย + soi name (with spaces)
+      /ซอย[ก-ฮ\d]{3,50}/,                           // ซอย + soi name (no spaces)
+      /แขวง[ก-ฮ\s]{1,30}/,                          // แขวง + subdistrict (with spaces)
+      /แขวง[ก-ฮ]{3,30}/,                            // แขวง + subdistrict (no spaces)
+      /เขต[ก-ฮ\s]{1,30}/,                           // เขต + district (with spaces)
+      /เขต[ก-ฮ]{3,30}/,                             // เขต + district (no spaces)
       /\d{5}/,                                       // 5-digit postal code
-      /อำเภอ[ก-ฮ\s]+/,                               // อำเภอ + district
-      /ตำบล[ก-ฮ\s]+/,                                // ตำบล + subdistrict
+      /อำเภอ[ก-ฮ\s]{1,30}/,                         // อำเภอ + district
+      /อำเภอ[ก-ฮ]{3,30}/,                           // อำเภอ + district (no spaces)
+      /ตำบล[ก-ฮ\s]{1,30}/,                          // ตำบล + subdistrict
+      /ตำบล[ก-ฮ]{3,30}/,                            // ตำบล + subdistrict (no spaces)
     ];
 
     for (const pattern of addressPatterns) {
@@ -399,6 +698,18 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     }
   }
 
+  // Enhanced: Extract full address lines from text
+  const fullAddressLines = extractFullAddressLines(cleanText);
+  if (fullAddressLines.length > 0) {
+    addressFound = true;
+    fullAddressLines.forEach(addressLine => {
+      if (!detectedAddresses.includes(addressLine)) {
+        detectedAddresses.push(addressLine);
+        console.log(`🏠 FULL ADDRESS EXTRACTED: "${addressLine}"`);
+      }
+    });
+  }
+
   if (!addressFound) {
     console.log('❌ ADDRESS NOT DETECTED: No Thai province or address pattern found');
     console.log('🔍 Looking for address indicators in text...');
@@ -410,13 +721,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   }
 
   // 6. Detect Receipt/Invoice Title
-  const receiptTitles = [
-    'ใบเสร็จ',
-    'ใบเสร็จรับเงิน',
-    'ใบกำกับภาษี',
-    'ใบเสร็จรับเงิน/ใบกำกับภาษี',
-    'บิลเงินสด'
-  ];
+  // Using imported keywords from ocrKeywords.ts
 
   // Add fuzzy matching patterns for common OCR errors
   const receiptTitlePatterns = [
@@ -439,7 +744,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   let foundTitle = '';
   
   // First try exact matches
-  for (const title of receiptTitles) {
+  for (const title of receiptTitleKeywords) {
     if (cleanText.includes(title)) {
       receiptTitleFound = true;
       foundTitle = title;

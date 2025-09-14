@@ -1,5 +1,6 @@
 import { fillWHTTemplateWithThaiFont } from "../utils/pdfWHTTemplateThai";
 import { extractTextFromImage, detectDataPresence } from "../utils/ocrUtils";
+import { autoDetectTaxType } from "../utils/ocrKeywords";
 import path from "path";
 import { Request, Response } from "express";
 import {
@@ -114,13 +115,18 @@ const createExpense = async (req: Request, res: Response) => {
 
     let imageUrl = req.body.image ?? "";
 
-    // Initialize expenseInput with form data
+    // Initialize expenseInput with form data, handling empty values properly
     let expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       desc: req.body.desc ?? "",
+      // Handle potentially empty required fields when image is present
+      date: req.body.date ? new Date(req.body.date) : new Date(),
+      amount: req.body.amount ? Number(req.body.amount) : 0,
+      note: req.body.note || "",
+      group: req.body.group || "Office", // Default group if empty
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
@@ -165,13 +171,39 @@ const createExpense = async (req: Request, res: Response) => {
             const nameToCheck = name.toLowerCase().trim();
             const businessNameToCheck = businessAcc.businessName.toLowerCase().trim();
             
-            // Check if the detected name contains the business name or vice versa
-            const isBusinessName = nameToCheck.includes(businessNameToCheck) || 
-                                   businessNameToCheck.includes(nameToCheck) ||
-                                   name.trim() === businessAcc.businessName.trim();
+            // Extract company name from text that might have prefixes like "ก 2 ชื่อบริษัท:" 
+            // Look for the actual business name anywhere in the detected text
+            const cleanBusinessName = businessNameToCheck
+              .replace(/บริษัท\s+/g, '') // Remove "บริษัท" prefix
+              .replace(/จำกัด|จํากัด/g, '') // Remove "จำกัด" suffix
+              .trim();
+            
+            const cleanDetectedName = nameToCheck
+              .replace(/^.*ชื่อบริษัท:\s*/i, '') // Remove "ชื่อบริษัท:" prefix
+              .replace(/^.*บริษัท\s+/i, '') // Remove "บริษัท" prefix
+              .replace(/จำกัด|จํากัด.*$/gi, '') // Remove "จำกัด" and anything after
+              .trim();
+            
+            // Check various forms of matching
+            const isBusinessName = 
+              // Exact match
+              nameToCheck === businessNameToCheck ||
+              name.trim() === businessAcc.businessName.trim() ||
+              // Contains full business name
+              nameToCheck.includes(businessNameToCheck) || 
+              businessNameToCheck.includes(nameToCheck) ||
+              // Clean name comparison (without company prefixes/suffixes)
+              cleanDetectedName.includes(cleanBusinessName) ||
+              cleanBusinessName.includes(cleanDetectedName) ||
+              // Check if the core business name appears anywhere in the detected text
+              nameToCheck.includes(cleanBusinessName) ||
+              cleanBusinessName.includes(cleanDetectedName);
             
             if (isBusinessName) {
               console.log(`   🚫 Filtered out business name: "${name}"`);
+              console.log(`      Original business name: "${businessAcc.businessName}"`);
+              console.log(`      Clean business name: "${cleanBusinessName}"`);
+              console.log(`      Clean detected name: "${cleanDetectedName}"`);
               return false;
             }
             return true;
@@ -190,8 +222,36 @@ const createExpense = async (req: Request, res: Response) => {
           });
           detectionResult.taxIdsFound = filteredTaxIds;
           
+          // Filter out business addresses from detected addresses
+          // Since we know the user's business has address: "555/39 หมู่บ้าน พลีโน่ รามอินทรา จตุโชติ..."
+          // We can filter based on patterns that match the business location
+          const originalAddressesCount = detectionResult.addressesDetected.length;
+          const filteredAddresses = detectionResult.addressesDetected.filter(address => {
+            const addressToCheck = address.toLowerCase().trim();
+            
+            // Known business address patterns to filter out
+            const businessAddressPatterns = [
+              /555\/39.*หมู่บ้าน.*พลีโน่/i,                    // Specific address pattern
+              /พลีโน่.*รามอินทรา.*จตุโชติ/i,                   // Location identifiers
+              /สามวาตะวันตก.*คลองสามวา/i,                     // District identifiers
+            ];
+            
+            // Check if this address matches user's business patterns
+            const isBusinessAddress = businessAddressPatterns.some(pattern => pattern.test(address)) ||
+                                     // Also check if the address contains the business name
+                                     addressToCheck.includes(businessAcc.businessName.toLowerCase());
+            
+            if (isBusinessAddress) {
+              console.log(`   🚫 Filtered out business address: "${address}"`);
+              return false;
+            }
+            return true;
+          });
+          detectionResult.addressesDetected = filteredAddresses;
+          
           console.log(`🚫 Filtered out ${originalNamesCount - filteredNames.length} business names`);
           console.log(`🚫 Filtered out ${originalTaxIdsCount - filteredTaxIds.length} business tax IDs`);
+          console.log(`🚫 Filtered out ${originalAddressesCount - filteredAddresses.length} business addresses`);
           
           // Update summary counts after filtering
           detectionResult.summary.hasAtLeast2Names = filteredNames.length >= 2;
@@ -411,9 +471,68 @@ const createExpense = async (req: Request, res: Response) => {
 
     console.log("Final Input", expenseInput);
 
+    // Create flexible validation schema based on whether image is present
+    const hasImage = req.file && req.file.buffer;
+    const flexibleSchema = hasImage ? 
+      // When image is present, make required fields optional (OCR can fill them)
+      Joi.object({
+        WHTpercent: Joi.number().optional(),
+        date: Joi.alternatives().try(Joi.date(), Joi.string().allow('')).optional(),
+        amount: Joi.alternatives().try(Joi.number(), Joi.string().allow('')).optional(),
+        group: Joi.string()
+          .valid(
+            "Employee",
+            "Freelancer", 
+            "Office",
+            "OfficeRental",
+            "CarRental",
+            "Commission",
+            "Advertising",
+            "Marketing",
+            "Copyright",
+            "Dividend",
+            "Interest",
+            "Influencer",
+            "Accounting",
+            "Legal",
+            "Taxation",
+            "Transport",
+            "Product",
+            "Packing",
+            "Fuel",
+            "Utilities",
+            "Maintenance"
+          )
+          .optional().allow(''),
+        desc: Joi.string().allow(""),
+        image: Joi.string().allow(""),
+        memberId: Joi.string().required(),
+        businessAcc: Joi.number().optional(),
+        note: Joi.string().optional().allow(''),
+        channel: Joi.string().optional(),
+        vat: Joi.boolean().optional(),
+        vatAmount: Joi.number().optional(),
+        withHoldingTax: Joi.boolean().optional(),
+        WHTAmount: Joi.number().optional(),
+        sName: Joi.string().optional().allow(""),
+        taxInvoiceNo: Joi.string().optional().allow(""),
+        sTaxId: Joi.string().optional().allow(""),
+        sAddress: Joi.string().optional().allow(""),
+        branch: Joi.string().optional().allow(""),
+        taxType: Joi.string().valid("Individual", "Juristic").optional(),
+        expNo: Joi.string().optional().allow(""),
+        ocrDataApplied: Joi.string().optional().allow(""),
+        expenseId: Joi.number().optional(),
+      }) 
+      : 
+      // When no image, use original strict validation
+      schema;
+
     // Validate the request body
-    const { error } = schema.validate(expenseInput);
+    const { error } = flexibleSchema.validate(expenseInput);
     if (error) {
+      console.log("❌ Validation error:", error.details[0].message);
+      console.log("❌ Failed input:", expenseInput);
       return res.status(400).json({ message: error.details[0].message });
     }
 
@@ -454,6 +573,15 @@ const createExpense = async (req: Request, res: Response) => {
     const datePart = format(new Date(), "yyyyMMdd");
     const randomPart = Math.floor(1000 + Math.random() * 9000); // Random 4 digit number
     expenseInput.expNo = `EXP${datePart}${randomPart}`;
+
+    // Auto-detect juristic person based on supplier name (sName)
+    if (expenseInput.sName) {
+      const detectedTaxType = autoDetectTaxType(expenseInput.sName);
+      if (detectedTaxType === taxType.Juristic) {
+        console.log(`🏢 Auto-detected Juristic person from sName: "${expenseInput.sName}"`);
+        expenseInput.taxType = taxType.Juristic;
+      }
+    }
 
     try {
       let expense;

@@ -142,12 +142,12 @@ export default function CreateExpense({
   const simulateOCRProgress = () => {
     setIsProcessingOCR(true);
     setOCRProgress(0);
-    
+
     const progressSteps = [
       { progress: 20, delay: 500, message: "Processing image..." },
       { progress: 50, delay: 1000, message: "Analyzing text..." },
       { progress: 80, delay: 1500, message: "Detecting data..." },
-      { progress: 95, delay: 2000, message: "Finalizing..." }
+      { progress: 95, delay: 2000, message: "Finalizing..." },
     ];
 
     progressSteps.forEach(({ progress, delay }) => {
@@ -208,9 +208,10 @@ export default function CreateExpense({
     setError("");
     setOCRAlert(null);
 
-    // Check if all fields are filled
-    if (!date || !note || !amount) {
-      console.log("❌ Missing required fields");
+    // Only check required fields if no image is selected
+    // When image is present, OCR can fill in missing fields
+    if (!image && (!date || !note || !amount)) {
+      console.log("❌ Missing required fields (no image for OCR)");
       setAlertConfig({
         visible: true,
         title: t("expense.create.error"),
@@ -226,7 +227,7 @@ export default function CreateExpense({
       return;
     }
 
-    console.log("✅ All required fields present, proceeding...");
+    console.log("✅ Validation passed, proceeding...");
 
     try {
       const memberId = await getMemberId();
@@ -273,11 +274,14 @@ export default function CreateExpense({
       if (data.error) throw new Error(data.error);
 
       console.log("📥 Full backend response received:", data);
-      console.log("🔍 Checking for OCR alert:", data.ocrAlert ? "Found" : "Not found");
+      console.log(
+        "🔍 Checking for OCR alert:",
+        data.ocrAlert ? "Found" : "Not found"
+      );
 
       // Complete OCR progress
       setOCRProgress(100);
-      
+
       // Handle OCR alert from backend response
       if (data.ocrAlert) {
         // Store the created expense ID for later updates
@@ -285,18 +289,20 @@ export default function CreateExpense({
           setCreatedExpenseId(data.id);
           console.log("💾 Stored created expense ID:", data.id);
         }
-        
+
         setOCRAlert(data.ocrAlert);
         console.log("🔍 OCR Alert received:", data.ocrAlert);
         console.log("📋 OCR Alert type:", data.ocrAlert.type);
         console.log("📋 OCR Alert details:", data.ocrAlert.details);
-        
+
         // Show OCR result in the progress indicator
         setTimeout(() => {
-          console.log("⏰ About to show OCR result, setting showOCRResult to true");
+          console.log(
+            "⏰ About to show OCR result, setting showOCRResult to true"
+          );
           setShowOCRResult(true);
         }, 500);
-        
+
         return; // Don't continue to normal success until user dismisses OCR result
       } else {
         console.log("ℹ️ No OCR alert in response");
@@ -313,7 +319,7 @@ export default function CreateExpense({
       if (data.WHTAmount !== undefined) {
         setWHTAmount(data.WHTAmount);
       }
-      
+
       // Normal success flow (no OCR alert)
       clearForm();
       onClose();
@@ -377,6 +383,7 @@ export default function CreateExpense({
               alignSelf: "center",
             }}
             keyboardShouldPersistTaps="handled"
+            scrollEnabled={false}
           >
             <TouchableOpacity
               activeOpacity={1}
@@ -410,385 +417,636 @@ export default function CreateExpense({
 
                 {/* OCR Progress Indicator */}
                 {isProcessingOCR && (
-                  <View style={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    zIndex: 1000
-                  }}>
-                    <View style={{
-                      backgroundColor: theme === 'dark' ? '#2D2D2D' : '#ffffff',
-                      padding: 20,
+                  <View
+                    style={{
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      justifyContent: "center",
+                      alignItems: "center",
                       borderRadius: 10,
-                      minWidth: 300,
-                      maxWidth: '90%',
-                      alignItems: 'center'
-                    }}>
+                      zIndex: 1000,
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor:
+                          theme === "dark" ? "#2D2D2D" : "#ffffff",
+                        padding: 20,
+                        borderRadius: 10,
+                        minWidth: 300,
+                        maxWidth: "90%",
+                        alignItems: "center",
+                      }}
+                    >
                       {!showOCRResult ? (
                         // Progress view
                         <>
-                          <CustomText style={{ 
-                            fontSize: 16, 
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                            color: theme === 'dark' ? '#fff' : '#000'
-                          }}>
+                          <CustomText
+                            style={{
+                              fontSize: 16,
+                              fontWeight: "bold",
+                              marginBottom: 10,
+                              color: theme === "dark" ? "#fff" : "#000",
+                            }}
+                          >
                             🔍 Processing OCR
                           </CustomText>
-                          
+
                           {/* Progress Bar */}
-                          <View style={{
-                            width: 200,
-                            height: 6,
-                            backgroundColor: theme === 'dark' ? '#444' : '#e0e0e0',
-                            borderRadius: 3,
-                            overflow: 'hidden',
-                            marginBottom: 10
-                          }}>
-                            <View style={{
-                              width: `${ocrProgress}%`,
-                              height: '100%',
-                              backgroundColor: ocrProgress === 100 ? '#22c55e' : '#3b82f6',
-                              borderRadius: 3
-                            }} />
+                          <View
+                            style={{
+                              width: 200,
+                              height: 6,
+                              backgroundColor:
+                                theme === "dark" ? "#444" : "#e0e0e0",
+                              borderRadius: 3,
+                              overflow: "hidden",
+                              marginBottom: 10,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: `${ocrProgress}%`,
+                                height: "100%",
+                                backgroundColor:
+                                  ocrProgress === 100 ? "#22c55e" : "#3b82f6",
+                                borderRadius: 3,
+                              }}
+                            />
                           </View>
-                          
-                          <CustomText style={{ 
-                            fontSize: 14,
-                            color: theme === 'dark' ? '#ccc' : '#666'
-                          }}>
+
+                          <CustomText
+                            style={{
+                              fontSize: 14,
+                              color: theme === "dark" ? "#ccc" : "#666",
+                            }}
+                          >
                             {ocrProgress}% Complete
                           </CustomText>
-                          
-                          <CustomText style={{ 
-                            fontSize: 12,
-                            color: theme === 'dark' ? '#999' : '#888',
-                            marginTop: 5,
-                            textAlign: 'center'
-                          }}>
-                            {ocrProgress < 100 ? 'Analyzing image for invoice data...' : 'Processing complete!'}
+
+                          <CustomText
+                            style={{
+                              fontSize: 12,
+                              color: theme === "dark" ? "#999" : "#888",
+                              marginTop: 5,
+                              textAlign: "center",
+                            }}
+                          >
+                            {ocrProgress < 100
+                              ? "Analyzing image for invoice data..."
+                              : "Processing complete!"}
                           </CustomText>
                         </>
                       ) : (
                         // Results view
                         <>
-                          {console.log("📱 Rendering OCR Results View - showOCRResult:", showOCRResult)}
+                          {console.log(
+                            "📱 Rendering OCR Results View - showOCRResult:",
+                            showOCRResult
+                          )}
                           {console.log("📋 OCR Alert in results:", ocrAlert)}
-                          <CustomText style={{ 
-                            fontSize: 16, 
-                            fontWeight: 'bold',
-                            marginBottom: 15,
-                            color: theme === 'dark' ? '#fff' : '#000',
-                            textAlign: 'center'
-                          }}>
-                            {ocrAlert?.type === 'success' ? '🎉 OCR Detection Complete' :
-                             ocrAlert?.type === 'warning' ? '⚠️ OCR Detection Warning' :
-                             '❌ OCR Detection Error'}
+                          <CustomText
+                            style={{
+                              fontSize: 16,
+                              fontWeight: "bold",
+                              marginBottom: 15,
+                              color: theme === "dark" ? "#fff" : "#000",
+                              textAlign: "center",
+                            }}
+                          >
+                            {ocrAlert?.type === "success"
+                              ? "🎉 OCR Detection Complete"
+                              : ocrAlert?.type === "warning"
+                              ? "⚠️ OCR Detection Warning"
+                              : "❌ OCR Detection Error"}
                           </CustomText>
-                          
-                          <ScrollView 
-                            style={{ 
+
+                          <ScrollView
+                            style={{
                               maxHeight: 300,
-                              width: '100%'
+                              width: "100%",
                             }}
                             showsVerticalScrollIndicator={true}
                           >
-                            <CustomText style={{ 
-                              fontSize: 14,
-                              color: theme === 'dark' ? '#ccc' : '#666',
-                              textAlign: 'left',
-                              marginBottom: 15,
-                              lineHeight: 20
-                            }}>
+                            <CustomText
+                              style={{
+                                fontSize: 14,
+                                color: theme === "dark" ? "#ccc" : "#666",
+                                textAlign: "left",
+                                marginBottom: 15,
+                                lineHeight: 20,
+                              }}
+                            >
                               {ocrAlert?.message}
                             </CustomText>
-                            
-                            {ocrAlert?.type === 'warning' && ocrAlert?.details?.failedRequirements && (
-                              <>
-                                <CustomText style={{ 
-                                  fontSize: 14,
-                                  fontWeight: 'bold',
-                                  color: '#f59e0b',
-                                  marginBottom: 8
-                                }}>
-                                  Missing Requirements:
-                                </CustomText>
-                                {ocrAlert.details.failedRequirements.map((req: string, index: number) => (
-                                  <CustomText key={index} style={{ 
-                                    fontSize: 13,
-                                    color: theme === 'dark' ? '#ccc' : '#666',
-                                    marginBottom: 4,
-                                    marginLeft: 10
-                                  }}>
-                                    • {req}
+
+                            {ocrAlert?.type === "warning" &&
+                              ocrAlert?.details?.failedRequirements && (
+                                <>
+                                  <CustomText
+                                    style={{
+                                      fontSize: 14,
+                                      fontWeight: "bold",
+                                      color: "#f59e0b",
+                                      marginBottom: 8,
+                                    }}
+                                  >
+                                    Missing Requirements:
                                   </CustomText>
-                                ))}
-                              </>
-                            )}
-                            
+                                  {ocrAlert.details.failedRequirements.map(
+                                    (req: string, index: number) => (
+                                      <CustomText
+                                        key={index}
+                                        style={{
+                                          fontSize: 13,
+                                          color:
+                                            theme === "dark" ? "#ccc" : "#666",
+                                          marginBottom: 4,
+                                          marginLeft: 10,
+                                        }}
+                                      >
+                                        • {req}
+                                      </CustomText>
+                                    )
+                                  )}
+                                </>
+                              )}
+
                             {/* Selectable OCR Data */}
                             {ocrAlert?.details?.selectableOptions && (
                               <>
-                                <CustomText style={{ 
-                                  fontSize: 14,
-                                  fontWeight: 'bold',
-                                  color: '#22c55e',
-                                  marginTop: 15,
-                                  marginBottom: 12
-                                }}>
+                                <CustomText
+                                  style={{
+                                    fontSize: 14,
+                                    fontWeight: "bold",
+                                    color: "#22c55e",
+                                    marginTop: 15,
+                                    marginBottom: 12,
+                                  }}
+                                >
                                   📋 Select Detected Data:
                                 </CustomText>
-                                
+
                                 {/* Names Selection */}
-                                {ocrAlert.details.selectableOptions.names && ocrAlert.details.selectableOptions.names.length > 0 && (
-                                  <View style={{ marginBottom: 15 }}>
-                                    <CustomText style={{ 
-                                      fontSize: 13,
-                                      fontWeight: 'bold',
-                                      color: theme === 'dark' ? '#fff' : '#333',
-                                      marginBottom: 8
-                                    }}>
-                                      👤 Names ({ocrAlert.details.selectableOptions.names.length} found):
-                                    </CustomText>
-                                    {ocrAlert.details.selectableOptions.names.map((name: string, index: number) => (
-                                      <TouchableOpacity 
-                                        key={index}
-                                        onPress={() => {
-                                          setSelectedOCRData(prev => ({ ...prev, selectedName: name }));
-                                          console.log("🔍 Selected name:", name);
-                                        }}
+                                {ocrAlert.details.selectableOptions.names &&
+                                  ocrAlert.details.selectableOptions.names
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
                                         style={{
-                                          padding: 8,
-                                          marginBottom: 4,
-                                          marginLeft: 10,
-                                          backgroundColor: selectedOCRData.selectedName === name 
-                                            ? (theme === 'dark' ? '#374151' : '#dbeafe')
-                                            : (theme === 'dark' ? '#1f2937' : '#f3f4f6'),
-                                          borderRadius: 6,
-                                          borderWidth: selectedOCRData.selectedName === name ? 2 : 1,
-                                          borderColor: selectedOCRData.selectedName === name 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#4b5563' : '#d1d5db')
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
                                         }}
                                       >
-                                        <CustomText style={{ 
-                                          fontSize: 12,
-                                          color: selectedOCRData.selectedName === name 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#ccc' : '#666')
-                                        }}>
-                                          {selectedOCRData.selectedName === name ? '✓ ' : '○ '}{name}
-                                        </CustomText>
-                                      </TouchableOpacity>
-                                    ))}
-                                  </View>
-                                )}
-                                
+                                        👤 Names (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .names.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.names.map(
+                                        (name: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedName: name,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected name:",
+                                                name
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedName ===
+                                                name
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedName ===
+                                                name
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedName ===
+                                                name
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedName ===
+                                                  name
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedName ===
+                                              name
+                                                ? "✓ "
+                                                : "○ "}
+                                              {name}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Tax IDs Selection */}
-                                {ocrAlert.details.selectableOptions.taxIds && ocrAlert.details.selectableOptions.taxIds.length > 0 && (
-                                  <View style={{ marginBottom: 15 }}>
-                                    <CustomText style={{ 
-                                      fontSize: 13,
-                                      fontWeight: 'bold',
-                                      color: theme === 'dark' ? '#fff' : '#333',
-                                      marginBottom: 8
-                                    }}>
-                                      🆔 Tax IDs ({ocrAlert.details.selectableOptions.taxIds.length} found):
-                                    </CustomText>
-                                    {ocrAlert.details.selectableOptions.taxIds.map((taxId: string, index: number) => (
-                                      <TouchableOpacity 
-                                        key={index}
-                                        onPress={() => {
-                                          setSelectedOCRData(prev => ({ ...prev, selectedTaxId: taxId }));
-                                          console.log("🔍 Selected taxId:", taxId);
-                                        }}
+                                {ocrAlert.details.selectableOptions.taxIds &&
+                                  ocrAlert.details.selectableOptions.taxIds
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
                                         style={{
-                                          padding: 8,
-                                          marginBottom: 4,
-                                          marginLeft: 10,
-                                          backgroundColor: selectedOCRData.selectedTaxId === taxId 
-                                            ? (theme === 'dark' ? '#374151' : '#dbeafe')
-                                            : (theme === 'dark' ? '#1f2937' : '#f3f4f6'),
-                                          borderRadius: 6,
-                                          borderWidth: selectedOCRData.selectedTaxId === taxId ? 2 : 1,
-                                          borderColor: selectedOCRData.selectedTaxId === taxId 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#4b5563' : '#d1d5db')
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
                                         }}
                                       >
-                                        <CustomText style={{ 
-                                          fontSize: 12,
-                                          color: selectedOCRData.selectedTaxId === taxId 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#ccc' : '#666')
-                                        }}>
-                                          {selectedOCRData.selectedTaxId === taxId ? '✓ ' : '○ '}{taxId}
-                                        </CustomText>
-                                      </TouchableOpacity>
-                                    ))}
-                                  </View>
-                                )}
-                                
+                                        🆔 Tax IDs (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .taxIds.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.taxIds.map(
+                                        (taxId: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedTaxId: taxId,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected taxId:",
+                                                taxId
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedTaxId ===
+                                                taxId
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedTaxId ===
+                                                taxId
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedTaxId ===
+                                                taxId
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedTaxId ===
+                                                  taxId
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedTaxId ===
+                                              taxId
+                                                ? "✓ "
+                                                : "○ "}
+                                              {taxId}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Amounts Selection */}
-                                {ocrAlert.details.selectableOptions.amounts && ocrAlert.details.selectableOptions.amounts.length > 0 && (
-                                  <View style={{ marginBottom: 15 }}>
-                                    <CustomText style={{ 
-                                      fontSize: 13,
-                                      fontWeight: 'bold',
-                                      color: theme === 'dark' ? '#fff' : '#333',
-                                      marginBottom: 8
-                                    }}>
-                                      💰 Amounts ({ocrAlert.details.selectableOptions.amounts.length} found):
-                                    </CustomText>
-                                    {ocrAlert.details.selectableOptions.amounts.map((amount: number, index: number) => (
-                                      <TouchableOpacity 
-                                        key={index}
-                                        onPress={() => {
-                                          setSelectedOCRData(prev => ({ ...prev, selectedAmount: amount }));
-                                          console.log("🔍 Selected amount:", amount);
-                                        }}
+                                {ocrAlert.details.selectableOptions.amounts &&
+                                  ocrAlert.details.selectableOptions.amounts
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
                                         style={{
-                                          padding: 8,
-                                          marginBottom: 4,
-                                          marginLeft: 10,
-                                          backgroundColor: selectedOCRData.selectedAmount === amount 
-                                            ? (theme === 'dark' ? '#374151' : '#dbeafe')
-                                            : (theme === 'dark' ? '#1f2937' : '#f3f4f6'),
-                                          borderRadius: 6,
-                                          borderWidth: selectedOCRData.selectedAmount === amount ? 2 : 1,
-                                          borderColor: selectedOCRData.selectedAmount === amount 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#4b5563' : '#d1d5db')
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
                                         }}
                                       >
-                                        <CustomText style={{ 
-                                          fontSize: 12,
-                                          color: selectedOCRData.selectedAmount === amount 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#ccc' : '#666')
-                                        }}>
-                                          {selectedOCRData.selectedAmount === amount ? '✓ ' : '○ '}฿{amount.toLocaleString()}
-                                        </CustomText>
-                                      </TouchableOpacity>
-                                    ))}
-                                  </View>
-                                )}
-                                
+                                        💰 Amounts (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .amounts.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.amounts.map(
+                                        (amount: number, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedAmount: amount,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected amount:",
+                                                amount
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedAmount ===
+                                                amount
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedAmount ===
+                                                amount
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedAmount ===
+                                                amount
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedAmount ===
+                                                  amount
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedAmount ===
+                                              amount
+                                                ? "✓ "
+                                                : "○ "}
+                                              ฿{amount.toLocaleString()}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Dates Selection */}
-                                {ocrAlert.details.selectableOptions.dates && ocrAlert.details.selectableOptions.dates.length > 0 && (
-                                  <View style={{ marginBottom: 15 }}>
-                                    <CustomText style={{ 
-                                      fontSize: 13,
-                                      fontWeight: 'bold',
-                                      color: theme === 'dark' ? '#fff' : '#333',
-                                      marginBottom: 8
-                                    }}>
-                                      📅 Dates ({ocrAlert.details.selectableOptions.dates.length} found):
-                                    </CustomText>
-                                    {ocrAlert.details.selectableOptions.dates.map((date: string, index: number) => (
-                                      <TouchableOpacity 
-                                        key={index}
-                                        onPress={() => {
-                                          setSelectedOCRData(prev => ({ ...prev, selectedDate: date }));
-                                          console.log("🔍 Selected date:", date);
-                                        }}
+                                {ocrAlert.details.selectableOptions.dates &&
+                                  ocrAlert.details.selectableOptions.dates
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
                                         style={{
-                                          padding: 8,
-                                          marginBottom: 4,
-                                          marginLeft: 10,
-                                          backgroundColor: selectedOCRData.selectedDate === date 
-                                            ? (theme === 'dark' ? '#374151' : '#dbeafe')
-                                            : (theme === 'dark' ? '#1f2937' : '#f3f4f6'),
-                                          borderRadius: 6,
-                                          borderWidth: selectedOCRData.selectedDate === date ? 2 : 1,
-                                          borderColor: selectedOCRData.selectedDate === date 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#4b5563' : '#d1d5db')
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
                                         }}
                                       >
-                                        <CustomText style={{ 
-                                          fontSize: 12,
-                                          color: selectedOCRData.selectedDate === date 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#ccc' : '#666')
-                                        }}>
-                                          {selectedOCRData.selectedDate === date ? '✓ ' : '○ '}{date}
-                                        </CustomText>
-                                      </TouchableOpacity>
-                                    ))}
-                                  </View>
-                                )}
-                                
+                                        📅 Dates (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .dates.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.dates.map(
+                                        (date: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedDate: date,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected date:",
+                                                date
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedDate ===
+                                                date
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedDate ===
+                                                date
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedDate ===
+                                                date
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedDate ===
+                                                  date
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedDate ===
+                                              date
+                                                ? "✓ "
+                                                : "○ "}
+                                              {date}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
+
                                 {/* Addresses Selection */}
-                                {ocrAlert.details.selectableOptions.addresses && ocrAlert.details.selectableOptions.addresses.length > 0 && (
-                                  <View style={{ marginBottom: 15 }}>
-                                    <CustomText style={{ 
-                                      fontSize: 13,
-                                      fontWeight: 'bold',
-                                      color: theme === 'dark' ? '#fff' : '#333',
-                                      marginBottom: 8
-                                    }}>
-                                      🏠 Addresses ({ocrAlert.details.selectableOptions.addresses.length} found):
-                                    </CustomText>
-                                    {ocrAlert.details.selectableOptions.addresses.map((address: string, index: number) => (
-                                      <TouchableOpacity 
-                                        key={index}
-                                        onPress={() => {
-                                          setSelectedOCRData(prev => ({ ...prev, selectedAddress: address }));
-                                          console.log("🔍 Selected address:", address);
-                                        }}
+                                {ocrAlert.details.selectableOptions.addresses &&
+                                  ocrAlert.details.selectableOptions.addresses
+                                    .length > 0 && (
+                                    <View style={{ marginBottom: 15 }}>
+                                      <CustomText
                                         style={{
-                                          padding: 8,
-                                          marginBottom: 4,
-                                          marginLeft: 10,
-                                          backgroundColor: selectedOCRData.selectedAddress === address 
-                                            ? (theme === 'dark' ? '#374151' : '#dbeafe')
-                                            : (theme === 'dark' ? '#1f2937' : '#f3f4f6'),
-                                          borderRadius: 6,
-                                          borderWidth: selectedOCRData.selectedAddress === address ? 2 : 1,
-                                          borderColor: selectedOCRData.selectedAddress === address 
-                                            ? '#3b82f6' 
-                                            : (theme === 'dark' ? '#4b5563' : '#d1d5db')
+                                          fontSize: 13,
+                                          fontWeight: "bold",
+                                          color:
+                                            theme === "dark" ? "#fff" : "#333",
+                                          marginBottom: 8,
                                         }}
                                       >
-                                        <CustomText 
-                                          numberOfLines={2}
-                                          style={{ 
-                                            fontSize: 12,
-                                            color: selectedOCRData.selectedAddress === address 
-                                              ? '#3b82f6' 
-                                              : (theme === 'dark' ? '#ccc' : '#666')
-                                          }}
-                                        >
-                                          {selectedOCRData.selectedAddress === address ? '✓ ' : '○ '}{address}
-                                        </CustomText>
-                                      </TouchableOpacity>
-                                    ))}
-                                  </View>
-                                )}
+                                        🏠 Addresses (
+                                        {
+                                          ocrAlert.details.selectableOptions
+                                            .addresses.length
+                                        }{" "}
+                                        found):
+                                      </CustomText>
+                                      {ocrAlert.details.selectableOptions.addresses.map(
+                                        (address: string, index: number) => (
+                                          <TouchableOpacity
+                                            key={index}
+                                            onPress={() => {
+                                              setSelectedOCRData((prev) => ({
+                                                ...prev,
+                                                selectedAddress: address,
+                                              }));
+                                              console.log(
+                                                "🔍 Selected address:",
+                                                address
+                                              );
+                                            }}
+                                            style={{
+                                              padding: 8,
+                                              marginBottom: 4,
+                                              marginLeft: 10,
+                                              backgroundColor:
+                                                selectedOCRData.selectedAddress ===
+                                                address
+                                                  ? theme === "dark"
+                                                    ? "#374151"
+                                                    : "#dbeafe"
+                                                  : theme === "dark"
+                                                  ? "#1f2937"
+                                                  : "#f3f4f6",
+                                              borderRadius: 6,
+                                              borderWidth:
+                                                selectedOCRData.selectedAddress ===
+                                                address
+                                                  ? 2
+                                                  : 1,
+                                              borderColor:
+                                                selectedOCRData.selectedAddress ===
+                                                address
+                                                  ? "#3b82f6"
+                                                  : theme === "dark"
+                                                  ? "#4b5563"
+                                                  : "#d1d5db",
+                                            }}
+                                          >
+                                            <CustomText
+                                              numberOfLines={2}
+                                              style={{
+                                                fontSize: 12,
+                                                color:
+                                                  selectedOCRData.selectedAddress ===
+                                                  address
+                                                    ? "#3b82f6"
+                                                    : theme === "dark"
+                                                    ? "#ccc"
+                                                    : "#666",
+                                              }}
+                                            >
+                                              {selectedOCRData.selectedAddress ===
+                                              address
+                                                ? "✓ "
+                                                : "○ "}
+                                              {address}
+                                            </CustomText>
+                                          </TouchableOpacity>
+                                        )
+                                      )}
+                                    </View>
+                                  )}
                               </>
                             )}
                           </ScrollView>
-                          
-                          
+
                           {/* Action Buttons */}
-                          <View style={{ 
-                            flexDirection: 'row', 
-                            justifyContent: 'space-around', 
-                            marginTop: 20,
-                            width: '100%'
-                          }}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-around",
+                              marginTop: 20,
+                              width: "100%",
+                            }}
+                          >
                             {/* Use Selected Data Button */}
                             <TouchableOpacity
                               onPress={async () => {
-                                console.log("🚀 Resubmitting form with selected OCR data:", selectedOCRData);
-                                
+                                console.log(
+                                  "🚀 Resubmitting form with selected OCR data:",
+                                  selectedOCRData
+                                );
+
                                 try {
                                   // Apply selected data to form fields
                                   if (selectedOCRData.selectedName) {
@@ -798,60 +1056,99 @@ export default function CreateExpense({
                                     setSTaxId(selectedOCRData.selectedTaxId);
                                   }
                                   if (selectedOCRData.selectedAmount) {
-                                    setAmount(selectedOCRData.selectedAmount.toString());
+                                    setAmount(
+                                      selectedOCRData.selectedAmount.toString()
+                                    );
                                   }
                                   if (selectedOCRData.selectedDate) {
                                     try {
-                                      setSelectedDates([selectedOCRData.selectedDate]);
+                                      setSelectedDates([
+                                        selectedOCRData.selectedDate,
+                                      ]);
                                       setDate([selectedOCRData.selectedDate]);
                                     } catch (error) {
-                                      console.log("Date conversion error:", error);
+                                      console.log(
+                                        "Date conversion error:",
+                                        error
+                                      );
                                     }
                                   }
                                   if (selectedOCRData.selectedAddress) {
-                                    setSAddress(selectedOCRData.selectedAddress);
+                                    setSAddress(
+                                      selectedOCRData.selectedAddress
+                                    );
                                   }
-                                  
+
                                   // Create new FormData with selected OCR data
                                   const formData = new FormData();
-                                  formData.append("amount", selectedOCRData.selectedAmount?.toString() || amount);
+                                  formData.append(
+                                    "amount",
+                                    selectedOCRData.selectedAmount?.toString() ||
+                                      amount
+                                  );
                                   formData.append("desc", desc);
                                   formData.append("note", note);
-                                  
+
                                   // Convert date format if OCR date is selected
-                                  let dateToSubmit = Array.isArray(date) ? date[0] : date;
+                                  let dateToSubmit = Array.isArray(date)
+                                    ? date[0]
+                                    : date;
                                   if (selectedOCRData.selectedDate) {
                                     // Convert DD/MM/YYYY to YYYY-MM-DD format or proper Date format
                                     try {
-                                      const dateParts = selectedOCRData.selectedDate.split('/');
+                                      const dateParts =
+                                        selectedOCRData.selectedDate.split("/");
                                       if (dateParts.length === 3) {
                                         // Assuming DD/MM/YYYY format
                                         const day = dateParts[0];
                                         const month = dateParts[1];
                                         const year = dateParts[2];
                                         // Convert to YYYY-MM-DD format
-                                        dateToSubmit = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                                        console.log(`📅 Converted date from ${selectedOCRData.selectedDate} to ${dateToSubmit}`);
+                                        dateToSubmit = `${year}-${month.padStart(
+                                          2,
+                                          "0"
+                                        )}-${day.padStart(2, "0")}`;
+                                        console.log(
+                                          `📅 Converted date from ${selectedOCRData.selectedDate} to ${dateToSubmit}`
+                                        );
                                       } else {
-                                        console.warn("⚠️ Unexpected date format, using original:", selectedOCRData.selectedDate);
-                                        dateToSubmit = selectedOCRData.selectedDate;
+                                        console.warn(
+                                          "⚠️ Unexpected date format, using original:",
+                                          selectedOCRData.selectedDate
+                                        );
+                                        dateToSubmit =
+                                          selectedOCRData.selectedDate;
                                       }
                                     } catch (error) {
-                                      console.error("❌ Date conversion error:", error);
-                                      dateToSubmit = Array.isArray(date) ? date[0] : date; // Fallback to original date
+                                      console.error(
+                                        "❌ Date conversion error:",
+                                        error
+                                      );
+                                      dateToSubmit = Array.isArray(date)
+                                        ? date[0]
+                                        : date; // Fallback to original date
                                     }
                                   }
-                                  
+
                                   formData.append("date", dateToSubmit);
-                                  
+
                                   // Add selected OCR data or original form data
-                                  formData.append("sName", selectedOCRData.selectedName || sName);
-                                  formData.append("sTaxId", selectedOCRData.selectedTaxId || sTaxId);
-                                  formData.append("sAddress", selectedOCRData.selectedAddress || sAddress);
+                                  formData.append(
+                                    "sName",
+                                    selectedOCRData.selectedName || sName
+                                  );
+                                  formData.append(
+                                    "sTaxId",
+                                    selectedOCRData.selectedTaxId || sTaxId
+                                  );
+                                  formData.append(
+                                    "sAddress",
+                                    selectedOCRData.selectedAddress || sAddress
+                                  );
                                   formData.append("taxInvoiceNo", taxInvoiceNo);
                                   formData.append("branch", branch);
                                   formData.append("taxType", taxType);
-                                  
+
                                   // Add image if exists
                                   if (image) {
                                     formData.append("image", {
@@ -860,129 +1157,168 @@ export default function CreateExpense({
                                       type: "image/jpeg",
                                     } as unknown as Blob);
                                   }
-                                  
+
                                   formData.append("group", group || "");
-                                  formData.append("vat", vatIncluded ? "true" : "false");
-                                  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-                                  formData.append("WHTpercent", WHTpercent.toString());
-                                  
+                                  formData.append(
+                                    "vat",
+                                    vatIncluded ? "true" : "false"
+                                  );
+                                  formData.append(
+                                    "withHoldingTax",
+                                    withHoldingTax ? "true" : "false"
+                                  );
+                                  formData.append(
+                                    "WHTpercent",
+                                    WHTpercent.toString()
+                                  );
+
                                   const memberId = await getMemberId();
                                   if (memberId) {
                                     formData.append("memberId", memberId);
                                   } else {
-                                    throw new Error("Member ID is null or undefined");
+                                    throw new Error(
+                                      "Member ID is null or undefined"
+                                    );
                                   }
-                                  
+
                                   // Add flag to indicate this is a resubmission with OCR data
                                   formData.append("ocrDataApplied", "true");
-                                  
+
                                   // Add the original expense ID for updating
                                   if (createdExpenseId) {
-                                    formData.append("expenseId", createdExpenseId.toString());
-                                    console.log("📝 Adding expense ID for update:", createdExpenseId);
+                                    formData.append(
+                                      "expenseId",
+                                      createdExpenseId.toString()
+                                    );
+                                    console.log(
+                                      "📝 Adding expense ID for update:",
+                                      createdExpenseId
+                                    );
                                   }
-                                  
-                                  console.log("📤 Resubmitting expense with OCR data to backend...");
-                                  
+
+                                  console.log(
+                                    "📤 Resubmitting expense with OCR data to backend..."
+                                  );
+
                                   // Call create expense API again with selected data
-                                  const updateResult = await CallAPIExpense.createAExpenseAPI(formData);
-                                  
+                                  const updateResult =
+                                    await CallAPIExpense.createAExpenseAPI(
+                                      formData
+                                    );
+
                                   if (updateResult.error) {
-                                    console.error("❌ Failed to resubmit expense with OCR data:", updateResult.error);
+                                    console.error(
+                                      "❌ Failed to resubmit expense with OCR data:",
+                                      updateResult.error
+                                    );
                                     throw new Error(updateResult.error);
                                   } else {
-                                    console.log("✅ Successfully resubmitted expense with OCR data");
+                                    console.log(
+                                      "✅ Successfully resubmitted expense with OCR data"
+                                    );
                                   }
-                                  
                                 } catch (error) {
-                                  console.error("❌ Error resubmitting expense with OCR data:", error);
-                                  setError("Failed to update expense with selected data");
+                                  console.error(
+                                    "❌ Error resubmitting expense with OCR data:",
+                                    error
+                                  );
+                                  setError(
+                                    "Failed to update expense with selected data"
+                                  );
                                   return;
                                 }
-                                
+
                                 // Close OCR indicator
                                 setIsProcessingOCR(false);
                                 setShowOCRResult(false);
                                 setOCRProgress(0);
                                 setOCRAlert(null);
                                 setCreatedExpenseId(null);
-                                
+
                                 // Reset selection state
                                 setSelectedOCRData({
-                                  selectedName: '',
-                                  selectedTaxId: '',
+                                  selectedName: "",
+                                  selectedTaxId: "",
                                   selectedAmount: undefined,
-                                  selectedDate: '',
-                                  selectedAddress: ''
+                                  selectedDate: "",
+                                  selectedAddress: "",
                                 });
-                                
+
                                 // Complete the form submission flow
                                 clearForm();
                                 onClose();
                                 success();
-                                
-                                console.log("✅ OCR data applied and expense resubmitted successfully");
+
+                                console.log(
+                                  "✅ OCR data applied and expense resubmitted successfully"
+                                );
                               }}
                               style={{
-                                backgroundColor: '#22c55e',
+                                backgroundColor: "#22c55e",
                                 paddingHorizontal: 20,
                                 paddingVertical: 12,
                                 borderRadius: 8,
-                                flex: 0.45
+                                flex: 0.45,
                               }}
                             >
-                              <CustomText style={{
-                                color: '#ffffff',
-                                fontSize: 14,
-                                fontWeight: 'bold',
-                                textAlign: 'center'
-                              }}>
+                              <CustomText
+                                style={{
+                                  color: "#ffffff",
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
                                 ✓ Use Data
                               </CustomText>
                             </TouchableOpacity>
-                            
+
                             {/* Skip OCR Button */}
                             <TouchableOpacity
                               onPress={() => {
                                 console.log("⏭️ Skipping OCR data selection");
-                                
+
                                 // Close OCR indicator and proceed without applying data
                                 setIsProcessingOCR(false);
                                 setShowOCRResult(false);
                                 setOCRProgress(0);
                                 setOCRAlert(null);
                                 setCreatedExpenseId(null);
-                                
+
                                 // Reset selection state
                                 setSelectedOCRData({
-                                  selectedName: '',
-                                  selectedTaxId: '',
+                                  selectedName: "",
+                                  selectedTaxId: "",
                                   selectedAmount: undefined,
-                                  selectedDate: '',
-                                  selectedAddress: ''
+                                  selectedDate: "",
+                                  selectedAddress: "",
                                 });
-                                
+
                                 // Complete the form submission flow
                                 clearForm();
                                 onClose();
                                 success();
-                                
-                                console.log("⏭️ OCR skipped, proceeding with expense creation");
+
+                                console.log(
+                                  "⏭️ OCR skipped, proceeding with expense creation"
+                                );
                               }}
                               style={{
-                                backgroundColor: '#6b7280',
+                                backgroundColor: "#6b7280",
                                 paddingHorizontal: 20,
                                 paddingVertical: 12,
                                 borderRadius: 8,
-                                flex: 0.45
+                                flex: 0.45,
                               }}
                             >
-                              <CustomText style={{
-                                color: '#ffffff',
-                                fontSize: 14,
-                                fontWeight: 'bold',
-                                textAlign: 'center'
-                              }}>
+                              <CustomText
+                                style={{
+                                  color: "#ffffff",
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
                                 Skip OCR
                               </CustomText>
                             </TouchableOpacity>
@@ -1405,8 +1741,8 @@ export default function CreateExpense({
                         label: t("expense.detail.group.fuel"),
                       },
                       {
-                        key:"Maintenance",
-                        label: t("expense.detail.group.maintenance")
+                        key: "Maintenance",
+                        label: t("expense.detail.group.maintenance"),
                       },
                       {
                         key: "Utilities",
