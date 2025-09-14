@@ -379,6 +379,9 @@ export default function CreateExpense({
       setError(error.message);
     }
   };
+
+// handle save expense not repreat detect OCR again no update image change
+
   // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
     `px-4 py-2 rounded-lg mx-1 border-2 ${
@@ -2113,6 +2116,12 @@ export default function CreateExpense({
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
                   />
+                  {/* <SecondaryButton
+                    title={t("common.save")}
+                    handlePress={handleSaveExpense}
+                    containerStyles="px-12 mt-2"
+                    textStyles="!text-white"
+                  /> */}
                 </View>
               </View>
             </TouchableOpacity>
