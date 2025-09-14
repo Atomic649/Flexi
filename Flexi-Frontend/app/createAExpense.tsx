@@ -30,21 +30,50 @@ import { getWHTPercentage } from "@/components/TaxVariable";
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
-  const parsedDate = new Date(dateString);
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const year = parsedDate.getFullYear();
+  
+  try {
+    let parsedDate;
+    
+    // Handle DD/MM/YYYY format from OCR
+    if (dateString.includes("/") && !dateString.includes("T")) {
+      const dateParts = dateString.split("/");
+      if (dateParts.length === 3) {
+        // Assuming DD/MM/YYYY format
+        const day = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]) - 1; // JavaScript months are 0-indexed
+        const year = parseInt(dateParts[2]);
+        parsedDate = new Date(year, month, day, 12, 0, 0); // Set to noon to avoid timezone issues
+      } else {
+        parsedDate = new Date(dateString);
+      }
+    } else {
+      parsedDate = new Date(dateString);
+    }
+    
+    // Check if date is valid
+    if (isNaN(parsedDate.getTime())) {
+      console.warn("⚠️ Invalid date format:", dateString);
+      return dateString; // Return original string if parsing fails
+    }
+    
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const year = parsedDate.getFullYear();
 
-  // Get hours in 12-hour format
-  let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
+    // Get hours in 12-hour format
+    let hours = parsedDate.getHours();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
 
-  // Get minutes
-  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+    // Get minutes
+    const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
 
-  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+    return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+  } catch (error) {
+    console.error("❌ Error formatting date:", error, "Original:", dateString);
+    return dateString; // Return original string if any error occurs
+  }
 };
 
 interface ExpenseDetailProps {
@@ -281,6 +310,23 @@ export default function CreateExpense({
         "🔍 Checking for OCR alert:",
         data.ocrAlert ? "Found" : "Not found"
       );
+      
+      // Update frontend state with backend-processed data
+      if (data.taxType && data.taxType !== taxType) {
+        console.log(`🔄 Backend auto-detected taxType: "${data.taxType}" (was: "${taxType}")`);
+        setTaxType(data.taxType);
+      }
+      
+      // Update VAT settings if backend processed them
+      if (data.vat !== undefined && data.vat !== vatIncluded) {
+        console.log(`🔄 Backend set VAT: ${data.vat} (was: ${vatIncluded})`);
+        setVatIncluded(data.vat);
+      }
+      
+      if (data.vatAmount !== undefined && data.vatAmount !== vatAmount) {
+        console.log(`🔄 Backend set VAT Amount: ${data.vatAmount} (was: ${vatAmount})`);
+        setVatAmount(Number(data.vatAmount));
+      }
 
       // Complete OCR progress
       setOCRProgress(100);
@@ -1207,6 +1253,46 @@ export default function CreateExpense({
                             )}
                           </ScrollView>
 
+                          {/* Select All Button */}
+                          <TouchableOpacity
+                            onPress={() => {
+                              console.log("🔄 Selecting all available OCR data");
+                              
+                              setSelectedOCRData((prev) => ({
+                                ...prev,
+                                // Select first available option from each category
+                                selectedName: ocrAlert?.details?.selectableOptions?.names?.[0] || prev.selectedName,
+                                selectedTaxId: ocrAlert?.details?.selectableOptions?.taxIds?.[0] || prev.selectedTaxId,
+                                selectedTaxInvoiceId: ocrAlert?.details?.selectableOptions?.taxInvoiceIds?.[0] || prev.selectedTaxInvoiceId,
+                                selectedVatAmount: ocrAlert?.details?.selectableOptions?.vatAmounts?.[0] || prev.selectedVatAmount,
+                                selectedAmount: ocrAlert?.details?.selectableOptions?.amounts?.[0] || prev.selectedAmount,
+                                selectedDate: ocrAlert?.details?.selectableOptions?.dates?.[0] || prev.selectedDate,
+                                selectedAddress: ocrAlert?.details?.selectableOptions?.addresses?.[0] || prev.selectedAddress,
+                              }));
+                              
+                              console.log("✅ All available OCR data selected");
+                            }}
+                            style={{
+                              backgroundColor: "#3b82f6",
+                              paddingHorizontal: 16,
+                              paddingVertical: 10,
+                              borderRadius: 8,
+                              marginTop: 15,
+                              alignSelf: "center",
+                            }}
+                          >
+                            <CustomText
+                              style={{
+                                color: "#ffffff",
+                                fontSize: 13,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                              }}
+                            >
+                              📋 Select All Available Data
+                            </CustomText>
+                          </TouchableOpacity>
+
                           {/* Action Buttons */}
                           <View
                             style={{
@@ -1247,15 +1333,34 @@ export default function CreateExpense({
                                   }
                                   if (selectedOCRData.selectedDate) {
                                     try {
-                                      setSelectedDates([
-                                        selectedOCRData.selectedDate,
-                                      ]);
-                                      setDate([selectedOCRData.selectedDate]);
+                                      // Convert DD/MM/YYYY format to a proper Date
+                                      const dateParts = selectedOCRData.selectedDate.split("/");
+                                      if (dateParts.length === 3) {
+                                        // Assuming DD/MM/YYYY format from OCR
+                                        const day = dateParts[0];
+                                        const month = dateParts[1];
+                                        const year = dateParts[2];
+                                        // Create ISO date string (YYYY-MM-DD)
+                                        const isoDateString = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T12:00:00.000Z`;
+                                        
+                                        console.log(`📅 Converting OCR date: ${selectedOCRData.selectedDate} -> ${isoDateString}`);
+                                        
+                                        setSelectedDates([isoDateString]);
+                                        setDate([isoDateString]);
+                                      } else {
+                                        // If it's already in a proper format, use as is
+                                        console.log(`📅 Using OCR date as is: ${selectedOCRData.selectedDate}`);
+                                        setSelectedDates([selectedOCRData.selectedDate]);
+                                        setDate([selectedOCRData.selectedDate]);
+                                      }
                                     } catch (error) {
                                       console.log(
                                         "Date conversion error:",
                                         error
                                       );
+                                      // Fallback: try to use the date as is
+                                      setSelectedDates([selectedOCRData.selectedDate]);
+                                      setDate([selectedOCRData.selectedDate]);
                                     }
                                   }
                                   if (selectedOCRData.selectedAddress) {
@@ -1347,13 +1452,22 @@ export default function CreateExpense({
                                   }
 
                                   formData.append("group", group || "");
+                                  
+                                  // Use selected VAT amount from OCR if available
+                                  const finalVatAmount = selectedOCRData.selectedVatAmount ? 
+                                    Number(selectedOCRData.selectedVatAmount) : vatAmount;
+                                  const finalVatIncluded = selectedOCRData.selectedVatAmount ? 
+                                    Number(selectedOCRData.selectedVatAmount) > 0 : vatIncluded;
+                                  
+                                  console.log(`📊 VAT Data for submission: selectedVatAmount=${selectedOCRData.selectedVatAmount}, finalVatAmount=${finalVatAmount}, finalVatIncluded=${finalVatIncluded}`);
+                                  
                                   formData.append(
                                     "vat",
-                                    vatIncluded ? "true" : "false"
+                                    finalVatIncluded ? "true" : "false"
                                   );
                                   formData.append(
                                     "vatAmount",
-                                    vatAmount.toString()
+                                    finalVatAmount.toString()
                                   );
                                   formData.append(
                                     "withHoldingTax",
@@ -1408,6 +1522,24 @@ export default function CreateExpense({
                                     console.log(
                                       "✅ Successfully resubmitted expense with OCR data"
                                     );
+                                    console.log("📋 API Response:", updateResult);
+                                    
+                                    // Update UI state with the response data from backend
+                                    if (updateResult.taxType) {
+                                      console.log(`🔄 Updating taxType from "${taxType}" to "${updateResult.taxType}"`);
+                                      setTaxType(updateResult.taxType);
+                                    }
+                                    
+                                    // Also update other fields that might have been processed by backend
+                                    if (updateResult.vat !== undefined) {
+                                      console.log(`🔄 Updating vat from backend: ${updateResult.vat}`);
+                                      setVatIncluded(updateResult.vat);
+                                    }
+                                    
+                                    if (updateResult.vatAmount !== undefined) {
+                                      console.log(`🔄 Updating vatAmount from backend: ${updateResult.vatAmount}`);
+                                      setVatAmount(Number(updateResult.vatAmount));
+                                    }
                                   }
                                 } catch (error) {
                                   console.error(
@@ -1438,11 +1570,7 @@ export default function CreateExpense({
                                   selectedAddress: "",
                                 });
 
-                                // Complete the form submission flow
-                                clearForm();
-                                onClose();
-                                success();
-
+                               
                                 console.log(
                                   "✅ OCR data applied and expense resubmitted successfully"
                                 );

@@ -111,7 +111,7 @@ const createExpense = async (req: Request, res: Response) => {
       return res.status(400).json({ message: err.message });
     }
     // Debugging: Log the uploaded file details
-    console.log("Uploaded file:", req.file ? "File received" : "No file");
+    // console.log("Uploaded file:", req.file ? "File received" : "No file");
 
     let imageUrl = req.body.image ?? "";
 
@@ -141,7 +141,7 @@ const createExpense = async (req: Request, res: Response) => {
     if (req.file && req.file.buffer && !ocrDataApplied) {
       console.log("Processing OCR for uploaded image...");
       try {
-        console.log("Image buffer size:", req.file.buffer.length);
+        // console.log("Image buffer size:", req.file.buffer.length);
 
         // Get user's business account information to filter out from OCR results
         const memberId = req.body.memberId;
@@ -161,9 +161,9 @@ const createExpense = async (req: Request, res: Response) => {
         
         // Filter out user's business information from OCR results
         if (businessAcc) {
-          console.log("🔍 Filtering out user's business information:");
-          console.log(`   Business Name: ${businessAcc.businessName}`);
-          console.log(`   Tax ID: ${businessAcc.taxId}`);
+          // console.log("🔍 Filtering out user's business information:");
+          // console.log(`   Business Name: ${businessAcc.businessName}`);
+          // console.log(`   Tax ID: ${businessAcc.taxId}`);
           
           // Filter out business name from names
           const originalNamesCount = detectionResult.namesFound.length;
@@ -200,10 +200,10 @@ const createExpense = async (req: Request, res: Response) => {
               cleanBusinessName.includes(cleanDetectedName);
             
             if (isBusinessName) {
-              console.log(`   🚫 Filtered out business name: "${name}"`);
-              console.log(`      Original business name: "${businessAcc.businessName}"`);
-              console.log(`      Clean business name: "${cleanBusinessName}"`);
-              console.log(`      Clean detected name: "${cleanDetectedName}"`);
+              // console.log(`   🚫 Filtered out business name: "${name}"`);
+              // console.log(`      Original business name: "${businessAcc.businessName}"`);
+              // console.log(`      Clean business name: "${cleanBusinessName}"`);
+              // console.log(`      Clean detected name: "${cleanDetectedName}"`);
               return false;
             }
             return true;
@@ -215,7 +215,7 @@ const createExpense = async (req: Request, res: Response) => {
           const filteredTaxIds = detectionResult.taxIdsFound.filter(taxId => {
             const isBusinessTaxId = taxId.trim() === businessAcc.taxId.trim();
             if (isBusinessTaxId) {
-              console.log(`   🚫 Filtered out business tax ID: "${taxId}"`);
+              // console.log(`   🚫 Filtered out business tax ID: "${taxId}"`);
               return false;
             }
             return true;
@@ -242,27 +242,27 @@ const createExpense = async (req: Request, res: Response) => {
                                      addressToCheck.includes(businessAcc.businessName.toLowerCase());
             
             if (isBusinessAddress) {
-              console.log(`   🚫 Filtered out business address: "${address}"`);
+              // console.log(`   🚫 Filtered out business address: "${address}"`);
               return false;
             }
             return true;
           });
           detectionResult.addressesDetected = filteredAddresses;
           
-          console.log(`🚫 Filtered out ${originalNamesCount - filteredNames.length} business names`);
-          console.log(`🚫 Filtered out ${originalTaxIdsCount - filteredTaxIds.length} business tax IDs`);
-          console.log(`🚫 Filtered out ${originalAddressesCount - filteredAddresses.length} business addresses`);
+          // console.log(`🚫 Filtered out ${originalNamesCount - filteredNames.length} business names`);
+          // console.log(`🚫 Filtered out ${originalTaxIdsCount - filteredTaxIds.length} business tax IDs`);
+          // console.log(`🚫 Filtered out ${originalAddressesCount - filteredAddresses.length} business addresses`);
           
           // Update summary counts after filtering
           detectionResult.summary.hasAtLeast2Names = filteredNames.length >= 2;
           detectionResult.summary.hasAtLeast1TaxId = filteredTaxIds.length >= 1;
           
-          console.log(`✅ Final filtered results:`);
-          console.log(`   Names remaining: ${filteredNames.length} (${filteredNames.join(', ')})`);
-          console.log(`   Tax IDs remaining: ${filteredTaxIds.length} (${filteredTaxIds.join(', ')})`);
+          // console.log(`✅ Final filtered results:`);
+          // console.log(`   Names remaining: ${filteredNames.length} (${filteredNames.join(', ')})`);
+          // console.log(`   Tax IDs remaining: ${filteredTaxIds.length} (${filteredTaxIds.join(', ')})`);
         }
         
-        console.log("Detection result:", detectionResult);
+        // console.log("Detection result:", detectionResult);
 
         // Report OCR detection results
         console.log("📊 OCR DETECTION REPORT:");
@@ -273,9 +273,9 @@ const createExpense = async (req: Request, res: Response) => {
             detectionResult.namesFound.length,
             "names"
           );
-          detectionResult.namesFound.forEach((name, index) => {
-            console.log(`   ${index + 1}. ${name}`);
-          });
+          // detectionResult.namesFound.forEach((name, index) => {
+          //   console.log(`   ${index + 1}. ${name}`);
+          // });
         } else {
           console.log(
             "❌ NAMES: FAIL - Found",
@@ -290,9 +290,9 @@ const createExpense = async (req: Request, res: Response) => {
             detectionResult.taxIdsFound.length,
             "tax IDs"
           );
-          detectionResult.taxIdsFound.forEach((taxId, index) => {
-            console.log(`   ${index + 1}. ${taxId}`);
-          });
+          // detectionResult.taxIdsFound.forEach((taxId, index) => {
+          //   console.log(`   ${index + 1}. ${taxId}`);
+          // });
         } else {
           console.log("❌ TAX IDs: FAIL - No tax IDs found");
         }
@@ -303,9 +303,9 @@ const createExpense = async (req: Request, res: Response) => {
             detectionResult.taxInvoiceIdsFound.length,
             "tax invoice IDs"
           );
-          detectionResult.taxInvoiceIdsFound.forEach((taxInvoiceId, index) => {
-            console.log(`   ${index + 1}. ${taxInvoiceId}`);
-          });
+          // detectionResult.taxInvoiceIdsFound.forEach((taxInvoiceId, index) => {
+          //   console.log(`   ${index + 1}. ${taxInvoiceId}`);
+          // });
         } else {
           console.log("❌ TAX INVOICE IDs: FAIL - No tax invoice IDs found");
         }
@@ -316,35 +316,35 @@ const createExpense = async (req: Request, res: Response) => {
             detectionResult.vatAmountsFound.length,
             "VAT amounts"
           );
-          detectionResult.vatAmountsFound.forEach((vatAmount, index) => {
-            console.log(`   ${index + 1}. ${vatAmount}`);
-          });
+          // detectionResult.vatAmountsFound.forEach((vatAmount, index) => {
+          //   console.log(`   ${index + 1}. ${vatAmount}`);
+          // });
         } else {
           console.log("❌ VAT AMOUNTS: FAIL - No VAT amounts found");
         }
 
-        console.log(
-          `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
-            detectionResult.summary.hasAmount ? "PASS" : "FAIL"
-          }`
-        );
-        console.log(
-          `${detectionResult.summary.hasDate ? "✅" : "❌"} DATE: ${
-            detectionResult.summary.hasDate ? "PASS" : "FAIL"
-          }`
-        );
-        console.log(
-          `${detectionResult.summary.hasAddress ? "✅" : "❌"} ADDRESS: ${
-            detectionResult.summary.hasAddress ? "PASS" : "FAIL"
-          }`
-        );
-        console.log(
-          `${
-            detectionResult.summary.hasReceiptTitle ? "✅" : "❌"
-          } RECEIPT TITLE: ${
-            detectionResult.summary.hasReceiptTitle ? "PASS" : "FAIL"
-          }`
-        );
+        // console.log(
+        //   `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
+        //     detectionResult.summary.hasAmount ? "PASS" : "FAIL"
+        //   }`
+        // );
+        // console.log(
+        //   `${detectionResult.summary.hasDate ? "✅" : "❌"} DATE: ${
+        //     detectionResult.summary.hasDate ? "PASS" : "FAIL"
+        //   }`
+        // );
+        // console.log(
+        //   `${detectionResult.summary.hasAddress ? "✅" : "❌"} ADDRESS: ${
+        //     detectionResult.summary.hasAddress ? "PASS" : "FAIL"
+        //   }`
+        // );
+        // console.log(
+        //   `${
+        //     detectionResult.summary.hasReceiptTitle ? "✅" : "❌"
+        //   } RECEIPT TITLE: ${
+        //     detectionResult.summary.hasReceiptTitle ? "PASS" : "FAIL"
+        //   }`
+        // );
 
         // Calculate overall detection status
         const allRequirementsMet =
@@ -448,26 +448,26 @@ const createExpense = async (req: Request, res: Response) => {
           console.log("🎉 OCR DETECTION SUCCESS - All requirements met!");
         } else {
           console.log("⚠️  OCR DETECTION PARTIAL - Some requirements missing");
-          console.log("🚨 OCR Alert created:", ocrAlert?.type);
+          // console.log("🚨 OCR Alert created:", ocrAlert?.type);
         }
 
-        console.log(
-          "Final expense input (form data only - OCR is detection-only):",
-          {
-            sName: expenseInput.sName,
-            sAddress: expenseInput.sAddress,
-            sTaxId: expenseInput.sTaxId,
-            amount: expenseInput.amount,
-            date: expenseInput.date,
-            desc: expenseInput.desc,
-          }
-        );
+        // console.log(
+        //   "Final expense input (form data only - OCR is detection-only):",
+        //   {
+        //     sName: expenseInput.sName,
+        //     sAddress: expenseInput.sAddress,
+        //     sTaxId: expenseInput.sTaxId,
+        //     amount: expenseInput.amount,
+        //     date: expenseInput.date,
+        //     desc: expenseInput.desc,
+        //   }
+        // );
 
         // Now upload the image to S3
-        console.log("Uploading image to S3...");
+        // console.log("Uploading image to S3...");
         imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
         expenseInput.image = imageUrl;
-        console.log("Image uploaded to S3:", imageUrl);
+        // console.log("Image uploaded to S3:", imageUrl);
       } catch (ocrError) {
         console.warn("OCR processing failed:", ocrError);
         
@@ -484,10 +484,10 @@ const createExpense = async (req: Request, res: Response) => {
 
         // Still upload the image to S3 even if OCR fails
         try {
-          console.log("Uploading image to S3 (OCR failed)...");
+          // console.log("Uploading image to S3 (OCR failed)...");
           imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
           expenseInput.image = imageUrl;
-          console.log("Image uploaded to S3:", imageUrl);
+          // console.log("Image uploaded to S3:", imageUrl);
         } catch (uploadError) {
           console.error("S3 upload also failed:", uploadError);
           return res.status(500).json({ message: "Failed to upload image" });
@@ -497,17 +497,17 @@ const createExpense = async (req: Request, res: Response) => {
       // If this is a resubmission with OCR data, just upload the image without processing OCR
       console.log("Skipping OCR processing - using selected OCR data from frontend");
       try {
-        console.log("Uploading image to S3 (OCR data already selected)...");
+        // console.log("Uploading image to S3 (OCR data already selected)...");
         imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
         expenseInput.image = imageUrl;
-        console.log("Image uploaded to S3:", imageUrl);
+        // console.log("Image uploaded to S3:", imageUrl);
       } catch (uploadError) {
         console.error("S3 upload failed:", uploadError);
         return res.status(500).json({ message: "Failed to upload image" });
       }
     }
 
-    console.log("Final Input", expenseInput);
+    // console.log("Final Input", expenseInput);
 
     // Create flexible validation schema based on whether image is present
     const hasImage = req.file && req.file.buffer;
@@ -594,7 +594,7 @@ const createExpense = async (req: Request, res: Response) => {
       new Date(expenseInput.date),
       "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     );
-    console.log("Formatted Date", formattedDate);
+    // console.log("Formatted Date", formattedDate);
 
     // Calcalate vatAmount form 7% of amount
     if (expenseInput.vat) {
@@ -614,11 +614,23 @@ const createExpense = async (req: Request, res: Response) => {
 
     // Auto-detect juristic person based on supplier name (sName)
     if (expenseInput.sName) {
+      console.log(`🔍 Auto-detecting tax type for sName: "${expenseInput.sName}"`);
+      console.log(`🔍 Current taxType before detection: "${expenseInput.taxType}"`);
+      
       const detectedTaxType = autoDetectTaxType(expenseInput.sName);
+      console.log(`🔍 Detected tax type: "${detectedTaxType}"`);
+      
       if (detectedTaxType === taxType.Juristic) {
         console.log(`🏢 Auto-detected Juristic person from sName: "${expenseInput.sName}"`);
+        console.log(`🏢 Changing taxType from "${expenseInput.taxType}" to "${taxType.Juristic}"`);
         expenseInput.taxType = taxType.Juristic;
+      } else {
+        console.log(`👤 Keeping taxType as Individual for sName: "${expenseInput.sName}"`);
       }
+      
+      console.log(`🔍 Final taxType after detection: "${expenseInput.taxType}"`);
+    } else {
+      console.log(`⚠️ No sName provided, keeping taxType as: "${expenseInput.taxType}"`);
     }
 
     try {
@@ -1282,6 +1294,14 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
 
     console.log(`🔍 VAT Amount processing: ${vatAmount} -> ${vatAmountNumber}, setting vat to: ${shouldSetVat}`);
 
+    // Auto-detect juristic person based on supplier name (sName) if provided
+    let detectedTaxType;
+    if (sName) {
+      console.log(`🔍 Auto-detecting tax type for sName: "${sName}"`);
+      detectedTaxType = autoDetectTaxType(sName);
+      console.log(`🔍 Detected tax type: "${detectedTaxType}"`);
+    }
+
     // Update the expense with selected OCR data
     const updatedExpense = await prisma.expense.update({
       where: { id: Number(expenseId) },
@@ -1289,13 +1309,16 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
         ...(sName && { sName }),
         ...(sTaxId && { sTaxId }),
         ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
-        ...(vatAmount && { 
+        // Always update VAT fields when vatAmount is provided
+        ...(vatAmount !== undefined && { 
           vatAmount: vatAmountNumber,
           vat: shouldSetVat  // Set vat to true if vatAmount > 0
         }),
         ...(amount && { amount: Number(amount) }),
         ...(date && { date }),
         ...(address && { sAddress: address }),
+        // Auto-detect and set taxType if juristic person detected
+        ...(detectedTaxType && { taxType: detectedTaxType }),
       }
     });
 
@@ -1304,15 +1327,29 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
       ...(sName && { sName }),
       ...(sTaxId && { sTaxId }),
       ...(taxInvoiceId && { taxInvoiceNo: taxInvoiceId }),
-      ...(vatAmount && { 
+      // Always log VAT fields when vatAmount is provided
+      ...(vatAmount !== undefined && { 
         vatAmount: vatAmountNumber,
         vat: shouldSetVat 
       }),
       ...(amount && { amount: Number(amount) }),
       ...(date && { date }),
       ...(address && { sAddress: address }),
+      // Log taxType if auto-detected
+      ...(detectedTaxType && { taxType: detectedTaxType }),
     });
-    res.json({ success: true, expense: updatedExpense });
+    
+    // Return updated expense with properly formatted response
+    const response = {
+      success: true, 
+      expense: updatedExpense,
+      // Include the updated fields for frontend sync
+      taxType: updatedExpense.taxType,
+      vat: updatedExpense.vat,
+      vatAmount: updatedExpense.vatAmount,
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error("❌ Error updating expense with OCR data:", error);
     res.status(500).json({ message: "Failed to update expense with OCR data" });

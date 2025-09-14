@@ -165,16 +165,19 @@ export const allJuristicKeywords = [
 // Function to auto-detect tax type based on supplier name
 export const autoDetectTaxType = (sName: string): taxType => {
   if (!sName || sName.trim() === "") {
+    console.log(`🔍 AutoDetect: Empty sName, returning Individual`);
     return taxType.Individual;
   }
 
   const name = sName.toLowerCase().trim();
+  console.log(`🔍 AutoDetect: Processing name: "${sName}" -> normalized: "${name}"`);
 
   // Check for Thai keywords
   for (const keyword of thaiJuristicKeywords) {
-    if (name.includes(keyword)) {
+    const keywordLower = keyword.toLowerCase();
+    if (name.includes(keywordLower)) {
       console.log(
-        `🏢 Detected Thai juristic keyword: "${keyword}" in "${sName}"`
+        `🏢 AutoDetect: Found Thai juristic keyword: "${keyword}" (normalized: "${keywordLower}") in "${sName}"`
       );
       return taxType.Juristic;
     }
@@ -182,15 +185,17 @@ export const autoDetectTaxType = (sName: string): taxType => {
 
   // Check for English keywords
   for (const keyword of englishJuristicKeywords) {
-    if (name.includes(keyword)) {
+    const keywordLower = keyword.toLowerCase();
+    if (name.includes(keywordLower)) {
       console.log(
-        `🏢 Detected English juristic keyword: "${keyword}" in "${sName}"`
+        `🏢 AutoDetect: Found English juristic keyword: "${keyword}" (normalized: "${keywordLower}") in "${sName}"`
       );
       return taxType.Juristic;
     }
   }
 
   // Default to Individual if no juristic indicators found
+  console.log(`👤 AutoDetect: No juristic keywords found in "${sName}", returning Individual`);
   return taxType.Individual;
 };
 

@@ -252,6 +252,8 @@ class CallAPIExpense {
   async updateExpenseWithOCRDataAPI(expenseId: number, selectedData: {
     sName?: string;
     sTaxId?: string;
+    taxInvoiceId?: string;
+    vatAmount?: string;
     amount?: string;
     date?: string;
     address?: string;
