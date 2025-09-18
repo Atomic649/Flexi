@@ -2174,10 +2174,10 @@ export default function CreateExpense({
                   </View>
                 ) : null}
 
-                <View className="flex-row justify-evenly">
+                <View className="flex-row justify-evenly pt-2">
                   <TouchableOpacity
                     onPress={() => pickImage()}
-                    className=" items-center justify-center"
+                    className=" items-center justify-center pt-2"
                   >
                     <Ionicons
                       name="document-text-outline"
@@ -2189,12 +2189,22 @@ export default function CreateExpense({
                     </CustomText>
                   </TouchableOpacity>
 
-                  <SecondaryButton
-                    title={t("common.OCR")}
-                    handlePress={handleCreateExpenseWithOCR}
-                    containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-                  />
+                  {image && (
+                    <TouchableOpacity
+                      onPress={() => {handleCreateExpenseWithOCR()}}
+                      className=" items-center justify-center pt-2"
+                    >
+                      <Ionicons
+                        name="scan"
+                        size={26}
+                        color="#999999"
+                      />
+                      <CustomText className="text-center mt-1">
+                        {t("common.OCR")}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+
                   <SecondaryButton
                     title={t("common.save")}
                     handlePress={handleCreateExpense}
