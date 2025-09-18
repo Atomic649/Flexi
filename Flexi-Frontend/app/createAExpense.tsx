@@ -230,9 +230,79 @@ export default function CreateExpense({
   };
 
   const handleClose = () => {
+  // Require a note before allowing the modal to close and save only when amount > 0
+  if (Number(amount) > 0 && (!note || note.trim() === "")) {
+      setAlertConfig({
+        visible: true,
+        title: t("expense.create.error"),
+        message: t("expense.create.fillNote" ) || "Please fill in the note before closing.",
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            style: "default",
+          },
+        ],
+      });
+      return;
+    }
+
     clearForm();
     onClose();
+    handleDeleteExpense(); // Delete expense if created with amount 0
   };
+
+  //handleCreateOrUpdate
+  const handleCreateOrUpdate = async()=>{
+    // if there are exited data from OCR use handleUpdateExpense else use handleCreateExpense
+    if (selectedOCRData) {
+      await handleUpdateExpense();
+    } else {
+      await handleCreateExpense();
+    }
+  }
+
+  //handleUpdateExpense by createdExpenseId
+  const handleUpdateExpense = async()=>{
+    setError("");
+
+    try {
+      const formData = new FormData();
+      // Only append single string values
+      if (note && typeof note === 'string') formData.append("note", note);
+      if (amount) formData.append("amount", amount);
+      if (desc) formData.append("desc", desc);
+      if (sName) formData.append("sName",sName);
+      if (sTaxId) formData.append("sTaxId",sTaxId);
+      if (vatAmount) formData.append("vatAmount", vatAmount.toString());
+      if (sAddress) formData.append("sAddress",sAddress);
+      if (taxInvoiceNo) formData.append("taxInvoiceId",taxInvoiceNo);
+      if (date) formData.append("date", Array.isArray(date) ? date[0] : date);
+      if (branch) formData.append("branch", branch);
+      if (image) {
+        formData.append("image", {
+          uri: image,
+          name: "image.jpg",
+          type: "image/jpeg",
+        } as unknown as Blob);
+      }
+
+      if (createdExpenseId !== null) {
+        const data = await CallAPIExpense.updateExpenseAPI(createdExpenseId, formData);
+        if (data.error) throw new Error(data.error);
+
+        // Clear and close once on success
+        clearForm();
+        setCreatedExpenseId(null);
+        onClose();
+        success();
+      } else {
+        throw new Error("Expense ID is null or undefined");
+      }
+    } catch (error: any) {
+      setError(error.message);
+    }
+  }
 
   const handleCreateExpense = async () => {
     setError("");
@@ -459,7 +529,23 @@ export default function CreateExpense({
     }
   };
 
-// handle save expense not repreat detect OCR again no update image change
+// delete expense by id if amount is 0
+const handleDeleteExpense = async () => {   
+    if (createdExpenseId && Number(amount) === 0) {
+      try {
+        const memberId = await getMemberId();
+        if (memberId) {
+          await CallAPIExpense.deleteExpenseAPI(createdExpenseId, memberId);
+          console.log("🗑️ Auto-deleted expense 0 Amount with ID:", createdExpenseId);
+          setCreatedExpenseId(null); // Clear stored ID after deletion
+        } else {
+          console.error("❌ memberId is null, cannot delete expense.");
+        }
+      } catch (error) {
+        console.error("❌ Failed to auto-delete expense:", error);
+      }
+    }
+};  
 
   // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
@@ -495,7 +581,26 @@ export default function CreateExpense({
           backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
         activeOpacity={1}
-        onPressOut={handleClose}
+       onPressOut={() => {
+         // Allow closing by tapping the backdrop when amount is empty or <= 0.
+         // Require a note only when amount > 0.
+         if (Number(amount) > 0 && (!note || note.trim() === "")) {
+           setAlertConfig({
+             visible: true,
+             title: t("expense.create.error"),
+             message: t("expense.create.fillNote" ) || "Please fill in the note before closing.",
+             buttons: [
+               {
+                 text: t("common.ok"),
+                 onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+                 style: "default",
+               },
+             ],
+           });
+           return;
+         }
+         handleClose();
+       }}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -1593,7 +1698,6 @@ export default function CreateExpense({
                                     await CallAPIExpense.createAExpenseWithOCRAPI(
                                       formData
                                     );
-
                                   if (updateResult.error) {
                                     console.error(
                                       "❌ Failed to resubmit expense with OCR data:",
@@ -1639,7 +1743,7 @@ export default function CreateExpense({
                                 setShowOCRResult(false);
                                 setOCRProgress(100);
                                 setOCRAlert(null);
-                                setCreatedExpenseId(null);
+                               // setCreatedExpenseId(null);
 
                                 // Reset selection state
                                 setSelectedOCRData({
@@ -1687,8 +1791,9 @@ export default function CreateExpense({
                                 setShowOCRResult(false);
                                 setOCRProgress(0);
                                 setOCRAlert(null);
-                                setCreatedExpenseId(null);
-
+                                console.log("Expense ID:", createdExpenseId);
+                                
+                               
                                 // Reset selection state
                                 setSelectedOCRData({
                                   selectedName: "",
@@ -1700,14 +1805,9 @@ export default function CreateExpense({
                                   selectedAddress: "",
                                 });
 
-                                // Complete the form submission flow
-                                clearForm();
-                                onClose();
-                                success();
-
-                                console.log(
-                                  "⏭️ OCR skipped, proceeding with expense creation"
-                                );
+                              console.log(
+                                "⏭️ OCR skipped, proceeding with expense creation"
+                              );                                
                               }}
                               style={{
                                 backgroundColor: "#6b7280",
@@ -2207,7 +2307,7 @@ export default function CreateExpense({
 
                   <SecondaryButton
                     title={t("common.save")}
-                    handlePress={handleCreateExpense}
+                    handlePress={() =>handleCreateOrUpdate()}
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
                   />

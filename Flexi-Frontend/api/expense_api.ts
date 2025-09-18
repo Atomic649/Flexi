@@ -213,10 +213,10 @@ class CallAPIExpense {
 
       return response.data;
     } catch (error) {
-      console.error("🚨 Create Expense API Error:", error);
+      console.error("🚨 Create Expense WithOCRAPI API Error:", error);
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 404) {
-          throw new Error("API endpoint not found (404)");
+          throw new Error("OCR API endpoint not found (404)");
         }
         throw error.response.data;
       } else {

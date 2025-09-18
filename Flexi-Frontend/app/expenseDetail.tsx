@@ -108,11 +108,6 @@ export default function ExpenseDetail({
   const [sAddress, setSAddress] = useState(expense.sAddress || "");
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
 
-  // Debug logging for group state changes
-  useEffect(() => {
-    console.log("🔄 Group state changed:", group, "Type:", typeof group);
-  }, [group]);
-
   useEffect(() => {
     const fetchExpense = async () => {
       try {
@@ -205,14 +200,13 @@ export default function ExpenseDetail({
 
   // Handle group changes - disable VAT and WHT for Fuel group, set WHT percentage for other groups
   useEffect(() => {
-    // Use React's automatic batching for state updates to prevent intermediate renders
     if (group === "Fuel") {
-      // Batch all state updates for Fuel group
       setVatIncluded(false);
       setWithHoldingTax(false);
       setWHTpercent(0);
       setWHTAmount(0);
       setVatAmount(0);
+      // For Fuel group, set taxType to Juristic by default but keep it editable
       setTaxType("Juristic");
     } else if (group === "Employee") {
       // For Employee group, force taxType to Individual
@@ -643,7 +637,7 @@ export default function ExpenseDetail({
                         flexDirection: "row",
                         alignItems: "center",
                         marginRight: 24,
-                        opacity: (group && group === "Fuel") ? 0.5 : 1,
+                        opacity: group === "Fuel" ? 0.5 : 1,
                       }}
                       onPress={() => {
                         if (group !== "Fuel") {
@@ -666,7 +660,15 @@ export default function ExpenseDetail({
                         }
                       />
                       <CustomText
-                        className="ml-2"                       
+                        className="ml-2"
+                        style={{
+                          color:
+                            group === "Fuel"
+                              ? theme === "dark"
+                                ? "#666666"
+                                : "#999999"
+                              : undefined,
+                        }}
                       >
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
@@ -679,16 +681,14 @@ export default function ExpenseDetail({
                           flexDirection: "row",
                           alignItems: "center",
                           marginRight: 8,
-                          opacity: (group && group === "Fuel") ? 0.5 : 1,  
-                                         
+                          opacity: group === "Fuel" ? 0.5 : 1,
                         }}
                         onPress={() => {
                           if (group !== "Fuel") {
                             setWithHoldingTax(!withHoldingTax);
                           }
-                        }}                        
+                        }}
                         disabled={group === "Fuel"}
-                        
                       >
                         <Ionicons
                           name={withHoldingTax ? "checkbox" : "square-outline"}
@@ -706,7 +706,13 @@ export default function ExpenseDetail({
                         <CustomText
                           style={{
                             textAlign: "right",
-                            marginLeft: 8                           
+                            marginLeft: 8,
+                            color:
+                              group === "Fuel"
+                                ? theme === "dark"
+                                  ? "#666666"
+                                  : "#999999"
+                                : undefined,
                           }}
                         >
                           {t("expense.detail.withHoldingTax")}
@@ -723,7 +729,7 @@ export default function ExpenseDetail({
                               padding: 4,
                               color: theme === "dark" ? "#fff" : "#000",
                               textAlign: "center",
-                              opacity: (group && group === "Fuel") ? 0.5 : 1,
+                              opacity: group === "Fuel" ? 0.5 : 1,
                               fontFamily:
                                 i18n.language === "th"
                                   ? "IBMPlexSansThai-Medium"
@@ -990,9 +996,7 @@ export default function ExpenseDetail({
                 </View>
 
                 {error ? (
-                  <CustomText className=" mt-4 items-center justify-center "
-                  style={{ color: "#ff4d4f" }}>{error}
-                  </CustomText>
+                  <CustomText className="text-red-500 mt-4">{error}</CustomText>
                 ) : null}
 
                 <View className="flex-row justify-evenly mt-2">
