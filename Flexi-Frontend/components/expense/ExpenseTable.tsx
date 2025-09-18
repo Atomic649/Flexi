@@ -15,6 +15,17 @@ interface Expense {
   image: string;
   group: string;
   id: number;
+  vat: boolean;
+  vatAmount: number;
+  withHoldingTax: boolean;
+  WHTpercent: number;
+  WHTAmount: number;
+  sTaxId?: string;
+  sName?: string;
+  taxInvoiceNo?: string;
+  sAddress?: string;
+  branch?: string;
+  taxType?: "Individual" | "Juristic";
 }
 
 interface ExpenseTableProps {
@@ -130,9 +141,12 @@ const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTable
               className={`flex-2 text-start pt-3  ${
                 theme === "dark" ? "text-white" : "text-zinc-900"
               }`}
+              style={{
+                opacity: !item.sName ? 0.5 : 1
+              }}
               numberOfLines={1}
             >
-              {item.desc}
+              {item.sName || item.desc}
             </Text>
             <Text
               className={`flex-2 text-start py-3 ${
