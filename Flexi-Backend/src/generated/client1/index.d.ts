@@ -323,7 +323,8 @@ export const ExpenseGroup: {
   Packing: 'Packing',
   Utilities: 'Utilities',
   Fuel: 'Fuel',
-  Maintenance: 'Maintenance'
+  Maintenance: 'Maintenance',
+  Others: 'Others'
 };
 
 export type ExpenseGroup = (typeof ExpenseGroup)[keyof typeof ExpenseGroup]

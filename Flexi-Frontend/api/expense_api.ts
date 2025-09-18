@@ -196,11 +196,11 @@ class CallAPIExpense {
     }
   }
 
-  // create expense
-  async createAExpenseAPI(formData: FormData): Promise<any> {
+    // create expense
+  async createAExpenseWithOCRAPI(formData: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.post(`/expense`,  formData, {
+      const response = await axiosInstance.post(`/expense/ocr`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -210,6 +210,31 @@ class CallAPIExpense {
       if (response.data.ocrAlert) {
         console.log("📋 OCR Alert Details:", JSON.stringify(response.data.ocrAlert, null, 2));
       }
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Create Expense API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          throw new Error("API endpoint not found (404)");
+        }
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // create expense
+  async createAExpenseAPI(formData: FormData): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/expense`,  formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("🚀CreateExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {

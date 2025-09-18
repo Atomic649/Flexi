@@ -528,6 +528,7 @@ Enum ExpenseGroup {
   Utilities
   Fuel
   Maintenance
+  Others
 }
 
 Ref: Member.userId > User.id

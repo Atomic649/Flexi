@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createExpense,
+  createExpenseWithOCR,
   getExpenses,
   getExpenseById,
   updateExpenseById, 
@@ -16,6 +17,9 @@ const router = express.Router();
 
 // Creating a New Expense
 router.post("/", authenticateToken, createExpense);
+
+// Creating a New Expense with OCR
+router.post("/ocr", authenticateToken, createExpenseWithOCR);
 
 // Getting all Expenses
 router.get("/all/:memberId", authenticateToken, getExpenses);

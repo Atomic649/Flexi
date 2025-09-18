@@ -235,6 +235,85 @@ export default function CreateExpense({
   };
 
   const handleCreateExpense = async () => {
+    setError("");
+
+    // Check if all fields are filled
+    if (!date || !note || !amount) {
+      setAlertConfig({
+        visible: true,
+        title: t("expense.create.error"),
+        message: t("expense.create.message"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
+    }
+
+    try {
+      const memberId = await getMemberId();
+      const formattedDate = format(
+        new Date(date[0]),
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+      );
+
+      const formData = new FormData();
+      formData.append("date", formattedDate);
+      formData.append("note", note);
+      formData.append("amount", amount);
+      formData.append("desc", desc);
+      if (image) {
+        formData.append("image", {
+          uri: image,
+          name: "image.jpg",
+          type: "image/jpeg",
+        } as unknown as Blob);
+      }
+      formData.append("group", group || "");
+      formData.append("vat", vatIncluded ? "true" : "false");
+      formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+      formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("sTaxId", sTaxId);
+      formData.append("sName", sName);
+      formData.append("taxInvoiceNo", taxInvoiceNo);
+      formData.append("sAddress", sAddress);
+      formData.append("branch", branch);
+      formData.append("taxType", taxType);
+      if (memberId) {
+        formData.append("memberId", memberId);
+      } else {
+        throw new Error("Member ID is null or undefined");
+      }
+
+      const data = await CallAPIExpense.createAExpenseAPI(formData);
+      if (data.error) throw new Error(data.error);
+
+      // Set vatAmount from backend response if available
+      if (data.vatAmount !== undefined) {
+        setVatAmount(data.vatAmount);
+      }
+
+      // Set vatAmount from backend response if available
+      if (data.vatAmount !== undefined) {
+        setVatAmount(data.vatAmount);
+      }
+      // Set WHTAmount from backend response if available
+      if (data.WHTAmount !== undefined) {
+        setWHTAmount(data.WHTAmount);
+      }
+      clearForm();
+      onClose();
+      success();
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  const handleCreateExpenseWithOCR = async () => {
     console.log("🚀 === STARTING EXPENSE CREATION ===");
     setError("");
     setOCRAlert(null);
@@ -302,7 +381,7 @@ export default function CreateExpense({
       }
 
       console.log("📤 Sending expense data to backend...");
-      const data = await CallAPIExpense.createAExpenseAPI(formData);
+      const data = await CallAPIExpense.createAExpenseWithOCRAPI(formData);
       if (data.error) throw new Error(data.error);
 
       console.log("📥 Full backend response received:", data);
@@ -1511,7 +1590,7 @@ export default function CreateExpense({
 
                                   // Call create expense API again with selected data
                                   const updateResult =
-                                    await CallAPIExpense.createAExpenseAPI(
+                                    await CallAPIExpense.createAExpenseWithOCRAPI(
                                       formData
                                     );
 
@@ -2111,17 +2190,17 @@ export default function CreateExpense({
                   </TouchableOpacity>
 
                   <SecondaryButton
+                    title={t("common.OCR")}
+                    handlePress={handleCreateExpenseWithOCR}
+                    containerStyles="px-12 mt-2"
+                    textStyles="!text-white"
+                  />
+                  <SecondaryButton
                     title={t("common.save")}
                     handlePress={handleCreateExpense}
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
                   />
-                  {/* <SecondaryButton
-                    title={t("common.save")}
-                    handlePress={handleSaveExpense}
-                    containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-                  /> */}
                 </View>
               </View>
             </TouchableOpacity>

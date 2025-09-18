@@ -79,7 +79,8 @@ const schema = Joi.object({
       "Packing",
       "Fuel",
       "Utilities",
-      "Maintenance"
+      "Maintenance",
+      "Others"
     )
     .required(),
   desc: Joi.string().allow(""),
@@ -102,9 +103,113 @@ const schema = Joi.object({
   ocrDataApplied: Joi.string().optional().allow(""), // Flag to indicate OCR data resubmission
   expenseId: Joi.number().optional(), // ID of existing expense to update
 });
-
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
+  // Handle image upload with multer
+  upload(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    // Debugging: Log the uploaded file details
+    console.log("Uploaded file:", req.file);
+
+    // Merge the uploaded file S3 URL key into the expense object
+    // Convert string 'true'/'false' to boolean for vat and withHoldingTax
+    const expenseInput: Expense = {
+      ...req.body,
+      vat: req.body.vat === "true" ? true : false,
+      withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
+      image: req.file
+        ? (req.file as any)?.location ?? ""
+        : req.body.image ?? "",
+      desc: req.body.desc ?? "",
+      group: req.body.group || "Others", // Default to "Others" if group is empty
+      taxType: req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+    };
+
+    console.log("Input", expenseInput);
+
+    // Validate the request body
+    const { error } = schema.validate(expenseInput);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const memberId = req.body.memberId;
+    // Find businessAcc by memberId
+    const businessAcc = await prisma.businessAcc.findFirst({
+      where: {
+        memberId: memberId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!businessAcc) {
+      return res.status(400).json({ message: "Business account not found" });
+    }
+
+    // Convert date time to format Expected ISO-8601 DateTime
+    const formattedDate = format(
+      new Date(expenseInput.date),
+      "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    );
+    console.log("Formatted Date", formattedDate);
+
+    // Calcalate vatAmount form 7% of amount
+    if (expenseInput.vat) {
+      expenseInput.vatAmount = expenseInput.amount * 0.07;
+    }
+
+    // Calculate WHTAmount form withHoldingTax and WHTpercent
+    if (expenseInput.withHoldingTax) {
+      expenseInput.WHTAmount =
+        (expenseInput.amount * (expenseInput.WHTpercent ?? 0)) / 100;
+    }
+
+    // generate expNo in format EXPYYYYMMDDXXXX
+    const datePart = format(new Date(), "yyyyMMdd");
+    const randomPart = Math.floor(1000 + Math.random() * 9000); // Random 4 digit number
+    expenseInput.expNo = `EXP${datePart}${randomPart}`;
+
+    try {
+      const expense = await prisma.expense.create({
+        data: {
+          date: formattedDate,
+          amount: expenseInput.amount,
+          desc: expenseInput.desc,
+          group: expenseInput.group,
+          image: expenseInput.image,
+          memberId: expenseInput.memberId,
+          businessAcc: businessAcc.id,
+          note: expenseInput.note,
+          channel: expenseInput.channel,
+          save: false,
+          vat: expenseInput.vat,
+          vatAmount: expenseInput.vatAmount,
+          withHoldingTax: expenseInput.withHoldingTax ?? false,
+          WHTAmount: expenseInput.WHTAmount ?? 0,
+          WHTpercent: expenseInput.WHTpercent ?? 0,
+          sName: expenseInput.sName ?? "",
+          taxInvoiceNo: expenseInput.taxInvoiceNo ?? "",
+          sTaxId: expenseInput.sTaxId ?? "",
+          sAddress: expenseInput.sAddress ?? "",
+          branch: expenseInput.branch ?? "",
+          taxType: expenseInput.taxType ?? taxType.Individual,
+          expNo: expenseInput.expNo ?? "",          
+        },
+      });
+      res.json(expense);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Failed to create expense" });
+    }
+  });
+};
+
+//  create a new expense - Post
+const createExpenseWithOCR = async (req: Request, res: Response) => {
   // Handle image upload with multer
   upload(req, res, async (err: any) => {
     if (err) {
@@ -126,7 +231,7 @@ const createExpense = async (req: Request, res: Response) => {
       date: req.body.date ? new Date(req.body.date) : new Date(),
       amount: req.body.amount ? Number(req.body.amount) : 0,
       note: req.body.note || "",
-      group: req.body.group || "Office", // Default group if empty
+      group: req.body.group || "Others", // Default group to "Others" if empty
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
@@ -539,7 +644,8 @@ const createExpense = async (req: Request, res: Response) => {
             "Packing",
             "Fuel",
             "Utilities",
-            "Maintenance"
+            "Maintenance", 
+            "Others"
           )
           .optional().allow(''),
         desc: Joi.string().allow(""),
@@ -798,6 +904,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
+      group: req.body.group || "Others", // Default to "Others" if group is empty
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
@@ -1358,6 +1465,7 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
 
 export {
   createExpense,
+  createExpenseWithOCR,
   getExpenses,
   getExpenseById,
   updateExpenseById,

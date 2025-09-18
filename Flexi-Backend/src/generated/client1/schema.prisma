@@ -180,6 +180,7 @@ enum ExpenseGroup {
   Utilities
   Fuel
   Maintenance
+  Others
 }
 
 model User {
