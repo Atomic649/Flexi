@@ -247,6 +247,7 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   taxInvoiceNo: 'taxInvoiceNo',
   branch: 'branch',
   taxType: 'taxType',
+  status: 'status',
   businessAcc: 'businessAcc',
   memberId: 'memberId'
 };
@@ -533,6 +534,12 @@ exports.Bank = exports.$Enums.Bank = {
   KTB: 'KTB',
   BBL: 'BBL',
   TMB: 'TMB'
+};
+
+exports.ExpenseStatus = exports.$Enums.ExpenseStatus = {
+  Pass: 'Pass',
+  Fail: 'Fail',
+  Warning: 'Warning'
 };
 
 exports.SocialMedia = exports.$Enums.SocialMedia = {

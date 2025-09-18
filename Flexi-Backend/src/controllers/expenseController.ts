@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import {
   Bank,
   ExpenseGroup,
+  ExpenseStatus,
   PrismaClient as PrismaClient1,
   taxType,
 } from "../generated/client1";
@@ -50,6 +51,7 @@ interface Expense {
   branch?: string;
   taxType?: taxType;
   expNo?: string;
+  status?: ExpenseStatus;
 }
 
 // Validate the request body
@@ -102,6 +104,7 @@ const schema = Joi.object({
   expNo: Joi.string().optional().allow(""),
   ocrDataApplied: Joi.string().optional().allow(""), // Flag to indicate OCR data resubmission
   expenseId: Joi.number().optional(), // ID of existing expense to update
+  status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -217,7 +220,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     }
     // Debugging: Log the uploaded file details
     // console.log("Uploaded file:", req.file ? "File received" : "No file");
-
     let imageUrl = req.body.image ?? "";
 
     // Initialize expenseInput with form data, handling empty values properly
@@ -236,8 +238,11 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
 
-    // Initialize OCR alert variable
-    let ocrAlert = null;
+  // Initialize OCR alert variable
+  let ocrAlert = null;
+  // Track whether business name was detected and the effective names count used for requirement checks
+  let businessNameDetected = false;
+  let namesCountForRequirement = 0;
 
     // Check if this is a resubmission with OCR data applied
     const ocrDataApplied = req.body.ocrDataApplied === 'true';
@@ -246,8 +251,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     if (req.file && req.file.buffer && !ocrDataApplied) {
       console.log("Processing OCR for uploaded image...");
       try {
-        // console.log("Image buffer size:", req.file.buffer.length);
-
         // Get user's business account information to filter out from OCR results
         const memberId = req.body.memberId;
         const businessAcc = await prisma.businessAcc.findFirst({
@@ -266,13 +269,10 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         
         // Filter out user's business information from OCR results
         if (businessAcc) {
-          // console.log("🔍 Filtering out user's business information:");
-          // console.log(`   Business Name: ${businessAcc.businessName}`);
-          // console.log(`   Tax ID: ${businessAcc.taxId}`);
-          
-          // Filter out business name from names
-          const originalNamesCount = detectionResult.namesFound.length;
-          const filteredNames = detectionResult.namesFound.filter(name => {
+          // Filter out business name from names but count it toward requirement
+          const originalNames = detectionResult.namesFound.slice();
+          const originalNamesCount = originalNames.length;
+          const filteredNames = originalNames.filter(name => {
             const nameToCheck = name.toLowerCase().trim();
             const businessNameToCheck = businessAcc.businessName.toLowerCase().trim();
             
@@ -305,15 +305,14 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
               cleanBusinessName.includes(cleanDetectedName);
             
             if (isBusinessName) {
-              // console.log(`   🚫 Filtered out business name: "${name}"`);
-              // console.log(`      Original business name: "${businessAcc.businessName}"`);
-              // console.log(`      Clean business name: "${cleanBusinessName}"`);
-              // console.log(`      Clean detected name: "${cleanDetectedName}"`);
               return false;
             }
             return true;
           });
+          // Keep filtered names for frontend selectable options, but record if business name existed
           detectionResult.namesFound = filteredNames;
+          businessNameDetected = originalNamesCount > filteredNames.length;
+          namesCountForRequirement = filteredNames.length + (businessNameDetected ? 1 : 0);
           
           // Filter out business tax ID from tax IDs
           const originalTaxIdsCount = detectionResult.taxIdsFound.length;
@@ -328,8 +327,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           detectionResult.taxIdsFound = filteredTaxIds;
           
           // Filter out business addresses from detected addresses
-          // Since we know the user's business has address: "555/39 หมู่บ้าน พลีโน่ รามอินทรา จตุโชติ..."
-          // We can filter based on patterns that match the business location
           const originalAddressesCount = detectionResult.addressesDetected.length;
           const filteredAddresses = detectionResult.addressesDetected.filter(address => {
             const addressToCheck = address.toLowerCase().trim();
@@ -343,7 +340,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             
             // Check if this address matches user's business patterns
             const isBusinessAddress = businessAddressPatterns.some(pattern => pattern.test(address)) ||
-                                     // Also check if the address contains the business name
+                            // Also check if the address contains the business name
                                      addressToCheck.includes(businessAcc.businessName.toLowerCase());
             
             if (isBusinessAddress) {
@@ -352,40 +349,28 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             }
             return true;
           });
-          detectionResult.addressesDetected = filteredAddresses;
-          
-          // console.log(`🚫 Filtered out ${originalNamesCount - filteredNames.length} business names`);
-          // console.log(`🚫 Filtered out ${originalTaxIdsCount - filteredTaxIds.length} business tax IDs`);
-          // console.log(`🚫 Filtered out ${originalAddressesCount - filteredAddresses.length} business addresses`);
-          
+          detectionResult.addressesDetected = filteredAddresses;          
           // Update summary counts after filtering
-          detectionResult.summary.hasAtLeast2Names = filteredNames.length >= 2;
+          // Count business name (if detected) toward the "2 names" requirement
+          detectionResult.summary.hasAtLeast2Names = namesCountForRequirement >= 2;
           detectionResult.summary.hasAtLeast1TaxId = filteredTaxIds.length >= 1;
           
-          // console.log(`✅ Final filtered results:`);
-          // console.log(`   Names remaining: ${filteredNames.length} (${filteredNames.join(', ')})`);
-          // console.log(`   Tax IDs remaining: ${filteredTaxIds.length} (${filteredTaxIds.join(', ')})`);
-        }
+         }
         
-        // console.log("Detection result:", detectionResult);
-
         // Report OCR detection results
         console.log("📊 OCR DETECTION REPORT:");
 
         if (detectionResult.summary.hasAtLeast2Names) {
           console.log(
-            "✅ NAMES: PASS - Found",
-            detectionResult.namesFound.length,
-            "names"
+            "✅ NAMES: PASS - Counted",         
+            namesCountForRequirement,
+            `(filtered list shows ${detectionResult.namesFound.length} entries)`
           );
-          // detectionResult.namesFound.forEach((name, index) => {
-          //   console.log(`   ${index + 1}. ${name}`);
-          // });
         } else {
           console.log(
-            "❌ NAMES: FAIL - Found",
-            detectionResult.namesFound.length,
-            "names (need ≥2)"
+            "❌ NAMES: FAIL - Counted",
+            namesCountForRequirement,
+            `(filtered list shows ${detectionResult.namesFound.length} entries) need ≥2`
           );
         }
 
@@ -427,30 +412,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         } else {
           console.log("❌ VAT AMOUNTS: FAIL - No VAT amounts found");
         }
-
-        // console.log(
-        //   `${detectionResult.summary.hasAmount ? "✅" : "❌"} AMOUNT: ${
-        //     detectionResult.summary.hasAmount ? "PASS" : "FAIL"
-        //   }`
-        // );
-        // console.log(
-        //   `${detectionResult.summary.hasDate ? "✅" : "❌"} DATE: ${
-        //     detectionResult.summary.hasDate ? "PASS" : "FAIL"
-        //   }`
-        // );
-        // console.log(
-        //   `${detectionResult.summary.hasAddress ? "✅" : "❌"} ADDRESS: ${
-        //     detectionResult.summary.hasAddress ? "PASS" : "FAIL"
-        //   }`
-        // );
-        // console.log(
-        //   `${
-        //     detectionResult.summary.hasReceiptTitle ? "✅" : "❌"
-        //   } RECEIPT TITLE: ${
-        //     detectionResult.summary.hasReceiptTitle ? "PASS" : "FAIL"
-        //   }`
-        // );
-
+       
         // Calculate overall detection status
         const allRequirementsMet =
           detectionResult.summary.hasAtLeast2Names &&
@@ -466,7 +428,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           const failedRequirements = [];
           
           if (!detectionResult.summary.hasAtLeast2Names) {
-            failedRequirements.push(`Names (found ${detectionResult.namesFound.length}, need ≥2)`);
+            failedRequirements.push(`Names (found ${namesCountForRequirement}, need ≥2)`);
           }
           if (!detectionResult.summary.hasAtLeast1TaxId) {
             failedRequirements.push(`Tax IDs (found ${detectionResult.taxIdsFound.length}, need ≥1)`);
@@ -513,7 +475,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
                 amounts: detectionResult.amountsDetected || [],
                 dates: detectionResult.datesDetected || [],
                 addresses: detectionResult.addressesDetected || [],
-                provinces: detectionResult.provincesDetected || []
+                provinces: detectionResult.provincesDetected || [],                
               }
             }
           };
@@ -555,19 +517,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           console.log("⚠️  OCR DETECTION PARTIAL - Some requirements missing");
           // console.log("🚨 OCR Alert created:", ocrAlert?.type);
         }
-
-        // console.log(
-        //   "Final expense input (form data only - OCR is detection-only):",
-        //   {
-        //     sName: expenseInput.sName,
-        //     sAddress: expenseInput.sAddress,
-        //     sTaxId: expenseInput.sTaxId,
-        //     amount: expenseInput.amount,
-        //     date: expenseInput.date,
-        //     desc: expenseInput.desc,
-        //   }
-        // );
-
+       
         // Now upload the image to S3
         // console.log("Uploading image to S3...");
         imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
@@ -667,6 +617,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         expNo: Joi.string().optional().allow(""),
         ocrDataApplied: Joi.string().optional().allow(""),
         expenseId: Joi.number().optional(),
+        status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
       }) 
       : 
       // When no image, use original strict validation
@@ -768,6 +719,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             sAddress: expenseInput.sAddress ?? "",
             branch: expenseInput.branch ?? "",
             taxType: expenseInput.taxType ?? taxType.Individual,
+            status: ocrAlert?.type === "success" ? "Pass" : "Warning" 
           },
         });
         console.log("✅ Successfully updated expense with OCR data");
@@ -797,6 +749,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             branch: expenseInput.branch ?? "",
             taxType: expenseInput.taxType ?? taxType.Individual,
             expNo: expenseInput.expNo ?? "",
+            status: ocrAlert?.type === "success" ? "Pass" : "Warning"
           },
         });
       }
@@ -891,9 +844,14 @@ const updateExpenseById = async (req: Request, res: Response) => {
       const oldImageKey = extractS3Key(existingExpense.image);
       try {
         await deleteFromS3(oldImageKey);
-        console.log("Old image deleted from S3");
-      } catch (e) {
-        console.error("Failed to delete old image from S3:", e);
+        console.log("✅ Old image deleted from S3:", oldImageKey);
+      } catch (e: any) {
+        if (e.name === 'AccessDenied') {
+          console.warn("⚠️ S3 Delete permission denied - continuing without deletion:", oldImageKey);
+        } else {
+          console.error("❌ Failed to delete old image from S3:", oldImageKey, e.message || e);
+        }
+        // Continue execution - S3 deletion failure shouldn't block the update
       }
     }
 
@@ -981,9 +939,14 @@ const deleteExpenseById = async (req: Request, res: Response) => {
       const imageKey = extractS3Key(existingExpense.image);
       try {
         await deleteFromS3(imageKey);
-        console.log("Image deleted from S3");
-      } catch (e) {
-        console.error("Failed to delete image from S3:", e);
+        console.log("✅ Image deleted from S3:", imageKey);
+      } catch (e: any) {
+        if (e.name === 'AccessDenied') {
+          console.warn("⚠️ S3 Delete permission denied - continuing without deletion:", imageKey);
+        } else {
+          console.error("❌ Failed to delete image from S3:", imageKey, e.message || e);
+        }
+        // Continue execution - S3 deletion failure shouldn't block the delete operation
       }
     }
 

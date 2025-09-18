@@ -158,6 +158,12 @@ enum DocumentType {
   WithholdingTax
 }
 
+enum ExpenseStatus {
+  Pass
+  Fail
+  Warning
+}
+
 enum ExpenseGroup {
   Employee
   Freelancer
@@ -360,6 +366,7 @@ model Expense {
   taxInvoiceNo   String?
   branch         String?
   taxType       taxType?    @default(Individual)
+  status        ExpenseStatus? 
   // Relation
   businessAcc    Int
   businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])

@@ -171,6 +171,7 @@ Table Expense {
   taxInvoiceNo String
   branch String
   taxType taxType [default: 'Individual']
+  status ExpenseStatus
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
@@ -504,6 +505,12 @@ Enum DocumentType {
   DebitNote
   CreditNote
   WithholdingTax
+}
+
+Enum ExpenseStatus {
+  Pass
+  Fail
+  Warning
 }
 
 Enum ExpenseGroup {
