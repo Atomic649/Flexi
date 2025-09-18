@@ -857,12 +857,13 @@ const updateExpenseById = async (req: Request, res: Response) => {
 
     // Merge the uploaded file S3 URL key into the expense object
     // Convert string 'true'/'false' to boolean for vat and withHoldingTax
+    // Preserve existing image URL when no new file is uploaded
     const expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
-      image: (req.file as any)?.location ?? "", // Use type assertion for custom property
-      group: req.body.group || "Others", // Default to "Others" if group is empty
+      image: (req.file as any)?.location ?? existingExpense.image ?? "",
+      group: req.body.group || existingExpense.group || "Others",
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
