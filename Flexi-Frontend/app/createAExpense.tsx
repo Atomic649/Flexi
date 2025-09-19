@@ -30,10 +30,10 @@ import { getWHTPercentage } from "@/components/TaxVariable";
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
-  
+
   try {
     let parsedDate;
-    
+
     // Handle DD/MM/YYYY format from OCR
     if (dateString.includes("/") && !dateString.includes("T")) {
       const dateParts = dateString.split("/");
@@ -49,13 +49,13 @@ const formatDate = (dateString: string) => {
     } else {
       parsedDate = new Date(dateString);
     }
-    
+
     // Check if date is valid
     if (isNaN(parsedDate.getTime())) {
       console.warn("⚠️ Invalid date format:", dateString);
       return dateString; // Return original string if parsing fails
     }
-    
+
     const day = String(parsedDate.getDate()).padStart(2, "0");
     const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
     const year = parsedDate.getFullYear();
@@ -230,16 +230,19 @@ export default function CreateExpense({
   };
 
   const handleClose = () => {
-  // Require a note before allowing the modal to close and save only when amount > 0
-  if (Number(amount) > 0 && (!note || note.trim() === "")) {
+    // Require a note before allowing the modal to close and save only when amount > 0
+    if (Number(amount) > 0 && (!note || note.trim() === "")) {
       setAlertConfig({
         visible: true,
         title: t("expense.create.error"),
-        message: t("expense.create.fillNote" ) || "Please fill in the note before closing.",
+        message:
+          t("expense.create.fillNote") ||
+          "Please fill in the note before closing.",
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
             style: "default",
           },
         ],
@@ -253,30 +256,30 @@ export default function CreateExpense({
   };
 
   //handleCreateOrUpdate
-  const handleCreateOrUpdate = async()=>{
+  const handleCreateOrUpdate = async () => {
     // if there are exited data from OCR use handleUpdateExpense else use handleCreateExpense
     if (selectedOCRData) {
       await handleUpdateExpense();
     } else {
       await handleCreateExpense();
     }
-  }
+  };
 
   //handleUpdateExpense by createdExpenseId
-  const handleUpdateExpense = async()=>{
+  const handleUpdateExpense = async () => {
     setError("");
 
     try {
       const formData = new FormData();
       // Only append single string values
-      if (note && typeof note === 'string') formData.append("note", note);
+      if (note && typeof note === "string") formData.append("note", note);
       if (amount) formData.append("amount", amount);
       if (desc) formData.append("desc", desc);
-      if (sName) formData.append("sName",sName);
-      if (sTaxId) formData.append("sTaxId",sTaxId);
+      if (sName) formData.append("sName", sName);
+      if (sTaxId) formData.append("sTaxId", sTaxId);
       if (vatAmount) formData.append("vatAmount", vatAmount.toString());
-      if (sAddress) formData.append("sAddress",sAddress);
-      if (taxInvoiceNo) formData.append("taxInvoiceId",taxInvoiceNo);
+      if (sAddress) formData.append("sAddress", sAddress);
+      if (taxInvoiceNo) formData.append("taxInvoiceId", taxInvoiceNo);
       if (date) formData.append("date", Array.isArray(date) ? date[0] : date);
       if (branch) formData.append("branch", branch);
       if (image) {
@@ -288,7 +291,10 @@ export default function CreateExpense({
       }
 
       if (createdExpenseId !== null) {
-        const data = await CallAPIExpense.updateExpenseAPI(createdExpenseId, formData);
+        const data = await CallAPIExpense.updateExpenseAPI(
+          createdExpenseId,
+          formData
+        );
         if (data.error) throw new Error(data.error);
 
         // Clear and close once on success
@@ -302,7 +308,7 @@ export default function CreateExpense({
     } catch (error: any) {
       setError(error.message);
     }
-  }
+  };
 
   const handleCreateExpense = async () => {
     setError("");
@@ -459,21 +465,25 @@ export default function CreateExpense({
         "🔍 Checking for OCR alert:",
         data.ocrAlert ? "Found" : "Not found"
       );
-      
+
       // Update frontend state with backend-processed data
       if (data.taxType && data.taxType !== taxType) {
-        console.log(`🔄 Backend auto-detected taxType: "${data.taxType}" (was: "${taxType}")`);
+        console.log(
+          `🔄 Backend auto-detected taxType: "${data.taxType}" (was: "${taxType}")`
+        );
         setTaxType(data.taxType);
       }
-      
+
       // Update VAT settings if backend processed them
       if (data.vat !== undefined && data.vat !== vatIncluded) {
         console.log(`🔄 Backend set VAT: ${data.vat} (was: ${vatIncluded})`);
         setVatIncluded(data.vat);
       }
-      
+
       if (data.vatAmount !== undefined && data.vatAmount !== vatAmount) {
-        console.log(`🔄 Backend set VAT Amount: ${data.vatAmount} (was: ${vatAmount})`);
+        console.log(
+          `🔄 Backend set VAT Amount: ${data.vatAmount} (was: ${vatAmount})`
+        );
         setVatAmount(Number(data.vatAmount));
       }
 
@@ -529,14 +539,17 @@ export default function CreateExpense({
     }
   };
 
-// delete expense by id if amount is 0
-const handleDeleteExpense = async () => {   
+  // delete expense by id if amount is 0
+  const handleDeleteExpense = async () => {
     if (createdExpenseId && Number(amount) === 0) {
       try {
         const memberId = await getMemberId();
         if (memberId) {
           await CallAPIExpense.deleteExpenseAPI(createdExpenseId, memberId);
-          console.log("🗑️ Auto-deleted expense 0 Amount with ID:", createdExpenseId);
+          console.log(
+            "🗑️ Auto-deleted expense 0 Amount with ID:",
+            createdExpenseId
+          );
           setCreatedExpenseId(null); // Clear stored ID after deletion
         } else {
           console.error("❌ memberId is null, cannot delete expense.");
@@ -545,7 +558,7 @@ const handleDeleteExpense = async () => {
         console.error("❌ Failed to auto-delete expense:", error);
       }
     }
-};  
+  };
 
   // Setting Button Group of Expense
   const groupButtonClass = (groupName: string) =>
@@ -581,26 +594,29 @@ const handleDeleteExpense = async () => {
           backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
         activeOpacity={1}
-       onPressOut={() => {
-         // Allow closing by tapping the backdrop when amount is empty or <= 0.
-         // Require a note only when amount > 0.
-         if (Number(amount) > 0 && (!note || note.trim() === "")) {
-           setAlertConfig({
-             visible: true,
-             title: t("expense.create.error"),
-             message: t("expense.create.fillNote" ) || "Please fill in the note before closing.",
-             buttons: [
-               {
-                 text: t("common.ok"),
-                 onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-                 style: "default",
-               },
-             ],
-           });
-           return;
-         }
-         handleClose();
-       }}
+        onPressOut={() => {
+          // Allow closing by tapping the backdrop when amount is empty or <= 0.
+          // Require a note only when amount > 0.
+          if (Number(amount) > 0 && (!note || note.trim() === "")) {
+            setAlertConfig({
+              visible: true,
+              title: t("expense.create.error"),
+              message:
+                t("expense.create.fillNote") ||
+                "Please fill in the note before closing.",
+              buttons: [
+                {
+                  text: t("common.ok"),
+                  onPress: () =>
+                    setAlertConfig((prev) => ({ ...prev, visible: false })),
+                  style: "default",
+                },
+              ],
+            });
+            return;
+          }
+          handleClose();
+        }}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -651,7 +667,7 @@ const handleDeleteExpense = async () => {
                   )}
                 </TouchableOpacity>
 
-                {/* OCR Progress Indicator */}
+                {/* -----------------------OCR Progress Indicator---------------------------------- */}
                 {isProcessingOCR && (
                   <View
                     style={{
@@ -689,7 +705,7 @@ const handleDeleteExpense = async () => {
                               color: theme === "dark" ? "#fff" : "#000",
                             }}
                           >
-                            🔍 Processing OCR
+                            {`🔍 ${t("ocr.processing")}`}
                           </CustomText>
 
                           {/* Progress Bar */}
@@ -720,10 +736,9 @@ const handleDeleteExpense = async () => {
                               fontSize: 14,
                               color: theme === "dark" ? "#ccc" : "#666",
                             }}
-                          >
-                            {ocrProgress}% Complete
-                          </CustomText>
-
+                          >{`${ocrProgress}% ${t(
+                            "common.complete"
+                          )}`}</CustomText>
                           <CustomText
                             style={{
                               fontSize: 12,
@@ -733,8 +748,8 @@ const handleDeleteExpense = async () => {
                             }}
                           >
                             {ocrProgress < 100
-                              ? "Analyzing image for invoice data..."
-                              : "Processing complete!"}
+                              ? t("ocr.analyzing")
+                              : t("ocr.complete")}
                           </CustomText>
                         </>
                       ) : (
@@ -755,10 +770,12 @@ const handleDeleteExpense = async () => {
                             }}
                           >
                             {ocrAlert?.type === "success"
-                              ? "🎉 OCR Detection Complete"
+                              ? `🎉 ${t("ocr.alert.pass")}`
                               : ocrAlert?.type === "warning"
-                              ? "⚠️ OCR Detection Warning"
-                              : "❌ OCR Detection Error"}
+                              ? `⚠️ ${t("ocr.alert.warning")}`
+                              : ocrAlert?.type === "fail"
+                              ? `❌ ${t("ocr.alert.fail")}`
+                              : `❌❌❌ ${t("ocr.alert.error")}`}
                           </CustomText>
 
                           <ScrollView
@@ -768,17 +785,6 @@ const handleDeleteExpense = async () => {
                             }}
                             showsVerticalScrollIndicator={true}
                           >
-                            <CustomText
-                              style={{
-                                fontSize: 14,
-                                color: theme === "dark" ? "#ccc" : "#666",
-                                textAlign: "left",
-                                marginBottom: 15,
-                                lineHeight: 20,
-                              }}
-                            >
-                              {ocrAlert?.message}
-                            </CustomText>
 
                             {ocrAlert?.type === "warning" &&
                               ocrAlert?.details?.failedRequirements && (
@@ -791,10 +797,16 @@ const handleDeleteExpense = async () => {
                                       marginBottom: 8,
                                     }}
                                   >
-                                    Missing Requirements:
+                                    {t("ocr.missingRequirements")}
                                   </CustomText>
                                   {ocrAlert.details.failedRequirements.map(
-                                    (req: string, index: number) => (
+                                    (
+                                      req: {
+                                        key: string;
+                                        values?: Record<string,string>;
+                                      },
+                                      index: number
+                                    ) => (
                                       <CustomText
                                         key={index}
                                         style={{
@@ -805,7 +817,7 @@ const handleDeleteExpense = async () => {
                                           marginLeft: 10,
                                         }}
                                       >
-                                        • {req}
+                                        {`• ${t(req.key, req.values)}`}
                                       </CustomText>
                                     )
                                   )}
@@ -823,8 +835,7 @@ const handleDeleteExpense = async () => {
                                     marginTop: 15,
                                     marginBottom: 12,
                                   }}
-                                >
-                                  📋 Select Detected Data:
+                                >{`📋 ${t("ocr.selectDetectedData")}`}
                                 </CustomText>
 
                                 {/* Names Selection */}
@@ -840,13 +851,7 @@ const handleDeleteExpense = async () => {
                                             theme === "dark" ? "#fff" : "#333",
                                           marginBottom: 8,
                                         }}
-                                      >
-                                        👤 Names (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .names.length
-                                        }{" "}
-                                        found):
+                                      >{`👤 ${t("ocr.name")}`}
                                       </CustomText>
                                       {ocrAlert.details.selectableOptions.names.map(
                                         (name: string, index: number) => (
@@ -902,11 +907,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedName ===
-                                              name
-                                                ? "✓ "
-                                                : "○ "}
-                                              {name}
+                                              {`${
+                                                selectedOCRData.selectedName ===
+                                                name
+                                                  ? "✓ "
+                                                  : "○ "
+                                              }${name}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -927,14 +933,7 @@ const handleDeleteExpense = async () => {
                                             theme === "dark" ? "#fff" : "#333",
                                           marginBottom: 8,
                                         }}
-                                      >
-                                        🆔 Tax IDs (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .taxIds.length
-                                        }{" "}
-                                        found):
-                                      </CustomText>
+                                      >{`🆔 ${t("ocr.taxId")}`}</CustomText>
                                       {ocrAlert.details.selectableOptions.taxIds.map(
                                         (taxId: string, index: number) => (
                                           <TouchableOpacity
@@ -989,11 +988,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedTaxId ===
-                                              taxId
-                                                ? "✓ "
-                                                : "○ "}
-                                              {taxId}
+                                              {`${
+                                                selectedOCRData.selectedTaxId ===
+                                                taxId
+                                                  ? "✓ "
+                                                  : "○ "
+                                              }${taxId}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1002,9 +1002,10 @@ const handleDeleteExpense = async () => {
                                   )}
 
                                 {/* Tax Invoice IDs Selection */}
-                                {ocrAlert.details.selectableOptions.taxInvoiceIds &&
-                                  ocrAlert.details.selectableOptions.taxInvoiceIds
-                                    .length > 0 && (
+                                {ocrAlert.details.selectableOptions
+                                  .taxInvoiceIds &&
+                                  ocrAlert.details.selectableOptions
+                                    .taxInvoiceIds.length > 0 && (
                                     <View style={{ marginBottom: 15 }}>
                                       <CustomText
                                         style={{
@@ -1014,22 +1015,19 @@ const handleDeleteExpense = async () => {
                                             theme === "dark" ? "#fff" : "#333",
                                           marginBottom: 8,
                                         }}
-                                      >
-                                        🧾 Tax Invoice IDs (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .taxInvoiceIds.length
-                                        }{" "}
-                                        found):
-                                      </CustomText>
+                                      >{`🧾 ${t("ocr.taxInvoiceNo")}`}</CustomText>
                                       {ocrAlert.details.selectableOptions.taxInvoiceIds.map(
-                                        (taxInvoiceId: string, index: number) => (
+                                        (
+                                          taxInvoiceId: string,
+                                          index: number
+                                        ) => (
                                           <TouchableOpacity
                                             key={index}
                                             onPress={() => {
                                               setSelectedOCRData((prev) => ({
                                                 ...prev,
-                                                selectedTaxInvoiceId: taxInvoiceId,
+                                                selectedTaxInvoiceId:
+                                                  taxInvoiceId,
                                               }));
                                               console.log(
                                                 "🔍 Selected taxInvoiceId:",
@@ -1076,11 +1074,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedTaxInvoiceId ===
-                                              taxInvoiceId
-                                                ? "✓ "
-                                                : "○ "}
-                                              {taxInvoiceId}
+                                              {`${
+                                                selectedOCRData.selectedTaxInvoiceId ===
+                                                taxInvoiceId
+                                                  ? "✓ "
+                                                  : "○ "
+                                              }${taxInvoiceId}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1089,7 +1088,8 @@ const handleDeleteExpense = async () => {
                                   )}
 
                                 {/* VAT Amounts Selection */}
-                                {ocrAlert.details.selectableOptions.vatAmounts &&
+                                {ocrAlert.details.selectableOptions
+                                  .vatAmounts &&
                                   ocrAlert.details.selectableOptions.vatAmounts
                                     .length > 0 && (
                                     <View style={{ marginBottom: 15 }}>
@@ -1102,13 +1102,7 @@ const handleDeleteExpense = async () => {
                                           marginBottom: 8,
                                         }}
                                       >
-                                        💰 VAT Amounts (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .vatAmounts.length
-                                        }{" "}
-                                        found):
-                                      </CustomText>
+                                        {`💰 ${t("ocr.vatAmount")}`}</CustomText>
                                       {ocrAlert.details.selectableOptions.vatAmounts.map(
                                         (vatAmount: string, index: number) => (
                                           <TouchableOpacity
@@ -1163,11 +1157,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedVatAmount ===
-                                              vatAmount
-                                                ? "✓ "
-                                                : "○ "}
-                                              {vatAmount}
+                                              {`${
+                                                selectedOCRData.selectedVatAmount ===
+                                                vatAmount
+                                                  ? "✓ "
+                                                  : "○ "
+                                              } ${vatAmount}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1189,12 +1184,7 @@ const handleDeleteExpense = async () => {
                                           marginBottom: 8,
                                         }}
                                       >
-                                        💰 Amounts (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .amounts.length
-                                        }{" "}
-                                        found):
+                                        {`💰 ${t("ocr.amount")}`}
                                       </CustomText>
                                       {ocrAlert.details.selectableOptions.amounts.map(
                                         (amount: number, index: number) => (
@@ -1250,11 +1240,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedAmount ===
-                                              amount
-                                                ? "✓ "
-                                                : "○ "}
-                                              ฿{amount.toLocaleString()}
+                                              {`${
+                                                selectedOCRData.selectedAmount ===
+                                                amount
+                                                  ? "✓ "
+                                                  : "○ "
+                                              }฿${amount.toLocaleString()}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1276,12 +1267,7 @@ const handleDeleteExpense = async () => {
                                           marginBottom: 8,
                                         }}
                                       >
-                                        📅 Dates (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .dates.length
-                                        }{" "}
-                                        found):
+                                        {`📅 ${t("ocr.date")}`}
                                       </CustomText>
                                       {ocrAlert.details.selectableOptions.dates.map(
                                         (date: string, index: number) => (
@@ -1337,11 +1323,12 @@ const handleDeleteExpense = async () => {
                                                     : "#666",
                                               }}
                                             >
-                                              {selectedOCRData.selectedDate ===
-                                              date
-                                                ? "✓ "
-                                                : "○ "}
-                                              {date}
+                                              {`${
+                                                selectedOCRData.selectedDate ===
+                                                date
+                                                  ? "✓ "
+                                                  : "○ "
+                                              }${date}`}
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1363,12 +1350,7 @@ const handleDeleteExpense = async () => {
                                           marginBottom: 8,
                                         }}
                                       >
-                                        🏠 Addresses (
-                                        {
-                                          ocrAlert.details.selectableOptions
-                                            .addresses.length
-                                        }{" "}
-                                        found):
+                                        {`🏠 ${t("ocr.address")}`}
                                       </CustomText>
                                       {ocrAlert.details.selectableOptions.addresses.map(
                                         (address: string, index: number) => (
@@ -1424,12 +1406,7 @@ const handleDeleteExpense = async () => {
                                                     ? "#ccc"
                                                     : "#666",
                                               }}
-                                            >
-                                              {selectedOCRData.selectedAddress ===
-                                              address
-                                                ? "✓ "
-                                                : "○ "}
-                                              {address}
+                                            >{`${selectedOCRData.selectedAddress === address ? "✓ " : "○ "}${address}`} 
                                             </CustomText>
                                           </TouchableOpacity>
                                         )
@@ -1443,20 +1420,37 @@ const handleDeleteExpense = async () => {
                           {/* Select All Button */}
                           <TouchableOpacity
                             onPress={() => {
-                              console.log("🔄 Selecting all available OCR data");
-                              
+                              console.log(
+                                "🔄 Selecting all available OCR data"
+                              );
+
                               setSelectedOCRData((prev) => ({
                                 ...prev,
                                 // Select first available option from each category
-                                selectedName: ocrAlert?.details?.selectableOptions?.names?.[0] || prev.selectedName,
-                                selectedTaxId: ocrAlert?.details?.selectableOptions?.taxIds?.[0] || prev.selectedTaxId,
-                                selectedTaxInvoiceId: ocrAlert?.details?.selectableOptions?.taxInvoiceIds?.[0] || prev.selectedTaxInvoiceId,
-                                selectedVatAmount: ocrAlert?.details?.selectableOptions?.vatAmounts?.[0] || prev.selectedVatAmount,
-                                selectedAmount: ocrAlert?.details?.selectableOptions?.amounts?.[0] || prev.selectedAmount,
-                                selectedDate: ocrAlert?.details?.selectableOptions?.dates?.[0] || prev.selectedDate,
-                                selectedAddress: ocrAlert?.details?.selectableOptions?.addresses?.[0] || prev.selectedAddress,
+                                selectedName:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.names?.[0] || prev.selectedName,
+                                selectedTaxId:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.taxIds?.[0] || prev.selectedTaxId,
+                                selectedTaxInvoiceId:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.taxInvoiceIds?.[0] ||
+                                  prev.selectedTaxInvoiceId,
+                                selectedVatAmount:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.vatAmounts?.[0] || prev.selectedVatAmount,
+                                selectedAmount:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.amounts?.[0] || prev.selectedAmount,
+                                selectedDate:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.dates?.[0] || prev.selectedDate,
+                                selectedAddress:
+                                  ocrAlert?.details?.selectableOptions
+                                    ?.addresses?.[0] || prev.selectedAddress,
                               }));
-                              
+
                               console.log("✅ All available OCR data selected");
                             }}
                             style={{
@@ -1476,7 +1470,7 @@ const handleDeleteExpense = async () => {
                                 textAlign: "center",
                               }}
                             >
-                              📋 Select All Available Data
+                              {`📋 ${t("ocr.selectAll")}`}
                             </CustomText>
                           </TouchableOpacity>
 
@@ -1506,10 +1500,14 @@ const handleDeleteExpense = async () => {
                                     setSTaxId(selectedOCRData.selectedTaxId);
                                   }
                                   if (selectedOCRData.selectedTaxInvoiceId) {
-                                    setTaxInvoiceNo(selectedOCRData.selectedTaxInvoiceId);
+                                    setTaxInvoiceNo(
+                                      selectedOCRData.selectedTaxInvoiceId
+                                    );
                                   }
                                   if (selectedOCRData.selectedVatAmount) {
-                                    setVatAmount(Number(selectedOCRData.selectedVatAmount));
+                                    setVatAmount(
+                                      Number(selectedOCRData.selectedVatAmount)
+                                    );
                                     // Also set VAT as included if a VAT amount is selected
                                     setVatIncluded(true);
                                   }
@@ -1521,23 +1519,36 @@ const handleDeleteExpense = async () => {
                                   if (selectedOCRData.selectedDate) {
                                     try {
                                       // Convert DD/MM/YYYY format to a proper Date
-                                      const dateParts = selectedOCRData.selectedDate.split("/");
+                                      const dateParts =
+                                        selectedOCRData.selectedDate.split("/");
                                       if (dateParts.length === 3) {
                                         // Assuming DD/MM/YYYY format from OCR
                                         const day = dateParts[0];
                                         const month = dateParts[1];
                                         const year = dateParts[2];
                                         // Create ISO date string (YYYY-MM-DD)
-                                        const isoDateString = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T12:00:00.000Z`;
-                                        
-                                        console.log(`📅 Converting OCR date: ${selectedOCRData.selectedDate} -> ${isoDateString}`);
-                                        
+                                        const isoDateString = `${year}-${month.padStart(
+                                          2,
+                                          "0"
+                                        )}-${day.padStart(
+                                          2,
+                                          "0"
+                                        )}T12:00:00.000Z`;
+
+                                        console.log(
+                                          `📅 Converting OCR date: ${selectedOCRData.selectedDate} -> ${isoDateString}`
+                                        );
+
                                         setSelectedDates([isoDateString]);
                                         setDate([isoDateString]);
                                       } else {
                                         // If it's already in a proper format, use as is
-                                        console.log(`📅 Using OCR date as is: ${selectedOCRData.selectedDate}`);
-                                        setSelectedDates([selectedOCRData.selectedDate]);
+                                        console.log(
+                                          `📅 Using OCR date as is: ${selectedOCRData.selectedDate}`
+                                        );
+                                        setSelectedDates([
+                                          selectedOCRData.selectedDate,
+                                        ]);
                                         setDate([selectedOCRData.selectedDate]);
                                       }
                                     } catch (error) {
@@ -1546,7 +1557,9 @@ const handleDeleteExpense = async () => {
                                         error
                                       );
                                       // Fallback: try to use the date as is
-                                      setSelectedDates([selectedOCRData.selectedDate]);
+                                      setSelectedDates([
+                                        selectedOCRData.selectedDate,
+                                      ]);
                                       setDate([selectedOCRData.selectedDate]);
                                     }
                                   }
@@ -1623,8 +1636,9 @@ const handleDeleteExpense = async () => {
                                     selectedOCRData.selectedAddress || sAddress
                                   );
                                   formData.append(
-                                    "taxInvoiceNo", 
-                                    selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo
+                                    "taxInvoiceNo",
+                                    selectedOCRData.selectedTaxInvoiceId ||
+                                      taxInvoiceNo
                                   );
                                   formData.append("branch", branch);
                                   formData.append("taxType", taxType);
@@ -1639,15 +1653,25 @@ const handleDeleteExpense = async () => {
                                   }
 
                                   formData.append("group", group || "");
-                                  
+
                                   // Use selected VAT amount from OCR if available
-                                  const finalVatAmount = selectedOCRData.selectedVatAmount ? 
-                                    Number(selectedOCRData.selectedVatAmount) : vatAmount;
-                                  const finalVatIncluded = selectedOCRData.selectedVatAmount ? 
-                                    Number(selectedOCRData.selectedVatAmount) > 0 : vatIncluded;
-                                  
-                                  console.log(`📊 VAT Data for submission: selectedVatAmount=${selectedOCRData.selectedVatAmount}, finalVatAmount=${finalVatAmount}, finalVatIncluded=${finalVatIncluded}`);
-                                  
+                                  const finalVatAmount =
+                                    selectedOCRData.selectedVatAmount
+                                      ? Number(
+                                          selectedOCRData.selectedVatAmount
+                                        )
+                                      : vatAmount;
+                                  const finalVatIncluded =
+                                    selectedOCRData.selectedVatAmount
+                                      ? Number(
+                                          selectedOCRData.selectedVatAmount
+                                        ) > 0
+                                      : vatIncluded;
+
+                                  console.log(
+                                    `📊 VAT Data for submission: selectedVatAmount=${selectedOCRData.selectedVatAmount}, finalVatAmount=${finalVatAmount}, finalVatIncluded=${finalVatIncluded}`
+                                  );
+
                                   formData.append(
                                     "vat",
                                     finalVatIncluded ? "true" : "false"
@@ -1708,23 +1732,34 @@ const handleDeleteExpense = async () => {
                                     console.log(
                                       "✅ Successfully resubmitted expense with OCR data"
                                     );
-                                    console.log("📋 API Response:", updateResult);
-                                    
+                                    console.log(
+                                      "📋 API Response:",
+                                      updateResult
+                                    );
+
                                     // Update UI state with the response data from backend
                                     if (updateResult.taxType) {
-                                      console.log(`🔄 Updating taxType from "${taxType}" to "${updateResult.taxType}"`);
+                                      console.log(
+                                        `🔄 Updating taxType from "${taxType}" to "${updateResult.taxType}"`
+                                      );
                                       setTaxType(updateResult.taxType);
                                     }
-                                    
+
                                     // Also update other fields that might have been processed by backend
                                     if (updateResult.vat !== undefined) {
-                                      console.log(`🔄 Updating vat from backend: ${updateResult.vat}`);
+                                      console.log(
+                                        `🔄 Updating vat from backend: ${updateResult.vat}`
+                                      );
                                       setVatIncluded(updateResult.vat);
                                     }
-                                    
+
                                     if (updateResult.vatAmount !== undefined) {
-                                      console.log(`🔄 Updating vatAmount from backend: ${updateResult.vatAmount}`);
-                                      setVatAmount(Number(updateResult.vatAmount));
+                                      console.log(
+                                        `🔄 Updating vatAmount from backend: ${updateResult.vatAmount}`
+                                      );
+                                      setVatAmount(
+                                        Number(updateResult.vatAmount)
+                                      );
                                     }
                                   }
                                 } catch (error) {
@@ -1743,7 +1778,7 @@ const handleDeleteExpense = async () => {
                                 setShowOCRResult(false);
                                 setOCRProgress(100);
                                 setOCRAlert(null);
-                               // setCreatedExpenseId(null);
+                                // setCreatedExpenseId(null);
 
                                 // Reset selection state
                                 setSelectedOCRData({
@@ -1756,7 +1791,6 @@ const handleDeleteExpense = async () => {
                                   selectedAddress: "",
                                 });
 
-                               
                                 console.log(
                                   "✅ OCR data applied and expense resubmitted successfully"
                                 );
@@ -1777,7 +1811,7 @@ const handleDeleteExpense = async () => {
                                   textAlign: "center",
                                 }}
                               >
-                                ✓ Use Data
+                                {t("ocr.useData")}
                               </CustomText>
                             </TouchableOpacity>
 
@@ -1792,8 +1826,7 @@ const handleDeleteExpense = async () => {
                                 setOCRProgress(0);
                                 setOCRAlert(null);
                                 console.log("Expense ID:", createdExpenseId);
-                                
-                               
+
                                 // Reset selection state
                                 setSelectedOCRData({
                                   selectedName: "",
@@ -1805,9 +1838,9 @@ const handleDeleteExpense = async () => {
                                   selectedAddress: "",
                                 });
 
-                              console.log(
-                                "⏭️ OCR skipped, proceeding with expense creation"
-                              );                                
+                                console.log(
+                                  "⏭️ OCR skipped, proceeding with expense creation"
+                                );
                               }}
                               style={{
                                 backgroundColor: "#6b7280",
@@ -1825,7 +1858,7 @@ const handleDeleteExpense = async () => {
                                   textAlign: "center",
                                 }}
                               >
-                                Skip OCR
+                                {t("ocr.skipOcr")}
                               </CustomText>
                             </TouchableOpacity>
                           </View>
@@ -1834,16 +1867,18 @@ const handleDeleteExpense = async () => {
                     </View>
                   </View>
                 )}
-
+                {/* -----------------------End OCR Progress Indicator------------------------------ */}
                 <View className="flex-row items-center justify-center bg-transparent  rounded-full p-2 ml-2">
                   <CustomText
                     className={`text-base mx-2 ${
                       theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
                     }`}
                   >
-                    {SelectedDates.length > 0
-                      ? formatDate(SelectedDates[0])
-                      : t("dashboard.selectDate")}
+                    {`${
+                      SelectedDates.length > 0
+                        ? formatDate(SelectedDates[0])
+                        : t("dashboard.selectDate")
+                    }`}
                   </CustomText>
                   {/* icon Calendar */}
                   <Ionicons
@@ -2291,14 +2326,12 @@ const handleDeleteExpense = async () => {
 
                   {image && (
                     <TouchableOpacity
-                      onPress={() => {handleCreateExpenseWithOCR()}}
+                      onPress={() => {
+                        handleCreateExpenseWithOCR();
+                      }}
                       className=" items-center justify-center pt-2"
                     >
-                      <Ionicons
-                        name="scan"
-                        size={26}
-                        color="#999999"
-                      />
+                      <Ionicons name="scan" size={26} color="#999999" />
                       <CustomText className="text-center mt-1">
                         {t("common.OCR")}
                       </CustomText>
@@ -2307,7 +2340,7 @@ const handleDeleteExpense = async () => {
 
                   <SecondaryButton
                     title={t("common.save")}
-                    handlePress={() =>handleCreateOrUpdate()}
+                    handlePress={() => handleCreateOrUpdate()}
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
                   />

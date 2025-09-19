@@ -27,7 +27,8 @@
     "future": "future",
     "days": "days",
     "THB": "THB",
-    "OCR": "Scan"
+    "OCR": "Scan",
+    "complete": "Complete"
   },
   "months": {
     "january": "January",
@@ -1474,7 +1475,7 @@
     "taxInvoiceNo": "Tax Invoice No.",
     "whtPercent": "WHT Percent",
     "whtAmount": "WHT Amount",
-    "amountExpense":"Amount of goods/services",
+    "amountExpense": "Amount of goods/services",
     "totalExpense": "Total Expense",
     "totalTaxExpense": "Total Tax Expense",
     "totalWht": "Total WHT",
@@ -1487,9 +1488,8 @@
     "vatDetailList": "VAT Detail List",
     "category": "Category",
     "percentage": "Percentage",
-    "expenseNo":" Document No.",
+    "expenseNo": " Document No.",
     "amountIncVat": "Amount Inc. VAT"
-
   },
   "taxDoc": {
     "vatTitle": "VAT Registration Alert",
@@ -1523,5 +1523,39 @@
     "individualTax": "Individual Tax"
   },
   "Individual": "Individual",
-  "Juristic": "Company"
+  "Juristic": "Company",
+  "ocr": {
+    "processing": "Processing OCR...",
+    "analyzing": "Analyzing image for invoice data...",
+    "complete": "Processing complete!",
+    "alert": {
+      "pass": "Document meets quality standards of revenue department.",
+      "warning": "Document quality is missing some requirements. in consideration of the revenue department to accept.",
+      "fail": "Document quality is below the minimum standard required by the revenue department.",
+      "error": "An error occurred during OCR processing. Please try again."
+    },
+    "missingRequirements": "Missing Requirements :",
+    "selectDetectedData": "Select Detected Data:",
+    "found": "Found",
+    "notFound": "Not Found",
+    "name": "Seller/ Service Provider Name",
+    "taxId": "Tax ID",
+    "taxInvoiceNo": "Tax Invoice No.",
+    "vatAmount": "VAT Amount",
+    "amount": "Total Amount",
+    "date": "Date",
+    "address": "Address",
+    "selectAll": "Select All",
+    "useData": "✓ Use Data",
+    "skipOcr": "Skip OCR",
+    "failed": {
+      "names": "Names (found {{found}}, need ≥{{required}})",
+      "taxId": "Tax IDs (found {{found}}, need ≥{{required}})",
+      "taxInvoiceId": "Tax Invoice IDs (found {{found}}, need ≥{{required}})",
+      "amount": "Amount (not detected)",
+      "date": "Date (not detected)",
+      "address": "Address with Thai province (not detected)",
+      "receiptTitle": "Receipt title (need: {{examples, list}})"
+    }
+  }
 }
