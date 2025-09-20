@@ -10,6 +10,10 @@ import daikin from "../assets/images/Daikin.jpg"
 import start from "../assets/images/start.png"
 import loginshopee from "../assets/images/loginshopee.png"
 import bg from "../assets/images/bg-web.jpg"
+import check from "../assets/images/check.png"
+import listcheck from "../assets/images/list-check.png"
+import warning from "../assets/images/warning.png";
+import falseSign from "../assets/images/false.png"
 
 export default { 
     profile, 
@@ -23,5 +27,9 @@ export default {
     daikin,
     start,
     loginshopee,
-    bg
+    bg,
+    check,    
+    listcheck,
+    warning,
+    falseSign
 }

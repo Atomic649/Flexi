@@ -760,28 +760,25 @@ export default function CreateExpense({
                             showOCRResult
                           )}
                           {console.log("📋 OCR Alert in results:", ocrAlert)}
-                          <CustomText
-                            style={{
-                              fontSize: 18,
-                              fontWeight: "bold",
-                              marginBottom:10,
-                              color: theme === "dark" ? "#fff" : "#000",
-                              textAlign: "center",
-                            }}
-                          >
-                            {ocrAlert?.type === "success"
-                              ? `🎉 ${t("ocr.alert.pass.title")}`
-                              : ocrAlert?.type === "warning"
-                              ? `⚠️ ${t("ocr.alert.warning.title")}`
-                              : ocrAlert?.type === "fail"
-                              ? `❌ ${t("ocr.alert.fail.title")}`
-                              : `❌❌❌ ${t("ocr.alert.error")}`}
-                          </CustomText>
+                          {/* Replace title emoji/text with status image */}
+                          <Image
+                            source={
+                              ocrAlert?.type === "success"
+                                ? require("@/constants/images").default.listcheck
+                                : ocrAlert?.type === "warning"
+                                ? require("@/constants/images").default.warning
+                                : ocrAlert?.type === "fail"
+                                ? require("@/constants/images").default.falseSign
+                                : require("@/constants/images").default.falseSign
+                            }
+                            style={{ width: 100, height: 100, marginBottom: 10 }}
+                            resizeMode="contain"
+                          />
 
                           <CustomText
                             style={{
-                              fontSize: 16,
-                              fontWeight: "normal",
+                              fontSize: 14,
+                              fontWeight: "bold",
                               marginBottom: 15,
                               color: theme === "dark" ? "#fff" : "#000",
                               textAlign: "center",
