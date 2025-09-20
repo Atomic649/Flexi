@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { View } from "@/components/Themed";
-import { SecondaryButton, CustomButton } from "@/components/CustomButton";
+import { SecondaryButton, GrayButton, CustomButton } from "@/components/CustomButton";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -148,7 +148,7 @@ export default function CreateExpense({
       setWithHoldingTax(false);
       setWHTpercent(0);
       setVatAmount(0);
-  const [showSelection, setShowSelection] = useState<boolean>(false);
+      const [showSelection, setShowSelection] = useState<boolean>(false);
       setWHTAmount(0);
     } else if (withHoldingTax && group) {
       // Auto-set WHT percentage using TaxVariable component
@@ -176,7 +176,8 @@ export default function CreateExpense({
     try {
       // Apply selected data to form fields
       if (selectedOCRData.selectedName) setSName(selectedOCRData.selectedName);
-      if (selectedOCRData.selectedTaxId) setSTaxId(selectedOCRData.selectedTaxId);
+      if (selectedOCRData.selectedTaxId)
+        setSTaxId(selectedOCRData.selectedTaxId);
       if (selectedOCRData.selectedTaxInvoiceId)
         setTaxInvoiceNo(selectedOCRData.selectedTaxInvoiceId);
       if (selectedOCRData.selectedVatAmount) {
@@ -192,7 +193,10 @@ export default function CreateExpense({
           const day = parts[0];
           const month = parts[1];
           const year = parts[2];
-          const iso = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+          const iso = `${year}-${month.padStart(2, "0")}-${day.padStart(
+            2,
+            "0"
+          )}`;
           setSelectedDates([iso]);
           setDate([iso]);
         } else {
@@ -200,11 +204,15 @@ export default function CreateExpense({
           setDate([selectedOCRData.selectedDate]);
         }
       }
-      if (selectedOCRData.selectedAddress) setSAddress(selectedOCRData.selectedAddress);
+      if (selectedOCRData.selectedAddress)
+        setSAddress(selectedOCRData.selectedAddress);
 
       // Build form data
       const formData = new FormData();
-      formData.append("amount", selectedOCRData.selectedAmount?.toString() || amount);
+      formData.append(
+        "amount",
+        selectedOCRData.selectedAmount?.toString() || amount
+      );
       formData.append("desc", desc);
       formData.append("note", note);
 
@@ -212,7 +220,10 @@ export default function CreateExpense({
       if (selectedOCRData.selectedDate) {
         const parts = selectedOCRData.selectedDate.split("/");
         if (parts.length === 3) {
-          dateToSubmit = `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+          dateToSubmit = `${parts[2]}-${parts[1].padStart(
+            2,
+            "0"
+          )}-${parts[0].padStart(2, "0")}`;
         } else {
           dateToSubmit = selectedOCRData.selectedDate;
         }
@@ -222,18 +233,29 @@ export default function CreateExpense({
       formData.append("sName", selectedOCRData.selectedName || sName);
       formData.append("sTaxId", selectedOCRData.selectedTaxId || sTaxId);
       formData.append("sAddress", selectedOCRData.selectedAddress || sAddress);
-      formData.append("taxInvoiceNo", selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo);
+      formData.append(
+        "taxInvoiceNo",
+        selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo
+      );
       formData.append("branch", branch);
       formData.append("taxType", taxType);
 
       if (image) {
-        formData.append("image", { uri: image, name: "image.jpg", type: "image/jpeg" } as unknown as Blob);
+        formData.append("image", {
+          uri: image,
+          name: "image.jpg",
+          type: "image/jpeg",
+        } as unknown as Blob);
       }
 
       formData.append("group", group || "");
 
-      const finalVatAmount = selectedOCRData.selectedVatAmount ? Number(selectedOCRData.selectedVatAmount) : vatAmount;
-      const finalVatIncluded = selectedOCRData.selectedVatAmount ? Number(selectedOCRData.selectedVatAmount) > 0 : vatIncluded;
+      const finalVatAmount = selectedOCRData.selectedVatAmount
+        ? Number(selectedOCRData.selectedVatAmount)
+        : vatAmount;
+      const finalVatIncluded = selectedOCRData.selectedVatAmount
+        ? Number(selectedOCRData.selectedVatAmount) > 0
+        : vatIncluded;
       formData.append("vat", finalVatIncluded ? "true" : "false");
       formData.append("vatAmount", finalVatAmount.toString());
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
@@ -243,21 +265,33 @@ export default function CreateExpense({
       if (memberId) formData.append("memberId", memberId);
 
       formData.append("ocrDataApplied", "true");
-      if (createdExpenseId) formData.append("expenseId", createdExpenseId.toString());
+      if (createdExpenseId)
+        formData.append("expenseId", createdExpenseId.toString());
 
-      const updateResult = await CallAPIExpense.createAExpenseWithOCRAPI(formData);
+      const updateResult = await CallAPIExpense.createAExpenseWithOCRAPI(
+        formData
+      );
       if (updateResult.error) throw new Error(updateResult.error);
 
       if (updateResult.taxType) setTaxType(updateResult.taxType);
       if (updateResult.vat !== undefined) setVatIncluded(updateResult.vat);
-      if (updateResult.vatAmount !== undefined) setVatAmount(Number(updateResult.vatAmount));
+      if (updateResult.vatAmount !== undefined)
+        setVatAmount(Number(updateResult.vatAmount));
 
       // Close and reset
       setIsProcessingOCR(false);
       setShowOCRResult(false);
       setOCRProgress(100);
       setOCRAlert(null);
-      setSelectedOCRData({ selectedName: "", selectedTaxId: "", selectedTaxInvoiceId: "", selectedVatAmount: "", selectedAmount: undefined, selectedDate: "", selectedAddress: "" });
+      setSelectedOCRData({
+        selectedName: "",
+        selectedTaxId: "",
+        selectedTaxInvoiceId: "",
+        selectedVatAmount: "",
+        selectedAmount: undefined,
+        selectedDate: "",
+        selectedAddress: "",
+      });
       setShowSelection(false);
       console.log("✅ OCR data applied and expense resubmitted successfully");
     } catch (error) {
@@ -739,7 +773,7 @@ export default function CreateExpense({
           return (
             <TouchableOpacity
               key={index}
-              onPress={() => onSelect(item)}
+              onPress={() => onSelect(isSelected ? undefined : item)}
               style={{
                 padding: 8,
                 marginBottom: 4,
@@ -963,46 +997,51 @@ export default function CreateExpense({
 
                           {/* Alert Section */}
 
-                                                        {!showSelection &&(
-                          <Image
-                            source={
-                              ocrAlert?.type === "success"
-                                ? require("@/constants/images").default
-                                    .listcheck
+                          {!showSelection && (
+                            <Image
+                              source={
+                                ocrAlert?.type === "success"
+                                  ? require("@/constants/images").default
+                                      .listcheck
+                                  : ocrAlert?.type === "warning"
+                                  ? require("@/constants/images").default
+                                      .warning
+                                  : ocrAlert?.type === "fail"
+                                  ? require("@/constants/images").default
+                                      .falseSign
+                                  : require("@/constants/images").default.bug
+                              }
+                              style={{
+                                width: 100,
+                                height: 100,
+                                marginBottom: 10,
+                              }}
+                              resizeMode="contain"
+                            />
+                          )}
+                          {!showSelection && (
+                            <CustomText
+                              style={{
+                                fontSize: 14,
+                                fontWeight: "bold",
+                                marginBottom: 15,
+                                color: theme === "dark" ? "#fff" : "#000",
+                                textAlign: "center",
+                              }}
+                            >
+                              {ocrAlert?.type === "success"
+                                ? `${t("ocr.alert.pass.desc")}`
                                 : ocrAlert?.type === "warning"
-                                ? require("@/constants/images").default.warning
+                                ? `${t("ocr.alert.warning.desc")}`
                                 : ocrAlert?.type === "fail"
-                                ? require("@/constants/images").default
-                                    .falseSign
-                                : require("@/constants/images").default.bug
-                            }
-                            style={{
-                              width: 100,
-                              height: 100,
-                              marginBottom: 10,
-                            }}
-                            resizeMode="contain"
-                          />)}
-                                                       {!showSelection &&(
-                          <CustomText
-                            style={{
-                              fontSize: 14,
-                              fontWeight: "bold",
-                              marginBottom: 15,
-                              color: theme === "dark" ? "#fff" : "#000",
-                              textAlign: "center",
-                            }}
-                          >
-                            {ocrAlert?.type === "success"
-                              ? `${t("ocr.alert.pass.desc")}`
-                              : ocrAlert?.type === "warning"
-                              ? `${t("ocr.alert.warning.desc")}`
-                              : ocrAlert?.type === "fail"
-                              ? `${t("ocr.alert.fail.desc")}`
-                              : `${t("ocr.alert.error")}`}
-                          </CustomText>)}
+                                ? `${t("ocr.alert.fail.desc")}`
+                                : `${t("ocr.alert.error")}`}
+                            </CustomText>
+                          )}
 
-                          {!showSelection && (ocrAlert?.type === "warning" || ocrAlert?.type === "fail") &&
+                          {!showSelection &&
+                            (ocrAlert?.type === "warning" ||
+                              ocrAlert?.type === "fail") &&
                             ocrAlert?.details?.failedRequirements && (
                               <>
                                 {ocrAlert.details.failedRequirements.map(
@@ -1074,7 +1113,7 @@ export default function CreateExpense({
                                 );
                               }}
                               style={{
-                                backgroundColor: "#3b82f6",
+                                backgroundColor: "#818181",
                                 paddingHorizontal: 16,
                                 paddingVertical: 10,
                                 borderRadius: 8,
@@ -1123,8 +1162,12 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="👤"
                                       labelKey="ocr.name"
-                                      items={ocrAlert.details.selectableOptions.names}
-                                      selectedValue={selectedOCRData.selectedName}
+                                      items={
+                                        ocrAlert.details.selectableOptions.names
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedName
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1136,8 +1179,13 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="🆔"
                                       labelKey="ocr.taxId"
-                                      items={ocrAlert.details.selectableOptions.taxIds}
-                                      selectedValue={selectedOCRData.selectedTaxId}
+                                      items={
+                                        ocrAlert.details.selectableOptions
+                                          .taxIds
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedTaxId
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1149,8 +1197,13 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="🧾"
                                       labelKey="ocr.taxInvoiceNo"
-                                      items={ocrAlert.details.selectableOptions.taxInvoiceIds}
-                                      selectedValue={selectedOCRData.selectedTaxInvoiceId}
+                                      items={
+                                        ocrAlert.details.selectableOptions
+                                          .taxInvoiceIds
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedTaxInvoiceId
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1162,8 +1215,13 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="💰"
                                       labelKey="ocr.vatAmount"
-                                      items={ocrAlert.details.selectableOptions.vatAmounts}
-                                      selectedValue={selectedOCRData.selectedVatAmount}
+                                      items={
+                                        ocrAlert.details.selectableOptions
+                                          .vatAmounts
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedVatAmount
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1175,22 +1233,33 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="💰"
                                       labelKey="ocr.amount"
-                                      items={ocrAlert.details.selectableOptions.amounts}
-                                      selectedValue={selectedOCRData.selectedAmount}
+                                      items={
+                                        ocrAlert.details.selectableOptions
+                                          .amounts
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedAmount
+                                      }
                                       onSelect={(val: number) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
                                           selectedAmount: val,
                                         }))
                                       }
-                                      formatter={(amt: number) => `฿${amt.toLocaleString()}`}
+                                      formatter={(amt: number) =>
+                                        `฿${amt.toLocaleString()}`
+                                      }
                                     />
 
                                     <SelectableOption
                                       icon="📅"
                                       labelKey="ocr.date"
-                                      items={ocrAlert.details.selectableOptions.dates}
-                                      selectedValue={selectedOCRData.selectedDate}
+                                      items={
+                                        ocrAlert.details.selectableOptions.dates
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedDate
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1202,8 +1271,13 @@ export default function CreateExpense({
                                     <SelectableOption
                                       icon="🏠"
                                       labelKey="ocr.address"
-                                      items={ocrAlert.details.selectableOptions.addresses}
-                                      selectedValue={selectedOCRData.selectedAddress}
+                                      items={
+                                        ocrAlert.details.selectableOptions
+                                          .addresses
+                                      }
+                                      selectedValue={
+                                        selectedOCRData.selectedAddress
+                                      }
                                       onSelect={(val: string) =>
                                         setSelectedOCRData((prev) => ({
                                           ...prev,
@@ -1228,21 +1302,25 @@ export default function CreateExpense({
                                 alignSelf: "center",
                                 marginTop: 10,
                                 width: "100%",
-                                gap: 2
+                                gap: 2,
                               }}
                             >
-                            {/* Use Selected Data Button */}
-                            {ocrAlert?.type !== "fail" && (
-                              <SecondaryButton title={t("ocr.useData")} handlePress={applySelectedOCRData}
+                              {/* Use Selected Data Button */}
+                              {ocrAlert?.type !== "fail" && (
+                                <CustomButton
+                                  title={t("ocr.useData")}
+                                  handlePress={applySelectedOCRData}
+                                  containerStyles="px-12 mt-2"
+                                  textStyles="!text-white"
+                                />
+                              )}
+
+                              <GrayButton
+                                title={t("ocr.skipOcr")}
+                                handlePress={handleSkip}
                                 containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-  />
-                            )}
-
-                            <SecondaryButton title={t("ocr.skipOcr")} handlePress={handleSkip}   containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-  />
-
+                                textStyles="!text-white"
+                              />
                             </View>
                           )}
                         </>

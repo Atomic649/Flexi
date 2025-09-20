@@ -1,6 +1,7 @@
-import { ActivityIndicator, TouchableOpacity ,Text} from "react-native"
+import { ActivityIndicator, TouchableOpacity, Text } from "react-native";
 import { CustomText } from "./CustomText"; // Ensure this path is correct
-import { useTextColorClass } from '@/utils/themeUtils'
+import { useTextColorClass } from "@/utils/themeUtils";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface CustomButtonProps {
   title: string;
@@ -48,7 +49,6 @@ const CustomButton = ({
   );
 };
 
-
 // Secondary Button (Important but not primary actions)
 const SecondaryButton = ({
   title,
@@ -65,7 +65,44 @@ const SecondaryButton = ({
       }`}
       disabled={isLoading}
     >
-      <CustomText weight="bold" style={{ color: '#13b594',fontSize: 14 }}>
+      <CustomText weight="bold" style={{ color: "#13b594", fontSize: 14 }}>
+        {title}
+      </CustomText>
+
+      {isLoading && (
+        <ActivityIndicator
+          animating={isLoading}
+          color="#fff"
+          size="small"
+          className="ml-2"
+        />
+      )}
+    </TouchableOpacity>
+  );
+};
+
+// Secondary Button (Important but not primary actions)
+const GrayButton = ({
+  title,
+  handlePress,
+  containerStyles,
+  isLoading,
+}: CustomButtonProps) => {
+  const { theme } = useTheme();
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={0.7}
+      className={`${
+        theme === "dark"
+          ? "bg-zinc-800 border-[#d1d5db]"
+          : "bg-[#f3f4f6] border-[#d1d5db]"
+      } rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
+        isLoading ? "opacity-50" : ""
+      }`}
+      disabled={isLoading}
+    >
+      <CustomText weight="bold" style={{ color: "#666", fontSize: 14 }}>
         {title}
       </CustomText>
 
@@ -97,7 +134,7 @@ const TextButton = ({
       }`}
       disabled={isLoading}
     >
-      <CustomText weight="bold" style={{ color: '#0dd4ac',fontSize: 16 }}>
+      <CustomText weight="bold" style={{ color: "#0dd4ac", fontSize: 16 }}>
         {title}
       </CustomText>
 
@@ -119,7 +156,7 @@ const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
     <TouchableOpacity onPress={onPress}>
       <CustomText className={`${useTextColorClass()}`}>{title}</CustomText>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
-export { SecondaryButton, TextButton, Button, CustomButton };
+export { SecondaryButton, TextButton, Button, CustomButton, GrayButton };
