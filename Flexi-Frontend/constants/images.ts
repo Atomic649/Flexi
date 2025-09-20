@@ -14,6 +14,9 @@ import check from "../assets/images/check.png"
 import listcheck from "../assets/images/list-check.png"
 import warning from "../assets/images/warning.png";
 import falseSign from "../assets/images/false.png"
+import imagetotext from "../assets/images/imagetotext.png"
+import fail from "../assets/images/fail.png"
+import bug from "../assets/images/bug.png"
 
 export default { 
     profile, 
@@ -31,5 +34,8 @@ export default {
     check,    
     listcheck,
     warning,
-    falseSign
+    falseSign,
+    imagetotext,
+    fail,
+    bug
 }

@@ -1545,7 +1545,7 @@
     "amount": "Total Amount",
     "date": "Date",
     "address": "Address",
-    "selectAll": "Select All",
+    "selectAll": "Select Detected Data",
     "useData": "✓ Use Data",
     "skipOcr": "Skip OCR",
     "failed": {
