@@ -433,76 +433,57 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           detectionResult.summary.hasAddress &&
           detectionResult.summary.hasReceiptTitle;
 
-        // Prepare OCR alert for frontend
-        if (!allRequirementsMet) {
-          const failedRequirements = [];
+        // Check if only taxId is missing (all other requirements met)
+        const onlyTaxIdMissing =
+          detectionResult.summary.hasAtLeast2Names &&
+          !detectionResult.summary.hasAtLeast1TaxId &&
+          detectionResult.summary.hasTaxInvoiceId &&
+          detectionResult.summary.hasAmount &&
+          detectionResult.summary.hasDate &&
+          detectionResult.summary.hasAddress &&
+          detectionResult.summary.hasReceiptTitle;
 
-          if (!detectionResult.summary.hasReceiptTitle) {
-            failedRequirements.push({
-              key: "ocr.failed.receiptTitle",
-              values: { examples: ["ใบเสร็จ", "ใบกำกับภาษี"] },
-            });
-          }
-          if (!detectionResult.summary.hasAtLeast1TaxId) {
-            failedRequirements.push({
-              key: "ocr.failed.taxId",
-              values: {
-                found: detectionResult.taxIdsFound.length,
-                required: 1,
-              },
-            });
-          }
-          if (!detectionResult.summary.hasTaxInvoiceId) {
-            failedRequirements.push({
-              key: "ocr.failed.taxInvoiceId",
-              values: {
-                found: detectionResult.taxInvoiceIdsFound.length,
-                required: 1,
-              },
-            });
-          }
-          if (!detectionResult.summary.hasAmount) {
-            failedRequirements.push({ key: "ocr.failed.amount" });
-          }
-          if (!detectionResult.summary.hasDate) {
-            failedRequirements.push({ key: "ocr.failed.date" });
-          }
-          if (!detectionResult.summary.hasAddress) {
-            failedRequirements.push({ key: "ocr.failed.address" });
-          }
-          
-          ocrAlert = {
-            type: "warning",
-            title: "OCR Detection Alert",
-            message:
-              "Some required data elements are missing from the uploaded image",
-            details: {
-              status: "partial",
-              failedRequirements,
-              detectedData: {
-                names: detectionResult.namesFound,
-                taxIds: detectionResult.taxIdsFound,
-                taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
-                vatAmounts: detectionResult.vatAmountsFound,
-                hasAmount: detectionResult.summary.hasAmount,
-                hasDate: detectionResult.summary.hasDate,
-                hasAddress: detectionResult.summary.hasAddress,
-                hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
-              },
-              // Add selectable options for frontend
-              selectableOptions: {
-                names: detectionResult.namesFound || [],
-                taxIds: detectionResult.taxIdsFound || [],
-                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
-                vatAmounts: detectionResult.vatAmountsFound || [],
-                amounts: detectionResult.amountsDetected || [],
-                dates: detectionResult.datesDetected || [],
-                addresses: detectionResult.addressesDetected || [],
-                provinces: detectionResult.provincesDetected || [],
-              },
+        // Prepare OCR alert for frontend
+        const failedRequirements = [];
+
+        if (!detectionResult.summary.hasReceiptTitle) {
+          failedRequirements.push({
+            key: "ocr.failed.receiptTitle",
+            values: {
+              examples: ["ใบเสร็จ", "ใบกำกับภาษี", "ใบเสร็จรับเงิน"],
             },
-          };
-        } else {
+          });
+        }
+        if (!detectionResult.summary.hasAtLeast1TaxId) {
+          failedRequirements.push({
+            key: "ocr.failed.taxId",
+            values: {
+              found: detectionResult.taxIdsFound.length,
+              required: 1,
+            },
+          });
+        }
+        if (!detectionResult.summary.hasTaxInvoiceId) {
+          failedRequirements.push({
+            key: "ocr.failed.taxInvoiceId",
+            values: {
+              found: detectionResult.taxInvoiceIdsFound.length,
+              required: 1,
+            },
+          });
+        }
+        if (!detectionResult.summary.hasAmount) {
+          failedRequirements.push({ key: "ocr.failed.amount" });
+        }
+        if (!detectionResult.summary.hasDate) {
+          failedRequirements.push({ key: "ocr.failed.date" });
+        }
+        if (!detectionResult.summary.hasAddress) {
+          failedRequirements.push({ key: "ocr.failed.address" });
+        }
+
+        // Decide alert type: success / warning (only taxId missing) / fail
+        if (allRequirementsMet) {
           ocrAlert = {
             type: "success",
             title: "OCR Detection Success",
@@ -520,7 +501,77 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
                 hasAddress: detectionResult.summary.hasAddress,
                 hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
               },
-              // Add selectable options for frontend (even for success)
+              selectableOptions: {
+                names: detectionResult.namesFound || [],
+                taxIds: detectionResult.taxIdsFound || [],
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
+                vatAmounts: detectionResult.vatAmountsFound || [],
+                amounts: detectionResult.amountsDetected || [],
+                dates: detectionResult.datesDetected || [],
+                addresses: detectionResult.addressesDetected || [],
+                provinces: detectionResult.provincesDetected || [],
+              },
+            },
+          };
+        } else if (onlyTaxIdMissing) {
+          ocrAlert = {
+            type: "warning",
+            title: "OCR Detection Warning",
+            message:
+              "Tax ID is missing but allowed. Other required data detected.",
+            details: {
+              status: "partial",
+              allowedMissing: "taxId",
+              failedRequirements: [
+                {
+                  key: "ocr.failed.taxId",
+                  values: {
+                    found: detectionResult.taxIdsFound.length,
+                    required: 1,
+                  },
+                },
+              ],
+              detectedData: {
+                names: detectionResult.namesFound,
+                taxIds: detectionResult.taxIdsFound,
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
+                vatAmounts: detectionResult.vatAmountsFound,
+                hasAmount: detectionResult.summary.hasAmount,
+                hasDate: detectionResult.summary.hasDate,
+                hasAddress: detectionResult.summary.hasAddress,
+                hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
+              },
+              selectableOptions: {
+                names: detectionResult.namesFound || [],
+                taxIds: detectionResult.taxIdsFound || [],
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
+                vatAmounts: detectionResult.vatAmountsFound || [],
+                amounts: detectionResult.amountsDetected || [],
+                dates: detectionResult.datesDetected || [],
+                addresses: detectionResult.addressesDetected || [],
+                provinces: detectionResult.provincesDetected || [],
+              },
+            },
+          };
+        } else {
+          ocrAlert = {
+            type: "fail",
+            title: "OCR Detection Alert",
+            message:
+              "Some required data elements are missing from the uploaded image",
+            details: {
+              status: "partial",
+              failedRequirements,
+              detectedData: {
+                names: detectionResult.namesFound,
+                taxIds: detectionResult.taxIdsFound,
+                taxInvoiceIds: detectionResult.taxInvoiceIdsFound,
+                vatAmounts: detectionResult.vatAmountsFound,
+                hasAmount: detectionResult.summary.hasAmount,
+                hasDate: detectionResult.summary.hasDate,
+                hasAddress: detectionResult.summary.hasAddress,
+                hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
+              },
               selectableOptions: {
                 names: detectionResult.namesFound || [],
                 taxIds: detectionResult.taxIdsFound || [],
@@ -534,7 +585,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             },
           };
         }
-
         if (allRequirementsMet) {
           console.log("🎉 OCR DETECTION SUCCESS - All requirements met!");
         } else {

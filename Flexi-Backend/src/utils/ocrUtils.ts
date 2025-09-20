@@ -989,6 +989,11 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบเสร็จรับเงิน/,
     /ใบกำกับภาษี/,
     /บิลเงินสด/,
+    /ใบรับรองแทนใบเสร็จรับเงิน/,
+    /ใบสำคัญจ่าย/,
+    /ใบสำคัญรับเงิน/,
+    /บิลเงินสด/,
+    /ใบรับเงิน/,
     
     // Fuzzy patterns for common OCR errors
     /ใบ[แเ][สศ]ร[็ะ]จ/,                    // ใบเสร็จ with character variations

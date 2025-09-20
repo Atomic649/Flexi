@@ -762,21 +762,40 @@ export default function CreateExpense({
                           {console.log("📋 OCR Alert in results:", ocrAlert)}
                           <CustomText
                             style={{
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: "bold",
+                              marginBottom:10,
+                              color: theme === "dark" ? "#fff" : "#000",
+                              textAlign: "center",
+                            }}
+                          >
+                            {ocrAlert?.type === "success"
+                              ? `🎉 ${t("ocr.alert.pass.title")}`
+                              : ocrAlert?.type === "warning"
+                              ? `⚠️ ${t("ocr.alert.warning.title")}`
+                              : ocrAlert?.type === "fail"
+                              ? `❌ ${t("ocr.alert.fail.title")}`
+                              : `❌❌❌ ${t("ocr.alert.error")}`}
+                          </CustomText>
+
+                          <CustomText
+                            style={{
+                              fontSize: 16,
+                              fontWeight: "normal",
                               marginBottom: 15,
                               color: theme === "dark" ? "#fff" : "#000",
                               textAlign: "center",
                             }}
                           >
                             {ocrAlert?.type === "success"
-                              ? `🎉 ${t("ocr.alert.pass")}`
+                              ? `${t("ocr.alert.pass.desc")}`
                               : ocrAlert?.type === "warning"
-                              ? `⚠️ ${t("ocr.alert.warning")}`
+                              ? `${t("ocr.alert.warning.desc")}`
                               : ocrAlert?.type === "fail"
-                              ? `❌ ${t("ocr.alert.fail")}`
-                              : `❌❌❌ ${t("ocr.alert.error")}`}
+                              ? `${t("ocr.alert.fail.desc")}`
+                              : `${t("ocr.alert.error")}`}
                           </CustomText>
+
 
                           <ScrollView
                             style={{
@@ -791,7 +810,7 @@ export default function CreateExpense({
                                 <>
                                   <CustomText
                                     style={{
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       fontWeight: "bold",
                                       color: "#f59e0b",
                                       marginBottom: 8,

@@ -200,11 +200,8 @@ class CallAPIExpense {
   async createAExpenseWithOCRAPI(formData: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.post(`/expense/ocr`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  // Let axios set the Content-Type (including boundary) for FormData
+  const response = await axiosInstance.post(`/expense/ocr`, formData);
       console.log("🚀CreateExpenseAPI - Full Response:", response.data);
       console.log("🔍 OCR Alert in API Response:", response.data.ocrAlert ? "Present" : "Missing");
       if (response.data.ocrAlert) {
@@ -229,11 +226,8 @@ class CallAPIExpense {
   async createAExpenseAPI(formData: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.post(`/expense`,  formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  // Let axios set the Content-Type (including boundary) for FormData
+  const response = await axiosInstance.post(`/expense`, formData);
       console.log("🚀CreateExpenseAPI:", response.data);
 
       return response.data;
