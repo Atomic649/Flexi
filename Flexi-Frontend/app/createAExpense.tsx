@@ -10,7 +10,13 @@ import {
   Alert,
 } from "react-native";
 import { View } from "@/components/Themed";
-import { SecondaryButton, GrayButton, CustomButton } from "@/components/CustomButton";
+import {
+  SecondaryButton,
+  GrayButton,
+  DarkGrayButton,
+  CustomButton,
+  MiniCustomButton,
+} from "@/components/CustomButton";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -325,6 +331,81 @@ export default function CreateExpense({
     setShowSelection(false);
 
     console.log("⏭️ OCR skipped, proceeding with expense creation");
+  };
+
+  // Confirm and save even when OCR reports missing items
+  const handleSaveAnyway = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("ocr.alert.confirmreportOCR") || "Confirm save",
+      message:
+        t("ocr.alert.reportOCRmessage") ||
+        "Send report system ,the text detected data is not accurate.",
+      buttons: [
+        {
+          text: t("common.cancel") || "Cancel",
+          onPress: () =>
+            setAlertConfig((prev) => ({ ...prev, visible: false })),
+          style: "cancel",
+        },
+        {
+          text: t("common.confirm") || "Save image only",
+          onPress: async () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+
+            // Clear OCR UI/state: we explicitly ignore selected OCR fields
+            setIsProcessingOCR(false);
+            setShowOCRResult(false);
+            setOCRProgress(0);
+            setOCRAlert(null);
+            setSelectedOCRData({
+              selectedName: "",
+              selectedTaxId: "",
+              selectedTaxInvoiceId: "",
+              selectedVatAmount: "",
+              selectedAmount: undefined,
+              selectedDate: "",
+              selectedAddress: "",
+            });
+            setShowSelection(false);
+
+            try {
+              const memberId = await getMemberId();
+
+              // Build minimal form data with image only (and memberId)
+              const fd = new FormData();
+              if (image) {
+                fd.append("image", {
+                  uri: image,
+                  name: "image.jpg",
+                  type: "image/jpeg",
+                } as unknown as Blob);
+              }
+              if (memberId) fd.append("memberId", memberId);
+
+              if (createdExpenseId) {
+                // Update existing draft with image-only
+                const res = await CallAPIExpense.updateExpenseAPI(
+                  createdExpenseId,
+                  fd
+                );
+                if (res.error) throw new Error(res.error);
+              } else {
+                // Create new expense with image-only
+                const res = await CallAPIExpense.createAExpenseAPI(fd);
+                if (res.error) throw new Error(res.error);
+              }
+
+             
+            } catch (err: any) {
+              console.warn("Error saving image-only:", err);
+              setError(err?.message || String(err));
+            }
+          },
+          style: "destructive",
+        },
+      ],
+    });
   };
 
   // Simulate OCR progress for visual feedback
@@ -739,14 +820,12 @@ export default function CreateExpense({
 
   // Reusable selectable list for OCR options to reduce duplication
   const SelectableOption = ({
-    icon,
     labelKey,
     items,
     selectedValue,
     onSelect,
     formatter,
   }: {
-    icon: string;
     labelKey: string;
     items?: any[];
     selectedValue?: any;
@@ -763,9 +842,10 @@ export default function CreateExpense({
             fontWeight: "bold",
             color: theme === "dark" ? "#fff" : "#333",
             marginBottom: 8,
+            marginLeft: 10,
           }}
         >
-          {`${icon} ${t(labelKey)}`}
+          {t(labelKey)}
         </CustomText>
 
         {items.map((item: any, index: number) => {
@@ -933,15 +1013,7 @@ export default function CreateExpense({
                       {!showOCRResult ? (
                         // Progress view
                         <>
-                          <Image
-                            source={
-                              require("@/constants/images").default.imagetotext
-                            }
-                            style={{ width: 100, height: 100, marginBottom: 8 }}
-                            resizeMode="contain"
-                          />
-
-                          {/* Progress Bar */}
+                                                {/* Progress Bar */}
                           <View
                             style={{
                               width: 200,
@@ -951,6 +1023,7 @@ export default function CreateExpense({
                               borderRadius: 3,
                               overflow: "hidden",
                               marginBottom: 10,
+                              marginTop: 10,
                             }}
                           >
                             <View
@@ -1023,18 +1096,18 @@ export default function CreateExpense({
                             <CustomText
                               style={{
                                 fontSize: 14,
-                                fontWeight: "bold",
+                                fontWeight: "normal",
                                 marginBottom: 15,
                                 color: theme === "dark" ? "#fff" : "#000",
                                 textAlign: "center",
                               }}
                             >
                               {ocrAlert?.type === "success"
-                                ? `${t("ocr.alert.pass.desc")}`
+                                ? `${t("ocr.alert.pass")}`
                                 : ocrAlert?.type === "warning"
-                                ? `${t("ocr.alert.warning.desc")}`
+                                ? `${t("ocr.alert.warning")}`
                                 : ocrAlert?.type === "fail"
-                                ? `${t("ocr.alert.fail.desc")}`
+                                ? `${t("ocr.alert.fail")}`
                                 : `${t("ocr.alert.error")}`}
                             </CustomText>
                           )}
@@ -1044,6 +1117,16 @@ export default function CreateExpense({
                               ocrAlert?.type === "fail") &&
                             ocrAlert?.details?.failedRequirements && (
                               <>
+                                <CustomText
+                                  style={{
+                                    fontSize: 13,
+                                    alignSelf: "flex-start",
+                                    marginLeft: 10,
+                                    color: "#ff2d31",
+                                  }}
+                                >
+                                  {`ควรระบุ :`}
+                                </CustomText>
                                 {ocrAlert.details.failedRequirements.map(
                                   (
                                     req: {
@@ -1056,10 +1139,9 @@ export default function CreateExpense({
                                       key={index}
                                       style={{
                                         fontSize: 13,
-                                        color:
-                                          theme === "dark" ? "#ccc" : "#666",
-                                        marginBottom: 4,
+                                        alignSelf: "flex-start",
                                         marginLeft: 10,
+                                        color: "#ff2d31",
                                       }}
                                     >
                                       {`• ${t(req.key, req.values)}`}
@@ -1069,70 +1151,88 @@ export default function CreateExpense({
                               </>
                             )}
 
-                          {/* Select All Button */}
-                          {!showSelection && ocrAlert?.type !== "fail" && (
-                            <TouchableOpacity
-                              onPress={() => {
-                                console.log(
-                                  "🔄 Selecting all available OCR data"
-                                );
-
-                                setSelectedOCRData((prev) => ({
-                                  ...prev,
-                                  // Select first available option from each category
-                                  selectedName:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.names?.[0] || prev.selectedName,
-                                  selectedTaxId:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.taxIds?.[0] || prev.selectedTaxId,
-                                  selectedTaxInvoiceId:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.taxInvoiceIds?.[0] ||
-                                    prev.selectedTaxInvoiceId,
-                                  selectedVatAmount:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.vatAmounts?.[0] ||
-                                    prev.selectedVatAmount,
-                                  selectedAmount:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.amounts?.[0] || prev.selectedAmount,
-                                  selectedDate:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.dates?.[0] || prev.selectedDate,
-                                  selectedAddress:
-                                    ocrAlert?.details?.selectableOptions
-                                      ?.addresses?.[0] || prev.selectedAddress,
-                                }));
-
-                                // reveal selection UI
-                                setShowSelection(true);
-
-                                console.log(
-                                  "✅ All available OCR data selected"
-                                );
-                              }}
+                          {/* If Fail show 2 CustomButton and GreyButton ( Save Anyway and Close) */}
+                          {ocrAlert?.type == "fail" && (
+                            <View
                               style={{
-                                backgroundColor: "#818181",
-                                paddingHorizontal: 16,
-                                paddingVertical: 10,
-                                borderRadius: 8,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
                                 marginTop: 15,
-                                alignSelf: "center",
+                                gap: 4,
                               }}
                             >
-                              <CustomText
-                                style={{
-                                  color: "#ffffff",
-                                  fontSize: 13,
-                                  fontWeight: "bold",
-                                  textAlign: "center",
-                                }}
-                              >
-                                {`${t("ocr.selectAll")}`}
-                              </CustomText>
-                            </TouchableOpacity>
+                              <DarkGrayButton
+                                title={t("ocr.alert.saveAnyway")}
+                                handlePress={handleSaveAnyway}
+                                containerStyles="px-12 mt-2"
+                              />
+                              <GrayButton
+                                title={t("ocr.alert.close")}
+                                handlePress={handleSkip}
+                                containerStyles="px-12 mt-2"
+                              />
+                            </View>
                           )}
+
+                          {/* Select All Button + Close */}
+                          {!showSelection && ocrAlert?.type !== "fail" && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignSelf: "center",
+                                marginTop: 15,
+                                gap: 8,
+                              }}
+                            >
+                              <DarkGrayButton
+                                title={t("ocr.selectAll")}
+                                handlePress={() => {
+                                  console.log("🔄 Selecting all available OCR data");
+
+                                  setSelectedOCRData((prev) => ({
+                                    ...prev,
+                                    // Select first available option from each category
+                                    selectedName:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.names?.[0] || prev.selectedName,
+                                    selectedTaxId:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.taxIds?.[0] || prev.selectedTaxId,
+                                    selectedTaxInvoiceId:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.taxInvoiceIds?.[0] ||
+                                      prev.selectedTaxInvoiceId,
+                                    selectedVatAmount:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.vatAmounts?.[0] || prev.selectedVatAmount,
+                                    selectedAmount:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.amounts?.[0] || prev.selectedAmount,
+                                    selectedDate:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.dates?.[0] || prev.selectedDate,
+                                    selectedAddress:
+                                      ocrAlert?.details?.selectableOptions
+                                        ?.addresses?.[0] || prev.selectedAddress,
+                                  }));
+
+                                  // reveal selection UI
+                                  setShowSelection(true);
+
+                                  console.log("✅ All available OCR data selected");
+                                }}
+                                containerStyles="px-6 mt-2"
+                              />
+
+                              <GrayButton
+                                title={t("ocr.alert.close")}
+                                handlePress={handleSkip}
+                                containerStyles="px-6 mt-2"
+                              />
+                            </View>
+                          )}
+
+                          
 
                           {/* End Alert Section */}
 
@@ -1160,7 +1260,6 @@ export default function CreateExpense({
                                     </CustomText>
 
                                     <SelectableOption
-                                      icon="👤"
                                       labelKey="ocr.name"
                                       items={
                                         ocrAlert.details.selectableOptions.names
@@ -1177,7 +1276,6 @@ export default function CreateExpense({
                                     />
 
                                     <SelectableOption
-                                      icon="🆔"
                                       labelKey="ocr.taxId"
                                       items={
                                         ocrAlert.details.selectableOptions
@@ -1195,7 +1293,6 @@ export default function CreateExpense({
                                     />
 
                                     <SelectableOption
-                                      icon="🧾"
                                       labelKey="ocr.taxInvoiceNo"
                                       items={
                                         ocrAlert.details.selectableOptions
@@ -1213,7 +1310,6 @@ export default function CreateExpense({
                                     />
 
                                     <SelectableOption
-                                      icon="💰"
                                       labelKey="ocr.vatAmount"
                                       items={
                                         ocrAlert.details.selectableOptions
@@ -1231,7 +1327,6 @@ export default function CreateExpense({
                                     />
 
                                     <SelectableOption
-                                      icon="💰"
                                       labelKey="ocr.amount"
                                       items={
                                         ocrAlert.details.selectableOptions
@@ -1247,12 +1342,11 @@ export default function CreateExpense({
                                         }))
                                       }
                                       formatter={(amt: number) =>
-                                        `฿${amt.toLocaleString()}`
+                                        `${amt.toLocaleString()}`
                                       }
                                     />
 
                                     <SelectableOption
-                                      icon="📅"
                                       labelKey="ocr.date"
                                       items={
                                         ocrAlert.details.selectableOptions.dates
@@ -1269,7 +1363,6 @@ export default function CreateExpense({
                                     />
 
                                     <SelectableOption
-                                      icon="🏠"
                                       labelKey="ocr.address"
                                       items={
                                         ocrAlert.details.selectableOptions
@@ -1307,7 +1400,7 @@ export default function CreateExpense({
                             >
                               {/* Use Selected Data Button */}
                               {ocrAlert?.type !== "fail" && (
-                                <CustomButton
+                                <MiniCustomButton
                                   title={t("ocr.useData")}
                                   handlePress={applySelectedOCRData}
                                   containerStyles="px-12 mt-2"
