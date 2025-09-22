@@ -94,10 +94,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             min-width: 200px;
           }
           .invoice-number {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: #5e5e5e;
             margin: 0 0 5px 0;
+          }
+          .invoice-number .bill-label,
+          .invoice-number .bill-id {
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
           }
           .invoice-date {
             font-size: 14px;
@@ -107,12 +113,17 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Business Info Section */
           .business-info-section {
-            background: #fafbfc;
-            padding: 15px;
+            background: #f5f7f8;
+            padding: 9px 11px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             border-left: 4px solid #5e5e5e;
           }
+            .business-details {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 6px;
+            }
           .business-info-section h3 {
             margin: 0 0 12px 0;
             font-size: 14px;
@@ -121,19 +132,33 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
-          .business-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            .business-details p {
+              margin: 1px 0;
+              font-size: 12px;
+              line-height: 1.1;
+            }
+          .business-info-section h3 { margin: 0 0 8px 0; }
+          .full-width {
+            grid-column: 1 / -1;
           }
-          .business-details p {
-            margin: 3px 0;
-            font-size: 12px;
-            line-height: 1.3;
-          }
+            .business-info-section {
+              background: #f5f7f8;
+              padding: 10px 12px;
+              border-radius: 8px;
+              margin-bottom: 14px;
+              border-left: 4px solid #5e5e5e;
+            }
           .business-details strong {
             color: #374151;
             font-weight: 600;
+          }
+          /* Customer Info Section - slightly lighter than business */
+          .customer-info-section {
+            background: #fafbfc;
+            padding: 9px 11px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #d1d5db;
           }
           
           /* Billing Section */
@@ -274,6 +299,49 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             text-align: right;
           }
           
+          /* Terms and Summary Side by Side Container */
+          .terms-summary-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+          }
+          .terms-section {
+            flex: 1;
+            width: 50%;
+          }
+          .terms-section .note-section {
+            margin-bottom: 0;
+          }
+          .summary-section {
+            flex: 1;
+            width: 50%;
+            margin-bottom: 0;
+          }
+          
+          /* Note Section */
+          .note-section {
+            /* match customer-info-section visuals */
+            background: #fafbfc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d1d5db;
+          }
+          .note-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #5e5e5e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .note-section p {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #374151;
+          }
+          
           /* Footer */
           .invoice-footer {
             margin-top: 30px;
@@ -377,10 +445,6 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             .company-logo-section h1 {
               font-size: 24px;
             }
-            .business-details {
-              grid-template-columns: 1fr;
-              gap: 10px;
-            }
             .billing-info {
               grid-template-columns: 1fr 1fr;
               gap: 15px;
@@ -453,10 +517,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${
                 isVatRegistered ? t("print.taxInvoice") : t("print.receipt")
               }</h1>
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="invoice-number">#${invoice.billId}</div>
-              <p style="margin-top: 2px;">${t("print.original")}</p>
+              <div class="invoice-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${invoice.billId}</span></div>
+              
+              <p style="margin: 2px 0 0 0; font-size:12px; color:#6b7280;">${(() => { const d = new Date(invoice.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
             </div>
           </div>
 
@@ -468,69 +534,64 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 : t("print.storeInformation")
             }</h3>
             <div class="business-details">
-              <div>
+            <div>
                 <p><strong>${
                   businessDetails?.taxType === "Juristic"
                     ? t("print.companyName")
                     : t("print.storeName")
                 }:</strong> ${
-    businessDetails?.businessName || businessName || "Your Business Name"
+    (businessDetails?.businessName || businessName || "Your Business Name") + (businessDetails?.branch ? ` (${businessDetails.branch})` : '')
   }</p>
-                <p><strong>${t("print.address")}:</strong> ${
-    businessDetails?.businessAddress || t("print.notSpecified")
-  }</p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p><strong>${t("print.taxId")}:</strong> ${
     businessDetails?.taxId || t("print.notSpecified")
   }</p>
+            </div>
+            <div class="full-width">
+                <p><strong>${t("print.address")}:</strong> ${[
+    businessDetails?.businessAddress,
+    businessDetails?.businessSubDistrict,
+    businessDetails?.businessDistrict,
+    businessDetails?.businessProvince,
+    businessDetails?.businessPostId,
+  ]
+    .filter(Boolean)
+    .join(', ') || t("print.notSpecified")}
+                </p>
+            </div>
+            <div>
                 <p><strong>${t("print.contact")}:</strong> ${
     businessDetails?.businessPhone || t("print.notSpecified")
   }</p>
+            </div>
+            </div>
+          </div>
+
+          <!-- Customer Information (Billing) - use customer-info-section for lighter bg -->
+          <div class="customer-info-section">
+            <h3>${t("print.customerInformation")}</h3>
+            <div class="business-details">
+              <div>
+                <p><strong>${t("print.customerName")}:</strong> ${invoice.cName || ''} ${invoice.cLastName || ''}${invoice.cBranch ? ` (${invoice.cBranch})` : ''}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.taxId")}:</strong> ${invoice.cTaxId || t("print.notSpecified")}</p>
+              </div>
+              <div class="full-width">
+                <p><strong>${t("print.address")}:</strong> ${[
+    invoice.cAddress,
+    invoice.cProvince,
+    invoice.cPostId,
+  ].filter(Boolean).join(', ') || t("print.addressNotProvided")}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.contact")}:</strong> ${invoice.cPhone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>
 
-          <!-- Billing Information -->
-          <div class="billing-info">
-            <div class="billing-section">
-              <h3>${t("print.billedTo")}</h3>
-              <p class="customer-name">${invoice.cName} ${invoice.cLastName}</p>
-              ${
-                invoice.cTaxId
-                  ? `<p><strong>${t("print.taxId")}:</strong> ${
-                      invoice.cTaxId
-                    }</p>`
-                  : ""
-              }
-              ${
-                invoice.cPhone && invoice.cPhone !== "0000000000"
-                  ? `<p>${invoice.cPhone}</p>`
-                  : ""
-              }
-              <p>${invoice.cAddress || t("print.addressNotProvided")}</p>
-              
-              <p>${invoice.cProvince || ""} ${invoice.cPostId || ""}</p>
-            </div>
-            
-            <div class="billing-section">
-              <h3>${t("print.paymentDetails")}</h3>
-              <p><strong>${t("print.paymentMethod")}:</strong> ${t(
-    `print.payment.${invoice.payment}`
-  )}</p>
-              <p><strong>${t("print.invoiceDate")}:</strong> ${formatDate(
-    invoice.purchaseAt
-  )}</p>
-              <div class="payment-status">
-                <strong>${t("print.status")}:</strong>
-                <span class="status-badge ${
-                  invoice.cashStatus ? "status-paid" : "status-unpaid"
-                }">
-                  ${invoice.cashStatus ? t("print.paid") : t("print.unpaid")}
-                </span>
-              </div>
-            </div>
-          </div>
+          <!-- Billing Information removed: content consolidated into customer/business sections -->
 
           <!-- Items Table (multi-product) -->
           <div class="items-section">
@@ -578,58 +639,51 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </table>
           </div>
 
-          <!-- Summary -->
-          <div class="summary-section">
+          
+          <!-- Summary (full-width) -->
+          <div class="summary-section" style="width: 100%; margin-bottom: 0;">
             <div class="summary-table">
-              ${
-                isVatRegistered
-                  ? `
-              ${totalDiscount > 0 ? `
-              <div class="summary-row discount">
-                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                <span class="summary-amount">-${formatCurrencyForPDF(
-                  totalDiscount
-                )}</span>
-              </div>
-              ` : ''}
-              <div class="summary-row subtotal">
-                <span class="summary-label">${t("print.subtotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  subtotal
-                )}</span>
-              </div>
-              <div class="summary-row tax">
-                <span class="summary-label">${t("print.tax")} (7%):</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  vatAmount
-                )}</span>
-              </div>
-              `
-                  : `
-              ${totalDiscount > 0 ? `
-              <div class="summary-row discount">
-                <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                <span class="summary-amount">-${formatCurrencyForPDF(
-                  totalDiscount
-                )}</span>
-              </div>
-              ` : ''}
-              <div class="summary-row subtotal">
-                <span class="summary-label">${t("print.subtotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  subtotal
-                )}</span>
-              </div>
-              `
-              }
-              <div class="summary-row total">
-                <span class="summary-label">${t("print.grandTotal")}:</span>
-                <span class="summary-amount">${formatCurrencyForPDF(
-                  grandTotal
-                )}</span>
+                ${isVatRegistered
+                  ? `${totalDiscount > 0 ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
+                </div>` : ""}
+                <div class="summary-row subtotal">
+                  <span class="summary-label">${t("print.subtotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                </div>
+                <div class="summary-row tax">
+                  <span class="summary-label">${t("print.tax")} (7%):</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+                </div>`
+                  : `${totalDiscount > 0 ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
+                </div>` : ""}
+                <div class="summary-row subtotal">
+                  <span class="summary-label">${t("print.subtotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                </div>`}
+                <div class="summary-row total">
+                  <span class="summary-label">${t("print.grandTotal")}:</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(grandTotal)}</span>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Terms (full-width) -->
+          <div style="width: 50%; margin-bottom: 12px;">
+            <div class="note-section">
+              <h3>${t("print.termsAndConditions")}</h3>
+              <p>
+                ${invoice.remark ? `• ${invoice.remark}` : ""}
+              </p>
+            </div>
+          </div>
+
 
           <!-- Footer -->
           <div class="signature-section" style="margin-bottom:0; padding-bottom:0;">
@@ -662,7 +716,6 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 )}: _______________</div>
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">
-                <div class="signature-label">${t("print.customerStamp")}</div>
                 <div class="business-stamp">
                   <div class="stamp-text">${t("print.customerStampHere")}</div>
                 </div>

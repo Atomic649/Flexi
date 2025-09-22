@@ -92,10 +92,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             min-width: 200px;
           }
           .invoice-number {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: #5e5e5e;
             margin: 0 0 5px 0;
+          }
+          .invoice-number .bill-label,
+          .invoice-number .bill-id {
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
           }
           .invoice-date {
             font-size: 14px;
@@ -106,9 +112,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           /* Business Info Section */
           .business-info-section {
             background: #fafbfc;
-            padding: 15px;
+            padding: 9px 11px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             border-left: 4px solid #5e5e5e;
           }
           .business-info-section h3 {
@@ -122,13 +128,17 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           .business-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 6px;
+          }
+          .full-width {
+            grid-column: 1 / -1;
           }
           .business-details p {
-            margin: 3px 0;
+            margin: 1px 0;
             font-size: 12px;
-            line-height: 1.3;
+            line-height: 1.1;
           }
+          .business-info-section h3 { margin: 0 0 8px 0; }
           .business-details strong {
             color: #374151;
             font-weight: 600;
@@ -489,10 +499,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${
                  t("print.invoice") 
               }</h1>
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="invoice-number">#${invoice.billId}</div>
-              <p style="margin-top: 2px;">${t("print.original")}</p>
+              <div class="invoice-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${invoice.billId}</span></div>
+                
+                <p style="margin-top: 2px;">${(() => { const d = new Date(invoice.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
             </div>
           </div>
 
@@ -505,57 +517,64 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             }</h3>
             <div class="business-details">
               <div>
-                <p><strong>${
-                  businessDetails?.taxType === "Juristic"
-                    ? t("print.companyName")
-                    : t("print.storeName")
-                }:</strong> ${
-    businessDetails?.businessName || businessName || "Your Business Name"
-  }</p>
-                <p><strong>${t("print.address")}:</strong> ${
-    businessDetails?.businessAddress || t("print.notSpecified")
-  }</p>
+                  <p><strong>${
+                    businessDetails?.taxType === "Juristic"
+                      ? t("print.companyName")
+                      : t("print.storeName")
+                  }:</strong> ${
+      (businessDetails?.businessName || businessName || "Your Business Name") + (businessDetails?.branch ? ` (${businessDetails.branch})` : '')
+    }</p>
               </div>
               <div>
-                <p><strong>${t("print.taxId")}:</strong> ${
-    businessDetails?.taxId || t("print.notSpecified")
-  }</p>
-                <p><strong>${t("print.contact")}:</strong> ${
-    businessDetails?.businessPhone || t("print.notSpecified")
-  }</p>
+                  <p><strong>${t("print.taxId")}:</strong> ${
+      businessDetails?.taxId || t("print.notSpecified")
+    }</p>
+              </div>
+              <div class="full-width">
+                  <p><strong>${t("print.address")}:</strong> ${[
+      businessDetails?.businessAddress,
+      businessDetails?.businessSubDistrict,
+      businessDetails?.businessDistrict,
+      businessDetails?.businessProvince,
+      businessDetails?.businessPostId,
+    ]
+      .filter(Boolean)
+      .join(', ') || t("print.notSpecified")}
+                  </p>
+              </div>
+              <div>
+                  <p><strong>${t("print.contact")}:</strong> ${
+      businessDetails?.businessPhone || t("print.notSpecified")
+    }</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Information (Billing) - duplicated style -->
+          <div class="business-info-section">
+            <h3>${t("print.customerInformation")}</h3>
+            <div class="business-details">
+              <div>
+                <p><strong>${t("print.customerName")}:</strong> ${invoice.cName || ''} ${invoice.cLastName || ''}${invoice.cBranch ? ` (${invoice.cBranch})` : ''}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.taxId")}:</strong> ${invoice.cTaxId || t("print.notSpecified")}</p>
+              </div>
+              <div class="full-width">
+                <p><strong>${t("print.address")}:</strong> ${[
+    invoice.cAddress,
+    invoice.cProvince,
+    invoice.cPostId,
+  ].filter(Boolean).join(', ') || t("print.addressNotProvided")}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.contact")}:</strong> ${invoice.cPhone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>
 
           <!-- Billing Information -->
-          <div class="billing-info">
-            <div class="billing-section">
-              <h3 style="font-family: 'IBMPlexSansThai', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400;">${t("print.billedTo")}</h3>
-              <p class="customer-name">${invoice.cName} ${invoice.cLastName}</p>
-              ${
-                invoice.cTaxId
-                  ? `<p><strong>${t("print.taxId")}:</strong> ${
-                      invoice.cTaxId
-                    }</p>`
-                  : ""
-              }
-              ${
-                invoice.cPhone && invoice.cPhone !== "0000000000"
-                  ? `<p>${invoice.cPhone}</p>`
-                  : ""
-              }
-              <p>${invoice.cAddress || t("print.addressNotProvided")}</p>
-              
-              <p>${invoice.cProvince || ""} ${invoice.cPostId || ""}</p>
-            </div>
-            
-            <div class="billing-section">
-              <h3 style="font-family: 'IBMPlexSansThai', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight:400;">${t("print.paymentDetails")}</h3>
-              <p><strong>${t("print.invoiceDate")}</strong>: ${formatDate(invoice.purchaseAt)}</p>
-              ${invoice.priceValid ? `<p><strong>${t("print.validUntil")}</strong>: ${formatDate(invoice.priceValid)}</p>` : ""}
-              ${invoice.paymentTermCondition ? `<p><strong>${t("print.paymentMethods")}</strong>: ${invoice.paymentTermCondition}</p>` : ""}
-            </div>
-          </div>
+            <!-- Billing Information removed: content consolidated into customer/business sections -->
 
           <!-- Items Table (multi-product) -->
           <div class="items-section">
@@ -611,6 +630,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
                   ${invoice.remark ? `• ${invoice.remark}` : ""}
+                </p>
+                <p>
+                  ${invoice.priceValid ? `${(() => { const d = new Date(invoice.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUntill")} ${dd}/${mm}/${yyyy}`; })()}` : ""}
                 </p>
               </div>
             </div>

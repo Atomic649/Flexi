@@ -92,10 +92,16 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             min-width: 200px;
           }
           .quotation-number {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: #3b82f6;
             margin: 0 0 5px 0;
+          }
+          .quotation-number .bill-label,
+          .quotation-number .bill-id {
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
           }
           .quotation-date {
             font-size: 14px;
@@ -106,9 +112,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           /* Business Info Section */
           .business-info-section {
             background: #f0f9ff;
-            padding: 15px;
+            padding: 9px 11px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             border-left: 4px solid #3b82f6;
           }
           .business-info-section h3 {
@@ -122,13 +128,15 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           .business-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 6px;
           }
+          .full-width { grid-column: 1 / -1; }
           .business-details p {
-            margin: 3px 0;
+            margin: 1px 0;
             font-size: 12px;
-            line-height: 1.3;
+            line-height: 1.1;
           }
+          .business-info-section h3 { margin: 0 0 8px 0; }
           .business-details strong {
             color: #374151;
             font-weight: 600;
@@ -418,10 +426,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           <div class="quotation-header">
             <div class="company-logo-section" style="display: flex; align-items: center; height: 100%;">
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${t("print.quotation")}</h1>
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
             </div>
             <div class="quotation-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="quotation-number">#${quotation.billId || quotation.id}</div>
-              <p style="margin-top: 2px;">${t("print.original")}</p>
+              <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.billId || quotation.id}</span></div>
+              
+              <p style="margin-top: 2px;">${(() => { const d = new Date(quotation.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
             </div>
           </div>
 
@@ -439,41 +449,59 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                     ? t("print.companyName")
                     : t("print.storeName")
                 }:</strong> ${
-    businessDetails?.businessName || businessName || "Your Business Name"
+    (businessDetails?.businessName || businessName || "Your Business Name") + (businessDetails?.branch ? ` (${businessDetails.branch})` : '')
   }</p>
-                <p><strong>${t("print.address")}:</strong> ${
-    businessDetails?.businessAddress || t("print.notSpecified")
-  }</p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p><strong>${t("print.taxId")}:</strong> ${
     businessDetails?.taxId || t("print.notSpecified")
   }</p>
+            </div>
+            <div class="full-width">
+                <p><strong>${t("print.address")}:</strong> ${[
+    businessDetails?.businessAddress,
+    businessDetails?.businessSubDistrict,
+    businessDetails?.businessDistrict,
+    businessDetails?.businessProvince,
+    businessDetails?.businessPostId,
+  ]
+    .filter(Boolean)
+    .join(', ') || t("print.notSpecified")}
+                </p>
+            </div>
+            <div>
                 <p><strong>${t("print.contact")}:</strong> ${
     businessDetails?.businessPhone || t("print.notSpecified")
   }</p>
+            </div>
+            </div>
+          </div>
+
+          <!-- Customer Information (Billing) - duplicated style -->
+          <div class="business-info-section">
+            <h3>${t("print.customerInformation")}</h3>
+            <div class="business-details">
+              <div>
+                <p><strong>${t("print.customerName")}:</strong> ${quotation.cName || ''} ${quotation.cLastName || ''}${quotation.cBranch ? ` (${quotation.cBranch})` : ''}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxId || t("print.notSpecified")}</p>
+              </div>
+              <div class="full-width">
+                <p><strong>${t("print.address")}:</strong> ${[
+    quotation.cAddress,
+    quotation.cProvince,
+    quotation.cPostId,
+  ].filter(Boolean).join(', ') || t("print.addressNotProvided")}</p>
+              </div>
+              <div>
+                <p><strong>${t("print.contact")}:</strong> ${quotation.cPhone || t("print.notSpecified")}</p>
               </div>
             </div>
           </div>
 
           <!-- Billing Information -->
-          <div class="billing-info">
-            <div class="billing-section">
-              <h3>${t("print.quotationTo")}</h3>
-              <p class="customer-name">${quotation.cName} ${quotation.cLastName}</p>
-              <p><strong>${t("print.phone")}:</strong> ${quotation.cPhone}</p>
-              <p><strong>${t("print.address")}:</strong> ${quotation.cAddress}${quotation.cProvince}${quotation.cPostId}</p>
-${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxId}</p>` : ""}
-            </div>
-            
-            <div class="billing-section">
-              <h3>${t("print.quotationDetails")}</h3>
-              <p><strong>${t("print.quotationNumber")}:</strong> ${quotation.billId || quotation.id}</p>
-              <p><strong>${t("print.issueDate")}:</strong> ${formatDate(quotation.purchaseAt)}</p>
-              ${quotation.priceValid ? `<p><strong>${t("print.validUntil")}:</strong> ${formatDate(quotation.priceValid)}</p>` : ""}
-              ${quotation.paymentTermCondition ? `<p><strong>${t("print.paymentMethods")}</strong>: ${quotation.paymentTermCondition}</p>` : ""}
-            </div>
-          </div>
+            <!-- Billing Information removed: content consolidated into customer/business sections -->
 
           <!-- Items -->
           <div class="items-section">
@@ -516,6 +544,9 @@ ${quotation.cTaxId ? `<p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxI
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
                   ${quotation.remark ? `• ${quotation.remark}` : ""}
+                </p>
+                <p>
+                  ${quotation.priceValid ? `\n${(() => { const d = new Date(quotation.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUtill")}: ${dd}/${mm}/${yyyy}`; })()}` : ""}
                 </p>
               </div>
             </div>
