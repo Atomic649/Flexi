@@ -12,28 +12,29 @@ import { Ionicons } from "@expo/vector-icons";
 import icons from "@/constants/icons";
 import { useRouter } from "expo-router";
 import { CustomText } from "./CustomText";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
-  const day = String(parsedDate.getDate()).padStart(2, '0');
-  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
   const year = parsedDate.getFullYear();
-  
+
   // Get hours in 12-hour format
   let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  
+
   // Get minutes
-  const minutes = String(parsedDate.getMinutes()).padStart(2, '0');
-  
+  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+
   return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
 };
 
 const formatNumber = (number: number | string) => {
-  const num = typeof number === 'string' ? parseFloat(number) : number;
-  return num.toLocaleString('en-US');
+  const num = typeof number === "string" ? parseFloat(number) : number;
+  return num.toLocaleString("en-US");
 };
 
 export default function ExpenseCard({
@@ -43,6 +44,7 @@ export default function ExpenseCard({
   type,
   note,
   desc,
+  sName,
   image,
   AdsCardColor,
   ExCardColor,
@@ -55,6 +57,7 @@ export default function ExpenseCard({
 }: any) {
   const [detailVisible, setDetailVisible] = useState(false);
   const router = useRouter();
+  const { theme } = useTheme();
 
   const getExpenseTextColor = (type: string) => {
     switch (type) {
@@ -93,9 +96,11 @@ export default function ExpenseCard({
   };
 
   const handleEdit = () => {
-    Alert.alert("Not available", "Coming Soon, Please Delete and create new expense", [
-    
-    ]);
+    Alert.alert(
+      "Not available",
+      "Coming Soon, Please Delete and create new expense",
+      []
+    );
   };
 
   return (
@@ -121,8 +126,8 @@ export default function ExpenseCard({
                   note,
                   desc,
                   image,
-                  type
-                }
+                  type,
+                },
               });
             } else {
               // setDetailVisible(true);
@@ -145,14 +150,14 @@ export default function ExpenseCard({
                     {formatDate(date)}
                   </Text>
                   <CustomText
-                    className="text-sm font-normal pt-1"
+                    className="text-sm font-normal pt-2"
                     style={{ color: DescColor }}
                     numberOfLines={1}
                   >
-                    {type === "ads" ? note : desc}
+                    {type === "ads" ? note : sName || desc}
                   </CustomText>
                   <CustomText
-                    className="text-base font-psemibold pt-1"
+                    className="text-base font-psemibold"
                     weight="semibold"
                     style={{ color: NoteColor }}
                     numberOfLines={1}
@@ -161,7 +166,7 @@ export default function ExpenseCard({
                   </CustomText>
                 </View>
               </View>
-              <View className="flex-row items-center">
+              <View className="flex-colum items-end">
                 <Text
                   className="text-xl font-bold justify-end"
                   style={{ color: getExpenseTextColor(type) }}
@@ -169,7 +174,21 @@ export default function ExpenseCard({
                 >
                   -{formatNumber(expenses)}
                 </Text>
-              
+
+                <Ionicons
+                  className="text-end mt-2 justify-end"
+                  name="document-text-outline"
+                  size={16}
+                  color={
+                    !image
+                      ? theme === "dark"
+                        ? "rgba(255, 255, 255, 0.3)"
+                        : "rgba(103, 103, 103, 0.3)"
+                      : theme === "dark"
+                      ? "white"
+                      : "#676767"
+                  }
+                />
               </View>
             </View>
           </View>
@@ -255,7 +274,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                    {type === "ads" ? note : desc}
+                  {type === "ads" ? note : desc}
                 </Text>
                 <Text
                   style={{
@@ -265,7 +284,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                 {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
+                  {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
                 </Text>
                 <Text
                   style={{
@@ -305,4 +324,4 @@ export default function ExpenseCard({
   );
 }
 
-//
+

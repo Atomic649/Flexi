@@ -273,6 +273,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         date: true,
         amount: true,
         note: true,
+        sName:true,
         desc: true,
         image: true,
       },
@@ -296,6 +297,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
             date: expense.date,
             expenses: expense.amount,
             type: "expense",
+            sName: expense.sName || "",
             note: expense.note || "",
             desc: expense.desc || "",
             image: expense.image || "",
@@ -303,7 +305,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         })
       )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
+    console.log("🚀 result", result);
     res.json(result);
   } catch (e) {
     console.error(e);

@@ -862,25 +862,27 @@ export default function CreateExpense({
                 marginLeft: 10,
                 backgroundColor: isSelected
                   ? theme === "dark"
-                    ? "#374151"
+                    ? "#2f2f2f"
                     : "#dbfefa"
                   : theme === "dark"
-                  ? "#1f2937"
+                  ? "#2f2f2f"
                   : "#f3f4f6",
                 borderRadius: 10,
                 borderWidth: isSelected ? 2 : 1,
                 borderColor: isSelected
                   ? "#3bf6da"
                   : theme === "dark"
-                  ? "#4b5563"
+                  ? "transparent"
                   : "#d1d5db",
               }}
             >
               <CustomText
                 style={{
                   fontSize: 12,
-                  color: isSelected
-                    ? "#636363"
+                  color: isSelected?
+                  theme === "dark"
+                    ? "#ccc"
+                    : "#636363"
                     : theme === "dark"
                     ? "#ccc"
                     : "#666",
@@ -989,7 +991,7 @@ export default function CreateExpense({
                 {isProcessingOCR && (
                   <View
                     style={{
-                      backgroundColor: "rgba(0,0,0,0.8)",
+                      backgroundColor: "rgba(0, 0, 0, 0.947)",
                       position: "absolute",
                       top: 0,
                       left: 0,
@@ -1004,7 +1006,7 @@ export default function CreateExpense({
                     <View
                       style={{
                         backgroundColor:
-                          theme === "dark" ? "#2D2D2D" : "#ffffff",
+                          theme === "dark" ? "#181818" : "#ffffff",
                         padding: 20,
                         borderRadius: 10,
                         minWidth: 300,
@@ -1124,7 +1126,7 @@ export default function CreateExpense({
                                     fontSize: 13,
                                     alignSelf: "flex-start",
                                     marginLeft: 10,
-                                    color: "#ff2d31",
+                                    color: theme === "dark" ? "#ac1b02" : "#ff2d31",
                                   }}
                                 >
                                   {`ควรระบุ :`}
@@ -1143,7 +1145,7 @@ export default function CreateExpense({
                                         fontSize: 13,
                                         alignSelf: "flex-start",
                                         marginLeft: 10,
-                                        color: "#ff2d31",
+                                        color: theme === "dark" ? "#ac1b02" : "#ff2d31",
                                       }}
                                     >
                                       {`• ${t(req.key, req.values)}`}
@@ -1161,6 +1163,7 @@ export default function CreateExpense({
                                 justifyContent: "space-between",
                                 marginTop: 15,
                                 gap: 4,
+                                backgroundColor: "transparent"
                               }}
                             >
                               <DarkGrayButton

@@ -35,6 +35,7 @@ type Expense = {
   expenses: number;
   type: string;
   note: string;
+  sName: string;
   desc: string;
   image: string;
 };
@@ -92,6 +93,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
       i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
   };
 
+  
   // Fetch expenses function
   const fetchExpenses = async () => {
     try {
@@ -100,6 +102,9 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
         const response = await CallAPIReport.getAdsExpenseReportsAPI(
           memberId
         );
+  // DEBUG: log full response to inspect fields like sName
+  // Keep log to help diagnose missing sName; can be removed later
+  console.log('DEBUG: AdsExpenseReport response =>', response);
         // Ensure response is an array before setting state
         setExpense(Array.isArray(response) ? response : []);
       } else {
@@ -245,6 +250,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                           desc: expense.desc,
                           image: expense.image,
                           type: expense.type,
+                          sName: expense.sName,
                         },
                       });
                     } else {
@@ -286,7 +292,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                       style={{ width: "33.33%" }}
                       numberOfLines={1}
                     >
-                      {expense.type === "ads" ? expense.note : expense.desc}
+                      {expense.type === "ads" ? expense.note : (expense.sName || expense.desc )}
                     </Text>
                     <Text
                       className={`${
@@ -297,7 +303,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                     >
                       {expense.type === "ads"
                         ? "คาดการณ์ค่าโฆษณา"
-                        : expense.note}
+                        : (expense.sName || expense.note)}
                     </Text>
                     <Text
                       className={`${
@@ -361,6 +367,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 date={expense.date}
                 type={expense.type}
                 expenses={expense.expenses}
+                sName={expense.sName}
                 note={expense.note}
                 desc={expense.desc}
                 image={expense.image}

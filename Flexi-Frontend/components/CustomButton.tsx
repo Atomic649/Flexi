@@ -94,14 +94,17 @@ const GrayButton = ({
       activeOpacity={0.7}
       className={`${
         theme === "dark"
-          ? "bg-zinc-800 border-[#d1d5db]"
+          ? "bg-[#333333] border-[#d1d5db]"
           : "bg-[#f3f4f6] border-[#d1d5db]"
       } rounded-xl min-h-[50px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
     >
-      <CustomText weight="bold" style={{ color: "#666", fontSize: 14 }}>
+      <CustomText
+        weight="bold"
+        style={{ color: theme === "dark" ? "#dadada" : "#666", fontSize: 14 }}
+      >
         {title}
       </CustomText>
 
@@ -131,14 +134,20 @@ const DarkGrayButton = ({
       activeOpacity={0.7}
       className={`${
         theme === "dark"
-          ? "bg-zinc-900 border-[#a9aaab]"
+          ? "bg-[#dddddd] border-[#a9aaab]"
           : "bg-[#666] border-[#a9aaab]"
       } rounded-xl min-h-[50px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
     >
-      <CustomText weight="bold" style={{ color: "#fbfafa", fontSize: 14 }}>
+      <CustomText
+        weight="bold"
+        style={{
+          color: theme === "dark" ? "#666" : "#fbfafa",
+          fontSize: 14,
+        }}
+      >
         {title}
       </CustomText>
 
@@ -226,4 +235,12 @@ const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
   );
 };
 
-export { SecondaryButton, TextButton, Button, CustomButton, GrayButton,DarkGrayButton, MiniCustomButton };
+export {
+  SecondaryButton,
+  TextButton,
+  Button,
+  CustomButton,
+  GrayButton,
+  DarkGrayButton,
+  MiniCustomButton,
+};

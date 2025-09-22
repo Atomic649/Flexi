@@ -988,7 +988,11 @@ const updateExpenseById = async (req: Request, res: Response) => {
       expenseInput.WHTAmount =
         (expenseInput.amount * expenseInput.WHTpercent) / 100;
     }
-
+    // convert date time to format Expected ISO-8601 DateTime
+    if (expenseInput.date) {
+      expenseInput.date = new Date(expenseInput.date);
+    }
+    
     try {
       const expense = await prisma.expense.update({
         where: {
