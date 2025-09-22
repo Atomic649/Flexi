@@ -1532,7 +1532,11 @@
       "pass": "Document meets quality standards of revenue department.",
       "warning": "Document quality is missing some requirements. in consideration of the revenue department to accept.",
       "fail": "Document quality is below the minimum standard required by the revenue department.",
-      "error": "An error occurred during OCR processing. Please try again."
+      "error": "An error occurred during OCR processing. Please try again.",
+      "saveAnyway":" Save Anyway",
+      "close":"X",
+      "confirmreportOCR": "Confirm Report",
+      "reportOCRmessage": "Do you want to submit a report to the system\nfor incorrect detected data?"
     },
     "missingRequirements": "Missing Requirements :",
     "selectDetectedData": "Select Detected Data:",
@@ -1546,16 +1550,16 @@
     "date": "Date",
     "address": "Address",
     "selectAll": "Select Detected Data",
-    "useData": "✓ Use Data",
+    "useData": "Use Data",
     "skipOcr": "Skip OCR",
     "failed": {
-      "names": "Names (found {{found}}, need ≥{{required}})",
-      "taxId": "Tax IDs (found {{found}}, need ≥{{required}})",
-      "taxInvoiceId": "Tax Invoice IDs (found {{found}}, need ≥{{required}})",
-      "amount": "Amount (not detected)",
-      "date": "Date (not detected)",
-      "address": "Address with Thai province (not detected)",
-      "receiptTitle": "Receipt title (need: {{examples, list}})"
+      "names": "Seller/ Service Provider Name",
+      "taxId": "Tax IDs / ID card for Seller/ Service Provider ",
+      "taxInvoiceId": "Tax Invoice IDs",
+      "amount": "Amount",
+      "date": "Date",
+      "address": "Address with Thai province",
+      "receiptTitle": "Receipt title (need: {{examples, list}} etc.)"
     }
   }
 }

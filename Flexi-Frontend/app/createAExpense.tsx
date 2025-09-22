@@ -340,12 +340,14 @@ export default function CreateExpense({
       title: t("ocr.alert.confirmreportOCR") || "Confirm save",
       message:
         t("ocr.alert.reportOCRmessage") ||
-        "Send report system ,the text detected data is not accurate.",
+        "Save image and send report system ,the text detected data is not accurate.",
       buttons: [
         {
           text: t("common.cancel") || "Cancel",
-          onPress: () =>
-            setAlertConfig((prev) => ({ ...prev, visible: false })),
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            handleSkip();
+          },
           style: "cancel",
         },
         {
@@ -1013,7 +1015,7 @@ export default function CreateExpense({
                       {!showOCRResult ? (
                         // Progress view
                         <>
-                                                {/* Progress Bar */}
+                       {/* Progress Bar */}
                           <View
                             style={{
                               width: 200,
