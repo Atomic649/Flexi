@@ -1535,6 +1535,10 @@
       "error": "An error occurred during OCR processing. Please try again.",
       "saveAnyway":" Save Anyway",
       "close":"X",
+      "incompleteData":"Incomplete Data",
+      "fillNote": "Cannot save due to incomplete data\nPlease fill in the missing information",
+      "continueEditToCompleteAllFill": "Go back to edit",
+      "closeWithoutSaving": "Close without saving",
       "confirmreportOCR": "Confirm Report",
       "reportOCRmessage": "Do you want to submit a report to the system\nfor incorrect detected data?"
     },
@@ -1552,6 +1556,7 @@
     "selectAll": "Select Detected Data",
     "useData": "Use Data",
     "skipOcr": "Skip OCR",
+    "shouldSpecify": "Should specify :",
     "failed": {
       "names": "Seller/ Service Provider Name",
       "taxId": "Tax IDs / ID card for Seller/ Service Provider ",

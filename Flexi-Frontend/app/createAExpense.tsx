@@ -496,6 +496,12 @@ export default function CreateExpense({
     handleDeleteExpense(); // Delete expense if created with amount 0
   };
 
+  const handleCloseWithoutAlert = () => {
+    //clearForm();
+    onClose();
+    handleDeleteExpense(); // Delete expense if created with amount 0
+  };
+
   //handleCreateOrUpdate
   const handleCreateOrUpdate = async () => {
     // if there are exited data from OCR use handleUpdateExpense else use handleCreateExpense
@@ -920,15 +926,23 @@ export default function CreateExpense({
           if (Number(amount) > 0 && (!note || note.trim() === "")) {
             setAlertConfig({
               visible: true,
-              title: t("expense.create.error"),
+              title: t("ocr.alert.incompleteData") || "Incomplete data",
               message:
-                t("expense.create.fillNote") ||
+                t("ocr.alert.fillNote") ||
                 "Please fill in the note before closing.",
               buttons: [
                 {
-                  text: t("common.ok"),
+                  text: t("ocr.alert.continueEditToCompleteAllFill"),
                   onPress: () =>
                     setAlertConfig((prev) => ({ ...prev, visible: false })),
+                  style: "default",
+                },
+                {
+                  text: t("ocr.alert.closeWithoutSaving"),
+                  onPress: () => {
+                    handleCloseWithoutAlert(),
+                    onClose();                    
+                  },
                   style: "default",
                 },
               ],
@@ -991,7 +1005,7 @@ export default function CreateExpense({
                 {isProcessingOCR && (
                   <View
                     style={{
-                      backgroundColor: "rgba(0, 0, 0, 0.947)",
+                      backgroundColor: theme === "dark" ?"rgba(0, 0, 0, 0.947)":"rgba(55, 55, 55, 0.9)",
                       position: "absolute",
                       top: 0,
                       left: 0,
@@ -1129,7 +1143,7 @@ export default function CreateExpense({
                                     color: theme === "dark" ? "#ac1b02" : "#ff2d31",
                                   }}
                                 >
-                                  {`ควรระบุ :`}
+                                  {t("ocr.shouldSpecify")}
                                 </CustomText>
                                 {ocrAlert.details.failedRequirements.map(
                                   (
