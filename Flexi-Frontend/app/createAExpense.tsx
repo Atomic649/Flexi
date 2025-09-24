@@ -558,8 +558,9 @@ export default function CreateExpense({
 
   //handleCreateOrUpdate
   const handleCreateOrUpdate = async () => {
-    // if there are exited data from OCR use handleUpdateExpense else use handleCreateExpense
-    if (selectedOCRData) {
+    // If we've already created an expense (createdExpenseId) update it,
+    // otherwise create a new one. Relying on `selectedOCRData` was incorrect.
+    if (createdExpenseId) {
       await handleUpdateExpense();
     } else {
       await handleCreateExpense();
@@ -573,16 +574,26 @@ export default function CreateExpense({
     try {
       const formData = new FormData();
       // Only append single string values
-      if (note && typeof note === "string") formData.append("note", note);
-      if (amount) formData.append("amount", amount);
-      if (desc) formData.append("desc", desc);
-      if (sName) formData.append("sName", sName);
-      if (sTaxId) formData.append("sTaxId", sTaxId);
-      if (vatAmount) formData.append("vatAmount", vatAmount.toString());
-      if (sAddress) formData.append("sAddress", sAddress);
-      if (taxInvoiceNo) formData.append("taxInvoiceId", taxInvoiceNo);
-      if (date) formData.append("date", Array.isArray(date) ? date[0] : date);
-      if (branch) formData.append("branch", branch);
+  if (note && typeof note === "string") formData.append("note", note);
+  // Normalize amount formatting for update as well
+  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
+  formData.append("amount", normalizedAmount);
+  if (desc) formData.append("desc", desc);
+  // Always include group/branch/taxType to match create behavior
+  formData.append("group", group || "");
+  // Ensure VAT flag is sent so backend knows how to interpret vatAmount
+  formData.append("vat", vatIncluded ? "true" : "false");
+  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
+  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+  formData.append("WHTpercent", WHTpercent.toString());
+  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
+  formData.append("sName", sName || "");
+  formData.append("sTaxId", sTaxId || "");
+  formData.append("sAddress", sAddress || "");
+  formData.append("taxInvoiceNo", taxInvoiceNo || "");
+  formData.append("date", Array.isArray(date) ? date[0] : date);
+  formData.append("branch", branch || "");
+  formData.append("taxType", taxType || "");
       if (image) {
         formData.append("image", {
           uri: image,
@@ -641,7 +652,9 @@ export default function CreateExpense({
       const formData = new FormData();
       formData.append("date", formattedDate);
       formData.append("note", note);
-      formData.append("amount", amount);
+  // Normalize formatted amount (e.g., "1,234.00") to plain numeric string
+  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
+  formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
       if (image) {
         formData.append("image", {
@@ -651,9 +664,11 @@ export default function CreateExpense({
         } as unknown as Blob);
       }
       formData.append("group", group || "");
-      formData.append("vat", vatIncluded ? "true" : "false");
+  formData.append("vat", vatIncluded ? "true" : "false");
+  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-      formData.append("WHTpercent", WHTpercent.toString());
+  formData.append("WHTpercent", WHTpercent.toString());
+  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
       formData.append("sTaxId", sTaxId);
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
@@ -731,7 +746,8 @@ export default function CreateExpense({
       const formData = new FormData();
       formData.append("date", formattedDate);
       formData.append("note", note);
-      formData.append("amount", amount);
+  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
+  formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
       if (image) {
         formData.append("image", {
@@ -741,10 +757,11 @@ export default function CreateExpense({
         } as unknown as Blob);
       }
       formData.append("group", group || "");
-      formData.append("vat", vatIncluded ? "true" : "false");
-      formData.append("vatAmount", vatAmount.toString());
-      formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-      formData.append("WHTpercent", WHTpercent.toString());
+  formData.append("vat", vatIncluded ? "true" : "false");
+  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
+  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+  formData.append("WHTpercent", WHTpercent.toString());
+  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
       formData.append("sTaxId", sTaxId);
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
@@ -1865,48 +1882,7 @@ export default function CreateExpense({
                       value={sAddress}
                       onChangeText={setSAddress}
                     />
-                    {/* Show calculated WHT amount when applicable */}
-                    {DocumentType &&
-                      DocumentType.includes("WithholdingTax") &&
-                      withHoldingTax &&
-                      WHTAmount > 0 && (
-                        <View
-                          style={{
-                            marginTop: 8,
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "column",
-                              alignItems: "flex-end",
-                            }}
-                          >
-                            <CustomText style={{ textAlign: "right" }}>
-                              {t("expense.detail.WHTAmount") + " :"}
-                            </CustomText>
-                          </View>
-                          <View
-                            style={{
-                              flexDirection: "column",
-                              alignItems: "flex-end",
-                              marginLeft: 12,
-                            }}
-                          >
-                            <CustomText style={{ textAlign: "left" }}>
-                              {typeof WHTAmount === "number" && !isNaN(WHTAmount)
-                                ? WHTAmount.toFixed(2).replace(
-                                    /\B(?=(\d{3})+(?!\d))/g,
-                                    ","
-                                  )
-                                : "0.00"}
-                            </CustomText>
-                          </View>
-                        </View>
-                      )}
-                  </>
+                    </>
                 )}
                 <View className="flex-row justify-evenly items-center">
                   <ScrollView

@@ -1044,6 +1044,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบสำคัญรับเงิน/,
     /บิลเงินสด/,
     /ใบรับเงิน/,
+    /ต้นฉบับ/,
     
     // Fuzzy patterns for common OCR errors
     /ใบ[แเ][สศ]ร[็ะ]จ/,                    // ใบเสร็จ with character variations
@@ -1054,6 +1055,10 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบแสร็จ/,                             // Common OCR error: แสร็จ instead of เสร็จ
     /ใบแสร็จรับเงิ/,                        // Full common OCR error
   /กํากับภาษี|กํากับ|ก่ากับภาษี|กํกับภาษี/, // extra variants with possible combining char issues
+    // Add fuzzy Thai patterns for severely garbled OCR outputs (user-requested)
+    /เบเสรจรบเงบน/,                         // fuzzy garbled form of ใบเสร็จรับเงิน
+    /เบกากบภาษ/,                            // fuzzy garbled form of ใบกำกับภาษี
+    /เบเสรจรบเงบน\s*\/\s*เบกากบภาษ/,    // combined variant with a slash between the two
   ];
 
   let receiptTitleFound = false;
