@@ -36,6 +36,7 @@ import {
   formatNumber,
   reverseCalculateFromFinal,
 } from "@/utils/taxUtils";
+import { DEFAULT_VAT_PERCENT, DEFAULT_WHT_PERCENT } from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -175,8 +176,8 @@ export default function CreateExpense({
     if (withHoldingTax) {
       // Treat `amount` as the final paid amount (base + VAT - WHT).
       // Use the reverse helper with VAT rate = 7% when vatIncluded is true, otherwise 0%.
-      const vatRate = vatIncluded ? 7 : 0;
-      const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
+  const vatRate = vatIncluded ? DEFAULT_VAT_PERCENT : 0;
+  const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
 
       // sync computed values to state for UI and submission
       if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
@@ -185,7 +186,7 @@ export default function CreateExpense({
       setWHTAmount(0);
       // if VAT checkbox is on and there's no WHT, still show VAT derived from final amount
       if (vatIncluded) {
-        const res = reverseCalculateFromFinal(finalAmt, 7, 0);
+  const res = reverseCalculateFromFinal(finalAmt, DEFAULT_VAT_PERCENT, 0);
         if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
       }
     }
@@ -1606,7 +1607,7 @@ export default function CreateExpense({
                               // and reverse-calculate base and VAT using current WHTpercent.
                               reverseCalculateFromFinal(
                                 Number(amount) || 0,
-                                7,
+                                DEFAULT_VAT_PERCENT,
                                 withHoldingTax ? Number(WHTpercent) : 0
                               ).base
                             )}
@@ -1615,7 +1616,7 @@ export default function CreateExpense({
                             {formatNumber(
                               reverseCalculateFromFinal(
                                 Number(amount) || 0,
-                                7,
+                                DEFAULT_VAT_PERCENT,
                                 withHoldingTax ? Number(WHTpercent) : 0
                               ).vat
                             )}

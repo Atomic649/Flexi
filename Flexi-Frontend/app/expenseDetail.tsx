@@ -24,7 +24,12 @@ import { getMemberId } from "@/utils/utility";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
-import { calculateVatFromGross, formatNumber } from "@/utils/taxUtils";
+import {
+  calculateVatFromGross,
+  formatNumber,
+  reverseCalculateFromFinal,
+  DEFAULT_VAT_PERCENT,
+} from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -190,12 +195,20 @@ export default function ExpenseDetail({
   ]);
   // Update WHTAmount when amount or WHTpercent changes
   useEffect(() => {
+    const finalAmt = Number(amount) || 0;
+    const percent = Number(WHTpercent) || 0;
+
     if (withHoldingTax) {
-      const amt = Number(amount);
-      const percent = Number(WHTpercent);
-      setWHTAmount(amt && percent ? (amt * percent) / 100 : 0);
+      const vatRate = vatIncluded ? DEFAULT_VAT_PERCENT : 0;
+      const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
+      if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
+      setWHTAmount(res.wht);
     } else {
       setWHTAmount(0);
+      if (vatIncluded) {
+        const res = reverseCalculateFromFinal(finalAmt, DEFAULT_VAT_PERCENT, 0);
+        if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
+      }
     }
   }, [amount, WHTpercent, withHoldingTax]);
 
@@ -596,10 +609,24 @@ export default function ExpenseDetail({
                       {vat && vatIncluded && (
                         <>
                           <CustomText style={{ textAlign: "left" }}>
-                            {formatNumber(calculateVatFromGross(Number(amount)).excl)}
+                            {formatNumber(
+                              // When VAT is included we assume `amount` is final paid
+                              // and reverse-calculate the base using the default VAT percent
+                              reverseCalculateFromFinal(
+                                Number(amount) || 0,
+                                DEFAULT_VAT_PERCENT,
+                                withHoldingTax ? Number(WHTpercent) : 0
+                              ).base
+                            )}
                           </CustomText>
                           <CustomText style={{ textAlign: "left" }}>
-                            {formatNumber(calculateVatFromGross(Number(amount)).vat)}
+                            {formatNumber(
+                              reverseCalculateFromFinal(
+                                Number(amount) || 0,
+                                DEFAULT_VAT_PERCENT,
+                                withHoldingTax ? Number(WHTpercent) : 0
+                              ).vat
+                            )}
                           </CustomText>
                         </>
                       )}

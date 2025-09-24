@@ -1,5 +1,12 @@
 // Reusable tax calculation helpers
-export function calculateVatFromGross(gross: number, ratePercent = 7) {
+// Centralized default tax rates — change here if tax policy changes
+export const DEFAULT_VAT_PERCENT = 7;
+export const DEFAULT_WHT_PERCENT = 3;
+
+export function calculateVatFromGross(
+  gross: number,
+  ratePercent = DEFAULT_VAT_PERCENT
+) {
   const g = Number(gross) || 0;
   const r = Number(ratePercent) || 0;
   if (r === 0) return { vat: 0, excl: g };
@@ -16,8 +23,8 @@ export function formatNumber(value: number, decimals = 2) {
 // Formula: base = final / (1 + vatRate - whtRate)
 export function reverseCalculateFromFinal(
   finalAmount: number,
-  vatRatePercent = 7,
-  whtRatePercent = 3
+  vatRatePercent = DEFAULT_VAT_PERCENT,
+  whtRatePercent = DEFAULT_WHT_PERCENT
 ) {
   const finalAmt = Number(finalAmount) || 0;
   const vatR = Number(vatRatePercent) / 100;
