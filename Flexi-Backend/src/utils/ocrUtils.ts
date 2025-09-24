@@ -628,7 +628,18 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /(?:Total|TOTAL)\s*:?\s*฿?\s*([0-9,]+\.?\d*)/gi
   ];
 
+  // Additional flexible patterns to catch OCR variations and currency suffixes like THB or บาท
+  const extraAmountPatterns = [
+    /(?:ยอดรวมทั้งหมด|ยอดรวมทังหมด|ยอดรวม:)\s*([0-9,]+\.?\d*)/gi, // common Thai OCR typo ทัง -> ทั้ง
+    /(?:ยอดรวมทังหมด|ยอดรวมทั้งหมด|ยอดรวม)\s*[:\-]?\s*([0-9\.,]+)\s*(?:THB|thb|บาท)?/gi,
+    /([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{1,2})?)\s*(?:THB|thb|บาท)/gi, // numbers with thousands separators followed by currency
+    /([0-9]+\.[0-9]{2})\s*THB/gi,
+    /(?:รวมทั้งสิ้น|รวมทั้งหมด|รวม:?)\s*([0-9,]+\.?\d*)/gi,
+    /(?:ยอดรวมทังหมด)\s*[:\s]{1,40}([0-9,]+\.?\d*)/gi // allow many spaces/cols due to OCR formatting
+  ];
+
   let amountFound = false;
+  // First pass: high-confidence patterns
   for (const pattern of amountPatterns) {
     const matches = cleanText.matchAll(pattern);
     for (const match of matches) {
@@ -637,13 +648,52 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
         const amount = parseFloat(amountStr);
         if (!isNaN(amount) && amount > 0) {
           amountFound = true;
-          detectedAmounts.push(amount.toString()); // Collect actual amount
-          console.log(`🔍 AMOUNT DETECTED: ${amount} (${match[1]})`);
+          detectedAmounts.push(amount.toString());
+          console.log(`🔍 AMOUNT DETECTED (primary): ${amount} (${match[1]})`);
           break;
         }
       }
     }
     if (amountFound) break;
+  }
+
+  // Second pass: more flexible patterns for OCR typos and currency suffixes
+  if (!amountFound) {
+    for (const pattern of extraAmountPatterns) {
+      const matches = cleanText.matchAll(pattern);
+      for (const match of matches) {
+        if (match && match[1]) {
+          const amountStr = match[1].replace(/[,\s]/g, '').replace(/\.+(?=.*\.)/g, '');
+          const amount = parseFloat(amountStr);
+          if (!isNaN(amount) && amount > 0) {
+            amountFound = true;
+            detectedAmounts.push(amount.toString());
+            console.log(`🔍 AMOUNT DETECTED (extra): ${amount} (${match[1]}) from pattern ${pattern.source}`);
+            break;
+          }
+        }
+      }
+      if (amountFound) break;
+    }
+  }
+
+  // Fallback: pick the largest currency-like number found in the text (useful when labels are OCR-mangled)
+  if (!amountFound) {
+    // Find all numbers that look like currency (with commas or decimals) and are not dates (dd/mm/yyyy)
+    const currencyLike = Array.from(cleanText.matchAll(/\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+\.\d{2}/g)).map(m => m[0]);
+    const candidates: number[] = [];
+    for (const c of currencyLike) {
+      // skip things that look like dates (e.g., 10/09/2025 already removed earlier) and postal codes
+      const sanitized = c.replace(/,/g, '');
+      const num = parseFloat(sanitized);
+      if (!isNaN(num) && num > 0) candidates.push(num);
+    }
+    if (candidates.length > 0) {
+      const maxAmount = Math.max(...candidates);
+      amountFound = true;
+      detectedAmounts.push(maxAmount.toString());
+      console.log(`🔍 AMOUNT DETECTED (fallback largest): ${maxAmount}`);
+    }
   }
 
   if (!amountFound) {
@@ -999,9 +1049,11 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบ[แเ][สศ]ร[็ะ]จ/,                    // ใบเสร็จ with character variations
     /ใบ[แเ][สศ]ร[็ะ]จรับเงิ[นิ]/,          // ใบเสร็จรับเงิน with variations
     /ใบ[แเ][สศ]ร[็ะ]จรับเงิ[นิ]?$/,        // ใบเสร็จรับเงิน at end of line
-    /ใบกำกับ[ภพ][าะ][ษศ][ีิ]/,              // ใบกำกับภาษี with variations
+  /ใบกำก?ั?บ[\s\-\u200B\u200C\u200D]*ภาษ[ีีษศ]/, // permissive for ใบกํากับภาษี variations and zero-width chars
+  /ใบก[ำ|ั]?ก[ั|า]?บ[\s\-\u200B\u200C\u200D]*ภาษ[ีีษศ]/, // more permissive broken-up pattern
     /ใบแสร็จ/,                             // Common OCR error: แสร็จ instead of เสร็จ
     /ใบแสร็จรับเงิ/,                        // Full common OCR error
+  /กํากับภาษี|กํากับ|ก่ากับภาษี|กํกับภาษี/, // extra variants with possible combining char issues
   ];
 
   let receiptTitleFound = false;

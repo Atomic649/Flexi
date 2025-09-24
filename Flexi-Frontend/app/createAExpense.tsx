@@ -32,6 +32,7 @@ import { format } from "date-fns";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
+import { router } from "expo-router";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -397,8 +398,6 @@ export default function CreateExpense({
                 const res = await CallAPIExpense.createAExpenseAPI(fd);
                 if (res.error) throw new Error(res.error);
               }
-
-             
             } catch (err: any) {
               console.warn("Error saving image-only:", err);
               setError(err?.message || String(err));
@@ -496,10 +495,35 @@ export default function CreateExpense({
     handleDeleteExpense(); // Delete expense if created with amount 0
   };
 
-  const handleCloseWithoutAlert = () => {
-    //clearForm();
-    onClose();
-    handleDeleteExpense(); // Delete expense if created with amount 0
+  const handleCloseWithoutAlert = async () => {
+    try {
+      // Close any open alert immediately
+      setAlertConfig((prev) => ({ ...prev, visible: false }));
+
+      // Stop any OCR processing and reset progress
+      setIsProcessingOCR(false);
+      setOCRProgress(0);
+      setOCRAlert(null);
+
+      // Clear local form state first
+      clearForm();
+
+      // Attempt deletion in background and await it to avoid race conditions
+      await handleDeleteExpense();
+
+      // Defer onClose to next tick so state updates settle before parent unmounts
+      setTimeout(() => {
+        try {
+          onClose();
+        } catch (e) {
+          console.error('Error during onClose:', e);
+        }
+      }, 0);
+    } catch (err) {
+      console.error('handleCloseWithoutAlert error:', err);
+      // still try to close safely
+      setTimeout(() => onClose(), 0);
+    }
   };
 
   //handleCreateOrUpdate
@@ -885,10 +909,10 @@ export default function CreateExpense({
               <CustomText
                 style={{
                   fontSize: 12,
-                  color: isSelected?
-                  theme === "dark"
-                    ? "#ccc"
-                    : "#636363"
+                  color: isSelected
+                    ? theme === "dark"
+                      ? "#ccc"
+                      : "#636363"
                     : theme === "dark"
                     ? "#ccc"
                     : "#666",
@@ -939,10 +963,7 @@ export default function CreateExpense({
                 },
                 {
                   text: t("ocr.alert.closeWithoutSaving"),
-                  onPress: () => {
-                    handleCloseWithoutAlert(),
-                    onClose();                    
-                  },
+                  onPress: () => handleCloseWithoutAlert(),
                   style: "default",
                 },
               ],
@@ -1005,7 +1026,10 @@ export default function CreateExpense({
                 {isProcessingOCR && (
                   <View
                     style={{
-                      backgroundColor: theme === "dark" ?"rgba(0, 0, 0, 0.947)":"rgba(55, 55, 55, 0.9)",
+                      backgroundColor:
+                        theme === "dark"
+                          ? "rgba(0, 0, 0, 0.947)"
+                          : "rgba(55, 55, 55, 0.9)",
                       position: "absolute",
                       top: 0,
                       left: 0,
@@ -1031,7 +1055,7 @@ export default function CreateExpense({
                       {!showOCRResult ? (
                         // Progress view
                         <>
-                       {/* Progress Bar */}
+                          {/* Progress Bar */}
                           <View
                             style={{
                               width: 200,
@@ -1140,7 +1164,8 @@ export default function CreateExpense({
                                     fontSize: 13,
                                     alignSelf: "flex-start",
                                     marginLeft: 10,
-                                    color: theme === "dark" ? "#ac1b02" : "#ff2d31",
+                                    color:
+                                      theme === "dark" ? "#ac1b02" : "#ff2d31",
                                   }}
                                 >
                                   {t("ocr.shouldSpecify")}
@@ -1159,7 +1184,10 @@ export default function CreateExpense({
                                         fontSize: 13,
                                         alignSelf: "flex-start",
                                         marginLeft: 10,
-                                        color: theme === "dark" ? "#ac1b02" : "#ff2d31",
+                                        color:
+                                          theme === "dark"
+                                            ? "#ac1b02"
+                                            : "#ff2d31",
                                       }}
                                     >
                                       {`• ${t(req.key, req.values)}`}
@@ -1177,7 +1205,7 @@ export default function CreateExpense({
                                 justifyContent: "space-between",
                                 marginTop: 15,
                                 gap: 4,
-                                backgroundColor: "transparent"
+                                backgroundColor: "transparent",
                               }}
                             >
                               <DarkGrayButton
@@ -1206,7 +1234,9 @@ export default function CreateExpense({
                               <DarkGrayButton
                                 title={t("ocr.selectAll")}
                                 handlePress={() => {
-                                  console.log("🔄 Selecting all available OCR data");
+                                  console.log(
+                                    "🔄 Selecting all available OCR data"
+                                  );
 
                                   setSelectedOCRData((prev) => ({
                                     ...prev,
@@ -1223,7 +1253,8 @@ export default function CreateExpense({
                                       prev.selectedTaxInvoiceId,
                                     selectedVatAmount:
                                       ocrAlert?.details?.selectableOptions
-                                        ?.vatAmounts?.[0] || prev.selectedVatAmount,
+                                        ?.vatAmounts?.[0] ||
+                                      prev.selectedVatAmount,
                                     selectedAmount:
                                       ocrAlert?.details?.selectableOptions
                                         ?.amounts?.[0] || prev.selectedAmount,
@@ -1232,13 +1263,16 @@ export default function CreateExpense({
                                         ?.dates?.[0] || prev.selectedDate,
                                     selectedAddress:
                                       ocrAlert?.details?.selectableOptions
-                                        ?.addresses?.[0] || prev.selectedAddress,
+                                        ?.addresses?.[0] ||
+                                      prev.selectedAddress,
                                   }));
 
                                   // reveal selection UI
                                   setShowSelection(true);
 
-                                  console.log("✅ All available OCR data selected");
+                                  console.log(
+                                    "✅ All available OCR data selected"
+                                  );
                                 }}
                                 containerStyles="px-6 mt-2"
                               />
@@ -1250,8 +1284,6 @@ export default function CreateExpense({
                               />
                             </View>
                           )}
-
-                          
 
                           {/* End Alert Section */}
 
