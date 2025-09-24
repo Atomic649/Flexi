@@ -896,7 +896,10 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   }
 
   // 6. Detect Date
+  // Support numeric dates (dd/mm/yyyy) and Thai long-form dates like 'วันที่ 22 กันยายน 2568'
   const datePatterns = [
+    // Thai long form day month year (allow abbreviated month tokens with dots, e.g. 'ส.ค.' or full names)
+    /(?:วันที่)\s*(\d{1,2})\s*([ก-\u0E7Fa-zA-Z.]{1,10})\s*(\d{4})/gi,
     /(?:วันที่|Date|date)\s*:?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/gi,
     /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})\b/g
   ];
@@ -905,7 +908,21 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   for (const pattern of datePatterns) {
     const matches = cleanText.matchAll(pattern);
     for (const match of matches) {
-      if (match && match[1]) {
+      if (!match) continue;
+      // If Thai long-form (day, month name, year) was captured
+      if (match[1] && match[2] && match[3]) {
+        // Normalize month token by removing stray dots that appear in abbreviations (e.g., 'ส.ค.' -> 'สค')
+        const rawMonth = match[2] || '';
+        const normalizedMonth = rawMonth.replace(/\./g, '').trim();
+        const dateStr = `${match[1]} ${normalizedMonth} ${match[3]}`;
+        dateFound = true;
+        detectedDates.push(dateStr); // Collect actual date string (Thai form)
+        console.log(`🔍 DATE DETECTED (Thai long form): ${dateStr}`);
+        break;
+      }
+
+      // Otherwise fallback to numeric group
+      if (match[1]) {
         const dateStr = match[1];
         if (/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(dateStr)) {
           dateFound = true;
@@ -1044,7 +1061,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบสำคัญรับเงิน/,
     /บิลเงินสด/,
     /ใบรับเงิน/,
-    /ต้นฉบับ/,
+   
     
     // Fuzzy patterns for common OCR errors
     /ใบ[แเ][สศ]ร[็ะ]จ/,                    // ใบเสร็จ with character variations
@@ -1055,10 +1072,36 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ใบแสร็จ/,                             // Common OCR error: แสร็จ instead of เสร็จ
     /ใบแสร็จรับเงิ/,                        // Full common OCR error
   /กํากับภาษี|กํากับ|ก่ากับภาษี|กํกับภาษี/, // extra variants with possible combining char issues
+    /ก[ำ|ั]?ก[ั|า]?บ[\s\-\u200B\u200C\u200D]*ภาษ[ีีษศ]/, // กํากับภาษี broken-up pattern    
+    /ใบ[แเ][สศ]ร[็ะ]จ\s*\/\s*ใบกำก?ั?บ[\s\-\u200B\u200C\u200D]*ภาษ[ีีษศ]/, // combined variant with a slash between the two    
     // Add fuzzy Thai patterns for severely garbled OCR outputs (user-requested)
     /เบเสรจรบเงบน/,                         // fuzzy garbled form of ใบเสร็จรับเงิน
     /เบกากบภาษ/,                            // fuzzy garbled form of ใบกำกับภาษี
     /เบเสรจรบเงบน\s*\/\s*เบกากบภาษ/,    // combined variant with a slash between the two
+  // Additional Thai title tokens (invoice / tax / delivery) and combined forms
+  /ใบแจ้งหนี้/,                              // ใบแจ้งหนี้
+  /ใบค[่ิ]?ม?า?ก?ั?บ[\s\-\u200B\u200C\u200D]*ภาษ[ีีษศ]/, // permissive for ใบคํากับภาษี variations
+  /ใบส่งของ/,                                 // ใบส่งของ
+  /ใบแจ้งหนี้\s*\/\s*ใบค[\s\S]{0,20}ภาษ[ีีษศ]/, // combined Thai slash variant (tolerant)
+  /ใบแจ้งหนี้\s*\/\s*ใบค[\s\S]{0,20}ภาษ[ีีษศ]\s*\/\s*ใบส่งของ/, // triple combined Thai (slash-separated)
+  // Sequence-aware fuzzy match: allow up to 40 chars between the tokens to tolerate OCR noise/spacing
+  /ใบแจ้งหนี้[\s\S]{0,40}ใบค[\s\S]{0,20}ภาษ[\s\S]{0,20}[\s\S]{0,40}ใบส่งของ/, 
+  // English/Latin variants and common OCR typos for invoice/tax/delivery
+  /Invoice/i,
+  /Involce/i, // common OCR typo for Invoice
+  /Invoice\s*\/\s*Tax/i,
+  /Involce\s*\/\s*Tax/i,
+  /Invoice\s*\/\s*Tax\s*\/\s*Delivery/i,
+  /Involce\s*\/\s*Tax\s*\/\s*Delivery/i,
+    /บ[ีี]ลเงินสด/,                           // บิลเงินสด with character variations    
+    /ใบร[ัา]บรองแทนใบแสร็จรบเงบน/,         // fuzzy garbled form of ใบรับรองแทนใบเสร็จรับเงิน
+    /ใบสำคัญจ่าย/,                          // ใบสำคัญจ่าย
+    /ใบสำคัญรับเงิ[นิ]/,                    // ใบสำคัญรับเงิน with variations
+    /ใบสำคัญรับเงิ[นิ]?$/,                  // ใบสำคัญรับเงิน at end of line
+    /บิลเงินสด/,                            // บิลเงินสด
+    /ใบร[ัา]บเงิ[นิ]/,                      // ใบรับเงิน with variations
+    /ใบร[ัา]บเงิ[นิ]?$/                     // ใบรับเงิน at end of line
+
   ];
 
   let receiptTitleFound = false;

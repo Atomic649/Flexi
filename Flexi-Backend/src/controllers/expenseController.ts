@@ -28,6 +28,87 @@ const upload = multer(multerConfig.multerConfigImageMemory.config).single(
 //Create  instance of PrismaClient
 const prisma = new PrismaClient1();
 
+// Helper: parse flexible date inputs including Thai long-form and numeric dd/mm/yyyy
+function parseFlexibleDate(raw: any): Date | null {
+  if (!raw) return null;
+  if (raw instanceof Date && !isNaN(raw.getTime())) return raw;
+  const str = String(raw).trim();
+
+  // 1) Try numeric dd/mm/yyyy or dd-mm-yyyy
+  const numericMatch = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (numericMatch) {
+    let day = parseInt(numericMatch[1], 10);
+    let month = parseInt(numericMatch[2], 10);
+    let year = parseInt(numericMatch[3], 10);
+    // If year looks like Buddhist year (>2500), convert to AD
+    if (year > 2400) year = year - 543;
+    const d = new Date(year, month - 1, day);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // 2) Try Thai long-form: วันที่ 22 กันยายน 2568 or 27 ส.ค. 2568
+  const thaiMatch = str.match(/(?:วันที่\s*)?(\d{1,2})\s*([ก-๙\.]{2,15})\s*(\d{4})/i);
+  if (thaiMatch) {
+    const day = parseInt(thaiMatch[1], 10);
+    let rawMonth = thaiMatch[2].replace(/\./g, "").trim();
+    let year = parseInt(thaiMatch[3], 10);
+    // convert Buddhist year to AD if necessary
+    if (year > 2400) year = year - 543;
+    // Map Thai month names/abbreviations to month index
+    const thaiMonths: { [k: string]: number } = {
+      "มกราคม": 0,
+      "กุมภาพันธ์": 1,
+      "มีนาคม": 2,
+      "เมษายน": 3,
+      "พฤษภาคม": 4,
+      "มิถุนายน": 5,
+      "กรกฎาคม": 6,
+      "สิงหาคม": 7,
+      "กันยายน": 8,
+      "ตุลาคม": 9,
+      "พฤศจิกายน": 10,
+      "ธันวาคม": 11,
+      "ม.ค": 0,
+      "ก.พ": 1,
+      "มี.ค": 2,
+      "เม.ย": 3,
+      "พ.ค": 4,
+      "มิ.ย": 5,
+      "ก.ค": 6,
+      "ส.ค": 7,
+      "ก.ย": 8,
+      "ต.ค": 9,
+      "พ.ย": 10,
+      "ธ.ค": 11,
+      "ม.ค.": 0,
+      "ก.พ.": 1,
+      "มี.ค.": 2,
+      "เม.ย.": 3,
+      "พ.ค.": 4,
+      "มิ.ย.": 5,
+      "ก.ค.": 6,
+      "ส.ค.": 7,
+      "ก.ย.": 8,
+      "ต.ค.": 9,
+      "พ.ย.": 10,
+      "ธ.ค.": 11,
+    };
+    // Try exact key, then try lowercased keys without diacritics as fallback
+    let monthIndex = thaiMonths[rawMonth] ?? thaiMonths[rawMonth.replace(/\u0E47|\u0E48|\u0E49/g, "")] ;
+    if (monthIndex === undefined) {
+      // try approximate matching by prefix
+      const found = Object.keys(thaiMonths).find((k) => rawMonth.indexOf(k) !== -1 || k.indexOf(rawMonth) !== -1);
+      if (found) monthIndex = thaiMonths[found];
+    }
+    if (monthIndex !== undefined) {
+      const d = new Date(year, monthIndex, day);
+      if (!isNaN(d.getTime())) return d;
+    }
+  }
+
+  return null;
+}
+
 // Interface for request body from client
 interface Expense {
   WHTpercent?: number;
@@ -118,6 +199,26 @@ const createExpense = async (req: Request, res: Response) => {
 
     // Merge the uploaded file S3 URL key into the expense object
     // Convert string 'true'/'false' to boolean for vat and withHoldingTax
+    // Normalize date: if incoming date parses to a valid Date, use Date object; otherwise keep raw string
+    const rawDate = req.body.date;
+    let normalizedDate: any = rawDate;
+    if (rawDate) {
+      const parsed = new Date(rawDate);
+      if (!isNaN(parsed.getTime())) {
+        normalizedDate = parsed;
+      } else {
+        // keep as string (e.g., Thai long-form 'วันที่ 22 กันยายน 2568') so Joi can accept string
+        normalizedDate = rawDate;
+      }
+    }
+
+    const parsedDate = parseFlexibleDate(normalizedDate) ?? new Date();
+    //  convert date time to format Expected ISO-8601 DateTime
+
+
+    // Ensure date is an ISO-8601 string before validation/storage
+    const isoDateString = parsedDate instanceof Date ? format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssXXX") : String(parsedDate);
+
     const expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
@@ -127,6 +228,7 @@ const createExpense = async (req: Request, res: Response) => {
         : req.body.image ?? "",
       desc: req.body.desc ?? "",
       group: req.body.group || "Others", // Default to "Others" if group is empty
+      date: isoDateString as unknown as Date,
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
@@ -223,7 +325,17 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     // console.log("Uploaded file:", req.file ? "File received" : "No file");
     let imageUrl = req.body.image ?? "";
 
-    // Initialize expenseInput with form data, handling empty values properly
+      // Initialize expenseInput with form data, handling empty values properly
+    // Normalize date input to avoid Invalid Date objects for non-ISO/Thai long-form strings
+    const rawDateOCR = req.body.date;
+    let normalizedDateOCR: any = rawDateOCR ? rawDateOCR : new Date();
+    if (rawDateOCR) {
+      const parsed = new Date(rawDateOCR);
+      normalizedDateOCR = !isNaN(parsed.getTime()) ? parsed : rawDateOCR;
+    }
+
+    const parsedDateOCR = parseFlexibleDate(normalizedDateOCR) ?? new Date();
+
     let expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
@@ -231,7 +343,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       image: imageUrl,
       desc: req.body.desc ?? "",
       // Handle potentially empty required fields when image is present
-      date: req.body.date ? new Date(req.body.date) : new Date(),
+      date: parsedDateOCR,
       amount: req.body.amount ? Number(req.body.amount) : 0,
       note: req.body.note || "",
       group: req.body.group || "Others", // Default group to "Others" if empty
@@ -992,7 +1104,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
     if (expenseInput.date) {
       expenseInput.date = new Date(expenseInput.date);
     }
-    
+
     try {
       const expense = await prisma.expense.update({
         where: {
