@@ -164,6 +164,17 @@ export default function CreateExpense({
     }
   }, [group, taxType, withHoldingTax]);
 
+  // Update WHTAmount when amount or WHTpercent changes (mirror expenseDetail.tsx)
+  useEffect(() => {
+    if (withHoldingTax) {
+      const amt = Number(amount);
+      const percent = Number(WHTpercent);
+      setWHTAmount(amt && percent ? (amt * percent) / 100 : 0);
+    } else {
+      setWHTAmount(0);
+    }
+  }, [amount, WHTpercent, withHoldingTax]);
+
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -1528,7 +1539,10 @@ export default function CreateExpense({
                   keyboardType="numeric"
                 />
 
-                {vat && vatIncluded && (
+                {((vat && vatIncluded) ||
+                  (DocumentType &&
+                    DocumentType.includes("WithholdingTax") &&
+                    withHoldingTax)) && (
                   <View
                     style={{
                       marginTop: 8,
@@ -1543,12 +1557,23 @@ export default function CreateExpense({
                         alignItems: "flex-end",
                       }}
                     >
-                      <CustomText style={{ textAlign: "right" }}>
-                        {t("expense.detail.exclVat") + " :"}
-                      </CustomText>
-                      <CustomText style={{ textAlign: "right" }}>
-                        {t("expense.detail.vat") + " :"}
-                      </CustomText>
+                      {vat && vatIncluded && (
+                        <>
+                          <CustomText style={{ textAlign: "right" }}>
+                            {t("expense.detail.exclVat") + " :"}
+                          </CustomText>
+                          <CustomText style={{ textAlign: "right" }}>
+                            {t("expense.detail.vat") + " :"}
+                          </CustomText>
+                        </>
+                      )}
+                      {DocumentType &&
+                        DocumentType.includes("WithholdingTax") &&
+                        withHoldingTax && (
+                          <CustomText style={{ textAlign: "right" }}>
+                            {t("expense.detail.WHTAmount") + " :"}
+                          </CustomText>
+                        )}
                     </View>
                     <View
                       style={{
@@ -1557,16 +1582,32 @@ export default function CreateExpense({
                         marginLeft: 12,
                       }}
                     >
-                      <CustomText style={{ textAlign: "left" }}>
-                        {(Number(amount) / 1.07)
-                          .toFixed(2)
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      </CustomText>
-                      <CustomText style={{ textAlign: "left" }}>
-                        {(Number(amount) * 0.07)
-                          .toFixed(2)
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      </CustomText>
+                      {vat && vatIncluded && (
+                        <>
+                          <CustomText style={{ textAlign: "left" }}>
+                            {(Number(amount) / 1.07)
+                              .toFixed(2)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          </CustomText>
+                          <CustomText style={{ textAlign: "left" }}>
+                            {(Number(amount) * 0.07)
+                              .toFixed(2)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          </CustomText>
+                        </>
+                      )}
+                      {DocumentType &&
+                        DocumentType.includes("WithholdingTax") &&
+                        withHoldingTax && (
+                          <CustomText style={{ textAlign: "left" }}>
+                            {typeof WHTAmount === "number" && !isNaN(WHTAmount)
+                              ? WHTAmount.toFixed(2).replace(
+                                  /\B(?=(\d{3})+(?!\d))/g,
+                                  ","
+                                )
+                              : "0.00"}
+                          </CustomText>
+                        )}
                     </View>
                   </View>
                 )}
@@ -1805,6 +1846,47 @@ export default function CreateExpense({
                       value={sAddress}
                       onChangeText={setSAddress}
                     />
+                    {/* Show calculated WHT amount when applicable */}
+                    {DocumentType &&
+                      DocumentType.includes("WithholdingTax") &&
+                      withHoldingTax &&
+                      WHTAmount > 0 && (
+                        <View
+                          style={{
+                            marginTop: 8,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                            }}
+                          >
+                            <CustomText style={{ textAlign: "right" }}>
+                              {t("expense.detail.WHTAmount") + " :"}
+                            </CustomText>
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                              marginLeft: 12,
+                            }}
+                          >
+                            <CustomText style={{ textAlign: "left" }}>
+                              {typeof WHTAmount === "number" && !isNaN(WHTAmount)
+                                ? WHTAmount.toFixed(2).replace(
+                                    /\B(?=(\d{3})+(?!\d))/g,
+                                    ","
+                                  )
+                                : "0.00"}
+                            </CustomText>
+                          </View>
+                        </View>
+                      )}
                   </>
                 )}
                 <View className="flex-row justify-evenly items-center">
