@@ -24,6 +24,7 @@ import { getMemberId } from "@/utils/utility";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
+import { calculateVatFromGross, formatNumber } from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -595,14 +596,10 @@ export default function ExpenseDetail({
                       {vat && vatIncluded && (
                         <>
                           <CustomText style={{ textAlign: "left" }}>
-                            {(Number(amount) / 1.07)
-                              .toFixed(2)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            {formatNumber(calculateVatFromGross(Number(amount)).excl)}
                           </CustomText>
                           <CustomText style={{ textAlign: "left" }}>
-                            {(Number(amount) * 0.07)
-                              .toFixed(2)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            {formatNumber(calculateVatFromGross(Number(amount)).vat)}
                           </CustomText>
                         </>
                       )}

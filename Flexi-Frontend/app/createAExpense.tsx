@@ -32,7 +32,10 @@ import { format } from "date-fns";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
-import { router } from "expo-router";
+import {
+  formatNumber,
+  reverseCalculateFromFinal,
+} from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -166,14 +169,27 @@ export default function CreateExpense({
 
   // Update WHTAmount when amount or WHTpercent changes (mirror expenseDetail.tsx)
   useEffect(() => {
+    const finalAmt = Number(amount) || 0;
+    const percent = Number(WHTpercent) || 0;
+
     if (withHoldingTax) {
-      const amt = Number(amount);
-      const percent = Number(WHTpercent);
-      setWHTAmount(amt && percent ? (amt * percent) / 100 : 0);
+      // Treat `amount` as the final paid amount (base + VAT - WHT).
+      // Use the reverse helper with VAT rate = 7% when vatIncluded is true, otherwise 0%.
+      const vatRate = vatIncluded ? 7 : 0;
+      const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
+
+      // sync computed values to state for UI and submission
+      if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
+      setWHTAmount(res.wht);
     } else {
       setWHTAmount(0);
+      // if VAT checkbox is on and there's no WHT, still show VAT derived from final amount
+      if (vatIncluded) {
+        const res = reverseCalculateFromFinal(finalAmt, 7, 0);
+        if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
+      }
     }
-  }, [amount, WHTpercent, withHoldingTax]);
+  }, [amount, WHTpercent, withHoldingTax, vatIncluded, vatAmount]);
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -189,6 +205,8 @@ export default function CreateExpense({
     }
   };
 
+  
+  
   // Apply selected OCR data and resubmit expense
   const applySelectedOCRData = async () => {
     try {
@@ -1529,9 +1547,7 @@ export default function CreateExpense({
                   value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                   onChangeText={(val) => {
                     const raw = val.replace(/,/g, "");
-                    setAmount(raw);
-                    setWHTAmount(raw ? (Number(raw) * WHTpercent) / 100 : 0);
-                  }}
+                    setAmount(raw);}}
                   placeholder="0.00"
                   placeholderTextColor={
                     theme === "dark" ? "#6d6c67" : "#adaaa6"
@@ -1585,14 +1601,24 @@ export default function CreateExpense({
                       {vat && vatIncluded && (
                         <>
                           <CustomText style={{ textAlign: "left" }}>
-                            {(Number(amount) / 1.07)
-                              .toFixed(2)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            {formatNumber(
+                              // If vatIncluded is true we treat `amount` as final paid amount
+                              // and reverse-calculate base and VAT using current WHTpercent.
+                              reverseCalculateFromFinal(
+                                Number(amount) || 0,
+                                7,
+                                withHoldingTax ? Number(WHTpercent) : 0
+                              ).base
+                            )}
                           </CustomText>
                           <CustomText style={{ textAlign: "left" }}>
-                            {(Number(amount) * 0.07)
-                              .toFixed(2)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            {formatNumber(
+                              reverseCalculateFromFinal(
+                                Number(amount) || 0,
+                                7,
+                                withHoldingTax ? Number(WHTpercent) : 0
+                              ).vat
+                            )}
                           </CustomText>
                         </>
                       )}
@@ -1601,10 +1627,7 @@ export default function CreateExpense({
                         withHoldingTax && (
                           <CustomText style={{ textAlign: "left" }}>
                             {typeof WHTAmount === "number" && !isNaN(WHTAmount)
-                              ? WHTAmount.toFixed(2).replace(
-                                  /\B(?=(\d{3})+(?!\d))/g,
-                                  ","
-                                )
+                              ? formatNumber(WHTAmount)
                               : "0.00"}
                           </CustomText>
                         )}
@@ -1688,15 +1711,10 @@ export default function CreateExpense({
                             value={WHTpercent.toString()}
                             onChangeText={(val) => {
                               if (group !== "Fuel") {
-                                const num = parseFloat(val);
-                                setWHTpercent(isNaN(num) ? 0 : num);
-                                setWHTAmount(
-                                  Number(amount)
-                                    ? (Number(amount) *
-                                        (isNaN(num) ? 0 : num)) /
-                                        100
-                                    : 0
-                                );
+                                        const num = parseFloat(val);
+                                        setWHTpercent(isNaN(num) ? 0 : num);
+                                        // WHTAmount will be recalculated in the useEffect which
+                                        // uses VAT-excluded base when vatAmount exists
                               }
                             }}
                             placeholder={t("expense.detail.percent")}
