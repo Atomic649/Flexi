@@ -1,16 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
-  Text,
-  Button,
   ActivityIndicator,
   TouchableOpacity,
   Modal,
-  SafeAreaView,
-  Alert,
   Dimensions,
-  Platform, // Import Platform for platform checks
-  TextInput, // Import TextInput for password input
+  Platform, 
+  TextInput,
+  SafeAreaView,
 } from "react-native";
 
 import * as DocumentPicker from "expo-document-picker";
@@ -23,12 +20,13 @@ import ExpenseTable from "./ExpenseTable";
 import { getMemberId } from "@/utils/utility";
 import CallAPIExpense from "@/api/expense_api";
 import { router } from "expo-router";
-import ExpenseDetail from "@/app/expenseDetail"; // Import the ExpenseDetail component
-import CreateExpense from "@/app/createAExpense"; // Import the CreateExpense component
+import ExpenseDetail from "@/app/expenseDetail";
+import CreateExpense from "@/app/createAExpense"; 
 import { CustomText } from "../CustomText";
 import { useTranslation } from "react-i18next";
 import { TextButtonCancle, TextButtonComfirm } from "../CustomButton";
 import i18n from "@/i18n";
+import CustomAlert from "../CustomAlert";
 
 export default function DetectExpense() {
   const { theme } = useTheme();
@@ -47,6 +45,11 @@ export default function DetectExpense() {
   const [passwordModalVisible, setPasswordModalVisible] =
     useState<boolean>(false); // State for password modal
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Added refresh trigger
+  // Custom alert state (replaces Alert.alert)
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertButtons, setAlertButtons] = useState<any[]>([]);
 
   // auto delete if save is false
   const autoDelete = async () => {
@@ -60,6 +63,7 @@ export default function DetectExpense() {
 
   const pickAndProcessPdf = async () => {
     autoDelete();
+    onRefresh();
     const result = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
     });
@@ -68,7 +72,7 @@ export default function DetectExpense() {
     const uri =
       result.assets && result.assets.length > 0 ? result.assets[0].uri : null;
     if (!uri) {
-      setError("No PDF selected or invalid file.");
+      setError("");
       return;
     } else {
       try {
@@ -149,7 +153,12 @@ export default function DetectExpense() {
 
   const handlePasswordSubmit = () => {
     if (passwordPdf.trim() === "") {
-      Alert.alert(t("common.error"), t("expense.alerts.emptyPassword"));
+      setAlertTitle(t("common.error"));
+      setAlertMessage(t("expense.alerts.emptyPassword"));
+      setAlertButtons([
+        { text: t("common.ok"), onPress: () => setAlertVisible(false) },
+      ]);
+      setAlertVisible(true);
       return;
     }
     setPasswordModalVisible(false);
@@ -189,16 +198,12 @@ export default function DetectExpense() {
         );
         console.log("🔥response", response);
         setExpenses([]); // Clear all data in
-        Alert.alert(
-          t("expense.alerts.successTitle"),
-          t("expense.alerts.successMessage"),
-          [
-            {
-              text: t("common.ok"),
-              onPress: () => router.push("/(tabs)/expense"),
-            },
-          ]
-        );
+        setAlertTitle(t("expense.alerts.successTitle"));
+        setAlertMessage(t("expense.alerts.successMessage"));
+        setAlertButtons([
+          { text: t("common.ok"), onPress: () => router.push("/(tabs)/expense") },
+        ]);
+        setAlertVisible(true);
         router.push("/(tabs)/expense");
       } catch (error) {
         console.error("Error saving expenses:", error);
@@ -463,6 +468,13 @@ export default function DetectExpense() {
           id: 0,
           group: "",
         }}
+      />
+      <CustomAlert
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        buttons={alertButtons}
+        onClose={() => setAlertVisible(false)}
       />
     </SafeAreaView>
   );
