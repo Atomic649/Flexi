@@ -380,6 +380,24 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         // Detect data presence in the uploaded image
         const detectionResult = await extractTextFromImage(req.file.buffer);
 
+        //  if detect thai date 22 กรกฎาคม 2568 or 22 ก.ค. 2568 convert to be dd/mm/yyyy
+        const parsedDatesFromOCR = detectionResult.datesDetected
+          .map((dateStr) => parseFlexibleDate(dateStr))
+          .filter((d): d is Date => d !== null);
+
+        // Convert Thai dates to dd/mm/yyyy format
+        const convertedDates = parsedDatesFromOCR.map((date) => {
+          const day = date.getDate().toString().padStart(2, "0");
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const year = date.getFullYear();
+          return `${day}/${month}/${year}`;
+        });
+
+        if (convertedDates.length > 0) {
+          console.log("   ✅ Detected and converted dates from OCR:", convertedDates);
+          detectionResult.datesDetected = convertedDates;
+        }
+
         // Filter out user's business information from OCR results
         if (businessAcc) {
           // Filter out business name from names but count it toward requirement
@@ -431,7 +449,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             filteredNames.length + (businessNameDetected ? 1 : 0);
 
           // Filter out business tax ID from tax IDs
-          const originalTaxIdsCount = detectionResult.taxIdsFound.length;
           const filteredTaxIds = detectionResult.taxIdsFound.filter((taxId) => {
             const isBusinessTaxId = taxId.trim() === businessAcc.taxId.trim();
             if (isBusinessTaxId) {
@@ -443,8 +460,6 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           detectionResult.taxIdsFound = filteredTaxIds;
 
           // Filter out business addresses from detected addresses
-          const originalAddressesCount =
-            detectionResult.addressesDetected.length;
           const filteredAddresses = detectionResult.addressesDetected.filter(
             (address) => {
               const addressToCheck = address.toLowerCase().trim();
