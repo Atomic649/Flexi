@@ -423,6 +423,8 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   
   // 1. Detect Names
   const namePatterns = [
+  // English-style company names (capture suffixes like CO.,LTD, LTD, LIMITED, INC)
+  /([A-Za-z0-9\.\,\-\s]{3,}?(?:Co\.?\,?\s*LTD\.?|CO\.?\,?\s*LTD\.?|LTD\.?|LIMITED|Company|CORP|INC\.?))/gi,
     // Company names with prefixes and endings - Enhanced for บมจ. ซีพี ออลล์
     /(?:ห้างหุ้นส่วนจำกัด|ห้างหุ้นส่วนจํากัด|บจก\.?\s*|บมจ\.?\s*)\s*([^.\n\r;,]*?)(?:\s*จำกัด\s*(?:มหาชน)?|\s*จํากัด\s*(?:มหาชน)?|$)/gi,
     // Personal names with titles
@@ -506,10 +508,108 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     pattern.lastIndex = 0;
   }
 
-  console.log(`🔍 NAMES DETECTED: ${namesFound.length} names found`);
-  namesFound.forEach((name, index) => {
+  console.log(`🔍 NAMES DETECTED: ${namesFound.length} names found`, namesFound);
+  // Clean up detected names: remove known receipt/invoice title tokens that may be
+  // prefixed to company names by noisy OCR and filter out names that are only
+  // title phrases.
+  const receiptTitleTokens = [
+    'ใบแจ้งหนี้', 'ใบคํากับภาษี', 'ใบกำกับภาษี', 'ใบส่งของ', 'ใบเสร็จ', 'ใบเสร็จรับเงิน'
+  ];
+
+  const normalizeName = (n: string) => {
+    let s = n.trim();
+    // Remove common separators and equal signs that appear in OCR'd titles
+    s = s.replace(/[=\/]+/g, ' ').replace(/:+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    // Remove any receipt title tokens that appear anywhere in the string
+    for (const token of receiptTitleTokens) {
+      const re = new RegExp(token, 'gi');
+      s = s.replace(re, '').trim();
+    }
+    return s;
+  };
+
+  const cleanedNames: string[] = [];
+  for (const rawName of namesFound) {
+    const cleaned = normalizeName(rawName);
+    // Exclude entries that become empty or are too short after normalization
+  if (!cleaned || cleaned.length < 3) continue;
+  // Exclude names that are just generic title words
+  const lower = cleaned.toLowerCase();
+  if (receiptTitleTokens.some(t => lower.includes(t))) continue;
+
+  // Plausibility checks to reject gibberish like "พางวราด์ เซว ๓๐๕ริอิงจิธ์ไธิถาว: กจวเก์จ"
+  // 1) Must contain at least 2 Thai letters OR at least one ASCII word of length >=3
+  const thaiLetters = (cleaned.match(/[ก-๙]/g) || []).length;
+  const asciiWords = (cleaned.match(/[A-Za-z]{3,}/g) || []).length;
+  if (thaiLetters < 2 && asciiWords < 1) continue;
+
+  // 2) Limit ratio of non-word characters (punctuation/digits) to avoid noisy lines
+  const nonWord = (cleaned.match(/[^\p{L}\p{N}\s]/gu) || []).length;
+  const total = cleaned.length || 1;
+  if (nonWord / total > 0.25) continue;
+    if (!cleanedNames.includes(cleaned)) cleanedNames.push(cleaned);
+  }
+
+  console.log(`🔍 NAMES CLEANED: ${cleanedNames.length} names kept`);
+  cleanedNames.forEach((name, index) => {
     console.log(`   ${index + 1}. ${name}`);
   });
+
+  // Further refine cleaned names: extract explicit 'บริษัท ... จำกัด' if present,
+  // and strip trailing noisy tokens (dates, separators, words like 'รับเงิน', 'ในนาม').
+  const noisyTokens = ['รับเงิน', 'รับเช็ค', 'ในนาม', 'ผู้จ่ายเงิน', 'ผู้รับเงิน', 'รับเงิน', 'จํานวนเงินรวมทั้งสิ้น', 'จํานวนเงินรวม'];
+  const companyPattern = /(บริษัท\s+[^\d\n\r\|\[\]<>\\\/]{3,}?(?:จำกัด\s*(?:มหาชน)?|จํากัด\s*(?:มหาชน)?))/i;
+
+  const finalNames: string[] = [];
+  for (let name of cleanedNames) {
+    // Strip at first occurrence of common separators that indicate trailing noise
+    name = name.split(/[|\\\[\]<>%\/]/)[0].trim();
+
+    // Remove any noisy token words
+    for (const tk of noisyTokens) {
+      const re = new RegExp(tk, 'gi');
+      name = name.replace(re, '').trim();
+    }
+
+    // Remove trailing date-like sequences
+    name = name.replace(/\s*\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}.*$/,'').trim();
+
+      // Try to extract 'บริษัท ... จำกัด' as authoritative company name
+      const m = name.match(companyPattern);
+      if (m && m[1]) {
+        const extracted = m[1].replace(/\s+/g, ' ').trim();
+        if (!finalNames.includes(extracted)) finalNames.push(extracted);
+        continue;
+      }
+
+      // Try to extract English-style company names like 'NAPAT PACKAGING CO.,LTD'
+      // Match sequences with common suffixes and avoid trailing numeric/amount fragments
+      const engCompanyPattern = /([A-Za-z0-9\-\.,\s]{3,}?(?:\bCo\.?\b|\bCO\.?\b|\bLTD\.?\b|\bLIMITED\b|\bCompany\b|\bCORP\b|\bINC\.?\b))[\.,\s]*$/i;
+      const me = name.match(engCompanyPattern);
+      if (me && me[1]) {
+        let extracted = me[1].replace(/\s{2,}/g, ' ').trim();
+        // Normalize common suffix punctuation
+        extracted = extracted.replace(/\bCo\.?\s*,?\s*LTD\.?/i, 'CO.,LTD');
+        extracted = extracted.replace(/\s+$/,'');
+        // Remove trailing numbers or amount fragments
+        extracted = extracted.replace(/[,\s]*\d+[\.,]?\d*$/,'').trim();
+        if (!finalNames.includes(extracted)) finalNames.push(extracted);
+        continue;
+      }
+
+      // Fallback: keep only entries that appear to be company-like (contain letters and not too many digits)
+      if (name && name.length >= 4) {
+        const digitRatio = (name.match(/\d/g) || []).length / (name.length || 1);
+        if (digitRatio < 0.2) {
+          name = name.replace(/^[^\p{L}0-9]+|[^\p{L}0-9]+$/gu, '').trim();
+          if (name && !finalNames.includes(name)) finalNames.push(name);
+        }
+      }
+  }
+
+  // Replace contents of original namesFound array with finalNames
+  namesFound.length = 0;
+  finalNames.forEach(n => namesFound.push(n));
 
   // 2. Detect Tax IDs
   const taxIdPatterns = [
@@ -635,7 +735,9 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /([0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]{1,2})?)\s*(?:THB|thb|บาท)/gi, // numbers with thousands separators followed by currency
     /([0-9]+\.[0-9]{2})\s*THB/gi,
     /(?:รวมทั้งสิ้น|รวมทั้งหมด|รวม:?)\s*([0-9,]+\.?\d*)/gi,
-    /(?:ยอดรวมทังหมด)\s*[:\s]{1,40}([0-9,]+\.?\d*)/gi // allow many spaces/cols due to OCR formatting
+    /(?:ยอดรวมทังหมด)\s*[:\s]{1,40}([0-9,]+\.?\d*)/gi, // allow many spaces/cols due to OCR 
+    /(?:ยอดช[ํำ]าระ)\s*[:\s]{1,60}([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)/gi,
+  
   ];
 
   let amountFound = false;
@@ -886,6 +988,7 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     }
   }
 
+  // If no VAT found by patterns
   if (!vatAmountFound) {
     console.log('❌ VAT AMOUNT NOT DETECTED');
   } else {
@@ -1028,11 +1131,13 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   const fullAddressLines = extractFullAddressLines(cleanText);
   if (fullAddressLines.length > 0) {
     addressFound = true;
+    // Prefer full address lines over smaller fragments: replace any previously collected
+    // address fragments with the high-confidence full address lines so only the
+    // complete addresses are returned to the frontend.
+    detectedAddresses.length = 0;
     fullAddressLines.forEach(addressLine => {
-      if (!detectedAddresses.includes(addressLine)) {
-        detectedAddresses.push(addressLine);
-        console.log(`🏠 FULL ADDRESS EXTRACTED: "${addressLine}"`);
-      }
+      detectedAddresses.push(addressLine);
+      console.log(`🏠 FULL ADDRESS EXTRACTED: "${addressLine}"`);
     });
   }
 
@@ -1157,11 +1262,20 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
   console.log(`✅ Address: ${addressFound ? 'PASS' : 'FAIL'}`);
   console.log(`✅ Receipt Title: ${receiptTitleFound ? 'PASS' : 'FAIL'}`);
 
+  // Filter out zero VAT amounts (common OCR false positives like "0")
+  const filterNonZero = (arr: string[]) => arr.filter(v => {
+    if (!v && v !== '0') return false;
+    const num = parseFloat(v.toString().replace(/,/g, '').trim());
+    return !isNaN(num) && Math.abs(num) > 0;
+  });
+
+  const vatAmountsFoundFiltered = filterNonZero(vatAmountsFound);
+  const detectedVatAmountsFiltered = filterNonZero(detectedVatAmounts);
+
   return {
     namesFound,
     taxIdsFound,
-    taxInvoiceIdsFound,
-    vatAmountsFound,
+  taxInvoiceIdsFound,
     amountFound,
     dateFound,
     addressFound,
@@ -1170,10 +1284,12 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     // Return the actual collected values instead of placeholder text
     amountsDetected: detectedAmounts,
     datesDetected: detectedDates,
-    addressesDetected: detectedAddresses,
-    provincesDetected: detectedProvinces,
+  addressesDetected: detectedAddresses,
+  provincesDetected: detectedProvinces,
     taxInvoiceIdsDetected: detectedTaxInvoiceIds,
-    vatAmountsDetected: detectedVatAmounts,
+  // Return VAT arrays excluding zero values
+  vatAmountsFound: vatAmountsFoundFiltered,
+  vatAmountsDetected: detectedVatAmountsFiltered,
     summary
   };
 };
