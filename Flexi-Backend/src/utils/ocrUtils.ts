@@ -439,6 +439,8 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     /ลูกค้า[^ก-๙a-zA-Z]*([ก-๙]+\s+[ก-๙]+)(?:\s+การ|\s+\d|\s+วันที่|$)/gi
   ];
 
+  
+
   const namesFound: string[] = [];
 
   for (const pattern of namePatterns) {
@@ -528,25 +530,44 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     return s;
   };
 
+  // Pre-seed authoritative Thai company names from the raw text.
+  // This ensures full matches like "บริษัท ซีพี ออลล์ จํากัด (มหาชน)" are captured
+  // before later normalization or overlapping regexes can split them.
+  try {
+    // Match full Thai company names, tolerant of either 'จำกัด' or 'จํากัด' spellings,
+    // and optional '(มหาชน)' after the จำกัด token.
+    const authoritativeCompanyPattern = /(บริษัท\s+[\s\S]{3,}?(?:จำกัด|จํากัด)(?:\s*(?:มหาชน|\(มหาชน\))?))/gi;
+    let acMatch: RegExpExecArray | null;
+    while ((acMatch = authoritativeCompanyPattern.exec(cleanText)) !== null) {
+      const comp = acMatch[1].replace(/\s+/g, ' ').trim();
+      if (comp.length > 3 && !namesFound.includes(comp)) {
+        namesFound.push(comp);
+        console.log(`🔍 PRE-SEEDED COMPANY NAME: "${comp}"`);
+      }
+    }
+  } catch (e) {
+    // defensive: if RegExp with unicode/flags fails in some runtime, continue gracefully
+    console.log('⚠️ Pre-seed company name extraction failed:', e);
+  }
   const cleanedNames: string[] = [];
   for (const rawName of namesFound) {
     const cleaned = normalizeName(rawName);
     // Exclude entries that become empty or are too short after normalization
-  if (!cleaned || cleaned.length < 3) continue;
-  // Exclude names that are just generic title words
-  const lower = cleaned.toLowerCase();
-  if (receiptTitleTokens.some(t => lower.includes(t))) continue;
+    if (!cleaned || cleaned.length < 3) continue;
+    // Exclude names that are just generic title words
+    const lower = cleaned.toLowerCase();
+    if (receiptTitleTokens.some(t => lower.includes(t))) continue;
 
-  // Plausibility checks to reject gibberish like "พางวราด์ เซว ๓๐๕ริอิงจิธ์ไธิถาว: กจวเก์จ"
-  // 1) Must contain at least 2 Thai letters OR at least one ASCII word of length >=3
-  const thaiLetters = (cleaned.match(/[ก-๙]/g) || []).length;
-  const asciiWords = (cleaned.match(/[A-Za-z]{3,}/g) || []).length;
-  if (thaiLetters < 2 && asciiWords < 1) continue;
+    // Plausibility checks to reject gibberish
+    const thaiLetters = (cleaned.match(/[ก-๙]/g) || []).length;
+    const asciiWords = (cleaned.match(/[A-Za-z]{3,}/g) || []).length;
+    if (thaiLetters < 2 && asciiWords < 1) continue;
 
-  // 2) Limit ratio of non-word characters (punctuation/digits) to avoid noisy lines
-  const nonWord = (cleaned.match(/[^\p{L}\p{N}\s]/gu) || []).length;
-  const total = cleaned.length || 1;
-  if (nonWord / total > 0.25) continue;
+  // Limit ratio of non-word characters (punctuation/digits)
+  const nonWord = (cleaned.match(/[^ -\p{L}\p{N}\s]/gu) || []).length;
+    const total = cleaned.length || 1;
+    if (nonWord / total > 0.25) continue;
+
     if (!cleanedNames.includes(cleaned)) cleanedNames.push(cleaned);
   }
 
