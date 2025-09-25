@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
-  Platform, 
+  Platform,
   TextInput,
   SafeAreaView,
 } from "react-native";
@@ -21,7 +21,7 @@ import { getMemberId } from "@/utils/utility";
 import CallAPIExpense from "@/api/expense_api";
 import { router } from "expo-router";
 import ExpenseDetail from "@/app/expenseDetail";
-import CreateExpense from "@/app/createAExpense"; 
+import CreateExpense from "@/app/createAExpense";
 import { CustomText } from "../CustomText";
 import { useTranslation } from "react-i18next";
 import { TextButtonCancle, TextButtonComfirm } from "../CustomButton";
@@ -36,7 +36,6 @@ export default function DetectExpense() {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [expenses, setExpenses] = useState<any[]>([]);
-  const screenWidth = Dimensions.get("window").width;
   const [selectedExpense, setSelectedExpense] = useState<any | null>(null);
   const [isCreateExpenseVisible, setIsCreateExpenseVisible] = useState(false);
   const [isCreateSuccess, setIsCreateSuccess] = useState(false);
@@ -88,7 +87,14 @@ export default function DetectExpense() {
         console.log("🔥pdfUriChoose", pdfUri);
       } catch (error) {
         console.error("🚨pickAndProcessPdf", error);
-        setError("Failed to process PDF");
+        // Clear inline error and show a CustomAlert instead
+        setError(null);
+        setAlertTitle(t("common.error"));
+        setAlertMessage("Failed to process PDF");
+        setAlertButtons([
+          { text: t("common.ok"), onPress: () => setAlertVisible(false) },
+        ]);
+        setAlertVisible(true);
       }
     }
   };
@@ -136,14 +142,37 @@ export default function DetectExpense() {
       }
     } catch (error: any) {
       console.error("Error fetching expenses:", error);
-      if (error.message === "Duplicate data found") {
-        setError("Duplicate data found");
-      } else if (error.message === "No password given") {
-        setPasswordModalVisible(true);
-      } else {
-        setError(
-          "Failed to process PDF or Invalid Password \n Please try again"
-        );
+
+      // Axios error with response
+        const status = error?.response?.status || error?.status || (error?.statusCode ?? null);
+        const serverMessage =
+          (error && typeof error === "object" && (error.message || error?.data?.message)) ||
+          (typeof error === "string" ? error : undefined) ||
+          error?.response?.data?.message;
+
+        const msg = String(serverMessage || "");
+
+        if (status === 409 || /duplicate/i.test(msg)) {
+          // Duplicate data
+          setAlertTitle(t("common.error"));
+          setAlertMessage(t("Duplicate data found"));
+          setAlertButtons([
+            { text: t("common.ok"), onPress: () => setAlertVisible(false) },
+          ]);
+          setAlertVisible(true);
+        } else if (/no password/i.test(msg) || msg === "No password given") {
+          // Server demands a password — open password modal
+          setPasswordModalVisible(true);
+        } else {
+          // Generic failure
+          setAlertTitle(t("common.error"));
+          setAlertMessage(
+            t("expense.alerts.failedPdf") || "Failed to process PDF or Invalid Password\nPlease try again"
+          );
+          setAlertButtons([
+            { text: t("common.ok"), onPress: () => setAlertVisible(false) },
+          ]);
+          setAlertVisible(true);
       }
     } finally {
       setPasswordPdf(""); // Clear the password after processing
@@ -201,10 +230,18 @@ export default function DetectExpense() {
         setAlertTitle(t("expense.alerts.successTitle"));
         setAlertMessage(t("expense.alerts.successMessage"));
         setAlertButtons([
-          { text: t("common.ok"), onPress: () => router.push("/(tabs)/expense") },
+          {
+            text: t("common.ok"),
+            onPress: () => {
+              setAlertVisible(false);
+              router.replace({
+                pathname: "/(tabs)/expense",
+              });
+            },
+          },
         ]);
         setAlertVisible(true);
-        router.push("/(tabs)/expense");
+        // Navigation will occur when the alert button's onPress is executed
       } catch (error) {
         console.error("Error saving expenses:", error);
       }
@@ -425,7 +462,6 @@ export default function DetectExpense() {
                   i18n.language === "th"
                     ? "IBMPlexSansThai-Medium"
                     : "Poppins-Regular",
-
               }}
               placeholder={t("expense.alerts.password")}
               placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}

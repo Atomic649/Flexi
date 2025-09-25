@@ -265,7 +265,9 @@ export const pdfExtract = async (
         });
 
         if (duplicateData.length > 0) {
-          throw new Error("Duplicate data found");
+          // Return a 409 Conflict so clients can handle it explicitly
+          res.status(409).json({ message: "Duplicate data found" });
+          return;
         }
 
         for (const item of codeAmountWithSName) {
@@ -299,12 +301,15 @@ export const pdfExtract = async (
 
       try {
         await createExpenses();
+        // If createExpenses already sent a response (e.g. duplicate data), stop here
+        if (res.headersSent) return;
         res.status(201).json({
           message: "Expenses created successfully",
           expenses: await getExpenses(),
         });
       } catch (e: any) {
         console.error(e);
+        if (res.headersSent) return;
         res.status(500).json({ message: e.message });
       }
     } catch (e: any) {
