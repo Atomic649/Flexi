@@ -27,6 +27,8 @@ import ExpenseDetail from "@/app/expenseDetail"; // Import the ExpenseDetail com
 import CreateExpense from "@/app/createAExpense"; // Import the CreateExpense component
 import { CustomText } from "../CustomText";
 import { useTranslation } from "react-i18next";
+import { TextButtonCancle, TextButtonComfirm } from "../CustomButton";
+import i18n from "@/i18n";
 
 export default function DetectExpense() {
   const { theme } = useTheme();
@@ -109,7 +111,7 @@ export default function DetectExpense() {
           formData.append("filePath", {
             uri: filePath,
             name: "file.pdf",
-            type: "application/pdf",           
+            type: "application/pdf",
           } as unknown as Blob);
         }
 
@@ -135,14 +137,15 @@ export default function DetectExpense() {
       } else if (error.message === "No password given") {
         setPasswordModalVisible(true);
       } else {
-        setError("Failed to process PDF or Invalid Password \n Please try again");
+        setError(
+          "Failed to process PDF or Invalid Password \n Please try again"
+        );
       }
     } finally {
       setPasswordPdf(""); // Clear the password after processing
       setLoading(false);
     }
   };
-
 
   const handlePasswordSubmit = () => {
     if (passwordPdf.trim() === "") {
@@ -166,7 +169,7 @@ export default function DetectExpense() {
         setExpenses(expenses);
         setError(null);
         // Increment refresh trigger to force reload of table
-        setRefreshTrigger(prev => prev + 1);
+        setRefreshTrigger((prev) => prev + 1);
       }
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -218,7 +221,7 @@ export default function DetectExpense() {
 
   const toggleExpenseDetail = (expense: any) => {
     setSelectedExpense(expense);
-    setRefreshTrigger(prev => prev + 1); // Increment refresh trigger when viewing an expense
+    setRefreshTrigger((prev) => prev + 1); // Increment refresh trigger when viewing an expense
   };
 
   // Handle expense edit closure
@@ -234,7 +237,7 @@ export default function DetectExpense() {
       <View
         className="flex-row items-center justify-between  py-1"
         style={{
-          width: Dimensions.get("window").width > 768  ? "50%" : "100%",
+          width: Dimensions.get("window").width > 768 ? "50%" : "100%",
         }}
       >
         <TouchableOpacity
@@ -269,12 +272,13 @@ export default function DetectExpense() {
             size={24}
             color={theme === "dark" ? "primary" : "#3b3b3b"}
           />
-          <Text
-            className="text-center text-xs font-bold"
+          <CustomText
+            className="text-center text-xs font-bold pt-1"
+            weight="semibold"
             style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
           >
             {t("expense.buttons.pdf")}
-          </Text>
+          </CustomText>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -287,12 +291,13 @@ export default function DetectExpense() {
           }}
           onPress={handleSave}
         >
-          <Text
+          <CustomText
             className="text-center text-base font-bold"
+            weight="semibold"
             style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
           >
             {t("expense.buttons.save")}
-          </Text>
+          </CustomText>
         </TouchableOpacity>
       </View>
 
@@ -311,9 +316,7 @@ export default function DetectExpense() {
               backgroundColor: theme === "dark" ? "#282625" : "#edeceb",
             }}
           >
-            <CustomText className="text-center ">
-              {error}
-            </CustomText>
+            <CustomText className="text-center ">{error}</CustomText>
           </View>
         </View>
       )}
@@ -364,17 +367,15 @@ export default function DetectExpense() {
                 </View>
               ))}
             <View className="flex-row justify-between px-10 mt-4">
-              <Button
+              <TextButtonCancle
                 title={t("common.cancel")}
-                onPress={() => setModalVisible(false)}
-                color="#006eff"
+                handlePress={() => setModalVisible(false)}
               />
-              <Button
+              <TextButtonComfirm
                 title={t("common.confirm")}
-                onPress={() => {
-                  confirmAndProcessPdf();       
-                                             }}
-                color="#ff1713"
+                handlePress={() => {
+                  confirmAndProcessPdf();
+                }}
               />
             </View>
           </View>
@@ -404,9 +405,7 @@ export default function DetectExpense() {
             <CustomText className="text-center text-lg font-pmedium mb-4">
               {t("expense.alerts.enterPassword")}
             </CustomText>
-            {/* <Text className="text-center text-base font-normal mb-2 ">
-              {t("expense.alerts.deleteFile")}
-            </Text> */}
+
             <TextInput
               style={{
                 justifyContent: "center",
@@ -417,6 +416,11 @@ export default function DetectExpense() {
                 padding: 10,
                 marginBottom: 20,
                 color: theme === "dark" ? "#ffffff" : "#000000",
+                fontFamily:
+                  i18n.language === "th"
+                    ? "IBMPlexSansThai-Medium"
+                    : "Poppins-Regular",
+
               }}
               placeholder={t("expense.alerts.password")}
               placeholderTextColor={theme === "dark" ? "#6d6c67" : "#adaaa6"}
@@ -425,19 +429,17 @@ export default function DetectExpense() {
               onChangeText={setPasswordPdf}
               keyboardType="numeric"
             />
-            <View className="flex-row justify-between">
-              <Button
+            <View className="flex-row justify-around">
+              <TextButtonCancle
                 title={t("common.cancel")}
-                onPress={() => setPasswordModalVisible(false)}
-                color="#0d70f0"                
+                handlePress={() => setPasswordModalVisible(false)}
               />
-              <Button
+              <TextButtonComfirm
                 title={t("common.confirm")}
-                onPress={() => {
+                handlePress={() => {
                   handlePasswordSubmit();
                   console.log("🔑Password", passwordPdf);
-                }}                
-                color="#ff1713"
+                }}
               />
             </View>
           </View>

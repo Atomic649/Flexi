@@ -1,11 +1,20 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, RefreshControl, Platform, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ExpenseDetail from "@/app/expenseDetail"; // Ensure correct import
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import { useTranslation } from "react-i18next";
+import { CustomText } from "../CustomText";
 
 interface Expense {
   date: string;
@@ -34,7 +43,11 @@ interface ExpenseTableProps {
   refreshTrigger?: number; // Add refresh trigger prop
 }
 
-const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTableProps) => {
+const ExpenseTable = ({
+  expenses,
+  onRowPress,
+  refreshTrigger = 0,
+}: ExpenseTableProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
@@ -43,7 +56,9 @@ const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTable
   const [refreshing, setRefreshing] = useState(false);
 
   // Sort expenses by date
-  const sortedExpenses = expenseList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sortedExpenses = expenseList.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   const headerClass = `font-bold p-2  ${
     theme === "dark" ? "text-white" : "text-[#ffffff]"
@@ -123,50 +138,58 @@ const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTable
             theme === "dark" ? "border-zinc-700" : "border-gray-300"
           }`}
         >
-          <View 
-          style={{
-          width: "25%",
-          }}>
+          <View
+            style={{
+              width: "25%",
+            }}
+          >
             <Text className={dateClass} numberOfLines={2}>
               {item.date.split("T")[0]}
               {"\n"}
               {item.date.split("T")[1].replace(/:\d{2}\.\d{3}Z$/, "")}
             </Text>
           </View>
-          <View  style={{
-          width: "45%",
-          }}>
-       
-            <Text
-              className={`flex-2 text-start pt-3  ${
-                theme === "dark" ? "text-white" : "text-zinc-900"
-              }`}
+          <View
+            style={{
+              width: "45%",
+            }}
+          >
+            <CustomText
+              className={`flex-2 text-start`}
+              weight="regular"
               style={{
-                opacity: !item.sName ? 0.5 : 1
+                opacity: !item.sName ? 0.5 : 1,
+                color: theme === "dark" ? "#ffffff" : "#18181b",
+                fontSize:13,
+                paddingTop: 9
               }}
               numberOfLines={1}
             >
               {item.sName || item.desc}
-            </Text>
-            <Text
-              className={`flex-2 text-start py-3 ${
-                theme === "dark" ? "text-white" : "text-zinc-900"
-              }`}
+            </CustomText>
+            <CustomText
+              className={`flex-2 text-start py-2 $`}
+              weight="regular"
+              style={{
+                color: theme === "dark" ? "#ffffff" : "#18181b",
+                fontSize:13
+              }}
               numberOfLines={1}
             >
               {item.note}
-            </Text>
+            </CustomText>
           </View>
-          <View  style={{
-          width: "25%",
-          }}>
-       
+          <View
+            style={{
+              width: "25%",
+            }}
+          >
             <Text className={cellClass} numberOfLines={1}>
               {item.amount}
             </Text>
 
             <View className="flex-row">
-              <TouchableOpacity               
+              <TouchableOpacity
                 className="flex-1 m-2 justify-center items-center"
                 disabled={!item.image}
               >
@@ -204,19 +227,49 @@ const ExpenseTable = ({ expenses, onRowPress, refreshTrigger = 0 }: ExpenseTable
   );
 
   return (
-    <View className="flex-1  "
+    <View
+      className="flex-1  "
       style={{
-        width: Dimensions.get("window").width > 768  ? "50%" : "100%",
-      }}>
+        width: Dimensions.get("window").width > 768 ? "50%" : "100%",
+      }}
+    >
       <View
         className="flex-row w-full justify-around p-1  "
-        style={{ backgroundColor: theme === "dark" ? "#3f3e3b" : "#5e5953",
+        style={{
+          backgroundColor: theme === "dark" ? "#3f3e3b" : "#5e5953",
           alignItems: "center",
-         }}
+        }}
       >
-        <Text className={`${headerClass} w-2/7`}>{t('expense.table.date')}</Text>
-        <Text className={`${headerClass} w-1/7`}>{t('expense.table.notedesc')}</Text>
-        <Text className={`${headerClass} w-1/7`}>{t('expense.table.amount')}</Text>
+        <CustomText
+          className={`w-2/7`}
+          style={{
+            fontWeight: "normal",
+            color: theme === "dark" ? "#ffffff" : "#ffffff",
+            fontSize: 12,
+          }}
+        >
+          {t("expense.table.date")}
+        </CustomText>
+        <CustomText
+          className={`w-1/7`}
+          style={{
+            fontWeight: "normal",
+            color: theme === "dark" ? "#ffffff" : "#ffffff",
+            fontSize: 12,
+          }}
+        >
+          {t("expense.table.notedesc")}
+        </CustomText>
+        <CustomText
+          className={`w-1/7`}
+          style={{
+            fontWeight: "normal",
+            color: theme === "dark" ? "#ffffff" : "#ffffff",
+            fontSize: 12,
+          }}
+        >
+          {t("expense.table.amount")}
+        </CustomText>
       </View>
       <FlatList
         data={sortedExpenses}

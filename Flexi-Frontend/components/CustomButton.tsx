@@ -194,30 +194,37 @@ const MiniCustomButton = ({
   );
 };
 
-// Tertiary Button (Outline style for less important actions)
-const TextButton = ({
+// Reusable text-only button base used by several variants
+interface TextButtonBaseProps extends Omit<CustomButtonProps, 'textStyles'> {
+  color?: string; // text color
+  textSize?: number;
+}
+
+const TextButtonBase = ({
   title,
   handlePress,
-  containerStyles,
-  isLoading,
-}: CustomButtonProps) => {
+  containerStyles = '',
+  isLoading = false,
+  color = '#0dd4ac',
+  textSize = 16,
+}: TextButtonBaseProps) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
       className={`bg-transparent rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
-        isLoading ? "opacity-50" : ""
+        isLoading ? 'opacity-50' : ''
       }`}
       disabled={isLoading}
     >
-      <CustomText weight="bold" style={{ color: "#0dd4ac", fontSize: 16 }}>
+      <CustomText weight="bold" style={{ color, fontSize: textSize }}>
         {title}
       </CustomText>
 
       {isLoading && (
         <ActivityIndicator
           animating={isLoading}
-          color="#04ecc1"
+          color={color}
           size="small"
           className="ml-2"
         />
@@ -225,6 +232,21 @@ const TextButton = ({
     </TouchableOpacity>
   );
 };
+
+// Specific variants kept for backward compatibility
+const TextButton = (props: CustomButtonProps) => (
+  <TextButtonBase {...props} color="#0dd4ac" textSize={16} />
+);
+
+const TextButtonComfirm = (props: CustomButtonProps) => (
+  // fixed color typo (## -> #)
+  <TextButtonBase {...props} color="#ff1713" textSize={16} />
+);
+
+const TextButtonCancle = (props: CustomButtonProps) => (
+  <TextButtonBase {...props} color="#006eff" textSize={16} />
+);
+
 
 // Simple Button (Text-only button with theme support)
 const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
@@ -243,4 +265,6 @@ export {
   GrayButton,
   DarkGrayButton,
   MiniCustomButton,
+  TextButtonComfirm,
+  TextButtonCancle
 };
