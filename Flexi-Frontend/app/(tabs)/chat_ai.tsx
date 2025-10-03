@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { CallAI, ChatMessage, streamChat, StreamEvent } from "@/api/chat_ai_api";
 import MarkdownMessage from "@/components/MarkdownMessage";
+import * as Clipboard from "expo-clipboard";
 
 type Role = "assistant" | "user";
 type Message = {
@@ -280,12 +281,22 @@ function ChatBubble({
   theme: "light" | "dark";
 }) {
   const isUser = message.role === "user";
+  const [copied, setCopied] = useState(false);
+
+  const onCopy = useCallback(async () => {
+    try {
+      await Clipboard.setStringAsync(message.content || "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  }, [message.content]);
+
+  const iconColor = isUser ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
+
   return (
-    <View
-      className={`w-full flex-row ${isUser ? "justify-end" : "justify-start"}`}
-    >
+    <View className={`w-full flex-row ${isUser ? "justify-end" : "justify-start"}`}>
       <View
-        className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+        className={`max-w-[85%] px-3 py-2 rounded-2xl ${
           isUser
             ? "bg-teal-300 rounded-br-sm"
             : "bg-zinc-100 dark:bg-zinc-800 rounded-bl-sm"
@@ -307,13 +318,29 @@ function ChatBubble({
         ) : (
           <MarkdownMessage content={message.content} />
         )}
-        <CustomText
-          className={`mt-1 text-[10px] ${
-            isUser ? "text-emerald-50/80" : "text-zinc-500 dark:text-zinc-400"
-          }`}
-        >
-          {formatTime(message.createdAt)}
-        </CustomText>
+
+        {/* Footer row: time left, copy button right */}
+        <View className="mt-1 flex-row items-center justify-between">
+          <CustomText
+            className={`text-[10px] ${
+              isUser ? "text-emerald-50/80" : "text-zinc-500 dark:text-zinc-400"
+            }`}
+          >
+            {formatTime(message.createdAt)}
+          </CustomText>
+          <TouchableOpacity
+            accessibilityLabel="Copy message"
+            onPress={onCopy}
+            className="p-1.5 rounded-md"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 } as any}
+          >
+            <Ionicons
+              name={copied ? "checkmark-circle" : "copy-outline"}
+              size={14}
+              color={copied ? (isUser ? "#ffffff" : "#22c55e") : iconColor}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
