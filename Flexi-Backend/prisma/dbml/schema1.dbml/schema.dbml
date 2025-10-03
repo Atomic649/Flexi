@@ -47,6 +47,7 @@ Table Member {
   product Product [not null]
   platform Platform [not null]
   store Store [not null]
+  chat ChatSession [not null]
 }
 
 Table BusinessAcc {
@@ -229,6 +230,24 @@ Table Product {
   member Member [not null]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
+}
+
+Table ChatSession {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  userId String [not null]
+  user Member [not null]
+  title String
+  summary String
+  messages ChatMessage [not null]
+}
+
+Table ChatMessage {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  message Json [not null]
+  sessionId String [not null]
+  session ChatSession [not null]
 }
 
 Table Credit {
@@ -577,6 +596,10 @@ Ref: Store.memberId > Member.uniqueId
 Ref: Product.memberId > Member.uniqueId
 
 Ref: Product.businessAcc > BusinessAcc.id
+
+Ref: ChatSession.userId > Member.uniqueId
+
+Ref: ChatMessage.sessionId > ChatSession.id
 
 Ref: Credit.ownerId > User.id
 

@@ -236,6 +236,8 @@ model Member {
   product    Product[]
   platform   Platform[]
   store      Store[]
+  chat      ChatSession[]
+  
 }
 
 model BusinessAcc {
@@ -427,6 +429,23 @@ model Product {
   member      Member        @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])
+}
+
+model ChatSession {
+  id       String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId   String
+  user      Member     @relation(fields: [userId], references: [uniqueId])
+  title     String?
+  summary   String?
+  messages  ChatMessage[]
+}
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  message   Json
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id])
 }
 
 model Credit {

@@ -140,9 +140,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="chat_ai"
         options={{
-          title: t("tabs.settings"),
+          title: t("tabs.chat_ai"),
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <TabIcon

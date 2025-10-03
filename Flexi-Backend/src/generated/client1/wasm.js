@@ -295,6 +295,21 @@ exports.Prisma.ProductScalarFieldEnum = {
   businessAcc: 'businessAcc'
 };
 
+exports.Prisma.ChatSessionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  userId: 'userId',
+  title: 'title',
+  summary: 'summary'
+};
+
+exports.Prisma.ChatMessageScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  message: 'message',
+  sessionId: 'sessionId'
+};
+
 exports.Prisma.CreditScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -415,6 +430,10 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -423,6 +442,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.UserRole = exports.$Enums.UserRole = {
   owner: 'owner',
@@ -600,6 +625,8 @@ exports.Prisma.ModelName = {
   Platform: 'Platform',
   Store: 'Store',
   Product: 'Product',
+  ChatSession: 'ChatSession',
+  ChatMessage: 'ChatMessage',
   Credit: 'Credit',
   Post: 'Post',
   Reaction: 'Reaction',

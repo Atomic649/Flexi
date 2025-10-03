@@ -89,6 +89,8 @@ import b2BRoutes from "./src/routes/B2BRoute";
 
 // Import Print Routes
 import printRoutes from "./src/routes/printRoute";
+// Import AI Chat Routes
+import chatAIRoutes from "./src/routes/chatAIRoute";
 
 // --------------USE ROUTES-----------------
 
@@ -146,16 +148,22 @@ app.use("/b2b", b2BRoutes);
 // Print Routes
 app.use("/print", printRoutes);
 
+// AI Chat Routes
+app.use("/ai", chatAIRoutes);
+
 
 // start server with out SSL
 const port = process.env.PORT || 3000;
-app.listen(port, (err?: Error) => {
+const httpServer = app.listen(port, (err?: Error) => {
   if (err) {
     console.error("Failed to start server:", err);
   } else {
     console.log(`Server started on port ${port}`);
   }
 });
+// Attach WebSocket streaming server
+import { attachChatAIWSServer } from "./src/ws/chatAIWS";
+attachChatAIWSServer(httpServer);
 
 // // --------------START SERVER-----------------
 // //-- Up to .env file "development" and "production" mode

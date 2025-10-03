@@ -157,7 +157,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="profile"
           options={{
-            ...showTopBarAndBackIcon(theme),
+            ...showTopBarAndBackIconRightSetting(theme),
             title: t("profile.Profile"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
@@ -165,7 +165,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="business_info"
           options={{
-            ...showTopBarAndBackIcon(theme),
+            ...showTopBarAndBackIconRightSetting(theme),
             title: t("settings.businessInfo"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
@@ -436,6 +436,35 @@ const showTopBarAndBackToSetting = (theme: string) => ({
     />
   ),
 });
+
+const showTopBarAndBackIconRightSetting = (theme: string) => ({
+  headerShown: true,
+  headerStyle: {
+    backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
+  },
+  headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
+  headerLeft: () => (
+    // Back button
+    <Ionicons
+      name="chevron-back"
+      size={24}
+      color={theme === "dark" ? "#ffffff" : "#18181b"}
+      onPress={() => router.back()}
+    />
+  ),
+
+  headerRight: () => (
+    // Settings button
+    <Ionicons
+      name="settings"
+      size={24}
+      color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+      onPress={() => router.push("/settings")}
+    />
+  ),
+});
+
 
 // Reuseable functions for hiding Top bar
 const HideTopBar = () => ({
