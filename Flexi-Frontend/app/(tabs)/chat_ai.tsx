@@ -10,6 +10,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   View,
@@ -34,44 +35,99 @@ type Message = {
   pending?: boolean; // true when assistant response is streaming
 };
 
-const STORAGE_KEY = "chat_ai_messages_v1";
+type Conversation = {
+  key: string; // local client key
+  sessionId?: string; // server session id
+  title?: string; // server-provided
+  messages: Message[];
+  createdAt: number;
+  updatedAt: number;
+};
+
+const STORAGE_KEY_OLD = "chat_ai_messages_v1";
+const STORAGE_KEY = "chat_ai_conversations_v1";
 
 export default function ChatAI() {
   const { theme } = useTheme();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
-  const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const [useStream, setUseStream] = useState(true);
   const flatListRef = useRef<FlatList<Message>>(null);
 
-  // Initial seed message and restore from storage
+  const createInitialConversation = useCallback((): Conversation => ({
+    key: String(Date.now()),
+    messages: [
+      {
+        id: `${Date.now()}-greet`,
+        role: "assistant",
+        content: "New chat started. Ask me anything!",
+        createdAt: Date.now(),
+      },
+    ],
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }), []);
+
+  const deleteConversation = useCallback(
+    (idx: number) => {
+      setConversations((prev) => {
+        const target = prev[idx];
+        // fire and forget backend clear if sessionId exists
+        if (target?.sessionId) {
+          CallAI.clearSectionMessages(target.sessionId).catch(() => {});
+        }
+        let next = prev.filter((_, i) => i !== idx);
+        if (next.length === 0) {
+          next = [createInitialConversation()];
+        }
+        let newIdx = activeIndex;
+        if (idx === activeIndex) newIdx = Math.min(idx, next.length - 1);
+        else if (idx < activeIndex) newIdx = Math.max(0, activeIndex - 1);
+        setActiveIndex(newIdx);
+        return next;
+      });
+    },
+    [activeIndex, createInitialConversation]
+  );
+
+  // Initial load: restore conversations or migrate from old storage
   useEffect(() => {
     const load = async () => {
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          setMessages(JSON.parse(raw));
+        const rawNew = await AsyncStorage.getItem(STORAGE_KEY);
+        if (rawNew) {
+          const parsed: Conversation[] = JSON.parse(rawNew);
+          setConversations(parsed);
+          return;
+        }
+        // migrate old single-message storage if present
+        const rawOld = await AsyncStorage.getItem(STORAGE_KEY_OLD);
+        if (rawOld) {
+          const oldMsgs: Message[] = JSON.parse(rawOld);
+          const conv: Conversation = {
+            key: String(Date.now()),
+            messages: oldMsgs,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          };
+          setConversations([conv]);
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([conv]));
+          await AsyncStorage.removeItem(STORAGE_KEY_OLD);
           return;
         }
       } catch {}
-      setMessages([
-        {
-          id: String(Date.now()),
-          role: "assistant",
-          content:
-            "Hi! I’m your Flexi AI assistant. Ask me anything about your business data, reports, or features.",
-          createdAt: Date.now(),
-        },
-      ]);
+      // seed with a first conversation and a greeting message
+  setConversations([createInitialConversation()]);
     };
     load();
   }, []);
 
-  // Persist messages
+  // Persist conversations
   useEffect(() => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages)).catch(() => {});
-  }, [messages]);
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)).catch(() => {});
+  }, [conversations]);
 
   const scrollToBottom = useCallback(() => {
     // For inverted FlatList, scroll to index 0 to go to bottom
@@ -79,6 +135,9 @@ export default function ChatAI() {
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     });
   }, []);
+
+  const activeConv = conversations[activeIndex];
+  const sessionId = activeConv?.sessionId;
 
   const onSend = useCallback(async () => {
     const text = input.trim();
@@ -91,7 +150,14 @@ export default function ChatAI() {
       createdAt: Date.now(),
     };
 
-    setMessages((prev) => [userMsg, ...prev]);
+    setConversations((prev) => {
+      const next = [...prev];
+      const conv = { ...next[activeIndex] };
+      conv.messages = [userMsg, ...(conv.messages || [])];
+      conv.updatedAt = Date.now();
+      next[activeIndex] = conv;
+      return next;
+    });
     setInput("");
     scrollToBottom();
 
@@ -100,45 +166,92 @@ export default function ChatAI() {
       if (useStream) {
         // Create a placeholder assistant message we will grow with incoming tokens
         let assistantId = `${Date.now()}-assistant`;
-        setMessages((prev) => [
-          { id: assistantId, role: "assistant", content: "", createdAt: Date.now(), pending: true },
-          ...prev,
-        ]);
+        setConversations((prev) => {
+          const next = [...prev];
+          const conv = { ...next[activeIndex] };
+          conv.messages = [
+            { id: assistantId, role: "assistant", content: "", createdAt: Date.now(), pending: true },
+            ...(conv.messages || []),
+          ];
+          conv.updatedAt = Date.now();
+          next[activeIndex] = conv;
+          return next;
+        });
 
         // Consume SSE stream
   await streamChat({ prompt: text, sessionId }, ({ token, sessionId: sid, title, done, error }: StreamEvent) => {
-          if (sid && !sessionId) setSessionId(sid);
+          if (sid && !sessionId) {
+            setConversations((prev) => {
+              const next = [...prev];
+              const conv = { ...next[activeIndex], sessionId: sid };
+              next[activeIndex] = conv;
+              return next;
+            });
+          }
           if (title) {
-            // title UI not shown here, but could be lifted into state later
+            setConversations((prev) => {
+              const next = [...prev];
+              const conv = { ...next[activeIndex], title };
+              next[activeIndex] = conv;
+              return next;
+            });
           }
           if (error) {
             // Replace assistant placeholder with error text
-            setMessages((prev) => {
-              return prev.map((m) =>
+            setConversations((prev) => {
+              const next = [...prev];
+              const conv = { ...next[activeIndex] };
+              conv.messages = conv.messages.map((m) =>
                 m.id === assistantId ? { ...m, content: "Sorry, streaming failed.", pending: false } : m
               );
+              next[activeIndex] = conv;
+              return next;
             });
           }
           if (typeof token === "string" && token.length) {
-            setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + token } : m)));
+            setConversations((prev) => {
+              const next = [...prev];
+              const conv = { ...next[activeIndex] };
+              conv.messages = conv.messages.map((m) =>
+                m.id === assistantId ? { ...m, content: m.content + token } : m
+              );
+              next[activeIndex] = conv;
+              return next;
+            });
           }
           if (done) {
             // mark assistant message as complete
-            setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, pending: false } : m)));
+            setConversations((prev) => {
+              const next = [...prev];
+              const conv = { ...next[activeIndex] };
+              conv.messages = conv.messages.map((m) =>
+                m.id === assistantId ? { ...m, pending: false } : m
+              );
+              conv.updatedAt = Date.now();
+              next[activeIndex] = conv;
+              return next;
+            });
             scrollToBottom();
           }
         });
       } else {
         // Non-stream fallback
         const { message, sessionId: returnedSessionId } = await CallAI.chat({ prompt: text, sessionId } as any);
-        if (!sessionId && returnedSessionId) setSessionId(returnedSessionId);
         const assistantMsg: Message = {
           id: `${Date.now()}-assistant`,
           role: "assistant",
           content: message || "",
           createdAt: Date.now(),
         };
-        setMessages((prev) => [assistantMsg, ...prev]);
+        setConversations((prev) => {
+          const next = [...prev];
+          const conv = { ...next[activeIndex] };
+          if (!conv.sessionId && returnedSessionId) conv.sessionId = returnedSessionId;
+          conv.messages = [assistantMsg, ...(conv.messages || [])];
+          conv.updatedAt = Date.now();
+          next[activeIndex] = conv;
+          return next;
+        });
         scrollToBottom();
       }
     } catch (e: any) {
@@ -148,11 +261,20 @@ export default function ChatAI() {
         content: "Sorry, I couldn’t get a response. Please try again.",
         createdAt: Date.now(),
       };
-      setMessages((prev) => [assistantMsg, ...prev]);
+      setConversations((prev) => {
+        const next = [...prev];
+        const conv = { ...next[activeIndex] };
+        conv.messages = [assistantMsg, ...(conv.messages || [])];
+        conv.updatedAt = Date.now();
+        next[activeIndex] = conv;
+        return next;
+      });
     } finally {
       setIsThinking(false);
     }
-  }, [input, isThinking, scrollToBottom, messages]);
+  }, [input, isThinking, scrollToBottom, conversations, activeIndex]);
+
+  const messages = useMemo(() => conversations[activeIndex]?.messages ?? [], [conversations, activeIndex]);
 
   const renderItem = useCallback(
     ({ item }: { item: Message }) => (
@@ -196,7 +318,7 @@ export default function ChatAI() {
               color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
             />
             <CustomText weight="semibold" className={`text-lg`}>
-              Flexi AI
+              {(conversations[activeIndex]?.title?.trim() || "Flexi AI")}
             </CustomText>
           </View>
           {isThinking && (
@@ -208,6 +330,60 @@ export default function ChatAI() {
               <CustomText className={`text-xs`}>Thinking…</CustomText>
             </View>
           )}
+        </View>
+
+        {/* Tabs bar */}
+        <View className="border-b border-zinc-200 dark:border-zinc-800">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2 py-2">
+            {conversations.map((c, idx) => {
+              const active = idx === activeIndex;
+              const bg = active ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800";
+              const textColor = active ? "text-white" : theme === "dark" ? "text-zinc-200" : "text-zinc-700";
+              const iconColor = active ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
+              const fallbackLabel = (() => {
+                const m = (c.messages || []).find((mm) => mm.role === "user"); // latest user due to newest-first ordering
+                if (!m) return "New Chat";
+                const s = (m.content || "").trim();
+                if (!s) return "New Chat";
+                return s.length > 24 ? s.slice(0, 24) + "…" : s;
+              })();
+              const label = (c.title && c.title.trim()) ? c.title.trim() : fallbackLabel;
+              return (
+                <View key={c.key} className={`mr-2 rounded-full ${bg}`}>
+                  <View className="flex-row items-center">
+                    <TouchableOpacity onPress={() => setActiveIndex(idx)} className="px-3 py-1.5">
+                      <CustomText weight="semibold" className={`${textColor} text-xs`}>
+                        {label}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      accessibilityLabel="Delete chat section"
+                      onPress={() => deleteConversation(idx)}
+                      disabled={active && isThinking}
+                      className="px-2 py-1.5"
+                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 } as any}
+                    >
+                      <Ionicons name="close" size={12} color={iconColor} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })}
+            <TouchableOpacity
+              onPress={() => {
+                const newConv = createInitialConversation();
+                setConversations((prev) => [newConv, ...prev]);
+                setActiveIndex(0);
+              }}
+              className="px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30"
+              accessibilityLabel="Create new chat section"
+            >
+              <View className="flex-row items-center">
+                <Ionicons name="add" size={14} color={theme === "dark" ? "#34d399" : "#059669"} />
+                <CustomText className="ml-1 text-xs" style={{ color: theme === "dark" ? "#34d399" : "#065f46" }}>New</CustomText>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
 
         {/* Messages */}

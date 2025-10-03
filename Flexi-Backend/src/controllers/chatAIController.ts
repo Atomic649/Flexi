@@ -304,4 +304,35 @@ export async function chatAIStreamWithLangChain(req: Request, res: Response) {
   }
 }
 
+// Clear all ChatMessage records for a given sessionId, keeping ChatSession (title/summary) intact
+export async function clearChatSectionMessages(req: Request, res: Response) {
+  try {
+    const { sessionId } = req.params as { sessionId: string };
+    if (!sessionId) return res.status(400).json({ error: "Missing sessionId" });
+
+    // Resolve member uniqueId from token
+    let memberId: string | undefined;
+    const userPayload: any = (req as any).user;
+    const userNumericId = userPayload?.id;
+    if (userNumericId) {
+      const member = await prisma.member.findFirst({ where: { userId: Number(userNumericId) } });
+      memberId = member?.uniqueId;
+    }
+    if (!memberId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Ensure the session belongs to this user
+    const session = await prisma.chatSession.findUnique({ where: { id: sessionId } });
+    if (!session || session.userId !== memberId) return res.status(404).json({ error: "Session not found" });
+
+    // Delete all messages in this session
+    const del = await prisma.chatMessage.deleteMany({ where: { sessionId } });
+
+    // Keep ChatSession as-is (title/summary retained)
+    return res.json({ ok: true, sessionId, deletedCount: del.count });
+  } catch (err: any) {
+    console.error("/ai/chat/section clear error:", err);
+    return res.status(500).json({ error: err?.message || "Failed to clear messages" });
+  }
+}
+
 

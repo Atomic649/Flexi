@@ -17,6 +17,11 @@ export const CallAI = {
     const { data } = await axios.post("/ai/chat", payload);
     return data;
   },
+  async clearSectionMessages(sessionId: string): Promise<{ ok: boolean; deletedCount: number }>{
+    const axios = await getAxiosWithAuth();
+    const { data } = await axios.delete(`/ai/chat/section/${sessionId}/messages`);
+    return data;
+  }
 };
 
 export type StreamEvent = {
