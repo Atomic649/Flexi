@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import { Platform, useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
 import { marked } from "marked";
@@ -15,7 +15,7 @@ marked.setOptions({
   breaks: true,
 });
 
-export default function MarkdownMessage({ content }: Props) {
+const MarkdownMessage = memo(function MarkdownMessage({ content }: Props) {
   const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -113,4 +113,6 @@ export default function MarkdownMessage({ content }: Props) {
       }}
     />
   );
-}
+});
+
+export default MarkdownMessage;

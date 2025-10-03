@@ -20,12 +20,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "@/components/CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import { CallAI, streamChat, StreamEvent } from "@/api/chat_ai_api";
+import { CallAI, streamChat, StreamEvent, ChatSession, ChatMessageFromServer } from "@/api/chat_ai_api";
 import MarkdownMessage from "@/components/MarkdownMessage";
 import * as Clipboard from "expo-clipboard";
 import i18n from "@/i18n";
+import { getMemberId } from "@/utils/utility";
 
 type Role = "assistant" | "user";
 type Message = {
@@ -36,34 +36,34 @@ type Message = {
   pending?: boolean; // true when assistant response is streaming
 };
 
-type Conversation = {
-  key: string; // local client key
-  sessionId?: string; // server session id
-  title?: string; // server-provided
+type ConversationFromServer = {
+  session: ChatSession;
   messages: Message[];
-  createdAt: number;
-  updatedAt: number;
 };
-
-const STORAGE_KEY_OLD = "chat_ai_messages_v1";
-const STORAGE_KEY = "chat_ai_conversations_v1";
 
 export default function ChatAI() {
   const { theme } = useTheme();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<ConversationFromServer[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [useStream, setUseStream] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const flatListRef = useRef<FlatList<Message>>(null);
 
   // Responsive breakpoint detection
   const screenData = Dimensions.get('window');
   const isLargeScreen = screenData.width >= 768; // Tablet/desktop breakpoint
 
-  const createInitialConversation = useCallback((): Conversation => ({
-    key: String(Date.now()),
+  const createNewConversation = useCallback((): ConversationFromServer => ({
+    session: {
+      id: `temp-${Date.now()}`, // temporary ID until server provides one
+      userId: "", // will be set by server
+      title: undefined,
+      summary: undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
     messages: [
       {
         id: `${Date.now()}-greet`,
@@ -72,21 +72,70 @@ export default function ChatAI() {
         createdAt: Date.now(),
       },
     ],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
   }), []);
+
+  // Load chat history from server
+  const loadChatHistory = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Get current member ID
+      const memberId = await getMemberId();
+      if (!memberId) {
+        console.error("No memberId found, creating new conversation");
+        setConversations([createNewConversation()]);
+        return;
+      }
+
+      // Fetch sessions for this member
+      const sessions = await CallAI.getChatSessions(memberId);
+      
+      if (sessions.length === 0) {
+        // No sessions, create a new one
+        setConversations([createNewConversation()]);
+      } else {
+        // Load sessions and their messages
+        const conversationsWithMessages = await Promise.all(
+          sessions.map(async (session) => {
+            try {
+              const serverMessages = await CallAI.getChatMessages(session.id);
+              const messages: Message[] = serverMessages.map((msg) => ({
+                id: msg.id,
+                role: msg.message.role,
+                content: msg.message.content,
+                createdAt: new Date(msg.createdAt).getTime(),
+              }));
+              return { session, messages };
+            } catch (error) {
+              console.error(`Failed to load messages for session ${session.id}:`, error);
+              return { session, messages: [] };
+            }
+          })
+        );
+        setConversations(conversationsWithMessages);
+        
+        console.log(`Loaded ${conversationsWithMessages.length} chat sessions for member ${memberId}`);
+      }
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+      // Fallback to new conversation
+      setConversations([createNewConversation()]);
+    } finally {
+      setLoading(false);
+    }
+  }, [createNewConversation]);
 
   const deleteConversation = useCallback(
     (idx: number) => {
       setConversations((prev) => {
         const target = prev[idx];
         // fire and forget backend clear if sessionId exists
-        if (target?.sessionId) {
-          CallAI.clearSectionMessages(target.sessionId).catch(() => {});
+        if (target?.session.id && !target.session.id.startsWith('temp-')) {
+          CallAI.clearSectionMessages(target.session.id).catch(() => {});
         }
         let next = prev.filter((_, i) => i !== idx);
         if (next.length === 0) {
-          next = [createInitialConversation()];
+          next = [createNewConversation()];
         }
         let newIdx = activeIndex;
         if (idx === activeIndex) newIdx = Math.min(idx, next.length - 1);
@@ -95,45 +144,13 @@ export default function ChatAI() {
         return next;
       });
     },
-    [activeIndex, createInitialConversation]
+    [activeIndex, createNewConversation]
   );
 
-  // Initial load: restore conversations or migrate from old storage
+  // Load chat history from server on component mount
   useEffect(() => {
-    const load = async () => {
-      try {
-        const rawNew = await AsyncStorage.getItem(STORAGE_KEY);
-        if (rawNew) {
-          const parsed: Conversation[] = JSON.parse(rawNew);
-          setConversations(parsed);
-          return;
-        }
-        // migrate old single-message storage if present
-        const rawOld = await AsyncStorage.getItem(STORAGE_KEY_OLD);
-        if (rawOld) {
-          const oldMsgs: Message[] = JSON.parse(rawOld);
-          const conv: Conversation = {
-            key: String(Date.now()),
-            messages: oldMsgs,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-          };
-          setConversations([conv]);
-          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([conv]));
-          await AsyncStorage.removeItem(STORAGE_KEY_OLD);
-          return;
-        }
-      } catch {}
-      // seed with a first conversation and a greeting message
-  setConversations([createInitialConversation()]);
-    };
-    load();
-  }, []);
-
-  // Persist conversations
-  useEffect(() => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)).catch(() => {});
-  }, [conversations]);
+    loadChatHistory();
+  }, [loadChatHistory]);
 
   const scrollToBottom = useCallback(() => {
     // For inverted FlatList, scroll to index 0 to go to bottom
@@ -143,7 +160,9 @@ export default function ChatAI() {
   }, []);
 
   const activeConv = conversations[activeIndex];
-  const sessionId = activeConv?.sessionId;
+  const sessionId = activeConv?.session.id && !activeConv.session.id.startsWith('temp-') 
+    ? activeConv.session.id 
+    : undefined;
 
   const onSend = useCallback(async () => {
     const text = input.trim();
@@ -160,7 +179,6 @@ export default function ChatAI() {
       const next = [...prev];
       const conv = { ...next[activeIndex] };
       conv.messages = [userMsg, ...(conv.messages || [])];
-      conv.updatedAt = Date.now();
       next[activeIndex] = conv;
       return next;
     });
@@ -179,7 +197,6 @@ export default function ChatAI() {
             { id: assistantId, role: "assistant", content: "", createdAt: Date.now(), pending: true },
             ...(conv.messages || []),
           ];
-          conv.updatedAt = Date.now();
           next[activeIndex] = conv;
           return next;
         });
@@ -189,7 +206,8 @@ export default function ChatAI() {
           if (sid && !sessionId) {
             setConversations((prev) => {
               const next = [...prev];
-              const conv = { ...next[activeIndex], sessionId: sid };
+              const conv = { ...next[activeIndex] };
+              conv.session = { ...conv.session, id: sid };
               next[activeIndex] = conv;
               return next;
             });
@@ -197,7 +215,8 @@ export default function ChatAI() {
           if (title) {
             setConversations((prev) => {
               const next = [...prev];
-              const conv = { ...next[activeIndex], title };
+              const conv = { ...next[activeIndex] };
+              conv.session = { ...conv.session, title };
               next[activeIndex] = conv;
               return next;
             });
@@ -233,7 +252,6 @@ export default function ChatAI() {
               conv.messages = conv.messages.map((m) =>
                 m.id === assistantId ? { ...m, pending: false } : m
               );
-              conv.updatedAt = Date.now();
               next[activeIndex] = conv;
               return next;
             });
@@ -252,9 +270,10 @@ export default function ChatAI() {
         setConversations((prev) => {
           const next = [...prev];
           const conv = { ...next[activeIndex] };
-          if (!conv.sessionId && returnedSessionId) conv.sessionId = returnedSessionId;
+          if (conv.session.id.startsWith('temp-') && returnedSessionId) {
+            conv.session = { ...conv.session, id: returnedSessionId };
+          }
           conv.messages = [assistantMsg, ...(conv.messages || [])];
-          conv.updatedAt = Date.now();
           next[activeIndex] = conv;
           return next;
         });
@@ -271,7 +290,6 @@ export default function ChatAI() {
         const next = [...prev];
         const conv = { ...next[activeIndex] };
         conv.messages = [assistantMsg, ...(conv.messages || [])];
-        conv.updatedAt = Date.now();
         next[activeIndex] = conv;
         return next;
       });
@@ -284,10 +302,12 @@ export default function ChatAI() {
 
   const renderItem = useCallback(
     ({ item }: { item: Message }) => (
-      <ChatBubble key={item.id} message={item} theme={theme} />
+      <ChatBubble message={item} />
     ),
-    [theme]
+    []
   );
+
+  const keyExtractor = useCallback((item: Message) => item.id, []);
 
   const listEmpty = useMemo(
     () => (
@@ -306,8 +326,8 @@ export default function ChatAI() {
   const canSend = input.trim().length > 0 && !isThinking;
 
   // Helper to render conversation label
-  const getConversationLabel = useCallback((c: Conversation) => {
-    if (c.title && c.title.trim()) return c.title.trim();
+  const getConversationLabel = useCallback((c: ConversationFromServer) => {
+    if (c.session.title && c.session.title.trim()) return c.session.title.trim();
     const m = (c.messages || []).find((mm) => mm.role === "user");
     if (!m) return "New Chat";
     const s = (m.content || "").trim();
@@ -336,11 +356,13 @@ export default function ChatAI() {
       <View className="p-3">
         <TouchableOpacity
           onPress={() => {
-            const newConv = createInitialConversation();
+            const newConv = createNewConversation();
             setConversations((prev) => [newConv, ...prev]);
             setActiveIndex(0);
           }}
-          className="flex-row items-center justify-center gap-2 px-4 py-3 rounded-lg bg-teal-300 dark:bg-teal-900/30"
+          className={`flex-row items-center justify-center gap-2 px-4 py-3 rounded-lg ${
+            theme === "dark" ? "bg-teal-900/30" : "bg-teal-300"
+          }`}
           accessibilityLabel="Create new chat section"
         >
           <Ionicons name="add" size={16} color={theme === "dark" ? "#34d399" : "#059669"} />
@@ -357,9 +379,13 @@ export default function ChatAI() {
           const label = getConversationLabel(c);
           return (
             <View
-              key={c.key}
+              key={c.session.id}
               className={`mb-2 rounded-lg ${
-                active ? "bg-teal-100 dark:bg-teal-900/30" : "bg-transparent"
+                active 
+                  ? theme === "dark" 
+                    ? "bg-teal-900/30" 
+                    : "bg-teal-100" 
+                  : "bg-transparent"
               }`}
             >
               <TouchableOpacity
@@ -382,13 +408,13 @@ export default function ChatAI() {
                   >
                     {label}
                   </CustomText>
-                  {c.updatedAt && (
+                  {c.session.updatedAt && (
                     <CustomText
                       className={`text-xs mt-1 ${
                         theme === "dark" ? "text-zinc-400" : "text-zinc-500"
                       }`}
                     >
-                      {new Date(c.updatedAt).toLocaleDateString()}
+                      {new Date(c.session.updatedAt).toLocaleDateString()}
                     </CustomText>
                   )}
                 </View>
@@ -419,13 +445,17 @@ export default function ChatAI() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2 py-2">
         {conversations.map((c, idx) => {
           const active = idx === activeIndex;
-          const bg = active ? "bg-teal-300" : "bg-zinc-200 dark:bg-zinc-800";
+          const bg = active 
+            ? "bg-teal-300" 
+            : theme === "dark" 
+              ? "bg-zinc-800" 
+              : "bg-zinc-200";
           const textColor = active ? "text-white" : theme === "dark" ? "text-zinc-200" : "text-zinc-700";
           const iconColor = active ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
           const label = getConversationLabel(c);
           const shortLabel = label.length > 24 ? label.slice(0, 24) + "…" : label;
           return (
-            <View key={c.key} className={`mr-2 rounded-full ${bg}`}>
+            <View key={c.session.id} className={`mr-2 rounded-full ${bg}`}>
               <View className="flex-row items-center">
                 <TouchableOpacity onPress={() => setActiveIndex(idx)} className="px-3 py-1.5">
                   <CustomText weight="semibold" className={`${textColor} text-xs pt-1`}>
@@ -447,11 +477,13 @@ export default function ChatAI() {
         })}
         <TouchableOpacity
           onPress={() => {
-            const newConv = createInitialConversation();
+            const newConv = createNewConversation();
             setConversations((prev) => [newConv, ...prev]);
             setActiveIndex(0);
           }}
-          className="px-3 py-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30"
+          className={`px-3 py-1.5 rounded-full ${
+            theme === "dark" ? "bg-teal-900/30" : "bg-teal-100"
+          }`}
           accessibilityLabel="Create new chat section"
         >
           <View className="flex-row items-center">
@@ -513,7 +545,7 @@ export default function ChatAI() {
             {isLargeScreen && (
               <View className="px-4 py-2 flex-row items-center justify-between border-b border-zinc-200 dark:border-zinc-800">
                 <CustomText weight="semibold" className="text-lg">
-                  {conversations[activeIndex]?.title?.trim() || "New Chat"}
+                  {conversations[activeIndex]?.session.title?.trim() || "New Chat"}
                 </CustomText>
                 {isThinking && (
                   <View className="flex-row items-center gap-2">
@@ -528,20 +560,31 @@ export default function ChatAI() {
             )}
 
         {/* Messages */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          inverted
-          keyExtractor={(m) => m.id}
-          renderItem={renderItem}
-          ListEmptyComponent={listEmpty}
-          contentContainerStyle={{ padding: 12, gap: 8 }}
-          keyboardShouldPersistTaps="handled"
-        />
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color={theme === "dark" ? "#34d399" : "#059669"} />
+            <CustomText className="mt-2 text-center">Loading chat history...</CustomText>
+          </View>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            inverted
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            ListEmptyComponent={listEmpty}
+            contentContainerStyle={{ padding: 12, gap: 8 }}
+            keyboardShouldPersistTaps="handled"
+          />
+        )}
 
         {/* Composer */}
         <View className="px-3 pb-2">
-          <View className="flex-row items-end gap-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-3 py-2 bg-white dark:bg-zinc-900">
+          <View className={`flex-row items-end gap-2 rounded-2xl border px-3 py-2 ${
+            theme === "dark" 
+              ? "border-zinc-800 bg-zinc-900" 
+              : "border-zinc-200 bg-white"
+          }`}>
             <TouchableOpacity
               className="p-2 rounded-xl"
               accessibilityLabel="More actions"
@@ -579,7 +622,11 @@ export default function ChatAI() {
               onPress={onSend}
               disabled={!canSend}
               className={`p-2 rounded-xl ${
-                canSend ? "bg-teal-300" : "bg-zinc-300 dark:bg-zinc-700"
+                canSend 
+                  ? "bg-teal-300" 
+                  : theme === "dark" 
+                    ? "bg-zinc-700" 
+                    : "bg-zinc-300"
               }`}
               accessibilityLabel="Send message"
             >
@@ -595,7 +642,9 @@ export default function ChatAI() {
 
           {/* Typing bubble */}
           {isThinking && (
-            <View className="mt-2 self-start max-w-[85%] rounded-2xl bg-zinc-100 dark:bg-zinc-800 px-3 py-2">
+            <View className={`mt-2 self-start max-w-[85%] rounded-2xl px-3 py-2 ${
+              theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"
+            }`}>
               <TypingDots theme={theme} />
             </View>
           )}
@@ -607,15 +656,14 @@ export default function ChatAI() {
   );
 }
 
-function ChatBubble({
-  message,
-  theme,
+const ChatBubble = React.memo(function ChatBubble({
+  message,  
 }: {
   message: Message;
-  theme: "light" | "dark";
 }) {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
+  const { theme } = useTheme();
 
   const onCopy = useCallback(async () => {
     try {
@@ -635,7 +683,9 @@ function ChatBubble({
         className={`max-w-[85%] px-3 py-2 rounded-2xl ${
           isUser
             ? "bg-teal-300 rounded-br-sm"
-            : "bg-zinc-100 dark:bg-zinc-800 rounded-bl-sm"
+            : theme === "dark" 
+              ? "bg-zinc-800 rounded-bl-sm"
+              : "bg-zinc-100 rounded-bl-sm"
         }`}
       >
         {isUser ? (
@@ -685,9 +735,9 @@ function ChatBubble({
       </View>
     </View>
   );
-}
+});
 
-function TypingDots({ theme }: { theme: "light" | "dark" }) {
+const TypingDots = React.memo(function TypingDots({ theme }: { theme: "light" | "dark" }) {
   const dotColor = theme === "dark" ? "#d4d4d8" : "#52525b";
   return (
     <View className="flex-row items-center gap-1">
@@ -705,7 +755,7 @@ function TypingDots({ theme }: { theme: "light" | "dark" }) {
       ))}
     </View>
   );
-}
+});
 
 function formatTime(ts: number) {
   const d = new Date(ts);

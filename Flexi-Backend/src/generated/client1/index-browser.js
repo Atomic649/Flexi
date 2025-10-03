@@ -298,6 +298,7 @@ exports.Prisma.ProductScalarFieldEnum = {
 exports.Prisma.ChatSessionScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   userId: 'userId',
   title: 'title',
   summary: 'summary'

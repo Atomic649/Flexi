@@ -5,6 +5,25 @@ import { getToken } from "@/utils/utility";
 export type ChatRole = "user" | "assistant" | "system";
 export type ChatMessage = { role: ChatRole; content: string };
 
+export type ChatSession = {
+  id: string;
+  userId: string;
+  title?: string;
+  summary?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ChatMessageFromServer = {
+  id: string;
+  sessionId: string;
+  message: {
+    role: "user" | "assistant";
+    content: string;
+  };
+  createdAt: string;
+};
+
 export const CallAI = {
   async chat(payload: {
     messages?: ChatMessage[];
@@ -20,6 +39,17 @@ export const CallAI = {
   async clearSectionMessages(sessionId: string): Promise<{ ok: boolean; deletedCount: number }>{
     const axios = await getAxiosWithAuth();
     const { data } = await axios.delete(`/ai/chat/section/${sessionId}/messages`);
+    return data;
+  },
+  async getChatSessions(memberId?: string): Promise<ChatSession[]> {
+    const axios = await getAxiosWithAuth();
+    const url = memberId ? `/ai/chat/sessions/${memberId}` : "/ai/chat/sessions";
+    const { data } = await axios.get(url);
+    return data;
+  },
+  async getChatMessages(sessionId: string): Promise<ChatMessageFromServer[]> {
+    const axios = await getAxiosWithAuth();
+    const { data } = await axios.get(`/ai/chat/session/${sessionId}/messages`);
     return data;
   }
 };
