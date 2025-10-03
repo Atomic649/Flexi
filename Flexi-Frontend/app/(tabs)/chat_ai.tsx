@@ -306,7 +306,8 @@ function ChatBubble({
     } catch {}
   }, [message.content]);
 
-  const iconColor = isUser ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
+  // Make copy icon color match the message text color
+  const messageTextColor = theme === "dark" ? "#b4b3b3" : "#2a2a2a";
   const showCopy = isUser || !message.pending;
 
   return (
@@ -354,7 +355,8 @@ function ChatBubble({
               <Ionicons
                 name={copied ? "checkmark-circle" : "copy-outline"}
                 size={14}
-                color={copied ? (isUser ? "#ffffff" : "#22c55e") : iconColor}
+                color={messageTextColor}
+                opacity={copied ? 0.9 : 0.6}
               />
             </TouchableOpacity>
           ) : (
