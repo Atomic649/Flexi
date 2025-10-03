@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -54,7 +55,12 @@ export default function ChatAI() {
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [useStream, setUseStream] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const flatListRef = useRef<FlatList<Message>>(null);
+
+  // Responsive breakpoint detection
+  const screenData = Dimensions.get('window');
+  const isLargeScreen = screenData.width >= 768; // Tablet/desktop breakpoint
 
   const createInitialConversation = useCallback((): Conversation => ({
     key: String(Date.now()),
@@ -299,92 +305,227 @@ export default function ChatAI() {
 
   const canSend = input.trim().length > 0 && !isThinking;
 
+  // Helper to render conversation label
+  const getConversationLabel = useCallback((c: Conversation) => {
+    if (c.title && c.title.trim()) return c.title.trim();
+    const m = (c.messages || []).find((mm) => mm.role === "user");
+    if (!m) return "New Chat";
+    const s = (m.content || "").trim();
+    if (!s) return "New Chat";
+    return s.length > 50 ? s.slice(0, 50) + "…" : s;
+  }, []);
+
+  // Sidebar for large screens
+  const renderSidebar = () => (
+    <View className={`w-80 border-r border-zinc-200 dark:border-zinc-800 ${useBackgroundColorClass()}`}>
+      {/* Sidebar Header */}
+      <View className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+        <View className="flex-row items-center gap-2">
+          <Ionicons
+            name="sparkles-outline"
+            size={20}
+            color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
+          />
+          <CustomText weight="semibold" className="text-lg">
+            Flexi AI
+          </CustomText>
+        </View>
+      </View>
+
+      {/* New Chat Button */}
+      <View className="p-3">
+        <TouchableOpacity
+          onPress={() => {
+            const newConv = createInitialConversation();
+            setConversations((prev) => [newConv, ...prev]);
+            setActiveIndex(0);
+          }}
+          className="flex-row items-center justify-center gap-2 px-4 py-3 rounded-lg bg-teal-300 dark:bg-teal-900/30"
+          accessibilityLabel="Create new chat section"
+        >
+          <Ionicons name="add" size={16} color={theme === "dark" ? "#34d399" : "#059669"} />
+          <CustomText weight="semibold" style={{ color: theme === "dark" ? "#34d399" : "#065f46" }}>
+            New Chat
+          </CustomText>
+        </TouchableOpacity>
+      </View>
+
+      {/* Chat History */}
+      <ScrollView className="flex-1 px-3">
+        {conversations.map((c, idx) => {
+          const active = idx === activeIndex;
+          const label = getConversationLabel(c);
+          return (
+            <View
+              key={c.key}
+              className={`mb-2 rounded-lg ${
+                active ? "bg-teal-100 dark:bg-teal-900/30" : "bg-transparent"
+              }`}
+            >
+              <TouchableOpacity
+                onPress={() => setActiveIndex(idx)}
+                className="p-3 flex-row items-center justify-between"
+              >
+                <View className="flex-1 mr-3">
+                  <CustomText
+                    weight={active ? "semibold" : "regular"}
+                    className={`text-sm ${
+                      active
+                        ? theme === "dark"
+                          ? "text-teal-300"
+                          : "text-teal-700"
+                        : theme === "dark"
+                        ? "text-zinc-200"
+                        : "text-zinc-700"
+                    }`}
+                    numberOfLines={2}
+                  >
+                    {label}
+                  </CustomText>
+                  {c.updatedAt && (
+                    <CustomText
+                      className={`text-xs mt-1 ${
+                        theme === "dark" ? "text-zinc-400" : "text-zinc-500"
+                      }`}
+                    >
+                      {new Date(c.updatedAt).toLocaleDateString()}
+                    </CustomText>
+                  )}
+                </View>
+                <TouchableOpacity
+                  accessibilityLabel="Delete chat section"
+                  onPress={() => deleteConversation(idx)}
+                  disabled={active && isThinking}
+                  className="p-1"
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 } as any}
+                >
+                  <Ionicons
+                    name="close"
+                    size={14}
+                    color={theme === "dark" ? "#9ca3af" : "#6b7280"}
+                  />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+
+  // Mobile horizontal tabs
+  const renderMobileTabs = () => (
+    <View className="border-b border-zinc-200 dark:border-zinc-800">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2 py-2">
+        {conversations.map((c, idx) => {
+          const active = idx === activeIndex;
+          const bg = active ? "bg-teal-300" : "bg-zinc-200 dark:bg-zinc-800";
+          const textColor = active ? "text-white" : theme === "dark" ? "text-zinc-200" : "text-zinc-700";
+          const iconColor = active ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
+          const label = getConversationLabel(c);
+          const shortLabel = label.length > 24 ? label.slice(0, 24) + "…" : label;
+          return (
+            <View key={c.key} className={`mr-2 rounded-full ${bg}`}>
+              <View className="flex-row items-center">
+                <TouchableOpacity onPress={() => setActiveIndex(idx)} className="px-3 py-1.5">
+                  <CustomText weight="semibold" className={`${textColor} text-xs pt-1`}>
+                    {shortLabel}
+                  </CustomText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  accessibilityLabel="Delete chat section"
+                  onPress={() => deleteConversation(idx)}
+                  disabled={active && isThinking}
+                  className="px-2 py-1.5"
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 } as any}
+                >
+                  <Ionicons name="close" size={12} color={iconColor} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          );
+        })}
+        <TouchableOpacity
+          onPress={() => {
+            const newConv = createInitialConversation();
+            setConversations((prev) => [newConv, ...prev]);
+            setActiveIndex(0);
+          }}
+          className="px-3 py-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30"
+          accessibilityLabel="Create new chat section"
+        >
+          <View className="flex-row items-center">
+            <Ionicons name="add" size={14} color={theme === "dark" ? "#34d399" : "#059669"} />
+            <CustomText className="ml-1 text-xs pt-1" style={{ color: theme === "dark" ? "#34d399" : "#065f46" }}>
+              New
+            </CustomText>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
       className={`flex-1 ${useBackgroundColorClass()}`}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 85 : 0}
-        className="flex-1"
-      >
-        {/* Header */}
-        <View className="px-4 py-2 flex-row items-center justify-between border-b border-zinc-200 dark:border-zinc-800">
-          <View className="flex-row items-center gap-2">
-            <Ionicons
-              name="sparkles-outline"
-              size={22}
-              color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
-            />
-            <CustomText weight="semibold" className={`text-lg`}>
-              {(conversations[activeIndex]?.title?.trim() || "Flexi AI")}
-            </CustomText>
-          </View>
-          {isThinking && (
-            <View className="flex-row items-center gap-2">
-              <ActivityIndicator
-                size="small"
-                color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
-              />
-              <CustomText className={`text-xs`}>Thinking…</CustomText>
-            </View>
-          )}
-        </View>
+      <View className="flex-1 flex-row">
+        {/* Sidebar for large screens */}
+        {isLargeScreen && renderSidebar()}
 
-        {/* Tabs bar */}
-        <View className="border-b border-zinc-200 dark:border-zinc-800">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2 py-2">
-            {conversations.map((c, idx) => {
-              const active = idx === activeIndex;
-              const bg = active ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800";
-              const textColor = active ? "text-white" : theme === "dark" ? "text-zinc-200" : "text-zinc-700";
-              const iconColor = active ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
-              const fallbackLabel = (() => {
-                const m = (c.messages || []).find((mm) => mm.role === "user"); // latest user due to newest-first ordering
-                if (!m) return "New Chat";
-                const s = (m.content || "").trim();
-                if (!s) return "New Chat";
-                return s.length > 24 ? s.slice(0, 24) + "…" : s;
-              })();
-              const label = (c.title && c.title.trim()) ? c.title.trim() : fallbackLabel;
-              return (
-                <View key={c.key} className={`mr-2 rounded-full ${bg}`}>
-                  <View className="flex-row items-center">
-                    <TouchableOpacity onPress={() => setActiveIndex(idx)} className="px-3 py-1.5">
-                      <CustomText weight="semibold" className={`${textColor} text-xs`}>
-                        {label}
-                      </CustomText>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      accessibilityLabel="Delete chat section"
-                      onPress={() => deleteConversation(idx)}
-                      disabled={active && isThinking}
-                      className="px-2 py-1.5"
-                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 } as any}
-                    >
-                      <Ionicons name="close" size={12} color={iconColor} />
-                    </TouchableOpacity>
-                  </View>
+        {/* Main chat area */}
+        <View className="flex-1">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 85 : 0}
+            className="flex-1"
+          >
+            {/* Header for mobile (large screens have sidebar header) */}
+            {/* {!isLargeScreen && (
+              <View className="px-4 py-2 flex-row items-center justify-between border-b border-zinc-200 dark:border-zinc-800">
+                <View className="flex-row items-center gap-2">
+                  <Ionicons
+                    name="sparkles-outline"
+                    size={22}
+                    color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
+                  />
+                  <CustomText weight="semibold" className="text-lg">
+                    {conversations[activeIndex]?.title?.trim() || "Flexi AI"}
+                  </CustomText>
                 </View>
-              );
-            })}
-            <TouchableOpacity
-              onPress={() => {
-                const newConv = createInitialConversation();
-                setConversations((prev) => [newConv, ...prev]);
-                setActiveIndex(0);
-              }}
-              className="px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30"
-              accessibilityLabel="Create new chat section"
-            >
-              <View className="flex-row items-center">
-                <Ionicons name="add" size={14} color={theme === "dark" ? "#34d399" : "#059669"} />
-                <CustomText className="ml-1 text-xs" style={{ color: theme === "dark" ? "#34d399" : "#065f46" }}>New</CustomText>
+                {isThinking && (
+                  <View className="flex-row items-center gap-2">
+                    <ActivityIndicator
+                      size="small"
+                      color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
+                    />
+                    <CustomText className="text-xs">Thinking…</CustomText>
+                  </View>
+                )}
               </View>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
+            )} */}
+
+            {/* Mobile tabs */}
+            {!isLargeScreen && renderMobileTabs()}
+
+            {/* Large screen header with current chat title */}
+            {isLargeScreen && (
+              <View className="px-4 py-2 flex-row items-center justify-between border-b border-zinc-200 dark:border-zinc-800">
+                <CustomText weight="semibold" className="text-lg">
+                  {conversations[activeIndex]?.title?.trim() || "New Chat"}
+                </CustomText>
+                {isThinking && (
+                  <View className="flex-row items-center gap-2">
+                    <ActivityIndicator
+                      size="small"
+                      color={theme === "dark" ? "#a1a1aa" : "#3f3f46"}
+                    />
+                    <CustomText className="text-xs">Thinking…</CustomText>
+                  </View>
+                )}
+              </View>
+            )}
 
         {/* Messages */}
         <FlatList
@@ -458,8 +599,10 @@ export default function ChatAI() {
               <TypingDots theme={theme} />
             </View>
           )}
+            </View>
+          </KeyboardAvoidingView>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
