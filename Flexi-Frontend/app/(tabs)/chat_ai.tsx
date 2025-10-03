@@ -20,9 +20,10 @@ import { CustomText } from "@/components/CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import { CallAI, ChatMessage, streamChat, StreamEvent } from "@/api/chat_ai_api";
+import { CallAI, streamChat, StreamEvent } from "@/api/chat_ai_api";
 import MarkdownMessage from "@/components/MarkdownMessage";
 import * as Clipboard from "expo-clipboard";
+import i18n from "@/i18n";
 
 type Role = "assistant" | "user";
 type Message = {
@@ -30,6 +31,7 @@ type Message = {
   role: Role;
   content: string;
   createdAt: number;
+  pending?: boolean; // true when assistant response is streaming
 };
 
 const STORAGE_KEY = "chat_ai_messages_v1";
@@ -99,7 +101,7 @@ export default function ChatAI() {
         // Create a placeholder assistant message we will grow with incoming tokens
         let assistantId = `${Date.now()}-assistant`;
         setMessages((prev) => [
-          { id: assistantId, role: "assistant", content: "", createdAt: Date.now() },
+          { id: assistantId, role: "assistant", content: "", createdAt: Date.now(), pending: true },
           ...prev,
         ]);
 
@@ -112,13 +114,17 @@ export default function ChatAI() {
           if (error) {
             // Replace assistant placeholder with error text
             setMessages((prev) => {
-              return prev.map((m) => (m.id === assistantId ? { ...m, content: "Sorry, streaming failed." } : m));
+              return prev.map((m) =>
+                m.id === assistantId ? { ...m, content: "Sorry, streaming failed.", pending: false } : m
+              );
             });
           }
           if (typeof token === "string" && token.length) {
             setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + token } : m)));
           }
           if (done) {
+            // mark assistant message as complete
+            setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, pending: false } : m)));
             scrollToBottom();
           }
         });
@@ -236,7 +242,16 @@ export default function ChatAI() {
               placeholder="Type your message"
               placeholderTextColor={theme === "dark" ? "#71717a" : "#a1a1aa"}
               multiline
-              className={`flex-1 max-h-36 min-h-[40px] text-base`}
+              className={`flex-1 pt-3 max-h-36 min-h-[40px] text-base`}
+              style={[
+          {
+            fontFamily:
+              i18n.language === "th"
+                ? "IBMPlexSansThai-Medium"
+                : "Poppins-Regular",
+            color: theme === "dark" ? "#ffffff" : "#000000",
+          },
+        ]}
               autoCapitalize="sentences"
               autoCorrect
               returnKeyType="send"
@@ -247,7 +262,7 @@ export default function ChatAI() {
               onPress={onSend}
               disabled={!canSend}
               className={`p-2 rounded-xl ${
-                canSend ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700"
+                canSend ? "bg-teal-300" : "bg-zinc-300 dark:bg-zinc-700"
               }`}
               accessibilityLabel="Send message"
             >
@@ -292,6 +307,7 @@ function ChatBubble({
   }, [message.content]);
 
   const iconColor = isUser ? "#ffffff" : theme === "dark" ? "#d4d4d8" : "#52525b";
+  const showCopy = isUser || !message.pending;
 
   return (
     <View className={`w-full flex-row ${isUser ? "justify-end" : "justify-start"}`}>
@@ -328,18 +344,22 @@ function ChatBubble({
           >
             {formatTime(message.createdAt)}
           </CustomText>
-          <TouchableOpacity
-            accessibilityLabel="Copy message"
-            onPress={onCopy}
-            className="p-1.5 rounded-md"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 } as any}
-          >
-            <Ionicons
-              name={copied ? "checkmark-circle" : "copy-outline"}
-              size={14}
-              color={copied ? (isUser ? "#ffffff" : "#22c55e") : iconColor}
-            />
-          </TouchableOpacity>
+          {showCopy ? (
+            <TouchableOpacity
+              accessibilityLabel="Copy message"
+              onPress={onCopy}
+              className="p-1.5 rounded-md"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 } as any}
+            >
+              <Ionicons
+                name={copied ? "checkmark-circle" : "copy-outline"}
+                size={14}
+                color={copied ? (isUser ? "#ffffff" : "#22c55e") : iconColor}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={{ width: 16, height: 16 }} />
+          )}
         </View>
       </View>
     </View>
