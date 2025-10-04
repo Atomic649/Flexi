@@ -207,6 +207,7 @@ export default function ChatAI() {
     setIsThinking(true);
     try {
       if (useStream) {
+        console.log("🚀 [FRONTEND] About to call streamChat with:", { prompt: text, sessionId });
         // Create a placeholder assistant message we will grow with incoming tokens
         let assistantId = `${Date.now()}-assistant`;
         setConversations((prev) => {

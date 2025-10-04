@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
-// Removed AI SDK based implementation; we use LangChain as default
-// import { openai } from "@ai-sdk/openai";
-// import { generateText, ModelMessage } from "ai";
 import { ChatOpenAI } from "@langchain/openai";
+import { AgentExecutor, createOpenAIToolsAgent } from "langchain/agents";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
+import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { createSalesAnalyticsTool } from "./toolChatAIController";
+// chatAIController.ts - Main AI chat functionality
 
 const prisma = new PrismaClient1();
 
@@ -23,9 +28,7 @@ function coerceTemperature(t?: any) {
   return 0.3;
 }
 
-// Removed AI SDK chatAI() implementation
-
-export async function chatAIWithLangChain(req: Request, res: Response) {
+export const chatAIWithLangChain = async (req: Request, res: Response) => {
   if (!ensureEnv(res)) return;
   try {
     const {
@@ -36,6 +39,7 @@ export async function chatAIWithLangChain(req: Request, res: Response) {
       system,
       temperature,
     } = req.body || {};
+
 
     // Resolve member uniqueId to attach session; if not provided, try from token's user id
     let memberId: string | undefined =
@@ -66,13 +70,58 @@ export async function chatAIWithLangChain(req: Request, res: Response) {
 
     const sysPrompt =
       system ||
-      "You are Flexi AI for Flexi Business Hub. Be concise, actionable, and helpful. Use short sentences and avoid fluff.";
+      `You are Flexi AI. You MUST ALWAYS use the getSalesAnalytics tool for ANY question about sales, money, or business data.
+
+🚨 CRITICAL: The getSalesAnalytics tool provides REAL-TIME database data. NEVER rely on chat history for sales figures - always fetch fresh data from the database.
+
+MANDATORY: ALWAYS call getSalesAnalytics tool for ANY mention of:
+- sales, revenue, money, earnings, income
+- business performance, analytics, reports
+- today, yesterday, this month, last month
+- numbers, amounts, totals, figures
+- "how much", "what's my", "show me"
+
+WORKFLOW:
+1. When user asks about sales/money: IMMEDIATELY call getSalesAnalytics tool
+2. Use ONLY the data returned from the tool - ignore any sales figures from chat history
+3. The tool data is ALWAYS the current, accurate database information
+
+NEVER say "I can't access your data" - ALWAYS use the getSalesAnalytics tool first.`;
+
+    // Create sales analytics tool
+    const salesTool = createSalesAnalyticsTool(memberId!);
 
     const llm = new ChatOpenAI({
       model: MODEL_NAME,
-      temperature: coerceTemperature(temperature),
+      temperature: 0.3, // Balanced temperature for tool usage
       apiKey: process.env.OPENAI_API_KEY,
     });
+
+    // Create prompt template for the agent
+    const agentPrompt = ChatPromptTemplate.fromMessages([
+      ["system", sysPrompt],
+      new MessagesPlaceholder("chat_history"),
+      ["human", "{input}"],
+      new MessagesPlaceholder("agent_scratchpad"),
+    ]);
+
+    // Create the agent
+    const agent = await createOpenAIToolsAgent({
+      llm,
+      tools: [salesTool],
+      prompt: agentPrompt,
+    });
+
+    // Create agent executor
+    const agentExecutor = new AgentExecutor({
+      agent,
+      tools: [salesTool],
+      verbose: true,
+      maxIterations: 3,
+      returnIntermediateSteps: true,
+    });
+    
+
 
     // Normalize incoming user content
     let userContent = "";
@@ -110,16 +159,27 @@ export async function chatAIWithLangChain(req: Request, res: Response) {
       })),
     ];
 
-    // Get assistant reply
-    const resp = await llm.invoke(lcMessages as any);
-    const text =
-      typeof (resp as any)?.content === "string"
-        ? (resp as any).content
-        : Array.isArray((resp as any)?.content)
-        ? (resp as any).content
-            .map((c: any) => c?.text || c?.content || "")
-            .join("\n")
-        : "";
+
+
+    // Convert history to the format expected by agent
+    const chatHistory = history.map((m) => {
+      const msg = m.message as any;
+      if (msg.role === "user") {
+        return new HumanMessage(msg.content);
+      } else {
+        return new AIMessage(msg.content);
+      }
+    });
+
+    // Get assistant reply using agent executor
+
+    
+    const resp = await agentExecutor.invoke({
+      input: userContent,
+      chat_history: chatHistory,
+    });
+    
+    const text = resp.output || "";
 
     // Store assistant message
     await prisma.chatMessage.create({
@@ -232,7 +292,7 @@ export async function chatAIWithLangChain(req: Request, res: Response) {
   }
 }
 
-export async function chatAIStreamWithLangChain(req: Request, res: Response) {
+export const chatAIStreamWithLangChain = async (req: Request, res: Response) => {
   if (!ensureEnv(res)) return;
   // SSE headers
   res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
@@ -291,14 +351,59 @@ export async function chatAIStreamWithLangChain(req: Request, res: Response) {
 
     const sysPrompt =
       system ||
-      "You are Flexi AI for Flexi Business Hub. Be concise, actionable, and helpful. Use short sentences and avoid fluff.";
+      `You are Flexi AI. You MUST ALWAYS use the getSalesAnalytics tool for ANY question about sales, money, or business data.
+
+🚨 CRITICAL: The getSalesAnalytics tool provides REAL-TIME database data. NEVER rely on chat history for sales figures - always fetch fresh data from the database.
+
+MANDATORY: ALWAYS call getSalesAnalytics tool for ANY mention of:
+- sales, revenue, money, earnings, income
+- business performance, analytics, reports
+- today, yesterday, this month, last month
+- numbers, amounts, totals, figures
+- "how much", "what's my", "show me"
+
+WORKFLOW:
+1. When user asks about sales/money: IMMEDIATELY call getSalesAnalytics tool
+2. Use ONLY the data returned from the tool - ignore any sales figures from chat history
+3. The tool data is ALWAYS the current, accurate database information
+
+NEVER say "I can't access your data" - ALWAYS use the getSalesAnalytics tool first.`;
+
+    // Create sales analytics tool
+    const salesTool = createSalesAnalyticsTool(memberId!);
 
     const llm = new ChatOpenAI({
       model: MODEL_NAME,
-      temperature: coerceTemperature(temperature),
+      temperature: 0.3, // Balanced temperature for tool usage
       apiKey: process.env.OPENAI_API_KEY,
       streaming: true,
     });
+
+    // Create prompt template for the agent
+    const agentPrompt = ChatPromptTemplate.fromMessages([
+      ["system", sysPrompt],
+      new MessagesPlaceholder("chat_history"),
+      ["human", "{input}"],
+      new MessagesPlaceholder("agent_scratchpad"),
+    ]);
+
+    // Create the agent
+    const agent = await createOpenAIToolsAgent({
+      llm,
+      tools: [salesTool],
+      prompt: agentPrompt,
+    });
+
+    // Create agent executor
+    const agentExecutor = new AgentExecutor({
+      agent,
+      tools: [salesTool],
+      verbose: true,
+      maxIterations: 3,
+      returnIntermediateSteps: true,
+    });
+    
+
 
     // Determine user content
     let userContent = "";
@@ -322,36 +427,79 @@ export async function chatAIStreamWithLangChain(req: Request, res: Response) {
       },
     });
 
-    // Load history and build LC messages
+    // Load history and convert to agent format
     const history = await prisma.chatMessage.findMany({
       where: { sessionId },
       orderBy: { createdAt: "asc" },
       take: 30,
     });
-    const lcMessages = [
-      { role: "system", content: sysPrompt },
-      ...history.map((m) => ({
-        role: (m.message as any).role,
-        content: (m.message as any).content,
-      })),
-    ];
 
-    // Stream tokens
-    let fullText = "";
-    const stream = await llm.stream(lcMessages as any);
-    for await (const chunk of stream) {
-      const piece =
-        typeof (chunk as any)?.content === "string"
-          ? (chunk as any).content
-          : Array.isArray((chunk as any)?.content)
-          ? (chunk as any).content
-              .map((c: any) => c?.text || c?.content || "")
-              .join("")
-          : "";
-      if (piece) {
-        fullText += piece;
-        send({ token: piece });
+    // Convert history to the format expected by agent
+    const chatHistory = history.map((m) => {
+      const msg = m.message as any;
+      if (msg.role === "user") {
+        return new HumanMessage(msg.content);
+      } else {
+        return new AIMessage(msg.content);
       }
+    });
+
+
+
+    // Use agent executor with proper streaming handling
+
+    
+    let fullText = "";
+    let hasError = false;
+    let toolsWereCalled = false;
+    
+    try {
+      // Stream from agent executor
+      const stream = await agentExecutor.stream({
+        input: userContent,
+        chat_history: chatHistory,
+      });
+
+      console.log("� [STREAM] Agent stream created, processing chunks...");
+
+      for await (const chunk of stream) {
+
+        
+        // Handle different chunk types
+        if (chunk.output) {
+          // Final output from agent
+          fullText += chunk.output;
+          
+          // Check for database errors
+          if (chunk.output.includes('DATABASE_CONNECTION_ERROR') || 
+              chunk.output.includes('ไม่สามารถเข้าถึงฐานข้อมูลได้')) {
+            hasError = true;
+            const friendlyMessage = 'Sorry, I cannot access the database right now. Please try again later.';
+            send({ token: friendlyMessage });
+            fullText = friendlyMessage;
+          } else {
+            // Stream the output in small chunks for better UX
+            const chunkSize = 3;
+            for (let i = 0; i < chunk.output.length; i += chunkSize) {
+              const piece = chunk.output.slice(i, i + chunkSize);
+              send({ token: piece });
+              // Small delay for smoother streaming
+              await new Promise(resolve => setTimeout(resolve, 15));
+            }
+          }
+        } else if (chunk.intermediate_steps) {
+          // Tool execution steps
+          toolsWereCalled = true;
+        }
+      }
+
+
+
+    } catch (streamError) {
+      console.error("❌ [STREAM] Streaming error:", streamError);
+      hasError = true;
+      fullText = "Sorry, there was an error processing your request. Please try again.";
+      send({ token: fullText });
     }
 
     // Persist assistant message
@@ -496,9 +644,9 @@ export async function getChatSessions(req: Request, res: Response) {
 
     // Get all non-deleted sessions for this member, ordered by most recently updated
     const sessions = await prisma.chatSession.findMany({
-      where: { 
+      where: {
         userId: memberId,
-        deleted: false  // Only show non-deleted sessions
+        deleted: false, // Only show non-deleted sessions
       },
       orderBy: { updatedAt: "desc" },
       take: 50, // Limit to 50 most recent sessions
@@ -595,11 +743,19 @@ export async function clearChatSectionMessages(req: Request, res: Response) {
       data: { deleted: true },
     });
 
-    return res.json({ ok: true, sessionId, deletedCount: del.count, deleted: true });
+    return res.json({
+      ok: true,
+      sessionId,
+      deletedCount: del.count,
+      deleted: true,
+    });
   } catch (err: any) {
     console.error("/ai/chat/section clear error:", err);
     return res
       .status(500)
-      .json({ error: err?.message || "Failed to clear messages and soft delete session" });
+      .json({
+        error:
+          err?.message || "Failed to clear messages and soft delete session",
+      });
   }
 }
