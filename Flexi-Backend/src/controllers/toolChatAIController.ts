@@ -83,14 +83,48 @@ export async function getSelectiveSalesData(memberId: string, period: SalesPerio
     return { lastMonth: await aggregate(memberId, range(lastMonthStart, thisMonthStart)) };
   }
   if (period === "last3Months") {
-    const thisMonthStart = startOfMonth(now);
-    const start3 = new Date(thisMonthStart.getFullYear(), thisMonthStart.getMonth() - 3, 1);
-    return { last3Months: await aggregate(memberId, range(start3, thisMonthStart)) };
+    // Include current (possibly partial) month plus previous two months
+    const currentMonthStart = startOfMonth(now);
+    const start3 = new Date(currentMonthStart.getFullYear(), currentMonthStart.getMonth() - 2, 1); // -2 => total span of 3 months including current
+    const nextMonthStart = startOfNextMonth(now);
+    const totalAgg = await aggregate(memberId, range(start3, nextMonthStart));
+    const monthBreakdowns: any[] = [];
+    for (let i = 0; i < 3; i++) {
+      const mStart = new Date(start3.getFullYear(), start3.getMonth() + i, 1);
+      const mEnd = new Date(start3.getFullYear(), start3.getMonth() + i + 1, 1);
+      const agg = await aggregate(memberId, range(mStart, mEnd));
+      monthBreakdowns.push({
+        month: mStart.getMonth() + 1,
+        year: mStart.getFullYear(),
+        label: `${mStart.getFullYear()}-${String(mStart.getMonth() + 1).padStart(2, '0')}`,
+        amount: agg.amount,
+        count: agg.count,
+        isCurrent: mStart.getTime() === currentMonthStart.getTime(),
+      });
+    }
+    return { last3Months: totalAgg, breakdown: monthBreakdowns, includedCurrentMonth: true };
   }
   if (period === "last6Months") {
-    const thisMonthStart = startOfMonth(now);
-    const start6 = new Date(thisMonthStart.getFullYear(), thisMonthStart.getMonth() - 6, 1);
-    return { last6Months: await aggregate(memberId, range(start6, thisMonthStart)) };
+    // Include current (possibly partial) month + previous 5 months
+    const currentMonthStart = startOfMonth(now);
+    const start6 = new Date(currentMonthStart.getFullYear(), currentMonthStart.getMonth() - 5, 1); // -5 => span 6 months including current
+    const nextMonthStart = startOfNextMonth(now);
+    const totalAgg = await aggregate(memberId, range(start6, nextMonthStart));
+    const monthBreakdowns: any[] = [];
+    for (let i = 0; i < 6; i++) {
+      const mStart = new Date(start6.getFullYear(), start6.getMonth() + i, 1);
+      const mEnd = new Date(start6.getFullYear(), start6.getMonth() + i + 1, 1);
+      const agg = await aggregate(memberId, range(mStart, mEnd));
+      monthBreakdowns.push({
+        month: mStart.getMonth() + 1,
+        year: mStart.getFullYear(),
+        label: `${mStart.getFullYear()}-${String(mStart.getMonth() + 1).padStart(2, '0')}`,
+        amount: agg.amount,
+        count: agg.count,
+        isCurrent: mStart.getTime() === currentMonthStart.getTime(),
+      });
+    }
+    return { last6Months: totalAgg, breakdown6: monthBreakdowns, includedCurrentMonth: true };
   }
   if (period === "lastYear") {
     const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
@@ -111,15 +145,15 @@ export async function getSelectiveSalesData(memberId: string, period: SalesPerio
 }
 
 function inferPeriod(raw: string): SalesPeriod {
-  const t = raw.toLowerCase();
-  if (/(today|วันนี้)/.test(t)) return "today";
-  if (/(yesterday|เมื่อวาน)/.test(t)) return "yesterday";
-  if (/(this month|เดือนนี้)/.test(t)) return "thisMonth";
-  if (/(last month|เดือนที่แล้ว)/.test(t)) return "lastMonth";
-  if (/(3 months|สามเดือน|quarter)/.test(t)) return "last3Months";
-  if (/(6 months|หกเดือน)/.test(t)) return "last6Months";
-  if (/(last year|ปีที่แล้ว|ปีก่อน)/.test(t)) return "lastYear";
-  if (/(all|overall|summary|ภาพรวม|performance|ยอดขาย)/.test(t)) return "summary";
+  const t = raw.toLowerCase().replace(/\s+/g, " ");
+  if (/(^|\b)(today|วันนี้)(\b|$)/.test(t)) return "today";
+  if (/(^|\b)(yesterday|เมื่อวาน)(\b|$)/.test(t)) return "yesterday";
+  if (/(this month|เดือนนี้|current month)/.test(t)) return "thisMonth";
+  if (/(last month|เดือนที่แล้ว|previous month)/.test(t)) return "lastMonth";
+  if (/((last|previous)\s*3\s*months|last3months|3\s*months|สามเดือน|ย้อนหลัง\s*3\s*เดือน|quarter)/.test(t)) return "last3Months";
+  if (/((last|previous)\s*6\s*months|last6months|6\s*months|หกเดือน|ย้อนหลัง\s*6\s*เดือน)/.test(t)) return "last6Months";
+  if (/(last year|ปีที่แล้ว|ปีก่อน|previous year)/.test(t)) return "lastYear";
+  if (/(all|overall|summary|ภาพรวม|performance|ยอดขายรวม)/.test(t)) return "summary";
   return "today";
 }
 
@@ -217,6 +251,22 @@ export function createSalesAnalyticsTool(memberId: string) {
         }
         if (period === "summary") {
           return "Summary fetched (today + month + 3/6 months + last year). Ask a specific period for lower cost.";
+        }
+        if (period === "last3Months") {
+          const d: any = data;
+          if (d.breakdown) {
+            const lines = d.breakdown.map((m: any) => `- ${m.label}: ${m.amount.toLocaleString()} THB (${m.count} orders)`).join("\n");
+            return `Last 3 Months (incl. current) Total: ${d.last3Months.amount.toLocaleString()} THB (${d.last3Months.count} orders)\n\nBreakdown:\n${lines}`;
+          }
+          return JSON.stringify(d);
+        }
+        if (period === "last6Months") {
+          const d: any = data;
+          if (d.breakdown6) {
+            const lines = d.breakdown6.map((m: any) => `- ${m.label}: ${m.amount.toLocaleString()} THB (${m.count} orders)`).join("\n");
+            return `Last 6 Months (incl. current) Total: ${d.last6Months.amount.toLocaleString()} THB (${d.last6Months.count} orders)\n\nBreakdown:\n${lines}`;
+          }
+          return JSON.stringify(d);
         }
         return JSON.stringify(data);
       } catch (e: any) {
