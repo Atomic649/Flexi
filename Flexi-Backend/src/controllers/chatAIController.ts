@@ -494,9 +494,12 @@ export async function getChatSessions(req: Request, res: Response) {
         .status(401)
         .json({ error: "Missing memberId or unauthorized" });
 
-    // Get all sessions for this member, ordered by most recently updated
+    // Get all non-deleted sessions for this member, ordered by most recently updated
     const sessions = await prisma.chatSession.findMany({
-      where: { userId: memberId },
+      where: { 
+        userId: memberId,
+        deleted: false  // Only show non-deleted sessions
+      },
       orderBy: { updatedAt: "desc" },
       take: 50, // Limit to 50 most recent sessions
       select: {
@@ -536,11 +539,11 @@ export async function getChatMessages(req: Request, res: Response) {
     }
     if (!memberId) return res.status(401).json({ error: "Unauthorized" });
 
-    // Ensure the session belongs to this user
+    // Ensure the session belongs to this user and is not deleted
     const session = await prisma.chatSession.findUnique({
       where: { id: sessionId },
     });
-    if (!session || session.userId !== memberId)
+    if (!session || session.userId !== memberId || session.deleted)
       return res.status(404).json({ error: "Session not found" });
 
     // Get all messages for this session
@@ -558,7 +561,7 @@ export async function getChatMessages(req: Request, res: Response) {
   }
 }
 
-// Clear all ChatMessage records for a given sessionId, keeping ChatSession (title/summary) intact
+// Clear all ChatMessage records for a given sessionId and soft delete ChatSession
 export async function clearChatSectionMessages(req: Request, res: Response) {
   try {
     const { sessionId } = req.params as { sessionId: string };
@@ -586,12 +589,17 @@ export async function clearChatSectionMessages(req: Request, res: Response) {
     // Delete all messages in this session
     const del = await prisma.chatMessage.deleteMany({ where: { sessionId } });
 
-    // Keep ChatSession as-is (title/summary retained)
-    return res.json({ ok: true, sessionId, deletedCount: del.count });
+    // Soft delete the session by setting deleted = true
+    await prisma.chatSession.update({
+      where: { id: sessionId },
+      data: { deleted: true },
+    });
+
+    return res.json({ ok: true, sessionId, deletedCount: del.count, deleted: true });
   } catch (err: any) {
     console.error("/ai/chat/section clear error:", err);
     return res
       .status(500)
-      .json({ error: err?.message || "Failed to clear messages" });
+      .json({ error: err?.message || "Failed to clear messages and soft delete session" });
   }
 }

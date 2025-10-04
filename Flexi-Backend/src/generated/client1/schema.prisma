@@ -439,6 +439,7 @@ model ChatSession {
   title     String?
   summary   String?
   messages  ChatMessage[]
+  deleted   Boolean?      @default(false)
 }
 
 model ChatMessage {

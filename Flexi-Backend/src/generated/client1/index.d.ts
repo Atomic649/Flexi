@@ -17115,6 +17115,7 @@ export namespace Prisma {
     userId: string | null
     title: string | null
     summary: string | null
+    deleted: boolean | null
   }
 
   export type ChatSessionMaxAggregateOutputType = {
@@ -17124,6 +17125,7 @@ export namespace Prisma {
     userId: string | null
     title: string | null
     summary: string | null
+    deleted: boolean | null
   }
 
   export type ChatSessionCountAggregateOutputType = {
@@ -17133,6 +17135,7 @@ export namespace Prisma {
     userId: number
     title: number
     summary: number
+    deleted: number
     _all: number
   }
 
@@ -17144,6 +17147,7 @@ export namespace Prisma {
     userId?: true
     title?: true
     summary?: true
+    deleted?: true
   }
 
   export type ChatSessionMaxAggregateInputType = {
@@ -17153,6 +17157,7 @@ export namespace Prisma {
     userId?: true
     title?: true
     summary?: true
+    deleted?: true
   }
 
   export type ChatSessionCountAggregateInputType = {
@@ -17162,6 +17167,7 @@ export namespace Prisma {
     userId?: true
     title?: true
     summary?: true
+    deleted?: true
     _all?: true
   }
 
@@ -17244,6 +17250,7 @@ export namespace Prisma {
     userId: string
     title: string | null
     summary: string | null
+    deleted: boolean | null
     _count: ChatSessionCountAggregateOutputType | null
     _min: ChatSessionMinAggregateOutputType | null
     _max: ChatSessionMaxAggregateOutputType | null
@@ -17270,6 +17277,7 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     summary?: boolean
+    deleted?: boolean
     user?: boolean | MemberDefaultArgs<ExtArgs>
     messages?: boolean | ChatSession$messagesArgs<ExtArgs>
     _count?: boolean | ChatSessionCountOutputTypeDefaultArgs<ExtArgs>
@@ -17282,6 +17290,7 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     summary?: boolean
+    deleted?: boolean
     user?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chatSession"]>
 
@@ -17292,6 +17301,7 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     summary?: boolean
+    deleted?: boolean
     user?: boolean | MemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chatSession"]>
 
@@ -17302,9 +17312,10 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     summary?: boolean
+    deleted?: boolean
   }
 
-  export type ChatSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "userId" | "title" | "summary", ExtArgs["result"]["chatSession"]>
+  export type ChatSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "userId" | "title" | "summary" | "deleted", ExtArgs["result"]["chatSession"]>
   export type ChatSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | MemberDefaultArgs<ExtArgs>
     messages?: boolean | ChatSession$messagesArgs<ExtArgs>
@@ -17330,6 +17341,7 @@ export namespace Prisma {
       userId: string
       title: string | null
       summary: string | null
+      deleted: boolean | null
     }, ExtArgs["result"]["chatSession"]>
     composites: {}
   }
@@ -17761,6 +17773,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"ChatSession", 'String'>
     readonly title: FieldRef<"ChatSession", 'String'>
     readonly summary: FieldRef<"ChatSession", 'String'>
+    readonly deleted: FieldRef<"ChatSession", 'Boolean'>
   }
     
 
@@ -32241,7 +32254,8 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     userId: 'userId',
     title: 'title',
-    summary: 'summary'
+    summary: 'summary',
+    deleted: 'deleted'
   };
 
   export type ChatSessionScalarFieldEnum = (typeof ChatSessionScalarFieldEnum)[keyof typeof ChatSessionScalarFieldEnum]
@@ -33978,6 +33992,7 @@ export namespace Prisma {
     userId?: StringFilter<"ChatSession"> | string
     title?: StringNullableFilter<"ChatSession"> | string | null
     summary?: StringNullableFilter<"ChatSession"> | string | null
+    deleted?: BoolNullableFilter<"ChatSession"> | boolean | null
     user?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     messages?: ChatMessageListRelationFilter
   }
@@ -33989,6 +34004,7 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrderInput | SortOrder
     summary?: SortOrderInput | SortOrder
+    deleted?: SortOrderInput | SortOrder
     user?: MemberOrderByWithRelationInput
     messages?: ChatMessageOrderByRelationAggregateInput
   }
@@ -34003,6 +34019,7 @@ export namespace Prisma {
     userId?: StringFilter<"ChatSession"> | string
     title?: StringNullableFilter<"ChatSession"> | string | null
     summary?: StringNullableFilter<"ChatSession"> | string | null
+    deleted?: BoolNullableFilter<"ChatSession"> | boolean | null
     user?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     messages?: ChatMessageListRelationFilter
   }, "id">
@@ -34014,6 +34031,7 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrderInput | SortOrder
     summary?: SortOrderInput | SortOrder
+    deleted?: SortOrderInput | SortOrder
     _count?: ChatSessionCountOrderByAggregateInput
     _max?: ChatSessionMaxOrderByAggregateInput
     _min?: ChatSessionMinOrderByAggregateInput
@@ -34029,6 +34047,7 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"ChatSession"> | string
     title?: StringNullableWithAggregatesFilter<"ChatSession"> | string | null
     summary?: StringNullableWithAggregatesFilter<"ChatSession"> | string | null
+    deleted?: BoolNullableWithAggregatesFilter<"ChatSession"> | boolean | null
   }
 
   export type ChatMessageWhereInput = {
@@ -36226,6 +36245,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
     user: MemberCreateNestedOneWithoutChatInput
     messages?: ChatMessageCreateNestedManyWithoutSessionInput
   }
@@ -36237,6 +36257,7 @@ export namespace Prisma {
     userId: string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
     messages?: ChatMessageUncheckedCreateNestedManyWithoutSessionInput
   }
 
@@ -36246,6 +36267,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: MemberUpdateOneRequiredWithoutChatNestedInput
     messages?: ChatMessageUpdateManyWithoutSessionNestedInput
   }
@@ -36257,6 +36279,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     messages?: ChatMessageUncheckedUpdateManyWithoutSessionNestedInput
   }
 
@@ -36267,6 +36290,7 @@ export namespace Prisma {
     userId: string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
   }
 
   export type ChatSessionUpdateManyMutationInput = {
@@ -36275,6 +36299,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type ChatSessionUncheckedUpdateManyInput = {
@@ -36284,6 +36309,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type ChatMessageCreateInput = {
@@ -38514,6 +38540,7 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     summary?: SortOrder
+    deleted?: SortOrder
   }
 
   export type ChatSessionMaxOrderByAggregateInput = {
@@ -38523,6 +38550,7 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     summary?: SortOrder
+    deleted?: SortOrder
   }
 
   export type ChatSessionMinOrderByAggregateInput = {
@@ -38532,6 +38560,7 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     summary?: SortOrder
+    deleted?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -43596,6 +43625,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
     messages?: ChatMessageCreateNestedManyWithoutSessionInput
   }
 
@@ -43605,6 +43635,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
     messages?: ChatMessageUncheckedCreateNestedManyWithoutSessionInput
   }
 
@@ -44007,6 +44038,7 @@ export namespace Prisma {
     userId?: StringFilter<"ChatSession"> | string
     title?: StringNullableFilter<"ChatSession"> | string | null
     summary?: StringNullableFilter<"ChatSession"> | string | null
+    deleted?: BoolNullableFilter<"ChatSession"> | boolean | null
   }
 
   export type UserCreateWithoutBusinessInput = {
@@ -46650,6 +46682,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
     user: MemberCreateNestedOneWithoutChatInput
   }
 
@@ -46660,6 +46693,7 @@ export namespace Prisma {
     userId: string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
   }
 
   export type ChatSessionCreateOrConnectWithoutMessagesInput = {
@@ -46684,6 +46718,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: MemberUpdateOneRequiredWithoutChatNestedInput
   }
 
@@ -46694,6 +46729,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type UserCreateWithoutOwnerInput = {
@@ -49700,6 +49736,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     title?: string | null
     summary?: string | null
+    deleted?: boolean | null
   }
 
   export type BillUpdateWithoutMemberInput = {
@@ -50063,6 +50100,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     messages?: ChatMessageUpdateManyWithoutSessionNestedInput
   }
 
@@ -50072,6 +50110,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     messages?: ChatMessageUncheckedUpdateManyWithoutSessionNestedInput
   }
 
@@ -50081,6 +50120,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type MemberCreateManyBusinessInput = {

@@ -301,7 +301,8 @@ exports.Prisma.ChatSessionScalarFieldEnum = {
   updatedAt: 'updatedAt',
   userId: 'userId',
   title: 'title',
-  summary: 'summary'
+  summary: 'summary',
+  deleted: 'deleted'
 };
 
 exports.Prisma.ChatMessageScalarFieldEnum = {

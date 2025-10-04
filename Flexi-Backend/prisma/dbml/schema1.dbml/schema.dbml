@@ -241,6 +241,7 @@ Table ChatSession {
   title String
   summary String
   messages ChatMessage [not null]
+  deleted Boolean [default: false]
 }
 
 Table ChatMessage {
