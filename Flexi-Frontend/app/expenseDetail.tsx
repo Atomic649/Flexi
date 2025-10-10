@@ -25,7 +25,6 @@ import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
 import {
-  calculateVatFromGross,
   formatNumber,
   reverseCalculateFromFinal,
   DEFAULT_VAT_PERCENT,
@@ -669,6 +668,7 @@ export default function ExpenseDetail({
                         }
                       }}
                       disabled={group === "Fuel"}
+                      activeOpacity={1} // Prevent fade effect on press
                     >
                       <Ionicons
                         name={vatIncluded ? "checkbox" : "square-outline"}
@@ -713,6 +713,7 @@ export default function ExpenseDetail({
                           }
                         }}
                         disabled={group === "Fuel"}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
                           name={withHoldingTax ? "checkbox" : "square-outline"}
@@ -812,6 +813,7 @@ export default function ExpenseDetail({
                           setTaxType("Individual");
                           setBranch("");
                         }}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
                           name={
@@ -837,6 +839,7 @@ export default function ExpenseDetail({
                             setTaxType("Juristic");
                             setBranch("headOffice");
                           }}
+                          activeOpacity={1} // Prevent fade effect on press
                         >
                           <Ionicons
                             name={
@@ -1012,6 +1015,7 @@ export default function ExpenseDetail({
                         key={key}
                         onPress={() => setGroup(key)}
                         className={groupButtonClass(key)}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <CustomText>{label}</CustomText>
                       </TouchableOpacity>

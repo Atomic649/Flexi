@@ -480,6 +480,7 @@ const ByOrder = () => {
             {getBillsToDisplay(date, groupedBills[date]).map((bill) => (
               <TouchableOpacity
                 key={bill.id}
+                activeOpacity={1} // Prevent fade effect on press
                 onPress={() =>
                   router.push({
                     pathname: "/editBill",

@@ -1674,6 +1674,7 @@ export default function CreateExpense({
                           setVatIncluded(!vatIncluded);
                         }
                       }}
+                      activeOpacity={1} // Prevent fade effect on press
                       disabled={group === "Fuel"}
                     >
                       <Ionicons
@@ -1701,6 +1702,7 @@ export default function CreateExpense({
                           }
                         }}
                         disabled={group === "Fuel"}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
                           name={withHoldingTax ? "checkbox" : "square-outline"}
@@ -1780,6 +1782,7 @@ export default function CreateExpense({
                           setTaxType("Individual");
                           setBranch("");
                         }}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
                           name={
@@ -1804,6 +1807,7 @@ export default function CreateExpense({
                           setTaxType("Juristic");
                           setBranch("headOffice");
                         }}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
                           name={
@@ -1978,6 +1982,7 @@ export default function CreateExpense({
                         key={key}
                         onPress={() => setGroup(key)}
                         className={groupButtonClass(key)}
+                        activeOpacity={1} // Prevent fade effect on press
                       >
                         <CustomText>{label}</CustomText>
                       </TouchableOpacity>

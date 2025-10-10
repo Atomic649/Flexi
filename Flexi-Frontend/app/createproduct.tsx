@@ -2,8 +2,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  SafeAreaView,
-  Dimensions,
   Platform,
   Text,
 } from "react-native";

@@ -249,7 +249,7 @@ export default function EditProduct() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}`}>
+    <View className={`flex-1 ${useBackgroundColorClass()}`}>
       <ScrollView>
         <View
           className={`flex-1 justify-center h-full px-4 py-5 pb-20 ${
@@ -389,6 +389,6 @@ export default function EditProduct() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }
