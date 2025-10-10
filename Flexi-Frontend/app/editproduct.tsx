@@ -1,4 +1,4 @@
-import { ScrollView, TouchableOpacity, Image, SafeAreaView, Platform } from "react-native";
+import { ScrollView, TouchableOpacity, Image, Platform } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import {CustomButton} from "@/components/CustomButton";

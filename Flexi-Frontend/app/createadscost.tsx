@@ -20,12 +20,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Dropdown2 from "@/components/Dropdown2";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import CallAPIProduct from "@/api/product_api";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
-import { format } from "date-fns";
-import { th } from "date-fns/locale"; // Import Thai locale if needed
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {

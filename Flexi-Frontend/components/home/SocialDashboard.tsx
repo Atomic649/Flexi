@@ -1,7 +1,6 @@
 import {
   View,
   ScrollView,
-  SafeAreaView,
   Modal,
   TouchableOpacity,
   Platform,
@@ -22,7 +21,7 @@ import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import { router } from "expo-router";
-import { isDesktop, isMobile } from "@/utils/responsive";
+import { isDesktop } from "@/utils/responsive";
 import CallAPIStore from "@/api/store_api";
 export default function SocialDashboard() {
   const { theme } = useTheme();

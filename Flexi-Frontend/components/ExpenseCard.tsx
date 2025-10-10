@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import icons from "@/constants/icons";
 import { useRouter } from "expo-router";
 import { CustomText } from "./CustomText";
 import { useTheme } from "@/providers/ThemeProvider";

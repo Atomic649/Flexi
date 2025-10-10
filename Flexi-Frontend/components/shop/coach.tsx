@@ -1,11 +1,9 @@
 import {
   View, 
   ScrollView,
-  Platform,
   Dimensions,
   ActivityIndicator,
   RefreshControl,
-  SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { useTheme } from "@/providers/ThemeProvider";

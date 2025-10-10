@@ -7,7 +7,7 @@ import {
   Platform,
   Dimensions,
 } from "react-native";
-import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
+import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
 import CallAPIReport from "@/api/report_api";
 import { useTheme } from "@/providers/ThemeProvider";

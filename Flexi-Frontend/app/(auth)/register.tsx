@@ -1,6 +1,5 @@
 import {
   ScrollView,
-  Image,
   Dimensions,
   KeyboardAvoidingView,
   Platform,

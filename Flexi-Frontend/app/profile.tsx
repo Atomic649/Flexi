@@ -1,6 +1,5 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useState, useEffect } from "react";
-
 import {
   Text,
   TouchableOpacity,

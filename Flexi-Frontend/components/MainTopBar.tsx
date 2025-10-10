@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, TouchableOpacity, Image, Text, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { CustomText } from "@/components/CustomText";

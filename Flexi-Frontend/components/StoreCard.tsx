@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";

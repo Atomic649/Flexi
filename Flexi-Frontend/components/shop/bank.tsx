@@ -1,7 +1,6 @@
 import {
   View, 
   ScrollView,
-  SafeAreaView,
   Dimensions,
   ActivityIndicator,
   RefreshControl,

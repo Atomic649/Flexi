@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Platform, SafeAreaView, TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { Dimensions } from "react-native";

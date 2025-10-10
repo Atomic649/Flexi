@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   Pressable,
-  SafeAreaView,
   Switch,
   Platform,
   Dimensions,

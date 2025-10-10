@@ -7,9 +7,7 @@ import {
   Dimensions,
   Platform,
   TextInput,
-  SafeAreaView,
 } from "react-native";
-
 import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
 import * as FileSystem from "expo-file-system/legacy";
@@ -273,7 +271,7 @@ export default function DetectExpense() {
   };
 
   return (
-    <SafeAreaView
+    <View
       className={`h-full ${useBackgroundColorClass()} items-center`}
     >
       <View
@@ -512,6 +510,6 @@ export default function DetectExpense() {
         buttons={alertButtons}
         onClose={() => setAlertVisible(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }

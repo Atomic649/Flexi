@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { SafeAreaView, TouchableOpacity, View, Platform } from "react-native";
+import React, { useState } from "react";
+import { TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { Dimensions } from "react-native";
@@ -9,8 +9,6 @@ import list from "../../components/expense/list";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import { useFocusEffect } from "expo-router";
-//import { useFocusEffect } from '@expo/navigation-ex/src/useFocusEffect';
-
 const Expense = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();

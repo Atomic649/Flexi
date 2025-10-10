@@ -3,7 +3,6 @@ import {
   ScrollView,  
   Modal,
   TouchableOpacity,
-  Platform,
   Dimensions,
   Image,
 } from "react-native";
@@ -17,7 +16,6 @@ import LineCard from "@/components/home/elements/LineCard";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import DashboardAds from "@/components/B2BAds";
 import { LinearGradient } from "expo-linear-gradient";
 import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";

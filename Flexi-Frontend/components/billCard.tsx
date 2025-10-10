@@ -10,7 +10,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -201,7 +200,7 @@ export default function BillCard({
       onPress={onPress} // Normal press for navigation
       onLongPress={handleLongPress}
       delayLongPress={500}
-      activeOpacity={0.9}
+      activeOpacity={0.5}
     >
       <View
         className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
@@ -333,7 +332,7 @@ export default function BillCard({
     </TouchableOpacity>
   );
 
-  // Wrap in SafeSwipeable if update function is provided and currentDocumentType is not "Receipt"
+  
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
       <>
@@ -345,11 +344,7 @@ export default function BillCard({
             alignSelf: "center",
           }}
         >
-          <Swipeable 
-            renderLeftActions={renderLeftActions}
-          >
             {cardContent}
-          </Swipeable>
         </View>
 
         {/* Action Menu Modal for Long Press */}
@@ -366,7 +361,7 @@ export default function BillCard({
               alignItems: "center",
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
-            activeOpacity={1}
+            activeOpacity={0.8}
             onPress={() => setShowActionMenu(false)}
           >
             <View
@@ -383,18 +378,6 @@ export default function BillCard({
                 elevation: 5,
               }}
             >
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  color: cNameColor,
-                  marginBottom: 15,
-                  textAlign: "center",
-                }}
-              >
-                {t("bill.updateStatus") || "Update Status"}
-              </Text>
-
               {/* Customer Confirm Button */}
               {currentDocumentType !== "Invoice" && (
                 <TouchableOpacity
@@ -413,9 +396,9 @@ export default function BillCard({
                   }}
                 >
                   <Ionicons name="checkmark-circle" size={24} color={iconColor} style={{ marginRight: 10 }} />
-                  <Text style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                  <CustomText style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
                     {t("bill.confirm") || "Customer Confirmed"}
-                  </Text>
+                  </CustomText>
                 </TouchableOpacity>
               )}
 
@@ -437,9 +420,9 @@ export default function BillCard({
                   }}
                 >
                   <Ionicons name="cash" size={24} color={iconColor} style={{ marginRight: 10 }} />
-                  <Text style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                  <CustomText style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
                     {t("bill.paid") || "Customer Paid"}
-                  </Text>
+                  </CustomText>
                 </TouchableOpacity>
               )}
 
@@ -454,9 +437,9 @@ export default function BillCard({
                   borderColor: cNameColor,
                 }}
               >
-                <Text style={{ color: cNameColor, fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+                <CustomText style={{ color: cNameColor, fontSize: 16, fontWeight: "600", textAlign: "center" }}>
                   {t("common.cancel") || "Cancel"}
-                </Text>
+                </CustomText>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -465,7 +448,7 @@ export default function BillCard({
     );
   }
 
-  // Return plain card if no swipe functionality needed or if currentDocumentType is "Receipt"
+  // Return plain card 
   return (
     <View
       style={{

@@ -1,7 +1,6 @@
 import {
   View, 
   ScrollView,
-  Platform,
   Dimensions,
   ActivityIndicator,
   RefreshControl,

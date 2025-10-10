@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import {
   ScrollView,
-  SafeAreaView,
   View,
   TouchableOpacity,
   Modal,
   Platform,
   ActivityIndicator,
-  DimensionValue,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";

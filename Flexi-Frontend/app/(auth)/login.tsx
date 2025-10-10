@@ -23,7 +23,6 @@ import {
   saveUserId,
 } from "@/utils/utility";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
-import ForgotPassword from "./forgot_password";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {

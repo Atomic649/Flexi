@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
-  Platform,
   Dimensions,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";

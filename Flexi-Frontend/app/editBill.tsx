@@ -1,7 +1,6 @@
 import {
   Dimensions,
   Platform,
-  SafeAreaView,
   Modal,
   TouchableOpacity,
   ScrollView,
@@ -1085,16 +1084,16 @@ export default function EditBill() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}`}>
+      <View className={`flex-1 ${useBackgroundColorClass()}`}>
         <View className="flex-1 justify-center items-center">
           <CustomText>{t("common.loading")}</CustomText>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView
+    <View
       className={`flex-1 ${useBackgroundColorClass()}`}
       style={{
         minHeight: Dimensions.get("window").height,
@@ -2041,6 +2040,6 @@ export default function EditBill() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }

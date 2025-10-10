@@ -3,7 +3,6 @@ import {
   TouchableOpacity,
   Image,
   Platform,
-  Text,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";

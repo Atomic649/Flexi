@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TextInput } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import CallAPIUser from '@/api/auth_api';
 import { useTranslation } from 'react-i18next';
 export default function ForgotPassword() {

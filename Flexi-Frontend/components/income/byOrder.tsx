@@ -18,7 +18,7 @@ import { getMemberId } from "@/utils/utility";
 import BillCard from "../billCard";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { router } from "expo-router";
 import { getResponsiveStyles, isDesktop, isMobileWeb } from "@/utils/responsive";

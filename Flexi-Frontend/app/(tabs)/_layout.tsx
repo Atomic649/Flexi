@@ -1,5 +1,5 @@
 import React from "react";
-import { router, Slot, Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { icons, images } from "@/constants";
 import {
   View,

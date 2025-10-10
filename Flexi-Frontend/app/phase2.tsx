@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { images } from "@/constants";
 import { router } from "expo-router";
 import {CustomButton} from "@/components/CustomButton";

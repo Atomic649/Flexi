@@ -1,7 +1,5 @@
 import {
   ScrollView,
-  Dimensions,
-  SafeAreaView,
   View,
   Text,
   TextInput,
