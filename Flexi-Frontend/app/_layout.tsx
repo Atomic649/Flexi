@@ -326,6 +326,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* Chat AI */}
+      <Stack.Screen
+        name="chat_ai"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("chatAI.title"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* mobileWeb */}
       <Stack.Screen
         name="mobileweb"

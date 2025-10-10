@@ -4,7 +4,7 @@ import { icons, images } from "@/constants";
 import {
   View,
   Image,
-  Platform,  
+  Platform,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
@@ -58,9 +58,9 @@ const TabIcon = ({
             // Color Icon of Middle Tab
             tintColor={size === "large" ? "#ffffff" : color}
             className={size === "large" ? "w-9 h-9  " : "w-9 h-7"}
-            style={{            
-              width: Platform.OS === "web" ?  18:28,
-              height: Platform.OS === "web" ?  18:28,
+            style={{
+              width: Platform.OS === "web" ? 18 : 28,
+              height: Platform.OS === "web" ? 18 : 28,
             }}
           />
         )}
@@ -68,7 +68,6 @@ const TabIcon = ({
     </View>
   );
 };
-
 
 // Mock window object for non-web environments
 if (Platform.OS !== "web" && typeof global.window === "undefined") {
@@ -92,17 +91,17 @@ export default function TabLayout() {
         tabBarInactiveTintColor: tabBarInactiveTintColor,
         tabBarShowLabel: true,
         tabBarLabelStyle: {
-          fontSize: Dimensions.get("window").width > 768  ? 16 : 12,
+          fontSize: Dimensions.get("window").width > 768 ? 16 : 12,
           fontFamily:
             i18n.language === "th"
               ? "IBMPlexSansThai-Medium"
               : "Poppins-Regular",
-          marginTop: 5, 
+          marginTop: 5,
         },
         tabBarStyle: {
           backgroundColor: tabBarBackgroundColor,
-          borderTopWidth: Dimensions.get("window").width > 768  ? 0 : 1,
-          borderBottomWidth: Dimensions.get("window").width > 768  ? 1 : 0,
+          borderTopWidth: Dimensions.get("window").width > 768 ? 0 : 1,
+          borderBottomWidth: Dimensions.get("window").width > 768 ? 1 : 0,
           borderColor: tabBarBorderColor,
           height: Platform.OS === "web" ? 60 : 90,
           paddingTop: Platform.OS === "web" ? 0 : 5,
@@ -111,8 +110,16 @@ export default function TabLayout() {
           top: Platform.OS === "web" ? 0 : undefined,
           zIndex: Platform.OS === "web" ? 5 : undefined,
           ...Platform.select({
-            ios: { height: 60, paddingBottom: 0, safeAreaInsets: { bottom: 35 } },
-            android: { height: 110, paddingBottom: 0, safeAreaInsets: { bottom: 35 } },
+            ios: {
+              height: 60,
+              paddingBottom: 0,
+              safeAreaInsets: { bottom: 35 },
+            },
+            android: {
+              height: 110,
+              paddingBottom: 0,
+              safeAreaInsets: { bottom: 35 },
+            },
             web: { safeAreaInsets: { top: 0 } },
           }),
         },
@@ -140,7 +147,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="chat_ai"
+        name="settings"
         options={{
           title: t("tabs.chat_ai"),
           headerShown: false,
@@ -154,6 +161,24 @@ export default function TabLayout() {
             />
           ),
           tabBarLabel: () => null, // Hide label for the middle button
+          tabBarButton: (props) => {
+            return (
+              <TouchableOpacity
+                onPress={props.onPress}
+                onPressIn={props.onPressIn || undefined}
+                onPressOut={props.onPressOut || undefined}
+                style={props.style}
+                disabled={props.disabled ?? false}
+                activeOpacity={1} // Prevent fade effect on press
+                onLongPress={() => {
+                  router.push("/chat_ai");
+                }}
+                delayLongPress={500} // Duration in ms to trigger long press (default is 500ms)
+              >
+                {props.children}
+              </TouchableOpacity>
+            );
+          },
         }}
       />
       <Tabs.Screen
@@ -179,4 +204,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
