@@ -55,11 +55,7 @@ export default function RoadMap() {
     }).start();
   };
 
-  useEffect(() => {
-    if (registeredUsers !== null) {
-      animateCounter(registeredUsers);
-    }
-  }, [registeredUsers]);
+  // Note: No effect reacting to registeredUsers; animateCounter is invoked within fetchRegisteredUsers
 
   const animatedNumber = animatedValue.interpolate({
     inputRange: [registeredUsers || 0, registeredUsers || 1],

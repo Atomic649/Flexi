@@ -11,7 +11,7 @@ import {
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
 import { SecondaryButton } from "@/components/CustomButton";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -94,15 +94,13 @@ export default function ExpenseDetail({
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [isVisible, setIsVisible] = useState(visible);
+  // Use the visible prop directly instead of mirroring to local state
   const { vat, DocumentType } = useBusiness();
   const [vatIncluded, setVatIncluded] = useState(expense.vat);
-  const [vatAmount, setVatAmount] = useState(expense.vatAmount);
   const [withHoldingTax, setWithHoldingTax] = useState(
     expense.withHoldingTax || false
   );
   const [WHTpercent, setWHTpercent] = useState(expense.WHTpercent || 0);
-  const [WHTAmount, setWHTAmount] = useState(expense.WHTAmount || 0);
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
     "Individual"
   );
@@ -128,10 +126,8 @@ export default function ExpenseDetail({
         setImage(fetchedExpense.image);
         setGroup(fetchedExpense.group);
         setVatIncluded(fetchedExpense.vat);
-        setVatAmount(fetchedExpense.vatAmount);
         setWithHoldingTax(fetchedExpense.withHoldingTax || false);
         setWHTpercent(fetchedExpense.WHTpercent || 0);
-        setWHTAmount(fetchedExpense.WHTAmount || 0);
         setSTaxId(fetchedExpense.sTaxId || "");
         setSName(fetchedExpense.sName || "");
         setTaxInvoiceNo(fetchedExpense.taxInvoiceNo || "");
@@ -156,10 +152,8 @@ export default function ExpenseDetail({
         group !== expense.group ||
         image !== expense.image ||
         vatIncluded !== expense.vat ||
-        vatAmount !== expense.vatAmount ||
         withHoldingTax !== (expense.withHoldingTax || false) ||
         WHTpercent !== (expense.WHTpercent || 0) ||
-        WHTAmount !== (expense.WHTAmount || 0) ||
         sTaxId !== (expense.sTaxId || "") ||
         sName !== (expense.sName || "") ||
         taxInvoiceNo !== (expense.taxInvoiceNo || "") ||
@@ -181,10 +175,8 @@ export default function ExpenseDetail({
     group,
     image,
     vatIncluded,
-    vatAmount,
     withHoldingTax,
     WHTpercent,
-    WHTAmount,
     sTaxId,
     sName,
     taxInvoiceNo,
@@ -192,53 +184,45 @@ export default function ExpenseDetail({
     taxType,
     branch,
   ]);
-  // Update WHTAmount when amount or WHTpercent changes
-  useEffect(() => {
+
+  // Compute VAT base/amount and WHT amount from inputs to avoid derived state/effects
+  const { computedBase, computedVatAmount, computedWHTAmount } = useMemo(() => {
     const finalAmt = Number(amount) || 0;
-    const percent = Number(WHTpercent) || 0;
+    const vatRate = vatIncluded ? DEFAULT_VAT_PERCENT : 0;
+    const whtPercent = withHoldingTax ? Number(WHTpercent) || 0 : 0;
+    const res = reverseCalculateFromFinal(finalAmt, vatRate, whtPercent);
+    return {
+      computedBase: res.base,
+      computedVatAmount: res.vat,
+      computedWHTAmount: withHoldingTax ? res.wht : 0,
+    };
+  }, [amount, vatIncluded, withHoldingTax, WHTpercent]);
 
-    if (withHoldingTax) {
-      const vatRate = vatIncluded ? DEFAULT_VAT_PERCENT : 0;
-      const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
-      if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
-      setWHTAmount(res.wht);
-    } else {
-      setWHTAmount(0);
-      if (vatIncluded) {
-        const res = reverseCalculateFromFinal(finalAmt, DEFAULT_VAT_PERCENT, 0);
-        if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
-      }
-    }
-  }, [amount, WHTpercent, withHoldingTax]);
-
-  // Handle group changes - disable VAT and WHT for Fuel group, set WHT percentage for other groups
-  useEffect(() => {
-    if (group === "Fuel") {
+  // Direct handler for group changes to avoid effect-as-event-handler
+  const handleGroupChange = (nextGroup: string) => {
+    setGroup(nextGroup);
+    if (nextGroup === "Fuel") {
       setVatIncluded(false);
       setWithHoldingTax(false);
       setWHTpercent(0);
-      setWHTAmount(0);
-      setVatAmount(0);
-      // For Fuel group, set taxType to Juristic by default but keep it editable
       setTaxType("Juristic");
-    } else if (group === "Employee") {
-      // For Employee group, force taxType to Individual
+      return;
+    }
+    if (nextGroup === "Employee") {
       setTaxType("Individual");
       if (withHoldingTax) {
-        const autoWHTPercent = getWHTPercentage(group, "Individual");
+        const autoWHTPercent = getWHTPercentage(nextGroup, "Individual");
         setWHTpercent(autoWHTPercent);
       }
-    } else if (withHoldingTax) {
-      // Auto-set WHT percentage using TaxVariable component
-      const autoWHTPercent = getWHTPercentage(group, taxType);
+      return;
+    }
+    if (withHoldingTax) {
+      const autoWHTPercent = getWHTPercentage(nextGroup, taxType);
       setWHTpercent(autoWHTPercent);
     }
-  }, [group, taxType, withHoldingTax]);
+  };
 
-  // Update modal visibility when prop changes
-  useEffect(() => {
-    setIsVisible(visible);
-  }, [visible]);
+  // Note: do not mirror `visible` into local state; rely on prop directly
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -314,10 +298,8 @@ export default function ExpenseDetail({
 
   // Close the modal and navigate back to the expense table
   const handleCloseAfterChanges = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onClose();
-    }, 100);
+    // Let parent control visibility; invoke onClose directly
+    onClose();
   };
 
   // Handle update
@@ -348,7 +330,7 @@ export default function ExpenseDetail({
       formData.append("amount", amount);
       formData.append("group", group);
       formData.append("vat", vatIncluded ? "true" : "false");
-      // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
+  // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
       formData.append("WHTpercent", WHTpercent.toString());
       formData.append("sTaxId", sTaxId);
@@ -396,11 +378,11 @@ export default function ExpenseDetail({
       const dateStr = date ? formatDate(date) : "";
       const memberId = String(await getMemberId());
 
-      // Debug: Check WHTAmount value
+      // Debug: Check computed WHTAmount value
       console.log(
         "🔍 Debug WHTAmount in downloadWHTDoc:",
-        WHTAmount,
-        typeof WHTAmount
+        computedWHTAmount,
+        typeof computedWHTAmount
       );
       console.log("🔍 Debug group in downloadWHTDoc:", group, typeof group);
 
@@ -414,8 +396,8 @@ export default function ExpenseDetail({
         taxInvoiceNo: taxInvoiceNo || "",
         memberId: memberId || "",
         WHTAmount:
-          WHTAmount !== undefined && WHTAmount !== null
-            ? WHTAmount.toString()
+          computedWHTAmount !== undefined && computedWHTAmount !== null
+            ? computedWHTAmount.toString()
             : "0",
         group: group || expense?.group || "",
         taxType: taxType || "Individual",
@@ -463,7 +445,7 @@ export default function ExpenseDetail({
   }
   return (
     <Modal
-      visible={isVisible}
+  visible={visible}
       transparent={true}
       animationType="none"
       onRequestClose={() => onClose()}
@@ -608,24 +590,10 @@ export default function ExpenseDetail({
                       {vat && vatIncluded && (
                         <>
                           <CustomText style={{ textAlign: "left" }}>
-                            {formatNumber(
-                              // When VAT is included we assume `amount` is final paid
-                              // and reverse-calculate the base using the default VAT percent
-                              reverseCalculateFromFinal(
-                                Number(amount) || 0,
-                                DEFAULT_VAT_PERCENT,
-                                withHoldingTax ? Number(WHTpercent) : 0
-                              ).base
-                            )}
+                            {formatNumber(computedBase)}
                           </CustomText>
                           <CustomText style={{ textAlign: "left" }}>
-                            {formatNumber(
-                              reverseCalculateFromFinal(
-                                Number(amount) || 0,
-                                DEFAULT_VAT_PERCENT,
-                                withHoldingTax ? Number(WHTpercent) : 0
-                              ).vat
-                            )}
+                            {formatNumber(computedVatAmount)}
                           </CustomText>
                         </>
                       )}
@@ -633,8 +601,8 @@ export default function ExpenseDetail({
                         DocumentType.includes("WithholdingTax") &&
                         withHoldingTax && (
                           <CustomText style={{ textAlign: "left" }}>
-                            {typeof WHTAmount === "number" && !isNaN(WHTAmount)
-                              ? WHTAmount.toFixed(2).replace(
+                            {typeof computedWHTAmount === "number" && !isNaN(computedWHTAmount)
+                              ? computedWHTAmount.toFixed(2).replace(
                                   /\B(?=(\d{3})+(?!\d))/g,
                                   ","
                                 )
@@ -1013,7 +981,7 @@ export default function ExpenseDetail({
                     ].map(({ key, label }) => (
                       <TouchableOpacity
                         key={key}
-                        onPress={() => setGroup(key)}
+                        onPress={() => handleGroupChange(key)}
                         className={groupButtonClass(key)}
                         activeOpacity={1} // Prevent fade effect on press
                       >
@@ -1061,7 +1029,7 @@ export default function ExpenseDetail({
                 </View>
 
                 {/* Download WHT Doc & Preview */}
-                {withHoldingTax && WHTAmount > 0 && (
+                {withHoldingTax && computedWHTAmount > 0 && (
                   <View className="flex-row justify-evenly mt-2">
                     <TouchableOpacity
                       onPress={() => downloadWHTDoc()}

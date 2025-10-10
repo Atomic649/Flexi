@@ -79,13 +79,7 @@ export default function CreateProduct() {
     fetchData();
   }, [t]); // Add t as dependency to refresh translations when language changes
 
-  // Clear barcode and set stock to 1 when product type is set to Service
-  useEffect(() => {
-    if (productType === "Service") {
-      setbarcode("");
-      setstock("1");
-    }
-  }, [productType]);
+  // Note: Avoid using effects as event handlers for productType changes.
 
   const pickImage = async () => {
     if (Platform.OS === "web") {
@@ -271,7 +265,14 @@ export default function CreateProduct() {
                 ? productTypes.find((t) => t.value === productType)?.label
                 : ""
             }
-            onValueChange={(value: string) => setProductType(value)}
+            onValueChange={(value: string) => {
+              setProductType(value);
+              if (value === "Service") {
+                // Batch dependent updates when switching to Service
+                setbarcode("");
+                setstock("1");
+              }
+            }}
             placeholder={t("product.selectType")}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#3D3D3D" : "#f1f1f1"}

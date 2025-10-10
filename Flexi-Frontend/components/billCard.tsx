@@ -6,7 +6,7 @@ import {
   Animated,
   Modal,
 } from "react-native";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
@@ -48,57 +48,57 @@ export default function BillCard({
 }: any) {
   const { t } = useTranslation();
 
-  // Local state to track immediate document type changes
-  const [localDocumentType, setLocalDocumentType] =
-    useState(currentDocumentType);
+  // Optimistic override for immediate UI feedback; falls back to prop
+  const [overrideDocumentType, setOverrideDocumentType] = useState<string | null>(null);
 
   // Animation values for status change
   const statusScaleAnim = useRef(new Animated.Value(1)).current;
   const statusOpacityAnim = useRef(new Animated.Value(1)).current;
 
-  // Update local state when currentDocumentType prop changes
-  useEffect(() => {
-    setLocalDocumentType(currentDocumentType);
-  }, [currentDocumentType]);
+  // Effective document type used for rendering and actions
+  const effectiveDocumentType =
+    overrideDocumentType !== null && overrideDocumentType !== currentDocumentType
+      ? overrideDocumentType
+      : currentDocumentType;
 
-  // Trigger status animation when localDocumentType changes
-  useEffect(() => {
-    if (localDocumentType) {
-      // Animate status change
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(statusScaleAnim, {
-            toValue: 1.2,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-          Animated.timing(statusOpacityAnim, {
-            toValue: 0.7,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.spring(statusScaleAnim, {
-            toValue: 1,
-            tension: 100,
-            friction: 5,
-            useNativeDriver: true,
-          }),
-          Animated.timing(statusOpacityAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-    }
-  }, [localDocumentType]);
+  // Animate status change directly in event handlers (not via effect)
+  const triggerStatusAnimation = useCallback(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(statusScaleAnim, {
+          toValue: 1.2,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(statusOpacityAnim, {
+          toValue: 0.7,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.spring(statusScaleAnim, {
+          toValue: 1,
+          tension: 100,
+          friction: 5,
+          useNativeDriver: true,
+        }),
+        Animated.timing(statusOpacityAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, [statusScaleAnim, statusOpacityAnim]);
+
+  // Note: No effect on prop change; compute effective value during render
 
   const handleCustomerConfirm = () => {
     if (onUpdateDocumentType) {
-      // Immediately update local state for instant UI feedback
-      setLocalDocumentType("Invoice");
+      // Optimistic update for instant UI feedback
+      setOverrideDocumentType("Invoice");
+      triggerStatusAnimation();
 
       // Call the API update function
       onUpdateDocumentType(id, "Invoice");
@@ -107,8 +107,9 @@ export default function BillCard({
 
   const handleCustomerPaid = () => {
     if (onUpdateDocumentType) {
-      // Immediately update local state for instant UI feedback
-      setLocalDocumentType("Receipt");
+      // Optimistic update for instant UI feedback
+      setOverrideDocumentType("Receipt");
+      triggerStatusAnimation();
 
       // Call the API update function
       onUpdateDocumentType(id, "Receipt");
@@ -143,47 +144,6 @@ export default function BillCard({
     }
   };
 
-  const renderLeftActions = () => {
-    // Don't show actions if no update function is provided or if currentDocumentType is "Receipt"
-    if (!onUpdateDocumentType || currentDocumentType === "Receipt") return null;
-
-    return (
-      <View className="flex-row">
-        {/* Customer Confirm - Update to Invoice */}
-        {currentDocumentType !== "Invoice" && (
-          <TouchableOpacity
-            onPress={handleCustomerConfirm}
-            className="bg-[#ffa12e] justify-center items-center w-20 rounded-lg mr-2"
-          >
-            <Ionicons name="checkmark-circle" size={24} color={iconColor} />
-            <Text
-              className="text-xs font-semibold mt-1 text-center"
-              style={{ color: iconColor }}
-            >
-              {t("bill.confirm") || "Confirm"}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Customer Paid - Update to Receipt */}
-        {currentDocumentType !== "Receipt" && (
-          <TouchableOpacity
-            onPress={handleCustomerPaid}
-            className="justify-center items-center w-20 rounded-lg"
-            style={{ backgroundColor: PriceColor }}
-          >
-            <Ionicons name="cash" size={24} color={iconColor} />
-            <Text
-              className="text-xs font-semibold mt-1 text-center"
-              style={{ color: iconColor }}
-            >
-              {t("bill.paid") || "Paid"}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
 
   // State for showing action menu on long press
   const [showActionMenu, setShowActionMenu] = useState(false);
@@ -290,20 +250,20 @@ export default function BillCard({
               className="text-xl font-bold justify-end"
               style={{
                 color:
-                  localDocumentType === "Receipt"
+                  effectiveDocumentType === "Receipt"
                     ? PriceColor
-                    : getStatusColor(localDocumentType),
-                opacity: localDocumentType === "Receipt" ? 1 : 0.5,
+                    : getStatusColor(effectiveDocumentType),
+                opacity: effectiveDocumentType === "Receipt" ? 1 : 0.5,
               }}
               numberOfLines={1}
             >
-              {localDocumentType === "Receipt"
+              {effectiveDocumentType === "Receipt"
                 ? `+${(total || 0).toLocaleString()}`
                 : (totalQuotation || 0).toLocaleString()}
             </Text>
 
             {/* DocumentType Status Box */}
-            {localDocumentType && (
+            {effectiveDocumentType && (
               <Animated.View
                 className="mt-2"
                 style={{
@@ -314,7 +274,7 @@ export default function BillCard({
                 <View
                   className="px-3 py-1 rounded-full"
                   style={{
-                    backgroundColor: getStatusColor(localDocumentType),
+                    backgroundColor: getStatusColor(effectiveDocumentType),
                   }}
                 >
                   <Text
@@ -326,7 +286,7 @@ export default function BillCard({
                     }}
                     numberOfLines={1}
                   >
-                    {getStatusText(localDocumentType)}
+                    {getStatusText(effectiveDocumentType)}
                   </Text>
                 </View>
               </Animated.View>
@@ -337,7 +297,7 @@ export default function BillCard({
     </TouchableOpacity>
   );
 
-  if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
+  if (onUpdateDocumentType && effectiveDocumentType !== "Receipt") {
     return (
       <>
         <View
@@ -383,7 +343,7 @@ export default function BillCard({
               }}
             >
               {/* Customer Confirm Button */}
-              {currentDocumentType !== "Invoice" && (
+              {effectiveDocumentType !== "Invoice" && (
                 <TouchableOpacity
                   onPress={() => {
                     setShowActionMenu(false);
@@ -418,7 +378,7 @@ export default function BillCard({
               )}
 
               {/* Customer Paid Button */}
-              {currentDocumentType !== "Receipt" && (
+              {effectiveDocumentType !== "Receipt" && (
                 <TouchableOpacity
                   onPress={() => {
                     setShowActionMenu(false);

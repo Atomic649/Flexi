@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   Platform,
@@ -240,6 +239,17 @@ export default function Print() {
   const [pdfPreviewUri, setPdfPreviewUri] = useState<string | null>(null);
   const [pdfPreviewModalVisible, setPdfPreviewModalVisible] = useState(false);
 
+  // Fetch business details directly when memberId is known (avoid effect as event handler)
+  const fetchBusinessDetailsByMemberId = async (mid: string) => {
+    try {
+      const response = await CallAPIBusiness.getBusinessDetailsAPI(mid);
+      setBusinessDetails(response);
+      console.log("Business Details :", response);
+    } catch (error) {
+      console.error("Error fetching business details:", error);
+    }
+  };
+
   // Fetch user credentials on component mount
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -253,6 +263,8 @@ export default function Print() {
         // Fetch monthly report data initially
         if (member) {
           fetchMonthlyReportData(selectedMonth);
+          // Also fetch the business details now that we have memberId
+          await fetchBusinessDetailsByMemberId(member);
         }
       } catch (error) {
         console.error("Error fetching credentials:", error);
@@ -261,50 +273,20 @@ export default function Print() {
 
     fetchCredentials();
   }, []);
+  // Note: No effect reacting to memberId; business details are fetched when credentials are loaded
 
-  // Fetch business details for the PDF report
-  useEffect(() => {
-    const fetchBusinessDetails = async () => {
-      try {
-        if (memberId) {
-          // Fetch complete business details
-          const response = await CallAPIBusiness.getBusinessDetailsAPI(
-            memberId
-          );
-          setBusinessDetails(response);
-          console.log("Business Details :", response);
-        }
-      } catch (error) {
-        console.error("Error fetching business details:", error);
-      }
-    };
+  // Helper: map document type to step
+  const mapDocTypeToStep = (docType: string): "QA" | "IV" | "RE" => {
+    if (docType === "Quotation") return "QA";
+    if (docType === "Invoice") return "IV";
+    return "RE";
+  };
 
-    fetchBusinessDetails();
-  }, [memberId]);
-
-  // Initialize selectedPrintType based on selectedInvoice DocumentType
-  useEffect(() => {
-    if (selectedInvoice && selectedInvoice.DocumentType) {
-      const docType = Array.isArray(selectedInvoice.DocumentType) 
-        ? selectedInvoice.DocumentType[0] 
-        : selectedInvoice.DocumentType;
-      
-      // Map DocumentType to print step
-      if (docType === "Quotation") {
-        setSelectedPrintType("QA");
-      } else if (docType === "Invoice") {
-        setSelectedPrintType("IV");
-      } else if (docType === "Receipt") {
-        setSelectedPrintType("RE");
-      }
-    } else if (contextDocumentTypes) {
-      // Fallback to first available if no selectedInvoice
-      const availableSteps = getAvailablePrintSteps();
-      if (availableSteps.length > 0) {
-        setSelectedPrintType(availableSteps[0]);
-      }
-    }
-  }, [selectedInvoice, contextDocumentTypes]);
+  // Compute a default print step from available context types
+  // const getDefaultPrintStep = (): "QA" | "IV" | "RE" => {
+  //   const available = getAvailablePrintSteps();
+  //   return available.length > 0 ? available[0] : "QA";
+  // };
 
   // Handle date range selection for the calendar
   const handleDatesChange = (dates: string[]) => {
@@ -615,6 +597,13 @@ export default function Print() {
   // View invoice details
   const viewInvoiceDetails = (invoice: any) => {
     setSelectedInvoice(invoice);
+    // Set print step based on invoice's DocumentType immediately
+    const docType = Array.isArray(invoice?.DocumentType)
+      ? invoice.DocumentType[0]
+      : invoice?.DocumentType;
+    if (docType) {
+      setSelectedPrintType(mapDocTypeToStep(docType));
+    }
     setInvoiceModalVisible(true);
   };
 

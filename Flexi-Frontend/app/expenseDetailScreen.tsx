@@ -9,7 +9,6 @@ export default function ExpenseDetailScreen() {
   const params = useLocalSearchParams();
   const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(true);
-  const [isInvalid, setIsInvalid] = useState(false);
   
   // Extract and validate parameters from the router
   const id = typeof params.id === 'string' ? parseInt(params.id, 10) : 0;
@@ -20,26 +19,23 @@ export default function ExpenseDetailScreen() {
   const image = typeof params.image === 'string' ? params.image : '';
   const type = typeof params.type === 'string' ? params.type : '';
 
+  // Derived validity (no extra state needed)
+  const isInvalid = !id || !date;
+
   // For debugging purposes
   useEffect(() => {
     console.log('ExpenseDetailScreen params:', params);
-    
-    // Check for invalid parameters
-    if (!id || !date) {
-      setIsInvalid(true);
-    }
   }, [params]);
 
-  // Handle invalid parameters case with proper navigation timing
+  // Handle invalid parameters with proper navigation timing (triggered by param changes)
   useEffect(() => {
-    if (isInvalid) {
+    if (!id || !date) {
       const timer = setTimeout(() => {
         router.back();
       }, 2000);
-      
       return () => clearTimeout(timer);
     }
-  }, [isInvalid]);
+  }, [id, date]);
 
   // Function to close the modal and navigate to expense list
   const handleClose = () => {

@@ -60,18 +60,7 @@ export default function CreateBill() {
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
 
-  // Set default remark from AsyncStorage
-  useEffect(() => {
-    const fetchDefaultRemark = async () => {
-      if (memberId) {
-        const defaultRemark = await getRemark(memberId);
-        if (defaultRemark !== null && defaultRemark !== undefined) {
-          setRemark(defaultRemark);
-        }
-      }
-    };
-    fetchDefaultRemark();
-  }, [memberId]);
+  // Note: Avoid reacting to memberId via effect to fetch defaults; handled during credentials fetch
 
   // Handler to save remark to AsyncStorage
   const handleSaveRemark = async () => {
@@ -119,19 +108,7 @@ export default function CreateBill() {
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
 
-  // Set default paymentTermCondition from AsyncStorage
-  useEffect(() => {
-    const fetchDefaultPaymentTerm = async () => {
-      if (memberId) {
-        const defaultTerm = await getPaymentTermCondition(memberId);
-        if (defaultTerm !== null && defaultTerm !== undefined) {
-          setPaymentTermCondition(defaultTerm);
-        }
-      }
-    };
-    fetchDefaultPaymentTerm();
-  }, [memberId]);
-
+  
   // Handler to save payment terms to AsyncStorage
   const handleSavePaymentTerms = async () => {
     try {
@@ -210,17 +187,13 @@ export default function CreateBill() {
   const [repeatMonths, setRepeatMonths] = useState(2);
   const [repeatMonthsInput, setRepeatMonthsInput] = useState("2");
 
-  // Business type state
-  const [businessType, setBusinessType] = useState<string | null>(null);
 
   // Document type progression state
   const [selectedDocumentType, setSelectedDocumentType] = useState<
     "QA" | "IV" | "RE"
   >("QA");
   const [showProgressSection, setShowProgressSection] = useState(true);
-  const [availableDocumentTypes, setAvailableDocumentTypes] = useState<
-    string[]
-  >([]);
+  // availableDocumentTypes and businessType are derived from context below
 
   // Helper functions for DocumentType progression UI
   const getStepOrder = (step: "QA" | "IV" | "RE"): number => {
@@ -281,6 +254,19 @@ export default function CreateBill() {
       if (businessId) {
         setBusinessAcc(businessId);
       }
+      // Load defaults tied to memberId
+      if (uniqueId) {
+        const [defaultRemark, defaultTerm] = await Promise.all([
+          getRemark(uniqueId),
+          getPaymentTermCondition(uniqueId),
+        ]);
+        if (defaultRemark !== null && defaultRemark !== undefined) {
+          setRemark(defaultRemark);
+        }
+        if (defaultTerm !== null && defaultTerm !== undefined) {
+          setPaymentTermCondition(defaultTerm);
+        }
+      }
       // Fetch stores for this member
       if (uniqueId) {
         try {
@@ -319,40 +305,35 @@ export default function CreateBill() {
     fetchProductChoice();
   }, []);
 
-  // Get document types and business type from BusinessProvider context
-  const {
-    DocumentType: contextDocumentTypes,
-    businessType: contextBusinessType,
-  } = useBusiness();
+  // Access BusinessProvider context
+  const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
 
-  // Sync document types and business type from BusinessProvider context
+  // Derive available document types directly from context
+  const availableDocumentTypes = Array.isArray(contextDocumentTypes)
+    ? contextDocumentTypes
+    : contextDocumentTypes
+    ? [contextDocumentTypes]
+    : [];
+
+  // Derive businessType directly for render
+  const businessType = contextBusinessType ?? null;
+
+  // Initialize progression visibility and selected step from available types
   useEffect(() => {
-    if (contextBusinessType) {
-      setBusinessType(contextBusinessType);
-    }
-
-    if (contextDocumentTypes) {
-      const docTypes = Array.isArray(contextDocumentTypes)
-        ? contextDocumentTypes
-        : [contextDocumentTypes];
-      setAvailableDocumentTypes(docTypes);
-
-      // If only Receipt is available, hide progression and default to Receipt
-      if (docTypes.length === 1 && docTypes[0] === "Receipt") {
-        setShowProgressSection(false);
+    if (availableDocumentTypes.length === 1 && availableDocumentTypes[0] === "Receipt") {
+      setShowProgressSection(false);
+      setSelectedDocumentType("RE");
+    } else if (availableDocumentTypes.length > 0) {
+      setShowProgressSection(true);
+      if (availableDocumentTypes.includes("Quotation")) {
+        setSelectedDocumentType("QA");
+      } else if (availableDocumentTypes.includes("Invoice")) {
+        setSelectedDocumentType("IV");
+      } else if (availableDocumentTypes.includes("Receipt")) {
         setSelectedDocumentType("RE");
-      } else {
-        setShowProgressSection(true);
-        if (docTypes.includes("Quotation")) {
-          setSelectedDocumentType("QA");
-        } else if (docTypes.includes("Invoice")) {
-          setSelectedDocumentType("IV");
-        } else if (docTypes.includes("Receipt")) {
-          setSelectedDocumentType("RE");
-        }
       }
     }
-  }, [contextDocumentTypes, contextBusinessType]);
+  }, [availableDocumentTypes.join(",")]);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -978,6 +959,7 @@ export default function CreateBill() {
                   setTaxType("Individual");
                   setCGender(""); // Allow gender selection
                 }}
+                activeOpacity={1}
               >
                 <Ionicons
                   name={
@@ -999,6 +981,7 @@ export default function CreateBill() {
                   setTaxType("Juristic");
                   setCGender("NotSpecified"); // Always set gender to NotSpecified
                 }}
+                activeOpacity={1}
               >
                 <Ionicons
                   name={taxType === "Juristic" ? "checkbox" : "square-outline"}

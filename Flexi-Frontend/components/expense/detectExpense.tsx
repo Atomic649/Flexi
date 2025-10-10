@@ -36,7 +36,6 @@ export default function DetectExpense() {
   const [expenses, setExpenses] = useState<any[]>([]);
   const [selectedExpense, setSelectedExpense] = useState<any | null>(null);
   const [isCreateExpenseVisible, setIsCreateExpenseVisible] = useState(false);
-  const [isCreateSuccess, setIsCreateSuccess] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [passwordPdf, setPasswordPdf] = useState<string>(""); // State for password
   const [passwordModalVisible, setPasswordModalVisible] =
@@ -245,15 +244,6 @@ export default function DetectExpense() {
       }
     }
   };
-
-  // if create success, refresh the page
-  useEffect(() => {
-    if (isCreateSuccess) {
-      onRefresh();
-      setIsCreateSuccess(false);
-      console.log("🔥 Refreshing... after create");
-    }
-  }, [isCreateSuccess]);
 
   const handleAdd = () => {
     setIsCreateExpenseVisible(true);
@@ -487,9 +477,9 @@ export default function DetectExpense() {
 
       <CreateExpense
         success={() => {
-          setIsCreateSuccess(true);
+          // Refresh immediately after a successful create
           onRefresh();
-          console.log("🔥isCreateSuccess", isCreateSuccess);
+          console.log("🔥 Refreshed after create");
         }}
         visible={isCreateExpenseVisible}
         onClose={() => setIsCreateExpenseVisible(false)}

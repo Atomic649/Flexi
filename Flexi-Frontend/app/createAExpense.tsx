@@ -7,7 +7,6 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
-  Alert,
 } from "react-native";
 import { View } from "@/components/Themed";
 import {
@@ -152,45 +151,108 @@ export default function CreateExpense({
     selectedAddress?: string;
   }>({});
 
-  // Reset VAT and WHT when Fuel group is selected, set WHT percentage for other groups
-  useEffect(() => {
-    if (group === "Fuel") {
+  // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
+  const recomputeAmounts = (overrides?: {
+    amount?: string | number;
+    vatIncluded?: boolean;
+    withHoldingTax?: boolean;
+    WHTpercent?: number;
+  }) => {
+    const finalAmt = Number(
+      overrides?.amount !== undefined ? overrides.amount : amount
+    ) || 0;
+    const nextVatIncluded =
+      overrides?.vatIncluded !== undefined ? overrides.vatIncluded : vatIncluded;
+    const nextWithHolding =
+      overrides?.withHoldingTax !== undefined
+        ? overrides.withHoldingTax
+        : withHoldingTax;
+    const nextWHTPercent = Number(
+      overrides?.WHTpercent !== undefined ? overrides.WHTpercent : WHTpercent
+    ) || 0;
+
+    // Only compute when either VAT or WHT is enabled
+    if (nextVatIncluded || nextWithHolding) {
+      const res = reverseCalculateFromFinal(
+        finalAmt,
+        nextVatIncluded ? DEFAULT_VAT_PERCENT : 0,
+        nextWithHolding ? nextWHTPercent : 0
+      );
+      // Keep vatAmount in sync only when VAT is enabled, otherwise zero it
+      setVatAmount(nextVatIncluded ? res.vat : 0);
+      // Keep WHTAmount in sync only when WHT is enabled, otherwise zero it
+      setWHTAmount(nextWithHolding ? res.wht : 0);
+    } else {
+      // Neither VAT nor WHT selected
+      setVatAmount(0);
+      setWHTAmount(0);
+    }
+  };
+
+  const handleGroupChange = (nextGroup: string) => {
+    setGroup(nextGroup);
+    if (nextGroup === "Fuel") {
+      // Fuel: disable tax options and clear derived amounts
       setVatIncluded(false);
       setWithHoldingTax(false);
       setWHTpercent(0);
       setVatAmount(0);
-      const [showSelection, setShowSelection] = useState<boolean>(false);
       setWHTAmount(0);
-    } else if (withHoldingTax && group) {
-      // Auto-set WHT percentage using TaxVariable component
-      const autoWHTPercent = getWHTPercentage(group, taxType);
-      setWHTpercent(autoWHTPercent);
+      return;
     }
-  }, [group, taxType, withHoldingTax]);
-
-  // Update WHTAmount when amount or WHTpercent changes (mirror expenseDetail.tsx)
-  useEffect(() => {
-    const finalAmt = Number(amount) || 0;
-    const percent = Number(WHTpercent) || 0;
-
+    // For non-fuel groups, if WHT is enabled, auto-set percent
     if (withHoldingTax) {
-      // Treat `amount` as the final paid amount (base + VAT - WHT).
-      // Use the reverse helper with VAT rate = 7% when vatIncluded is true, otherwise 0%.
-  const vatRate = vatIncluded ? DEFAULT_VAT_PERCENT : 0;
-  const res = reverseCalculateFromFinal(finalAmt, vatRate, percent);
+      const auto = getWHTPercentage(nextGroup, taxType);
+      if (auto !== WHTpercent) setWHTpercent(auto);
+      recomputeAmounts({ WHTpercent: auto });
+    }
+  };
 
-      // sync computed values to state for UI and submission
-      if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
-      setWHTAmount(res.wht);
-    } else {
-      setWHTAmount(0);
-      // if VAT checkbox is on and there's no WHT, still show VAT derived from final amount
-      if (vatIncluded) {
-  const res = reverseCalculateFromFinal(finalAmt, DEFAULT_VAT_PERCENT, 0);
-        if (Number(res.vat) !== Number(vatAmount)) setVatAmount(res.vat);
+  const handleToggleVatIncluded = () => {
+    if (group === "Fuel") return; // VAT disabled for Fuel
+    const next = !vatIncluded;
+    setVatIncluded(next);
+    recomputeAmounts({ vatIncluded: next });
+  };
+
+  const handleToggleWithHoldingTax = () => {
+    if (group === "Fuel") return; // WHT disabled for Fuel
+    const next = !withHoldingTax;
+    let nextPercent = WHTpercent;
+    if (next) {
+      // turning on → auto percent from group+taxType
+      if (group) {
+        nextPercent = getWHTPercentage(group, taxType);
+        if (nextPercent !== WHTpercent) setWHTpercent(nextPercent);
       }
     }
-  }, [amount, WHTpercent, withHoldingTax, vatIncluded, vatAmount]);
+    setWithHoldingTax(next);
+    recomputeAmounts({ withHoldingTax: next, WHTpercent: nextPercent });
+  };
+
+  const handleTaxTypeChange = (nextType: "Individual" | "Juristic") => {
+    setTaxType(nextType);
+    setBranch(nextType === "Juristic" ? "headOffice" : "");
+    if (withHoldingTax && group) {
+      const pct = getWHTPercentage(group, nextType);
+      if (pct !== WHTpercent) setWHTpercent(pct);
+      recomputeAmounts({ WHTpercent: pct });
+    }
+  };
+
+  const handleAmountChange = (val: string) => {
+    const raw = val.replace(/,/g, "");
+    setAmount(raw);
+    recomputeAmounts({ amount: raw });
+  };
+
+  const handleWHTPercentChange = (val: string) => {
+    if (group === "Fuel") return; // guarded
+    const num = parseFloat(val);
+    const pct = isNaN(num) ? 0 : num;
+    setWHTpercent(pct);
+    recomputeAmounts({ WHTpercent: pct });
+  };
 
   const pickImage = async (allowsEditing = false) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -1563,9 +1625,7 @@ export default function CreateExpense({
                     theme === "dark" ? "text-secondary-100" : "text-secondary"
                   }`}
                   value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                  onChangeText={(val) => {
-                    const raw = val.replace(/,/g, "");
-                    setAmount(raw);}}
+                  onChangeText={handleAmountChange}
                   placeholder="0.00"
                   placeholderTextColor={
                     theme === "dark" ? "#6d6c67" : "#adaaa6"
@@ -1669,11 +1729,7 @@ export default function CreateExpense({
                         marginRight: 24,
                         opacity: group === "Fuel" ? 0.5 : 1,
                       }}
-                      onPress={() => {
-                        if (group !== "Fuel") {
-                          setVatIncluded(!vatIncluded);
-                        }
-                      }}
+                      onPress={handleToggleVatIncluded}
                       activeOpacity={1} // Prevent fade effect on press
                       disabled={group === "Fuel"}
                     >
@@ -1696,11 +1752,7 @@ export default function CreateExpense({
                           marginRight: 8,
                           opacity: group === "Fuel" ? 0.5 : 1,
                         }}
-                        onPress={() => {
-                          if (group !== "Fuel") {
-                            setWithHoldingTax(!withHoldingTax);
-                          }
-                        }}
+                        onPress={handleToggleWithHoldingTax}
                         disabled={group === "Fuel"}
                         activeOpacity={1} // Prevent fade effect on press
                       >
@@ -1729,14 +1781,7 @@ export default function CreateExpense({
                               opacity: group === "Fuel" ? 0.5 : 1,
                             }}
                             value={WHTpercent.toString()}
-                            onChangeText={(val) => {
-                              if (group !== "Fuel") {
-                                        const num = parseFloat(val);
-                                        setWHTpercent(isNaN(num) ? 0 : num);
-                                        // WHTAmount will be recalculated in the useEffect which
-                                        // uses VAT-excluded base when vatAmount exists
-                              }
-                            }}
+                            onChangeText={handleWHTPercentChange}
                             placeholder={t("expense.detail.percent")}
                             keyboardType="numeric"
                             editable={group !== "Fuel"}
@@ -1778,10 +1823,7 @@ export default function CreateExpense({
                           alignItems: "center",
                           marginRight: 24,
                         }}
-                        onPress={() => {
-                          setTaxType("Individual");
-                          setBranch("");
-                        }}
+                        onPress={() => handleTaxTypeChange("Individual")}
                         activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
@@ -1803,10 +1845,7 @@ export default function CreateExpense({
                           alignItems: "center",
                           marginRight: 8,
                         }}
-                        onPress={() => {
-                          setTaxType("Juristic");
-                          setBranch("headOffice");
-                        }}
+                        onPress={() => handleTaxTypeChange("Juristic")}
                         activeOpacity={1} // Prevent fade effect on press
                       >
                         <Ionicons
@@ -1980,7 +2019,7 @@ export default function CreateExpense({
                     ].map(({ key, label }) => (
                       <TouchableOpacity
                         key={key}
-                        onPress={() => setGroup(key)}
+                        onPress={() => handleGroupChange(key)}
                         className={groupButtonClass(key)}
                         activeOpacity={1} // Prevent fade effect on press
                       >

@@ -25,16 +25,7 @@ AuthContext.displayName = 'AuthContext'; // Explicitly set displayName
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any | null>(null); // Update the type according to your backend response
   const [loading, setLoading] = useState(true);
-  const [shouldRedirectToLanding, setShouldRedirectToLanding] = useState(false);
-
-  // Effect to handle navigation after component is mounted
-  useEffect(() => {
-    if (shouldRedirectToLanding && !loading) {
-      // Only navigate when we're no longer loading and redirect flag is set
-      router.replace('/landing');
-      setShouldRedirectToLanding(false);
-    }
-  }, [shouldRedirectToLanding, loading]);
+  // Note: Avoid flag-based navigation side-effects; navigate directly at the event source
 
   useEffect(() => {
     // Check Session when the app starts
@@ -49,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
         await removeToken(); // Remove the token
         await removeMemberId(); // Remove the memberId        
-        // Set flag to redirect instead of navigating immediately
-        setShouldRedirectToLanding(true);
+        // Navigate directly on failure instead of deferring to another effect
+        router.replace('/landing');
       } finally {
         setLoading(false);
       }
@@ -59,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchSession();
 
     // Listen to authentication state changes
-    CallAPIUser.onAuthStateChange((newSession) => {
+    const unsubscribe = CallAPIUser.onAuthStateChange((newSession) => {
       // Make sure session data is properly validated before setting state
       if (newSession && typeof newSession === 'object') {
         setSession(newSession);
@@ -68,6 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setLoading(false);
     });
+    // Cleanup listener if API supports it
+    return typeof unsubscribe === 'function' ? unsubscribe : undefined;
   }, []);
 
   // Login function

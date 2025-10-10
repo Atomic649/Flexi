@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -54,10 +54,12 @@ const ExpenseTable = ({
   const [expenseList, setExpenseList] = useState(expenses);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Sort expenses by date
-  const sortedExpenses = expenseList.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  // Sort expenses by date (non-mutating)
+  const sortedExpenses = useMemo(() => {
+    return [...expenseList].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [expenseList]);
 
   const headerClass = `font-bold p-2  ${
     theme === "dark" ? "text-white" : "text-[#ffffff]"
@@ -74,8 +76,8 @@ const ExpenseTable = ({
       const memberId = String(await getMemberId());
       console.log("Member ID:", memberId);
       if (memberId) {
-        await CallAPIExpense.deleteExpenseAPI(id, memberId);
-        setExpenseList(expenseList.filter((expense) => expense.id !== id));
+  await CallAPIExpense.deleteExpenseAPI(id, memberId);
+  setExpenseList((prev) => prev.filter((expense) => expense.id !== id));
       } else {
         console.log("Member ID is null");
       }
@@ -102,10 +104,7 @@ const ExpenseTable = ({
     }
   }, []);
 
-  // Initial load of expenses
-  useEffect(() => {
-    setExpenseList(expenses);
-  }, [expenses]);
+  // Note: Avoid syncing props to state via effects; use initial seed and explicit refresh instead
 
   // Refresh expenses when refreshTrigger changes
   useEffect(() => {
