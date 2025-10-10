@@ -4,7 +4,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   TouchableOpacity,
   View as RNView,
 } from "react-native";
@@ -21,6 +20,7 @@ import CallMemberAPI from "@/api/member_api";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
   const { t } = useTranslation();

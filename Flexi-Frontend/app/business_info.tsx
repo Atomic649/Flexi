@@ -166,7 +166,7 @@ export default function BusinessInfo() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   return (
-    <SafeAreaView
+    <View
       className={`h-full ${useBackgroundColorClass()}`}
       style={{
         width: "100%",
@@ -427,6 +427,6 @@ export default function BusinessInfo() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }

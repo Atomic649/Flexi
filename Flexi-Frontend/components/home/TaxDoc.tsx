@@ -205,7 +205,7 @@ export default function TaxDoc() {
   }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <View className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
         style={{
           width: isMobile() ? "100%" : "40%",
@@ -822,6 +822,6 @@ export default function TaxDoc() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

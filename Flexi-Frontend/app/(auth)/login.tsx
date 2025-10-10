@@ -4,7 +4,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
 } from "react-native";
 import { View } from "@/components/Themed";
 import {CustomButton, Button } from "@/components/CustomButton";
@@ -25,6 +24,7 @@ import {
 } from "@/utils/utility";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import ForgotPassword from "./forgot_password";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
   // State variables for email and password

@@ -37,7 +37,7 @@ const shop = () => {
   });
 
   return (
-    <SafeAreaView
+    <View
       className={`h-full ${useBackgroundColorClass()}`}
       style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
     >
@@ -229,7 +229,7 @@ const shop = () => {
           />
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

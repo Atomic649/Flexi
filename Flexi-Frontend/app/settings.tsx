@@ -393,7 +393,7 @@ export default function Setting() {
   //------------------------------------------
 
   return (
-    <SafeAreaView
+    <View
       className={`h-full ${useBackgroundColorClass()}`}
       style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
     >
@@ -668,7 +668,7 @@ export default function Setting() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

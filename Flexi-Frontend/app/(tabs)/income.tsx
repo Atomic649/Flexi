@@ -27,7 +27,7 @@ const Income = () => {
   });
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
+    <View className={`h-full ${useBackgroundColorClass()}`}
      style={Platform.OS === "web" ? { paddingTop: 60 } : {}}>
       <TabView
         navigationState={{ index, routes }}
@@ -141,7 +141,7 @@ const Income = () => {
           />
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

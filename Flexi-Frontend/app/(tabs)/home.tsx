@@ -43,7 +43,7 @@ const Home = () => {
   const renderScene = SceneMap(renderSceneWithProps());
 
   return (
-    <SafeAreaView
+    <View
       className={`h-full ${useBackgroundColorClass()}`}
       style={Platform.OS === "web" ? { paddingTop: 60 } : {}}
     >
@@ -157,7 +157,7 @@ const Home = () => {
           />
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

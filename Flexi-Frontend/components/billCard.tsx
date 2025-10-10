@@ -1,20 +1,15 @@
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
-  Alert,
   Platform,
-  Linking,
   Animated,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
-import { SafeSwipeable } from "./SafeSwipeable";
 import { Ionicons } from "@expo/vector-icons";
-import { t } from "i18next";
-import { router } from "expo-router";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -329,11 +324,11 @@ export default function BillCard({
   // Wrap in SafeSwipeable if update function is provided and currentDocumentType is not "Receipt"
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
-      <SafeSwipeable 
+      <Swipeable 
         renderLeftActions={renderLeftActions}
       >
         {cardContent}
-      </SafeSwipeable>
+      </Swipeable>
     );
   }
 

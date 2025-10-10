@@ -1,7 +1,6 @@
 import {
   View,
-  ScrollView,
-  SafeAreaView,
+  ScrollView,  
   Modal,
   TouchableOpacity,
   Platform,
@@ -24,6 +23,7 @@ import { CustomText } from "@/components/CustomText";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import { images } from "@/constants";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Howto() {
   const { theme } = useTheme();

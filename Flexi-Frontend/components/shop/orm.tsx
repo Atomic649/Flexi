@@ -4,7 +4,6 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
-  SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -52,7 +51,7 @@ export default function ORM() {
   }, []);
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
+    <View className={`h-full ${useBackgroundColorClass()}`}
      >
       <ScrollView
         style={{
@@ -84,6 +83,6 @@ export default function ORM() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

@@ -3,8 +3,7 @@ import {
   Image,
   Dimensions,
   KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
+  Platform,  
   Text,
   Switch,
   TouchableOpacity,
@@ -12,7 +11,7 @@ import {
 import { View } from "@/components/Themed";
 import FormField from "@/components/FormField";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -22,6 +21,7 @@ import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { useTheme } from "@/providers/ThemeProvider";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
   const { t } = useTranslation();

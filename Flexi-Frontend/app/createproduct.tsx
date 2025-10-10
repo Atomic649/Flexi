@@ -249,7 +249,7 @@ export default function CreateProduct() {
   };
 
   return (
-    <SafeAreaView
+    <View
       className={`flex-1 ${useBackgroundColorClass()}`}
       style={{
         alignItems: Platform.OS === "web" ? "center" : "stretch",
@@ -390,6 +390,6 @@ export default function CreateProduct() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }

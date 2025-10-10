@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   FlatList,
   RefreshControl,
   Platform,
@@ -148,7 +147,7 @@ const Daily = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
+      <View
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
           width: Dimensions.get("window").width > 768  ? "60%" : "100%",
@@ -245,7 +244,7 @@ const Daily = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
-      </SafeAreaView>
+      </View>
     </GestureHandlerRootView>
   );
 };

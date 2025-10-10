@@ -4,8 +4,7 @@ import "@/i18n";
 import React, { useEffect, useState } from "react";
 import { router, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import {
-  SafeAreaView,
+import {  
   StatusBar, 
   Platform,
 } from "react-native";
@@ -22,6 +21,7 @@ import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {

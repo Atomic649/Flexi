@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   FlatList,
   RefreshControl,
   Platform,
@@ -560,7 +559,7 @@ const ByOrder = () => {
   };
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <View className={`h-full ${useBackgroundColorClass()}`}>
       <TouchableOpacity
         style={{
           position: "static",
@@ -583,6 +582,6 @@ const ByOrder = () => {
           />
       </TouchableOpacity>
       {isDesktop() ? renderTableView() : renderCardView()}
-    </SafeAreaView>
+    </View>
   );
 };export default ByOrder;

@@ -274,7 +274,7 @@ export default function Dashboard() {
   }));
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <View className={`h-full ${useBackgroundColorClass()}`}>
       {/* Calendar Modal */}
       <Modal
         visible={calendarVisible}
@@ -834,6 +834,6 @@ export default function Dashboard() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

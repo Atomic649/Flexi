@@ -4,19 +4,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
-  SafeAreaView,
 } from "react-native";
 import React, { useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import FormField from "@/components/FormField";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import { CustomText } from "@/components/CustomText";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import CallAPIUser from "@/api/auth_api";
 import { router } from "expo-router";
 import { ShieldCheck } from "@/components/ui/lucide-react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ChangePassword() {
   const { t } = useTranslation();
@@ -231,9 +231,7 @@ export default function ChangePassword() {
                   containerStyles="mt-4 bg-transparent "                  
                   textStyles={
                     theme === "dark" ? "!text-zinc-300" : "!text-zinc-700"
-                  }
-                  variant="outline"
-                />
+                  }/>
               </View>
             </View>
           </View>

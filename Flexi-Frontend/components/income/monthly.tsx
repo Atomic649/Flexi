@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   FlatList,
   RefreshControl,
   Platform,
   Dimensions,
-  DeviceEventEmitter,
 } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -192,7 +190,7 @@ const monthly = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
+      <View
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
           width: Dimensions.get("window").width > 768 ? "60%" : "100%",
@@ -382,7 +380,7 @@ const monthly = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
-      </SafeAreaView>
+      </View>
     </GestureHandlerRootView>
   );
 };

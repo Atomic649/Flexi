@@ -2,10 +2,6 @@ import { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
-  TouchableOpacity,
-  Alert,
-  SafeAreaView,
-  Platform,
   Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -14,12 +10,13 @@ import { useTranslation } from "react-i18next";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomButton from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import FormField2 from "@/components/FormField2";
 import CallAPIUser from "@/api/auth_api";
 import { getUserId, removeToken, removeMemberId, removeBusinessId, getMemberId } from "@/utils/utility";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DeleteAccount() {
   const { t } = useTranslation();
@@ -143,7 +140,7 @@ export default function DeleteAccount() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}` }>
+    <SafeAreaView className={`flex-1 ${useBackgroundColorClass()}`}>
       <ScrollView
         contentContainerStyle={{
           padding: 20,

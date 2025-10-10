@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomAlert from "@/components/CustomAlert";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "./CustomText";
-import { SafeSwipeable } from "./SafeSwipeable";
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function ProductCard({
   id,
@@ -88,7 +88,7 @@ export default function ProductCard({
 
   return (
     <>
-      <SafeSwipeable renderRightActions={renderRightActions}>
+      <Swipeable renderRightActions={renderRightActions}>
         <View className="p-2">
           <Pressable
             android_ripple={{ color: "#e0f7fa" }}
@@ -155,7 +155,7 @@ export default function ProductCard({
           </View>
         </Pressable>
         </View>
-      </SafeSwipeable>
+      </Swipeable>
 
       <CustomAlert
         visible={alertConfig.visible}

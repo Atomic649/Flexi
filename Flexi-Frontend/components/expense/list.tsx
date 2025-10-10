@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   FlatList,
   RefreshControl,
   Platform,
@@ -398,9 +397,9 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className={`h-full  ${useBackgroundColorClass()} `}>
+      <View className={`h-full  ${useBackgroundColorClass()} `}>
         {isDesktop() ? renderTableView() : renderCardView()}
-      </SafeAreaView>
+      </View>
     </GestureHandlerRootView>
   );
 };

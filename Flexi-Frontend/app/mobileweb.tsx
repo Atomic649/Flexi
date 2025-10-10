@@ -6,7 +6,7 @@ import {
   Linking,
   Platform,
   TouchableOpacity,
-  SafeAreaView,
+  
   Dimensions,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { isMobileWeb } from "@/utils/responsive";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MobileWebScreen() {
   const { t } = useTranslation();

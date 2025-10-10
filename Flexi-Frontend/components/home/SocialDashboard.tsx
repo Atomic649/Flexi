@@ -92,7 +92,7 @@ export default function SocialDashboard() {
       }
       style={{ flex: 1 }}
     >
-      <SafeAreaView
+      <View
         className="h-full "
         style={Platform.OS === "web" ? { paddingTop: 80 } : {}}
       >
@@ -473,7 +473,7 @@ export default function SocialDashboard() {
             </TouchableOpacity>
           </TouchableOpacity>
         </Modal>
-      </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 }

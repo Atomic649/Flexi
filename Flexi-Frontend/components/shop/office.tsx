@@ -52,7 +52,7 @@ export default function Office() {
   }, []);
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
+    <View className={`h-full ${useBackgroundColorClass()}`}>
       <ScrollView
         style={{
           width: Dimensions.get("window").width > 768 ? "100%" : "100%",
@@ -83,6 +83,6 @@ export default function Office() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

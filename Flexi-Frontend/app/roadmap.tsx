@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Animated, Image, SafeAreaView, Text, Platform, Dimensions } from "react-native";
+import { View, Animated, Image, Text, Platform, Dimensions } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {CustomButton} from "@/components/CustomButton";
 import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RoadMap() {
   const { theme } = useTheme();

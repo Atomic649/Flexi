@@ -54,7 +54,7 @@ export default function Coach() {
   }, []);
 
   return (
-    <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}
+    <View className={`h-full ${useBackgroundColorClass()}`}
      >
       <ScrollView
         style={{
@@ -86,6 +86,6 @@ export default function Coach() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

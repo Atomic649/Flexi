@@ -1332,7 +1332,7 @@ export default function Print() {
   };
 
   return (
-    <SafeAreaView
+    <View
       key={refreshKey} // Add key for component refresh
       className={`flex-1 ${useBackgroundColorClass()}`}
       style={{ paddingTop: Platform.OS === "web" ? 20 : 0 }}
@@ -2302,6 +2302,6 @@ export default function Print() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }
