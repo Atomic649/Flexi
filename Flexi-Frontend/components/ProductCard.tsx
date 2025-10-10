@@ -12,7 +12,6 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomAlert from "@/components/CustomAlert";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "./CustomText";
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function ProductCard({
   id,
@@ -26,7 +25,6 @@ export default function ProductCard({
 }: any) {
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 380;
-  const isWebLarge = width > 768;
   const { t } = useTranslation();
 
   // Add alert config state
@@ -72,90 +70,87 @@ export default function ProductCard({
     });
   }, [t, onDelete, id]);
 
-  const renderRightActions = useCallback(() => (
-    <TouchableOpacity
-      onPress={handleDelete}
-      className="bg-red-500 justify-center items-center w-20 rounded-lg"
-      style={{
-        backgroundColor: '#ff4444', // Ensure red background
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <Ionicons name="trash" size={24} color="white" />
-    </TouchableOpacity>
-  ), [handleDelete]);
-
   return (
     <>
-      <Swipeable renderRightActions={renderRightActions}>
-        <View className="p-2">
-          <Pressable
-            android_ripple={{ color: "#e0f7fa" }}
-            style={({ pressed }) => [
-              {
-                opacity: pressed ? 0.85 : 1,
-              },
-            // Tailwind classes
+      <View className="p-2">
+        <Pressable
+          android_ripple={{ color: "#e0f7fa" }}
+          style={({ pressed }) => [
             {
-              flex: 1,
-              flexDirection: "column",
-              alignItems: "center",
-              paddingHorizontal: isSmallScreen ? 8 : 16,             
-              marginVertical: 8,
+              opacity: pressed ? 0.85 : 1,
             },
-          ]}
-          onPress={() => {
-            router.push(`/editproduct?id=${id}`);
-          }}
-        >
-          <View className="flex flex-row gap-2 sm:gap-3 items-start w-full">
-            <View className="flex justify-center items-center flex-row flex-1">
-              <View
-                className={`${
-                  isSmallScreen ? "w-[70px] h-[70px]" : "w-[90px] h-[90px]"
-                } rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}
-              >
-                <Image
-                  source={{ uri: productimage }}
-                  className="w-full h-full rounded-lg"
-                  resizeMode="cover"
-                />
-              </View>
+          // Tailwind classes
+          {
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            paddingHorizontal: isSmallScreen ? 8 : 16,             
+            marginVertical: 8,
+          },
+        ]}
+        onPress={() => {
+          router.push(`/editproduct?id=${id}`);
+        }}
+      >
+        <View className="flex flex-row gap-2 sm:gap-3 items-start w-full">
+          <View className="flex justify-center items-center flex-row flex-1">
+            <View
+              className={`${
+                isSmallScreen ? "w-[70px] h-[70px]" : "w-[90px] h-[90px]"
+              } rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}
+            >
+              <Image
+                source={{ uri: productimage }}
+                className="w-full h-full rounded-lg"
+                resizeMode="cover"
+              />
+            </View>
 
-              <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1 px-2">
-                <CustomText
-                  className={`font-psemibold ${
-                    isSmallScreen ? "text-base" : "text-lg"
-                  }`}
-                  style={{ color: "#71717a" }}
-                  numberOfLines={2}
-                >
-                  {productname}
-                </CustomText>
+            <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1 px-2">
+              <CustomText
+                className={`font-psemibold ${
+                  isSmallScreen ? "text-base" : "text-lg"
+                }`}
+                style={{ color: "#71717a" }}
+                numberOfLines={2}
+              >
+                {productname}
+              </CustomText>
+              <Text
+                className={`${
+                  isSmallScreen ? "text-lg" : "text-xl"
+                } text-zinc-500 font-bold`}
+                numberOfLines={1}
+              >
+                {productprice}
+              </Text>
+
+              {producttype === "Product" && (
                 <Text
-                  className={`${
-                    isSmallScreen ? "text-lg" : "text-xl"
-                  } text-zinc-500 font-bold`}
+                  className="text-sm text-zinc-500 font-pregular"
                   numberOfLines={1}
                 >
-                  {productprice}
+                  Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
                 </Text>
-
-                {producttype === "Product" && (
-                  <Text
-                    className="text-sm text-zinc-500 font-pregular"
-                    numberOfLines={1}
-                  >
-                    Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
-                  </Text>
-                )}
-              </View>
+              )}
             </View>
           </View>
-        </Pressable>
+          
+          {/* Delete Icon */}
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+            style={{
+              padding: 8,
+            }}
+          >
+            <Ionicons name="trash-outline" size={24} color="#e74c3c" />
+          </TouchableOpacity>
         </View>
-      </Swipeable>
+      </Pressable>
+      </View>
 
       <CustomAlert
         visible={alertConfig.visible}

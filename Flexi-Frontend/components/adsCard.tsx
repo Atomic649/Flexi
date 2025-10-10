@@ -2,13 +2,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
   Platform,
 } from "react-native";
-import React from "react";
-//import Swipeable from "react-native-gesture-handler/Swipeable";
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import CustomAlert from "@/components/CustomAlert";
 
 export default function AdsCard({
   id,
@@ -19,6 +18,22 @@ export default function AdsCard({
   cardColor,
   onDelete,
 }: any) {
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    buttons: Array<{
+      text: string;
+      onPress: () => void;
+      style?: "default" | "cancel" | "destructive";
+    }>;
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    buttons: [],
+  });
+
   const getBorderColor = (platform: string) => {
     switch (platform) {
       case "Facebook":
@@ -35,35 +50,31 @@ export default function AdsCard({
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete",
-      "Are you sure you want to delete this ad connection?",
-      [
+    setAlertConfig({
+      visible: true,
+      title: "Delete",
+      message: "Are you sure you want to delete this ad connection?",
+      buttons: [
         {
           text: "Cancel",
           style: "cancel",
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
         },
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => onDelete(id),
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            onDelete(id);
+          },
         },
-      ]
-    );
+      ],
+    });
   };
 
-  const renderRightActions = () => (
-    <TouchableOpacity
-      onPress={handleDelete}
-      className="bg-[#ff2a00] justify-center items-center w-20 m-1 rounded-lg"
-    >
-      <Ionicons name="trash" size={24} color="white" />
-    </TouchableOpacity>
-  );
 
   return (
     <View className="flex px-10 items-center">
-      {/* <Swipeable renderRightActions={renderRightActions}> */}
       <View
         className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
               bg-[#918b8b0d]
@@ -100,7 +111,7 @@ export default function AdsCard({
               {accId}
             </Text>
           </View>
-          <View className="pt-2">
+          <View className="pt-2 flex-col gap-2">
             <TouchableOpacity
               onPress={() => {
                 router.push(`/editads?id=${id}`);
@@ -112,10 +123,20 @@ export default function AdsCard({
                 size={22}
               ></Ionicons>
             </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={22} color="#e74c3c" />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-      {/* </Swipeable> */}
+
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={alertConfig.buttons}
+        onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+      />
     </View>
   );
 }

@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "plugin:react-you-might-not-need-an-effect/legacy-recommended"
+  ]
+}

@@ -49,7 +49,8 @@ export default function BillCard({
   const { t } = useTranslation();
 
   // Local state to track immediate document type changes
-  const [localDocumentType, setLocalDocumentType] = useState(currentDocumentType);
+  const [localDocumentType, setLocalDocumentType] =
+    useState(currentDocumentType);
 
   // Animation values for status change
   const statusScaleAnim = useRef(new Animated.Value(1)).current;
@@ -98,11 +99,9 @@ export default function BillCard({
     if (onUpdateDocumentType) {
       // Immediately update local state for instant UI feedback
       setLocalDocumentType("Invoice");
-      
+
       // Call the API update function
       onUpdateDocumentType(id, "Invoice");
-      
-      // Note: Auto close functionality removed as SafeSwipeable doesn't support refs
     }
   };
 
@@ -110,11 +109,9 @@ export default function BillCard({
     if (onUpdateDocumentType) {
       // Immediately update local state for instant UI feedback
       setLocalDocumentType("Receipt");
-      
+
       // Call the API update function
       onUpdateDocumentType(id, "Receipt");
-      
-      // Note: Auto close functionality removed as SafeSwipeable doesn't support refs
     }
   };
 
@@ -159,12 +156,15 @@ export default function BillCard({
             className="bg-[#ffa12e] justify-center items-center w-20 rounded-lg mr-2"
           >
             <Ionicons name="checkmark-circle" size={24} color={iconColor} />
-            <Text className="text-xs font-semibold mt-1 text-center" style={{ color: iconColor }}>
+            <Text
+              className="text-xs font-semibold mt-1 text-center"
+              style={{ color: iconColor }}
+            >
               {t("bill.confirm") || "Confirm"}
             </Text>
           </TouchableOpacity>
         )}
-        
+
         {/* Customer Paid - Update to Receipt */}
         {currentDocumentType !== "Receipt" && (
           <TouchableOpacity
@@ -173,7 +173,10 @@ export default function BillCard({
             style={{ backgroundColor: PriceColor }}
           >
             <Ionicons name="cash" size={24} color={iconColor} />
-            <Text className="text-xs font-semibold mt-1 text-center" style={{ color: iconColor }}>
+            <Text
+              className="text-xs font-semibold mt-1 text-center"
+              style={{ color: iconColor }}
+            >
               {t("bill.paid") || "Paid"}
             </Text>
           </TouchableOpacity>
@@ -266,7 +269,7 @@ export default function BillCard({
                           numberOfLines={1}
                           style={{ color: "#7e7d7a" }}
                         >
-                          {t(`product.unit.${item.unit}`) }
+                          {t(`product.unit.${item.unit}`)}
                         </CustomText>
                       </>
                     ) : null}
@@ -285,21 +288,23 @@ export default function BillCard({
           <View className="pt-2 flex flex-col items-end">
             <Text
               className="text-xl font-bold justify-end"
-              style={{ 
-                color: localDocumentType === "Receipt"? PriceColor : getStatusColor(localDocumentType),
-                opacity: localDocumentType === "Receipt"
-                  ? 1 : 0.5,
+              style={{
+                color:
+                  localDocumentType === "Receipt"
+                    ? PriceColor
+                    : getStatusColor(localDocumentType),
+                opacity: localDocumentType === "Receipt" ? 1 : 0.5,
               }}
               numberOfLines={1}
             >
-                {localDocumentType === "Receipt"
+              {localDocumentType === "Receipt"
                 ? `+${(total || 0).toLocaleString()}`
                 : (totalQuotation || 0).toLocaleString()}
             </Text>
-            
+
             {/* DocumentType Status Box */}
             {localDocumentType && (
-              <Animated.View 
+              <Animated.View
                 className="mt-2"
                 style={{
                   transform: [{ scale: statusScaleAnim }],
@@ -308,16 +313,16 @@ export default function BillCard({
               >
                 <View
                   className="px-3 py-1 rounded-full"
-                  style={{ 
+                  style={{
                     backgroundColor: getStatusColor(localDocumentType),
                   }}
                 >
                   <Text
                     className="text-xs font-semibold"
-                    style={{ 
+                    style={{
                       color: iconColor,
                       fontSize: 10,
-                      textAlign: 'center'
+                      textAlign: "center",
                     }}
                     numberOfLines={1}
                   >
@@ -332,7 +337,6 @@ export default function BillCard({
     </TouchableOpacity>
   );
 
-  
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
       <>
@@ -344,7 +348,7 @@ export default function BillCard({
             alignSelf: "center",
           }}
         >
-            {cardContent}
+          {cardContent}
         </View>
 
         {/* Action Menu Modal for Long Press */}
@@ -395,8 +399,19 @@ export default function BillCard({
                     justifyContent: "center",
                   }}
                 >
-                  <Ionicons name="checkmark-circle" size={24} color={iconColor} style={{ marginRight: 10 }} />
-                  <CustomText style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={24}
+                    color={iconColor}
+                    style={{ marginRight: 10 }}
+                  />
+                  <CustomText
+                    style={{
+                      color: iconColor,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
                     {t("bill.confirm") || "Customer Confirmed"}
                   </CustomText>
                 </TouchableOpacity>
@@ -419,8 +434,19 @@ export default function BillCard({
                     justifyContent: "center",
                   }}
                 >
-                  <Ionicons name="cash" size={24} color={iconColor} style={{ marginRight: 10 }} />
-                  <CustomText style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                  <Ionicons
+                    name="cash"
+                    size={24}
+                    color={iconColor}
+                    style={{ marginRight: 10 }}
+                  />
+                  <CustomText
+                    style={{
+                      color: iconColor,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
                     {t("bill.paid") || "Customer Paid"}
                   </CustomText>
                 </TouchableOpacity>
@@ -437,7 +463,14 @@ export default function BillCard({
                   borderColor: cNameColor,
                 }}
               >
-                <CustomText style={{ color: cNameColor, fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+                <CustomText
+                  style={{
+                    color: cNameColor,
+                    fontSize: 16,
+                    fontWeight: "600",
+                    textAlign: "center",
+                  }}
+                >
                   {t("common.cancel") || "Cancel"}
                 </CustomText>
               </TouchableOpacity>
@@ -448,7 +481,7 @@ export default function BillCard({
     );
   }
 
-  // Return plain card 
+  // Return plain card
   return (
     <View
       style={{

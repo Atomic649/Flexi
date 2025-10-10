@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React from "react";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -30,75 +29,69 @@ export default function StoreCard({
     }
   };
 
-  const renderRightActions = () => (
-    <TouchableOpacity
-      onPress={() => {
-        onDelete(accId);
-      }}
-      className="bg-[#ff2a00] justify-center items-center w-20 m-1 rounded-lg"
-    >
-      <Ionicons name="trash" size={24} color="white" />
-    </TouchableOpacity>
-  );
-
   return (
     <View className="flex px-10 items-center">
-      <Swipeable renderRightActions={renderRightActions}>
-        <View
-          className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
+      <View
+        className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
       bg-[#918b8b0d]
       border-s-8 `}
+        style={{
+          width: Platform.OS === "web" ? 500 : 350,
+          borderColor: getBorderColor(platform),
+          backgroundColor: cardColor,
+        }}
+      >
+        <View className="flex flex-row "
           style={{
             width: Platform.OS === "web" ? 500 : 350,
-            borderColor: getBorderColor(platform),
-            backgroundColor: cardColor,
-          }}
-        >
-          <View className="flex flex-row "
-            style={{
-              width: Platform.OS === "web" ? 500 : 350,
-              height: Platform.OS === "web" ? 100 : 80,
-              justifyContent: "space-between",
-              padding: 15,
-            
-            }}>
-            <View className="flex justify-center flex-1 ml-3 gap-y-1">
-              <Text
-                className="font-bold text-sm text-zinc-500"
-                numberOfLines={3}
-              >
-                {platform}
-              </Text>
-              <Text
-                className="text-lg text-zinc-500 font-psemibold"
-                numberOfLines={1}
-              >
-                {accName}
-              </Text>
-              <Text
-                className="text-base text-zinc-500 font-pregular"
-                numberOfLines={1}
-              >
-                {accId}
-              </Text>
-            </View>
-            <View className="pt-2">
-              <TouchableOpacity
-                onPress={() => {
-                  router.push(`/editstore?id=${id}`);
-                  console.log("id", id);
-                }}
-              >
-                <Ionicons
-                  name="settings-sharp"
-                  color={color}
-                  size={22}
-                ></Ionicons>
-              </TouchableOpacity>
-            </View>
+            height: Platform.OS === "web" ? 100 : 80,
+            justifyContent: "space-between",
+            padding: 15,
+          
+          }}>
+          <View className="flex justify-center flex-1 ml-3 gap-y-1">
+            <Text
+              className="font-bold text-sm text-zinc-500"
+              numberOfLines={3}
+            >
+              {platform}
+            </Text>
+            <Text
+              className="text-lg text-zinc-500 font-psemibold"
+              numberOfLines={1}
+            >
+              {accName}
+            </Text>
+            <Text
+              className="text-base text-zinc-500 font-pregular"
+              numberOfLines={1}
+            >
+              {accId}
+            </Text>
+          </View>
+          <View className="pt-2 flex-col gap-2">
+            <TouchableOpacity
+              onPress={() => {
+                router.push(`/editstore?id=${id}`);
+                console.log("id", id);
+              }}
+            >
+              <Ionicons
+                name="settings-sharp"
+                color={color}
+                size={22}
+              ></Ionicons>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                onDelete(accId);
+              }}
+            >
+              <Ionicons name="trash-outline" size={22} color="#e74c3c" />
+            </TouchableOpacity>
           </View>
         </View>
-      </Swipeable>
+      </View>
     </View>
   );
 }
