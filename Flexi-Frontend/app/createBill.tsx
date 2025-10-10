@@ -20,7 +20,7 @@ import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
-import DropdownClear from "@/components/DropdownClear";
+import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
 import { useBusiness } from "@/providers/BusinessProvider";
@@ -29,7 +29,7 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
-import FormFieldClear from "@/components/FormFieldClear";
+import FormFieldClear from "@/components/formfield/FormFieldClear";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {

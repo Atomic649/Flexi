@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { View, TextInput, TouchableOpacity, Image } from "react-native";
-import { icons } from "../constants";
-import { CustomText } from "./CustomText";
-import i18n from "../i18n"; // Adjust the path if your i18n config is elsewhere
+import { icons } from "../../constants";
+import { CustomText } from "../CustomText";
+import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
 
 const FormField = ({
     title,

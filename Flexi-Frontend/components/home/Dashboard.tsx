@@ -19,7 +19,7 @@ import CallAPIProduct from "@/api/product_api";
 import CallAPIStore from "@/api/store_api";
 import CallDashboardAPI from "@/api/dashboard_api";
 import { format } from "date-fns";
-import Dropdown3 from "../Dropdown3";
+import Dropdown3 from "../dropdown/Dropdown3";
 import { Text } from "react-native";
 import { getResponsiveStyles } from "@/utils/responsive";
 import LinearChart from "@/components/LinearChart";

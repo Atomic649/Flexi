@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { View } from "@/components/Themed";
-import FormField from "@/components/FormField";
+import FormField from "@/components/formfield/FormField";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { CustomButton } from "@/components/CustomButton";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
-import Dropdown from "@/components/Dropdown";
+import Dropdown from "@/components/dropdown/Dropdown";
 import CallAPIBusiness from "@/api/business_api";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { useTheme } from "@/providers/ThemeProvider";

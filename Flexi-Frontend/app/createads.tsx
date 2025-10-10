@@ -6,12 +6,12 @@ import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import FormField2 from "@/components/FormField2";
+import FormField2 from "@/components/formfield/FormField2";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMemberId } from "@/utils/utility";
 import CallAPIPlatform from "@/api/platform_api";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Dropdown2 from "@/components/Dropdown2";
+import Dropdown2 from "@/components/dropdown/Dropdown2";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
 

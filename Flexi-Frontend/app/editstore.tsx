@@ -9,8 +9,8 @@ import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { ScrollView, View, Text, Platform } from "react-native";
 import {CustomButton} from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
-import FormField2 from "@/components/FormField2";
-import Dropdown2 from "@/components/Dropdown2";
+import FormField2 from "@/components/formfield/FormField2";
+import Dropdown2 from "@/components/dropdown/Dropdown2";
 import { useTheme } from "@/providers/ThemeProvider";
 
 export default function EditStore() {

@@ -10,8 +10,8 @@ import CallAPIBusiness from "@/api/business_api";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { useTheme } from "@/providers/ThemeProvider";
 import { getMemberId, getUserId } from "@/utils/utility";
-import Dropdown2 from "@/components/Dropdown2";
-import FormField2 from "@/components/FormField2";
+import Dropdown2 from "@/components/dropdown/Dropdown2";
+import FormField2 from "@/components/formfield/FormField2";
 import { Ionicons } from "@expo/vector-icons";
 
 

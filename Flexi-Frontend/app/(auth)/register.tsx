@@ -7,7 +7,7 @@ import {
   View as RNView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import FormField from "@/components/FormField";
+import FormField from "@/components/formfield/FormField";
 import { router } from "expo-router";
 import { CustomButton, Button } from "@/components/CustomButton";
 import { useState, useEffect, useRef } from "react";

@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import {CustomButton, Button } from "@/components/CustomButton";
-import FormField from "@/components/FormField";
+import FormField from "@/components/formfield/FormField";
 import { useRef, useState } from "react";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";

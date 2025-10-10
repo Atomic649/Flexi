@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
-import { FloatingLabelInput } from "@/components/FloatingLabelInput";
+import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";

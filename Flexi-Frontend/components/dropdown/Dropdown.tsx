@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, TouchableOpacity, FlatList, Text } from "react-native";
-import { CustomText } from "./CustomText";
+import { CustomText } from '../CustomText'; // Make sure to import CustomText
 
 const Dropdown = ({
   title,

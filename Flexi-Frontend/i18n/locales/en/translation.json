@@ -1568,5 +1568,8 @@
       "address": "Address with Thai province",
       "receiptTitle": "Receipt title (need: {{examples, list}} etc.)"
     }
-  }
+  },
+  "chatAI": {
+    "title": "Business Assistant"}   
+  
 }

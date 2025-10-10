@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
-import FormField from "@/components/FormField";
+import FormField from "@/components/formfield/FormField";
 import { CustomButton } from "@/components/CustomButton";
 import { CustomText } from "@/components/CustomText";
 import { useTranslation } from "react-i18next";

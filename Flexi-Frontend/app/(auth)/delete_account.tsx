@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CustomButton } from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
-import FormField2 from "@/components/FormField2";
+import FormField2 from "@/components/formfield/FormField2";
 import CallAPIUser from "@/api/auth_api";
 import { getUserId, removeToken, removeMemberId, removeBusinessId, getMemberId } from "@/utils/utility";
 import { SafeAreaView } from "react-native-safe-area-context";
