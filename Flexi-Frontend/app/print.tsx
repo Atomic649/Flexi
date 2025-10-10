@@ -1829,6 +1829,7 @@ export default function Print() {
                 className={`flex-row items-center ${
                   isMobile() ? "ml-auto" : ""
                 }`}
+                activeOpacity={1}
               >
                 <Ionicons
                   name="print"
@@ -1844,6 +1845,7 @@ export default function Print() {
           {/* Tabs */}
           <View className="flex-row mb-6">
             <TouchableOpacity
+              activeOpacity={1}
               className="p-3 px-6 rounded-t-lg"
               style={{
                 backgroundColor:
@@ -1879,6 +1881,7 @@ export default function Print() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              activeOpacity={1}
               className="p-3 px-6 rounded-t-lg"
               style={{
                 backgroundColor:
