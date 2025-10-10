@@ -478,42 +478,34 @@ const ByOrder = () => {
             </Text>
 
             {getBillsToDisplay(date, groupedBills[date]).map((bill) => (
-              <TouchableOpacity
+              <BillCard
                 key={bill.id}
-                activeOpacity={1} // Prevent fade effect on press
+                id={bill.id}
+                platform={bill.platform}
+                product={bill.product}
+                amount={bill.amount} 
+                cName={bill.cName}
+                cLastName={bill.cLastName}
+                total={bill.total}
+                totalQuotation={bill.totalQuotation}
+                purchaseAt={bill.purchaseAt}
+                CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
+                onDelete={handleDelete}
+                PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
+                cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
+                getBorderColor={getBorderColor(bill.platform)}
+                unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
+                discount={bill.discount}
+                currentDocumentType={bill.DocumentType}
+                onUpdateDocumentType={handleUpdateDocumentType}
+                iconColor={theme === "dark" ? "#232425" : "#ffffff"}
                 onPress={() =>
                   router.push({
                     pathname: "/editBill",
                     params: { id: bill.id },
                   })
                 }
-                style={{ 
-                  width: "100%",
-                  opacity: isDateInFuture(bill.purchaseAt) ? 0.5 : 1,
-                }}
-              >
-                <BillCard
-                  id={bill.id}
-                  platform={bill.platform}
-                  product={bill.product}
-                  amount={bill.amount} 
-                  cName={bill.cName}
-                  cLastName={bill.cLastName}
-                  total={bill.total}
-                  totalQuotation={bill.totalQuotation}
-                  purchaseAt={bill.purchaseAt}
-                  CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
-                  onDelete={handleDelete}
-                  PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
-                  cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
-                  getBorderColor={getBorderColor(bill.platform)}
-                  unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
-                  discount={bill.discount}
-                  currentDocumentType={bill.DocumentType}
-                  onUpdateDocumentType={handleUpdateDocumentType}
-                  iconColor={theme === "dark" ? "#232425" : "#ffffff"}
-                />
-              </TouchableOpacity>
+              />
             ))}
 
             {/* Show "See More" button for Future group */}

@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Platform,
   Animated,
+  Modal,
 } from "react-native";
 import React, { useRef, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,6 +45,7 @@ export default function BillCard({
   getBorderColor,
   onUpdateDocumentType, // New prop for updating document type
   currentDocumentType, // Current document type to show appropriate actions
+  onPress, // Add onPress prop to handle navigation from parent
 }: any) {
   const { t } = useTranslation();
 
@@ -181,15 +183,25 @@ export default function BillCard({
     );
   };
 
+  // State for showing action menu on long press
+  const [showActionMenu, setShowActionMenu] = useState(false);
+
+  const handleLongPress = () => {
+    if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
+      setShowActionMenu(true);
+    }
+  };
+
   const cardContent = (
-    <View
-      className="flex "
+    <TouchableOpacity
+      className="flex"
       style={{
-        width: Platform.OS === "web" ? "100%" : "100%",
-        maxWidth: 500,
-        minWidth: 350,
-        alignSelf: "center",
+        width: "100%",
       }}
+      onPress={onPress} // Normal press for navigation
+      onLongPress={handleLongPress}
+      delayLongPress={500}
+      activeOpacity={0.9}
     >
       <View
         className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
@@ -318,20 +330,152 @@ export default function BillCard({
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   // Wrap in SafeSwipeable if update function is provided and currentDocumentType is not "Receipt"
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
     return (
-      <Swipeable 
-        renderLeftActions={renderLeftActions}
-      >
-        {cardContent}
-      </Swipeable>
+      <>
+        <View
+          style={{
+            width: Platform.OS === "web" ? "100%" : "100%",
+            maxWidth: 500,
+            minWidth: 350,
+            alignSelf: "center",
+          }}
+        >
+          <Swipeable 
+            renderLeftActions={renderLeftActions}
+          >
+            {cardContent}
+          </Swipeable>
+        </View>
+
+        {/* Action Menu Modal for Long Press */}
+        <Modal
+          visible={showActionMenu}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowActionMenu(false)}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+            activeOpacity={1}
+            onPress={() => setShowActionMenu(false)}
+          >
+            <View
+              style={{
+                backgroundColor: CardColor,
+                borderRadius: 12,
+                padding: 20,
+                width: Platform.OS === "web" ? "30%" : "80%",
+                maxWidth: 400,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: cNameColor,
+                  marginBottom: 15,
+                  textAlign: "center",
+                }}
+              >
+                {t("bill.updateStatus") || "Update Status"}
+              </Text>
+
+              {/* Customer Confirm Button */}
+              {currentDocumentType !== "Invoice" && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowActionMenu(false);
+                    handleCustomerConfirm();
+                  }}
+                  style={{
+                    backgroundColor: "#ffa12e",
+                    padding: 15,
+                    borderRadius: 8,
+                    marginBottom: 10,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Ionicons name="checkmark-circle" size={24} color={iconColor} style={{ marginRight: 10 }} />
+                  <Text style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                    {t("bill.confirm") || "Customer Confirmed"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Customer Paid Button */}
+              {currentDocumentType !== "Receipt" && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowActionMenu(false);
+                    handleCustomerPaid();
+                  }}
+                  style={{
+                    backgroundColor: PriceColor,
+                    padding: 15,
+                    borderRadius: 8,
+                    marginBottom: 10,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Ionicons name="cash" size={24} color={iconColor} style={{ marginRight: 10 }} />
+                  <Text style={{ color: iconColor, fontSize: 16, fontWeight: "600" }}>
+                    {t("bill.paid") || "Customer Paid"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Cancel Button */}
+              <TouchableOpacity
+                onPress={() => setShowActionMenu(false)}
+                style={{
+                  backgroundColor: "transparent",
+                  padding: 15,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: cNameColor,
+                }}
+              >
+                <Text style={{ color: cNameColor, fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+                  {t("common.cancel") || "Cancel"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </>
     );
   }
 
   // Return plain card if no swipe functionality needed or if currentDocumentType is "Receipt"
-  return cardContent;
+  return (
+    <View
+      style={{
+        width: Platform.OS === "web" ? "100%" : "100%",
+        maxWidth: 500,
+        minWidth: 350,
+        alignSelf: "center",
+      }}
+    >
+      {cardContent}
+    </View>
+  );
 }

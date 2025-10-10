@@ -1560,7 +1560,25 @@ export default function EditBill() {
                 key={idx}
                 className="flex flex-row items-center mb-1 relative"
               >
-                <View className="w-2/5 pr-2">
+                <View className="w-2/5 pr-2" style={{ position: "relative" }}>
+                  {idx !== 0 && isEditMode && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveProductItem(idx)}
+                      style={{
+                        position: "absolute",
+                        top: 2,
+                        left: 2,
+                        zIndex: 10,
+                      }}
+                      activeOpacity={1}
+                    >
+                      <Ionicons
+                        name="close-circle"
+                        size={20}
+                        color="#e74c3c"
+                      />
+                    </TouchableOpacity>
+                  )}
                   <DropdownClear
                     title={t(`bill.productName`) + ` ${idx + 1}`}
                     options={productChoice.map((product) => ({
@@ -1630,7 +1648,7 @@ export default function EditBill() {
                     editable={isEditMode}
                   />
                 </View>
-                <View className="w-1/6 pr-2" style={{ position: "relative" }}>
+                <View className="w-1/6 pr-2">
                   <FormFieldClear
                     title={
                       t("bill.amount") +
@@ -1652,24 +1670,6 @@ export default function EditBill() {
                     keyboardType="numeric"
                     editable={isEditMode}
                   />
-
-                  {idx !== 0 && isEditMode && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveProductItem(idx)}
-                      style={{
-                        position: "absolute",
-                        top: 17,
-                        right: -6,
-                        zIndex: 1,
-                      }}
-                    >
-                      <Ionicons
-                        name="remove-circle"
-                        size={22}
-                        color="#e74c3c"
-                      />
-                    </TouchableOpacity>
-                  )}
                 </View>
               </View>
             ))}

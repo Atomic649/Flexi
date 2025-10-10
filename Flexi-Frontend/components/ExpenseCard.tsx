@@ -112,7 +112,6 @@ export default function ExpenseCard({
           maxWidth: 500,
           minWidth: 350,
         }}
-        key={id}
       >
         <TouchableOpacity
           onPress={() => {

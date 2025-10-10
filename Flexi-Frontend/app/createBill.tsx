@@ -1,11 +1,9 @@
 import {
   Dimensions,
   Platform,
-  SafeAreaView,
   Modal,
   TouchableOpacity,
   ScrollView,
-  Text,
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
@@ -686,7 +684,7 @@ export default function CreateBill() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   return (
-    <SafeAreaView
+    <View
       className={`flex-1 ${useBackgroundColorClass()}`}
       style={{
         minHeight: Dimensions.get("window").height,
@@ -1174,7 +1172,25 @@ export default function CreateBill() {
                 key={idx}
                 className="flex flex-row items-center mb-1 relative"
               >
-                <View className="w-2/5 pr-2">
+                <View className="w-2/5 pr-2" style={{ position: "relative" }}>
+                  {idx !== 0 && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveProductItem(idx)}
+                      style={{
+                        position: "absolute",
+                        top: 2,
+                        left: 2,
+                        zIndex: 10,
+                      }}
+                      activeOpacity={1}
+                    >
+                      <Ionicons
+                        name="close-circle"
+                        size={20}
+                        color="#e74c3c"
+                      />
+                    </TouchableOpacity>
+                  )}
                   <DropdownClear
                     title={t(`bill.productName`) + ` ${idx + 1}`}
                     options={productChoice.map((product) => ({
@@ -1241,7 +1257,7 @@ export default function CreateBill() {
                     keyboardType="numeric"
                   />
                 </View>
-                <View className="w-1/6 pr-2" style={{ position: "relative" }}>
+                <View className="w-1/6 pr-2">
                   <FormFieldClear
                     title={
                       t("bill.amount") +
@@ -1262,23 +1278,6 @@ export default function CreateBill() {
                     otherStyles="mt-1 mb-1"
                     keyboardType="numeric"
                   />
-                  {idx !== 0 && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveProductItem(idx)}
-                      style={{
-                        position: "absolute",
-                        top: 17,
-                        right: -6,
-                        zIndex: 1,
-                      }}
-                    >
-                      <Ionicons
-                        name="remove-circle"
-                        size={22}
-                        color="#e74c3c"
-                      />
-                    </TouchableOpacity>
-                  )}
                 </View>
               </View>
             ))}
@@ -1672,6 +1671,6 @@ export default function CreateBill() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
-    </SafeAreaView>
+    </View>
   );
 }
