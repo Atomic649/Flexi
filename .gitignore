@@ -68,6 +68,9 @@ expo-env.d.ts
 postgres_data/
 postgres_data2/
 
+# jenkins
+jenkins/
+
 #SSL
 cert.pem
 key.pem

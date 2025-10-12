@@ -107,3 +107,18 @@ services:
       - expo-web
     networks:
       - prosgres-docker-prisma
+
+  # Jenkins CI/CD
+  jenkins:
+    image: jenkins/jenkins:jdk21
+    container_name: jenkins
+    volumes:
+      - ./jenkins:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
+      - /var/run/docker.sock:/var/run/docker.sock # เพื่อให้ Jenkins สามารถใช้งาน Docker daemon ที่รันบน host ได้
+    environment:
+      - JENKINS_OPTS=--httpPort=8888 # กำหนด Port สำหรับ Jenkins UI
+    ports:
+      - "8888:8888" # สำหรับ Jenkins UI
+    restart: always
+    networks:
+      - prosgres-docker-prisma
