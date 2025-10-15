@@ -110,10 +110,14 @@ services:
 
   # Jenkins CI/CD
   jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile      
     image: jenkins/jenkins:jdk21
     container_name: jenkins
+    user: root
     volumes:
-      - ./jenkins:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
+      - ./jenkins/jenkins_home:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
       - /var/run/docker.sock:/var/run/docker.sock # เพื่อให้ Jenkins สามารถใช้งาน Docker daemon ที่รันบน host ได้
     environment:
       - JENKINS_OPTS=--httpPort=8888 # กำหนด Port สำหรับ Jenkins UI
