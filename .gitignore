@@ -68,9 +68,8 @@ expo-env.d.ts
 postgres_data/
 postgres_data2/
 
-# jenkins
-jenkins/
-
+# Ignore Jenkins home
+/jenkins/jenkins_home/
 #SSL
 cert.pem
 key.pem
