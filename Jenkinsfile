@@ -13,12 +13,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-cred'
         DOCKER_REPO = "atomic649/express-docker-app"
-        APP_NAME = "express-docker-app"
-        // Tame npm noise in CI
-        NPM_CONFIG_AUDIT = 'false'
-        NPM_CONFIG_FUND = 'false'
-        NPM_CONFIG_PROGRESS = 'false'
-        NPM_CONFIG_LOGLEVEL = 'warn'
+        APP_NAME = "express-docker-app"     
     }
 
     // กำหนด stages ของ Pipeline
@@ -44,14 +39,10 @@ pipeline {
         stage('Install & Test') {
             steps {
                 dir('Flexi-Backend') {
-                    sh '''
-                                                if [ -f package-lock.json ]; then \
-                                                    npm ci --no-audit --no-fund --progress=false; \
-                                                else \
-                                                    npm install --no-audit --no-fund --progress=false; \
-                                                fi
-                        npm test || echo "No backend tests defined or some failed" 
-                    '''
+                   sh '''
+                    if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                    npm test
+                '''
                 }
             }
         }
