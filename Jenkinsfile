@@ -14,6 +14,11 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-cred'
         DOCKER_REPO = "atomic649/express-docker-app"
         APP_NAME = "express-docker-app"
+        // Tame npm noise in CI
+        NPM_CONFIG_AUDIT = 'false'
+        NPM_CONFIG_FUND = 'false'
+        NPM_CONFIG_PROGRESS = 'false'
+        NPM_CONFIG_LOGLEVEL = 'warn'
     }
 
     // กำหนด stages ของ Pipeline
@@ -25,6 +30,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Checking out code..."
+                // Ensure clean workspace to avoid leftover node_modules or partial installs
+                deleteDir()
                 checkout scm
                 // หรือใช้แบบกำหนดเอง หากไม่ใช้ Pipeline from SCM:
                 // git url: 'https://github.com/your-username/your-repo.git'
@@ -38,7 +45,11 @@ pipeline {
             steps {
                 dir('Flexi-Backend') {
                     sh '''
-                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                                                if [ -f package-lock.json ]; then \
+                                                    npm ci --no-audit --no-fund --progress=false; \
+                                                else \
+                                                    npm install --no-audit --no-fund --progress=false; \
+                                                fi
                         npm test || echo "No backend tests defined or some failed" 
                     '''
                 }
