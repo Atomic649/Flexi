@@ -13,8 +13,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub-cred'
         DOCKER_REPO = "atomic649/express-docker-app"
-        APP_NAME = "express-docker-app"
-        APP_PORT = "3001"
+        APP_NAME = "express-docker-app"     
     }
 
     // กำหนด stages ของ Pipeline
@@ -107,19 +106,18 @@ pipeline {
         // ดึง image ล่าสุดจาก Docker Hub มาใช้งาน
         // หยุดและลบ container เก่าที่ชื่อ ${APP_NAME} (ถ้ามี)
         // สร้างและรัน container ใหม่จาก image ล่าสุด
-      stage('Deploy Local') {
-    steps {
-        sh """
-            echo "Deploying container ${APP_NAME} on host port ${APP_PORT}..."
-            docker pull ${DOCKER_REPO}:latest
-            docker stop ${APP_NAME} || true
-            docker rm ${APP_NAME} || true
-            # Map host 9999 to container 3000 (Express default). If your app listens on 9999 internally, change to -p \${APP_PORT}:\${APP_PORT}
-            docker run -d --name ${APP_NAME} -p \${APP_PORT}:3000 ${DOCKER_REPO}:latest
-            docker ps --filter name=${APP_NAME} --format "table {{.Names}}\\t{{.Image}}\\t{{.Ports}}\\t{{.Status}}"
-        """
-    }
-}
+        stage('Deploy Local') {
+            steps {
+                sh """
+                    echo "Deploying container ${APP_NAME} from latest image..."
+                    docker pull ${DOCKER_REPO}:latest
+                    docker stop ${APP_NAME} || true
+                    docker rm ${APP_NAME} || true
+                    docker run -d --name ${APP_NAME} -p 3001:3000 ${DOCKER_REPO}:latest
+                    docker ps --filter name=${APP_NAME} --format "table {{.Names}}\\t{{.Image}}\\t{{.Status}}"
+                """
+            }
+        }
     }
 
     // กำหนด post actions
