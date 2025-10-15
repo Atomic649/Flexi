@@ -7,11 +7,15 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../../src/generated/client2"
+  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator clientDist {
   provider = "prisma-client-js"
   output   = "../../dist/src/generated/client2"
+  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {

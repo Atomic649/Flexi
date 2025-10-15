@@ -1,10 +1,9 @@
 module.exports = {
-  resolver: 'jest-haste-resolver',
-  haste: {
-    providesModuleNodeModules: ['src/generated', 'dist/src/generated'],
-  },
-  moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1',
-    '^dist/(.*)$': '<rootDir>/dist/$1',
-  },
+  // Delegate to the Backend project's Jest config
+  projects: ['<rootDir>/Flexi-Backend'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/postgres_data',
+    '<rootDir>/postgres_data2',
+  ],
 };

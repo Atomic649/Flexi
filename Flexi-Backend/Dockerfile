@@ -10,20 +10,21 @@ WORKDIR /app
 # Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm install
-
-# Copy the Prisma schema file to the container
+# Copy the Prisma schema files before install so postinstall can access them
 COPY prisma ./prisma/
+
+# Install dependencies without running lifecycle scripts (avoid postinstall prisma generate here)
+ENV NODE_ENV=development
+RUN npm install --ignore-scripts
 
 # Copy the rest of the application code
 COPY . .
 
+# Generate Prisma client for the current platform (handled by postinstall too)
+RUN npm run prisma:generate
+
 # Build the application (transpile TypeScript to JavaScript)
 RUN npm run build
-
-# Generate Prisma client
-RUN npm run prisma:generate
 
 # Run database migrations
 #RUN npm run prisma:migrate

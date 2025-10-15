@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "prebuild": "npm run prisma:generate",
     "build": "tsc",
     "test": "jest",
     "start:dev": "nodemon index.ts",
     "start": "node dist/index.js",
+    "postinstall": "npm run prisma:generate",
     "prisma:generate": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
     "prisma:generate:db1": "npx prisma generate --schema=prisma/db1/schema1.prisma",
     "prisma:generate:db2": "npx prisma generate --schema=prisma/db2/schema2.prisma",
@@ -19,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=18.18.0 <=22.15.0"
+    "node": ">=18.18.0 <=22.20.0"
   },
   "description": "",
   "dependencies": {
@@ -80,9 +82,20 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ]
+    "testMatch": ["**/tests/**/*.test.ts"],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/src/generated/"
+    ],
+    "roots": ["<rootDir>/src", "<rootDir>/tests"],
+    "transform": {
+      "^.+\\.(ts|tsx)$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.jest.json"
+        }
+      ]
+    }
   },
   "files.associations": {
     "*.exp": "note"

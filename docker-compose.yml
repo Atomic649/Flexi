@@ -20,12 +20,15 @@ services:
       - ./Flexi-Backend:/app 
       - /app/node_modules # Prevent overwriting node_modules in the container
     working_dir: /app
-    command: sh -c "npm install && npm run build && npm run start" # migrate the second schema 
+    command: sh -c "npm install && npm run prisma:generate && npm run build && npm run start" # ensure prisma clients for linux-musl
     ports:
       - 3000:3000
     environment:
       - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-      - NODE_ENV=production     
+      - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
+      # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
+      - NODE_ENV=development     
     restart: always
     networks:
       - prosgres-docker-prisma
@@ -117,7 +120,7 @@ services:
     container_name: jenkins
     user: root
     volumes:
-      - ./jenkins/jenkins_home:/var/jenkins/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
+      - ./jenkins/jenkins_home:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
       - /var/run/docker.sock:/var/run/docker.sock # เพื่อให้ Jenkins สามารถใช้งาน Docker daemon ที่รันบน host ได้
     environment:
       - JENKINS_OPTS=--httpPort=8888 # กำหนด Port สำหรับ Jenkins UI

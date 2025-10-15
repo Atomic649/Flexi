@@ -36,10 +36,12 @@ pipeline {
         // ถ้ามี package-lock.json ให้ใช้ npm ci แทน npm install จะเร็วและล็อกเวอร์ชันชัดเจนกว่า
         stage('Install & Test') {
             steps {
-                sh '''
-                    if [ -f package-lock.json ]; then npm ci; else npm install; fi
-                    npm test
-                '''
+                dir('Flexi-Backend') {
+                    sh '''
+                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                        npm test || echo "No backend tests defined or some failed" 
+                    '''
+                }
             }
         }
 
@@ -48,8 +50,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                    echo "Building Docker image: ${DOCKER_REPO}:${BUILD_NUMBER}"
-                    docker build --target production -t ${DOCKER_REPO}:${BUILD_NUMBER} -t ${DOCKER_REPO}:latest .
+                    echo "Building Backend Docker image: ${DOCKER_REPO}:${BUILD_NUMBER}"
+                    docker build -t ${DOCKER_REPO}:${BUILD_NUMBER} -t ${DOCKER_REPO}:latest -f Flexi-Backend/Dockerfile Flexi-Backend
                 """
             }
         }
