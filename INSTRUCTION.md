@@ -207,8 +207,11 @@ docker compose down --volumes expo-web nginx
 **Docker Up**
 ```bash
 docker compose up --build  expo-web nginx
-````
-
+```
+**Docker Up All Container**
+```bash
+docker compose -f docker-compose.dev.yml up     
+```
 
 
 
