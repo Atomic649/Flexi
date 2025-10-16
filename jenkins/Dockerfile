@@ -3,7 +3,7 @@ FROM jenkins/jenkins:jdk21
 
 USER root
 
-# Install Docker CLI and Node.js with non-interactive gpg keyring
+# Install Docker CLI and Node.js (non-interactive gpg import)
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
@@ -13,9 +13,7 @@ RUN set -eux; \
     chmod a+r /etc/apt/keyrings/docker.gpg; \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list; \
     apt-get update; \
-    apt-get install -y --no-install-recommends docker-ce-cli; \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -; \
-    apt-get install -y --no-install-recommends nodejs; \
+    apt-get install -y --no-install-recommends docker-ce-cli; \    
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 

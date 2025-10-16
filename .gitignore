@@ -67,6 +67,7 @@ expo-env.d.ts
 # postgres_data
 postgres_data/
 postgres_data2/
+postgres_data3/
 
 # Ignore Jenkins home
 /jenkins/jenkins_home/
