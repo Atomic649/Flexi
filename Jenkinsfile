@@ -96,15 +96,13 @@ stage('Install & Test') {
                 dir('Flexi-Backend') {
                     sh '''
                         echo "Installing dependencies..."
-                        npm cache clean --force
-                        rm -rf node_modules
-                        npm ci
+                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
                         echo "Checking Jest version..."
                         npx jest --version
 
                         echo "Running tests..."
-                        npx jest --runInBand
+                        npm test
                     '''
                 }
             }
