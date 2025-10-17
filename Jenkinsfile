@@ -50,11 +50,11 @@ pipeline {
         //APP_NAME = "express-docker-app"     
          // กำหนดค่าสำหรับจำลอง DEV environment บน Local
         DEV_APP_NAME              = "flexi-dev"
-        DEV_HOST_PORT             = "4001"
+        DEV_HOST_PORT             = "3333"
 
         // กำหนดค่าสำหรับจำลอง PROD environment บน Local
         PROD_APP_NAME             = "flexi-prod"
-        PROD_HOST_PORT            = "4002"
+        PROD_HOST_PORT            = "3636"
     }
     // กำหนด input parameters สำหรับเลือก Action (Build & Deploy หรือ Rollback)
     // และกำหนดค่า ROLLBACK_TAG กับ ROLLBACK_TARGET เมื่อเลือก Rollback
@@ -80,32 +80,11 @@ pipeline {
             steps {
                 echo "Checking out code..."
                 checkout scm
-                
-                // Debug: Check what was actually checked out
-                echo "=== Post-checkout verification ==="
-                sh '''
-                    echo "Current directory: $(pwd)"
-                    echo "Workspace contents:"
-                    ls -la
-                    echo ""
-                    echo "Flexi-Backend directory contents:"
-                    if [ -d "Flexi-Backend" ]; then
-                        ls -la Flexi-Backend/
-                        echo ""
-                        echo "Essential files check:"
-                        echo "package.json exists: $(test -f Flexi-Backend/package.json && echo YES || echo NO)"
-                        echo "package-lock.json exists: $(test -f Flexi-Backend/package-lock.json && echo YES || echo NO)"
-                        echo "src/ directory exists: $(test -d Flexi-Backend/src && echo YES || echo NO)"
-                        echo "prisma/ directory exists: $(test -d Flexi-Backend/prisma && echo YES || echo NO)"
-                    else
-                        echo "ERROR: Flexi-Backend directory does not exist!"
-                    fi
-                '''
             }
         }
 
        
-          // Stage 2: ติดตั้ง dependencies และ Run test
+       // Stage 2: ติดตั้ง dependencies และ Run test
         // ใช้ Node.js plugin (ต้องติดตั้ง NodeJS plugin ก่อน) ใน Jenkins หรือ Node.js ใน Docker 
         // ถ้ามี package-lock.json ให้ใช้ npm ci แทน npm install จะเร็วและล็อกเวอร์ชันชัดเจนกว่า
        stage('Install & Test') {
@@ -113,79 +92,13 @@ pipeline {
             when { expression { params.ACTION == 'Build & Deploy' } }
             steps {
                 echo "Running tests inside a consistent Docker environment..."
-                echo "Workspace path: ${env.WORKSPACE}"
-                echo "Build number: ${env.BUILD_NUMBER}"
-                
-                script {
-                    try {
-                        echo "Pulling Docker image node:22-alpine..."
-                        sh 'docker pull node:22-alpine'
-                        
-                        echo "Starting Docker container with workspace mounted..."
-                        // Use sh command to run docker directly
-                        sh """
-                            docker run --rm \
-                                -v ${env.WORKSPACE}:/workspace \
-                                -w /workspace \
-                                node:22-alpine \
-                                sh -c '
-                                    set -e
-                                    
-                                    echo "=== Debug: Container Environment ==="
-                                    pwd
-                                    whoami
-                                    echo "Workspace mount verification:"
-                                    ls -la
-                                    
-                                    echo "=== Check if Flexi-Backend exists ==="
-                                    if [ ! -d "Flexi-Backend" ]; then
-                                        echo "ERROR: Flexi-Backend directory not found!"
-                                        echo "Available directories:"
-                                        ls -la
-                                        exit 1
-                                    fi
-                                    
-                                    echo "=== Entering Flexi-Backend directory ==="
-                                    cd Flexi-Backend
-                                    pwd
-                                    echo "Flexi-Backend contents:"
-                                    ls -la
-                                    
-                                    echo "=== Essential files verification ==="
-                                    if [ ! -f package.json ]; then
-                                        echo "ERROR: package.json not found in Flexi-Backend!"
-                                        echo "This suggests incomplete checkout or mount issue"
-                                        echo "Available files:"
-                                        ls -la
-                                        exit 1
-                                    fi
-                                    
-                                    if [ ! -f package-lock.json ]; then
-                                        echo "ERROR: package-lock.json not found in Flexi-Backend!"
-                                        echo "Available files:"
-                                        ls -la
-                                        exit 1
-                                    fi
-                                    
-                                    echo "=== Check Node.js and npm versions ==="
-                                    node --version
-                                    npm --version
-                                    
-                                    echo "=== Installing dependencies ==="
-                                    echo "Found package.json and package-lock.json, using npm ci"
-                                    npm ci --verbose
-                                    
-                                    echo "=== Generating Prisma clients for testing ==="
-                                    npm run prisma:generate:dev
-                                    
-                                    echo "=== Running tests ==="
-                                    npm test
-                                '
-                        """
-                        echo "Docker container execution completed successfully."
-                    } catch (Exception e) {
-                        echo "Error during Docker execution: ${e.getMessage()}"
-                        error "Install & Test stage failed: ${e.getMessage()}"
+                 dir ('Flexi-Backend')  {
+                 script {
+                    docker.image('node:22-alpine').inside {
+                        sh '''
+                            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                            npm test
+                        '''
                     }
                 }
             }
