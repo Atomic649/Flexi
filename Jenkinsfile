@@ -96,7 +96,7 @@ stage('Install & Test') {
                 dir('Flexi-Backend') {
                     sh '''
                         echo "Installing dependencies..."
-                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                        npm install
 
                         echo "Checking Jest version..."
                         npx jest --version
@@ -110,9 +110,7 @@ stage('Install & Test') {
     }
 }
 
-    // Stage 3: สร้าง Docker Image
-    // ใช้ Docker ที่ติดตั้งบน Jenkins agent (ต้องติดตั้ง Docker plugin ก่อน) ใน Jenkins หรือ Docker ใน Docker
-    stage('Build & Push Docker Image') {
+  stage('Build & Push Docker Image') {
     when { expression { params.ACTION == 'Build & Deploy' } }
     steps {
         script {
@@ -134,6 +132,7 @@ stage('Install & Test') {
         }
     }
 }
+
 
          // =================================================================
         // DEPLOY STAGES: ทำงานเมื่อ ACTION คือ 'Build & Deploy' ตามแต่ละ Branch
