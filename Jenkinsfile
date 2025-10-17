@@ -92,6 +92,13 @@ pipeline {
             when { expression { params.ACTION == 'Build & Deploy' } }
             steps {             
                 dir ('Flexi-Backend') {
+                    echo "Checking package.json..."
+                    if [ -f package.json ]; then
+                        echo "package.json found."
+                    else
+                        echo "package.json not found."
+                    fi
+
                     echo "Running tests inside a consistent Docker environment..."
                     script {
                         docker.image('node:22-alpine').inside {
