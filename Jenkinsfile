@@ -95,8 +95,10 @@ pipeline {
                  script {
                     docker.image('node:22-alpine').inside {
                         sh '''
+                        dir ('Flexi-Backend') {
                             if [ -f package-lock.json ]; then npm ci; else npm install; fi
                             npm test
+                        }
                         '''
                     }
                 }
