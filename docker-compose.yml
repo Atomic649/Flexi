@@ -30,7 +30,7 @@ services:
       - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
       - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
       # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
-      - NODE_ENV=development     
+      - NODE_ENV=production
     restart: always
     networks:
       - prosgres-docker-prisma
