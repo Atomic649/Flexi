@@ -624,7 +624,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tananyarukoon/Flexi/Flexi-Backend/src/generated/client1",
+      "value": "/app/src/generated/client1",
       "fromEnvVar": null
     },
     "config": {
@@ -633,7 +633,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin",
+        "value": "linux-musl-openssl-3.0.x",
         "native": true
       },
       {
@@ -642,7 +642,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/tananyarukoon/Flexi/Flexi-Backend/prisma/db1/schema1.prisma",
+    "sourceFilePath": "/app/prisma/db1/schema1.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

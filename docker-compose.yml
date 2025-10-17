@@ -23,12 +23,14 @@ services:
     command: sh -c "npm install && npm run prisma:generate:prod && npm run build && npm run start" # ensure prisma clients for linux-musl
     ports:
       - 3000:3000
+    env_file:
+      - ./Flexi-Backend/.env
     environment:
       - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
       - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
       - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
       # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
-      - NODE_ENV=production
+      - NODE_ENV=development     
     restart: always
     networks:
       - prosgres-docker-prisma
