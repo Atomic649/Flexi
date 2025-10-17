@@ -92,15 +92,21 @@ pipeline {
          when { expression { params.ACTION == 'Build & Deploy' } }
          steps {
           echo "Running tests inside a consistent Docker environment..."
-          script {
-              docker.image('node:22-alpine').inside {
-               dir('Flexi-Backend') {
-                sh '''
-                    if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          dir('Flexi-Backend') {
+            sh '''
+                echo "Pulling Node.js Docker image..."
+                docker pull node:22-alpine
+                
+                echo "Running tests in Docker container..."
+                docker run --rm -v $(pwd):/app -w /app node:22-alpine sh -c "
+                    if [ -f package-lock.json ]; then 
+                        npm ci
+                    else 
+                        npm install
+                    fi
                     npm test
-                '''
-               }
-              }
+                "
+            '''
           }
          }
      }
@@ -113,16 +119,25 @@ pipeline {
                     def imageTag = (env.BRANCH_NAME == 'main') ? sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() : "dev-${env.BUILD_NUMBER}"
                     env.IMAGE_TAG = imageTag
                     
-                    // [ปรับปรุง] ใช้ docker.withRegistry() เพื่อความปลอดภัยและเรียบง่าย
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS_ID) {
-                        echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
-                        def customImage = docker.build("${DOCKER_REPO}:${env.IMAGE_TAG}", "--target production .")
+                    // Use shell commands directly for more reliability
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                            echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
+                            docker build --target production -t ${DOCKER_REPO}:${env.IMAGE_TAG} .
+                            
+                            echo "Logging in to Docker Hub..."
+                            echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                            
+                            echo "Pushing images to Docker Hub..."
+                            docker push ${DOCKER_REPO}:${env.IMAGE_TAG}
+                        """
                         
-                        echo "Pushing images to Docker Hub..."
-                        customImage.push()
                         // Push 'latest' tag เฉพาะเมื่อเป็น branch main
                         if (env.BRANCH_NAME == 'main') {
-                            customImage.push('latest')
+                            sh """
+                                docker tag ${DOCKER_REPO}:${env.IMAGE_TAG} ${DOCKER_REPO}:latest
+                                docker push ${DOCKER_REPO}:latest
+                            """
                         }
                     }
                 }
