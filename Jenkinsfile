@@ -84,35 +84,25 @@ pipeline {
         }
 
        
-        // Stage 2: ติดตั้ง dependencies และ Run test
+       // Stage 2: ติดตั้ง dependencies และ Run test
         // ใช้ Node.js plugin (ต้องติดตั้ง NodeJS plugin ก่อน) ใน Jenkins หรือ Node.js ใน Docker 
         // ถ้ามี package-lock.json ให้ใช้ npm ci แทน npm install จะเร็วและล็อกเวอร์ชันชัดเจนกว่า
-    stage('Install & Test') {
-         // เงื่อนไข: เมื่อ ACTION คือ 'Build & Deploy' เท่านั้น
-         when { expression { params.ACTION == 'Build & Deploy' } }
-         steps {
-          echo "Running tests inside a consistent Docker environment..."
-          script {
-              // Mount the workspace into the Docker container
-              docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
-               dir('Flexi-Backend') {
-                sh '''
-                    ls -la
-                    if [ -f package-lock.json ]; then 
-                        echo "Found package-lock.json, using npm ci"
-                        npm ci
-                    else 
-                        echo "No package-lock.json found, using npm install"
-                        npm install
-                    fi
-                    npm run prisma:generate:dev
-                    npm test
-                '''
-               }
-              }
-          }
-         }
-     }
+       stage('Install & Test') {
+            // เงื่อนไข: เมื่อ ACTION คือ 'Build & Deploy' เท่านั้น
+            when { expression { params.ACTION == 'Build & Deploy' } }
+            steps {
+                echo "Running tests inside a consistent Docker environment..."
+                 script {
+                    docker.image('node:22-alpine').inside {
+                        sh '''
+                            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                            npm test
+                        '''
+                    }
+                }
+            }
+        }
+
 // Stage 3: สร้าง Docker Image
         // ใช้ Docker ที่ติดตั้งบน Jenkins agent (ต้องติดตั้ง Docker plugin ก่อน) ใน Jenkins หรือ Docker ใน Docker
         stage('Build & Push Docker Image') {
