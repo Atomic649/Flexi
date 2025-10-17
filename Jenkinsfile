@@ -87,27 +87,30 @@ pipeline {
         // Stage 2: ติดตั้ง dependencies และ Run test in Flexi-Bankend
         // ใช้ Node.js22 ใน Docker 
         // ถ้ามี package-lock.json ให้ใช้ npm ci แทน npm install จะเร็วและล็อกเวอร์ชันชัดเจนกว่า
-        stage('Install Dependencies & Test') {
-            when { expression { params.ACTION == 'Build & Deploy' } }
-            steps {
-                script {
-                    docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
-                        sh '''
-                            echo "Installing dependencies..."
-                            if [ -f package-lock.json ]; then
-                                npm ci
-                            else
-                                npm install
-                            fi
+      stage('Install & Test') {
+    when { expression { params.ACTION == 'Build & Deploy' } }
+    steps {
+        echo "Running tests inside a consistent Docker environment..."
+        script {
+            docker.image('node:22-alpine').inside {
+                dir('Flexi-Backend') {
+                    sh '''
+                        echo "Installing dependencies..."
+                        if [ -f package-lock.json ]; then
+                            npm ci
+                        else
+                            npm install
+                        fi
 
-                            echo "Running tests..."
-                            npm test
-                        '''
-                    }
+                        echo "Running tests..."
+                        npm test
+                    '''
                 }
             }
         }
-        // Stage 3: สร้าง Docker Image
+    }
+}
+  // Stage 3: สร้าง Docker Image
         // ใช้ Docker ที่ติดตั้งบน Jenkins agent (ต้องติดตั้ง Docker plugin ก่อน) ใน Jenkins หรือ Docker ใน Docker
         stage('Build & Push Docker Image') {
             when { expression { params.ACTION == 'Build & Deploy' } }
