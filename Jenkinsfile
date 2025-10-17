@@ -96,9 +96,8 @@ pipeline {
                     if [ -f package.json ]; then
                         echo "package.json found."
                     else
-                        echo "package.json not found."
-                    fi
-
+                        echo "package.json not found."       
+                                 
                     echo "Running tests inside a consistent Docker environment..."
                     script {
                         docker.image('node:22-alpine').inside {
