@@ -15,9 +15,11 @@ Flexi-Frontend/logs/
 
 # Environment variables
 *.env
+*.env.dev
 *.env.local
 *.env.*.local
 Flexi-Backend/.env
+Flexi-Backend/.env.dev
 
 
 # Build output

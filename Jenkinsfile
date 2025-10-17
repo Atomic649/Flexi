@@ -61,7 +61,7 @@ pipeline {
         }
 
         // ============================================================
-        // Stage 2: Prepare .env file securely
+        // Stage 2: Prepare .env file securely from Jenkins credentials
         // ============================================================
         stage('Prepare .env') {
             when { expression { params.ACTION == 'Build & Deploy' } }
@@ -71,8 +71,19 @@ pipeline {
                         echo "Preparing .env file from Jenkins credentials..."
                         withCredentials([string(credentialsId: 'flexi-env-file', variable: 'ENV_FILE_CONTENT')]) {
                             writeFile file: '.env', text: ENV_FILE_CONTENT
-                            echo ".env file created successfully"
-                            sh 'ls -la .env || echo "env file missing!"'
+                            echo "✅ .env file created successfully"
+                            sh '''
+                                echo "Verifying .env file..."
+                                if [ -f .env ]; then
+                                    echo "File size: $(wc -c < .env) bytes"
+                                    echo "Number of lines: $(wc -l < .env)"
+                                    echo "Environment variables that will be loaded:"
+                                    grep -E "^[A-Z_]+=" .env | cut -d= -f1 | sed 's/^/  - /' || echo "No variables found"
+                                else
+                                    echo "❌ ERROR: .env file creation failed!"
+                                    exit 1
+                                fi
+                            '''
                         }
                     }
                 }

@@ -24,7 +24,7 @@ services:
     ports:
       - 3002:3000
     env_file:
-      - ./Flexi-Backend/.env
+      - ./Flexi-Backend/.env.dev
     environment:
       - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
       - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
