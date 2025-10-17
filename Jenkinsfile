@@ -96,7 +96,7 @@ stage('Install & Test') {
                 dir('Flexi-Backend') {
                     sh '''
                         echo "Installing dependencies..."
-                        npm install
+                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
                         echo "Checking Jest version..."
                         npx jest --version
@@ -110,30 +110,30 @@ stage('Install & Test') {
     }
 }
 
-  // Stage 3: สร้าง Docker Image
-        // ใช้ Docker ที่ติดตั้งบน Jenkins agent (ต้องติดตั้ง Docker plugin ก่อน) ใน Jenkins หรือ Docker ใน Docker
-        stage('Build & Push Docker Image') {
-            when { expression { params.ACTION == 'Build & Deploy' } }
-            steps {
-                script {
-                    def imageTag = (env.BRANCH_NAME == 'main') ? sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() : "dev-${env.BUILD_NUMBER}"
-                    env.IMAGE_TAG = imageTag
-                    
-                    // [ปรับปรุง] ใช้ docker.withRegistry() เพื่อความปลอดภัยและเรียบง่าย
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS_ID) {
-                        echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
-                        def customImage = docker.build("${DOCKER_REPO}:${env.IMAGE_TAG}", "--target production .")
-                        
-                        echo "Pushing images to Docker Hub..."
-                        customImage.push()
-                        // Push 'latest' tag เฉพาะเมื่อเป็น branch main
-                        if (env.BRANCH_NAME == 'main') {
-                            customImage.push('latest')
-                        }
+    // Stage 3: สร้าง Docker Image
+    // ใช้ Docker ที่ติดตั้งบน Jenkins agent (ต้องติดตั้ง Docker plugin ก่อน) ใน Jenkins หรือ Docker ใน Docker
+    stage('Build & Push Docker Image') {
+    when { expression { params.ACTION == 'Build & Deploy' } }
+    steps {
+        script {
+            def imageTag = (env.BRANCH_NAME == 'main') ? sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() : "dev-${env.BUILD_NUMBER}"
+            env.IMAGE_TAG = imageTag
+
+            docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS_ID) {
+                dir('Flexi-Backend') {
+                    echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
+                    def customImage = docker.build("${DOCKER_REPO}:${env.IMAGE_TAG}", "--target production .")
+
+                    echo "Pushing images to Docker Hub..."
+                    customImage.push()
+                    if (env.BRANCH_NAME == 'main') {
+                        customImage.push('latest')
                     }
                 }
             }
         }
+    }
+}
 
          // =================================================================
         // DEPLOY STAGES: ทำงานเมื่อ ACTION คือ 'Build & Deploy' ตามแต่ละ Branch
