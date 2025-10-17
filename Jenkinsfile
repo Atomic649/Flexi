@@ -96,7 +96,7 @@ stage('Install & Test') {
                 dir('Flexi-Backend') {
                     sh '''
                         echo "Installing dependencies..."
-                        if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                        npm install
 
                         echo "Checking Jest version..."
                         npx jest --version
