@@ -92,13 +92,33 @@ pipeline {
             when { expression { params.ACTION == 'Build & Deploy' } }
             steps {
                 echo "Running tests inside a consistent Docker environment..."
-                 script {
-                    docker.image('node:22-alpine').inside {
+                script {
+                    // Mount workspace and set working directory
+                    docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
                         sh '''
-                        dir ('Flexi-Backend') {
-                            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                            echo "=== Debug: Current directory and files ==="
+                            pwd
+                            ls -la
+                            
+                            echo "=== Entering Flexi-Backend directory ==="
+                            cd Flexi-Backend
+                            pwd
+                            ls -la
+                            
+                            echo "=== Installing dependencies ==="
+                            if [ -f package-lock.json ]; then 
+                                echo "Found package-lock.json, using npm ci"
+                                npm ci --no-cache
+                            else 
+                                echo "No package-lock.json found, using npm install"
+                                npm install --no-cache
+                            fi
+                            
+                            echo "=== Generating Prisma clients for testing ==="
+                            npm run prisma:generate:dev
+                            
+                            echo "=== Running tests ==="
                             npm test
-                        }
                         '''
                     }
                 }
