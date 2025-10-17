@@ -84,7 +84,7 @@ pipeline {
         }
 
        
-       // Stage 2: ติดตั้ง dependencies และ Run test
+          // Stage 2: ติดตั้ง dependencies และ Run test
         // ใช้ Node.js plugin (ต้องติดตั้ง NodeJS plugin ก่อน) ใน Jenkins หรือ Node.js ใน Docker 
         // ถ้ามี package-lock.json ให้ใช้ npm ci แทน npm install จะเร็วและล็อกเวอร์ชันชัดเจนกว่า
        stage('Install & Test') {
@@ -92,34 +92,62 @@ pipeline {
             when { expression { params.ACTION == 'Build & Deploy' } }
             steps {
                 echo "Running tests inside a consistent Docker environment..."
+                echo "Workspace path: ${env.WORKSPACE}"
+                echo "Build number: ${env.BUILD_NUMBER}"
+                
                 script {
-                    // Mount workspace and set working directory
-                    docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
-                        sh '''
-                            echo "=== Debug: Current directory and files ==="
-                            pwd
-                            ls -la
-                            
-                            echo "=== Entering Flexi-Backend directory ==="
-                            cd Flexi-Backend
-                            pwd
-                            ls -la
-                            
-                            echo "=== Installing dependencies ==="
-                            if [ -f package-lock.json ]; then 
-                                echo "Found package-lock.json, using npm ci"
-                                npm ci --no-cache
-                            else 
-                                echo "No package-lock.json found, using npm install"
-                                npm install --no-cache
-                            fi
-                            
-                            echo "=== Generating Prisma clients for testing ==="
-                            npm run prisma:generate:dev
-                            
-                            echo "=== Running tests ==="
-                            npm test
-                        '''
+                    try {
+                        echo "Pulling Docker image node:22-alpine..."
+                        docker.image('node:22-alpine').pull()
+                        
+                        echo "Starting Docker container with workspace mounted..."
+                        // Mount workspace and set working directory
+                        docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
+                            sh '''
+                                set -e  # Exit on any error
+                                
+                                echo "=== Debug: Current directory and files ==="
+                                pwd
+                                whoami
+                                ls -la
+                                
+                                echo "=== Check if Flexi-Backend exists ==="
+                                if [ ! -d "Flexi-Backend" ]; then
+                                    echo "ERROR: Flexi-Backend directory not found!"
+                                    echo "Available directories:"
+                                    ls -la
+                                    exit 1
+                                fi
+                                
+                                echo "=== Entering Flexi-Backend directory ==="
+                                cd Flexi-Backend
+                                pwd
+                                ls -la
+                                
+                                echo "=== Check Node.js and npm versions ==="
+                                node --version
+                                npm --version
+                                
+                                echo "=== Installing dependencies ==="
+                                if [ -f package-lock.json ]; then 
+                                    echo "Found package-lock.json, using npm ci"
+                                    npm ci --no-cache --verbose
+                                else 
+                                    echo "No package-lock.json found, using npm install"
+                                    npm install --no-cache --verbose
+                                fi
+                                
+                                echo "=== Generating Prisma clients for testing ==="
+                                npm run prisma:generate:dev
+                                
+                                echo "=== Running tests ==="
+                                npm test
+                            '''
+                        }
+                        echo "Docker container execution completed successfully."
+                    } catch (Exception e) {
+                        echo "Error during Docker execution: ${e.getMessage()}"
+                        error "Install & Test stage failed: ${e.getMessage()}"
                     }
                 }
             }
