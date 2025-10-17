@@ -90,15 +90,16 @@ pipeline {
        stage('Install & Test') {
             // เงื่อนไข: เมื่อ ACTION คือ 'Build & Deploy' เท่านั้น
             when { expression { params.ACTION == 'Build & Deploy' } }
-            steps {
-                echo "Running tests inside a consistent Docker environment..."
-                 dir ('Flexi-Backend')  {
-                 script {
-                    docker.image('node:22-alpine').inside {
-                        sh '''
+            steps {             
+                dir ('Flexi-Backend') {
+                    echo "Running tests inside a consistent Docker environment..."
+                    script {
+                        docker.image('node:22-alpine').inside {
+                            sh '''
                             if [ -f package-lock.json ]; then npm ci; else npm install; fi
                             npm test
-                        '''
+                            '''
+                        }
                     }
                 }
             }
