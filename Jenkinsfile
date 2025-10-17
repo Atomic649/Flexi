@@ -80,6 +80,27 @@ pipeline {
             steps {
                 echo "Checking out code..."
                 checkout scm
+                
+                // Debug: Check what was actually checked out
+                echo "=== Post-checkout verification ==="
+                sh '''
+                    echo "Current directory: $(pwd)"
+                    echo "Workspace contents:"
+                    ls -la
+                    echo ""
+                    echo "Flexi-Backend directory contents:"
+                    if [ -d "Flexi-Backend" ]; then
+                        ls -la Flexi-Backend/
+                        echo ""
+                        echo "Essential files check:"
+                        echo "package.json exists: $(test -f Flexi-Backend/package.json && echo YES || echo NO)"
+                        echo "package-lock.json exists: $(test -f Flexi-Backend/package-lock.json && echo YES || echo NO)"
+                        echo "src/ directory exists: $(test -d Flexi-Backend/src && echo YES || echo NO)"
+                        echo "prisma/ directory exists: $(test -d Flexi-Backend/prisma && echo YES || echo NO)"
+                    else
+                        echo "ERROR: Flexi-Backend directory does not exist!"
+                    fi
+                '''
             }
         }
 
@@ -110,9 +131,10 @@ pipeline {
                                 sh -c '
                                     set -e
                                     
-                                    echo "=== Debug: Current directory and files ==="
+                                    echo "=== Debug: Container Environment ==="
                                     pwd
                                     whoami
+                                    echo "Workspace mount verification:"
                                     ls -la
                                     
                                     echo "=== Check if Flexi-Backend exists ==="
@@ -126,20 +148,32 @@ pipeline {
                                     echo "=== Entering Flexi-Backend directory ==="
                                     cd Flexi-Backend
                                     pwd
+                                    echo "Flexi-Backend contents:"
                                     ls -la
+                                    
+                                    echo "=== Essential files verification ==="
+                                    if [ ! -f package.json ]; then
+                                        echo "ERROR: package.json not found in Flexi-Backend!"
+                                        echo "This suggests incomplete checkout or mount issue"
+                                        echo "Available files:"
+                                        ls -la
+                                        exit 1
+                                    fi
+                                    
+                                    if [ ! -f package-lock.json ]; then
+                                        echo "ERROR: package-lock.json not found in Flexi-Backend!"
+                                        echo "Available files:"
+                                        ls -la
+                                        exit 1
+                                    fi
                                     
                                     echo "=== Check Node.js and npm versions ==="
                                     node --version
                                     npm --version
                                     
                                     echo "=== Installing dependencies ==="
-                                    if [ -f package-lock.json ]; then 
-                                        echo "Found package-lock.json, using npm ci"
-                                        npm ci --no-cache --verbose
-                                    else 
-                                        echo "No package-lock.json found, using npm install"
-                                        npm install --no-cache --verbose
-                                    fi
+                                    echo "Found package.json and package-lock.json, using npm ci"
+                                    npm ci --verbose
                                     
                                     echo "=== Generating Prisma clients for testing ==="
                                     npm run prisma:generate:dev
