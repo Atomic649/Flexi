@@ -2,8 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "prebuild": "npm run prisma:generate",
+  "scripts": {   
     "build": "tsc",
     "test": "jest",
     "start:dev": "nodemon index.dev.ts",

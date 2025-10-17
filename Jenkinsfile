@@ -50,11 +50,11 @@ pipeline {
         //APP_NAME = "express-docker-app"     
          // กำหนดค่าสำหรับจำลอง DEV environment บน Local
         DEV_APP_NAME              = "flexi-dev"
-        DEV_HOST_PORT             = "3001"
+        DEV_HOST_PORT             = "3333"
 
         // กำหนดค่าสำหรับจำลอง PROD environment บน Local
         PROD_APP_NAME             = "flexi-prod"
-        PROD_HOST_PORT            = "3000"
+        PROD_HOST_PORT            = "3636"
     }
     // กำหนด input parameters สำหรับเลือก Action (Build & Deploy หรือ Rollback)
     // และกำหนดค่า ROLLBACK_TAG กับ ROLLBACK_TARGET เมื่อเลือก Rollback
@@ -140,7 +140,7 @@ pipeline {
         stage('Deploy to DEV (Local Docker)') {
             when {
                 expression { params.ACTION == 'Build & Deploy' }
-                branch 'develop'
+                branch 'dev'
             } 
             steps {
                 script {
