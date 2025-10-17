@@ -90,7 +90,7 @@ pipeline {
        stage('Install & Test') {
             // เงื่อนไข: เมื่อ ACTION คือ 'Build & Deploy' เท่านั้น
             when { expression { params.ACTION == 'Build & Deploy' } }
-            steps {             
+            steps {
                 dir ('Flexi-Backend') {
                     echo "Checking package.json..."
                     if [ -f package.json ]; then
@@ -104,10 +104,10 @@ pipeline {
                             }
                         }
                     } else {
-                        error "package.json not found in Flexi-Backend directory."
+                        error "package.json not found in Flexi-Backend directory."}
                     }
                 }
-            }
+            }             
         }
 
 // Stage 3: สร้าง Docker Image
