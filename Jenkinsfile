@@ -98,52 +98,56 @@ pipeline {
                 script {
                     try {
                         echo "Pulling Docker image node:22-alpine..."
-                        docker.image('node:22-alpine').pull()
+                        sh 'docker pull node:22-alpine'
                         
                         echo "Starting Docker container with workspace mounted..."
-                        // Mount workspace and set working directory
-                        docker.image('node:22-alpine').inside("-v ${env.WORKSPACE}:/workspace -w /workspace") {
-                            sh '''
-                                set -e  # Exit on any error
-                                
-                                echo "=== Debug: Current directory and files ==="
-                                pwd
-                                whoami
-                                ls -la
-                                
-                                echo "=== Check if Flexi-Backend exists ==="
-                                if [ ! -d "Flexi-Backend" ]; then
-                                    echo "ERROR: Flexi-Backend directory not found!"
-                                    echo "Available directories:"
+                        // Use sh command to run docker directly
+                        sh """
+                            docker run --rm \
+                                -v ${env.WORKSPACE}:/workspace \
+                                -w /workspace \
+                                node:22-alpine \
+                                sh -c '
+                                    set -e
+                                    
+                                    echo "=== Debug: Current directory and files ==="
+                                    pwd
+                                    whoami
                                     ls -la
-                                    exit 1
-                                fi
-                                
-                                echo "=== Entering Flexi-Backend directory ==="
-                                cd Flexi-Backend
-                                pwd
-                                ls -la
-                                
-                                echo "=== Check Node.js and npm versions ==="
-                                node --version
-                                npm --version
-                                
-                                echo "=== Installing dependencies ==="
-                                if [ -f package-lock.json ]; then 
-                                    echo "Found package-lock.json, using npm ci"
-                                    npm ci --no-cache --verbose
-                                else 
-                                    echo "No package-lock.json found, using npm install"
-                                    npm install --no-cache --verbose
-                                fi
-                                
-                                echo "=== Generating Prisma clients for testing ==="
-                                npm run prisma:generate:dev
-                                
-                                echo "=== Running tests ==="
-                                npm test
-                            '''
-                        }
+                                    
+                                    echo "=== Check if Flexi-Backend exists ==="
+                                    if [ ! -d "Flexi-Backend" ]; then
+                                        echo "ERROR: Flexi-Backend directory not found!"
+                                        echo "Available directories:"
+                                        ls -la
+                                        exit 1
+                                    fi
+                                    
+                                    echo "=== Entering Flexi-Backend directory ==="
+                                    cd Flexi-Backend
+                                    pwd
+                                    ls -la
+                                    
+                                    echo "=== Check Node.js and npm versions ==="
+                                    node --version
+                                    npm --version
+                                    
+                                    echo "=== Installing dependencies ==="
+                                    if [ -f package-lock.json ]; then 
+                                        echo "Found package-lock.json, using npm ci"
+                                        npm ci --no-cache --verbose
+                                    else 
+                                        echo "No package-lock.json found, using npm install"
+                                        npm install --no-cache --verbose
+                                    fi
+                                    
+                                    echo "=== Generating Prisma clients for testing ==="
+                                    npm run prisma:generate:dev
+                                    
+                                    echo "=== Running tests ==="
+                                    npm test
+                                '
+                        """
                         echo "Docker container execution completed successfully."
                     } catch (Exception e) {
                         echo "Error during Docker execution: ${e.getMessage()}"
