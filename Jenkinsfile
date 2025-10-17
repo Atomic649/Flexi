@@ -91,23 +91,20 @@ pipeline {
             // เงื่อนไข: เมื่อ ACTION คือ 'Build & Deploy' เท่านั้น
             when { expression { params.ACTION == 'Build & Deploy' } }
             steps {
+                echo "Installing dependencies and running tests..."
                 dir ('Flexi-Backend') {
-                    echo "Checking package.json..."
-                    if [ -f package.json ]; then
-                        echo "Running tests inside a consistent Docker environment..."
-                        script {
-                            docker.image('node:22-alpine').inside {
-                                sh '''
-                                    if [ -f package-lock.json ]; then npm ci; else npm install; fi
-                                    npm test
-                                '''
-                            }
+                    echo "Running tests inside a consistent Docker environment..."
+                    script {
+                        docker.image('node:22-alpine').inside {
+                            sh '''
+                            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+                            npm test
+                            '''
                         }
-                    } else {
-                        error "package.json not found in Flexi-Backend directory."}
+
                     }
                 }
-            }             
+            }
         }
 
 // Stage 3: สร้าง Docker Image
