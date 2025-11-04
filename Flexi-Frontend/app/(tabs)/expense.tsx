@@ -15,22 +15,20 @@ const Expense = () => {
   const [index, setIndex] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [routes] = useState([
-    { key: "list", title1: t("expense.title.expenseList") },
-    { key: "detectExpense", title2: t("expense.title.updateExpense") },
+    { key: "list", title: t("expense.title.expenseList") },
+    { key: "detectExpense", title: t("expense.title.updateExpense") },
   ]);
-
   // Refresh expense list when screen comes into focus
   useFocusEffect(
-    React.useCallback(() => {
-      // Increment refresh trigger to force list to reload
-      setRefreshTrigger(prev => prev + 1);
+    React.useCallback(() => {   
+      setRefreshTrigger((prev) => prev + 1)   // Increment refresh trigger to force list to reload
     }, [])
   );
 
   // Create scene map with access to refresh trigger
   const renderSceneWithProps = () => {
     return {
-      list: () => list({ refreshTrigger }),
+      list: () => list({ refreshTrigger }), 
       detectExpense: detectExpense,
     };
   };
@@ -57,71 +55,43 @@ const Expense = () => {
                   }
                 : { backgroundColor: "#4e4b47" }
             }
-            indicatorStyle={{ backgroundColor: "#04ecc1", height: 3 }
-          }
-            renderTabBarItem={({ route, key }) => (
-              <View
-                className="flex-row items-center my-5 "
-                style={{
-                  width: Dimensions.get("window").width / 2,
-                  justifyContent: "center",
-                }}
-              >
-                {route.title1 && (
-                  <View className="justify-center items-center">
-                    <TouchableOpacity
-                      className="justify-center items-center"
-                      activeOpacity={1} // Prevent fade effect on press
-                      onPress={() =>
-                        setIndex(routes.findIndex((r) => r.key === key))
-                      }
-                    >
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          color:
-                            index === routes.findIndex((r) => r.key === key)
-                              ? theme === "dark"
-                                ? "#ffffff"
-                                : "#fbfbfb"
-                              : theme === "dark"
-                              ? "#868484"
-                              : "#e5e5e5",
-                        }}
-                      >
-                        {route.title1}
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                {route.title2 && (
-                  <View className="justify-center items-center">
-                    <TouchableOpacity
-                      className="justify-center items-center"
-                      onPress={() =>
-                        setIndex(routes.findIndex((r) => r.key === key))
-                      }
-                      activeOpacity={1} // Prevent fade effect on press
-                    >
-                      <CustomText
-                        style={{
-                          color:
-                            index === routes.findIndex((r) => r.key === key)
-                              ? theme === "dark"
-                                ? "#ffffff"
-                                : "#ffffff"
-                              : theme === "dark"
-                              ? "#868484"
-                              : "#aca5a5",
-                        }}
-                      >
-                        {route.title2}
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
+            indicatorStyle={{ backgroundColor: "#2b3c3a", height: 3 }}
+            renderTabBarItem={({ route, key, onLayout }) => {
+              const tabIndex = routes.findIndex((r) => r.key === key);
+              const isActive = index === tabIndex;
+
+              return (
+                <TouchableOpacity
+                  key={route.key}
+                  onLayout={onLayout}
+                  onPress={() => setIndex(tabIndex)}
+                  activeOpacity={1}
+                  style={{
+                    borderBottomWidth: isActive ? 3 : 0,
+                    borderBottomColor: isActive ? "#04ecc1" : "transparent",
+                    width: Dimensions.get("window").width / 2,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  <CustomText
+                    numberOfLines={1}
+                    style={{
+                      color: isActive
+                        ? theme === "dark"
+                          ? "#ffffff"
+                          : "#fbfbfb"
+                        : theme === "dark"
+                        ? "#868484"
+                        : "#aca5a5",
+                    }}
+                  >
+                    {route.title}
+                  </CustomText>
+                </TouchableOpacity>
+              );
+            }}
             style={
               theme === "dark"
                 ? { backgroundColor: "#1d1d1d" }
