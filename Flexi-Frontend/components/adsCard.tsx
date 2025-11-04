@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import CustomAlert from "@/components/CustomAlert";
+import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
 
 export default function AdsCard({
   id,
@@ -72,19 +73,36 @@ export default function AdsCard({
     });
   };
 
+  // Define swipe actions for the ads card
+  const rightActions: SwipeAction[] = [
+    {
+      id: "delete",
+      icon: "trash",     
+      backgroundColor: "#ff2a00",
+      textColor: "#FFFFFF",      
+      onPress: handleDelete,
+    },
+  ];
 
   return (
     <View className="flex px-10 items-center">
-      <View
-        className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
-              bg-[#918b8b0d]
-              border-s-8 `}
-        style={{
-          width: Platform.OS === "web" ? 500 : 350,
-          borderColor: getBorderColor(platform),
-          backgroundColor: cardColor,
-        }}
+      <SwipeableRow
+        rightActions={rightActions}
+        threshold={60}
+        actionWidth={80}
+        actionHeight="90%"
+        actionBorderRadius={6}
       >
+        <View
+          className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
+                bg-[#918b8b0d]
+                border-s-8 `}
+          style={{
+            width: Platform.OS === "web" ? 500 : 350,
+            borderColor: getBorderColor(platform),
+            backgroundColor: cardColor,
+          }}
+        >
         <View
           className="flex flex-row "
           style={{
@@ -123,12 +141,10 @@ export default function AdsCard({
                 size={22}
               ></Ionicons>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDelete}>
-              <Ionicons name="trash-outline" size={22} color="#e74c3c" />
-            </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </View>
+      </SwipeableRow>
 
       <CustomAlert
         visible={alertConfig.visible}

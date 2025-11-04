@@ -12,6 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomAlert from "@/components/CustomAlert";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "./CustomText";
+import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
+import { useBackgroundColorClass } from "@/utils/themeUtils";
 
 export default function ProductCard({
   id,
@@ -70,86 +72,101 @@ export default function ProductCard({
     });
   }, [t, onDelete, id]);
 
+  // Define swipe actions for the product card
+  const rightActions: SwipeAction[] = [
+    {
+      id: "delete",
+      icon: "trash",      
+      backgroundColor: "#ff2a00",
+      textColor: "#FFFFFF",
+      onPress: handleDelete,
+    },
+  ];
+
   return (
     <>
-      <View className="p-2">
-        <Pressable
-          android_ripple={{ color: "#e0f7fa" }}
-          style={({ pressed }) => [
+      <View className="p-2 ">
+        <SwipeableRow
+          rightActions={rightActions}
+          threshold={60}
+          actionWidth={80}
+          actionHeight="99%"
+          actionBorderRadius={8}
+        >
+          <Pressable
+            android_ripple={{ color: "#e0f7fa" }}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.85 : 1,
+              },
+            // Tailwind classes
             {
-              opacity: pressed ? 0.85 : 1,
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              paddingHorizontal: isSmallScreen ? 8 : 16,             
+              marginVertical: 8,
             },
-          // Tailwind classes
-          {
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "center",
-            paddingHorizontal: isSmallScreen ? 8 : 16,             
-            marginVertical: 8,
-          },
-        ]}
-        onPress={() => {
-          router.push(`/editproduct?id=${id}`);
-        }}
-      >
-        <View className="flex flex-row gap-2 sm:gap-3 items-start w-full">
-          <View className="flex justify-center items-center flex-row flex-1">
-            <View
-              className={`${
-                isSmallScreen ? "w-[70px] h-[70px]" : "w-[90px] h-[90px]"
-              } rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}
-            >
-              <Image
-                source={{ uri: productimage }}
-                className="w-full h-full rounded-lg"
-                resizeMode="cover"
-              />
-            </View>
-
-            <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1 px-2">
-              <CustomText
-                className={`font-psemibold ${
-                  isSmallScreen ? "text-base" : "text-lg"
-                }`}
-                style={{ color: "#71717a" }}
-                numberOfLines={2}
-              >
-                {productname}
-              </CustomText>
-              <Text
+          ]}
+          onPress={() => {
+            router.push(`/editproduct?id=${id}`);
+          }}
+        >
+          <View className={`flex } flex-row gap-2 sm:gap-3 items-start w-full`}
+                style={{ backgroundColor: useBackgroundColorClass() === 'bg-white' ? '#FFFFFF' : '#1e1e1e',
+                         padding: isSmallScreen ? 8 : 12,
+                         borderRadius: 8,
+                         shadowColor: '#000',
+                         shadowOffset: { width: 0, height: 2 },
+                         shadowOpacity: 0.1,
+                         shadowRadius: 4,
+                         elevation: 2,
+                }}>
+            <View className="flex justify-center items-center flex-row flex-1">
+              <View
                 className={`${
-                  isSmallScreen ? "text-lg" : "text-xl"
-                } text-zinc-500 font-bold`}
-                numberOfLines={1}
+                  isSmallScreen ? "w-[70px] h-[70px]" : "w-[90px] h-[90px]"
+                } rounded-lg border border-teal-200 flex justify-center items-center p-0.5`}
               >
-                {productprice}
-              </Text>
+                <Image
+                  source={{ uri: productimage }}
+                  className="w-full h-full rounded-lg"
+                  resizeMode="cover"
+                />
+              </View>
 
-              {producttype === "Product" && (
+              <View className="flex justify-center flex-1 ml-2 sm:ml-3 gap-y-1 px-2">
+                <CustomText
+                  className={`font-psemibold ${
+                    isSmallScreen ? "text-base" : "text-lg"
+                  }`}
+                  style={{ color: "#71717a" }}
+                  numberOfLines={2}
+                >
+                  {productname}
+                </CustomText>
                 <Text
-                  className="text-sm text-zinc-500 font-pregular"
+                  className={`${
+                    isSmallScreen ? "text-lg" : "text-xl"
+                  } text-zinc-500 font-bold`}
                   numberOfLines={1}
                 >
-                  Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
+                  {productprice}
                 </Text>
-              )}
+
+                {producttype === "Product" && (
+                  <Text
+                    className="text-sm text-zinc-500 font-pregular"
+                    numberOfLines={1}
+                  >
+                    Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
-          
-          {/* Delete Icon */}
-          <TouchableOpacity
-            onPress={(e) => {
-              e.stopPropagation();
-              handleDelete();
-            }}
-            style={{
-              padding: 8,
-            }}
-          >
-            <Ionicons name="trash-outline" size={24} color="#e74c3c" />
-          </TouchableOpacity>
-        </View>
-      </Pressable>
+          </Pressable>
+        </SwipeableRow>
       </View>
 
       <CustomAlert

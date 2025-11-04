@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
 
 export default function StoreCard({
   id,
@@ -25,22 +26,40 @@ export default function StoreCard({
       case "SCB":
         return "#9900ff"; // Red
       default:
-        return "#61fff2"; // Default color
+        return "#656666"; // Default color
     }
   };
 
+  // Define swipe actions for the store card
+  const rightActions: SwipeAction[] = [
+    {
+      id: "delete",
+      icon: "trash",      
+      backgroundColor: "#ff2a00",
+      textColor: "#FFFFFF",
+      onPress: () => onDelete(accId),
+    },
+  ];
+
   return (
     <View className="flex px-10 items-center">
-      <View
-        className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
-      bg-[#918b8b0d]
-      border-s-8 `}
-        style={{
-          width: Platform.OS === "web" ? 500 : 350,
-          borderColor: getBorderColor(platform),
-          backgroundColor: cardColor,
-        }}
+      <SwipeableRow
+        rightActions={rightActions}
+        threshold={60}
+        actionWidth={80}
+        actionHeight="90%"
+        actionBorderRadius={6}
       >
+        <View
+          className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
+        bg-[#918b8b0d]
+        border-s-8 `}
+          style={{
+            width: Platform.OS === "web" ? 500 : 350,
+            borderColor: getBorderColor(platform),
+            backgroundColor: cardColor,
+          }}
+        >
         <View className="flex flex-row "
           style={{
             width: Platform.OS === "web" ? 500 : 350,
@@ -82,16 +101,10 @@ export default function StoreCard({
                 size={22}
               ></Ionicons>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                onDelete(accId);
-              }}
-            >
-              <Ionicons name="trash-outline" size={22} color="#e74c3c" />
-            </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </View>
+      </SwipeableRow>
     </View>
   );
 }

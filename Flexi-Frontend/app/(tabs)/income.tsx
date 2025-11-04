@@ -66,7 +66,7 @@ const Income = () => {
                     width: Dimensions.get("window").width / 3,
                     justifyContent: "center",
                     alignItems: "center",
-                    paddingVertical: 20,
+                    paddingVertical: 12,
                   }}
                 >
                   <CustomText

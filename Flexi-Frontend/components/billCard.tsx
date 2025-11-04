@@ -3,13 +3,13 @@ import {
   Text,
   TouchableOpacity,
   Platform,
-  Animated,
-  Modal,
+  Animated as RNAnimated,
 } from "react-native";
 import React, { useRef, useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
+import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -52,8 +52,8 @@ export default function BillCard({
   const [overrideDocumentType, setOverrideDocumentType] = useState<string | null>(null);
 
   // Animation values for status change
-  const statusScaleAnim = useRef(new Animated.Value(1)).current;
-  const statusOpacityAnim = useRef(new Animated.Value(1)).current;
+  const statusScaleAnim = useRef(new RNAnimated.Value(1)).current;
+  const statusOpacityAnim = useRef(new RNAnimated.Value(1)).current;
 
   // Effective document type used for rendering and actions
   const effectiveDocumentType =
@@ -63,27 +63,27 @@ export default function BillCard({
 
   // Animate status change directly in event handlers (not via effect)
   const triggerStatusAnimation = useCallback(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(statusScaleAnim, {
-          toValue: 1.2,
+    RNAnimated.sequence([
+      RNAnimated.parallel([
+        RNAnimated.timing(statusScaleAnim, {
+          toValue: 1,
           duration: 200,
           useNativeDriver: true,
         }),
-        Animated.timing(statusOpacityAnim, {
+        RNAnimated.timing(statusOpacityAnim, {
           toValue: 0.7,
           duration: 200,
           useNativeDriver: true,
         }),
       ]),
-      Animated.parallel([
-        Animated.spring(statusScaleAnim, {
+      RNAnimated.parallel([
+        RNAnimated.spring(statusScaleAnim, {
           toValue: 1,
           tension: 100,
           friction: 5,
           useNativeDriver: true,
         }),
-        Animated.timing(statusOpacityAnim, {
+        RNAnimated.timing(statusOpacityAnim, {
           toValue: 1,
           duration: 300,
           useNativeDriver: true,
@@ -144,15 +144,33 @@ export default function BillCard({
     }
   };
 
+  // Define swipe actions for the bill card
+  const leftActions: SwipeAction[] = [];
 
-  // State for showing action menu on long press
-  const [showActionMenu, setShowActionMenu] = useState(false);
-
-  const handleLongPress = () => {
-    if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
-      setShowActionMenu(true);
+  // Add actions based on document type
+  if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
+    // Customer Confirm Button (only if not already Invoice)
+    if (effectiveDocumentType !== "Invoice") {
+      leftActions.push({
+        id: "confirm",
+        icon: "checkmark-circle",
+        text: t("bill.confirm") || "Confirm",
+        backgroundColor: "#ffa12e",
+        textColor: iconColor,
+        onPress: handleCustomerConfirm,
+      });
     }
-  };
+
+    // Customer Paid Button
+    leftActions.push({
+      id: "paid",
+      icon: "cash",
+      text: t("bill.paid") || "Paid",
+      backgroundColor: PriceColor,
+      textColor: iconColor,
+      onPress: handleCustomerPaid,
+    });
+  }
 
   const cardContent = (
     <TouchableOpacity
@@ -160,10 +178,8 @@ export default function BillCard({
       style={{
         width: "100%",
       }}
-      onPress={onPress} // Normal press for navigation
-      onLongPress={handleLongPress}
-      delayLongPress={500}
-      activeOpacity={0.5}
+      onPress={onPress}
+      activeOpacity={1}
     >
       <View
         className={`flex flex-col items-center pt-3 pb-4 px-4 pe-12  my-1 rounded-se-md          
@@ -264,7 +280,7 @@ export default function BillCard({
 
             {/* DocumentType Status Box */}
             {effectiveDocumentType && (
-              <Animated.View
+              <RNAnimated.View
                 className="mt-2"
                 style={{
                   transform: [{ scale: statusScaleAnim }],
@@ -277,8 +293,8 @@ export default function BillCard({
                     backgroundColor: getStatusColor(effectiveDocumentType),
                   }}
                 >
-                  <Text
-                    className="text-xs font-semibold"
+                  <CustomText
+                    className="text-xs font-semibold pt-1"
                     style={{
                       color: iconColor,
                       fontSize: 10,
@@ -287,9 +303,9 @@ export default function BillCard({
                     numberOfLines={1}
                   >
                     {getStatusText(effectiveDocumentType)}
-                  </Text>
+                  </CustomText>
                 </View>
-              </Animated.View>
+              </RNAnimated.View>
             )}
           </View>
         </View>
@@ -297,151 +313,6 @@ export default function BillCard({
     </TouchableOpacity>
   );
 
-  if (onUpdateDocumentType && effectiveDocumentType !== "Receipt") {
-    return (
-      <>
-        <View
-          style={{
-            width: Platform.OS === "web" ? "100%" : "100%",
-            maxWidth: 500,
-            minWidth: 350,
-            alignSelf: "center",
-          }}
-        >
-          {cardContent}
-        </View>
-
-        {/* Action Menu Modal for Long Press */}
-        <Modal
-          visible={showActionMenu}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setShowActionMenu(false)}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-            activeOpacity={0.8}
-            onPress={() => setShowActionMenu(false)}
-          >
-            <View
-              style={{
-                backgroundColor: CardColor,
-                borderRadius: 12,
-                padding: 20,
-                width: Platform.OS === "web" ? "30%" : "80%",
-                maxWidth: 400,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 4,
-                elevation: 5,
-              }}
-            >
-              {/* Customer Confirm Button */}
-              {effectiveDocumentType !== "Invoice" && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setShowActionMenu(false);
-                    handleCustomerConfirm();
-                  }}
-                  style={{
-                    backgroundColor: "#ffa12e",
-                    padding: 15,
-                    borderRadius: 8,
-                    marginBottom: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={24}
-                    color={iconColor}
-                    style={{ marginRight: 10 }}
-                  />
-                  <CustomText
-                    style={{
-                      color: iconColor,
-                      fontSize: 16,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {t("bill.confirm") || "Customer Confirmed"}
-                  </CustomText>
-                </TouchableOpacity>
-              )}
-
-              {/* Customer Paid Button */}
-              {effectiveDocumentType !== "Receipt" && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setShowActionMenu(false);
-                    handleCustomerPaid();
-                  }}
-                  style={{
-                    backgroundColor: PriceColor,
-                    padding: 15,
-                    borderRadius: 8,
-                    marginBottom: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Ionicons
-                    name="cash"
-                    size={24}
-                    color={iconColor}
-                    style={{ marginRight: 10 }}
-                  />
-                  <CustomText
-                    style={{
-                      color: iconColor,
-                      fontSize: 16,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {t("bill.paid") || "Customer Paid"}
-                  </CustomText>
-                </TouchableOpacity>
-              )}
-
-              {/* Cancel Button */}
-              <TouchableOpacity
-                onPress={() => setShowActionMenu(false)}
-                style={{
-                  backgroundColor: "transparent",
-                  padding: 15,
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  borderColor: cNameColor,
-                }}
-              >
-                <CustomText
-                  style={{
-                    color: cNameColor,
-                    fontSize: 16,
-                    fontWeight: "600",
-                    textAlign: "center",
-                  }}
-                >
-                  {t("common.cancel") || "Cancel"}
-                </CustomText>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      </>
-    );
-  }
-
-  // Return plain card
   return (
     <View
       style={{
@@ -451,7 +322,16 @@ export default function BillCard({
         alignSelf: "center",
       }}
     >
-      {cardContent}
+      <SwipeableRow
+        leftActions={leftActions}
+        disabled={!onUpdateDocumentType || currentDocumentType === "Receipt"}
+        threshold={80}
+        actionWidth={80}
+        actionHeight="92%"
+        actionBorderRadius={0}
+      >
+        {cardContent}
+      </SwipeableRow>
     </View>
   );
 }

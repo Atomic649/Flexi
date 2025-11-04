@@ -83,7 +83,7 @@ const Home = () => {
                     width: Dimensions.get("window").width / 2,
                     justifyContent: "center",
                     alignItems: "center",
-                    paddingVertical: 20,
+                    paddingVertical: 12,
                   }}
                 >
                   <CustomText

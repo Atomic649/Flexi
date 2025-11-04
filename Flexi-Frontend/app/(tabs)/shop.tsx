@@ -79,7 +79,7 @@ const shop = () => {
                     width: itemWidth,
                     justifyContent: "center",
                     alignItems: "center",
-                    paddingVertical: 20,
+                    paddingVertical: 12,
                   }}
                 >
                   <CustomText
