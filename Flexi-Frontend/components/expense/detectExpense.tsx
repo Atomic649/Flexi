@@ -263,6 +263,7 @@ export default function DetectExpense() {
   return (
     <View
       className={`h-full ${useBackgroundColorClass()} items-center`}
+      style={{ flex: 1, minHeight: 0 }}
     >
       <View
         className="flex-row items-center justify-between  py-1"
