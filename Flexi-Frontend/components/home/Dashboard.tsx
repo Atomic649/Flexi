@@ -348,6 +348,7 @@ export default function Dashboard() {
               {/* Time period buttons and date selection - 30/30/40 split */}
               <TouchableOpacity
                 onPress={() => handlePeriodChange("today")}
+                activeOpacity={1}
                 style={{
                   backgroundColor:
                     selectedPeriod === "today"
@@ -378,6 +379,7 @@ export default function Dashboard() {
 
               <TouchableOpacity
                 onPress={() => handlePeriodChange("thisMonth")}
+                activeOpacity={1}
                 style={{
                   backgroundColor:
                     selectedPeriod === "thisMonth"
@@ -409,6 +411,7 @@ export default function Dashboard() {
               {/* Calendar date picker */}
               <TouchableOpacity
                 onPress={() => setCalendarVisible(true)}
+                 activeOpacity={1}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",

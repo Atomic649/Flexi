@@ -57,7 +57,8 @@ const Expense = () => {
                   }
                 : { backgroundColor: "#4e4b47" }
             }
-            indicatorStyle={{ backgroundColor: "#04ecc1", height: 3 }}
+            indicatorStyle={{ backgroundColor: "#04ecc1", height: 3 }
+          }
             renderTabBarItem={({ route, key }) => (
               <View
                 className="flex-row items-center my-5 "
@@ -70,6 +71,7 @@ const Expense = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1} // Prevent fade effect on press
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -99,6 +101,7 @@ const Expense = () => {
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
+                      activeOpacity={1} // Prevent fade effect on press
                     >
                       <CustomText
                         style={{

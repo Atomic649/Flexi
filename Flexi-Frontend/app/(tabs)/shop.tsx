@@ -71,6 +71,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -97,6 +98,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -122,6 +124,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -147,6 +150,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -172,6 +176,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }
@@ -197,6 +202,7 @@ const shop = () => {
                   <View className="justify-center items-center">
                     <TouchableOpacity
                       className="justify-center items-center"
+                      activeOpacity={1}
                       onPress={() =>
                         setIndex(routes.findIndex((r) => r.key === key))
                       }

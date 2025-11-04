@@ -28,12 +28,13 @@ const Dropdown = ({
             <TouchableOpacity
                 className="w-full h-11 px-4 rounded-2xl border-2 border-transparent flex-row items-center justify-between"
                 onPress={handlePress}
+                activeOpacity={1}
                 style={{
                     backgroundColor: bgColor,
                     opacity: disabled ? 0.8 : 1
                 }}
             >
-                <CustomText className="text-[#b1b1b1] font-psemibold text-sm"
+                <CustomText className="text-[#6d6b6b] font-psemibold text-sm"
                 weight="bold"
                     style={{ color: textcolor }}>
                     {selectedValue || placeholder}
