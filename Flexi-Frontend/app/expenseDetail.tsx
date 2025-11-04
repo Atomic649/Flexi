@@ -659,7 +659,9 @@ export default function ExpenseDetail({
                               ? theme === "dark"
                                 ? "#666666"
                                 : "#999999"
-                              : undefined,
+                              :  theme === "dark"
+                            ? "#d0d0d0"
+                            : "#c1c1c1"
                         }}
                       >
                         {t("expense.detail.vatIncluded")}
@@ -705,7 +707,9 @@ export default function ExpenseDetail({
                                 ? theme === "dark"
                                   ? "#666666"
                                   : "#999999"
-                                : undefined,
+                                : theme === "dark"
+                              ? "#d0d0d0"
+                              : "#c1c1c1"
                           }}
                         >
                           {t("expense.detail.withHoldingTax")}
