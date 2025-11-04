@@ -28,7 +28,7 @@ const Expense = () => {
   // Create scene map with access to refresh trigger
   const renderSceneWithProps = () => {
     return {
-      list: () => list({ refreshTrigger }), 
+      list: () => list({ refreshTrigger }),
       detectExpense: detectExpense,
     };
   };
