@@ -546,7 +546,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   ${quotation.remark ? `• ${quotation.remark}` : ""}
                 </p>
                 <p>
-                  ${quotation.priceValid ? `\n${(() => { const d = new Date(quotation.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUtill")}: ${dd}/${mm}/${yyyy}`; })()}` : ""}
+                  ${quotation.priceValid ? `\n${(() => { const d = new Date(quotation.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUntill")}: ${dd}/${mm}/${yyyy}`; })()}` : ""}
                 </p>
               </div>
             </div>

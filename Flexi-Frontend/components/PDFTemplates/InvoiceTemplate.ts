@@ -24,10 +24,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     (sum: number, item: any) => sum + item.unitPrice * item.quantity,
     0
   );
-  const totalDiscount = productItems.reduce(
-    (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
-    0
-  ) + (invoice.billLevelDiscount || 0);
+  const totalDiscount =
+    productItems.reduce(
+      (sum: number, item: any) =>
+        sum + (item.unitDiscount || 0) * item.quantity,
+      0
+    ) + (invoice.billLevelDiscount || 0);
   const subtotal = rawTotal - totalDiscount;
   const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
   const grandTotal = subtotal + vatAmount;
@@ -496,15 +498,26 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <!-- Header -->
           <div class="invoice-header">
             <div class="company-logo-section" style="display: flex; align-items: center; height: 100%;">
-              <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${
-                 t("print.invoice") 
-              }</h1>
-              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
+              <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${t(
+                "print.invoice"
+              )}</h1>
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t(
+                "print.original"
+              )})</p>
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="invoice-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${invoice.billId}</span></div>
+              <div class="invoice-number"><span class="bill-label">${t(
+                "print.billNo"
+              )}</span> <span class="bill-id">${invoice.billId}</span></div>
                 
-                <p style="margin-top: 2px;">${(() => { const d = new Date(invoice.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
+                <p style="margin-top: 2px;">${(() => {
+                  const d = new Date(invoice.purchaseAt);
+                  if (isNaN(d.getTime())) return "";
+                  const dd = String(d.getDate()).padStart(2, "0");
+                  const mm = String(d.getMonth() + 1).padStart(2, "0");
+                  const yyyy = d.getFullYear();
+                  return `${dd}/${mm}/${yyyy}`;
+                })()}</p>
             </div>
           </div>
 
@@ -522,16 +535,18 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                       ? t("print.companyName")
                       : t("print.storeName")
                   }:</strong> ${
-      (businessDetails?.businessName || businessName || "Your Business Name") + (businessDetails?.branch ? ` (${businessDetails.branch})` : '')
-    }</p>
+    (businessDetails?.businessName || businessName || "Your Business Name") +
+    (businessDetails?.branch ? ` (${businessDetails.branch})` : "")
+  }</p>
               </div>
               <div>
                   <p><strong>${t("print.taxId")}:</strong> ${
-      businessDetails?.taxId || t("print.notSpecified")
-    }</p>
+    businessDetails?.taxId || t("print.notSpecified")
+  }</p>
               </div>
               <div class="full-width">
-                  <p><strong>${t("print.address")}:</strong> ${[
+                  <p><strong>${t("print.address")}:</strong> ${
+    [
       businessDetails?.businessAddress,
       businessDetails?.businessSubDistrict,
       businessDetails?.businessDistrict,
@@ -539,13 +554,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       businessDetails?.businessPostId,
     ]
       .filter(Boolean)
-      .join(', ') || t("print.notSpecified")}
+      .join(", ") || t("print.notSpecified")
+  }
                   </p>
               </div>
               <div>
                   <p><strong>${t("print.contact")}:</strong> ${
-      businessDetails?.businessPhone || t("print.notSpecified")
-    }</p>
+    businessDetails?.businessPhone || t("print.notSpecified")
+  }</p>
               </div>
             </div>
           </div>
@@ -555,20 +571,28 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <h3>${t("print.customerInformation")}</h3>
             <div class="business-details">
               <div>
-                <p><strong>${t("print.customerName")}:</strong> ${invoice.cName || ''} ${invoice.cLastName || ''}${invoice.cBranch ? ` (${invoice.cBranch})` : ''}</p>
+                <p><strong>${t("print.customerName")}:</strong> ${
+    invoice.cName || ""
+  } ${invoice.cLastName || ""}${
+    invoice.cBranch ? ` (${invoice.cBranch})` : ""
+  }</p>
               </div>
               <div>
-                <p><strong>${t("print.taxId")}:</strong> ${invoice.cTaxId || t("print.notSpecified")}</p>
+                <p><strong>${t("print.taxId")}:</strong> ${
+    invoice.cTaxId || t("print.notSpecified")
+  }</p>
               </div>
               <div class="full-width">
-                <p><strong>${t("print.address")}:</strong> ${[
-    invoice.cAddress,
-    invoice.cProvince,
-    invoice.cPostId,
-  ].filter(Boolean).join(', ') || t("print.addressNotProvided")}</p>
+                <p><strong>${t("print.address")}:</strong> ${
+    [invoice.cAddress, invoice.cProvince, invoice.cPostId]
+      .filter(Boolean)
+      .join(", ") || t("print.addressNotProvided")
+  }</p>
               </div>
               <div>
-                <p><strong>${t("print.contact")}:</strong> ${invoice.cPhone || t("print.notSpecified")}</p>
+                <p><strong>${t("print.contact")}:</strong> ${
+    invoice.cPhone || t("print.notSpecified")
+  }</p>
               </div>
             </div>
           </div>
@@ -590,7 +614,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   <th class="text-right" style="width: 17.5%;">${t(
                     "print.price"
                   )}</th>
-                    <th class="text-right" style="width: 13%;">${t("print.discount")}</th>
+                    <th class="text-right" style="width: 13%;">${t(
+                      "print.discount"
+                    )}</th>
                   <th class="text-right" style="width: 17.5%;">${t(
                     "print.total"
                   )}</th>
@@ -610,9 +636,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     <td class="text-right">${formatCurrencyForPDF(
                       item.unitPrice
                     )}</td>
-                      <td class="text-right">${item.unitDiscount ? `${formatCurrencyForPDF(item.unitDiscount)}` : "-"}</td>
+                      <td class="text-right">${
+                        item.unitDiscount
+                          ? `${formatCurrencyForPDF(item.unitDiscount)}`
+                          : "-"
+                      }</td>
                     <td class="text-right font-bold">${formatCurrencyForPDF(
-                      (item.unitPrice * item.quantity) - ((item.unitDiscount || 0) * item.quantity)
+                      item.unitPrice * item.quantity -
+                        (item.unitDiscount || 0) * item.quantity
                     )}</td>
                   </tr>
                 `
@@ -632,7 +663,20 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   ${invoice.remark ? `• ${invoice.remark}` : ""}
                 </p>
                 <p>
-                  ${invoice.priceValid ? `${(() => { const d = new Date(invoice.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUntill")} ${dd}/${mm}/${yyyy}`; })()}` : ""}
+                  ${
+                    invoice.priceValid
+                      ? `${(() => {
+                          const d = new Date(invoice.priceValid);
+                          if (isNaN(d.getTime())) return "";
+                          const dd = String(d.getDate()).padStart(2, "0");
+                          const mm = String(d.getMonth() + 1).padStart(2, "0");
+                          const yyyy = d.getFullYear();
+                          return `• ${t(
+                            "print.validUntill"
+                          )} ${dd}/${mm}/${yyyy}`;
+                        })()}`
+                      : ""
+                  }
                 </p>
               </div>
             </div>
@@ -640,32 +684,58 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <!-- Summary -->
             <div class="summary-section" style="flex: 1; width: 50%; margin-bottom: 0;">
               <div class="summary-table">
-                ${isVatRegistered
-                  ? `${totalDiscount > 0 ? `
+                ${
+                  isVatRegistered
+                    ? `${
+                        totalDiscount > 0
+                          ? `
                 <div class="summary-row discount">
-                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
-                </div>` : ""}
+                  <span class="summary-label">${
+                    t("print.totalDiscount") || "Total Discount"
+                  }:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount
+                  )}</span>
+                </div>`
+                          : ""
+                      }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subtotal
+                  )}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.vat")} (7%)</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    vatAmount
+                  )}</span>
                 </div>`
-                  : `${totalDiscount > 0 ? `
+                    : `${
+                        totalDiscount > 0
+                          ? `
                 <div class="summary-row discount">
-                  <span class="summary-label">${t("print.totalDiscount") || "Total Discount"}:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
-                </div>` : ""}
+                  <span class="summary-label">${
+                    t("print.totalDiscount") || "Total Discount"
+                  }:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount
+                  )}</span>
+                </div>`
+                          : ""
+                      }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
-                </div>`}
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subtotal
+                  )}</span>
+                </div>`
+                }
                 <div class="summary-row total">
                   <span class="summary-label">${t("print.grandTotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(grandTotal)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    grandTotal
+                  )}</span>
                 </div>
               </div>
             </div>
@@ -701,8 +771,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   "print.date"
                 )}: _______________</div>
               </div>
-              <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">
-                <div class="signature-label">${t("print.customerStamp")}</div>
+              <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">               
                 <div class="business-stamp">
                   <div class="stamp-text">${t("print.customerStampHere")}</div>
                 </div>

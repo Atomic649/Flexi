@@ -564,6 +564,7 @@ const ByOrder = () => {
           onPress={() => {
             router.push("/createBill");
           }}
+          activeOpacity={1}
         >
           <Ionicons
             name="add"
