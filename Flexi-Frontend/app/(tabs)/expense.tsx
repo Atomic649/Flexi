@@ -55,7 +55,12 @@ const Expense = () => {
                   }
                 : { backgroundColor: "#4e4b47" }
             }
-            indicatorStyle={{ backgroundColor: "#2b3c3a", height: 3 }}
+          indicatorStyle={  theme === "dark"
+                ? {
+                    backgroundColor: "#1d1d1d",
+                  }
+                : { backgroundColor: "#4e4b47" }
+            }
             renderTabBarItem={({ route, key, onLayout }) => {
               const tabIndex = routes.findIndex((r) => r.key === key);
               const isActive = index === tabIndex;

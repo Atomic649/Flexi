@@ -15,9 +15,9 @@ const Income = () => {
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "byOrder", title1: t("income.title.byOrder") },
-    { key: "daily", title2: t("income.title.Daily") },
-    { key: "monthly", title3: t("income.title.Monthly") },
+    { key: "byOrder", title: t("income.title.byOrder") },
+    { key: "daily", title: t("income.title.Daily") },
+    { key: "monthly", title: t("income.title.Monthly") },
   ]);
 
   const renderScene = SceneMap({
@@ -44,98 +44,48 @@ const Income = () => {
                   }
                 : { backgroundColor: "#4e4b47" }
             }
-            indicatorStyle={{ backgroundColor: "#04ecc1", height: 3 }}
-            renderTabBarItem={({ route, key }) => (
-              <View
-                className="flex-row items-center my-5 "
-                style={{
-                  width: Dimensions.get("window").width / 3,
-                  justifyContent: "center",
-                }}
-              >
-                {route.title1 && (
-                  <View className="justify-center items-center">
-                    <TouchableOpacity
-                      className="justify-center items-center"
-                      activeOpacity={1}
-                      onPress={() =>
-                        setIndex(routes.findIndex((r) => r.key === key))
-                      }
-                    >
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          color:
-                            index === routes.findIndex((r) => r.key === key)
-                              ? theme === "dark"
-                                ? "#ffffff"
-                                : "#fbfbfb"
-                              : theme === "dark"
-                              ? "#868484"
-                              : "#e5e5e5",
-                        }}
-                      >
-                        {route.title1}
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                {route.title2 && (
-                  <View className="justify-center items-center">
-                    <TouchableOpacity
-                      className="justify-center items-center"
-                      activeOpacity={1}
-                      onPress={() =>
-                        setIndex(routes.findIndex((r) => r.key === key))
-                      }
-                    >
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          color:
-                            index === routes.findIndex((r) => r.key === key)
-                              ? theme === "dark"
-                                ? "#ffffff"
-                                : "#fbfbfb"
-                              : theme === "dark"
-                              ? "#868484"
-                              : "#e5e5e5",
-                        }}
-                      >
-                        {route.title2}
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                {route.title3 && (
-                  <View className="justify-center items-center">
-                    <TouchableOpacity
-                      className="justify-center items-center"
-                      activeOpacity={1}
-                      onPress={() =>
-                        setIndex(routes.findIndex((r) => r.key === key))
-                      }
-                    >
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          color:
-                            index === routes.findIndex((r) => r.key === key)
-                              ? theme === "dark"
-                                ? "#ffffff"
-                                : "#fbfbfb"
-                              : theme === "dark"
-                              ? "#868484"
-                              : "#e5e5e5",
-                        }}
-                      >
-                        {route.title3}
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
+            indicatorStyle={  theme === "dark"
+                ? {
+                    backgroundColor: "#1d1d1d",
+                  }
+                : { backgroundColor: "#4e4b47" }
+            }
+            renderTabBarItem={({ route, key, onLayout }) => {
+              const tabIndex = routes.findIndex((r) => r.key === key);
+              const isActive = index === tabIndex;
+
+              return (
+                <TouchableOpacity
+                  key={route.key}
+                  onLayout={onLayout}
+                  onPress={() => setIndex(tabIndex)}
+                  activeOpacity={1}
+                  style={{
+                    borderBottomWidth: isActive ? 3 : 0,
+                    borderBottomColor: isActive ? "#04ecc1" : "transparent",
+                    width: Dimensions.get("window").width / 3,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  <CustomText
+                    numberOfLines={1}
+                    style={{
+                      color: isActive
+                        ? theme === "dark"
+                          ? "#ffffff"
+                          : "#fbfbfb"
+                        : theme === "dark"
+                        ? "#868484"
+                        : "#aca5a5",
+                    }}
+                  >
+                    {route.title}
+                  </CustomText>
+                </TouchableOpacity>
+              );
+            }}
             style={
               theme === "dark"
                 ? { backgroundColor: "#1d1d1d" }
