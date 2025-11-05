@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { vatRate } from "../TaxVariable";
 
 interface MonthlyReportData {
   selectedMonth: Date;
@@ -39,6 +40,9 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
     return bill.DocumentType === 'Receipt';
   });
 
+  // Check if business is VAT registered
+  const isVatRegistered = businessDetails?.vat === true;
+
   // Recalculate monthlyTotals based on receiptBills
   const totalSales = receiptBills.reduce((sum: number, bill: any) => sum + ((bill.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0);
   const totalOrders = receiptBills.length;
@@ -53,8 +57,20 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
     averageOrderValue,
   };
 
-  // Check if business is VAT registered
-  const isVatRegistered = businessDetails?.vat === true;
+  // Calculate totals for all product items across all bills
+  const allProductItems = receiptBills.flatMap(bill => bill.product || []);
+  const rawTotal = allProductItems.reduce(
+    (sum: number, item: any) => sum + item.unitPrice * item.quantity,
+    0
+  );
+  const totalDiscount = allProductItems.reduce(
+    (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
+    0
+  ) + receiptBills.reduce((sum: number, bill: any) => sum + (bill.billLevelDiscount || 0), 0);
+  
+  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+  const subTotal = rawTotal - totalDiscount - vatTotal;
+  const grandTotal = rawTotal - totalDiscount;
 
   return `
     <!DOCTYPE html>
@@ -212,8 +228,8 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             </div>
             ${isVatRegistered ? `
             <div class="summary-card">
-              <div class="label">${t("print.vatAmount")} (7%)</div>
-              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales * 0.07)}</div>
+              <div class="label">${t("print.vatAmount")} (${vatRate}%)</div>
+              <div class="value">${formatCurrencyForPDF(vatTotal)}</div>
             </div>
             ` : ''}
           </div>
@@ -229,7 +245,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                   <th>${t("print.customer")}</th>
                   <th>${t("print.productDetails")}</th>
                   <th class="text-right">${t("print.price")}</th>
-                  ${isVatRegistered ? `<th class="text-right">VAT (7%)</th>
+                  ${isVatRegistered ? `<th class="text-right">VAT (${vatRate}%)</th>
                   <th class="text-right">${t("print.total")}</th>` : ''}
                 </tr>
               </thead>
@@ -238,8 +254,8 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                   // Multi-product: sum all product items for this bill
                   const productItems = bill.product || [];
                   const subtotal = productItems.reduce((sum: number, item: any) => sum + (item.unitPrice * item.quantity), 0);
-                  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-                  const total = subtotal + vatAmount;
+                  const vatAmount = isVatRegistered ? (subtotal * vatRate) / (100 + vatRate) : 0;
+                  const total = subtotal;
                   return `
                     <tr>
                       <td>${index + 1}</td>
@@ -261,13 +277,9 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                 }).join('')}
                 <tr style="background-color: #e5e7eb; font-weight: bold;">
                   <td colspan="5" class="text-right bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(receiptBills.reduce((sum: number, bill: any) => sum + ((bill.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)), 0))}</td>
-                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(receiptBills.reduce((sum: number, bill: any) => sum + ((bill.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0)) * 0.07, 0))}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(receiptBills.reduce((sum: number, bill: any) => {
-                    const subtotal = (bill.product||[]).reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0);
-                    const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-                    return sum + subtotal + vatAmount;
-                  }, 0))}</td>` : ''}
+                  <td class="text-right bold">${formatCurrencyForPDF(rawTotal)}</td>
+                  ${isVatRegistered ? `<td class="text-right bold">${formatCurrencyForPDF(vatTotal)}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(grandTotal )}</td>` : ''}
                 </tr>
               </tbody>
             </table>

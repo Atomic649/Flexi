@@ -36,12 +36,8 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
 
   // Recalculate totals based on all expenses
   const totalExpenses = actualExpenses.reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0);
-  const totalExpenseCount = actualExpenses.length;
   const vatExpensesList = actualExpenses.filter((expense: any) => expense.vat);
-  const whtExpensesList = actualExpenses.filter((expense: any) => expense.withHoldingTax);
-  const vatExpenses = vatExpensesList.length;
-  const whtExpenses = whtExpensesList.length;
-  const averageExpenseAmount = totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
+  
 
   // Calculate total VAT and WHT amounts
   const totalVatAmount = actualExpenses.reduce((sum: number, expense: any) => 
