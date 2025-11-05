@@ -1,3 +1,4 @@
+import { vatRate } from "../TaxVariable";
 interface QuotationData {
   quotation: any;
   businessDetails: any;
@@ -28,9 +29,10 @@ export const generateQuotationHTML = (data: QuotationData): string => {
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
     0
   ) + (quotation.billLevelDiscount || 0);
-  const subtotal = rawTotal - totalDiscount;
-  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-  const grandTotal = subtotal + vatAmount;
+  
+  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+  const subTotal = rawTotal - totalDiscount - vatTotal;
+  const grandTotal = rawTotal - totalDiscount;
 
   return `
     <!DOCTYPE html>
@@ -72,12 +74,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             align-items: flex-start;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #3b82f6;
+            border-bottom: 2px solid #5e5e5e;
           }
           .company-logo-section h1 { 
             font-size: 28px; 
             margin: 0; 
-            color: #3b82f6;
+            color: #5e5e5e;
             font-weight: 700;
             letter-spacing: -0.5px;
           }
@@ -94,7 +96,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           .quotation-number {
             font-size: 16px;
             font-weight: 700;
-            color: #3b82f6;
+            color: #5e5e5e;
             margin: 0 0 5px 0;
           }
           .quotation-number .bill-label,
@@ -111,17 +113,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           
           /* Business Info Section */
           .business-info-section {
-            background: #f0f9ff;
+            background: #f5f7f8;
             padding: 9px 11px;
             border-radius: 8px;
             margin-bottom: 12px;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #5e5e5e;
           }
           .business-info-section h3 {
             margin: 0 0 12px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #3b82f6;
+            color: #5e5e5e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
@@ -159,7 +161,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             margin: 0 0 10px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #3b82f6;
+            color: #5e5e5e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid #e5e7eb;
@@ -188,7 +190,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           }
           .items-table th { 
-            background: #3b82f6;
+            background: #5e5e5e;
             color: white; 
             padding: 12px 10px;
             font-size: 12px; 
@@ -240,12 +242,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             color: #6b7280;
           }
           .summary-row.total { 
-            border-top: 2px solid #3b82f6;
+            border-top: 2px solid #5e5e5e;
             margin-top: 8px;
             padding-top: 12px;
             font-weight: 700;
             font-size: 16px;
-            color: #3b82f6;
+            color: #5e5e5e;
           }
           .summary-label {
             font-weight: 500;
@@ -277,17 +279,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           
           /* Note Section */
           .note-section {
-            background: #f0f9ff;
+            background: #f5f7f8;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #0284c7;
+            border-left: 4px solid #5e5e5e;
           }
           .note-section h3 {
             margin: 0 0 10px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #0369a1;
+            color: #5e5e5e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
@@ -562,12 +564,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 ` : ""}
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subTotal)}</span>
                 </div>
                 ${isVatRegistered ? `
                   <div class="summary-row tax">
                     <span class="summary-label">${t("print.vat")} (7%):</span>
-                    <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+                    <span class="summary-amount">${formatCurrencyForPDF(vatTotal)}</span>
                   </div>
                 ` : ""}
                 <div class="summary-row total">

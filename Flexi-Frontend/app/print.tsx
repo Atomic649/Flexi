@@ -14,7 +14,7 @@ import { CustomText } from "@/components/CustomText";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import FormField2 from "@/components/formfield/FormField2";
 import Dropdown2 from "@/components/dropdown/Dropdown2";
-import {CustomButton} from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import CustomAlert from "@/components/CustomAlert";
 import CallAPIPrint from "@/api/print_api";
 import { getMemberId, getBusinessId } from "@/utils/utility";
@@ -26,10 +26,11 @@ import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
 import CallAPIBusiness from "@/api/business_api";
 import { generateMonthlyReportHTML } from "@/components/PDFTemplates/MonthlySaleReportTemplate";
-import {generateExpenseReportHTML} from "@/components/PDFTemplates/MonthlyExpenseReportTemplate";
+import { generateExpenseReportHTML } from "@/components/PDFTemplates/MonthlyExpenseReportTemplate";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
+import { vatRate } from "@/components/TaxVariable";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -77,8 +78,13 @@ const formatMonthYear = (date: Date, t: any) => {
   return `${translatedMonth} ${year}`;
 };
 
-// Helper function to calculate total from items and discounts
+// Helper function to calculate total from items and discounts so product included
 const calculateInvoiceTotal = (invoice: any) => {
+  // Check if invoice is null or undefined
+  if (!invoice) {
+    return 0;
+  }
+  
   let itemsTotal = 0;
   
   // Calculate total from product items
@@ -100,7 +106,11 @@ const calculateInvoiceTotal = (invoice: any) => {
 export default function Print() {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { businessName, vat, DocumentType: contextDocumentTypes } = useBusiness();
+  const {
+    businessName,
+    vat,
+    DocumentType: contextDocumentTypes,
+  } = useBusiness();
   const [activeTab, setActiveTab] = useState(TAB_INDICES.INDIVIDUAL_INVOICE);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [businessId, setBusinessId] = useState<number | null>(null);
@@ -137,6 +147,11 @@ export default function Print() {
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
 
+  const totalIncVat = calculateInvoiceTotal(selectedInvoice);
+  const totalVat =
+    (calculateInvoiceTotal(selectedInvoice) * vatRate) / (100 + vatRate);
+  const totalExcVat = calculateInvoiceTotal(selectedInvoice) - totalVat;
+
   // Format currency with translation
   const formatCurrency = (amount: number) => {
     // Original formatting that causes encoding issues: return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(amount);
@@ -146,7 +161,9 @@ export default function Print() {
         style: "decimal",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }).format(amount) + " " + t("common.THB")
+      }).format(amount) +
+      " " +
+      t("common.THB")
     );
   };
 
@@ -157,12 +174,16 @@ export default function Print() {
         style: "decimal",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }).format(amount) + " " + t("common.THB")
+      }).format(amount) +
+      " " +
+      t("common.THB")
     );
   };
 
   // Print progression state - start with first available type
-  const [selectedPrintType, setSelectedPrintType] = useState<"QA" | "IV" | "RE">("QA");
+  const [selectedPrintType, setSelectedPrintType] = useState<
+    "QA" | "IV" | "RE"
+  >("QA");
 
   // Helper functions for Print progression UI
   const getPrintStepOrder = (step: "QA" | "IV" | "RE"): number => {
@@ -180,12 +201,14 @@ export default function Print() {
   };
 
   const getPrintStepIconColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isPrintStepCompleted(step)) return theme === "dark" ? "#18181b" : "#ffffff";
+    if (isPrintStepCompleted(step))
+      return theme === "dark" ? "#18181b" : "#ffffff";
     return theme === "dark" ? "#666" : "#999";
   };
 
   const getPrintStepDescriptionColor = (step: "QA" | "IV" | "RE"): string => {
-    if (isPrintStepCompleted(step)) return theme === "dark" ? "#c9c9c9" : "#666";
+    if (isPrintStepCompleted(step))
+      return theme === "dark" ? "#c9c9c9" : "#666";
     return theme === "dark" ? "#555" : "#bbb";
   };
 
@@ -324,27 +347,21 @@ export default function Print() {
 
       // Calculate monthly totals
       if (response && response.length > 0) {
-        const totalSales = response.reduce(
-          (sum: number, bill: any) => {
-            // Include only bills that are paid OR are receipts
-            if (bill.cashStatus || bill.DocumentType === "Receipt") {
-              return sum + calculateInvoiceTotal(bill);
-            }
-            return sum;
-          },
-          0
-        );
+        const totalSales = response.reduce((sum: number, bill: any) => {
+          // Include only bills that are paid OR are receipts
+          if (bill.cashStatus || bill.DocumentType === "Receipt") {
+            return sum + calculateInvoiceTotal(bill);
+          }
+          return sum;
+        }, 0);
 
-        const totalUnpaidSales = response.reduce(
-          (sum: number, bill: any) => {
-            // Include only bills that are unpaid AND not receipts
-            if (!bill.cashStatus && bill.DocumentType !== "Receipt") {
-              return sum + calculateInvoiceTotal(bill);
-            }
-            return sum;
-          },
-          0
-        );
+        const totalUnpaidSales = response.reduce((sum: number, bill: any) => {
+          // Include only bills that are unpaid AND not receipts
+          if (!bill.cashStatus && bill.DocumentType !== "Receipt") {
+            return sum + calculateInvoiceTotal(bill);
+          }
+          return sum;
+        }, 0);
 
         const paidOrders = response.filter(
           (bill: any) => bill.cashStatus
@@ -619,7 +636,7 @@ export default function Print() {
     });
     setTimeout(() => {
       setSelectedInvoice(null);
-      setRefreshKey(prev => prev + 1); // Force component refresh
+      setRefreshKey((prev) => prev + 1); // Force component refresh
     }, 100);
   };
 
@@ -641,7 +658,6 @@ export default function Print() {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
               saveIncomeReportToPDF();
             },
-           
           },
           {
             text: t("print.expenseReport"),
@@ -808,12 +824,15 @@ export default function Print() {
       setAlertConfig((prev) => ({ ...prev, visible: false }));
       console.log("PDF generation cancelled or failed:", error);
       // Check if it's a cancellation error (user dismissed the print dialog)
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('cancelled') || 
-          errorMessage.includes('dismissed') || 
-          errorMessage.includes('user') ||
-          errorMessage.includes('Printing did not complete') ||
-          errorMessage.includes('did not complete')) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (
+        errorMessage.includes("cancelled") ||
+        errorMessage.includes("dismissed") ||
+        errorMessage.includes("user") ||
+        errorMessage.includes("Printing did not complete") ||
+        errorMessage.includes("did not complete")
+      ) {
         // Do not show any alert
         return;
       }
@@ -834,8 +853,8 @@ export default function Print() {
     }
   };
 
-  const saveExpenseReportToPDF = async () =>{
-        // Hide any previous loading indicator before starting
+  const saveExpenseReportToPDF = async () => {
+    // Hide any previous loading indicator before starting
     setAlertConfig((prev) => ({ ...prev, visible: false }));
 
     // Show loading indicator
@@ -867,17 +886,26 @@ export default function Print() {
 
       // Calculate expense totals from the response
       const actualExpenses = response; // Include all expenses (including drafts)
-      const totalExpenses = actualExpenses.reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0);
+      const totalExpenses = actualExpenses.reduce(
+        (sum: number, expense: any) => sum + (Number(expense.amount) || 0),
+        0
+      );
       const totalExpenseCount = actualExpenses.length;
-      const vatExpenses = actualExpenses.filter((expense: any) => expense.vat).length;
-      const whtExpenses = actualExpenses.filter((expense: any) => expense.withHoldingTax).length;
-      const averageExpenseAmount = totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
+      const vatExpenses = actualExpenses.filter(
+        (expense: any) => expense.vat
+      ).length;
+      const whtExpenses = actualExpenses.filter(
+        (expense: any) => expense.withHoldingTax
+      ).length;
+      const averageExpenseAmount =
+        totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
 
       // Group expenses by category
       const expensesByGroup: { [key: string]: number } = {};
       actualExpenses.forEach((expense: any) => {
-        const group = expense.group || 'Other';
-        expensesByGroup[group] = (expensesByGroup[group] || 0) + (Number(expense.amount) || 0);
+        const group = expense.group || "Other";
+        expensesByGroup[group] =
+          (expensesByGroup[group] || 0) + (Number(expense.amount) || 0);
       });
 
       const expenseMonthlyTotals = {
@@ -909,7 +937,8 @@ export default function Print() {
       setAlertConfig((prev) => ({ ...prev, visible: false }));
     } catch (error) {
       setAlertConfig((prev) => ({ ...prev, visible: false }));
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes("cancelled") ||
         errorMessage.includes("dismissed") ||
@@ -932,7 +961,7 @@ export default function Print() {
         ],
       });
     }
-  }
+  };
 
   // Function to handle saving individual invoice as PDF for mobile
   const saveInvoiceToPDF = async () => {
@@ -967,24 +996,26 @@ export default function Print() {
       // Hide loading indicator and close modal
       setAlertConfig((prev) => ({ ...prev, visible: false }));
       closeInvoiceModalAndRefresh(); // Use centralized function
-      
     } catch (error) {
       console.log("PDF generation cancelled or failed:", error);
-      
+
       // Check if it's a cancellation error (user dismissed the print dialog)
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('cancelled') || 
-          errorMessage.includes('dismissed') || 
-          errorMessage.includes('user') ||
-          errorMessage.includes('Printing did not complete') ||
-          errorMessage.includes('did not complete')) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (
+        errorMessage.includes("cancelled") ||
+        errorMessage.includes("dismissed") ||
+        errorMessage.includes("user") ||
+        errorMessage.includes("Printing did not complete") ||
+        errorMessage.includes("did not complete")
+      ) {
         console.log("📝 User cancelled PDF generation");
         // Don't show error alert for user cancellation, just hide loading and close modal
         setAlertConfig((prev) => ({ ...prev, visible: false }));
         closeInvoiceModalAndRefresh();
         return;
       }
-      
+
       // Only show error for actual errors
       console.error("❌ Error generating individual invoice PDF:", error);
       setAlertConfig({
@@ -1085,24 +1116,26 @@ export default function Print() {
 
       setAlertConfig((prev) => ({ ...prev, visible: false }));
       closeInvoiceModalAndRefresh(); // Use centralized function
-      
     } catch (error) {
       console.log("PDF generation cancelled or failed:", error);
-      
+
       // Check if it's a cancellation error (user dismissed the print dialog)
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('cancelled') || 
-          errorMessage.includes('dismissed') || 
-          errorMessage.includes('user') ||
-          errorMessage.includes('Printing did not complete') ||
-          errorMessage.includes('did not complete')) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (
+        errorMessage.includes("cancelled") ||
+        errorMessage.includes("dismissed") ||
+        errorMessage.includes("user") ||
+        errorMessage.includes("Printing did not complete") ||
+        errorMessage.includes("did not complete")
+      ) {
         console.log("📝 User cancelled PDF generation");
         // Don't show error alert for user cancellation, just hide loading and close modal
         setAlertConfig((prev) => ({ ...prev, visible: false }));
         closeInvoiceModalAndRefresh();
         return;
       }
-      
+
       // Only show error for actual errors
       console.error("❌ Error generating quotation PDF:", error);
       setAlertConfig({
@@ -1203,13 +1236,14 @@ export default function Print() {
 
       setAlertConfig((prev) => ({ ...prev, visible: false }));
       closeInvoiceModalAndRefresh(); // Use centralized function
-      
     } catch (error) {
       console.error("Error generating receipt PDF:", error);
       setAlertConfig({
         visible: true,
         title: t("print.error"),
-        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        message: `${t("print.pdfGenerationError")}: ${
+          (error as Error).message
+        }`,
         buttons: [
           {
             text: t("common.ok"),
@@ -1282,7 +1316,7 @@ export default function Print() {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <View className="flex-row">           
+            <View className="flex-row">
               <CustomText className="mb-1">#</CustomText>
               <CustomText weight="bold" className="mb-1 text-base">
                 {invoice.billId}
@@ -1306,7 +1340,7 @@ export default function Print() {
               }`}
             >
               <CustomText
-                className="text-white text-xs"
+                className="text-white text-xs pt-1 "
                 style={{ color: "white", fontSize: 11 }}
               >
                 {invoice.cashStatus
@@ -1541,13 +1575,17 @@ export default function Print() {
                 <View className="flex-row justify-end mt-2">
                   <View className="w-2/3">
                     {/* Show discount if any discounts exist */}
-                    {(selectedInvoice.discount > 0 || selectedInvoice.billLevelDiscount > 0) && (
+                    {(selectedInvoice.discount > 0 ||
+                      selectedInvoice.billLevelDiscount > 0) && (
                       <View className="flex-row justify-between mb-2">
                         <CustomText weight="bold">
                           {t("print.totalDiscount")}
                         </CustomText>
                         <CustomText>
-                          {formatCurrency((selectedInvoice.discount || 0) + (selectedInvoice.billLevelDiscount || 0))}
+                          {formatCurrency(
+                            (selectedInvoice.discount || 0) +
+                              (selectedInvoice.billLevelDiscount || 0)
+                          )}
                         </CustomText>
                       </View>
                     )}
@@ -1556,9 +1594,7 @@ export default function Print() {
                         <CustomText weight="bold">
                           {t("print.subtotal")}
                         </CustomText>
-                        <CustomText>
-                          {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
-                        </CustomText>
+                        <CustomText>{formatCurrency(totalExcVat)}</CustomText>
                       </View>
                     )}
                     {isVatRegistered && (
@@ -1567,12 +1603,10 @@ export default function Print() {
                           <CustomText weight="bold">
                             {t("print.tax")}
                           </CustomText>
-                          <CustomText weight="bold"> (7%)</CustomText>
+                          <CustomText weight="bold">{` (${vatRate}%)`}</CustomText>
                         </View>
 
-                        <CustomText>
-                          {formatCurrency(calculateInvoiceTotal(selectedInvoice) * 0.07)}
-                        </CustomText>
+                        <CustomText>{formatCurrency(totalVat)}</CustomText>
                       </View>
                     )}
                     <View className="flex-row justify-between mb-2">
@@ -1581,13 +1615,15 @@ export default function Print() {
                       </CustomText>
                       <CustomText weight="bold">
                         {isVatRegistered
-                          ? formatCurrency(calculateInvoiceTotal(selectedInvoice) * 1.07)
-                          : formatCurrency(calculateInvoiceTotal(selectedInvoice))}
+                          ? formatCurrency(totalIncVat)
+                          : formatCurrency(
+                              calculateInvoiceTotal(selectedInvoice)
+                            )}
                       </CustomText>
                     </View>
                   </View>
                 </View>
-                </View>
+              </View>
             )}
 
             {/* Print Options Progression UI */}
@@ -1631,7 +1667,9 @@ export default function Print() {
                     },
                     RE: {
                       icon: "checkmark-circle-outline",
-                      label: isVatRegistered ? t("print.printTaxInvoice") : t("print.printReceipt"),
+                      label: isVatRegistered
+                        ? t("print.printTaxInvoice")
+                        : t("print.printReceipt"),
                       type: "Receipt",
                       onPress: () => {
                         handlePrintReceipt();
@@ -1651,7 +1689,9 @@ export default function Print() {
                           alignItems: "center",
                           backgroundColor: "transparent",
                         }}
-                        onPress={isStepActive ? stepConfig[step].onPress : undefined}
+                        onPress={
+                          isStepActive ? stepConfig[step].onPress : undefined
+                        }
                         activeOpacity={isStepActive ? 0.7 : 1}
                         disabled={!isStepActive}
                       >
@@ -1666,7 +1706,9 @@ export default function Print() {
                             alignItems: "center",
                             justifyContent: "center",
                             opacity: getPrintStepOpacity(step),
-                            shadowColor: isPrintStepCompleted(step) ? "#04ecc1" : "transparent",
+                            shadowColor: isPrintStepCompleted(step)
+                              ? "#04ecc1"
+                              : "transparent",
                             shadowOffset: { width: 0, height: 0 },
                             shadowOpacity: isPrintStepCompleted(step) ? 0.6 : 0,
                             shadowRadius: isPrintStepCompleted(step) ? 8 : 0,
@@ -1713,7 +1755,10 @@ export default function Print() {
                                 height: 3,
                                 borderRadius: 1.5,
                                 backgroundColor:
-                                  index < availableSteps.findIndex((s) => s === selectedPrintType)
+                                  index <
+                                  availableSteps.findIndex(
+                                    (s) => s === selectedPrintType
+                                  )
                                     ? "#04ecc1"
                                     : theme === "dark"
                                     ? "#444"
@@ -2043,7 +2088,7 @@ export default function Print() {
                             <CustomText weight="bold" className="text-xl">
                               {monthlyTotals.paidOrders}
                             </CustomText>
-                            <View className="ml-2 p-1 px-2 rounded-full bg-green-700">
+                            <View className="ml-2 pt-1 px-2 rounded-full bg-green-700">
                               <CustomText
                                 className="text-white text-xs"
                                 style={{ color: "white", fontSize: 10 }}
@@ -2080,7 +2125,7 @@ export default function Print() {
                             <CustomText weight="bold" className="text-xl">
                               {monthlyTotals.unpaidOrders}
                             </CustomText>
-                            <View className="ml-2 p-1 px-2 rounded-full bg-orange-700">
+                            <View className="ml-2 pt-1 px-2 rounded-full bg-orange-700">
                               <CustomText
                                 className="text-white text-xs"
                                 style={{ color: "white", fontSize: 10 }}

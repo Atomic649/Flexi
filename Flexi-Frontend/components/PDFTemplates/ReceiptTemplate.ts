@@ -1,3 +1,4 @@
+import { vatRate } from "../TaxVariable";
 interface InvoiceData {
   invoice: any;
   businessDetails: any;
@@ -28,9 +29,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
     0
   ) + (invoice.billLevelDiscount || 0);
-  const subtotal = rawTotal - totalDiscount;
-  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-  const grandTotal = subtotal + vatAmount;
+  
+  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+  const subTotal = rawTotal - totalDiscount - vatTotal;
+  const grandTotal = rawTotal - totalDiscount;
 
   return `
     <!DOCTYPE html>
@@ -651,11 +653,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 </div>` : ""}
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subTotal)}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.tax")} (7%):</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(vatAmount)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(vatTotal)}</span>
                 </div>`
                   : `${totalDiscount > 0 ? `
                 <div class="summary-row discount">
@@ -664,7 +666,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 </div>` : ""}
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subtotal)}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(subTotal)}</span>
                 </div>`}
                 <div class="summary-row total">
                   <span class="summary-label">${t("print.grandTotal")}:</span>

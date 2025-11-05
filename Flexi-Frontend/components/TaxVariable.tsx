@@ -1,44 +1,8 @@
-/**
- * TaxVariable.tsx
- * 
- * Thai Withholding Tax (WHT) percentage rules based on expense group and tax type.
- * This file centralizes all tax-related calculations to make it easier to update
- * when government tax laws change.
- * 
- * Last updated: September 12, 2025
- * Reference: Thai Revenue Department Withholding Tax Regulations
- */
+//------- vatRate-----------//
+export const vatRate = 7; // VAT rate of 7%
 
-//-------------Command for updating tax rules------------------
-// To update tax rules, modify the WHT_PERCENTAGE_RULES array below.
-// Each rule includes the expense group, optional tax type, and corresponding WHT percentage.
-// Ensure to follow the format and include descriptions for clarity.
 
-//-------------WHT Percentage Rules------------------
-// Note: "Fuel" group has no WHT regardless of tax type.
-// if group expense selected also watch TaxType set %WHT as foollowing..
-// 0% group =Maintenance and TaxType  = Individual
-
-// 1% 
-// condition1 (group =Transport and TaxType = Individual)
-// condition2 (group = Interest and TaxType = Juristic)
-
-// 2% (group =Advertising )
-
-// 3% 
-// codition1 (group as Accounting or Legal or Freelancer or Commission or Copyright or Marketing or Influrencer,Product,Packing,office)
-// condition2 (group=Insurance and TaxType=Individual)
-// condition3 (group=Transport and TaxType = Juristic)
-// condition4 (group =Maintenance and TaxType  = Juristic)
-
-// 5% (group =OfficeRental or  CarRental )
-
-// 10% (group = Dividend)
-
-// 15% (Group = interest and TaxType = Individual)
-
-//--------------------------End of Command------------------
-
+//------- WHTRate -----------//
 export interface WHTPercentageRule {
   group: string;
   taxType?: "Individual" | "Juristic";
@@ -256,8 +220,10 @@ export const isWHTRequired = (group: string): boolean => {
 
 export default {
   WHT_PERCENTAGE_RULES,
+  vatRate,
   getWHTPercentage,
   getWHTRequiredGroups,
   getWHTRuleDetails,
-  isWHTRequired
+  isWHTRequired,
+ 
 };

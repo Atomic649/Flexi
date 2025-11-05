@@ -2003,6 +2003,7 @@ export default function EditBill() {
             >
               <TouchableOpacity
                 onPress={() => setIsEditMode((prev) => !prev)}
+                activeOpacity={1}
                 style={{
                   backgroundColor: isEditMode ? "#ff8c00" : "#04ecc1",
                   borderRadius: 20,

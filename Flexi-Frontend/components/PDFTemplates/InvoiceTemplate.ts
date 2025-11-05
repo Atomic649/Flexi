@@ -1,3 +1,4 @@
+import { vatRate } from "../TaxVariable";
 interface InvoiceData {
   invoice: any;
   businessDetails: any;
@@ -30,9 +31,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
         sum + (item.unitDiscount || 0) * item.quantity,
       0
     ) + (invoice.billLevelDiscount || 0);
-  const subtotal = rawTotal - totalDiscount;
-  const vatAmount = isVatRegistered ? subtotal * 0.07 : 0;
-  const grandTotal = subtotal + vatAmount;
+
+  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+  const subTotal = rawTotal - totalDiscount - vatTotal;
+  const grandTotal = rawTotal - totalDiscount;
 
   return `
     <!DOCTYPE html>
@@ -702,13 +704,13 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    subtotal
+                    subTotal
                   )}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.vat")} (7%)</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    vatAmount
+                    vatTotal
                   )}</span>
                 </div>`
                     : `${
@@ -727,7 +729,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    subtotal
+                    subTotal
                   )}</span>
                 </div>`
                 }
