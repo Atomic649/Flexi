@@ -29,8 +29,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
     0
   ) + (quotation.billLevelDiscount || 0);
-  
-  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+
+  const vatTotal = isVatRegistered ? ((rawTotal - totalDiscount) * vatRate) / (100 + vatRate) : 0;
   const subTotal = rawTotal - totalDiscount - vatTotal;
   const grandTotal = rawTotal - totalDiscount;
 

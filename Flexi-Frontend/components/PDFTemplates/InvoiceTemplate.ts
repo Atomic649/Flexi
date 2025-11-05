@@ -32,7 +32,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       0
     ) + (invoice.billLevelDiscount || 0);
 
-  const vatTotal = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
+  const vatTotal = isVatRegistered ? ((rawTotal - totalDiscount) * vatRate) / (100 + vatRate) : 0;
   const subTotal = rawTotal - totalDiscount - vatTotal;
   const grandTotal = rawTotal - totalDiscount;
 
