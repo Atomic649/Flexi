@@ -165,6 +165,7 @@
     "help": "Unlock limit ",
     "title": "Product",
     "price": "Price",
+    "priceSubtitle": "Include VAT",
     "detail": "Product Detail",
     "description": "Description",
     "createbutton": "Create Product",

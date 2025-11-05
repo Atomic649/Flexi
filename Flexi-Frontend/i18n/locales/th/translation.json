@@ -166,6 +166,7 @@
     "help": "ปลดล็อกจำกัด ",
     "title": "สินค้า",
     "price": "ราคา",
+    "priceSubtitle": "รวมภาษีมูลค่าเพิ่ม (VAT)",
     "detail": "รายละเอียดสินค้า",
     "description": "คำอธิบาย",
     "createbutton": "สร้างสินค้า",

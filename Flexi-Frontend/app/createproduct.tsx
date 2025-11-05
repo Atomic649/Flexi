@@ -20,10 +20,12 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { getMemberId } from "@/utils/utility";
 import { useTheme } from "@/providers/ThemeProvider";
+import { useBusiness } from "@/providers/BusinessProvider";
 
 export default function CreateProduct() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { vat } = useBusiness();
   const router = useRouter();
   const [memberId, setMemberId] = useState<string | null>(null);
   const [name, setproductname] = useState("");
@@ -348,6 +350,7 @@ export default function CreateProduct() {
             <View className={productType === "Service" ? "w-full" : "w-1/2 pl-2"}>
               <FormField2
                 title={t("product.price")}
+                subtitle={vat ? t("product.priceSubtitle") : undefined}
                 value={price}
                 handleChangeText={setprice}
                 otherStyles={fieldStyles}

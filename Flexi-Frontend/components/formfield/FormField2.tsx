@@ -6,6 +6,7 @@ import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhe
 
 const FormField = ({
   title,
+  subtitle,
   value,
   placeholder,
   handleChangeText,
@@ -27,6 +28,11 @@ const FormField = ({
         <CustomText className="text-base text-zinc-500 font-pmedium mb-3">
           {title}
         </CustomText>
+        {subtitle && (
+          <CustomText className="text-sm text-zinc-400 font-pregular mb-2 ml-2">
+            {subtitle}
+          </CustomText>
+        )}
         {icons && (
           <Ionicons
             name={icons}
