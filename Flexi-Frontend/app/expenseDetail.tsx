@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system/legacy";
 import { SecondaryButton } from "@/components/CustomButton";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -411,16 +412,16 @@ export default function ExpenseDetail({
         window.URL.revokeObjectURL(fileUri);
       } else {
         // For mobile, save and print
-        fileUri = `${require("expo-file-system").documentDirectory}${fileName}`;
+        fileUri = `${FileSystem.documentDirectory}${fileName}`;
         const reader = new FileReader();
         reader.onload = async () => {
           const resultStr =
             typeof reader.result === "string" ? reader.result : "";
           const base64 = resultStr.split(",")[1] || "";
-          await require("expo-file-system").writeAsStringAsync(
+          await FileSystem.writeAsStringAsync(
             fileUri,
             base64,
-            { encoding: require("expo-file-system").EncodingType.Base64 }
+            { encoding: FileSystem.EncodingType.Base64 }
           );
           await Print.printAsync({ uri: fileUri });
         };

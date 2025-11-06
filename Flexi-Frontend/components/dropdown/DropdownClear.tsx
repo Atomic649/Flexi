@@ -52,6 +52,7 @@ const Dropdown = ({
       <TouchableOpacity
         className="w-full h-14 px-4 rounded-2xl border-2 border-transparent flex flex-row items-center justify-between"
         onPress={handlePress}
+        activeOpacity={1}
         style={{
           backgroundColor: "transparent",
           borderColor: borderColor ? borderColor : "transparent",

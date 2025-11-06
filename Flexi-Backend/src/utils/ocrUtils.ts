@@ -550,31 +550,82 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
     console.log('⚠️ Pre-seed company name extraction failed:', e);
   }
   const cleanedNames: string[] = [];
-  for (const rawName of namesFound) {
-    const cleaned = normalizeName(rawName);
-    // Exclude entries that become empty or are too short after normalization
-    if (!cleaned || cleaned.length < 3) continue;
-    // Exclude names that are just generic title words
-    const lower = cleaned.toLowerCase();
-    if (receiptTitleTokens.some(t => lower.includes(t))) continue;
+for (const rawName of namesFound) {
+  const cleaned = normalizeName(rawName);
+  console.log(`🔍 Processing name: "${rawName}" -> cleaned: "${cleaned}"`);
+  
+  // Exclude entries that become empty or are too short after normalization
+  if (!cleaned || cleaned.length < 3) {
+    console.log(`   ❌ Skipped: too short (${cleaned?.length || 0} chars)`);
+    continue;
+  }
+  
+  // Special protection for legitimate Thai company names
+  const isThaiCompany = /บริษัท.*จ[ำํ]ากัด/.test(cleaned);
+  console.log(`   🏢 Is Thai company: ${isThaiCompany}`);
+  
+  // Exclude names that are just generic title words (but protect company names)
+  const lower = cleaned.toLowerCase();
+  let isReceiptTitle = false;
+  
+  if (!isThaiCompany) {
+    // Only apply receipt title filtering to non-company names
+    for (const token of receiptTitleTokens) {
+      if (lower.includes(token.toLowerCase())) {
+        // Additional check: only exclude if the token makes up a significant portion
+        const tokenLength = token.length;
+        const cleanedLength = cleaned.length;
+        const ratio = tokenLength / cleanedLength;
+        
+        if (ratio > 0.7) { // Only exclude if receipt title token is >70% of the name
+          isReceiptTitle = true;
+          console.log(`   ❌ Skipped: contains receipt title token "${token}" (ratio: ${ratio.toFixed(2)})`);
+          break;
+        } else {
+          console.log(`   ⚠️ Contains receipt title token "${token}" but ratio too low (${ratio.toFixed(2)}) - keeping`);
+        }
+      }
+    }
+  } else {
+    console.log(`   ✅ Thai company detected - skipping receipt title check`);
+  }
+  
+  if (isReceiptTitle) continue;
 
-    // Plausibility checks to reject gibberish
-    const thaiLetters = (cleaned.match(/[ก-๙]/g) || []).length;
-    const asciiWords = (cleaned.match(/[A-Za-z]{3,}/g) || []).length;
-    if (thaiLetters < 2 && asciiWords < 1) continue;
-
-  // Limit ratio of non-word characters (punctuation/digits)
-  const nonWord = (cleaned.match(/[^ -\p{L}\p{N}\s]/gu) || []).length;
-    const total = cleaned.length || 1;
-    if (nonWord / total > 0.25) continue;
-
-    if (!cleanedNames.includes(cleaned)) cleanedNames.push(cleaned);
+  // Plausibility checks to reject gibberish
+  const thaiLetters = (cleaned.match(/[ก-๙]/g) || []).length;
+  const asciiWords = (cleaned.match(/[A-Za-z]{3,}/g) || []).length;
+  console.log(`   📊 Thai letters: ${thaiLetters}, ASCII words: ${asciiWords}`);
+  
+  if (thaiLetters < 2 && asciiWords < 1) {
+    console.log(`   ❌ Skipped: not enough valid characters`);
+    continue;
   }
 
-  console.log(`🔍 NAMES CLEANED: ${cleanedNames.length} names kept`);
-  cleanedNames.forEach((name, index) => {
-    console.log(`   ${index + 1}. ${name}`);
-  });
+  // Limit ratio of non-word characters (punctuation/digits)
+  // Move the hyphen to the end of the class to avoid creating a range with \p{...}
+  const nonWord = (cleaned.match(/[^\p{L}\p{N}\s-]/gu) || []).length;
+  const total = cleaned.length || 1;
+  const nonWordRatio = nonWord / total;
+  console.log(`   📊 Non-word ratio: ${nonWordRatio.toFixed(2)} (${nonWord}/${total})`);
+  
+  if (nonWordRatio > 0.55) {
+    console.log(`   ❌ Skipped: too many non-word characters`);
+    continue;
+  }
+
+  if (!cleanedNames.includes(cleaned)) {
+    cleanedNames.push(cleaned);
+    console.log(`   ✅ KEPT: "${cleaned}"`);
+  } else {
+    console.log(`   ⚠️ Duplicate: "${cleaned}"`);
+  }
+}
+
+console.log(`🔍 NAMES CLEANED: ${cleanedNames.length} names kept`);
+cleanedNames.forEach((name, index) => {
+  console.log(`   ${index + 1}. ${name}`);
+});
 
   // Further refine cleaned names: extract explicit 'บริษัท ... จำกัด' if present,
   // and strip trailing noisy tokens (dates, separators, words like 'รับเงิน', 'ในนาม').

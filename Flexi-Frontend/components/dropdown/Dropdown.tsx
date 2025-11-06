@@ -24,6 +24,7 @@ const Dropdown = ({
       <TouchableOpacity
         className="w-full h-16 px-4 bg-[#423f39]  rounded-2xl border-2 border-[#423f39] flex flex-row items-center justify-between"
         onPress={() => setIsOpen(!isOpen)}
+        activeOpacity={1}
       >
         <CustomText
           className="font-psemibold text-base"
