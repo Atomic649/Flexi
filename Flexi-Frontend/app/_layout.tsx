@@ -344,6 +344,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* Daily Detail */}
+      <Stack.Screen
+        name="dailyDetail"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("daily.details"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* privacy */}
       <Stack.Screen
         name="privacy"
