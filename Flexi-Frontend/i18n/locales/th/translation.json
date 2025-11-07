@@ -1569,6 +1569,16 @@
       "receiptTitle": "หัวข้อเอกสาร (ควรระบุ: {{examples,list}} เป็นต้น)"
     }
   },
+  "daily": {
+    "details": "รายละเอียดรายวัน",
+    "summary": "สรุป",
+    "sale": "ยอดขาย",
+    "adsCost": "คาดการณ์ค่าโฆษณา",
+    "profit": "กำไร",
+    "bills": "รายรับ",
+    "expenses": "ค่าใช้จ่าย"
+   
+  },
   "chatAI": {
     "title": "Flexi AI เลขาส่วนตัว "
   }

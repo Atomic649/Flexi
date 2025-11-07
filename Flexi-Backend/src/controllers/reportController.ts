@@ -313,4 +313,91 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
   }
 };
 
-export { dailyReport, monthlyReport, getListofAdsandExpenses };
+// daily report details show bill list by product , expense ,adsCost list by date
+const ReportDetailsEachDate = async (req: Request, res: Response) => {
+  const { memberId, date } = req.params;
+  try {
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId,
+        purchaseAt: {
+          gte: new Date(`${date}T00:00:00.000Z`),
+          lt: new Date(`${date}T23:59:59.999Z`),
+        },
+      },
+      select: {       
+        billId: true,
+        purchaseAt: true,
+        total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            unitPrice: true,
+            unitDiscount: true,
+            unit: true,
+          },
+        },
+      },
+      take: 100, // Limit to 100 records
+    });
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        memberId: memberId,
+        date: {
+          gte: new Date(`${date}T00:00:00.000Z`),
+          lt: new Date(`${date}T23:59:59.999Z`),
+        },
+        save: true,
+      },
+      select: {
+        id: true,
+        date: true,
+        amount: true,
+        note: true,
+        sName:true,
+        desc: true,
+        image: true,
+      },
+      take: 100, // Limit to 100 records
+    });
+
+    const ads = await prisma.adsCost.findMany({
+      where: {
+        memberId: memberId,
+        date: {
+          gte: new Date(`${date}T00:00:00.000Z`),
+          lt: new Date(`${date}T23:59:59.999Z`),
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+        adsCost: true,
+        platform: {
+          select: {
+            platform: true,
+            accName: true,
+          },
+        },
+      },
+      take: 100, // Limit to 100 records
+    });
+
+    console.log("🚀 bills", bills);
+    console.log("🚀 expenses", expenses);
+    console.log("🚀 ads", ads);
+
+    res.json({ bills, expenses, ads });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get report details" });
+  }
+}
+  
+
+export { dailyReport, monthlyReport, getListofAdsandExpenses, ReportDetailsEachDate };

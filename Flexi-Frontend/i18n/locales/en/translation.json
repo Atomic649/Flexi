@@ -1570,6 +1570,14 @@
       "receiptTitle": "Receipt title (need: {{examples, list}} etc.)"
     }
   },
+  "daily": {
+    "details": "Daily Details",
+    "summary": "Summary",
+    "sale": "Sale",
+    "adsCost": "Ads Cost Forecast",
+    "profit": "Profit",
+    "bills": "Income",
+    "expenses": "Expenses"},
   "chatAI": {
     "title": "Business Assistant"}   
   
