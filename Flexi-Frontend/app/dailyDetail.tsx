@@ -196,7 +196,7 @@ export default function DailyDetail() {
           {/* Bills Section */}
           {reportDetails && (
             <>
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-50"}`}>
+              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
                 <CustomText className={`text-lg font-semibold mb-3 ${textColorClass}`}>
                   {`${t("daily.bills")} (${reportDetails.bills.length})`}
                 </CustomText>
@@ -227,7 +227,7 @@ export default function DailyDetail() {
 
                       {/* Products List */}
                       {bill.product && bill.product.length > 0 && (
-                        <View className={`rounded-md p-3 px-5 bg-${theme === "dark" ? "zinc-900" : "zinc-100"}`}>
+                        <View className={`rounded-md p-3 px-5 bg-${theme === "dark" ? "zinc-900" : "zinc-50"}`}>
                           {bill.product.map((product, index) => {
                             const itemTotal = (product.quantity * product.unitPrice) - product.unitDiscount;
                             return (
@@ -268,7 +268,7 @@ export default function DailyDetail() {
               </View>
 
               {/* Expenses Section */}
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-50"}`}>
+              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
                 <CustomText className={`text-lg font-semibold mb-3 ${textColorClass}`}>
                   {`${t("daily.expenses")} (${reportDetails.expenses.length})`}
                 </CustomText>
@@ -301,7 +301,7 @@ export default function DailyDetail() {
               </View>
 
               {/* Ads Cost Section */}
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-50"}`}>
+              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
                 <CustomText className={`text-lg font-semibold mb-3 ${textColorClass}`}>
                   {`${t("daily.adsCost")} (${reportDetails.ads?.length || 0})`}
                 </CustomText>
