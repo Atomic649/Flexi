@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { getResponsiveStyles } from "@/utils/responsive";
 import { useTranslation } from "react-i18next";
@@ -54,13 +54,14 @@ export default function MonthlyCard({
   tableColor,
   responsiveStyles,
   marketingPreference = "ads", // Default to "ads" if not provided
+  onPress, // Add onPress prop
 }: any) {
   // Use provided responsive styles or get default ones
   const styles = responsiveStyles || getResponsiveStyles();
   const { t } = useTranslation();
   
   return (
-    <View className="flex ">
+    <TouchableOpacity onPress={onPress} className="flex ">
       <View className={`flex flex-col items-end `} style={{ 
         backgroundColor: tableColor,
         borderBottomWidth: 1,
@@ -164,6 +165,6 @@ export default function MonthlyCard({
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

@@ -1578,6 +1578,14 @@
     "profit": "Profit",
     "bills": "Income",
     "expenses": "Expenses"},
+  "monthly": {
+    "details": "Monthly Details",
+    "summary": "Summary",
+    "sale": "Sale",
+    "adsCost": "Ads Cost Forecast",
+    "profit": "Profit",
+    "bills": "Income",
+    "expenses": "Expenses"},
   "chatAI": {
     "title": "Business Assistant"}   
   

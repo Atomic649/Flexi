@@ -75,5 +75,24 @@ class CallAPIReport {
             }
         }
     }
+
+    // Get Report Details by Month
+    async getDetailsEachMonthAPI(memberId: string, month: string): Promise<any> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.get(`/report/month/${memberId}/${month}`);
+
+            console.log("🚀DetailsEachMonthAPI:", response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error("🚨 Get Monthly Report Details API Error:", error);
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error("Network Error");
+            }
+        }
+    }
 }
 export default new CallAPIReport();

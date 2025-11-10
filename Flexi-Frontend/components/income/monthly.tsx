@@ -23,6 +23,7 @@ import {
 } from "@/utils/responsive";
 import { Ionicons } from "@expo/vector-icons";
 import { useMarketing } from "@/providers/MarketingProvider";
+import { useRouter } from "expo-router";
 
 // Function to format numbers for display, handling the large values properly
 const formatNumberDisplay = (num: number) => {
@@ -49,6 +50,7 @@ type MonthlyCardProps = {
 const monthly = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [monthlyReport, setMonthlyReport] = useState<MonthlyCardProps[]>([]);
   const responsiveStyles = getResponsiveStyles(); // Get responsive styles based on screen size
@@ -186,6 +188,17 @@ const monthly = () => {
    // fontWeight: "900" as "900",
     fontFamily:
       i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
+  };
+
+  // Handle MonthlyCard press to navigate to detail screen
+  const handleItemPress = (item: MonthlyCardProps) => {
+    router.push({
+      pathname: "/MonthlyDetail",
+      params: {
+        month: item.month,
+        selectedItem: JSON.stringify(item),
+      },
+    });
   };
 
   return (
@@ -366,6 +379,7 @@ const monthly = () => {
               }
               responsiveStyles={responsiveStyles}
               marketingPreference={marketingPreference}
+              onPress={() => handleItemPress(item)}
             />
           )}
           ListEmptyComponent={() => (

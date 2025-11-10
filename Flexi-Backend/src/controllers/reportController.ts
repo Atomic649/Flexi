@@ -361,8 +361,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
         note: true,
         sName:true,
         desc: true,
-        image: true,
-      },
+              },
       take: 100, // Limit to 100 records
     });
 
@@ -398,6 +397,91 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
     res.status(500).json({ message: "failed to get report details" });
   }
 }
+
+// monthly report detail
+const ReportDetailsEachMonth = async (req: Request, res: Response) => {
+  const { memberId, month } = req.params;
+  try {
+    const bills = await prisma.bill.findMany({
+      where: {
+        memberId: memberId,
+        purchaseAt: {
+          gte: new Date(`${month}-01T00:00:00.000Z`),
+          lt: new Date(`${month}-31T23:59:59.999Z`),
+        },
+      },
+      select: {       
+        billId: true,
+        purchaseAt: true,
+        total: true,
+        discount: true,
+        billLevelDiscount: true,
+        beforeDiscount: true,
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            unitPrice: true,
+            unitDiscount: true,
+            unit: true,
+          },
+        },
+      },
+      take: 100, // Limit to 100 records
+    });
+
+   const expenses = await prisma.expense.findMany({
+      where: {
+        memberId: memberId,
+        date: {
+          gte: new Date(`${month}-01T00:00:00.000Z`),
+          lt: new Date(`${month}-31T23:59:59.999Z`),
+        },
+        save: true,
+      },
+      select: {
+        id: true,
+        date: true,
+        amount: true,
+        note: true,
+        sName:true,
+        desc: true,        
+      },
+      take: 100, // Limit to 100 records
+    });
+
+   const ads = await prisma.adsCost.findMany({
+      where: {
+        memberId: memberId,
+        date: {
+          gte: new Date(`${month}-01T00:00:00.000Z`),
+          lt: new Date(`${month}-31T23:59:59.999Z`),
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+        adsCost: true,
+        platform: {
+          select: {
+            platform: true,
+            accName: true,
+          },
+        },
+      },
+      take: 100, // Limit to 100 records
+    });
+
+    console.log("🚀 Mbills", bills);
+    console.log("🚀 Mexpenses", expenses);
+    console.log("🚀 Mads", ads);
+    
+    res.json({ bills, expenses, ads });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get monthly report details" });
+  }
+}
   
 
-export { dailyReport, monthlyReport, getListofAdsandExpenses, ReportDetailsEachDate };
+export { dailyReport, monthlyReport, getListofAdsandExpenses, ReportDetailsEachDate, ReportDetailsEachMonth };
