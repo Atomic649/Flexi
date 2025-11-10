@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
 import CallAPIReport from "@/api/report_api";
@@ -78,6 +78,9 @@ export default function DailyDetail() {
   );
   const [loadingDetails, setLoadingDetails] = useState(true);
   const [selectedItem, setSelectedItem] = useState<DailyCardProps | null>(null);
+  const [showAllBills, setShowAllBills] = useState(false);
+  const [showAllExpenses, setShowAllExpenses] = useState(false);
+  const [showAllAds, setShowAllAds] = useState(false);
 
   const formatCurrency = (amount: number) => {
     const formattedNumber = new Intl.NumberFormat("th-TH", {
@@ -118,9 +121,6 @@ export default function DailyDetail() {
     fetchDetailedReport();
   }, [params.date, params.selectedItem]);
 
-  const handleGoBack = () => {
-    router.back();
-  };
 
   return (
     <View className={`flex-1  ${backgroundColorClass}`}>
@@ -130,12 +130,18 @@ export default function DailyDetail() {
           theme === "dark" ? "border-gray-700" : "border-gray-200"
         }`}
       >
-        <Text
+        <CustomText
           className={`text-lg font-bold ${textColorClass}`}
           style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
         >
-          {`${params.date}`}
-        </Text>
+          {(() => {
+            const date = new Date(params.date as string);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2);
+            return `${day}/${month}/${year}`;
+          })()}
+        </CustomText>
       </View>
 
       {loadingDetails ? (
@@ -203,7 +209,8 @@ export default function DailyDetail() {
                       <CustomText className={textColorClass}>{`${t(
                         "daily.adsCost"
                       )} :`}</CustomText>
-                      <Text className={`font-semibold `}>
+                      <Text className={`font-semibold `}
+                      style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}>
                         {`${formatCurrency(calculatedAds)}`}
                       </Text>
                     </View>
@@ -245,7 +252,8 @@ export default function DailyDetail() {
                   {`${t("daily.bills")} (${reportDetails.bills.length})`}
                 </CustomText>
                 {reportDetails.bills.length > 0 ? (
-                  reportDetails.bills.map((bill) => (
+                  <>
+                  {(showAllBills ? reportDetails.bills : reportDetails.bills.slice(0, 5)).map((bill) => (
                     <View
                       key={bill.billId}
                       className={`border-b pb-4 mb-1 ${
@@ -288,9 +296,7 @@ export default function DailyDetail() {
                       {/* Products List */}
                       {bill.product && bill.product.length > 0 && (
                         <View
-                          className={`rounded-md  bg-${
-                            theme === "dark" ? "zinc-900" : "zinc-100"
-                          }`}
+                          className={`rounded-md`}
                         >
                           {bill.product.map((product, index) => {
                             const itemTotal =
@@ -311,8 +317,9 @@ export default function DailyDetail() {
                                     >
                                       {product.product}
                                     </CustomText>
-                                    <View className="flex-row items-center mb-2">
-                                      <Text className={`text-xs opacity-60`}>
+                                    <View className="flex-row items-center ">
+                                      <Text className={`text-xs opacity-60`}
+                                      style ={{ color: theme === "dark" ? "#a1a1aa" : "#7c7c7c" }}>
                                         {`${product.quantity} ${
                                           product.unit
                                         } × ${formatCurrency(
@@ -349,7 +356,20 @@ export default function DailyDetail() {
                         </View>
                       )}
                     </View>
-                  ))
+                  ))}
+                  {reportDetails.bills.length > 5 && (
+                    <TouchableOpacity
+                      onPress={() => setShowAllBills(!showAllBills)}
+                      className="mt-3 p-3 rounded-lg"
+                      activeOpacity={0.7}
+                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                    >
+                      <CustomText className={`text-center ${textColorClass} font-medium`}>
+                        {showAllBills ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.bills.length - 5})`}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+                  </>
                 ) : (
                   <CustomText
                     className={`text-center ${textColorClass} opacity-70`}
@@ -372,7 +392,8 @@ export default function DailyDetail() {
                   {`${t("daily.expenses")} (${reportDetails.expenses.length})`}
                 </CustomText>
                 {reportDetails.expenses.length > 0 ? (
-                  reportDetails.expenses.map((expense) => (
+                  <>
+                  {(showAllExpenses ? reportDetails.expenses : reportDetails.expenses.slice(0, 5)).map((expense) => (
                     <View
                       key={expense.id}
                       className={`border-b pb-3 mb-3 ${
@@ -399,7 +420,20 @@ export default function DailyDetail() {
                       )}
                       
                     </View>
-                  ))
+                  ))}
+                  {reportDetails.expenses.length > 5 && (
+                    <TouchableOpacity
+                      onPress={() => setShowAllExpenses(!showAllExpenses)}
+                      className="mt-3 p-3 rounded-lg"
+                      activeOpacity={0.7}
+                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                    >
+                      <CustomText className={`text-center ${textColorClass} font-medium`}>
+                        {showAllExpenses ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.expenses.length - 5})`}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+                  </>
                 ) : (
                   <CustomText
                     className={`text-center ${textColorClass} opacity-70`}
@@ -423,7 +457,8 @@ export default function DailyDetail() {
                   {`${t("daily.adsCost")} (${reportDetails.ads?.length || 0})`}
                 </CustomText>
                 {reportDetails.ads && reportDetails.ads.length > 0 ? (
-                  reportDetails.ads.map((ad) => (
+                  <>
+                  {(showAllAds ? reportDetails.ads : reportDetails.ads.slice(0, 5)).map((ad) => (
                     <View
                       key={ad.id}
                       className={`border-b pb-3 mb-3 ${
@@ -452,7 +487,20 @@ export default function DailyDetail() {
                       </View>
                      
                     </View>
-                  ))
+                  ))}
+                  {reportDetails.ads && reportDetails.ads.length > 5 && (
+                    <TouchableOpacity
+                      onPress={() => setShowAllAds(!showAllAds)}
+                      className="mt-3 p-3 rounded-lg"
+                      activeOpacity={0.7}
+                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                    >
+                      <CustomText className={`text-center ${textColorClass} font-medium`}>
+                        {showAllAds ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.ads.length - 5})`}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+                  </>
                 ) : (
                   <CustomText
                     className={`text-center ${textColorClass} opacity-70`}

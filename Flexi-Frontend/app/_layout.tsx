@@ -353,6 +353,15 @@ function RootLayoutNav() {
           headerTitleStyle: getHeaderTitleStyle(),
         }}
       />
+      {/* Monthly Detail */}
+      <Stack.Screen
+        name="monthlyDetail"
+        options={{
+          ...showTopBarAndBackIcon(theme),
+          title: t("monthly.details"),
+          headerTitleStyle: getHeaderTitleStyle(),
+        }}
+      />
       {/* privacy */}
       <Stack.Screen
         name="privacy"
