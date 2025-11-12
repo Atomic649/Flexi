@@ -355,7 +355,7 @@ function RootLayoutNav() {
       />
       {/* Monthly Detail */}
       <Stack.Screen
-        name="monthlyDetail"
+        name="MonthlyDetail"
         options={{
           ...showTopBarAndBackIcon(theme),
           title: t("monthly.details"),

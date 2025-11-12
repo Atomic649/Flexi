@@ -155,7 +155,7 @@ export default function BillCard({
         id: "confirm",
         icon: "checkmark-circle",
         text: t("bill.confirm") || "Confirm",
-        backgroundColor: "#ffa12e",
+        backgroundColor: "#ff8c00",
         textColor: iconColor,
         onPress: handleCustomerConfirm,
       });

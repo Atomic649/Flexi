@@ -2070,8 +2070,8 @@ export default function Print() {
                       </View>
 
                       <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/3 pr-2"
+                        className={`p-4 ${
+                          isMobile() ? "w-full" : "w-1/2 pr-2"
                         } mb-4`}
                       >
                         <View
@@ -2107,8 +2107,8 @@ export default function Print() {
                       </View>
 
                       <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/3 px-1"
+                          className={`p-4 ${
+                          isMobile() ? "w-full" : "w-1/2 pr-2"
                         } mb-4`}
                       >
                         <View
@@ -2144,10 +2144,9 @@ export default function Print() {
                       </View>
 
                       <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/3 pl-2"
-                        } mb-4`}
-                      >
+                          className={`p-4 ${
+                          isMobile() ? "w-full" : "w-1/2 pr-2"
+                        } mb-4`}>
                         <View
                           style={{
                             backgroundColor:

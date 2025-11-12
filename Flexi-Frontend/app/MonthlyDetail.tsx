@@ -69,7 +69,7 @@ type ReportDetails = {
   ads: AdsDetail[];
 };
 
-export default function monthlyDetail() {
+export default function MonthlyDetail() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -129,10 +129,7 @@ export default function monthlyDetail() {
     fetchDetailedReport();
   }, [params.month, params.selectedItem]);
 
-  const handleGoBack = () => {
-    router.back();
-  };
-
+  
   return (
     <View className={`flex-1 ${backgroundColorClass}`}>
       {/* Header */}
@@ -141,12 +138,12 @@ export default function monthlyDetail() {
           theme === "dark" ? "border-gray-700" : "border-gray-200"
         }`}
       >
-        <Text
+        <CustomText
           className={`text-lg font-bold ${textColorClass}`}
           style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
         >
           {formatDate(params.month as string)}
-        </Text>
+        </CustomText>
       </View>
 
       {loadingDetails ? (

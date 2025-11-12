@@ -144,12 +144,13 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
               <CustomText
                 style={{
                   color: action.textColor || "#FFFFFF",
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: "600",
                   textAlign: "center",
                   marginTop: 2,
                 }}
                 numberOfLines={2}
+                weight="bold"
               >
                 {action.text}
               </CustomText>

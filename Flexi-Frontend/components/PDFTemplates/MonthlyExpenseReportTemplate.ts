@@ -387,34 +387,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
               </div>
             `}
           </div>
-
-          <div class="page-break-with-margin">
-            <h3>${t("print.expensesByCategory")}</h3>
-            <table class="category-table">
-              <thead>
-                <tr>
-                  <th>${t("print.category")}</th>
-                  <th class="text-right">${t("print.amount")}</th>
-                  <th class="text-right">${t("print.percentage")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${Object.entries(expensesByGroup).map(([group, data]) => `
-                  <tr>
-                    <td><span class="expense-group">${t(`expense.detail.group.${group.toLowerCase()}`) || group}</span></td>
-                    <td class="text-right">${formatCurrencyForPDF(data.amount)}</td>
-                    <td class="text-right">${totalExpenses > 0 ? Math.round((data.amount / totalExpenses) * 100) : 0}%</td>
-                  </tr>
-                `).join('')}
-                <tr style="background-color: #f8f9fa; font-weight: bold;">
-                  <td class="bold">${t("print.total")}</td>
-                  <td class="text-right bold">${formatCurrencyForPDF(totalExpenses)}</td>
-                  <td class="text-right bold">100%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
+          
           <div class="footer">
             ${t("print.generatedOn")} ${format(new Date(), "dd/MM/yyyy HH:mm")} - Flexi Business Hub
           </div>
