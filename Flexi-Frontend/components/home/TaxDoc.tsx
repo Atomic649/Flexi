@@ -401,7 +401,7 @@ export default function TaxDoc() {
             </View>
 
             {/* Tax Power Tank limit */}
-            <View className="px-6 mb-4">
+            <View className="mb-4 items-center">
               <View
                 style={{
                   width: "100%",
@@ -409,8 +409,7 @@ export default function TaxDoc() {
                   justifyContent: "center",
                   alignItems: "flex-start",
                   backgroundColor: theme === "dark" ? "#06fbc6" : "#9cffef",
-                  borderRadius: 10,
-                  margin: 10,
+                  borderRadius: 10,                  
                 }}
               ></View>
               <View
@@ -419,8 +418,7 @@ export default function TaxDoc() {
                   height: 16, // Adjust height to fit content
                   justifyContent: "center",
                   alignItems: "flex-start",
-                  backgroundColor: theme === "dark" ? "#fe270b50" : "#fe270b73",
-                  margin: 10,
+                  backgroundColor: theme === "dark" ? "#fe270b50" : "#fe270b73",                  
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                   position: "absolute", // Position it on top of the background
