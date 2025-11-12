@@ -2151,7 +2151,7 @@ export default function Print() {
                           style={{
                             backgroundColor:
                               theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
+                          }} 
                           className="p-4 rounded-lg"
                         >
                           <CustomText className=" mb-1">
