@@ -643,8 +643,34 @@ export default function Print() {
   // Handle print action
   const handlePrint = () => {
     if (Platform.OS === "web") {
-      // Use HTML content for web/desktop printing
-      printHTMLContent();
+      // Show same options for web as mobile: "Income Report" and "Expense Report"
+      setAlertConfig({
+        visible: true,
+        title: t("print.saveAsPdf"),
+        message: t("print.saveAsPdfOption"),
+        buttons: [
+          {
+            text: t("print.incomeReport"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              printIncomeReportHTMLContent();
+            },
+          },
+          {
+            text: t("print.expenseReport"),
+            onPress: () => {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+              printExpenseReportHTMLContent();
+            },
+          },
+          {
+            text: t("common.cancel"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+            style: "cancel",
+          },
+        ],
+      });
     } else if (isMobile()) {
       // Show options for mobile: "Save as PDF" or "Cancel"
       setAlertConfig({
@@ -690,8 +716,8 @@ export default function Print() {
     }
   };
 
-  // Function to print HTML Monthly content for web/desktop
-  const printHTMLContent = () => {
+  // Function to print HTML Income Report content for web/desktop
+  const printIncomeReportHTMLContent = () => {
     // Generate HTML content using the template component
     const htmlContent = generateMonthlyReportHTML({
       selectedMonth,
@@ -727,6 +753,113 @@ export default function Print() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    }
+  };
+
+  // Function to print HTML Expense Report content for web/desktop
+  const printExpenseReportHTMLContent = async () => {
+    try {
+      // Call api getExpenseByDateRangeAPI
+      if (!memberId) throw new Error("Member ID is null");
+      const startDate = startOfMonth(selectedMonth);
+      const endDate = endOfMonth(selectedMonth);
+
+      const response = await CallAPIPrint.getExpenseByDateRangeAPI(
+        memberId,
+        format(startDate, "yyyy-MM-dd"),
+        format(endDate, "yyyy-MM-dd")
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      setExpenses(response);
+      console.log("Expenses for the month:", response);
+
+      // Calculate expense totals from the response
+      const actualExpenses = response; // Include all expenses (including drafts)
+      const totalExpenses = actualExpenses.reduce(
+        (sum: number, expense: any) => sum + (Number(expense.amount) || 0),
+        0
+      );
+      const totalExpenseCount = actualExpenses.length;
+      const vatExpenses = actualExpenses.filter(
+        (expense: any) => expense.vat
+      ).length;
+      const whtExpenses = actualExpenses.filter(
+        (expense: any) => expense.withHoldingTax
+      ).length;
+      const averageExpenseAmount =
+        totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
+
+      // Group expenses by category
+      const expensesByGroup: { [key: string]: number } = {};
+      actualExpenses.forEach((expense: any) => {
+        const group = expense.group || "Other";
+        expensesByGroup[group] =
+          (expensesByGroup[group] || 0) + (Number(expense.amount) || 0);
+      });
+
+      const expenseMonthlyTotals = {
+        totalExpenses,
+        totalExpenseCount,
+        vatExpenses,
+        whtExpenses,
+        averageExpenseAmount,
+        expensesByGroup,
+      };
+
+      // Generate HTML content for expense report
+      const htmlContent = generateExpenseReportHTML({
+        selectedMonth,
+        businessDetails,
+        businessName,
+        monthlyTotals: expenseMonthlyTotals,
+        expenses: response,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+        formatMonthYear,
+      });
+
+      // Create a new window for printing
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+
+        // Wait for content to load, then print
+        printWindow.onload = () => {
+          printWindow.print();
+          printWindow.close();
+        };
+      } else {
+        // Fallback: create a blob and open it
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `expense_report_${format(selectedMonth, "yyyy-MM")}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error("❌ Error generating expense report for web:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
     }
   };
 
