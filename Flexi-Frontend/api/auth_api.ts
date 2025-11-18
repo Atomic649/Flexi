@@ -11,6 +11,7 @@ class CallAPIUser {
     phone: string;
     email: string;
     password: string;
+    username?: string;
   }): Promise<any> {
     if (!(await checkNetwork())) {
       return { message: "No Network Connection" };

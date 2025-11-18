@@ -27,6 +27,85 @@ class CallAPIMember {
       }
     }
   }
+
+  // Get members by businessId
+  async getMembersByBusinessIdAPI(businessId: number) {
+    if (!(await checkNetwork())) {
+      return { error: "No internet connection" };
+    }
+    try {
+      const response = await getAxios().get(`/member/business/${businessId}`);
+      console.log("📝getMembersByBusinessIdAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Get Members By BusinessId API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Invite member by username
+  async inviteMemberByUsernameAPI(data: { username: string; role: string; businessId: number; }) {
+    if (!(await checkNetwork())) {
+      return { error: "No internet connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/member/invite`, data);
+      console.log("📝inviteMemberByUsernameAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Invite Member API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Accept invitation
+  async acceptInvitationAPI(data: { uniqueId: string }) {
+    if (!(await checkNetwork())) {
+      return { error: "No internet connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/member/accept`, data);
+      console.log("📝acceptInvitationAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Accept Invitation API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
+  // Get pending invitations for a user
+  async getPendingInvitationsByUserAPI(userId: number) {
+    if (!(await checkNetwork())) {
+      return { error: "No internet connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/member/pending/${userId}`);
+      console.log("📝getPendingInvitationsByUserAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Get Pending Invitations API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
 }
 
 export default new CallAPIMember();

@@ -3,6 +3,7 @@ import {
   BusinessType,
   PrismaClient as PrismaClient1,
   taxType,
+  IncomeChannel,
 } from "../generated/client1";
 import Joi from "joi";
 import multer from "multer";
@@ -104,6 +105,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         businessWebsite: businessAccInput.businessWebsite,
         businessPhone: businessAccInput.businessPhone,
         DocumentType: businessAccInput.DocumentType || ["Receipt"],
+      
       },
     });
 
@@ -111,7 +113,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     const store = await prisma.store.create({
       data: {
         accName: "Offline",
-        platform: "Offline" as any as import("../generated/client1").IncomeChannel,
+        platform: "Offline" as IncomeChannel,
         memberId: businessAcc.memberId,
         businessAcc: businessAcc.id,
       },
@@ -173,9 +175,9 @@ const createBusinessAcc = async (req: Request, res: Response) => {
      const store = await prisma.store.create({
        data: {
          accName: name,
-         platform: name as any as import("../generated/client1").IncomeChannel,
+         platform: name as IncomeChannel,
          memberId: businessAcc.memberId,
-          businessAcc: businessAcc.id,
+         businessAcc: businessAcc.id,
         },
       });
       console.log("store created", store);
@@ -271,7 +273,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       const store = await prisma.store.create({
         data: {
           accName: "Offline",
-          platform: "Offline" as any as import("../generated/client1").IncomeChannel,
+          platform: "Offline" as IncomeChannel,
           memberId: businessAcc.memberId,
           businessAcc: businessAcc.id,
         },
@@ -317,9 +319,9 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
        const influencerStore = await prisma.store.create({
          data: {
            accName: name,
-           platform: name as any as import("../generated/client1").IncomeChannel,
+           platform: name as IncomeChannel,
            memberId: memberId.uniqueId,
-            businessAcc: businessAcc.id,
+           businessAcc: businessAcc.id,
           },
         });
         console.log("influencer store created", influencerStore);
@@ -362,23 +364,63 @@ const getBusinessAcc = async (_: Request, res: Response) => {
     res.status(500).json({ message: "failed to get business accounts" });
   }
 };
-// Get a Business Account by ID - Get
+// Get Business Accounts for a user (owner + memberships)
+// Response shape: [{ businessName, memberId, id }, ...]
 const getBusinessAccByUserId = async (req: Request, res: Response) => {
   const { userId } = req.params;
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
   try {
-    const businessAcc = await prisma.businessAcc.findMany({
-      where: {
-        userId: Number(userId),
-      },
-      select: {
-        businessName: true,
-        memberId: true,
+    // Fetch all member records for the user, including any linked business accounts
+    const memberRecords = await prisma.member.findMany({
+      where: { userId: Number(userId) },
+      include: {
+        business: { select: { businessName: true, id: true } }, // business relation may be null for owner records
       },
     });
-    res.json(businessAcc);
+
+    // Membership-based businesses (user linked via member.businessId)
+    const membershipEntries = memberRecords
+      .filter((m) => m.business) // has joined business
+      .map((m) => ({
+        businessName: m.business!.businessName,
+        memberId: m.uniqueId,
+        id: m.business!.id,
+      }));
+
+    // Owner-based businesses (member.business is null, but they own businessAcc where businessAcc.memberId = member.uniqueId)
+    const ownerMemberIds = memberRecords
+      .filter((m) => !m.business) // potential owner records
+      .map((m) => m.uniqueId);
+
+    let ownerEntries: { businessName: string; memberId: string; id: number }[] = [];
+    if (ownerMemberIds.length > 0) {
+      const ownedBusinessAccs = await prisma.businessAcc.findMany({
+        where: { memberId: { in: ownerMemberIds } },
+        select: { businessName: true, memberId: true, id: true },
+      });
+      ownerEntries = ownedBusinessAccs.map((b) => ({
+        businessName: b.businessName,
+        memberId: b.memberId,
+        id: b.id,
+      }));
+    }
+
+    // Combine and deduplicate (in rare cases if both membership & owner overlap)
+    const combined = [...membershipEntries, ...ownerEntries];
+    const seen = new Set<string>();
+    const result = combined.filter((entry) => {
+      const key = `${entry.memberId}:${entry.businessName}:${entry.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    return res.json(result);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "failed to get business account" });
+    return res.status(500).json({ message: "failed to get business accounts for user" });
   }
 };
 

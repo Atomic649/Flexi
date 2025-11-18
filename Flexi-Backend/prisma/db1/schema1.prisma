@@ -45,6 +45,7 @@ enum UserRole {
   marketing
   accountant
   sales
+  partner
 }
 
 enum taxType {

@@ -9,9 +9,7 @@ import {
   getBusinessDetail,
   AddMoreBusinessAcc,
   updateBusinessAvatar,
-  getBusinessAvatar,
-
- 
+  getBusinessAvatar, 
   
 } from "../controllers/businessAccController";
 import authenticateToken from "../middleware/authMiddleware";

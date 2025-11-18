@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import CallAPIUser from "@/api/auth_api";
 import CallAPIBusiness from "@/api/business_api";
-import { getMemberId, getUserId, replaceMemberId } from "@/utils/utility";
+import { getMemberId, getUserId, replaceMemberId, saveBusinessId } from "@/utils/utility";
 import { ScrollView, View, Image } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -190,13 +190,17 @@ export default function Profile() {
   }, []);
 
   // Function to handle business account selection and reload app
-  const handleBusinessSelection = async (business: any) => {
+  const handleBusinessSelection = async (business: { businessName: string; memberId: string; id: number }) => {
     try {
       setSelectedBusiness(business.businessName);
       setBusinessAccChoiceVisible(false);
 
       // Store the selected business memberId
       await replaceMemberId(business.memberId);
+      // Also persist the selected business id for screens that rely on businessId
+      if (business?.id) {
+        await saveBusinessId(business.id);
+      }
 
       // Trigger business data refresh
       triggerFetch();

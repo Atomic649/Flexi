@@ -1,4 +1,11 @@
-import { Dimensions, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Modal, TextInput } from "react-native";
+import {
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import { CustomButton } from "@/components/CustomButton";
@@ -64,8 +71,8 @@ export default function UserInfo() {
       setEmail(data.email || "");
       setUsername(data.username || "");
       setBio(data.bio || "");
-  setPhone(data.phone || "");
-  setAvatar(data.avatar || "");
+      setPhone(data.phone || "");
+      setAvatar(data.avatar || "");
     } catch (err: any) {
       console.error("Error loading user profile:", err);
       setError(err?.message || "Failed to load user profile");
@@ -87,7 +94,8 @@ export default function UserInfo() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
           },
         ],
       });
@@ -108,23 +116,28 @@ export default function UserInfo() {
         setAlertConfig({
           visible: true,
           title: t("common.error"),
-          message: t("auth.changePassword.validation.enterPassword") || "Please enter your password",
+          message:
+            t("auth.changePassword.validation.enterPassword") ||
+            "Please enter your password",
           buttons: [
-            { text: t("common.ok"), onPress: () => setAlertConfig((p)=>({...p,visible:false})) },
+            {
+              text: t("common.ok"),
+              onPress: () => setAlertConfig((p) => ({ ...p, visible: false })),
+            },
           ],
         });
         return;
       }
 
       // Backend requires password, email, firstName, lastName, avatar, phone
-      const payload: any = {       
+      const payload: any = {
         id: userId,
         email,
         password: confirmPassword,
         firstName,
         lastName,
         avatar: avatar || "",
-        phone: phone || "",       
+        phone: phone || "",
         username,
         bio,
       };
@@ -174,7 +187,10 @@ export default function UserInfo() {
             alignSelf: "center",
           }}
         >
-          <View className="flex-1 justify-center px-4 py-10" style={{ width: "100%" }}>
+          <View
+            className="flex-1 justify-center px-4 py-10"
+            style={{ width: "100%" }}
+          >
             <FormField2
               title={t("auth.register.firstName") || "First Name"}
               placeholder={t("auth.register.firstName") || "First Name"}
@@ -199,7 +215,9 @@ export default function UserInfo() {
 
             <FormField2
               title={t("auth.register.emailPlaceholder") || "Email"}
-              placeholder={t("auth.register.emailPlaceholder") || "Enter your email"}
+              placeholder={
+                t("auth.register.emailPlaceholder") || "Enter your email"
+              }
               value={email}
               handleChangeText={setEmail}
               otherStyles="mt-7"
@@ -272,33 +290,58 @@ export default function UserInfo() {
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => setConfirmVisible(false)}
-          style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
         >
           <TouchableOpacity
             activeOpacity={1}
-            style={{ width: "85%", maxWidth: 500, backgroundColor: theme === "dark" ? "#18181b" : "#ffffff", borderRadius: 12, padding: 16 }}
+            style={{
+              width: "85%",
+              maxWidth: 500,
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              borderRadius: 12,
+              padding: 16,
+            }}
           >
             <FormField2
-                placeholder={t("profile.password.enterCurrentPassword") || "Enter password"}
-                title={t("profile.password.currentPassword") || "Current Password"}
-                placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                value={confirmPassword}
-                handleChangeText={setConfirmPassword}
-                secureTextEntry
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles=""
+              placeholder={
+                t("profile.password.enterCurrentPassword") || "Enter password"
+              }
+              title={
+                t("profile.password.currentPassword") || "Current Password"
+              }
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              value={confirmPassword}
+              handleChangeText={setConfirmPassword}
+              secureTextEntry
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles=""
             />
-            
 
-            <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: 16, gap: 12 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                marginTop: 16,
+                gap: 12,
+              }}
+            >
               <TouchableOpacity onPress={() => setConfirmVisible(false)}>
-                <CustomText style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>{t("common.cancel")}</CustomText>
+                <CustomText
+                  style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+                >
+                  {t("common.cancel")}
+                </CustomText>
               </TouchableOpacity>
               <TouchableOpacity onPress={submitUpdateWithPassword}>
-                <CustomText
-                weight="bold"
-                style={{ color: "#04ecc1" }}>{t("common.confirm")}</CustomText>
+                <CustomText weight="bold" style={{ color: "#04ecc1" }}>
+                  {t("common.confirm")}
+                </CustomText>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

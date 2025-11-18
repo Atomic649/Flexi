@@ -1592,5 +1592,32 @@
   },
   "chatAI": {
     "title": "Flexi AI เลขาส่วนตัว "
-  }
+  },
+  "team":{
+    "title": "การจัดการหุ้นส่วน",
+    "addMember": "เพิ่มสมาชิก",
+    "editMember": "แก้ไขสมาชิก",
+    "deleteMember": "ลบสมาชิก",
+    "memberEmail": "อีเมลสมาชิก",
+    "memberRole": "บทบาทสมาชิก",
+    "selectRole": "เลือกบทบาท",
+    "roles": {
+      "owner": "กรรมการผู้บริหาร",
+      "partner": "หุ้นส่วน",
+      "accountant": "นักบัญชี",
+      "marketing":"การตลาด",
+      "sales":"ฝ่ายขาย"
+    },
+    "invitations": {
+      "pending": "คำเชิญที่รอดำเนินการ",
+      "sent": "ส่งคำเชิญแล้วไปยัง",
+      "resend": "ส่งคำเชิญอีกครั้ง",
+      "cancel": "ยกเลิกคำเชิญ"
+    },
+    "alerts": {
+      "deleteTitle": "ลบสมาชิก",
+      "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบสมาชิกนี้?",
+      "deleteSuccess": "ลบสมาชิกสำเร็จ",
+      "deleteError": "ไม่สามารถลบสมาชิกได้"
+  }}
 }

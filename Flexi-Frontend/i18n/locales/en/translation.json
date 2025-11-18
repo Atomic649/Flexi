@@ -1589,6 +1589,33 @@
     "bills": "Income",
     "expenses": "Expenses"},
   "chatAI": {
-    "title": "Business Assistant"}   
+    "title": "Business Assistant"} ,
+      "team":{
+    "title": "Team Management",
+    "addMember": "Add Member",
+    "editMember": "Edit Member",
+    "deleteMember": "Delete Member",
+    "memberEmail": "Member Email",
+    "memberRole": "Member Role",
+    "selectRole": "Select Role",
+    "roles": {
+      "owner": "Owner",
+      "partner": "Partner",
+      "accountant": "Accountant",
+      "marketing":"Marketing",
+      "sales":"Sales"
+    },
+    "invitations": {
+      "pending": "Pending Invitations",
+      "sent": "Invitations Sent to",
+      "resend": "Resend Invitation",
+      "cancel": "Cancel Invitation"
+    },
+    "alerts": {
+      "deleteTitle": "Delete Member",
+      "deleteMessage": "Are you sure you want to delete this member?",
+      "deleteSuccess": "Member deleted successfully",
+      "deleteError": "Unable to delete member"
+  }}  
   
 }

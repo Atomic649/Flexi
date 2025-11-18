@@ -13,7 +13,6 @@ import { router } from "expo-router";
 import {CustomButton} from "@/components/CustomButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
-import Animated from "react-native-reanimated";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
@@ -535,7 +534,7 @@ export default function Setting() {
               <SectionItem
                 icon="users"
                 text={t("settings.businessSetting.team")}
-                onPress={() => {}}
+                onPress={() => {router.push("/team")}}
               />
             </View>
           </Section>

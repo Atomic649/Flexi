@@ -25,6 +25,7 @@ export default function Register() {
   const { t } = useTranslation();
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
+  const [username, setUsername] = useState("@");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -133,6 +134,7 @@ export default function Register() {
         phone,
         email,
         password,
+        username,
       });
 
       if (data.error) throw new Error(data.error);
@@ -319,6 +321,14 @@ export default function Register() {
                 placeholder={t("auth.register.lastName")}
                 value={lastName}
                 handleChangeText={setlastName}
+                otherStyles="mt-7"
+              />
+
+              <FormField
+                title={t("auth.register.username")}
+                placeholder={t("auth.register.username")}
+                value={username}
+                handleChangeText={setUsername}
                 otherStyles="mt-7"
               />
 

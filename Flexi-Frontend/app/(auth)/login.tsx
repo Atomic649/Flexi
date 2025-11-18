@@ -116,18 +116,64 @@ export default function Login() {
         }
       }
 
-      setAlertConfig({
-        visible: true,
-        title: t("auth.login.alerts.error"),
-        message: errorMessage,
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
-      });
+      // Special handling: missing business account -> offer choices
+      if (errorMessage === "Business account not found") {
+        // Attempt to persist token/user if backend still returned them (some APIs may include partial success data)
+        try {
+          if (error?.token) saveToken(error.token);
+          if (error?.user?.id) saveUserId(error.user.id);
+        } catch {}
+        setAlertConfig({
+          visible: true,
+          title: t("auth.login.alerts.error"),
+          message: errorMessage,
+          buttons: [
+            {
+              text: t("auth.login.alerts.partnerOption", "Partner"),
+              onPress: () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                // Navigate to a partner onboarding screen (placeholder). Adjust route if a dedicated screen exists.
+                // Use object form with cast to satisfy type until route types regenerate
+                router.push({ pathname: "/partner" } as any);
+              },
+            },
+            {
+              text: t(
+                "auth.login.alerts.registerBusinessOption",
+                "Register Business"
+              ),
+              onPress: async () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                // If we have a stored userId, pass it forward; business_register expects userId & uniqueId (uniqueId optional here)
+                const storedUserId = await AsyncStorage.getItem("userId");
+                router.push({
+                  pathname: "/business_register",
+                  params: storedUserId ? { userId: storedUserId } : {},
+                });
+              },
+            },
+            {
+              text: t("common.cancel"),
+              style: "cancel",
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      } else {
+        setAlertConfig({
+          visible: true,
+          title: t("auth.login.alerts.error"),
+          message: errorMessage,
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

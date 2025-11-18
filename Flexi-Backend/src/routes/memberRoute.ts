@@ -6,6 +6,8 @@ import {
   deleteMember,
   updateMember,
   searchMember,
+  getMembersByBusinessId,
+  inviteMemberByUsername,
 } from "../controllers/memberController";
 
 // Create express router
@@ -28,5 +30,13 @@ router.put("/:uniqueId", updateMember);
 
 // Searching Member by keyword 
 router.get("/search/:keyword", searchMember);
+
+// Get members by businessId
+router.get("/business/:businessId", getMembersByBusinessId);
+
+// Invite member by username
+router.post("/invite", inviteMemberByUsername);
+
+// Invitation accept/pending endpoints removed
 
 export default router;

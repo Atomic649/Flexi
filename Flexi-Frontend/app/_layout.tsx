@@ -389,6 +389,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* team */}
+        <Stack.Screen
+          name="team"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("settings.businessSetting.team"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* expense detail */}
         <Stack.Screen
           name="expenseDetailScreen"
