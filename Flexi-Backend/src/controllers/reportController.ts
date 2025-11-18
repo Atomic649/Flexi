@@ -320,6 +320,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId,
+        DocumentType:"Receipt",
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
@@ -405,6 +406,7 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         memberId: memberId,
+        DocumentType:"Receipt",
         purchaseAt: {
           gte: new Date(`${month}-01T00:00:00.000Z`),
           lt: new Date(`${month}-31T23:59:59.999Z`),

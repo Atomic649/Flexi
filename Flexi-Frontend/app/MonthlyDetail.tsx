@@ -129,6 +129,11 @@ export default function MonthlyDetail() {
     fetchDetailedReport();
   }, [params.month, params.selectedItem]);
 
+  // Navigate to print screen with billId to open Invoice Details Modal
+  const handlePressBillId = (billId: string) => {
+    router.push(`/print?billId=${encodeURIComponent(String(billId))}`);
+  };
+
   
   return (
     <View className={`flex-1 ${backgroundColorClass}`}>
@@ -256,14 +261,19 @@ export default function MonthlyDetail() {
 
                       {/* Bill Header */}
                       <View className="flex-row justify-between items-center mb-1">
-                        <CustomText
-                          className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
-                          style={{
-                            backgroundColor: theme === "dark" ? "#1f2937" : "#dededd",
-                          }}
+                        <TouchableOpacity
+                          onPress={() => handlePressBillId(String(bill.billId))}
+                          activeOpacity={0.7}
                         >
-                          {`#${String(bill.billId)}`}
-                        </CustomText>
+                          <CustomText
+                            className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
+                            style={{
+                              backgroundColor: theme === "dark" ? "#1f2937" : "#dededd",
+                            }}
+                          >
+                            {`#${String(bill.billId)}`}
+                          </CustomText>
+                        </TouchableOpacity>
                         <Text
                           className={`font-bold text-base ${textColorClass}`}
                           style={{

@@ -31,6 +31,7 @@ import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import { vatRate } from "@/components/TaxVariable";
+import { useLocalSearchParams } from "expo-router";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -104,6 +105,7 @@ const calculateInvoiceTotal = (invoice: any) => {
 };
 
 export default function Print() {
+  const params = useLocalSearchParams<{ billId?: string }>();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const {
@@ -297,6 +299,27 @@ export default function Print() {
     fetchCredentials();
   }, []);
   // Note: No effect reacting to memberId; business details are fetched when credentials are loaded
+
+  // If navigated with billId param, fetch that invoice and open modal automatically
+  useEffect(() => {
+    const openInvoiceFromParams = async () => {
+      try {
+        if (!params?.billId || !memberId) return;
+        // Reuse existing search API by bill id
+        const response = await CallAPIPrint.searchBillByIdAPI(
+          memberId,
+          String(params.billId)
+        );
+        if (response) {
+          viewInvoiceDetails(response);
+        }
+      } catch (error) {
+        console.error("Error opening invoice from params:", error);
+      }
+    };
+    openInvoiceFromParams();
+    // Re-run when billId or memberId becomes available
+  }, [params?.billId, memberId]);
 
   // Helper: map document type to step
   const mapDocTypeToStep = (docType: string): "QA" | "IV" | "RE" => {
