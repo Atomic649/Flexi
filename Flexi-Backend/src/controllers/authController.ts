@@ -172,18 +172,12 @@ const login = async (req: Request, res: Response) => {
     }
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);
-
-    // find memberId by userId
-    const memberId = await Prisma.member.findFirst({
-      where: {
-        userId: user.id,
-      },
-    });
     // find businessAcc by userId
     const businessAcc = await Prisma.businessAcc.findFirst({
       where: {
-        memberId: memberId?.uniqueId,
+        userId:user.id
       },
+    
     });
     if (!businessAcc) {
       return res.status(404).json({ message: "Business account not found" });
@@ -202,7 +196,7 @@ const login = async (req: Request, res: Response) => {
         phone: user.phone,
         bio: user.bio,
         username: user.username,
-        memberId: memberId?.uniqueId,
+        memberId: businessAcc.memberId,
         businessId: businessAcc.id,
       },
     });
