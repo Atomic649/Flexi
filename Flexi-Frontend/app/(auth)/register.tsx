@@ -141,7 +141,7 @@ export default function Register() {
 
       // Automatically create Unique ID in Member Table
       const data2 = await CallMemberAPI.createMemberAPI({
-        permission: "user",
+        permission: "admin",
         role: "owner",
         userId: data.user.id,
       });

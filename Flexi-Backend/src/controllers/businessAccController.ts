@@ -19,6 +19,7 @@ const prisma = new PrismaClient1();
 
 // Interface for request body from client
 interface businessAccInput {
+
   businessName: string;
   businessUserName?: string;
   taxId: string;
@@ -435,12 +436,13 @@ const getBusinessDetail = async (req: Request, res: Response) => {
     },
     select: {
       role: true,
+      businessId:true
     },
   });
   try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        memberId: memberId,
+        id:role?.businessId,
       },
       select: {
         id: true,
@@ -481,6 +483,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     vat,
     businessAddress,
     DocumentType,
+
   } = req.body;
 
   console.log("Update Business Details", {
@@ -498,10 +501,23 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   });
 
   try {
-    const businessAcc = await prisma.businessAcc.updateMany({
-      where: {
-        memberId: memberId,
-      },
+    // Locate the business account by memberId first
+    const existing = await prisma.member.findFirst({
+      where: { uniqueId: memberId },
+      select: { businessId: true, permission: true },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
+
+    // if permission is not admin, return error
+    if (existing.permission !== "admin") {
+      return res.status(403).json({ message: "You do not have permission to update business details" });
+    }
+
+    const updated = await prisma.businessAcc.update({
+      where: { id: existing.businessId },
       data: {
         businessName,
         businessUserName,
@@ -516,17 +532,26 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
       },
     });
 
-    if (businessAcc.count === 0) {
-      return res.status(404).json({ message: "Business account not found" });
-    }
-
-    res.json({
+    return res.json({
       status: "ok",
       message: "Business details updated successfully",
+      businessAcc: {
+        id: updated.id,
+        businessName: updated.businessName,
+        businessUserName: updated.businessUserName,
+        taxId: updated.taxId,
+        businessType: updated.businessType,
+        taxType: updated.taxType,
+        businessPhone: updated.businessPhone,
+        businessWebsite: updated.businessWebsite,
+        vat: updated.vat,
+        businessAddress: updated.businessAddress,
+        DocumentType: updated.DocumentType,
+      },
     });
   } catch (e) {
     console.error("Failed to update business details:", e);
-    res.status(500).json({ message: "Failed to update business details" });
+    return res.status(500).json({ message: "Failed to update business details" });
   }
 };
 
