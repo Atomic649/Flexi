@@ -278,12 +278,9 @@ export default function UserInfo() {
             activeOpacity={1}
             style={{ width: "85%", maxWidth: 500, backgroundColor: theme === "dark" ? "#18181b" : "#ffffff", borderRadius: 12, padding: 16 }}
           >
-            <CustomText className="text-lg mt-2 " style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
-              {t("profile.password.currentPassword") || "Confirm your password"}
-            </CustomText>
-            
             <FormField2
                 placeholder={t("profile.password.enterCurrentPassword") || "Enter password"}
+                title={t("profile.password.currentPassword") || "Current Password"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 value={confirmPassword}
                 handleChangeText={setConfirmPassword}
