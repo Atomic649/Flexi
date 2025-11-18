@@ -158,9 +158,7 @@ export default function Profile() {
     try {
       const memberId = await getMemberId();
       if (memberId !== null) {
-        const response = await CallAPIBusiness.getBusinessDetailsAPI(
-          memberId
-        );
+        const response = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
         setBusinessData(response);
       }
     } catch (error) {
@@ -285,7 +283,7 @@ export default function Profile() {
             className="text-lg font-bold text-center"
             style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
           >
-            {userData.firstName} 
+            {userData.firstName}
           </CustomText>
           <CustomText
             className="text-lg font-bold text-center"
@@ -315,6 +313,12 @@ export default function Profile() {
             </View>
           </TouchableOpacity>
         </View>
+        <Text
+          className="text-base text-center font-bold"
+          style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+        >
+          {businessData.businessUserName}
+        </Text>
 
         <Text
           className="text-sm text-center"
@@ -322,6 +326,7 @@ export default function Profile() {
         >
           {businessData.role}
         </Text>
+
         {businessAccChoice.length < 5 && (
           <TouchableOpacity
             onPress={() => router.push("/createBusiness")}

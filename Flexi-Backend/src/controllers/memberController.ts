@@ -11,6 +11,7 @@ interface memberInput {
   permission: string;
   role: UserRole;
   userId: number;
+  businessId?: number;
 }
 
 // Validate the request body

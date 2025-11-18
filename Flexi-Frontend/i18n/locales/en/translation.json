@@ -80,6 +80,8 @@
     },
     "register": {
       "title": "Register",
+      "username": "Username",
+      "bio": "Bio",
       "displayNamePlaceholder": "Display Name",
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Password",

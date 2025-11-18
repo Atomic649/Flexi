@@ -19,6 +19,7 @@ const prisma = new PrismaClient1();
 // Interface for request body from client
 interface businessAccInput {
   businessName: string;
+  businessUserName?: string;
   taxId: string;
   businessType: BusinessType;
   taxType: taxType;
@@ -36,6 +37,7 @@ interface businessAccInput {
 // validate the request body
 const schema = Joi.object({
   businessName: Joi.string().required(),
+  businessUserName: Joi.string().optional().allow(""),
   taxId: Joi.string().min(13).max(13).required(),
   businessType: Joi.string().required(),
   taxType: Joi.string().valid("Juristic", "Individual").required(),
@@ -93,6 +95,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     const businessAcc = await prisma.businessAcc.create({
       data: {
         businessName: businessAccInput.businessName,
+        businessUserName: businessAccInput.businessUserName,
         taxId: businessAccInput.taxId,
         businessType: businessAccInput.businessType,
         taxType: businessAccInput.taxType,
@@ -252,6 +255,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       const businessAcc = await prisma.businessAcc.create({
         data: {
           businessName: businessAccInput.businessName,
+          businessUserName: businessAccInput.businessUserName,
           taxId: businessAccInput.taxId,
           businessType: businessAccInput.businessType,
           taxType: businessAccInput.taxType,
@@ -399,6 +403,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
       select: {
         id: true,
         businessName: true,
+        businessUserName: true,
         taxId: true,
         taxType: true,
         businessAddress: true,
@@ -425,6 +430,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   const {
     businessName,
+    businessUserName,
     taxId,
     businessType,
     taxType,
@@ -438,6 +444,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   console.log("Update Business Details", {
     memberId,
     businessName,
+    businessUserName,
     taxId,
     businessType,
     taxType,
@@ -455,6 +462,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
       },
       data: {
         businessName,
+        businessUserName,
         taxId,
         businessType,
         taxType,

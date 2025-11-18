@@ -16,6 +16,8 @@ interface UserInput {
   lastName: string;
   avatar: string;
   phone: string;
+  bio?: string;
+  username?: string;
 }
 
 const Prisma = new PrismaClient1();
@@ -84,6 +86,7 @@ const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
+    username: Joi.string().required(),
     password: Joi.string().required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
@@ -116,6 +119,7 @@ const register = async (req: Request, res: Response) => {
         firstName: userInput.firstName,
         lastName: userInput.lastName,
         phone: userInput.phone,
+        username: userInput.username,
       },
     });
     // Generate JWT token
@@ -355,11 +359,13 @@ const updateUser = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
+    bio: Joi.string().optional().allow(""),
+    username: Joi.string().required(),
     password: Joi.string().required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
-    avatar: Joi.string().required(),
-    phone: Joi.string().required().min(10).max(10),
+    avatar: Joi.string().optional().allow(""),
+    phone: Joi.string().optional().min(10).max(10).allow(""),
   });
   const { error } = schema.validate(userInput);
   if (error) {
@@ -374,6 +380,8 @@ const updateUser = async (req: Request, res: Response) => {
       },
       data: {
         email: userInput.email,
+        bio: userInput.bio,
+        username: userInput.username,
         password: hashedPassword,
         firstName: userInput.firstName,
         lastName: userInput.lastName,
@@ -381,10 +389,24 @@ const updateUser = async (req: Request, res: Response) => {
         phone: userInput.phone,
       },
     });
-    res.json(user);
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);
-    res.json({ token });
+    // Respond once with combined payload
+    res.json({
+      status: "ok",
+      message: "User updated successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        bio: user.bio,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
+        phone: user.phone,
+      },
+      token,
+    });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to update user" });

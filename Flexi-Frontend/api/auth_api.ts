@@ -85,9 +85,11 @@ class CallAPIUser {
     try {
       const token = await getToken();
       const axiosInstance = await getAxiosWithAuth();
+      // Separate id from body to satisfy backend Joi ("id" is not allowed in body)
+      const { id, ...body } = data || {};
       const response = await axiosInstance.put(
-        `/auth/update/${data.id}`,
-        data,
+        `/auth/update/${id}`,
+        body,
         {
           headers: {
             Authorization: `Bearer ${token}`,

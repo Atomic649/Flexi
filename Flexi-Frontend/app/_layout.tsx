@@ -4,10 +4,7 @@ import "@/i18n";
 import React, { useEffect, useState } from "react";
 import { router, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import {  
-  StatusBar, 
-  Platform,
-} from "react-native";
+import { StatusBar, Platform } from "react-native";
 import { ThemeProvider, useTheme } from "@/providers/ThemeProvider";
 import * as NavigationBar from "expo-navigation-bar";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -18,28 +15,32 @@ import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import { MarketingProvider } from "@/providers/MarketingProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
-import { initReactI18next } from 'react-i18next';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { initReactI18next } from "react-i18next";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
-  i18n.use(initReactI18next).init({
-    // Your i18next configuration
-    fallbackLng: 'th', 
-    resources: {
-      en: { translation: require("@/i18n/locales/en/translation.json") },
-      th: { translation: require("@/i18n/locales/th/translation.json") },
-    },
-    interpolation: {
-      escapeValue: false, // React already does escaping
-    },
-  }).then(() => {    
-   // console.log("i18n initialized");
-  }).catch((error) => {
-    console.error("i18n initialization failed:", error);
-  });
+  i18n
+    .use(initReactI18next)
+    .init({
+      // Your i18next configuration
+      fallbackLng: "th",
+      resources: {
+        en: { translation: require("@/i18n/locales/en/translation.json") },
+        th: { translation: require("@/i18n/locales/th/translation.json") },
+      },
+      interpolation: {
+        escapeValue: false, // React already does escaping
+      },
+    })
+    .then(() => {
+      // console.log("i18n initialized");
+    })
+    .catch((error) => {
+      console.error("i18n initialization failed:", error);
+    });
 }
 
 function RootLayoutNav() {
@@ -76,7 +77,10 @@ function RootLayoutNav() {
         if (response) {
           setRegisteredUsers(response);
           // Update cache
-          await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
+          await AsyncStorage.setItem(
+            "registeredUsers",
+            JSON.stringify(response)
+          );
         }
       } catch (error) {
         console.error("Error refreshing registered users:", error);
@@ -101,7 +105,6 @@ function RootLayoutNav() {
           // console.warn(
           //   "`setBackgroundColorAsync` and `setButtonStyleAsync` are only available on Android"
           // );
-          
         }
       } catch (error) {
         console.error("Error setting navigation bar:", error);
@@ -134,7 +137,13 @@ function RootLayoutNav() {
         <Stack.Screen
           name="(tabs)"
           options={{
-            ...MainTopBar.getTopBarConfig(theme, registeredUsers, businessAvatar, businessName, isLoading),
+            ...MainTopBar.getTopBarConfig(
+              theme,
+              registeredUsers,
+              businessAvatar,
+              businessName,
+              isLoading
+            ),
             title: "",
           }}
         />
@@ -165,8 +174,17 @@ function RootLayoutNav() {
         <Stack.Screen
           name="business_info"
           options={{
-            ...showTopBarAndBackIconRightSetting(theme),
+            ...showTopBarAndBackIcon(theme),
             title: t("settings.businessInfo"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* user_info */}
+        <Stack.Screen
+          name="user_info"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("settings.userProfile"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
@@ -262,7 +280,7 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
-        
+
         {/* Edit Bill */}
         <Stack.Screen
           name="editBill"
@@ -272,7 +290,7 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
-        
+
         {/* ads */}
         <Stack.Screen
           name="ads"
@@ -283,107 +301,102 @@ function RootLayoutNav() {
           }}
         />
         {/* create ads cost */}
-      <Stack.Screen
-        name="createadscost"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("ads.createAdCost"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
         <Stack.Screen
-        name="term"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("terms.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* phase1 */}
-      <Stack.Screen
-        name="phase1"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("phase1.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* phase2 */}
-      <Stack.Screen
-        name="phase2"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("phase2.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* print */}
-      <Stack.Screen
-        name="print"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("print.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* Chat AI */}
-      <Stack.Screen
-        name="chat_ai"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("chatAI.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* mobileWeb */}
-      <Stack.Screen
-        name="mobileweb"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("mobileWeb.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* Daily Detail */}
-      <Stack.Screen
-        name="dailyDetail"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("daily.details"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* Monthly Detail */}
-      <Stack.Screen
-        name="MonthlyDetail"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("monthly.details"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* privacy */}
-      <Stack.Screen
-        name="privacy"
-        options={{
-          ...showTopBarAndBackIcon(theme),
-          title: t("privacy.title"),
-          headerTitleStyle: getHeaderTitleStyle(),
-        }}
-      />
-      {/* expense detail */}
-      <Stack.Screen
-        name="expenseDetailScreen"
-        options={{
-          headerShown: false, // Hide the header for this screen
-        }}
-      />
+          name="createadscost"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("ads.createAdCost"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        <Stack.Screen
+          name="term"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("terms.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* phase1 */}
+        <Stack.Screen
+          name="phase1"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("phase1.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* phase2 */}
+        <Stack.Screen
+          name="phase2"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("phase2.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* print */}
+        <Stack.Screen
+          name="print"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("print.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* Chat AI */}
+        <Stack.Screen
+          name="chat_ai"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("chatAI.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* mobileWeb */}
+        <Stack.Screen
+          name="mobileweb"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("mobileWeb.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* Daily Detail */}
+        <Stack.Screen
+          name="dailyDetail"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("daily.details"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* Monthly Detail */}
+        <Stack.Screen
+          name="MonthlyDetail"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("monthly.details"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* privacy */}
+        <Stack.Screen
+          name="privacy"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("privacy.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* expense detail */}
+        <Stack.Screen
+          name="expenseDetailScreen"
+          options={{
+            headerShown: false, // Hide the header for this screen
+          }}
+        />
       </Stack>
-
-
-     
-
-      
     </SafeAreaView>
   );
 }
@@ -431,7 +444,8 @@ const showTopBarAndBackIcon = (theme: string) => ({
   headerShown: true,
   headerStyle: {
     backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
+    fontFamily:
+      i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
@@ -450,7 +464,8 @@ const showTopBarAndBackToSetting = (theme: string) => ({
   headerShown: true,
   headerStyle: {
     backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
+    fontFamily:
+      i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
@@ -468,7 +483,8 @@ const showTopBarAndBackIconRightSetting = (theme: string) => ({
   headerShown: true,
   headerStyle: {
     backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
+    fontFamily:
+      i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
   },
   headerTintColor: theme === "dark" ? "#ffffff" : "#18181b",
   headerLeft: () => (
@@ -484,20 +500,18 @@ const showTopBarAndBackIconRightSetting = (theme: string) => ({
   headerRight: () => (
     // Settings button
     <Ionicons
-      name="settings"
+      name="pencil"
       size={24}
       color={theme === "dark" ? "#c9c9c9" : "#48453e"}
-      onPress={() => router.push("/settings")}
+      onPress={() => router.push("/business_info")}
     />
   ),
 });
-
 
 // Reuseable functions for hiding Top bar
 const HideTopBar = () => ({
   headerShown: false,
 });
-
 
 const getHeaderTitleStyle = () => ({
   fontSize: 15,

@@ -645,7 +645,7 @@ export default function Setting() {
               <SectionItem
                 icon="user"
                 text={t("settings.userProfile")}
-                onPress={() => router.push("/profile")}
+                onPress={() => router.push("/user_info")}
               />
             </View>
           </Section>

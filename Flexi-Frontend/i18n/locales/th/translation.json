@@ -80,6 +80,8 @@
     },
     "register": {
       "title": "สมัครสมาชิก",
+      "username": "ชื่อผู้ใช้",
+      "bio": "ประวัติส่วนตัว",
       "displayNamePlaceholder": "ชื่อที่แสดง",
       "emailPlaceholder": "อีเมล",
       "passwordPlaceholder": "รหัสผ่าน",

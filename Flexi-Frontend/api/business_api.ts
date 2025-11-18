@@ -113,6 +113,7 @@ class CallAPIBusiness {
     memberId: string,
     data: {
       businessName: string;
+      businessUserName?: string;
       businessPhone?: string;
       businessAddress: string;
       taxId: string;

@@ -20,6 +20,7 @@ export default function BusinessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
   const [businessName, setbusinessName] = useState("");
+  const [businessUserName, setBusinessUserName] = useState("");
   const [taxType, settaxType] = useState("");
   const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
@@ -72,7 +73,8 @@ export default function BusinessInfo() {
       const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
       console.log("data", data);
 
-      setbusinessName(data.businessName || "");
+  setbusinessName(data.businessName || "");
+  setBusinessUserName(data.businessUserName || "");
       settaxType(data.taxType || "");
       settaxId(data.taxId || "");
       setbusinessType(data.businessType || "");
@@ -130,6 +132,7 @@ export default function BusinessInfo() {
       // Use memberId directly for the update API call
       const data = await CallAPIBusiness.UpdateBusinessDetailsAPI(memberId, {
         businessName,
+        businessUserName,
         taxId,
         businessType,
         taxType,
@@ -202,7 +205,17 @@ export default function BusinessInfo() {
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-             
+            />
+
+            <FormField2
+              title={t("auth.register.username") || "Business Username"}
+              placeholder={t("auth.register.username") || "Business Username"}
+              value={businessUserName}
+              handleChangeText={setBusinessUserName}
+              otherStyles="mt-7"
+              bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
             />
 
             <Dropdown2
