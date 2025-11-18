@@ -141,6 +141,7 @@ export default function MonthlyDetail() {
         <CustomText
           className={`text-lg font-bold ${textColorClass}`}
           style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
+          weight="bold"
         >
           {formatDate(params.month as string)}
         </CustomText>
@@ -199,7 +200,7 @@ export default function MonthlyDetail() {
                     <CustomText className={textColorClass}>{`${t(
                       "monthly.expenses"
                     )} :`}</CustomText>
-                    <Text className={`font-semibold text-red-600`}>
+                    <Text className={`font-semibold text-[#ef4444]`}>
                       {`-${formatCurrency(calculatedExpenses)}`}
                     </Text>
                   </View>
@@ -297,7 +298,7 @@ export default function MonthlyDetail() {
                                       </Text>
                                       {product.unitDiscount > 0 && (
                                         <Text
-                                          className="text-xs  ml-2"
+                                          className="text-xs font-bold ml-2"
                                           style={{ color: "#e33201a2" }}
                                         >
                                           {`-${formatCurrency(product.unitDiscount)}`}
@@ -357,7 +358,7 @@ export default function MonthlyDetail() {
                         <CustomText className={`font-medium ${textColorClass}`}>
                           {expense.sName}
                         </CustomText>
-                        <Text className={`font-bold text-base text-red-600`}>
+                        <Text className={`font-bold text-base text-[#ef4444]`}>
                           {`${formatCurrency(parseFloat(expense.amount.toString()))}`}
                         </Text>
                       </View>
@@ -409,7 +410,7 @@ export default function MonthlyDetail() {
                             {ad.platform.accName}
                           </CustomText>
                         </View>
-                        <Text className={`font-bold text-base text-orange-600`}>
+                        <Text className={`font-bold text-base text-[#ef4444]`}>
                           {formatCurrency(parseFloat(ad.adsCost.toString()))}
                         </Text>
                       </View>

@@ -130,9 +130,9 @@ export default function DailyDetail() {
           theme === "dark" ? "border-gray-700" : "border-gray-200"
         }`}
       >
-        <CustomText
+        <Text
           className={`text-lg font-bold ${textColorClass}`}
-          style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
+          style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}          
         >
           {(() => {
             const date = new Date(params.date as string);
@@ -141,7 +141,7 @@ export default function DailyDetail() {
             const year = String(date.getFullYear()).slice(-2);
             return `${day}/${month}/${year}`;
           })()}
-        </CustomText>
+        </Text>
       </View>
 
       {loadingDetails ? (
@@ -201,7 +201,7 @@ export default function DailyDetail() {
                       <CustomText className={textColorClass}>{`${t(
                         "daily.expenses"
                       )} :`}</CustomText>
-                      <Text className={`font-semibold text-red-600`}>
+                      <Text className={`font-semibold text-[#ef4444]`}>
                         {`-${formatCurrency(calculatedExpenses)}`}
                       </Text>
                     </View>
@@ -328,7 +328,7 @@ export default function DailyDetail() {
                                       </Text>
                                       {product.unitDiscount > 0 && (
                                         <Text
-                                          className="text-xs  ml-2"
+                                          className="text-xs text-bold ml-2"
                                           style={{ color: "#e33201a2" }}
                                         >
                                           {`-${formatCurrency(
@@ -407,7 +407,7 @@ export default function DailyDetail() {
                         <CustomText className={`font-medium ${textColorClass}`}>
                           {expense.sName}
                         </CustomText>
-                        <Text className={`font-bold text-base text-red-600`}>
+                        <Text className={`font-bold text-base text-[#ef4444]`}>
                           {`${formatCurrency(expense.amount)}`}
                         </Text>
                       </View>
@@ -481,7 +481,7 @@ export default function DailyDetail() {
                             {ad.platform.accName}
                           </CustomText>
                         </View>
-                        <Text className={`font-bold text-base text-orange-600`}>
+                        <Text className={`font-bold text-base text-[#ef4444]`}>
                           {formatCurrency(ad.adsCost)}
                         </Text>
                       </View>

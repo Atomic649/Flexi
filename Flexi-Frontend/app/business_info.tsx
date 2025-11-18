@@ -1,4 +1,4 @@
-import { Dimensions, SafeAreaView, ScrollView, Switch, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
+import { Dimensions, ScrollView, Switch, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import { CustomButton } from "@/components/CustomButton";
