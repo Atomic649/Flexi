@@ -28,7 +28,8 @@
     "days": "days",
     "THB": "THB",
     "OCR": "Scan",
-    "complete": "Complete"
+    "complete": "Complete",
+    "noOptions": "No options"
   },
   "months": {
     "january": "January",
@@ -1343,6 +1344,7 @@
     "noResultsMessage": "No matching results found",
     "noResultsForDates": "No results found for the selected date range",
     "noBillFound": "No bill found with that ID",
+    "notSpecified":"Not Specified",
     "notSupported": "Not supported",
     "printOnlyWeb": "Printing is only available on web browsers",
     "printCenter": "Print Center",

@@ -1697,6 +1697,7 @@ export default function EditBill() {
                         value: "CreditCard",
                       },
                       { label: t("bill.payment.cash"), value: "Cash" },
+                      { label: t("bill.payment.notspecified"), value: "NotSpecified" },
                     ]}
                     placeholder={t("bill.selectPayment")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}

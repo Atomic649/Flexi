@@ -28,7 +28,8 @@
     "days": "วัน",
     "THB": "บาท",
     "OCR": "สแกน",
-    "complete": "เสร็จสิ้น"
+    "complete": "เสร็จสิ้น",
+    "noOptions": "ไม่มีตัวเลือก"
   },
   "months": {
     "january": "มกราคม",
@@ -1237,7 +1238,7 @@
       "transfer": "โอนเงินผ่านธนาคาร",
       "creditcard": "บัตรเครดิต",
       "cash": "เงินสด",
-      "NotSpecified": "-"
+      "notspecified": "-"
     },
     "selectPayment": "เลือกวิธีการชำระเงิน",
     "paymentStatus": "สถานะการชำระเงิน",
@@ -1342,6 +1343,7 @@
     "noResultsMessage": "ไม่พบผลลัพธ์ที่ตรงกัน",
     "noResultsForDates": "ไม่พบผลลัพธ์สำหรับช่วงวันที่ที่เลือก",
     "noBillFound": "ไม่พบใบเสร็จที่มีรหัสนั้น",
+    "notSpecified":"ไม่ระบุ",
     "notSupported": "ไม่รองรับ",
     "printOnlyWeb": "การพิมพ์มีให้บริการเฉพาะบนเว็บเบราว์เซอร์เท่านั้น",
     "printCenter": "ศูนย์การพิมพ์",

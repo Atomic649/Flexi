@@ -701,7 +701,6 @@ const updateBusinessAvatar = async (req: Request, res: Response) => {
 // get business Avatar by memberId - Get
 const getBusinessAvatar = async (req: Request, res: Response) => {
   const { memberId } = req.params;
-
   try {
     // find businessId by memberId
     const business = await prisma.member.findUnique({

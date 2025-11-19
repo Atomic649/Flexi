@@ -17,6 +17,7 @@ import CallAPIUser from "@/api/auth_api";
 import { getBusinessId } from "@/utils/utility";
 import CustomAlert from "@/components/CustomAlert";
 import i18n from "@/i18n";
+import { Ionicons } from "@expo/vector-icons";
 
 interface TeamMember {
   userId?: number;
@@ -142,16 +143,20 @@ export default function TeamScreen() {
           <TouchableOpacity
             onPress={() => setAddVisible(true)}
             style={{
-              backgroundColor: "#04ecc1",
+              backgroundColor: "transparent",
               paddingHorizontal: 14,
               paddingVertical: 8,
               borderRadius: 10,
             }}
           >
-            <CustomText style={{ color: "#0d0d0d", fontWeight: "700" }}>
-              {t("team.addMember") || "Add Member"}
-            </CustomText>
-          </TouchableOpacity>
+            {/* icon + */}
+            <Ionicons
+              name="add"
+              size={30}
+              color={"#04ecc1"}
+            ></Ionicons>
+            
+           </TouchableOpacity>
         </View>
 
         {loading && (

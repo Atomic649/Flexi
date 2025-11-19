@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View, TouchableOpacity, FlatList, Text } from "react-native";
+import { View, TouchableOpacity, ScrollView, Text } from "react-native";
 import { CustomText } from "../CustomText"; // Make sure to import CustomText
 import { useTheme } from "@/providers/ThemeProvider";
+import { t } from "i18next";
 
 const Dropdown = ({
   title,
@@ -81,34 +82,65 @@ const Dropdown = ({
       </TouchableOpacity>
 
       {isOpen && !disabled && (
-        <FlatList
-          data={options}
-          keyExtractor={(item) => item.value}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className="w-full h-16 px-4 rounded-2xl border-spacing-x-0.5 flex-row items-center"
-              onPress={() => {
-                onValueChange(item.value);
-                setIsOpen(false);
-              }}
-              style={{
-                backgroundColor: "#87878716",
-                borderColor: borderColor ? borderColor : "transparent",
-                borderWidth: 0.5,
-                borderRadius: 12,
-                opacity: disabled ? 0.7 : 0.9,
-              }}
-            >
-              <CustomText
-                className="font-psemibold text-lg"
-                style={{ color: textcolor }}
+        Array.isArray(options) && options.length > 0 ? (
+          <ScrollView
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            style={{
+              maxHeight: 260,
+              borderRadius: 16,
+              borderColor: borderColor ? borderColor : "transparent",
+              borderWidth: borderColor ? 0.0 : 0,
+            }}
+            contentContainerStyle={{ paddingVertical: 2 }}
+            {...props}
+          >
+            {options.map((item: any) => (
+              <TouchableOpacity
+                key={item.value}
+                className="w-full h-14 px-4 flex-row items-center"
+                onPress={() => {
+                  onValueChange(item.value);
+                  setIsOpen(false);
+                }}
+                style={{
+                  backgroundColor: "#87878716",
+                  borderColor: borderColor ? borderColor : "transparent",
+                  borderWidth: 0.8,
+                  borderRadius: 12,
+                  opacity: disabled ? 0.7 : 0.9,
+                  marginBottom: 0.05,
+                  alignItems: 'center',
+                }}
               >
-                {item.label}
-              </CustomText>
-            </TouchableOpacity>
-          )}
-          {...props}
-        />
+                <CustomText
+                  className="font-psemibold text-lg text-center"
+                  style={{ color: textcolor }}
+                >
+                  {item.label}
+                </CustomText>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        ) : (
+          <View
+            pointerEvents="none"
+            style={{
+              borderRadius: 16,
+              borderColor: borderColor ? borderColor : "transparent",
+              borderWidth: borderColor ? 0.5 : 0,
+              paddingVertical: 12,
+              alignItems: 'center',
+            }}
+          >
+            <CustomText
+              className="font-psemibold text-base"
+              style={{ color: textcolor ?? '#8c8c8c' }}
+            >
+              {t('common.noOptions')}
+            </CustomText>
+          </View>
+        )
       )}
     </View>
   );
