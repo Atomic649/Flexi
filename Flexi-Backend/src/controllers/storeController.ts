@@ -74,9 +74,14 @@ const createStore = async (req: Request, res: Response) => {
 const getStores = async (req: Request, res: Response) => {
   const memberId = req.params.memberId;
   try {
+      // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId },
+      select:{ businessId: true },
+    });
     const stores = await prisma.store.findMany({
       where: {
-        memberId: memberId,
+          businessAcc : businessId?.businessId ?? 0,
         deleted: false, // Exclude stores where deleted is true
       },
     });

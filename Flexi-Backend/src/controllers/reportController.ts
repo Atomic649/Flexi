@@ -8,9 +8,15 @@ const prisma = new PrismaClient1();
 const dailyReport = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   try {
+     // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId },
+      select:{ businessId: true },
+    });
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId,
+        businessAcc : businessId?.businessId ?? 0,
+        deleted: false,
       },
        select: {
         purchaseAt: true,        
@@ -103,11 +109,17 @@ const dailyReport = async (req: Request, res: Response) => {
 const monthlyReport = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   try {
+         // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId },
+      select:{ businessId: true },
+    });
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId,
+        businessAcc : businessId?.businessId ?? 0,
+        deleted: false,
       },
-      select: {
+       select: {
         purchaseAt: true,
         total: true,
         discount: true,

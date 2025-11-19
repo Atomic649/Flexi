@@ -469,7 +469,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
   const { memberId } = req.params;
 
   // find role by memberId
-  const role = await prisma.member.findUnique({
+  const business = await prisma.member.findUnique({
     where: {
       uniqueId: memberId,
     },
@@ -479,9 +479,10 @@ const getBusinessDetail = async (req: Request, res: Response) => {
     },
   });
   try {
+
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        id:role?.businessId,
+        id:business?.businessId,
       },
       select: {
         id: true,
@@ -500,7 +501,7 @@ const getBusinessDetail = async (req: Request, res: Response) => {
     res.json({
       ...businessAcc[0],
 
-      role: role?.role,
+      role: business?.role,
     });
   } catch (e) {
     console.error(e);

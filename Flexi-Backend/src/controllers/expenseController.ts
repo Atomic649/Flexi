@@ -1002,9 +1002,14 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
 const getExpenses = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   try {
-    const expenses = await prisma.expense.findMany({
+          // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId },
+      select:{ businessId: true },
+    });
+const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId,
+        businessAcc : businessId?.businessId ?? 0,
         save: false,
       },
     });
@@ -1249,12 +1254,18 @@ const getThisYearExpensesAPI = async (req: Request, res: Response) => {
     if (!memberId) {
       return res.status(400).json({ message: "Member ID is required" });
     }
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
     const expense = await prisma.expense.aggregate({
       _sum: {
         amount: true,
       },
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         date: {
           gte: new Date(new Date().getFullYear(), 0, 1),
           lte: new Date(new Date().getFullYear(), 11, 31),

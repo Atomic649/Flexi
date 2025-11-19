@@ -65,10 +65,17 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Build store filter
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
 
+// Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
+
+
     // Get income from bills (use total field which already accounts for discounts)
     const billsAggregation = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+       businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter,
         ...storeFilter
@@ -103,7 +110,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Get expenses
     const expensesAggregation = await prisma.expense.aggregate({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         deleted: false,
         date: dateFilter,
         save: true
@@ -116,7 +124,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Get ads cost
     const adsCostAggregation = await prisma.adsCost.aggregate({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         date: dateFilter,
         ...(productName ? { product: productName as string } : {})
       },
@@ -201,11 +210,16 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     // Build filters
     const productFilter = productName ? { product: productName as string } : {};
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
+// Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
 
     // Get bills data grouped by date
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter,
         ...storeFilter
@@ -228,7 +242,8 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     // Get expenses data grouped by date
     const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         deleted: false,
         date: dateFilter,
         save: true
@@ -242,7 +257,8 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     // Get ads cost data grouped by date
     const adsCosts = await prisma.adsCost.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         date: dateFilter,
         ...(productName ? { product: productName as string } : {})
       },
@@ -377,11 +393,17 @@ export const getTopProducts = async (req: Request, res: Response) => {
 
     // Build store filter
     const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
+// Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
 
     // Get bills with product items
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         deleted: false,
         purchaseAt: dateFilter,
         ...storeFilter
@@ -487,24 +509,17 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         }
         break;
     }
-
-    // Get bills with product items
-    const bills = await prisma.bill.findMany({
-      where: {
-        memberId: memberId as string,
-        deleted: false,
-        purchaseAt: dateFilter
-      },
-      select: {
-        platform: true,
-        product: true
-      }
+// Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
     });
+
 
     // Get bills with product items and platform info
     const platformBills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter
       },
@@ -611,11 +626,18 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
         }
         break;
     }
+ // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId as string },
+      select:{ businessId: true },
+    });
+   
+    
 
     // Get expenses grouped by category
     const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         date: dateFilter,
         save: true
@@ -629,7 +651,7 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
     // Get ads costs
     const adsCosts = await prisma.adsCost.findMany({
       where: {
-        memberId: memberId as string,
+         businessAcc: businessId?.businessId ?? 0,
         date: dateFilter
       },
       select: {
@@ -726,14 +748,17 @@ export const getTopStores = async (req: Request, res: Response) => {
         }
         break;
     }
-
-    // Build product filter
-    const productFilter = productName ? { product: productName as string } : {};
+// Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
 
     // Get bills with product items
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         deleted: false,
         purchaseAt: dateFilter
       },
@@ -746,7 +771,8 @@ export const getTopStores = async (req: Request, res: Response) => {
     // Get store information
     const stores = await prisma.store.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         deleted: false
       },
       select: {

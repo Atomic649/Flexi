@@ -26,10 +26,16 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
     const formattedStartDate = format(startDate, "yyyy-MM-dd");
     const formattedEndDate = format(endDate, "yyyy-MM-dd");
 
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
+
     // Get all bills for the member within the date range
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
         purchaseAt: {
           gte: new Date(formattedStartDate),
           lte: new Date(formattedEndDate),
@@ -97,11 +103,16 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
     // Ensure full day coverage for the date range
     const start = new Date(`${startDate}T00:00:00.000Z`);
     const end = new Date(`${endDate}T23:59:59.999Z`);
-
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
     // Get bills within the date range
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         purchaseAt: {
           gte: start,
           lte: end,
@@ -141,11 +152,16 @@ export const getExpenseByDateRange = async (req: Request, res: Response) => {
     // Ensure full day coverage for the date range
     const start = new Date(`${startDate}T00:00:00.000Z`);
     const end = new Date(`${endDate}T23:59:59.999Z`);
-
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
     // Get expenses within the date range
     const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         date: {
           gte: start,
           lte: end,
@@ -177,11 +193,17 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
         error: "Member ID and customer name are required",
       });
     }
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
 
     // Search by customer name or last name with case-insensitive search
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
         OR: [
           {
             cName: {
@@ -251,12 +273,17 @@ export const searchBillById = async (req: Request, res: Response) => {
     if (!billId || !memberId) {
       return res.status(400).json({ error: "Bill ID and Member ID are required" });
     }
-
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
     // Always use endsWith for flexible search
     const bill = await prisma.bill.findFirst({
       where: {
         billId: { endsWith: billId as string },
-        memberId: memberId as string,
+        businessAcc : businessId?.businessId ?? 0,
+
       },
       include: {
         product: true, // Include products if needed

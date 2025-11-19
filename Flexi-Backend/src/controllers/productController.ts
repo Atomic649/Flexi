@@ -105,10 +105,18 @@ const createProduct = async (req: Request, res: Response) => {
 // get all Product Name list by memberid
 const getProductByMemberId = async (req: Request, res: Response) => {
   const { memberId } = req.params;
+
+
   try {
+      // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: memberId },
+      select:{ businessId: true },
+    });
+
     const products = await prisma.product.findMany({
       where: {
-        memberId: memberId,
+        businessAcc : businessId?.businessId ?? 0,
         deleted: false,
       },
     });
