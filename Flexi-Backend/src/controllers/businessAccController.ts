@@ -703,9 +703,18 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
   const { memberId } = req.params;
 
   try {
+    // find businessId by memberId
+    const business = await prisma.member.findUnique({
+      where: {
+        uniqueId: memberId,
+      },
+      select: {
+        businessId: true,
+      },
+    });
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        memberId: { has: memberId },
+       id : business.businessId
       },
       select: {
         businessAvatar: true,
