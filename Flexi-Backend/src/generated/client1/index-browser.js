@@ -455,7 +455,8 @@ exports.UserRole = exports.$Enums.UserRole = {
   owner: 'owner',
   marketing: 'marketing',
   accountant: 'accountant',
-  sales: 'sales'
+  sales: 'sales',
+  partner: 'partner'
 };
 
 exports.BusinessType = exports.$Enums.BusinessType = {

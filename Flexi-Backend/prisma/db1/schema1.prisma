@@ -234,7 +234,7 @@ model Member {
   userId     Int
   user       User         @relation(fields: [userId], references: [id])
   businessId Int?
-  business   BusinessAcc? @relation(fields: [businessId], references: [id])
+  business   BusinessAcc?  @relation(fields: [businessId], references: [id])
   bill       Bill[]
   adsCost    AdsCost[]
   expense    Expense[]
@@ -260,7 +260,7 @@ model BusinessAcc {
   businessType     BusinessType   @default(OnlineSale)
   taxType          taxType        @default(Individual)
   userId           Int
-  memberId         String?
+  memberId        String[]       @default([]) // Track all member uniqueIds associated with this business
   DocumentType     DocumentType[] @default([Receipt])
   user             User           @relation(fields: [userId], references: [id])
   AllMember        Member[]

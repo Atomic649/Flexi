@@ -102,20 +102,31 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         businessType: businessAccInput.businessType,
         taxType: businessAccInput.taxType,
         userId: businessAccInput.userId,
-        memberId: businessAccInput.memberId,
+        // BusinessAcc.memberId is now a String[] (list of member uniqueIds)
+        memberId: [businessAccInput.memberId],
         businessWebsite: businessAccInput.businessWebsite,
         businessPhone: businessAccInput.businessPhone,
         DocumentType: businessAccInput.DocumentType || ["Receipt"],
       
       },
     });
+    
+    // Set the owner's Member.businessId pointer to this new business
+    try {
+      await prisma.member.update({
+        where: { uniqueId: businessAccInput.memberId },
+        data: { businessId: businessAcc.id },
+      });
+    } catch (err) {
+      console.warn("Failed to set owner's Member.businessId after business creation", err);
+    }
 
     // Create store as Offine for default
     const store = await prisma.store.create({
       data: {
         accName: "Offline",
         platform: "Offline" as IncomeChannel,
-        memberId: businessAcc.memberId,
+        memberId: businessAccInput.memberId,
         businessAcc: businessAcc.id,
       },
     });
@@ -151,7 +162,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         name,
         productType: "Service",
         price: 0,
-        memberId: businessAcc.memberId,
+        memberId: businessAccInput.memberId,
         stock: 0,
         businessAcc: businessAcc.id        
         },
@@ -177,7 +188,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
        data: {
          accName: name,
          platform: name as IncomeChannel,
-         memberId: businessAcc.memberId,
+         memberId: businessAccInput.memberId,
          businessAcc: businessAcc.id,
         },
       });
@@ -263,19 +274,29 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
           businessType: businessAccInput.businessType,
           taxType: businessAccInput.taxType,
           userId: businessAccInput.userId,
-          memberId: memberId.uniqueId,
+          memberId: [memberId.uniqueId],
           businessAddress: businessAccInput.businessAddress,
           businessAvatar: businessAccInput.businessAvatar,
           DocumentType: businessAccInput.DocumentType || ["Receipt"],
         },
       });
 
+        // Set the new owner's Member.businessId pointer to this new business
+        try {
+          await prisma.member.update({
+            where: { uniqueId: memberId.uniqueId },
+            data: { businessId: businessAcc.id },
+          });
+        } catch (err) {
+          console.warn("Failed to set new owner's Member.businessId after business creation", err);
+        }
+
       // Create store as Offline for default
       const store = await prisma.store.create({
         data: {
           accName: "Offline",
           platform: "Offline" as IncomeChannel,
-          memberId: businessAcc.memberId,
+          memberId: memberId.uniqueId,
           businessAcc: businessAcc.id,
         },
       });
@@ -373,46 +394,64 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "userId is required" });
   }
   try {
-    // Fetch all member records for the user, including any linked business accounts
+    // Fetch minimal member records for the user
     const memberRecords = await prisma.member.findMany({
       where: { userId: Number(userId) },
-      include: {
-        business: { select: { businessName: true, id: true } }, // business relation may be null for owner records
-      },
+      select: { uniqueId: true, businessId: true },
     });
 
-    // Membership-based businesses (user linked via member.businessId)
-    const membershipEntries = memberRecords
-      .filter((m) => m.business) // has joined business
-      .map((m) => ({
-        businessName: m.business!.businessName,
-        memberId: m.uniqueId,
-        id: m.business!.id,
-      }));
+    const memberIdSet = new Set(memberRecords.map((m) => m.uniqueId));
 
-    // Owner-based businesses (member.business is null, but they own businessAcc where businessAcc.memberId = member.uniqueId)
-    const ownerMemberIds = memberRecords
-      .filter((m) => !m.business) // potential owner records
-      .map((m) => m.uniqueId);
+    // 1) From explicit pointer Member.businessId -> BusinessAcc
+    const businessIds = Array.from(
+      new Set(
+        memberRecords
+          .map((m) => m.businessId)
+          .filter((id): id is number => typeof id === "number")
+      )
+    );
 
-    let ownerEntries: { businessName: string; memberId: string; id: number }[] = [];
-    if (ownerMemberIds.length > 0) {
-      const ownedBusinessAccs = await prisma.businessAcc.findMany({
-        where: { memberId: { in: ownerMemberIds } },
-        select: { businessName: true, memberId: true, id: true },
+    const accById: Record<number, { id: number; businessName: string }> = {};
+    if (businessIds.length > 0) {
+      const accs = await prisma.businessAcc.findMany({
+        where: { id: { in: businessIds } },
+        select: { id: true, businessName: true },
       });
-      ownerEntries = ownedBusinessAccs.map((b) => ({
-        businessName: b.businessName,
-        memberId: b.memberId,
-        id: b.id,
-      }));
+      for (const a of accs) accById[a.id] = a;
     }
 
-    // Combine and deduplicate (in rare cases if both membership & owner overlap)
-    const combined = [...membershipEntries, ...ownerEntries];
+    const fromBusinessId = memberRecords
+      .filter((m) => typeof m.businessId === "number" && accById[m.businessId!])
+      .map((m) => ({
+        businessName: accById[m.businessId!].businessName,
+        memberId: m.uniqueId,
+        id: m.businessId!,
+      }));
+
+    // 2) From BusinessAcc.memberId (String[] contains member uniqueId)
+    const memberUniqueIds = memberRecords.map((m) => m.uniqueId);
+    let fromArrayMembership: { businessName: string; memberId: string; id: number }[] = [];
+    if (memberUniqueIds.length > 0) {
+      const accs = await prisma.businessAcc.findMany({
+        where: { memberId: { hasSome: memberUniqueIds } },
+        select: { id: true, businessName: true, memberId: true },
+      });
+
+      for (const a of accs) {
+        // For each business, emit one entry per matching memberId belonging to this user
+        for (const mid of a.memberId) {
+          if (memberIdSet.has(mid)) {
+            fromArrayMembership.push({ businessName: a.businessName, memberId: mid, id: a.id });
+          }
+        }
+      }
+    }
+
+    // Combine and deduplicate by memberId:id
+    const combined = [...fromBusinessId, ...fromArrayMembership];
     const seen = new Set<string>();
     const result = combined.filter((entry) => {
-      const key = `${entry.memberId}:${entry.businessName}:${entry.id}`;
+      const key = `${entry.memberId}:${entry.id}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -579,7 +618,7 @@ const searchBusinessAcc = async (req: Request, res: Response) => {
         OR: [
           {
             memberId: {
-              contains: keyword,
+              has: keyword,
             },
           },
           {
@@ -665,7 +704,7 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
   try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        memberId: memberId,
+        memberId: { has: memberId },
       },
       select: {
         businessAvatar: true,

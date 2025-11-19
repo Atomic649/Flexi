@@ -47,20 +47,19 @@ const createStore = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Already have this connection" });
     }
 
-    // Find business ID by member ID
-    const businessAcc = await prisma.businessAcc.findFirst({
-      where: {
-        memberId: store.memberId,
-      },
-    });
+    // Find business ID by member ID from member table
+    const businessAcc = await prisma.member.findUnique({
+      where : { uniqueId: store.memberId },
+      select:{ businessId: true }
 
+    });   
     const newStore = await prisma.store.create({
       data: {
         platform: store.platform,
         accName: store.accName,
         accId: store.accId,        
         memberId: store.memberId,
-        businessAcc: businessAcc?.id ?? 0,
+        businessAcc: businessAcc?.businessId ?? 0,
         
       },
     });

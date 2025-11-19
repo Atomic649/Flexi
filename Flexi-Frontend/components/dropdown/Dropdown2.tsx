@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TouchableOpacity, FlatList, Text } from "react-native";
+import { View, TouchableOpacity, ScrollView, Text } from "react-native";
 import { CustomText } from '../CustomText'; // Make sure to import CustomText
 
 const Dropdown = ({
@@ -45,26 +45,31 @@ const Dropdown = ({
             </TouchableOpacity>
 
             {isOpen && !disabled && (
-                <FlatList
-                    data={options}
-                    keyExtractor={(item) => item.value}
-                    renderItem={({ item }) => (
+                <ScrollView
+                    nestedScrollEnabled
+                    keyboardShouldPersistTaps="handled"
+                    style={{ maxHeight: 240, borderRadius: 16, overflow: 'hidden' }}
+                    {...props}
+                >
+                    {options?.map((item: any) => (
                         <TouchableOpacity
-                            className="w-full h-16 px-4 rounded-2xl border-1 border-transparent flex flex-row items-center"
+                            key={item.value}
+                            className="w-full h-16 px-4 border-1 border-transparent flex flex-row items-center"
                             onPress={() => {
                                 onValueChange(item.value);
                                 setIsOpen(false);
                             }}
                             style={{ backgroundColor: bgChoiceColor }}
                         >
-                            <CustomText className="font-psemibold text-base"
-                                style={{ color: textcolor }}>
+                            <CustomText
+                                className="font-psemibold text-base"
+                                style={{ color: textcolor }}
+                            >
                                 {item.label}
                             </CustomText>
                         </TouchableOpacity>
-                    )}
-                    {...props}
-                />
+                    ))}
+                </ScrollView>
             )}
         </View>
     );

@@ -68,14 +68,10 @@ const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    // Find businessId by memberId
-    const businessAcc = await prisma.businessAcc.findFirst({
-      where: {
-        memberId: product.memberId,
-      },
-      select: {
-        id: true,
-      },
+// Find business ID by member ID from member table
+    const businessAcc = await prisma.member.findUnique({
+      where : { uniqueId: product.memberId },
+      select:{ businessId: true },
     });
 
     // Convert stock and price to integers
@@ -92,13 +88,12 @@ const createProduct = async (req: Request, res: Response) => {
           stock: product.stock,
           price: product.price,
           categoryId: product.categoryId,
-          statusId: product.statusId,
           memberId: product.memberId,
-          businessAcc: businessAcc?.id ?? 0,
+          businessAcc: businessAcc?.businessId ?? 0,
           unit: product.unit || Unit.Piece, // Default to PIECE if not provided
           productType: product.productType || ProductType.Product, // Default to NORMAL if not provided
         },
-      });
+      });      
       res.status(201).json(newProduct);
     } catch (e) {
       console.error(e);

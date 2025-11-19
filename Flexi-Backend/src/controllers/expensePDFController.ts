@@ -243,12 +243,11 @@ export const pdfExtract = async (
       const createExpenses = async () => {
         const expense: Expense = req.body;
         // Find business ID by member ID
-        const businessAcc = await prisma.businessAcc.findFirst({
-          where: {
-            memberId: expense.memberId,
-          },
-          select: { id: true },
-        });
+        // Find business ID by member ID from member table
+    const businessAcc = await prisma.member.findUnique({
+      where : { uniqueId: expense.memberId },
+      select:{ businessId: true }
+    });
 
         if (!codeAmountWithSName) {
           throw new Error("No codeAmountWithSName data found");
@@ -279,7 +278,7 @@ export const pdfExtract = async (
               desc: item.desc,
               note: item.note,
               memberId: expense.memberId,
-              businessAcc: businessAcc?.id ?? 0,
+              businessAcc: businessAcc?.businessId ?? 0,
               expNo: expNo,
               sName: item.sName,
             },

@@ -72,7 +72,9 @@ export const getUserId = async (): Promise<number | null> => {
 // Fuction to save meberId to AsyncStorage
 export const saveMemberId = async (memberId: string) => {
   try {
-    await AsyncStorage.setItem('memberId', memberId);
+    // Ensure a plain string is stored to avoid AsyncStorage warnings
+    const value = String(memberId);
+    await AsyncStorage.setItem('memberId', value);
     console.log('💾 memberId saved:', memberId);
   } catch (error) {
     console.error('Error saving memberId:', error);
@@ -105,7 +107,8 @@ export const removeMemberId = async () => {
 export const replaceMemberId = async (memberId: string) => {
   try {
     await AsyncStorage.removeItem('memberId');
-    await AsyncStorage.setItem('memberId', memberId);       
+    const value = String(memberId);
+    await AsyncStorage.setItem('memberId', value);       
     console.log('🔄 memberId replaced:', memberId);
   } catch (error) {
     console.error('Error replacing memberId:', error);

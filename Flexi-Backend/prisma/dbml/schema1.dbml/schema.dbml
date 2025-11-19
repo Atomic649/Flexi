@@ -65,7 +65,7 @@ Table BusinessAcc {
   businessType BusinessType [not null, default: 'OnlineSale']
   taxType taxType [not null, default: 'Individual']
   userId Int [not null]
-  memberId String
+  memberId String[] [not null]
   DocumentType DocumentType[] [not null]
   user User [not null]
   AllMember Member [not null]
@@ -411,6 +411,7 @@ Enum UserRole {
   marketing
   accountant
   sales
+  partner
 }
 
 Enum taxType {

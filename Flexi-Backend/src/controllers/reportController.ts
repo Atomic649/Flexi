@@ -20,8 +20,7 @@ const dailyReport = async (req: Request, res: Response) => {
         beforeDiscount: true,
         product: true,
       },
-      take: 100, // Limit to 100 records
-    });
+     });
 
     // Group by date and sum adsCost
     const adsCost = await prisma.adsCost.findMany({
@@ -31,9 +30,7 @@ const dailyReport = async (req: Request, res: Response) => {
       select: {
         date: true,
         adsCost: true,
-      },
-      take: 100, // Limit to 100 records
-    });
+      }, });
 
     // Group by purchaseAt and sum amount and total
     const dailyBills = bills.reduce((acc: any, bill) => {
@@ -118,8 +115,7 @@ const monthlyReport = async (req: Request, res: Response) => {
         beforeDiscount: true,
         product: true,
       },
-      take: 100, // Limit to 100 records
-    });
+      });
 
     console.log(bills);
 
