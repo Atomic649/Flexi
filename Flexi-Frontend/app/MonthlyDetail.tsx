@@ -280,7 +280,7 @@ export default function MonthlyDetail() {
                             color: theme === "dark" ? "#d4d4d8" : "#27272a",
                           }}
                         >
-                          {formatCurrency(parseFloat(bill.total.toString()) - parseFloat(bill.discount.toString()))}
+                          {formatCurrency(parseFloat(bill.total.toString()) )}
                         </Text>
                       </View>
 

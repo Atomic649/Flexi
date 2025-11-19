@@ -300,7 +300,7 @@ export default function DailyDetail() {
                             color: theme === "dark" ? "#d4d4d8" : "#27272a",
                           }}
                         >
-                          {formatCurrency(bill.total - bill.discount)}
+                          {formatCurrency(bill.total )}
                         </Text>
                       </View>
 
