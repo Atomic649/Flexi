@@ -5347,6 +5347,7 @@ export namespace Prisma {
     permission: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deleted: boolean | null
     userId: number | null
     businessId: number | null
   }
@@ -5357,6 +5358,7 @@ export namespace Prisma {
     permission: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deleted: boolean | null
     userId: number | null
     businessId: number | null
   }
@@ -5367,6 +5369,7 @@ export namespace Prisma {
     permission: number
     createdAt: number
     updatedAt: number
+    deleted: number
     userId: number
     businessId: number
     _all: number
@@ -5389,6 +5392,7 @@ export namespace Prisma {
     permission?: true
     createdAt?: true
     updatedAt?: true
+    deleted?: true
     userId?: true
     businessId?: true
   }
@@ -5399,6 +5403,7 @@ export namespace Prisma {
     permission?: true
     createdAt?: true
     updatedAt?: true
+    deleted?: true
     userId?: true
     businessId?: true
   }
@@ -5409,6 +5414,7 @@ export namespace Prisma {
     permission?: true
     createdAt?: true
     updatedAt?: true
+    deleted?: true
     userId?: true
     businessId?: true
     _all?: true
@@ -5506,6 +5512,7 @@ export namespace Prisma {
     permission: string
     createdAt: Date
     updatedAt: Date
+    deleted: boolean | null
     userId: number
     businessId: number | null
     _count: MemberCountAggregateOutputType | null
@@ -5535,6 +5542,7 @@ export namespace Prisma {
     permission?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deleted?: boolean
     userId?: boolean
     businessId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5555,6 +5563,7 @@ export namespace Prisma {
     permission?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deleted?: boolean
     userId?: boolean
     businessId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5567,6 +5576,7 @@ export namespace Prisma {
     permission?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deleted?: boolean
     userId?: boolean
     businessId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5579,11 +5589,12 @@ export namespace Prisma {
     permission?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deleted?: boolean
     userId?: boolean
     businessId?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uniqueId" | "role" | "permission" | "createdAt" | "updatedAt" | "userId" | "businessId", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uniqueId" | "role" | "permission" | "createdAt" | "updatedAt" | "deleted" | "userId" | "businessId", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     business?: boolean | Member$businessArgs<ExtArgs>
@@ -5624,6 +5635,7 @@ export namespace Prisma {
       permission: string
       createdAt: Date
       updatedAt: Date
+      deleted: boolean | null
       userId: number
       businessId: number | null
     }, ExtArgs["result"]["member"]>
@@ -6063,6 +6075,7 @@ export namespace Prisma {
     readonly permission: FieldRef<"Member", 'String'>
     readonly createdAt: FieldRef<"Member", 'DateTime'>
     readonly updatedAt: FieldRef<"Member", 'DateTime'>
+    readonly deleted: FieldRef<"Member", 'Boolean'>
     readonly userId: FieldRef<"Member", 'Int'>
     readonly businessId: FieldRef<"Member", 'Int'>
   }
@@ -32062,6 +32075,7 @@ export namespace Prisma {
     permission: 'permission',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    deleted: 'deleted',
     userId: 'userId',
     businessId: 'businessId'
   };
@@ -32935,6 +32949,7 @@ export namespace Prisma {
     permission?: StringFilter<"Member"> | string
     createdAt?: DateTimeFilter<"Member"> | Date | string
     updatedAt?: DateTimeFilter<"Member"> | Date | string
+    deleted?: BoolNullableFilter<"Member"> | boolean | null
     userId?: IntFilter<"Member"> | number
     businessId?: IntNullableFilter<"Member"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -32954,6 +32969,7 @@ export namespace Prisma {
     permission?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deleted?: SortOrderInput | SortOrder
     userId?: SortOrder
     businessId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
@@ -32976,6 +32992,7 @@ export namespace Prisma {
     permission?: StringFilter<"Member"> | string
     createdAt?: DateTimeFilter<"Member"> | Date | string
     updatedAt?: DateTimeFilter<"Member"> | Date | string
+    deleted?: BoolNullableFilter<"Member"> | boolean | null
     userId?: IntFilter<"Member"> | number
     businessId?: IntNullableFilter<"Member"> | number | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -32995,6 +33012,7 @@ export namespace Prisma {
     permission?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deleted?: SortOrderInput | SortOrder
     userId?: SortOrder
     businessId?: SortOrderInput | SortOrder
     _count?: MemberCountOrderByAggregateInput
@@ -33013,6 +33031,7 @@ export namespace Prisma {
     permission?: StringWithAggregatesFilter<"Member"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Member"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Member"> | Date | string
+    deleted?: BoolNullableWithAggregatesFilter<"Member"> | boolean | null
     userId?: IntWithAggregatesFilter<"Member"> | number
     businessId?: IntNullableWithAggregatesFilter<"Member"> | number | null
   }
@@ -35076,6 +35095,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -35093,6 +35113,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -35110,6 +35131,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -35127,6 +35149,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -35144,6 +35167,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
   }
@@ -35154,6 +35178,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type MemberUncheckedUpdateManyInput = {
@@ -35162,6 +35187,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
   }
@@ -37453,6 +37479,11 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -37550,6 +37581,7 @@ export namespace Prisma {
     permission?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deleted?: SortOrder
     userId?: SortOrder
     businessId?: SortOrder
   }
@@ -37565,6 +37597,7 @@ export namespace Prisma {
     permission?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deleted?: SortOrder
     userId?: SortOrder
     businessId?: SortOrder
   }
@@ -37575,6 +37608,7 @@ export namespace Prisma {
     permission?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deleted?: SortOrder
     userId?: SortOrder
     businessId?: SortOrder
   }
@@ -37594,6 +37628,14 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -37608,11 +37650,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type BoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
   export type EnumBusinessTypeFilter<$PrismaModel = never> = {
@@ -37706,14 +37743,6 @@ export namespace Prisma {
   export type BusinessAccSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-  }
-
-  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type EnumBusinessTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -40011,6 +40040,10 @@ export namespace Prisma {
     set?: $Enums.UserRole
   }
 
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
   export type UserUpdateOneRequiredWithoutMemberNestedInput = {
     create?: XOR<UserCreateWithoutMemberInput, UserUncheckedCreateWithoutMemberInput>
     connectOrCreate?: UserCreateOrConnectWithoutMemberInput
@@ -40343,10 +40376,6 @@ export namespace Prisma {
     connectOrCreate?: ProductCreateOrConnectWithoutBusinessIdInput | ProductCreateOrConnectWithoutBusinessIdInput[]
     createMany?: ProductCreateManyBusinessIdInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-  }
-
-  export type NullableBoolFieldUpdateOperationsInput = {
-    set?: boolean | null
   }
 
   export type EnumBusinessTypeFieldUpdateOperationsInput = {
@@ -41946,6 +41975,11 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -41954,6 +41988,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -41983,11 +42025,6 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
   export type NestedEnumBusinessTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.BusinessType | EnumBusinessTypeFieldRefInput<$PrismaModel>
     in?: $Enums.BusinessType[] | ListEnumBusinessTypeFieldRefInput<$PrismaModel>
@@ -42000,14 +42037,6 @@ export namespace Prisma {
     in?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.taxType[] | ListEnumtaxTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumtaxTypeFilter<$PrismaModel> | $Enums.taxType
-  }
-
-  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumBusinessTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -42490,6 +42519,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
     adsCost?: AdsCostCreateNestedManyWithoutMemberInput
@@ -42506,6 +42536,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
     adsCost?: AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -42921,6 +42952,7 @@ export namespace Prisma {
     permission?: StringFilter<"Member"> | string
     createdAt?: DateTimeFilter<"Member"> | Date | string
     updatedAt?: DateTimeFilter<"Member"> | Date | string
+    deleted?: BoolNullableFilter<"Member"> | boolean | null
     userId?: IntFilter<"Member"> | number
     businessId?: IntNullableFilter<"Member"> | number | null
   }
@@ -44111,6 +44143,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
     adsCost?: AdsCostCreateNestedManyWithoutMemberInput
@@ -44127,6 +44160,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
     adsCost?: AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -44656,6 +44690,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     adsCost?: AdsCostCreateNestedManyWithoutMemberInput
@@ -44672,6 +44707,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     adsCost?: AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -44815,6 +44851,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     adsCost?: AdsCostUpdateManyWithoutMemberNestedInput
@@ -44831,6 +44868,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     adsCost?: AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -45197,6 +45235,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -45213,6 +45252,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -45371,6 +45411,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -45387,6 +45428,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -45601,6 +45643,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -45617,6 +45660,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -45709,6 +45753,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -45725,6 +45770,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -45826,6 +45872,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -45842,6 +45889,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -45950,6 +45998,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -45966,6 +46015,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -46119,6 +46169,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -46135,6 +46186,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -46243,6 +46295,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -46259,6 +46312,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -46333,6 +46387,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -46349,6 +46404,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -46467,6 +46523,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -46483,6 +46540,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -46559,6 +46617,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     user: UserCreateNestedOneWithoutMemberInput
     business?: BusinessAccCreateNestedOneWithoutAllMemberInput
     bill?: BillCreateNestedManyWithoutMemberInput
@@ -46575,6 +46634,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
     businessId?: number | null
     bill?: BillUncheckedCreateNestedManyWithoutMemberInput
@@ -46628,6 +46688,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
@@ -46644,6 +46705,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -49070,6 +49132,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     businessId?: number | null
   }
 
@@ -49253,6 +49316,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     business?: BusinessAccUpdateOneWithoutAllMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
     adsCost?: AdsCostUpdateManyWithoutMemberNestedInput
@@ -49269,6 +49333,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
     adsCost?: AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -49285,6 +49350,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     businessId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
@@ -50133,6 +50199,7 @@ export namespace Prisma {
     permission: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    deleted?: boolean | null
     userId: number
   }
 
@@ -50259,6 +50326,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     user?: UserUpdateOneRequiredWithoutMemberNestedInput
     bill?: BillUpdateManyWithoutMemberNestedInput
     adsCost?: AdsCostUpdateManyWithoutMemberNestedInput
@@ -50275,6 +50343,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
     bill?: BillUncheckedUpdateManyWithoutMemberNestedInput
     adsCost?: AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -50291,6 +50360,7 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
     userId?: IntFieldUpdateOperationsInput | number
   }
 

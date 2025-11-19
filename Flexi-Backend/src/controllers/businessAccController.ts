@@ -396,7 +396,7 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
   try {
     // Fetch minimal member records for the user
     const memberRecords = await prisma.member.findMany({
-      where: { userId: Number(userId) },
+      where: { userId: Number(userId), deleted: false },
       select: { uniqueId: true, businessId: true },
     });
 

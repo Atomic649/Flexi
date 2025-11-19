@@ -229,7 +229,7 @@ model Member {
   permission String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
+  deleted    Boolean? @default(false)
   // Relation
   userId     Int
   user       User         @relation(fields: [userId], references: [id])

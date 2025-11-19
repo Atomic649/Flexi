@@ -139,6 +139,7 @@ exports.Prisma.MemberScalarFieldEnum = {
   permission: 'permission',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  deleted: 'deleted',
   userId: 'userId',
   businessId: 'businessId'
 };

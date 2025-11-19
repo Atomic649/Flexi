@@ -224,12 +224,12 @@ model User {
 }
 
 model Member {
-  uniqueId   String   @id @default(uuid())
-  role       UserRole @default(owner)
+  uniqueId   String        @id @default(uuid())
+  role       UserRole      @default(owner)
   permission String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deleted    Boolean?      @default(false)
   // Relation
   userId     Int
   user       User          @relation(fields: [userId], references: [id])

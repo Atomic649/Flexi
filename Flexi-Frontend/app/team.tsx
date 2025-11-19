@@ -18,6 +18,7 @@ import { getBusinessId } from "@/utils/utility";
 import CustomAlert from "@/components/CustomAlert";
 import i18n from "@/i18n";
 import { Ionicons } from "@expo/vector-icons";
+import { SwipeableRow, SwipeAction } from "@/components/swipe/SwipeableRow";
 
 interface TeamMember {
   userId?: number;
@@ -173,40 +174,85 @@ export default function TeamScreen() {
           </CustomText>
         )}
         {!loading &&
-          members.map((m) => (
-            <View
-              key={m.uniqueId}
-              style={{
-                marginBottom: 12,
-                padding: 14,
-                borderRadius: 12,
-                backgroundColor: theme === "dark" ? "#2D2D2D" : "#f1f1f1",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  alignItems: "center",
-                  backgroundColor: "transparent",
-                }}
+          members.map((m) => {
+            const isProtected =
+              m.uniqueId === "self" ||
+              m.role === "owner" ||
+              m.role === "admin" ||
+              m.permission === "admin";
+
+            const rightActions: SwipeAction[] = isProtected
+              ? []
+              : [
+                  {
+                    id: "delete",
+                    icon: "trash",
+                    backgroundColor: "#ef4444",
+                    onPress: () => {
+                      setAlertConfig({
+                        visible: true,
+                        title: t("common.confirm") || "Confirm",
+                        message:
+                          t("team.confirmDelete") ||
+                          `Remove ${m.firstName} ${m.lastName} from team?`,
+                        buttons: [
+                          {
+                            text: t("common.cancel") || "Cancel",
+                            onPress: () =>
+                              setAlertConfig((p) => ({ ...p, visible: false })),
+                          },
+                          {
+                            text: t("common.delete") || "Delete",
+                            onPress: async () => {
+                              try {
+                                setAlertConfig((p) => ({ ...p, visible: false }));
+                                await CallAPIMember.softDeleteMemberAPI(m.uniqueId);
+                                await fetchMembers();
+                              } catch (e: any) {
+                                setAlertConfig({
+                                  visible: true,
+                                  title: t("common.error") || "Error",
+                                  message: e?.message || "Failed to delete member",
+                                  buttons: [
+                                    {
+                                      text: t("common.ok") || "OK",
+                                      onPress: () =>
+                                        setAlertConfig((p) => ({ ...p, visible: false })),
+                                    },
+                                  ],
+                                });
+                              }
+                            },
+                          },
+                        ],
+                      });
+                    },
+                  },
+                ];
+
+            return (
+              <SwipeableRow
+                key={m.uniqueId}
+                rightActions={rightActions}
+                actionWidth={80}
+                actionHeight={"80%"}
+                actionBorderRadius={12}
+                disabled={isProtected}
               >
                 <View
                   style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    backgroundColor: "transparent",
-                    justifyContent: "space-around",
-                    alignItems: "stretch",
+                    marginBottom: 2,
+                    padding: 14,
+                    borderRadius: 12,
+                    backgroundColor: theme === "dark" ? "#2D2D2D" : "#f1f1f1",
                   }}
                 >
                   <View
                     style={{
                       flexDirection: "row",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      justifyContent: "space-between",                      
                       backgroundColor: "transparent",
-                      width: "100%",
                     }}
                   >
                     <CustomText
@@ -241,9 +287,9 @@ export default function TeamScreen() {
                     </TouchableOpacity>
                   </View>
                 </View>
-              </View>
-            </View>
-          ))}
+              </SwipeableRow>
+            );
+          })}
       </ScrollView>
 
       {/* Add Member Modal */}

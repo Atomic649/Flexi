@@ -8,6 +8,7 @@ import {
   searchMember,
   getMembersByBusinessId,
   inviteMemberByUsername,
+  softDeleteMember
 } from "../controllers/memberController";
 
 // Create express router
@@ -37,6 +38,6 @@ router.get("/business/:businessId", getMembersByBusinessId);
 // Invite member by username
 router.post("/invite", inviteMemberByUsername);
 
-// Invitation accept/pending endpoints removed
-
+//softDeleteMember
+router.delete("/soft/:uniqueId", softDeleteMember);
 export default router;

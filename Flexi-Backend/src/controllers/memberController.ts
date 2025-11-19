@@ -68,6 +68,7 @@ const getMemberIDByUserID = async (req: Request, res: Response) => {
     const member = await prisma.member.findMany({
       where: {
         userId: Number(userId),
+        deleted: false
       },
     });
     res.json({
@@ -87,10 +88,26 @@ const getMemberIDByUserID = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a Member - Delete
+// Delete a Member - Delete (hard delete)
 const deleteMember = async (req: Request, res: Response) => {
   const { uniqueId } = req.params;
   try {
+    // Protect privileged members from deletion
+    const target = await prisma.member.findUnique({
+      where: { uniqueId },
+      select: { role: true, permission: true },
+    });
+
+    if (!target) {
+      return res.status(404).json({ message: "member not found" });
+    }
+
+    if (target.role === "owner" || target.permission === "admin") {
+      return res
+        .status(403)
+        .json({ message: "protected member cannot be deleted" });
+    }
+
     const member = await prisma.member.delete({
       where: {
         uniqueId: uniqueId,
@@ -102,6 +119,43 @@ const deleteMember = async (req: Request, res: Response) => {
     res.status(500).json({ message: "failed to delete member" });
   }
 };
+
+// soft Delete a Member - Delete (mark as deleted)
+const softDeleteMember = async (req: Request, res: Response) => {
+  const { uniqueId } = req.params;
+  try {
+    // Protect privileged members from deletion
+    const target = await prisma.member.findUnique({
+      where: { uniqueId },
+      select: { role: true, permission: true },
+    });
+
+    if (!target) {
+      return res.status(404).json({ message: "member not found" });
+    }
+
+    if (target.role === "owner" || target.permission === "admin") {
+      return res
+        .status(403)
+        .json({ message: "protected member cannot be deleted" });
+    }
+
+    const member = await prisma.member.update({
+      where: {
+        uniqueId: uniqueId,
+      },
+      data: {
+        deleted: true,
+      },
+    });
+    res.json(member);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to delete member" });
+  }
+}
+
+
 // Update a Member - Put
 const updateMember = async (req: Request, res: Response) => {
   const { uniqueId } = req.params;
@@ -173,6 +227,7 @@ const getMembersByBusinessId = async (req: Request, res: Response) => {
     const members = await prisma.member.findMany({
       where: {
         businessId: Number(businessId),
+        deleted: false
       },
       select: {
         userId: true,
@@ -237,6 +292,7 @@ const inviteMemberByUsername = async (req: Request, res: Response) => {
       where: {
         userId: user.id,
         businessId: Number(businessId),
+        deleted: false
       },
     });
     if (exists) {
@@ -269,6 +325,7 @@ export {
   updateMember,
   searchMember,
   getMembersByBusinessId,
-  inviteMemberByUsername
+  inviteMemberByUsername,
+  softDeleteMember,
 };
 

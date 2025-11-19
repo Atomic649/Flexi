@@ -28,6 +28,26 @@ class CallAPIMember {
     }
   }
 
+  // Delete member by uniqueId
+  async softDeleteMemberAPI(uniqueId: string) {
+    if (!(await checkNetwork())) {
+      return { error: "No internet connection" };
+    }
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.delete(`/member/soft/${uniqueId}`);
+      console.log("🗑️ softDeleteMemberAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Soft Delete Member API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  }
+
   // Get members by businessId
   async getMembersByBusinessIdAPI(businessId: number) {
     if (!(await checkNetwork())) {
