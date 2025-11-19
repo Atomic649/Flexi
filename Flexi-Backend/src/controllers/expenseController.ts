@@ -242,10 +242,10 @@ const createExpense = async (req: Request, res: Response) => {
     }
 
     const memberId = req.body.memberId;
-    // Find businessAcc by memberId
+    // Find businessAcc by memberId (array column)
     const businessAcc = await prisma.businessAcc.findFirst({
       where: {
-        memberId: memberId,
+        memberId: { has: memberId },
       },
       select: {
         id: true,
@@ -368,7 +368,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         const memberId = req.body.memberId;
         const businessAcc = await prisma.businessAcc.findFirst({
           where: {
-            memberId: memberId,
+            memberId: { has: memberId },
           },
           select: {
             id: true,
@@ -840,10 +840,10 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     }
 
     const memberId = req.body.memberId;
-    // Find businessAcc by memberId
+    // Find businessAcc by memberId (array column)
     const businessAcc = await prisma.businessAcc.findFirst({
       where: {
-        memberId: memberId,
+        memberId: { has: memberId },
       },
       select: {
         id: true,
@@ -1315,7 +1315,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     // if business detail with memberId
     const businessDetail = await prisma.businessAcc.findFirst({
       where: {
-        memberId: memberId,
+        memberId: { has: memberId },
       },
       select: {
         businessName: true,
