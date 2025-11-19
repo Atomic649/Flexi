@@ -49,6 +49,9 @@ export default function TeamScreen() {
   const roleOptions = ["owner", "marketing", "accountant", "sales"] as const;
   const [selectedRole, setSelectedRole] =
     useState<(typeof roleOptions)[number]>("sales");
+  // Member limit (exclude synthetic self row) max 5
+  const realMemberCount = members.filter(m => m.uniqueId !== 'self').length;
+  const memberLimitReached = realMemberCount >= 5;
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -142,7 +145,24 @@ export default function TeamScreen() {
             {t("team.title") || "Team Members"}
           </CustomText>
           <TouchableOpacity
-            onPress={() => setAddVisible(true)}
+            disabled={memberLimitReached}
+            onPress={() => {
+              if (memberLimitReached) {
+                setAlertConfig({
+                  visible: true,
+                  title: t('common.info') || 'Info',
+                  message: t('team.memberLimitReached') || 'You have reached the maximum of 5 members.',
+                  buttons: [
+                    {
+                      text: t('common.ok') || 'OK',
+                      onPress: () => setAlertConfig(p => ({ ...p, visible: false }))
+                    }
+                  ]
+                });
+                return;
+              }
+              setAddVisible(true);
+            }}
             style={{
               backgroundColor: "transparent",
               paddingHorizontal: 14,
@@ -154,7 +174,7 @@ export default function TeamScreen() {
             <Ionicons
               name="add"
               size={30}
-              color={"#04ecc1"}
+              color={memberLimitReached ? (theme === 'dark' ? '#555' : '#999') : "#04ecc1"}
             ></Ionicons>
             
            </TouchableOpacity>
@@ -235,14 +255,14 @@ export default function TeamScreen() {
                 key={m.uniqueId}
                 rightActions={rightActions}
                 actionWidth={80}
-                actionHeight={"80%"}
+                actionHeight={"90%"}
                 actionBorderRadius={12}
                 disabled={isProtected}
               >
                 <View
                   style={{
                     marginBottom: 2,
-                    padding: 14,
+                    padding: 12,
                     borderRadius: 12,
                     backgroundColor: theme === "dark" ? "#2D2D2D" : "#f1f1f1",
                   }}
@@ -269,7 +289,7 @@ export default function TeamScreen() {
                       style={{
                         backgroundColor: "#04ecc1",
                         paddingHorizontal: 14,
-                        paddingVertical: 6,
+                        paddingVertical: 2,
                         borderRadius: 20,
                         marginLeft: 8,
                         justifyContent: "flex-end",
@@ -425,8 +445,10 @@ export default function TeamScreen() {
                 </CustomText>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={memberLimitReached}
                 onPress={async () => {
                   try {
+                    if (memberLimitReached) throw new Error(t('team.memberLimitReached') || 'Maximum 5 members reached');
                     const businessId = await getBusinessId();
                     if (!businessId) throw new Error("Invalid businessId");
                     if (!newUsername.trim())
@@ -457,7 +479,7 @@ export default function TeamScreen() {
                     setAlertConfig({
                       visible: true,
                       title: t("common.error") || "Error",
-                      message: e?.message || "Failed to invite member",
+                      message: e?.message || (t('team.memberLimitReached') || 'Maximum 5 members reached'),
                       buttons: [
                         {
                           text: t("common.ok") || "OK",
@@ -473,6 +495,7 @@ export default function TeamScreen() {
                   paddingHorizontal: 16,
                   paddingVertical: 10,
                   borderRadius: 10,
+                  opacity: memberLimitReached ? 0.4 : 1,
                 }}
               >
                 <CustomText style={{ color: "#0d0d0d", fontWeight: "700" }}>
@@ -491,6 +514,13 @@ export default function TeamScreen() {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
+      {memberLimitReached && (
+        <View style={{ position: 'absolute', bottom: 12, left: 0, right: 0, alignItems: 'center' }}>
+          <CustomText style={{ fontSize: 12, color: theme === 'dark' ? '#aaa' : '#555' }}>
+            {t('team.memberLimitReached') || 'Maximum 5 members reached.'}
+          </CustomText>
+        </View>
+      )}
     </View>
   );
 }

@@ -278,6 +278,15 @@ const inviteMemberByUsername = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   try {
+    // Enforce maximum of 5 active (non-deleted) members per business
+    const currentCount = await prisma.member.count({
+      where: { businessId: Number(businessId), deleted: false },
+    });
+    if (currentCount >= 5) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Maximum members reached (5) for this business" });
+    }
     // Find user by username
     const user = await prisma.user.findUnique({
       where: { username },
