@@ -26,6 +26,22 @@ const Prisma = new PrismaClient1();
 const tokenConfig = { expiresIn: "30day" };
 const resetTokenConfig = { expiresIn: "1h" };
 
+// Password policy: min 8 chars (recommend 12+), must include upper, lower, digit, and at least one non-alphanumeric (special) char.
+// Accepts any printable non-space character; rejects whitespace.
+// Example valid: Ato.mic649  StrongPass9@  XyZ12345!  Good#Pass2024
+const passwordSchema = Joi.string()
+  .min(8)
+  .max(128)
+  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])(?!.*\s).+$/)
+  .messages({
+    "string.min": "Password must be at least 8 characters.",
+    "string.max": "Password must be less than 128 characters.",
+    "string.pattern.base": "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
+  });
+
+// Centralized bcrypt cost factor (env override; default 12 for stronger security)
+const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS || 12);
+
 // Email configuration for password reset - Updated with better security options
 let transporter: nodemailer.Transporter;
 
@@ -87,7 +103,7 @@ const register = async (req: Request, res: Response) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
     username: Joi.string().required(),
-    password: Joi.string().required(),
+    password: passwordSchema,
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     phone: Joi.string().required().min(10).max(10),
@@ -109,8 +125,8 @@ const register = async (req: Request, res: Response) => {
         message: "User already exists",
       });
     }
-    //Check if password matches
-    const salt = await bcrypt.genSalt(10);
+  // Hash password
+  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
     const user = await Prisma.user.create({
       data: {
@@ -149,7 +165,7 @@ const login = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+  password: passwordSchema.required(),
   });
   const { error } = schema.validate(userInput);
   if (error) {
@@ -370,7 +386,7 @@ const updateUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   try {
-    const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
     const user = await Prisma.user.update({
       where: {
@@ -462,7 +478,7 @@ const changePassword = async (req: Request, res: Response) => {
   const schema = Joi.object({
     id: Joi.number().required(),
     currentPassword: Joi.string().required(),
-    newPassword: Joi.string().required(),
+    newPassword: passwordSchema.required(),
   });
   const { error } = schema.validate({ id, currentPassword, newPassword });
   if (error) {
@@ -485,7 +501,7 @@ const changePassword = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Old password is incorrect" });
     }
 
-    const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
     const updatedUser = await Prisma.user.update({
@@ -618,7 +634,7 @@ const resetPassword = async (req: Request, res: Response) => {
   // Validate input
   const schema = Joi.object({
     token: Joi.string().required(),
-    newPassword: Joi.string().required().min(6),
+    newPassword: passwordSchema.required(),
   });
   
   const { error } = schema.validate({ token, newPassword });
@@ -646,7 +662,7 @@ const resetPassword = async (req: Request, res: Response) => {
     }
 
     // Hash new password
-    const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     // Update user password and clear reset token

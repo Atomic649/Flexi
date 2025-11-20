@@ -3,6 +3,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   TouchableOpacity,
   View as RNView,
 } from "react-native";
@@ -29,6 +30,7 @@ export default function Register() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -85,6 +87,14 @@ export default function Register() {
     });
   };
 
+  // Keep a single leading '@' and prevent deleting it; strip extra '@' and whitespace
+  const handleUsernameChange = (text: string) => {
+    // Remove whitespace and any leading '@' characters
+    let cleaned = text.replace(/\s/g, "").replace(/^@+/, "");
+    // Always ensure a single '@' prefix remains
+    setUsername("@" + cleaned);
+  };
+
   // Handle register
   const handleRegister = async () => {
     setError("");
@@ -95,6 +105,25 @@ export default function Register() {
         visible: true,
         title: t("auth.register.validation.incomplete"),
         message: t("auth.register.validation.invalidData"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
+    }
+
+    // Confirm password must match
+    if (password !== confirmPassword) {
+      setAlertConfig({
+        visible: true,
+        title: t("auth.register.validation.incomplete"),
+        message:
+          t("auth.register.validation.passwordMismatch") ||
+          "Passwords do not match",
         buttons: [
           {
             text: t("common.ok"),
@@ -248,7 +277,7 @@ export default function Register() {
         </TouchableOpacity>
         <RNView className="flex-row flex-wrap ml-2">
           <CustomText
-            className={`text-sm ${visited ? "text-gray-500" : "text-gray-600"}`}
+            className={`text-sm pt-2 ${visited ? "text-gray-500" : "text-gray-600"}`}
           >
             {label}
           </CustomText>
@@ -257,8 +286,9 @@ export default function Register() {
               linkRoute === "/term" ? handleViewTerms : handleViewPrivacy
             }
           >
-            <RNView className="flex-row items-center">
-              <CustomText className="text-sm text-[#04ecc1] ml-1">
+            <RNView className="flex-row items-center justify-center">
+              <CustomText className="text-sm pt-2  ml-1"
+              style={{ color: visited ? "#888888" : "#04ecc1" }}>
                 {linkText}
               </CustomText>
               {!visited && (
@@ -266,7 +296,7 @@ export default function Register() {
                   name="arrow-forward"
                   size={12}
                   color="#04ecc1"
-                  style={{ marginLeft: 4 }}
+                  style={{ marginLeft: 4}}
                 />
               )}
             </RNView>
@@ -281,14 +311,42 @@ export default function Register() {
     );
   };
   const scrollViewRef = useRef<ScrollView>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates?.height ?? 0);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  const scrollToEndWithDelay = (delay = 200) => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, delay);
+  };
 
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
         style={{ flex: 1 }}
       >
-        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 24 + keyboardHeight }}
+        >
           <View
             className="w-full flex justify-center h-full px-4 py-10"
             style={{
@@ -328,8 +386,11 @@ export default function Register() {
                 title={t("auth.register.username")}
                 placeholder={t("auth.register.username")}
                 value={username}
-                handleChangeText={setUsername}
+                handleChangeText={handleUsernameChange}
                 otherStyles="mt-7"
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="username"
               />
 
               <FormField
@@ -348,25 +409,30 @@ export default function Register() {
                 handleChangeText={setEmail}
                 otherStyles="mt-7"
                 keyboardType="email-address"
-                onFocus={() => {
-                  setTimeout(() => {
-                    scrollViewRef.current?.scrollToEnd({ animated: true });
-                  }, 200);
-                }}
+                onFocus={() => scrollToEndWithDelay(250)}
               />
 
               <FormField
                 title={t("auth.register.passwordPlaceholder")}
+                subTitle={t("auth.login.passwordSubTitle")}
                 placeholder={t("auth.register.passwordPlaceholder")}
                 value={password}
                 handleChangeText={setPassword}
                 otherStyles="mt-7"
-                secureTextEntry
-                onFocus={() => {
-                  setTimeout(() => {
-                    scrollViewRef.current?.scrollToEnd({ animated: true });
-                  }, 200);
-                }}
+                secure
+                onFocus={() => scrollToEndWithDelay(250)}
+              />
+
+              <FormField
+                title={t("auth.register.confirmPassword") || "Confirm Password"}                
+                placeholder={
+                  t("auth.register.confirmPassword") || "Confirm Password"
+                }
+                value={confirmPassword}
+                handleChangeText={setConfirmPassword}
+                otherStyles="mt-4"
+                secure
+                onFocus={() => scrollToEndWithDelay(250)}
               />
 
               <RNView className="mt-5">

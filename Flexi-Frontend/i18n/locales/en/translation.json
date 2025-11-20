@@ -59,6 +59,7 @@
   "auth": {
     "login": {
       "title": "Login",
+      "passwordSubTitle": "Password must be at least 6 characters long, including uppercase, lowercase, number, and special character.",
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Password",
       "button": "Login",
@@ -81,6 +82,7 @@
     },
     "register": {
       "title": "Register",
+      "confirmPassword": "Confirm Password",
       "username": "Username",
       "bio": "Bio",
       "displayNamePlaceholder": "Display Name",
