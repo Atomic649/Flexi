@@ -39,6 +39,14 @@ const passwordSchema = Joi.string()
     "string.pattern.base": "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
   });
 
+// Username must start with '@' and include only English letters and numbers (no spaces or special characters)
+const usernameSchema = Joi.string()
+  .trim()
+  .pattern(/^@[A-Za-z0-9]+$/)
+  .messages({
+    "string.pattern.base": "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
+  });
+
 // Centralized bcrypt cost factor (env override; default 12 for stronger security)
 const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS || 12);
 
@@ -102,8 +110,8 @@ const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    username: Joi.string().required(),
-    password: passwordSchema,
+    username: usernameSchema.required(),
+    password: passwordSchema.required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     phone: Joi.string().required().min(10).max(10),
@@ -374,7 +382,7 @@ const updateUser = async (req: Request, res: Response) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
     bio: Joi.string().optional().allow(""),
-    username: Joi.string().required(),
+    username: usernameSchema.required(),
     password: Joi.string().required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),

@@ -104,7 +104,9 @@
       "alerts": {
         "success": "สมัครสมาชิกสำเร็จ",
         "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
-        "ok": "ตกลง"
+        "ok": "ตกลง",
+        "updatedSuccess":"อัปเดตสำเร็จ",
+        "updatedsuccessMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
       },
       "firstName": "ชื่อ",
       "lastName": "นามสกุล",

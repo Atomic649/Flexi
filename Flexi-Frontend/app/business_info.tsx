@@ -20,7 +20,7 @@ export default function BusinessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
   const [businessName, setbusinessName] = useState("");
-  const [businessUserName, setBusinessUserName] = useState("");
+  const [businessUserName, setBusinessUserName] = useState("@");
   const [taxType, settaxType] = useState("");
   const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
@@ -28,6 +28,12 @@ export default function BusinessInfo() {
   type DocumentTypeOption = "Invoice" | "Receipt" | "Quotation" | "WithholdingTax";
   const [documentTypes, setDocumentTypes] = useState<DocumentTypeOption[]>(["Receipt"]);
   const [error, setError] = useState("");
+
+  // Ensure business username always begins with a single '@' and cannot be removed
+  const normalizeBusinessUserName = (value: string) => {
+    const cleaned = value.replace(/\s/g, "").replace(/^@+/, "");
+    return "@" + cleaned;
+  };
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -74,7 +80,7 @@ export default function BusinessInfo() {
       console.log("data", data);
 
   setbusinessName(data.businessName || "");
-  setBusinessUserName(data.businessUserName || "");
+  setBusinessUserName(normalizeBusinessUserName(data.businessUserName || ""));
       settaxType(data.taxType || "");
       settaxId(data.taxId || "");
       setbusinessType(data.businessType || "");
@@ -146,8 +152,8 @@ export default function BusinessInfo() {
 
       setAlertConfig({
         visible: true,
-        title: t("auth.register.alerts.success"),
-        message: t("auth.register.alerts.successMessage"),
+        title: t("auth.register.alerts.updatedSuccess"),
+        message: t("auth.register.alerts.updatedsuccessMessage"),
         buttons: [
           {
             text: t("auth.register.alerts.ok"),
@@ -211,8 +217,11 @@ export default function BusinessInfo() {
               title={t("auth.register.username") || "Business Username"}
               placeholder={t("auth.register.username") || "Business Username"}
               value={businessUserName}
-              handleChangeText={setBusinessUserName}
+              handleChangeText={(text: string) => setBusinessUserName(normalizeBusinessUserName(text))}
               otherStyles="mt-7"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="username"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}

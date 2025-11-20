@@ -81,7 +81,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     }
 
     //List of DocumentType
-    const validDocumentTypes = ["Invoice", "Receipt", "Quotation"];
+    const validDocumentTypes = ["Invoice", "Receipt", "Quotation", "WithholdingTax"];
     if (businessAccInput.DocumentType && businessAccInput.DocumentType.length > 0) {
       const invalidTypes = businessAccInput.DocumentType.filter(
         type => !validDocumentTypes.includes(type)

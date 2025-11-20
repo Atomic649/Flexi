@@ -659,12 +659,11 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL1",
-        "value": null
+        "value": "postgresql://postgres:123456@localhost:9649/prismatypedb?schema=flexidb"
       }
     }
   },

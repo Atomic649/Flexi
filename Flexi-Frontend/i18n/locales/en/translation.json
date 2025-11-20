@@ -123,7 +123,9 @@
       "alerts": {
         "success": "Registration successful",
         "successMessage": "Please press OK to proceed",
-        "ok": "OK"
+        "ok": "OK",
+        "updatedSuccess":"Updated successfully",
+        "updatedsuccessMessage": "Please press OK to proceed"
       },
       "businessName": "Business Name",
       "taxType": "Tax Type",

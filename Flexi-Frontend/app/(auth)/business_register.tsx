@@ -33,7 +33,7 @@ export default function Register() {
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [isVatRegistered, setIsVatRegistered] = useState(false);
-  const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation")[]>(["Receipt"]);
+  const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[]>(["Receipt"]);
   const [error, setError] = useState("");
 
   // Add alert config state
@@ -93,11 +93,14 @@ export default function Register() {
 
       setAlertConfig({
         visible: true,
-        title: t("auth.register.alerts.success"),
-        message: t("auth.register.alerts.successMessage"),
+        title: t("auth.businessRegister.alerts.success", "Business Registered"),
+        message: t(
+          "auth.businessRegister.alerts.successMessage",
+          "Your business account was created successfully."
+        ),
         buttons: [
           {
-            text: t("auth.register.alerts.ok"),
+            text: t("auth.businessRegister.alerts.continue", "Continue"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
               router.replace("/login");
@@ -105,16 +108,14 @@ export default function Register() {
           },
         ],
       });
-
-      // go to login page
-      router.replace("/login");
+      // Navigation now occurs only after user confirms the alert
     } catch (error: any) {
       setError(error.message);
     }
   };
 
   // Handle document type selection
-  const handleDocumentTypeToggle = (type: "Invoice" | "Receipt" | "Quotation") => {
+  const handleDocumentTypeToggle = (type: "Invoice" | "Receipt" | "Quotation" | "WithholdingTax") => {
     // Don't allow unchecking Receipt as it's required
     if (type === "Receipt") return;
     
@@ -289,7 +290,7 @@ export default function Register() {
                   {t("auth.businessRegister.documentTypes")}
                 </CustomText>
                 
-                {(["Quotation","Invoice", "Receipt" ] as const).map((type) => (
+                {(["Quotation","Invoice","WithholdingTax","Receipt" ] as const).map((type) => (
                   <TouchableOpacity
                     key={type}
                     style={{
@@ -302,6 +303,7 @@ export default function Register() {
                     }}
                     onPress={() => handleDocumentTypeToggle(type)}
                     disabled={type === "Receipt"}
+                    activeOpacity={0.8}
                   >
                     <View
                       style={{

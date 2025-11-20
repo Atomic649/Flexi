@@ -12,7 +12,7 @@ class CallAPIBusiness {
     taxType: string;
     userId: number;
     memberId: any;
-    DocumentType?: ("Invoice" | "Receipt" | "Quotation")[];
+    DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
   }): Promise<any> {
     if (!(await checkNetwork())) {
       return { message: "No Network Connection" };
@@ -58,7 +58,7 @@ class CallAPIBusiness {
     businessType: string;
     taxType: string;
     userId: number;
-    DocumentType?: ("Invoice" | "Receipt" | "Quotation")[];
+    DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
   }): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
