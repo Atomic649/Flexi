@@ -36,10 +36,18 @@ interface businessAccInput {
   DocumentType?: ("Invoice" | "Receipt" | "Quotation"|"WithholdingTax")[];
 }
 
+// Username must start with '@' and include only English letters and numbers (no spaces or special characters)
+const businessUsernameSchema = Joi.string()
+  .trim()
+  .pattern(/^@[A-Za-z0-9]+$/)
+  .messages({
+    "string.pattern.base": "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
+  });
+
 // validate the request body
 const schema = Joi.object({
   businessName: Joi.string().required(),
-  businessUserName: Joi.string().optional().allow(""),
+  businessUserName: businessUsernameSchema.optional().allow(""),
   taxId: Joi.string().min(13).max(13).required(),
   businessType: Joi.string().required(),
   taxType: Joi.string().valid("Juristic", "Individual").required(),
@@ -55,6 +63,7 @@ const schema = Joi.object({
     .optional()
     .default(["Receipt"]),
 });
+
 
 // Create a Business Account - Post
 const createBusinessAcc = async (req: Request, res: Response) => {
@@ -541,6 +550,13 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
   });
 
   try {
+    // Validate businessUserName if provided
+    if (typeof businessUserName !== 'undefined') {
+      const { error } = businessUsernameSchema.allow("").validate(businessUserName);
+      if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+      }
+    }
     // Locate the business account by memberId first
     const existing = await prisma.member.findFirst({
       where: { uniqueId: memberId },
