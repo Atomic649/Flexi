@@ -96,7 +96,7 @@ const GrayButton = ({
         theme === "dark"
           ? "bg-[#333333] border-[#d1d5db]"
           : "bg-[#f3f4f6] border-[#d1d5db]"
-      } rounded-xl min-h-[50px] flex flex-row justify-center items-center ${containerStyles} ${
+      } rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}

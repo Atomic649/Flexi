@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import { CustomButton } from "@/components/CustomButton";
+import { CustomButton, GrayButton } from "@/components/CustomButton";
 import React, { useEffect, useRef, useState } from "react";
 import { saveRemark, getRemark } from "@/utils/utility";
 import {
@@ -30,6 +30,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
+import AutoFillBill, {
+  ParsedCustomerInfo,
+} from "@/components/autoFillBill";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -661,6 +664,29 @@ export default function CreateBill() {
     setRepeatMonths(1);
     setRepeatMonthsInput("1");
   };
+  const handleAutoFillApply = (parsed: ParsedCustomerInfo) => {
+    const effectiveTaxType = parsed.taxType ?? taxType;
+
+    if (parsed.taxType) {
+      setTaxType(parsed.taxType);
+    }
+
+    setCName(parsed.name ?? "");
+
+    if (effectiveTaxType === "Juristic") {
+      setCLastName("");
+      setCGender("NotSpecified");
+    } else {
+      setCLastName(parsed.lastName ?? "");
+      setCGender(parsed.gender ?? "");
+    }
+
+    setCPhone(parsed.phone ?? "");
+    setTaxId(parsed.taxId ?? "");
+    setCAddress(parsed.address ?? "");
+    setCProvince(parsed.province ?? "");
+    setCPostId(parsed.postal ?? "");
+  };
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -873,8 +899,17 @@ export default function CreateBill() {
           >
             {/* Clear Button in Top Right */}
             <View
-              style={{ position: "absolute", top: 0, right: 0, zIndex: 10 }}
+              style={{ position: "absolute", top: 0, right: 0, zIndex: 10 ,flexDirection: "row" }}
             >
+              <AutoFillBill
+                onApply={handleAutoFillApply}
+                taxType={taxType}
+                containerStyle={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 5,
+                }}
+              />
               <TouchableOpacity
                 style={{
                   flexDirection: "row",
@@ -889,7 +924,7 @@ export default function CreateBill() {
                   style={{
                     color: theme === "dark" ? "#03dbc1" : "#03dbc1",
                     fontSize: 18,
-                    paddingHorizontal: 10,
+                    paddingHorizontal: 5,
                   }}
                 >
                   {t("bill.clearFields")}

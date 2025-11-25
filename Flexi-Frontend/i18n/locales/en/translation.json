@@ -1212,6 +1212,8 @@
       "female": "Female",
       "notSpecified": "Not Specified"
     },
+    "autoFill":" Auto-fill",
+    "autoFillInstructions":"Paste customer info text here to auto-fill the fields (separate with space) avoid (: ; , - _ )",   
     "invoice": "Invoice",
     "receipt": "Receipt/Tax Invoice",
     "quotation": "Quotation",
