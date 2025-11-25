@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
 import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";
+import CustomAlert from "./CustomAlert";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -45,6 +46,7 @@ export default function BillCard({
   onUpdateDocumentType, // New prop for updating document type
   currentDocumentType, // Current document type to show appropriate actions
   onPress, // Add onPress prop to handle navigation from parent
+  onDuplicate,
 }: any) {
   const { t } = useTranslation();
 
@@ -54,6 +56,28 @@ export default function BillCard({
   // Animation values for status change
   const statusScaleAnim = useRef(new RNAnimated.Value(1)).current;
   const statusOpacityAnim = useRef(new RNAnimated.Value(1)).current;
+  const longPressTriggeredRef = useRef(false);
+  const [duplicateAlertVisible, setDuplicateAlertVisible] = useState(false);
+
+  const handleCancelDuplicate = useCallback(() => {
+    longPressTriggeredRef.current = false;
+    setDuplicateAlertVisible(false);
+  }, []);
+
+  const handleConfirmDuplicate = useCallback(() => {
+    setDuplicateAlertVisible(false);
+    if (onDuplicate) {
+      onDuplicate(id);
+    }
+  }, [id, onDuplicate]);
+
+  const handleDuplicatePrompt = useCallback(() => {
+    if (!onDuplicate) {
+      return;
+    }
+    longPressTriggeredRef.current = true;
+    setDuplicateAlertVisible(true);
+  }, [onDuplicate]);
 
   // Effective document type used for rendering and actions
   const effectiveDocumentType =
@@ -178,7 +202,17 @@ export default function BillCard({
       style={{
         width: "100%",
       }}
-      onPress={onPress}
+      onPress={() => {
+        if (longPressTriggeredRef.current) {
+          longPressTriggeredRef.current = false;
+          return;
+        }
+        if (onPress) {
+          onPress();
+        }
+      }}
+      onLongPress={handleDuplicatePrompt}
+      delayLongPress={450}
       activeOpacity={1}
     >
       <View
@@ -332,6 +366,30 @@ export default function BillCard({
       >
         {cardContent}
       </SwipeableRow>
+      {onDuplicate && (
+        <CustomAlert
+          visible={duplicateAlertVisible}
+          title={t("bill.duplicateConfirmTitle", {
+            defaultValue: "Duplicate bill?",
+          })}
+          message={t("bill.duplicateConfirmMessage", {
+            defaultValue:
+              "Create a new bill using this customer's details?",
+          })}
+          buttons={[
+            {
+              text: t("common.cancel"),
+              onPress: handleCancelDuplicate,
+              style: "cancel",
+            },
+            {
+              text: t("common.confirm"),
+              onPress: handleConfirmDuplicate,
+            },
+          ]}
+          onClose={handleCancelDuplicate}
+        />
+      )}
     </View>
   );
 }

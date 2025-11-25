@@ -727,12 +727,18 @@ export default function EditBill() {
         } else {
           setShowProgressSection(true);
         }
-        // Set taxType based on fields
-        if (billData.cTaxId && billData.cTaxId.length > 0) {
-          setTaxType("Juristic");
-        } else {
-          setTaxType("Individual");
-        }
+        // Set taxType based on database value (fallback to tax ID presence)
+        const rawTaxType = billData.TaxType ?? billData.taxType;
+        const normalizedTaxType =
+          rawTaxType && typeof rawTaxType === "string"
+            ? rawTaxType.toLowerCase() === "juristic"
+              ? "Juristic"
+              : rawTaxType.toLowerCase() === "individual"
+              ? "Individual"
+              : null
+            : null;
+        const hasTaxId = Boolean(billData.cTaxId && billData.cTaxId.trim().length > 0);
+        setTaxType(normalizedTaxType ?? (hasTaxId ? "Juristic" : "Individual"));
         // Set productItems from billData.product (array of items)
         if (
           billData.product &&
@@ -1390,6 +1396,59 @@ export default function EditBill() {
                 </View>
               </View>
             </View>
+             {/* Tax Type Checkboxes Row */}
+                        <View
+                          className="flex flex-row items-center mt-2 mb-2"
+                          style={{ backgroundColor: "transparent", marginBottom: 8 }}
+                        >
+                          <TouchableOpacity
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              marginRight: 20,
+                            }}
+                            onPress={() => {
+                              setTaxType("Individual");
+                              setCGender(""); // Allow gender selection
+                            }}
+                            activeOpacity={1}
+                          >
+                            <Ionicons
+                              name={
+                                taxType === "Individual" ? "checkbox" : "square-outline"
+                              }
+                              size={22}
+                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                            />
+                            <CustomText
+                              className="ml-2"
+                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                            >
+                              {t("auth.businessRegister.taxTypeOption.Individual")}
+                            </CustomText>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                            onPress={() => {
+                              setTaxType("Juristic");
+                              setCGender("NotSpecified"); // Always set gender to NotSpecified
+                            }}
+                            activeOpacity={1}
+                          >
+                            <Ionicons
+                              name={taxType === "Juristic" ? "checkbox" : "square-outline"}
+                              size={22}
+                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                            />
+                            <CustomText
+                              className="ml-2"
+                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                            >
+                              {t("auth.businessRegister.taxTypeOption.Juristic")}
+                            </CustomText>
+                          </TouchableOpacity>
+                        </View>
+            
             <View className="flex flex-row justify-between">
               <View
                 className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}
@@ -1860,6 +1919,7 @@ export default function EditBill() {
                     marginRight: 20,
                   }}
                   onPress={() => handlePriceValidDaysChange(7)}
+                  activeOpacity={0.8}
                 >
                   <Ionicons
                     name={priceValidDays === 7 ? "checkbox" : "square-outline"}
@@ -1881,6 +1941,7 @@ export default function EditBill() {
                     marginRight: 20,
                   }}
                   onPress={() => handlePriceValidDaysChange(15)}
+                  activeOpacity={0.8}
                 >
                   <Ionicons
                     name={priceValidDays === 15 ? "checkbox" : "square-outline"}
@@ -1898,6 +1959,7 @@ export default function EditBill() {
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
                   onPress={() => handlePriceValidDaysChange(30)}
+                  activeOpacity={0.8}
                 >
                   <Ionicons
                     name={priceValidDays === 30 ? "checkbox" : "square-outline"}

@@ -172,6 +172,13 @@ const ByOrder = () => {
     }
   };
 
+  const handleDuplicateBill = useCallback((billId: number) => {
+    router.push({
+      pathname: "/createBill",
+      params: { duplicateId: billId.toString() },
+    });
+  }, []);
+
   // State to track expanded future bills
   const [showAllFuture, setShowAllFuture] = useState(false);
 
@@ -505,6 +512,7 @@ const ByOrder = () => {
                     params: { id: bill.id },
                   })
                 }
+                onDuplicate={handleDuplicateBill}
               />
             ))}
 

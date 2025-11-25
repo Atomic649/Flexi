@@ -1212,6 +1212,8 @@
       "female": "Female",
       "notSpecified": "Not Specified"
     },
+    "duplicateConfirmTitle":"Duplicate bill?",
+    "duplicateConfirmMessage":"Create a new bill using this customer's details?",
     "autoFill":" Auto-fill",
     "autoFillInstructions":"Paste customer info text here to auto-fill the fields (separate with space) avoid (: ; , - _ )",   
     "invoice": "Invoice",

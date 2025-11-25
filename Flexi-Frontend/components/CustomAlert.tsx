@@ -53,7 +53,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
           <View className="px-4 pt-4 pb-2">
             <CustomText 
               weight="medium"
-              className="text-lg text-center"
+              className="text-lg text-center pt-1"
               style={{ 
                 fontFamily: i18n.language === 'th' ? 'IBMPlexSansThai-Medium' : 'Poppins-Medium'
               }}

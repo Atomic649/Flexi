@@ -25,7 +25,7 @@ import CallAPIBill from "@/api/bill_api";
 import CallAPIStore from "@/api/store_api";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { useTheme } from "@/providers/ThemeProvider";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
@@ -58,6 +58,15 @@ export default function CreateBill() {
   const [memberId, setMemberId] = useState<string | null>(null);
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const searchParams = useLocalSearchParams<{ duplicateId?: string | string[] }>();
+  const duplicateIdParam = Array.isArray(searchParams.duplicateId)
+    ? searchParams.duplicateId[0]
+    : searchParams.duplicateId;
+  const parsedDuplicateId = duplicateIdParam ? Number(duplicateIdParam) : null;
+  const duplicateBillId =
+    parsedDuplicateId !== null && !Number.isNaN(parsedDuplicateId)
+      ? parsedDuplicateId
+      : null;
   const [storeId, setStoreId] = useState<number>(0);
   const [stores, setStores] = useState<any[]>([]);
   const [error, setError] = useState("");
@@ -171,6 +180,9 @@ export default function CreateBill() {
   const [productItems, setProductItems] = useState([
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
+  const duplicatePrefillCacheRef = useRef<{ id: number; data: any } | null>(
+    null
+  );
 
   const fieldStyles = "mt-2 mb-2";
 
@@ -248,6 +260,23 @@ export default function CreateBill() {
     return mapping[type];
   };
 
+  const getDocumentTypeFromAPI = (
+    docType?: string | string[] | null
+  ): "QA" | "IV" | "RE" | null => {
+    if (!docType) return null;
+    const value = Array.isArray(docType) ? docType[0] : docType;
+    switch (value) {
+      case "Invoice":
+        return "IV";
+      case "Receipt":
+        return "RE";
+      case "Quotation":
+      case "Bill":
+      default:
+        return "QA";
+    }
+  };
+
   useEffect(() => {
     const fetchMemberId = async () => {
       const uniqueId = await getMemberId();
@@ -317,12 +346,17 @@ export default function CreateBill() {
     : contextDocumentTypes
     ? [contextDocumentTypes]
     : [];
+  const availableDocumentTypesKey = availableDocumentTypes.join(",");
 
   // Derive businessType directly for render
   const businessType = contextBusinessType ?? null;
 
   // Initialize progression visibility and selected step from available types
   useEffect(() => {
+    if (duplicateBillId) {
+      return;
+    }
+
     if (availableDocumentTypes.length === 1 && availableDocumentTypes[0] === "Receipt") {
       setShowProgressSection(false);
       setSelectedDocumentType("RE");
@@ -336,7 +370,174 @@ export default function CreateBill() {
         setSelectedDocumentType("RE");
       }
     }
-  }, [availableDocumentTypes.join(",")]);
+  }, [availableDocumentTypesKey, duplicateBillId]);
+
+  useEffect(() => {
+    if (!duplicateBillId) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const applyBillData = (billData: any) => {
+      if (isCancelled || !billData) {
+        return;
+      }
+
+      const purchaseDate = billData.purchaseAt
+        ? new Date(billData.purchaseAt)
+        : new Date();
+      setPurchaseAt(purchaseDate);
+      setSelectedDates([purchaseDate.toISOString()]);
+      setDate([purchaseDate.toISOString()]);
+
+      setCName(billData.cName ?? "");
+      setCLastName(billData.cLastName ?? "");
+      setCPhone(billData.cPhone ?? "");
+      setCGender(billData.cGender ?? "");
+      setCAddress(billData.cAddress ?? "");
+      setCPostId(billData.cPostId ?? "");
+      setCProvince(billData.cProvince ?? "");
+      setTaxId(billData.cTaxId ?? "");
+      setPayment(billData.payment ?? "NotSpecified");
+      setCashStatus(Boolean(billData.cashStatus));
+      setStoreId(billData.storeId ?? 0);
+      if (billData.businessAcc !== undefined && billData.businessAcc !== null) {
+        setBusinessAcc(billData.businessAcc);
+      }
+      setImage(billData.image ?? "");
+      setNote(billData.note ?? "");
+      setPaymentTermCondition(billData.paymentTermCondition ?? "");
+      setRemark(billData.remark ?? "");
+
+      const isJuristicCustomer =
+        billData.TaxType === "Juristic" ||
+        Boolean(billData.cTaxId && billData.cTaxId.length > 0);
+      setTaxType(isJuristicCustomer ? "Juristic" : "Individual");
+
+      if (
+        billData.product &&
+        Array.isArray(billData.product) &&
+        billData.product.length > 0
+      ) {
+        setProductItems(
+          billData.product.map((item: any) => ({
+            product: item.product ?? "",
+            price:
+              item.unitPrice !== undefined && item.unitPrice !== null
+                ? item.unitPrice.toString()
+                : "",
+            quantity:
+              item.quantity !== undefined && item.quantity !== null
+                ? item.quantity.toString()
+                : "1",
+            unit: item.unit ?? "",
+            unitDiscount:
+              item.unitDiscount !== undefined && item.unitDiscount !== null
+                ? item.unitDiscount.toString()
+                : "",
+          }))
+        );
+      } else {
+        setProductItems([
+          {
+            product: "",
+            price: "",
+            quantity: "1",
+            unit: "",
+            unitDiscount: "",
+          },
+        ]);
+      }
+
+      if (typeof billData.repeat === "boolean") {
+        setIsRepeat(billData.repeat);
+      } else {
+        setIsRepeat(false);
+      }
+      if (billData.repeatMonths && billData.repeatMonths > 0) {
+        setRepeatMonths(billData.repeatMonths);
+        setRepeatMonthsInput(billData.repeatMonths.toString());
+      } else {
+        setRepeatMonths(1);
+        setRepeatMonthsInput("1");
+      }
+
+      if (billData.priceValid) {
+        const priceValidDate = new Date(billData.priceValid);
+        setPriceValid(priceValidDate);
+        const baseDate = billData.purchaseAt
+          ? new Date(billData.purchaseAt)
+          : new Date();
+        const diffDays = Math.round(
+          (priceValidDate.getTime() - baseDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+        if (diffDays === 7 || diffDays === 15 || diffDays === 30) {
+          setPriceValidDays(diffDays as 7 | 15 | 30);
+        } else {
+          setPriceValidDays(null);
+        }
+      } else {
+        setPriceValid(null);
+        setPriceValidDays(null);
+      }
+
+      const documentTypeFromBill = getDocumentTypeFromAPI(
+        billData.DocumentType
+      );
+      if (
+        documentTypeFromBill &&
+        (availableDocumentTypes.length === 0 ||
+          availableDocumentTypes.includes(
+            getDocumentTypeForAPI(documentTypeFromBill)
+          ))
+      ) {
+        setSelectedDocumentType(documentTypeFromBill);
+      } else if (availableDocumentTypes.length > 0) {
+        if (availableDocumentTypes.includes("Quotation")) {
+          setSelectedDocumentType("QA");
+        } else if (availableDocumentTypes.includes("Invoice")) {
+          setSelectedDocumentType("IV");
+        } else if (availableDocumentTypes.includes("Receipt")) {
+          setSelectedDocumentType("RE");
+        }
+      }
+    };
+
+    const prefillFromBill = async () => {
+      try {
+        if (
+          duplicatePrefillCacheRef.current &&
+          duplicatePrefillCacheRef.current.id === duplicateBillId
+        ) {
+          applyBillData(duplicatePrefillCacheRef.current.data);
+          return;
+        }
+
+        const billData = await CallAPIBill.getBillByIdAPI(duplicateBillId);
+        if (!billData) {
+          return;
+        }
+        duplicatePrefillCacheRef.current = {
+          id: duplicateBillId,
+          data: billData,
+        };
+        applyBillData(billData);
+      } catch (error) {
+        console.error("Failed to prefill bill for duplication:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to duplicate bill"
+        );
+      }
+    };
+
+    prefillFromBill();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [duplicateBillId, availableDocumentTypesKey]);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -1481,6 +1682,7 @@ export default function CreateBill() {
                       marginRight: 20,
                     }}
                     onPress={() => handlePriceValidDaysChange(7)}
+                    activeOpacity={0.8}
                   >
                     <Ionicons
                       name={
@@ -1506,6 +1708,7 @@ export default function CreateBill() {
                       marginRight: 20,
                     }}
                     onPress={() => handlePriceValidDaysChange(15)}
+                    activeOpacity={0.8}
                   >
                     <Ionicons
                       name={
@@ -1527,6 +1730,7 @@ export default function CreateBill() {
                   <TouchableOpacity
                     style={{ flexDirection: "row", alignItems: "center" }}
                     onPress={() => handlePriceValidDaysChange(30)}
+                    activeOpacity={0.8}
                   >
                     <Ionicons
                       name={
