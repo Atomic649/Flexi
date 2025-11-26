@@ -25,6 +25,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as Print from "expo-print";
 import { Ionicons } from "@expo/vector-icons";
+import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
@@ -33,10 +34,7 @@ import { format } from "date-fns";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
-import {
-  formatNumber,
-  reverseCalculateFromFinal,
-} from "@/utils/taxUtils";
+import { formatNumber, reverseCalculateFromFinal } from "@/utils/taxUtils";
 import { DEFAULT_VAT_PERCENT, DEFAULT_WHT_PERCENT } from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
@@ -127,8 +125,7 @@ export default function CreateExpense({
   const [group, setGroup] = useState<string | undefined>();
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
-  const [attachmentPickerVisible, setAttachmentPickerVisible] =
-    useState(false);
+  const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
@@ -175,18 +172,20 @@ export default function CreateExpense({
     withHoldingTax?: boolean;
     WHTpercent?: number;
   }) => {
-    const finalAmt = Number(
-      overrides?.amount !== undefined ? overrides.amount : amount
-    ) || 0;
+    const finalAmt =
+      Number(overrides?.amount !== undefined ? overrides.amount : amount) || 0;
     const nextVatIncluded =
-      overrides?.vatIncluded !== undefined ? overrides.vatIncluded : vatIncluded;
+      overrides?.vatIncluded !== undefined
+        ? overrides.vatIncluded
+        : vatIncluded;
     const nextWithHolding =
       overrides?.withHoldingTax !== undefined
         ? overrides.withHoldingTax
         : withHoldingTax;
-    const nextWHTPercent = Number(
-      overrides?.WHTpercent !== undefined ? overrides.WHTpercent : WHTpercent
-    ) || 0;
+    const nextWHTPercent =
+      Number(
+        overrides?.WHTpercent !== undefined ? overrides.WHTpercent : WHTpercent
+      ) || 0;
 
     // Only compute when either VAT or WHT is enabled
     if (nextVatIncluded || nextWithHolding) {
@@ -307,13 +306,16 @@ export default function CreateExpense({
         multiple: false,
       });
 
-      const asset = result.assets && result.assets.length > 0 ? result.assets[0] : null;
+      const asset =
+        result.assets && result.assets.length > 0 ? result.assets[0] : null;
 
       if (asset?.uri) {
         setAttachment({
           uri: asset.uri,
           name:
-            asset.name || asset.uri.split("/").pop() || `attachment_${Date.now()}.pdf`,
+            asset.name ||
+            asset.uri.split("/").pop() ||
+            `attachment_${Date.now()}.pdf`,
           type: asset.mimeType || "application/pdf",
           preview: "pdf",
         });
@@ -358,8 +360,6 @@ export default function CreateExpense({
     } as unknown as Blob);
   };
 
-  
-  
   // Apply selected OCR data and resubmit expense
   const applySelectedOCRData = async () => {
     try {
@@ -686,11 +686,11 @@ export default function CreateExpense({
         try {
           onClose();
         } catch (e) {
-          console.error('Error during onClose:', e);
+          console.error("Error during onClose:", e);
         }
       }, 0);
     } catch (err) {
-      console.error('handleCloseWithoutAlert error:', err);
+      console.error("handleCloseWithoutAlert error:", err);
       // still try to close safely
       setTimeout(() => onClose(), 0);
     }
@@ -714,26 +714,28 @@ export default function CreateExpense({
     try {
       const formData = new FormData();
       // Only append single string values
-  if (note && typeof note === "string") formData.append("note", note);
-  // Normalize amount formatting for update as well
-  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
-  formData.append("amount", normalizedAmount);
-  if (desc) formData.append("desc", desc);
-  // Always include group/branch/taxType to match create behavior
-  formData.append("group", group || "");
-  // Ensure VAT flag is sent so backend knows how to interpret vatAmount
-  formData.append("vat", vatIncluded ? "true" : "false");
-  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
-  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-  formData.append("WHTpercent", WHTpercent.toString());
-  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
-  formData.append("sName", sName || "");
-  formData.append("sTaxId", sTaxId || "");
-  formData.append("sAddress", sAddress || "");
-  formData.append("taxInvoiceNo", taxInvoiceNo || "");
-  formData.append("date", Array.isArray(date) ? date[0] : date);
-  formData.append("branch", branch || "");
-  formData.append("taxType", taxType || "");
+      if (note && typeof note === "string") formData.append("note", note);
+      // Normalize amount formatting for update as well
+      const normalizedAmount = amount
+        ? amount.toString().replace(/,/g, "")
+        : "0";
+      formData.append("amount", normalizedAmount);
+      if (desc) formData.append("desc", desc);
+      // Always include group/branch/taxType to match create behavior
+      formData.append("group", group || "");
+      // Ensure VAT flag is sent so backend knows how to interpret vatAmount
+      formData.append("vat", vatIncluded ? "true" : "false");
+      formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
+      formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+      formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
+      formData.append("sName", sName || "");
+      formData.append("sTaxId", sTaxId || "");
+      formData.append("sAddress", sAddress || "");
+      formData.append("taxInvoiceNo", taxInvoiceNo || "");
+      formData.append("date", Array.isArray(date) ? date[0] : date);
+      formData.append("branch", branch || "");
+      formData.append("taxType", taxType || "");
       appendAttachmentToFormData(formData);
 
       if (createdExpenseId !== null) {
@@ -786,17 +788,19 @@ export default function CreateExpense({
       const formData = new FormData();
       formData.append("date", formattedDate);
       formData.append("note", note);
-  // Normalize formatted amount (e.g., "1,234.00") to plain numeric string
-  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
-  formData.append("amount", normalizedAmount);
+      // Normalize formatted amount (e.g., "1,234.00") to plain numeric string
+      const normalizedAmount = amount
+        ? amount.toString().replace(/,/g, "")
+        : "0";
+      formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
       appendAttachmentToFormData(formData);
       formData.append("group", group || "");
-  formData.append("vat", vatIncluded ? "true" : "false");
-  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
+      formData.append("vat", vatIncluded ? "true" : "false");
+      formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-  formData.append("WHTpercent", WHTpercent.toString());
-  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
+      formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
       formData.append("sTaxId", sTaxId);
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
@@ -875,16 +879,18 @@ export default function CreateExpense({
       const formData = new FormData();
       formData.append("date", formattedDate);
       formData.append("note", note);
-  const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
-  formData.append("amount", normalizedAmount);
+      const normalizedAmount = amount
+        ? amount.toString().replace(/,/g, "")
+        : "0";
+      formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
       appendAttachmentToFormData(formData);
       formData.append("group", group || "");
-  formData.append("vat", vatIncluded ? "true" : "false");
-  formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
-  formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
-  formData.append("WHTpercent", WHTpercent.toString());
-  formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
+      formData.append("vat", vatIncluded ? "true" : "false");
+      formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
+      formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
+      formData.append("WHTpercent", WHTpercent.toString());
+      formData.append("WHTAmount", WHTAmount ? WHTAmount.toString() : "0");
       formData.append("sTaxId", sTaxId);
       formData.append("sName", sName);
       formData.append("taxInvoiceNo", taxInvoiceNo);
@@ -1192,20 +1198,43 @@ export default function CreateExpense({
                   </TouchableOpacity>
                 )}
 
-                {attachment?.preview === "pdf" && (
-                  <TouchableOpacity
-                    onPress={handlePreviewAttachment}
-                    className="mt-4 mb-6 self-center flex-row items-center bg-gray-100 dark:bg-zinc-800 px-4 py-3 rounded-md"
-                  >
-                    <Ionicons
-                      name="document-text-outline"
-                      size={28}
-                      color={theme === "dark" ? "#f5f5f5" : "#4a4a4a"}
-                    />
-                    <CustomText className="ml-3">
-                      {attachment.name}
-                    </CustomText>
-                  </TouchableOpacity>
+                {attachment?.preview === "pdf" && attachment.uri && (
+                  <View className="mt-4 mb-6 self-center w-full">
+                    <TouchableOpacity
+                      onPress={handlePreviewAttachment}
+                      style={{
+                        width: "100%",
+                        height: Platform.OS === "web" ? 420 : 360,
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        borderWidth: 1,
+                        borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb",
+                        backgroundColor:
+                          theme === "dark" ? "#18181b" : "#f9fafb",
+                      }}
+                    >
+                      {Platform.OS !== "web" ? (
+                        <WebView
+                          originWhitelist={["*"]}
+                          source={{ uri: attachment.uri }}
+                          style={{ flex: 1 }}
+                        />
+                      ) : (
+                        <View className="flex-1 justify-center items-center bg-white">
+                          <iframe
+                            src={attachment.uri}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              border: "none",
+                              backgroundColor: "white",
+                            }}
+                            title="PDF Preview"
+                          />
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 )}
 
                 {/* -----------------------OCR Progress Indicator---------------------------------- */}
@@ -2002,7 +2031,7 @@ export default function CreateExpense({
                       value={sAddress}
                       onChangeText={setSAddress}
                     />
-                    </>
+                  </>
                 )}
                 <View className="flex-row justify-evenly items-center">
                   <ScrollView

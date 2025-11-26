@@ -2,6 +2,7 @@ import { getAxios } from "@/utils/axiosInstance";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
 import { checkNetwork } from "@/utils/utility";
 import axios from "axios";
+import { t } from "i18next";
 
 class CallAPIBusiness {
   // Register Member API
@@ -28,7 +29,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -47,7 +48,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -75,7 +76,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -103,7 +104,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -136,7 +137,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -154,7 +155,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -173,7 +174,7 @@ class CallAPIBusiness {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }

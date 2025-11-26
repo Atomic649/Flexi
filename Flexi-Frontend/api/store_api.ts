@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
+import { t } from "i18next";
 
 class CallAPIStore{
     // Get Stores
@@ -16,7 +17,7 @@ class CallAPIStore{
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -32,7 +33,7 @@ class CallAPIStore{
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -53,7 +54,7 @@ class CallAPIStore{
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -76,7 +77,7 @@ class CallAPIStore{
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -92,7 +93,7 @@ class CallAPIStore{
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }

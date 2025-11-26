@@ -29,7 +29,8 @@
     "THB": "บาท",
     "OCR": "สแกน",
     "complete": "เสร็จสิ้น",
-    "noOptions": "ไม่มีตัวเลือก"
+    "noOptions": "ไม่มีตัวเลือก",
+    "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​"
   },
   "months": {
     "january": "มกราคม",

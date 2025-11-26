@@ -29,7 +29,8 @@
     "THB": "THB",
     "OCR": "Scan",
     "complete": "Complete",
-    "noOptions": "No options"
+    "noOptions": "No options",
+    "networkError": "Network API Error"
   },
   "months": {
     "january": "January",

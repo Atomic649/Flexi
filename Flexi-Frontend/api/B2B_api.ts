@@ -1,6 +1,7 @@
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
 import axios from "axios";
 import Bank from '../components/shop/bank';
+import { t } from "i18next";
 
 
 class CallAPIB2B {
@@ -18,7 +19,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }
@@ -37,7 +38,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }
@@ -55,7 +56,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }
@@ -74,7 +75,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }
@@ -93,7 +94,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }
@@ -112,7 +113,7 @@ class CallAPIB2B {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error(error instanceof Error ? error.message : "Network Error");
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
       }
     }
   }

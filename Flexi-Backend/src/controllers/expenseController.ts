@@ -1194,51 +1194,48 @@ const updateExpenseById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    // Delete the old image from S3 if a new image is uploaded
-    if (imageFile && existingExpense.image) {
-      const oldImageKey = extractS3Key(existingExpense.image);
+    const deleteExistingFile = async (
+      fileUrl: string | null | undefined,
+      type: "image" | "pdf"
+    ) => {
+      if (!fileUrl) return;
+      const fileKey = extractS3Key(fileUrl);
       try {
-        await deleteFromS3(oldImageKey);
-        console.log("✅ Old image deleted from S3:", oldImageKey);
+        await deleteFromS3(fileKey);
+        console.log(`✅ Old ${type} deleted from S3:`, fileKey);
       } catch (e: any) {
         if (e.name === "AccessDenied") {
           console.warn(
-            "⚠️ S3 Delete permission denied - continuing without deletion:",
-            oldImageKey
+            `⚠️ S3 Delete permission denied - continuing without deletion:`,
+            fileKey
           );
         } else {
           console.error(
-            "❌ Failed to delete old image from S3:",
-            oldImageKey,
+            `❌ Failed to delete old ${type} from S3:`,
+            fileKey,
             e.message || e
           );
         }
-        // Continue execution - S3 deletion failure shouldn't block the update
       }
+    };
+
+    if (imageFile && pdfFile) {
+      return res.status(400).json({
+        message: "Please upload either an image or a PDF, not both.",
+      });
     }
 
-    if (pdfFile && existingExpense.pdf) {
-      const oldPdfKey = extractS3Key(existingExpense.pdf);
-      try {
-        await deleteFromS3(oldPdfKey);
-        console.log("✅ Old PDF deleted from S3:", oldPdfKey);
-      } catch (e: any) {
-        if (e.name === "AccessDenied") {
-          console.warn(
-            "⚠️ S3 Delete permission denied - continuing without deletion:",
-            oldPdfKey
-          );
-        } else {
-          console.error(
-            "❌ Failed to delete old PDF from S3:",
-            oldPdfKey,
-            e.message || e
-          );
-        }
-      }
+    if (imageFile) {
+      await deleteExistingFile(existingExpense.image, "image");
+      await deleteExistingFile(existingExpense.pdf, "pdf");
+    } else if (pdfFile) {
+      await deleteExistingFile(existingExpense.pdf, "pdf");
+      await deleteExistingFile(existingExpense.image, "image");
     }
 
     let imageUrl = req.body.image ?? existingExpense.image ?? "";
+    let pdfUrl = req.body.pdf ?? existingExpense.pdf ?? "";
+
     if (imageFile?.buffer) {
       try {
         imageUrl = await uploadToS3(
@@ -1246,13 +1243,13 @@ const updateExpenseById = async (req: Request, res: Response) => {
           imageFile.mimetype,
           imageFile.fieldname
         );
+        pdfUrl = "";
       } catch (uploadError) {
         console.error("Failed to upload image", uploadError);
         return res.status(500).json({ message: "Failed to upload image" });
       }
     }
 
-    let pdfUrl = req.body.pdf ?? existingExpense.pdf ?? "";
     if (pdfFile?.buffer) {
       try {
         pdfUrl = await uploadToS3(
@@ -1260,6 +1257,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           pdfFile.mimetype,
           pdfFile.fieldname
         );
+        imageUrl = "";
       } catch (uploadError) {
         console.error("Failed to upload PDF", uploadError);
         return res.status(500).json({ message: "Failed to upload PDF" });
@@ -1894,6 +1892,8 @@ export {
   generateWHTDocument,
   updateExpenseWithOCRData,
 };
+
+
 function convertNumberToThaiText(input: string | number): string {
   // Converts a number or string to Thai text representation (words)
   const thaiNumbers = [

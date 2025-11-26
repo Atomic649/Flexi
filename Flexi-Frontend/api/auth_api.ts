@@ -1,6 +1,7 @@
 import { checkNetwork, getToken } from "@/utils/utility";
 import { getAxios, getAxiosWithAuth } from "@/utils/axiosInstance";
 import axios from "axios";
+import { t } from "i18next";
 
 class CallAPIUser {
   // Register API
@@ -27,7 +28,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -48,7 +49,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -74,7 +75,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -103,7 +104,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -120,7 +121,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -137,7 +138,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -162,7 +163,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -199,7 +200,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -219,7 +220,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -263,7 +264,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -285,7 +286,7 @@ class CallAPIUser {
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }

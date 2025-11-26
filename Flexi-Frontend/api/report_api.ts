@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
+import { t } from "i18next";
 
 class CallAPIReport {
     // Get Reports
@@ -16,7 +17,7 @@ class CallAPIReport {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -34,7 +35,7 @@ class CallAPIReport {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -52,7 +53,7 @@ class CallAPIReport {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -71,7 +72,7 @@ class CallAPIReport {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }
@@ -90,7 +91,7 @@ class CallAPIReport {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
-                throw new Error("Network Error");
+                throw new Error(t("common.networkError"));
             }
         }
     }

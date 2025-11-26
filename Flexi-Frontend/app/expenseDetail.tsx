@@ -20,6 +20,7 @@ import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
+import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
@@ -60,8 +61,8 @@ interface ExpenseDetailProps {
     note: string;
     desc: string;
     amount: string;
-  image: string;
-  pdf?: string;
+    image: string;
+    pdf?: string;
     id: number;
     group: string;
     vat: boolean;
@@ -136,8 +137,7 @@ export default function ExpenseDetail({
   const [sAddress, setSAddress] = useState(expense.sAddress || "");
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
-  const [attachmentPickerVisible, setAttachmentPickerVisible] =
-    useState(false);
+  const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
   const hasAttachment = Boolean(attachment);
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
@@ -155,7 +155,7 @@ export default function ExpenseDetail({
         setDesc(fetchedExpense.desc);
         setAmount(fetchedExpense.amount);
         setImage(fetchedExpense.image);
-  setPdfUrl(fetchedExpense.pdf || "");
+        setPdfUrl(fetchedExpense.pdf || "");
         setGroup(fetchedExpense.group);
         setVatIncluded(fetchedExpense.vat);
         setWithHoldingTax(fetchedExpense.withHoldingTax || false);
@@ -183,7 +183,7 @@ export default function ExpenseDetail({
         amount !== expense.amount ||
         group !== expense.group ||
         image !== expense.image ||
-  pdfUrl !== (expense.pdf || "") ||
+        pdfUrl !== (expense.pdf || "") ||
         vatIncluded !== expense.vat ||
         withHoldingTax !== (expense.withHoldingTax || false) ||
         WHTpercent !== (expense.WHTpercent || 0) ||
@@ -313,7 +313,9 @@ export default function ExpenseDetail({
         setAttachment({
           uri: asset.uri,
           name:
-            asset.name || asset.uri.split("/").pop() || `attachment_${Date.now()}.pdf`,
+            asset.name ||
+            asset.uri.split("/").pop() ||
+            `attachment_${Date.now()}.pdf`,
           type: asset.mimeType || "application/pdf",
           preview: "pdf",
         });
@@ -443,7 +445,7 @@ export default function ExpenseDetail({
       formData.append("amount", amount);
       formData.append("group", group);
       formData.append("vat", vatIncluded ? "true" : "false");
-  // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
+      // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
       formData.append("withHoldingTax", withHoldingTax ? "true" : "false");
       formData.append("WHTpercent", WHTpercent.toString());
       formData.append("sTaxId", sTaxId);
@@ -524,11 +526,9 @@ export default function ExpenseDetail({
           const resultStr =
             typeof reader.result === "string" ? reader.result : "";
           const base64 = resultStr.split(",")[1] || "";
-          await FileSystem.writeAsStringAsync(
-            fileUri,
-            base64,
-            { encoding: FileSystem.EncodingType.Base64 }
-          );
+          await FileSystem.writeAsStringAsync(fileUri, base64, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
           await Print.printAsync({ uri: fileUri });
         };
         reader.readAsDataURL(pdfBlob);
@@ -552,7 +552,7 @@ export default function ExpenseDetail({
   }
   return (
     <Modal
-  visible={visible}
+      visible={visible}
       transparent={true}
       animationType="none"
       onRequestClose={() => onClose()}
@@ -620,23 +620,43 @@ export default function ExpenseDetail({
                     />
                   )}
                 </TouchableOpacity>
-                {hasPdfPreview && (
-                  <TouchableOpacity
-                    onPress={() => handlePreviewPdf(pdfPreviewUri)}
-                    className="flex-row items-center justify-center mb-6"
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name="document-text-outline"
-                      size={22}
-                      color={theme === "dark" ? "#d0d0d0" : "#6b7280"}
-                    />
-                    <CustomText className="ml-2">
-                      {pdfDisplayName ||
-                        t("expense.detail.previewPdf") ||
-                        "Preview PDF"}
-                    </CustomText>
-                  </TouchableOpacity>
+                {hasPdfPreview && pdfPreviewUri && (
+                  <View className="mb-6 w-full self-center">
+                    <TouchableOpacity
+                      onPress={() => handlePreviewPdf(pdfPreviewUri)}
+                      style={{
+                        width: "100%",
+                        height: Platform.OS === "web" ? 420 : 360,
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        borderWidth: 1,
+                        borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb",
+                        backgroundColor:
+                          theme === "dark" ? "#18181b" : "#f9fafb",
+                      }}
+                    >
+                      {Platform.OS !== "web" ? (
+                        <WebView
+                          originWhitelist={["*"]}
+                          source={{ uri: pdfPreviewUri }}
+                          style={{ flex: 1 }}
+                        />
+                      ) : (
+                        <View className="flex-1 justify-center items-center bg-white">
+                          <iframe
+                            src={pdfPreviewUri}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              border: "none",
+                              backgroundColor: "white",
+                            }}
+                            title="PDF Preview"
+                          />
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 )}
                 <CustomText className="text-center font-bold">
                   {formatDate(date)}
@@ -729,11 +749,11 @@ export default function ExpenseDetail({
                         DocumentType.includes("WithholdingTax") &&
                         withHoldingTax && (
                           <CustomText style={{ textAlign: "left" }}>
-                            {typeof computedWHTAmount === "number" && !isNaN(computedWHTAmount)
-                              ? computedWHTAmount.toFixed(2).replace(
-                                  /\B(?=(\d{3})+(?!\d))/g,
-                                  ","
-                                )
+                            {typeof computedWHTAmount === "number" &&
+                            !isNaN(computedWHTAmount)
+                              ? computedWHTAmount
+                                  .toFixed(2)
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                               : "0.00"}
                           </CustomText>
                         )}
@@ -787,9 +807,9 @@ export default function ExpenseDetail({
                               ? theme === "dark"
                                 ? "#666666"
                                 : "#999999"
-                              :  theme === "dark"
-                            ? "#d0d0d0"
-                            : "#c1c1c1"
+                              : theme === "dark"
+                              ? "#d0d0d0"
+                              : "#c1c1c1",
                         }}
                       >
                         {t("expense.detail.vatIncluded")}
@@ -836,8 +856,8 @@ export default function ExpenseDetail({
                                   ? "#666666"
                                   : "#999999"
                                 : theme === "dark"
-                              ? "#d0d0d0"
-                              : "#c1c1c1"
+                                ? "#d0d0d0"
+                                : "#c1c1c1",
                           }}
                         >
                           {t("expense.detail.withHoldingTax")}
@@ -1102,8 +1122,8 @@ export default function ExpenseDetail({
                         label: t("expense.detail.group.fuel"),
                       },
                       {
-                        key:"Maintenance",
-                        label: t("expense.detail.group.maintenance")
+                        key: "Maintenance",
+                        label: t("expense.detail.group.maintenance"),
                       },
                       {
                         key: "Utilities",
@@ -1124,7 +1144,13 @@ export default function ExpenseDetail({
                 </View>
 
                 {error ? (
-                  <CustomText className="text-red-500 mt-4">{error}</CustomText>
+                  <CustomText className=" mt-4"
+                  style= {{
+                    color: "#ff4d4f",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginHorizontal: 20,
+                  }}>{error}</CustomText>
                 ) : null}
 
                 <View className="flex-row justify-evenly mt-2">

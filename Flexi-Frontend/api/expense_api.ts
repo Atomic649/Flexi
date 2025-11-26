@@ -1,6 +1,7 @@
 
 import axios from "axios";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
+import { t } from "i18next";
 
 class CallAPIExpense {
   // Download WHT Document PDF from backend
@@ -32,7 +33,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -57,7 +58,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -78,7 +79,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -99,7 +100,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -123,7 +124,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -145,7 +146,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -167,7 +168,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -191,7 +192,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -217,7 +218,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -239,7 +240,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -262,7 +263,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
@@ -294,7 +295,7 @@ class CallAPIExpense {
         }
         throw error.response.data;
       } else {
-        throw new Error("Network Error");
+        throw new Error(t("common.networkError"));
       }
     }
   }
