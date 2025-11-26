@@ -293,7 +293,7 @@ model Bill {
   purchaseAt           DateTime      @default(now())
   platform             IncomeChannel
   cashStatus           Boolean?      @default(false)
-  image                String?
+  image                String?  
   deleted              Boolean?      @default(false)
   repeat               Boolean?      @default(false)
   repeatMonths         Int?          @default(0)
@@ -356,6 +356,7 @@ model Expense {
   amount         Decimal
   group          ExpenseGroup?
   image          String?
+  pdf            String?
   note           String?
   desc           String?
   deleted        Boolean?    @default(false)

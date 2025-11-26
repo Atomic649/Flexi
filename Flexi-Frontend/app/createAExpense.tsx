@@ -22,6 +22,8 @@ import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
+import * as Print from "expo-print";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
@@ -96,9 +98,19 @@ interface ExpenseDetailProps {
     desc: string;
     amount: string;
     image: string;
+    pdf: string;
     id: number;
     group: string;
   };
+}
+
+type AttachmentPreviewType = "image" | "pdf";
+
+interface AttachmentFile {
+  uri: string;
+  name: string;
+  type: string;
+  preview: AttachmentPreviewType;
 }
 
 export default function CreateExpense({
@@ -111,10 +123,12 @@ export default function CreateExpense({
   const [note, setNote] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
-  const [image, setImage] = useState<string | undefined>();
+  const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [group, setGroup] = useState<string | undefined>();
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
+  const [attachmentPickerVisible, setAttachmentPickerVisible] =
+    useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
@@ -150,6 +164,9 @@ export default function CreateExpense({
     selectedDate?: string;
     selectedAddress?: string;
   }>({});
+  const hasAttachment = Boolean(attachment);
+  const isImageAttachment = attachment?.preview === "image";
+  const isPdfAttachment = attachment?.preview === "pdf";
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -255,17 +272,90 @@ export default function CreateExpense({
   };
 
   const pickImage = async (allowsEditing = false) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing,
-      aspect: [16, 9],
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing,
+        aspect: [16, 9],
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setOCRAlert(null); // Clear any previous OCR alerts when new image is selected
+      if (!result.canceled && result.assets?.length) {
+        const asset = result.assets[0];
+        const inferredName =
+          asset.fileName || asset.uri.split("/").pop() || "attachment.jpg";
+        setAttachment({
+          uri: asset.uri,
+          name: inferredName,
+          type: asset.mimeType || "image/jpeg",
+          preview: "image",
+        });
+        setOCRAlert(null); // Clear any previous OCR alerts when new image is selected
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+    } finally {
+      setAttachmentPickerVisible(false);
     }
+  };
+
+  const handlePickPdf = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+
+      const asset = result.assets && result.assets.length > 0 ? result.assets[0] : null;
+
+      if (asset?.uri) {
+        setAttachment({
+          uri: asset.uri,
+          name:
+            asset.name || asset.uri.split("/").pop() || `attachment_${Date.now()}.pdf`,
+          type: asset.mimeType || "application/pdf",
+          preview: "pdf",
+        });
+        setOCRAlert(null);
+      }
+    } catch (error) {
+      console.error("Error picking PDF:", error);
+    } finally {
+      setAttachmentPickerVisible(false);
+    }
+  };
+
+  const handleOpenAttachmentPicker = () => {
+    setAttachmentPickerVisible(true);
+  };
+
+  const closeAttachmentPicker = () => {
+    setAttachmentPickerVisible(false);
+  };
+
+  const handlePreviewAttachment = async () => {
+    if (!attachment) return;
+    if (attachment.preview === "image") {
+      setImageModalVisible(true);
+      return;
+    }
+    try {
+      await Print.printAsync({ uri: attachment.uri });
+    } catch (error) {
+      console.error("Error previewing attachment:", error);
+    }
+  };
+
+  const appendAttachmentToFormData = (formData: FormData) => {
+    if (!attachment) return;
+
+    const fileField = attachment.preview === "pdf" ? "pdf" : "image";
+    formData.append(fileField, {
+      uri: attachment.uri,
+      name: attachment.name,
+      type: attachment.type,
+    } as unknown as Blob);
   };
 
   
@@ -339,13 +429,7 @@ export default function CreateExpense({
       formData.append("branch", branch);
       formData.append("taxType", taxType);
 
-      if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
-      }
+      appendAttachmentToFormData(formData);
 
       formData.append("group", group || "");
 
@@ -469,13 +553,7 @@ export default function CreateExpense({
 
               // Build minimal form data with image only (and memberId)
               const fd = new FormData();
-              if (image) {
-                fd.append("image", {
-                  uri: image,
-                  name: "image.jpg",
-                  type: "image/jpeg",
-                } as unknown as Blob);
-              }
+              appendAttachmentToFormData(fd);
               if (memberId) fd.append("memberId", memberId);
 
               if (createdExpenseId) {
@@ -541,7 +619,7 @@ export default function CreateExpense({
     setNote("");
     setAmount("");
     setDesc("");
-    setImage(undefined);
+    setAttachment(null);
     setGroup(undefined);
     setDate([new Date().toISOString()]);
     setSelectedDates([new Date().toISOString()]);
@@ -656,13 +734,7 @@ export default function CreateExpense({
   formData.append("date", Array.isArray(date) ? date[0] : date);
   formData.append("branch", branch || "");
   formData.append("taxType", taxType || "");
-      if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
-      }
+      appendAttachmentToFormData(formData);
 
       if (createdExpenseId !== null) {
         const data = await CallAPIExpense.updateExpenseAPI(
@@ -718,13 +790,7 @@ export default function CreateExpense({
   const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
   formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
-      if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
-      }
+      appendAttachmentToFormData(formData);
       formData.append("group", group || "");
   formData.append("vat", vatIncluded ? "true" : "false");
   formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
@@ -771,10 +837,11 @@ export default function CreateExpense({
     console.log("🚀 === STARTING EXPENSE CREATION ===");
     setError("");
     setOCRAlert(null);
+    const hasImageAttachment = attachment?.preview === "image";
 
     // Only check required fields if no image is selected
     // When image is present, OCR can fill in missing fields
-    if (!image && (!date || !note || !amount)) {
+    if (!hasImageAttachment && (!date || !note || !amount)) {
       console.log("❌ Missing required fields (no image for OCR)");
       setAlertConfig({
         visible: true,
@@ -801,7 +868,7 @@ export default function CreateExpense({
       );
 
       // Start OCR progress simulation if image is present
-      if (image) {
+      if (hasImageAttachment) {
         simulateOCRProgress();
       }
 
@@ -811,13 +878,7 @@ export default function CreateExpense({
   const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
   formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
-      if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
-      }
+      appendAttachmentToFormData(formData);
       formData.append("group", group || "");
   formData.append("vat", vatIncluded ? "true" : "false");
   formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
@@ -1106,10 +1167,10 @@ export default function CreateExpense({
               style={{
                 flex:
                   Platform.OS === "web"
-                    ? image
+                    ? hasAttachment
                       ? 0.8
                       : 0.4
-                    : image
+                    : hasAttachment
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
@@ -1121,15 +1182,31 @@ export default function CreateExpense({
               onPress={() => {}}
             >
               <View className=" flex-1 justify-center h-full py-6 px-4 rounded-lg">
-                <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                  {image && (
+                {isImageAttachment && (
+                  <TouchableOpacity onPress={() => setImageModalVisible(true)}>
                     <Image
-                      source={{ uri: image }}
+                      source={{ uri: attachment?.uri }}
                       style={{ width: 300, height: 300 }}
                       className="mt-4 mb-6 self-center rounded-md"
                     />
-                  )}
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                )}
+
+                {attachment?.preview === "pdf" && (
+                  <TouchableOpacity
+                    onPress={handlePreviewAttachment}
+                    className="mt-4 mb-6 self-center flex-row items-center bg-gray-100 dark:bg-zinc-800 px-4 py-3 rounded-md"
+                  >
+                    <Ionicons
+                      name="document-text-outline"
+                      size={28}
+                      color={theme === "dark" ? "#f5f5f5" : "#4a4a4a"}
+                    />
+                    <CustomText className="ml-3">
+                      {attachment.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                )}
 
                 {/* -----------------------OCR Progress Indicator---------------------------------- */}
                 {isProcessingOCR && (
@@ -2037,7 +2114,7 @@ export default function CreateExpense({
 
                 <View className="flex-row justify-evenly pt-2">
                   <TouchableOpacity
-                    onPress={() => pickImage()}
+                    onPress={handleOpenAttachmentPicker}
                     className=" items-center justify-center pt-2"
                   >
                     <Ionicons
@@ -2050,7 +2127,7 @@ export default function CreateExpense({
                     </CustomText>
                   </TouchableOpacity>
 
-                  {image && (
+                  {(isImageAttachment || isPdfAttachment) && (
                     <TouchableOpacity
                       onPress={() => {
                         handleCreateExpenseWithOCR();
@@ -2078,7 +2155,7 @@ export default function CreateExpense({
 
         {/* Modal to view image */}
         <Modal
-          visible={imageModalVisible}
+          visible={imageModalVisible && isImageAttachment}
           transparent={true}
           onRequestClose={() => setImageModalVisible(false)}
         >
@@ -2088,13 +2165,15 @@ export default function CreateExpense({
             onPressOut={() => setImageModalVisible(false)}
           >
             <View className="flex-1 justify-center items-center bg-black bg-opacity-90">
-              <Image
-                source={{
-                  uri: image,
-                }}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
+              {isImageAttachment && attachment?.uri ? (
+                <Image
+                  source={{
+                    uri: attachment.uri,
+                  }}
+                  className="w-full h-full"
+                  resizeMode="contain"
+                />
+              ) : null}
               <TouchableOpacity
                 onPress={() => setImageModalVisible(false)}
                 className="absolute top-0 right-0 p-4"
@@ -2141,6 +2220,31 @@ export default function CreateExpense({
           onClose={() =>
             setAlertConfig((prev) => ({ ...prev, visible: false }))
           }
+        />
+
+        <CustomAlert
+          visible={attachmentPickerVisible}
+          title={t("expense.detail.attachBill") || "Attach Bill"}
+          message={
+            t("expense.detail.chooseAttachmentType") ||
+            "Choose how you want to attach the bill"
+          }
+          buttons={[
+            {
+              text: t("expense.detail.pickPdf") || "Pick PDF",
+              onPress: handlePickPdf,
+            },
+            {
+              text: t("expense.detail.pickImage") || "Pick Image",
+              onPress: () => pickImage(false),
+            },
+            {
+              text: t("common.cancel"),
+              style: "cancel",
+              onPress: closeAttachmentPicker,
+            },
+          ]}
+          onClose={closeAttachmentPicker}
         />
       </TouchableOpacity>
     </Modal>

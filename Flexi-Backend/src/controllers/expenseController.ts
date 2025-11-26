@@ -21,9 +21,42 @@ import {
   uploadToS3,
 } from "../services/imageService";
 
-const upload = multer(multerConfig.multerConfigImageMemory.config).single(
-  multerConfig.multerConfigImageMemory.keyUpload
-);
+const attachmentUploadConfig =
+  multerConfig.multerConfigExpenseAttachmentMemory;
+
+const upload = multer(attachmentUploadConfig.config).fields([
+  { name: attachmentUploadConfig.imageKeyUpload, maxCount: 1 },
+  { name: attachmentUploadConfig.pdfKeyUpload, maxCount: 1 },
+]);
+
+type MulterFiles =
+  | Record<string, Express.Multer.File[]>
+  | Express.Multer.File[]
+  | undefined;
+
+type MulterReadyRequest = Request & {
+  file?: Express.Multer.File;
+  files?: MulterFiles;
+};
+
+const getUploadedFile = (
+  req: MulterReadyRequest,
+  fieldName: string
+): Express.Multer.File | undefined => {
+  const files = req.files;
+  if (!files) return undefined;
+
+  if (Array.isArray(files)) {
+    return files.find((file) => file.fieldname === fieldName);
+  }
+
+  const fieldFiles = files[fieldName];
+  if (Array.isArray(fieldFiles) && fieldFiles.length > 0) {
+    return fieldFiles[0];
+  }
+
+  return undefined;
+};
 
 //Create  instance of PrismaClient
 const prisma = new PrismaClient1();
@@ -116,6 +149,7 @@ interface Expense {
   amount: number;
   group: ExpenseGroup;
   image: string;
+  pdf?: string;
   memberId: string;
   businessAcc: number;
   note: string;
@@ -168,6 +202,7 @@ const schema = Joi.object({
     .required(),
   desc: Joi.string().allow(""),
   image: Joi.string().allow(""),
+  pdf: Joi.string().allow(""),
   memberId: Joi.string().required(),
   businessAcc: Joi.number(),
   note: Joi.string(),
@@ -194,8 +229,53 @@ const createExpense = async (req: Request, res: Response) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
-    // Debugging: Log the uploaded file details
-    console.log("Uploaded file:", req.file);
+    const multerReq = req as MulterReadyRequest;
+    const imageFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.imageKeyUpload
+    );
+    const pdfFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.pdfKeyUpload
+    );
+    multerReq.file = imageFile;
+
+    console.log(
+      "Uploaded image:",
+      imageFile ? `${imageFile.originalname} (${imageFile.mimetype})` : "none"
+    );
+    console.log(
+      "Uploaded pdf:",
+      pdfFile ? `${pdfFile.originalname} (${pdfFile.mimetype})` : "none"
+    );
+
+    let imageUrl = req.body.image ?? "";
+    if (imageFile?.buffer) {
+      try {
+        imageUrl = await uploadToS3(
+          imageFile.buffer,
+          imageFile.mimetype,
+          imageFile.fieldname
+        );
+      } catch (uploadError) {
+        console.error("Failed to upload image", uploadError);
+        return res.status(500).json({ message: "Failed to upload image" });
+      }
+    }
+
+    let pdfUrl = req.body.pdf ?? "";
+    if (pdfFile?.buffer) {
+      try {
+        pdfUrl = await uploadToS3(
+          pdfFile.buffer,
+          pdfFile.mimetype,
+          pdfFile.fieldname
+        );
+      } catch (uploadError) {
+        console.error("Failed to upload PDF", uploadError);
+        return res.status(500).json({ message: "Failed to upload PDF" });
+      }
+    }
 
     // Merge the uploaded file S3 URL key into the expense object
     // Convert string 'true'/'false' to boolean for vat and withHoldingTax
@@ -223,9 +303,8 @@ const createExpense = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
-      image: req.file
-        ? (req.file as any)?.location ?? ""
-        : req.body.image ?? "",
+      image: imageUrl,
+      pdf: pdfUrl,
       desc: req.body.desc ?? "",
       group: req.body.group || "Others", // Default to "Others" if group is empty
       date: isoDateString as unknown as Date,
@@ -287,6 +366,7 @@ const createExpense = async (req: Request, res: Response) => {
           desc: expenseInput.desc,
           group: expenseInput.group,
           image: expenseInput.image,
+          pdf: expenseInput.pdf,
           memberId: expenseInput.memberId,
           businessAcc: businessAcc.id,
           note: expenseInput.note,
@@ -321,9 +401,21 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
+    const multerReq = req as MulterReadyRequest;
+    const imageFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.imageKeyUpload
+    );
+    const pdfFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.pdfKeyUpload
+    );
+    multerReq.file = imageFile;
+
     // Debugging: Log the uploaded file details
-    // console.log("Uploaded file:", req.file ? "File received" : "No file");
+    // console.log("Uploaded file:", imageFile ? "File received" : "No file");
     let imageUrl = req.body.image ?? "";
+    let pdfUrl = req.body.pdf ?? "";
 
       // Initialize expenseInput with form data, handling empty values properly
     // Normalize date input to avoid Invalid Date objects for non-ISO/Thai long-form strings
@@ -341,6 +433,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
+      pdf: pdfUrl,
       desc: req.body.desc ?? "",
       // Handle potentially empty required fields when image is present
       date: parsedDateOCR,
@@ -361,7 +454,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     const ocrDataApplied = req.body.ocrDataApplied === "true";
 
     // Process OCR if an image was uploaded and it's not a resubmission with OCR data
-    if (req.file && req.file.buffer && !ocrDataApplied) {
+  if (imageFile && imageFile.buffer && !ocrDataApplied) {
       console.log("Processing OCR for uploaded image...");
       try {
         // Get user's business account information to filter out from OCR results
@@ -378,7 +471,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         });
 
         // Detect data presence in the uploaded image
-        const detectionResult = await extractTextFromImage(req.file.buffer);
+  const detectionResult = await extractTextFromImage(imageFile.buffer);
 
         //  if detect thai date 22 กรกฎาคม 2568 or 22 ก.ค. 2568 convert to be dd/mm/yyyy
         const parsedDatesFromOCR = detectionResult.datesDetected
@@ -719,9 +812,9 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           // console.log("🚨 OCR Alert created:", ocrAlert?.type);
         }
 
-        // Now upload the image to S3
-        // console.log("Uploading image to S3...");
-        imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+    // Now upload the image to S3
+    // console.log("Uploading image to S3...");
+    imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype);
         expenseInput.image = imageUrl;
         // console.log("Image uploaded to S3:", imageUrl);
       } catch (ocrError) {
@@ -742,7 +835,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         // Still upload the image to S3 even if OCR fails
         try {
           // console.log("Uploading image to S3 (OCR failed)...");
-          imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+          imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype);
           expenseInput.image = imageUrl;
           // console.log("Image uploaded to S3:", imageUrl);
         } catch (uploadError) {
@@ -750,14 +843,14 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           return res.status(500).json({ message: "Failed to upload image" });
         }
       }
-    } else if (req.file && req.file.buffer && ocrDataApplied) {
+    } else if (imageFile && imageFile.buffer && ocrDataApplied) {
       // If this is a resubmission with OCR data, just upload the image without processing OCR
       console.log(
         "Skipping OCR processing - using selected OCR data from frontend"
       );
       try {
         // console.log("Uploading image to S3 (OCR data already selected)...");
-        imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype);
+        imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype);
         expenseInput.image = imageUrl;
         // console.log("Image uploaded to S3:", imageUrl);
       } catch (uploadError) {
@@ -769,7 +862,21 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     // console.log("Final Input", expenseInput);
 
     // Create flexible validation schema based on whether image is present
-    const hasImage = req.file && req.file.buffer;
+    if (pdfFile && pdfFile.buffer) {
+      try {
+        pdfUrl = await uploadToS3(
+          pdfFile.buffer,
+          pdfFile.mimetype,
+          pdfFile.fieldname
+        );
+        expenseInput.pdf = pdfUrl;
+      } catch (uploadError) {
+        console.error("Failed to upload PDF", uploadError);
+        return res.status(500).json({ message: "Failed to upload PDF" });
+      }
+    }
+
+    const hasImage = imageFile && imageFile.buffer;
     const flexibleSchema = hasImage
       ? // When image is present, make required fields optional (OCR can fill them)
         Joi.object({
@@ -809,6 +916,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             .allow(""),
           desc: Joi.string().allow(""),
           image: Joi.string().allow(""),
+          pdf: Joi.string().allow(""),
           memberId: Joi.string().required(),
           businessAcc: Joi.number().optional(),
           note: Joi.string().optional().allow(""),
@@ -931,6 +1039,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             desc: expenseInput.desc,
             group: expenseInput.group,
             image: expenseInput.image,
+            pdf: expenseInput.pdf,
             note: expenseInput.note,
             channel: expenseInput.channel,
             vat: expenseInput.vat,
@@ -957,6 +1066,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             desc: expenseInput.desc,
             group: expenseInput.group,
             image: expenseInput.image,
+            pdf: expenseInput.pdf,
             memberId: expenseInput.memberId,
             businessAcc: businessAcc.id,
             note: expenseInput.note,
@@ -1034,6 +1144,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         desc: true,
         amount: true,
         image: true,
+    pdf: true,
         group: true,
         vat: true,
         vatAmount: true,
@@ -1063,6 +1174,17 @@ const updateExpenseById = async (req: Request, res: Response) => {
       return res.status(400).json({ message: err.message });
     }
 
+    const multerReq = req as MulterReadyRequest;
+    const imageFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.imageKeyUpload
+    );
+    const pdfFile = getUploadedFile(
+      multerReq,
+      attachmentUploadConfig.pdfKeyUpload
+    );
+    multerReq.file = imageFile;
+
     // Fetch the existing product to get the current image URL
     const existingExpense = await prisma.expense.findUnique({
       where: { id: Number(req.params.id) },
@@ -1073,7 +1195,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
     }
 
     // Delete the old image from S3 if a new image is uploaded
-    if (req.file && existingExpense.image) {
+    if (imageFile && existingExpense.image) {
       const oldImageKey = extractS3Key(existingExpense.image);
       try {
         await deleteFromS3(oldImageKey);
@@ -1095,6 +1217,55 @@ const updateExpenseById = async (req: Request, res: Response) => {
       }
     }
 
+    if (pdfFile && existingExpense.pdf) {
+      const oldPdfKey = extractS3Key(existingExpense.pdf);
+      try {
+        await deleteFromS3(oldPdfKey);
+        console.log("✅ Old PDF deleted from S3:", oldPdfKey);
+      } catch (e: any) {
+        if (e.name === "AccessDenied") {
+          console.warn(
+            "⚠️ S3 Delete permission denied - continuing without deletion:",
+            oldPdfKey
+          );
+        } else {
+          console.error(
+            "❌ Failed to delete old PDF from S3:",
+            oldPdfKey,
+            e.message || e
+          );
+        }
+      }
+    }
+
+    let imageUrl = req.body.image ?? existingExpense.image ?? "";
+    if (imageFile?.buffer) {
+      try {
+        imageUrl = await uploadToS3(
+          imageFile.buffer,
+          imageFile.mimetype,
+          imageFile.fieldname
+        );
+      } catch (uploadError) {
+        console.error("Failed to upload image", uploadError);
+        return res.status(500).json({ message: "Failed to upload image" });
+      }
+    }
+
+    let pdfUrl = req.body.pdf ?? existingExpense.pdf ?? "";
+    if (pdfFile?.buffer) {
+      try {
+        pdfUrl = await uploadToS3(
+          pdfFile.buffer,
+          pdfFile.mimetype,
+          pdfFile.fieldname
+        );
+      } catch (uploadError) {
+        console.error("Failed to upload PDF", uploadError);
+        return res.status(500).json({ message: "Failed to upload PDF" });
+      }
+    }
+
     // Merge the uploaded file S3 URL key into the expense object
     // Convert string 'true'/'false' to boolean for vat and withHoldingTax
     // Preserve existing image URL when no new file is uploaded
@@ -1102,7 +1273,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
-      image: (req.file as any)?.location ?? existingExpense.image ?? "",
+      image: imageUrl,
+      pdf: pdfUrl,
       group: req.body.group || existingExpense.group || "Others",
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
@@ -1138,6 +1310,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           group: expenseInput.group,
           note: expenseInput.note,
           image: expenseInput.image,
+          pdf: expenseInput.pdf,
           memberId: expenseInput.memberId,
           vat: expenseInput.vat,
           vatAmount: expenseInput.vatAmount,
@@ -1172,6 +1345,7 @@ const deleteExpenseById = async (req: Request, res: Response) => {
       },
       select: {
         image: true,
+        pdf: true,
       },
     });
 
@@ -1199,6 +1373,27 @@ const deleteExpenseById = async (req: Request, res: Response) => {
           );
         }
         // Continue execution - S3 deletion failure shouldn't block the delete operation
+      }
+    }
+
+    if (existingExpense.pdf) {
+      const pdfKey = extractS3Key(existingExpense.pdf);
+      try {
+        await deleteFromS3(pdfKey);
+        console.log("✅ PDF deleted from S3:", pdfKey);
+      } catch (e: any) {
+        if (e.name === "AccessDenied") {
+          console.warn(
+            "⚠️ S3 Delete permission denied - continuing without deletion:",
+            pdfKey
+          );
+        } else {
+          console.error(
+            "❌ Failed to delete PDF from S3:",
+            pdfKey,
+            e.message || e
+          );
+        }
       }
     }
 

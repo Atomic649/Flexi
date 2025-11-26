@@ -31,6 +31,23 @@ const storageImageS3 = multerS3({
 
 const storageImageMemory = multer.memoryStorage()
 
+const attachmentFileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  callback: FileFilterCallback
+) => {
+  const isImage = file.fieldname === "image" && file.mimetype.startsWith("image/")
+  const isPdf = file.fieldname === "pdf" && file.mimetype === "application/pdf"
+
+  if (isImage || isPdf) {
+    callback(null, true)
+  } else {
+    callback(
+      new Error("Unsupported file type! Please upload an image or PDF document.")
+    )
+  }
+}
+
 export const multerConfigImage = {
   config: {
     storage: storageImageS3,
@@ -47,6 +64,16 @@ export const multerConfigImageMemory = {
     fileFilter: imageFileFilter,
   },
   keyUpload: "image",
+}
+
+export const multerConfigExpenseAttachmentMemory = {
+  config: {
+    storage: storageImageMemory,
+    limits: { fileSize: 1024 * 1024 * 10 },
+    fileFilter: attachmentFileFilter,
+  },
+  imageKeyUpload: "image",
+  pdfKeyUpload: "pdf",
 }
 
 export const multerConfigAvatar = {
@@ -121,4 +148,4 @@ export const pdfMulterConfig = {
 
 
 
-export default { multerConfigImage, pdfMulterConfig, multerConfigAvatar, multerConfigImageMemory }
+export default { multerConfigImage, pdfMulterConfig, multerConfigAvatar, multerConfigImageMemory, multerConfigExpenseAttachmentMemory }

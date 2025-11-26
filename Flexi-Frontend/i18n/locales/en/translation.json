@@ -738,6 +738,9 @@
     },
     "detail": {
       "description": "Description (optional)",
+      "chooseAttachmentType": "Choose Attachment Type",
+      "pickPdf": "Pick PDF",
+      "pickImage": "Pick Image",
       "amount": "Amount",
       "note": "Note",
       "exclVat": "Excl. VAT",

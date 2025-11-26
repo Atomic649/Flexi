@@ -355,6 +355,7 @@ model Expense {
   amount         Decimal
   group          ExpenseGroup?
   image          String?
+  pdf            String?
   note           String?
   desc           String?
   deleted        Boolean?       @default(false)

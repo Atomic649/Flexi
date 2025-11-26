@@ -231,6 +231,7 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   amount: 'amount',
   group: 'group',
   image: 'image',
+  pdf: 'pdf',
   note: 'note',
   desc: 'desc',
   deleted: 'deleted',

@@ -21,6 +21,7 @@ interface Expense {
   desc: string;
   amount: string;
   image: string;
+  pdf: string;
   group: string;
   id: number;
   vat: boolean;
@@ -61,9 +62,6 @@ const ExpenseTable = ({
     );
   }, [expenseList]);
 
-  const headerClass = `font-bold p-2  ${
-    theme === "dark" ? "text-white" : "text-[#ffffff]"
-  }`;
   const cellClass = `flex-1 text-center pt-3 ${
     theme === "dark" ? "text-white" : "text-zinc-900"
   }`;
@@ -189,14 +187,14 @@ const ExpenseTable = ({
             <View className="flex-row">
               <TouchableOpacity
                 className="flex-1 m-2 justify-center items-center"
-                disabled={!item.image}
+                disabled={!item.image && !item.pdf}
               >
                 <Ionicons
                   className="text-center"
                   name="document-text-outline"
                   size={16}
                   color={
-                    !item.image
+                    !item.image && !item.pdf
                       ? theme === "dark"
                         ? "rgba(255, 255, 255, 0.3)"
                         : "rgba(103, 103, 103, 0.3)"

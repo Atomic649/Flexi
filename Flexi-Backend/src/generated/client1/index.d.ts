@@ -12035,6 +12035,7 @@ export namespace Prisma {
     amount: Decimal | null
     group: $Enums.ExpenseGroup | null
     image: string | null
+    pdf: string | null
     note: string | null
     desc: string | null
     deleted: boolean | null
@@ -12066,6 +12067,7 @@ export namespace Prisma {
     amount: Decimal | null
     group: $Enums.ExpenseGroup | null
     image: string | null
+    pdf: string | null
     note: string | null
     desc: string | null
     deleted: boolean | null
@@ -12097,6 +12099,7 @@ export namespace Prisma {
     amount: number
     group: number
     image: number
+    pdf: number
     note: number
     desc: number
     deleted: number
@@ -12148,6 +12151,7 @@ export namespace Prisma {
     amount?: true
     group?: true
     image?: true
+    pdf?: true
     note?: true
     desc?: true
     deleted?: true
@@ -12179,6 +12183,7 @@ export namespace Prisma {
     amount?: true
     group?: true
     image?: true
+    pdf?: true
     note?: true
     desc?: true
     deleted?: true
@@ -12210,6 +12215,7 @@ export namespace Prisma {
     amount?: true
     group?: true
     image?: true
+    pdf?: true
     note?: true
     desc?: true
     deleted?: true
@@ -12328,6 +12334,7 @@ export namespace Prisma {
     amount: Decimal
     group: $Enums.ExpenseGroup | null
     image: string | null
+    pdf: string | null
     note: string | null
     desc: string | null
     deleted: boolean | null
@@ -12378,6 +12385,7 @@ export namespace Prisma {
     amount?: boolean
     group?: boolean
     image?: boolean
+    pdf?: boolean
     note?: boolean
     desc?: boolean
     deleted?: boolean
@@ -12411,6 +12419,7 @@ export namespace Prisma {
     amount?: boolean
     group?: boolean
     image?: boolean
+    pdf?: boolean
     note?: boolean
     desc?: boolean
     deleted?: boolean
@@ -12444,6 +12453,7 @@ export namespace Prisma {
     amount?: boolean
     group?: boolean
     image?: boolean
+    pdf?: boolean
     note?: boolean
     desc?: boolean
     deleted?: boolean
@@ -12477,6 +12487,7 @@ export namespace Prisma {
     amount?: boolean
     group?: boolean
     image?: boolean
+    pdf?: boolean
     note?: boolean
     desc?: boolean
     deleted?: boolean
@@ -12499,7 +12510,7 @@ export namespace Prisma {
     memberId?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "expNo" | "amount" | "group" | "image" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "expNo" | "amount" | "group" | "image" | "pdf" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     businessId?: boolean | BusinessAccDefaultArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -12528,6 +12539,7 @@ export namespace Prisma {
       amount: Prisma.Decimal
       group: $Enums.ExpenseGroup | null
       image: string | null
+      pdf: string | null
       note: string | null
       desc: string | null
       deleted: boolean | null
@@ -12981,6 +12993,7 @@ export namespace Prisma {
     readonly amount: FieldRef<"Expense", 'Decimal'>
     readonly group: FieldRef<"Expense", 'ExpenseGroup'>
     readonly image: FieldRef<"Expense", 'String'>
+    readonly pdf: FieldRef<"Expense", 'String'>
     readonly note: FieldRef<"Expense", 'String'>
     readonly desc: FieldRef<"Expense", 'String'>
     readonly deleted: FieldRef<"Expense", 'Boolean'>
@@ -32182,6 +32195,7 @@ export namespace Prisma {
     amount: 'amount',
     group: 'group',
     image: 'image',
+    pdf: 'pdf',
     note: 'note',
     desc: 'desc',
     deleted: 'deleted',
@@ -33548,6 +33562,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
+    pdf?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
     deleted?: BoolNullableFilter<"Expense"> | boolean | null
@@ -33581,6 +33596,7 @@ export namespace Prisma {
     amount?: SortOrder
     group?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    pdf?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     desc?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
@@ -33617,6 +33633,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
+    pdf?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
     deleted?: BoolNullableFilter<"Expense"> | boolean | null
@@ -33650,6 +33667,7 @@ export namespace Prisma {
     amount?: SortOrder
     group?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    pdf?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     desc?: SortOrderInput | SortOrder
     deleted?: SortOrderInput | SortOrder
@@ -33689,6 +33707,7 @@ export namespace Prisma {
     amount?: DecimalWithAggregatesFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableWithAggregatesFilter<"Expense"> | string | null
+    pdf?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     note?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     desc?: StringNullableWithAggregatesFilter<"Expense"> | string | null
     deleted?: BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
@@ -35756,6 +35775,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -35787,6 +35807,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -35817,6 +35838,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -35848,6 +35870,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -35879,6 +35902,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -35909,6 +35933,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -35938,6 +35963,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -38206,6 +38232,7 @@ export namespace Prisma {
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
+    pdf?: SortOrder
     note?: SortOrder
     desc?: SortOrder
     deleted?: SortOrder
@@ -38246,6 +38273,7 @@ export namespace Prisma {
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
+    pdf?: SortOrder
     note?: SortOrder
     desc?: SortOrder
     deleted?: SortOrder
@@ -38277,6 +38305,7 @@ export namespace Prisma {
     amount?: SortOrder
     group?: SortOrder
     image?: SortOrder
+    pdf?: SortOrder
     note?: SortOrder
     desc?: SortOrder
     deleted?: SortOrder
@@ -43479,6 +43508,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -43509,6 +43539,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -43926,6 +43957,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"Expense"> | Decimal | DecimalJsLike | number | string
     group?: EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
     image?: StringNullableFilter<"Expense"> | string | null
+    pdf?: StringNullableFilter<"Expense"> | string | null
     note?: StringNullableFilter<"Expense"> | string | null
     desc?: StringNullableFilter<"Expense"> | string | null
     deleted?: BoolNullableFilter<"Expense"> | boolean | null
@@ -44272,6 +44304,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -44302,6 +44335,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -49739,6 +49773,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -49958,6 +49993,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -49988,6 +50024,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -50018,6 +50055,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -50248,6 +50286,7 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     group?: $Enums.ExpenseGroup | null
     image?: string | null
+    pdf?: string | null
     note?: string | null
     desc?: string | null
     deleted?: boolean | null
@@ -50481,6 +50520,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -50511,6 +50551,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -50541,6 +50582,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     group?: NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    pdf?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null

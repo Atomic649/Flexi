@@ -18,6 +18,7 @@ import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
@@ -59,7 +60,8 @@ interface ExpenseDetailProps {
     note: string;
     desc: string;
     amount: string;
-    image: string;
+  image: string;
+  pdf?: string;
     id: number;
     group: string;
     vat: boolean;
@@ -76,6 +78,27 @@ interface ExpenseDetailProps {
   };
 }
 
+type AttachmentPreviewType = "image" | "pdf";
+
+interface AttachmentFile {
+  uri: string;
+  name: string;
+  type: string;
+  preview: AttachmentPreviewType;
+}
+
+const extractFileName = (uri?: string) => {
+  if (!uri) return "";
+  try {
+    const decoded = decodeURIComponent(uri);
+    const segments = decoded.split("/");
+    return segments[segments.length - 1] || uri;
+  } catch {
+    const fallbackSegments = uri.split("/");
+    return fallbackSegments[fallbackSegments.length - 1] || uri;
+  }
+};
+
 export default function ExpenseDetail({
   visible,
   onClose,
@@ -91,6 +114,7 @@ export default function ExpenseDetail({
   const [desc, setDesc] = useState(expense.desc);
   const [amount, setAmount] = useState(expense.amount);
   const [image, setImage] = useState(expense.image);
+  const [pdfUrl, setPdfUrl] = useState(expense.pdf || "");
   const [group, setGroup] = useState(expense.group);
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
@@ -111,6 +135,12 @@ export default function ExpenseDetail({
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
   const [sAddress, setSAddress] = useState(expense.sAddress || "");
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
+  const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
+  const [attachmentPickerVisible, setAttachmentPickerVisible] =
+    useState(false);
+  const hasAttachment = Boolean(attachment);
+  const isImageAttachment = attachment?.preview === "image";
+  const isPdfAttachment = attachment?.preview === "pdf";
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -125,6 +155,7 @@ export default function ExpenseDetail({
         setDesc(fetchedExpense.desc);
         setAmount(fetchedExpense.amount);
         setImage(fetchedExpense.image);
+  setPdfUrl(fetchedExpense.pdf || "");
         setGroup(fetchedExpense.group);
         setVatIncluded(fetchedExpense.vat);
         setWithHoldingTax(fetchedExpense.withHoldingTax || false);
@@ -152,6 +183,7 @@ export default function ExpenseDetail({
         amount !== expense.amount ||
         group !== expense.group ||
         image !== expense.image ||
+  pdfUrl !== (expense.pdf || "") ||
         vatIncluded !== expense.vat ||
         withHoldingTax !== (expense.withHoldingTax || false) ||
         WHTpercent !== (expense.WHTpercent || 0) ||
@@ -160,7 +192,8 @@ export default function ExpenseDetail({
         taxInvoiceNo !== (expense.taxInvoiceNo || "") ||
         branch !== (expense.branch || "") ||
         taxType !== (expense.taxType || "Individual") ||
-        sAddress !== (expense.sAddress || "")
+        sAddress !== (expense.sAddress || "") ||
+        hasAttachment
       ) {
         setHasChanges(true);
       } else {
@@ -175,6 +208,7 @@ export default function ExpenseDetail({
     amount,
     group,
     image,
+    pdfUrl,
     vatIncluded,
     withHoldingTax,
     WHTpercent,
@@ -184,6 +218,7 @@ export default function ExpenseDetail({
     sAddress,
     taxType,
     branch,
+    hasAttachment,
   ]);
 
   // Compute VAT base/amount and WHT amount from inputs to avoid derived state/effects
@@ -198,6 +233,14 @@ export default function ExpenseDetail({
       computedWHTAmount: withHoldingTax ? res.wht : 0,
     };
   }, [amount, vatIncluded, withHoldingTax, WHTpercent]);
+
+  const imagePreviewUri = isImageAttachment ? attachment?.uri : image;
+  const pdfPreviewUri = isPdfAttachment ? attachment?.uri : pdfUrl;
+  const hasImagePreview = Boolean(imagePreviewUri);
+  const hasPdfPreview = Boolean(pdfPreviewUri);
+  const pdfDisplayName = isPdfAttachment
+    ? attachment?.name
+    : extractFileName(pdfUrl);
 
   // Direct handler for group changes to avoid effect-as-event-handler
   const handleGroupChange = (nextGroup: string) => {
@@ -226,16 +269,74 @@ export default function ExpenseDetail({
   // Note: do not mirror `visible` into local state; rely on prop directly
 
   const pickImage = async (allowsEditing = false) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing,
-      aspect: [16, 9],
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing,
+        aspect: [16, 9],
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setHasChanges(true);
+      if (!result.canceled && result.assets?.length) {
+        const asset = result.assets[0];
+        const inferredName =
+          asset.fileName || asset.uri.split("/").pop() || "attachment.jpg";
+        setImage(asset.uri);
+        setPdfUrl("");
+        setAttachment({
+          uri: asset.uri,
+          name: inferredName,
+          type: asset.mimeType || "image/jpeg",
+          preview: "image",
+        });
+        setHasChanges(true);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+    } finally {
+      setAttachmentPickerVisible(false);
+    }
+  };
+
+  const handlePickPdf = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+
+      const asset =
+        result.assets && result.assets.length > 0 ? result.assets[0] : null;
+
+      if (asset?.uri) {
+        setAttachment({
+          uri: asset.uri,
+          name:
+            asset.name || asset.uri.split("/").pop() || `attachment_${Date.now()}.pdf`,
+          type: asset.mimeType || "application/pdf",
+          preview: "pdf",
+        });
+        setPdfUrl(asset.uri);
+        setImage("");
+        setHasChanges(true);
+      }
+    } catch (error) {
+      console.error("Error picking PDF:", error);
+    } finally {
+      setAttachmentPickerVisible(false);
+    }
+  };
+
+  const handleOpenAttachmentPicker = () => setAttachmentPickerVisible(true);
+  const closeAttachmentPicker = () => setAttachmentPickerVisible(false);
+
+  const handlePreviewPdf = async (uri?: string) => {
+    if (!uri) return;
+    try {
+      await Print.printAsync({ uri });
+    } catch (error) {
+      console.error("Error previewing PDF:", error);
     }
   };
 
@@ -303,6 +404,17 @@ export default function ExpenseDetail({
     onClose();
   };
 
+  const appendAttachmentToFormData = (formData: FormData) => {
+    if (!attachment) return;
+
+    const fileField = attachment.preview === "pdf" ? "pdf" : "image";
+    formData.append(fileField, {
+      uri: attachment.uri,
+      name: attachment.name,
+      type: attachment.type,
+    } as unknown as Blob);
+  };
+
   // Handle update
   const handleUpdateExpense = async () => {
     setError("");
@@ -340,13 +452,7 @@ export default function ExpenseDetail({
       formData.append("sAddress", sAddress);
       formData.append("taxType", taxType);
       formData.append("branch", branch);
-      if (image) {
-        formData.append("image", {
-          uri: image,
-          name: "image.jpg",
-          type: "image/jpeg",
-        } as unknown as Blob);
-      }
+      appendAttachmentToFormData(formData);
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
       handleCloseAfterChanges(); // Close modal after successful update
 
@@ -502,15 +608,36 @@ export default function ExpenseDetail({
                 className="flex-1 justify-center h-full py-6 px-4 rounded-lg"
                 style={{ backgroundColor: "transparent" }}
               >
-                <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                  {image && (
+                <TouchableOpacity
+                  onPress={() => hasImagePreview && setImageModalVisible(true)}
+                  activeOpacity={hasImagePreview ? 0.8 : 1}
+                >
+                  {hasImagePreview && imagePreviewUri && (
                     <Image
-                      source={{ uri: image }}
+                      source={{ uri: imagePreviewUri }}
                       style={{ width: 300, height: 300 }}
                       className="mt-4 mb-6 self-center rounded-md"
                     />
                   )}
                 </TouchableOpacity>
+                {hasPdfPreview && (
+                  <TouchableOpacity
+                    onPress={() => handlePreviewPdf(pdfPreviewUri)}
+                    className="flex-row items-center justify-center mb-6"
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name="document-text-outline"
+                      size={22}
+                      color={theme === "dark" ? "#d0d0d0" : "#6b7280"}
+                    />
+                    <CustomText className="ml-2">
+                      {pdfDisplayName ||
+                        t("expense.detail.previewPdf") ||
+                        "Preview PDF"}
+                    </CustomText>
+                  </TouchableOpacity>
+                )}
                 <CustomText className="text-center font-bold">
                   {formatDate(date)}
                 </CustomText>
@@ -988,7 +1115,7 @@ export default function ExpenseDetail({
                         key={key}
                         onPress={() => handleGroupChange(key)}
                         className={groupButtonClass(key)}
-                        activeOpacity={1} // Prevent fade effect on press
+                        activeOpacity={0.8} // Prevent fade effect on press
                       >
                         <CustomText>{label}</CustomText>
                       </TouchableOpacity>
@@ -1004,16 +1131,18 @@ export default function ExpenseDetail({
                   <TouchableOpacity
                     onPress={() => showDeleteConfirmation()}
                     className=" items-center justify-center"
+                    activeOpacity={0.8}
                   >
                     <Ionicons name="trash-outline" size={24} color="#999999" />
                     <CustomText className="text-center mt-1">
                       {t("common.delete")}
                     </CustomText>
                   </TouchableOpacity>
-
+                  {/* attach bill document */}
                   <TouchableOpacity
-                    onPress={() => pickImage()}
+                    onPress={handleOpenAttachmentPicker}
                     className=" items-center justify-center"
+                    activeOpacity={0.8}
                   >
                     <Ionicons
                       name="document-text-outline"
@@ -1070,7 +1199,7 @@ export default function ExpenseDetail({
 
         {/* Modal to view image */}
         <Modal
-          visible={imageModalVisible}
+          visible={imageModalVisible && hasImagePreview}
           transparent={true}
           onRequestClose={() => setImageModalVisible(false)}
         >
@@ -1080,13 +1209,15 @@ export default function ExpenseDetail({
             onPressOut={() => setImageModalVisible(false)}
           >
             <View className="flex-1 justify-center items-center bg-black bg-opacity-90">
-              <Image
-                source={{
-                  uri: image,
-                }}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
+              {hasImagePreview && imagePreviewUri ? (
+                <Image
+                  source={{
+                    uri: imagePreviewUri,
+                  }}
+                  className="w-full h-full"
+                  resizeMode="contain"
+                />
+              ) : null}
               <TouchableOpacity
                 onPress={() => setImageModalVisible(false)}
                 className="absolute top-0 right-0 p-4"
@@ -1103,6 +1234,31 @@ export default function ExpenseDetail({
           onClose={() =>
             setAlertConfig((prev) => ({ ...prev, visible: false }))
           }
+        />
+
+        <CustomAlert
+          visible={attachmentPickerVisible}
+          title={t("expense.detail.attachBill") || "Attach Bill"}
+          message={
+            t("expense.detail.chooseAttachmentType") ||
+            "Choose how you want to attach the bill"
+          }
+          buttons={[
+            {
+              text: t("expense.detail.pickPdf") || "Pick PDF",
+              onPress: handlePickPdf,
+            },
+            {
+              text: t("expense.detail.pickImage") || "Pick Image",
+              onPress: () => pickImage(false),
+            },
+            {
+              text: t("common.cancel"),
+              style: "cancel",
+              onPress: closeAttachmentPicker,
+            },
+          ]}
+          onClose={closeAttachmentPicker}
         />
       </TouchableOpacity>
     </Modal>

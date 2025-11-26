@@ -490,6 +490,7 @@ export default function DetectExpense() {
           desc: "",
           amount: "",
           image: "",
+          pdf: "",
           id: 0,
           group: "",
         }}

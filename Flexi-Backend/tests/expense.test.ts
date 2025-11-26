@@ -1,6 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { uploadToS3, deleteFromS3 } from '../src/services/imageService';
 
 // Mock multer memory config and multer behavior
 jest.mock('../src/middleware/multer_config', () => ({
@@ -10,24 +11,53 @@ jest.mock('../src/middleware/multer_config', () => ({
 			config: {},
 			keyUpload: 'image',
 		},
+		multerConfigExpenseAttachmentMemory: {
+			config: {},
+			imageKeyUpload: 'image',
+			pdfKeyUpload: 'pdf',
+		},
 	},
 }));
 
 jest.mock('multer', () => {
+	const assignMockFiles = (req: any) => {
+		const header = req.headers?.['x-mock-file'];
+		const files: Record<string, any[]> = {};
+		const addFile = (fieldname: string, mimetype: string, contents: string) => {
+			files[fieldname] = [
+				{
+					fieldname,
+					originalname: `mock-${fieldname}.${fieldname === 'pdf' ? 'pdf' : 'png'}`,
+					buffer: Buffer.from(contents),
+					mimetype,
+				},
+			];
+		};
+
+		if (header === '1' || header === 'image' || header === 'both') {
+			addFile('image', 'image/png', 'image-bytes');
+		}
+		if (header === 'pdf' || header === 'both') {
+			addFile('pdf', 'application/pdf', '%PDF-1.4');
+		}
+
+		if (Object.keys(files).length > 0) {
+			req.files = files;
+			req.file = files.image?.[0];
+		} else {
+			req.files = undefined;
+			req.file = undefined;
+		}
+	};
+
+	const middlewareFactory = () => (req: any, _res: any, cb: (err?: any) => void) => {
+		assignMockFiles(req);
+		cb();
+	};
+
 	const mockMulter = () => ({
-		single: () => (req: any, _res: any, cb: (err?: any) => void) => {
-			// If header set, simulate a file upload
-			if (req.headers && req.headers['x-mock-file'] === '1') {
-				req.file = {
-					buffer: Buffer.from('file-bytes'),
-					mimetype: 'image/png',
-					location: 'https://s3.example.com/bucket/old-key.png',
-				};
-			} else {
-				req.file = undefined;
-			}
-			cb();
-		},
+		single: () => middlewareFactory(),
+		fields: () => middlewareFactory(),
 	});
 	(mockMulter as any).MulterError = class MulterError extends Error {};
 	return mockMulter;
@@ -171,6 +201,23 @@ describe('expenseController', () => {
 			expect(res.status).toBe(400);
 			expect(res.body.message).toMatch(/Business account not found/i);
 		});
+
+		test('uploads pdf attachment and persists URL', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10 });
+			prismaMock.expense.create.mockResolvedValue({ id: 2, amount: 100 });
+			const res = await request(app)
+				.post('/expense')
+				.set('x-mock-file', 'pdf')
+				.send(baseExpensePayload());
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.pdf).toBe('https://s3.example.com/bucket/new-key.png');
+			expect(uploadToS3).toHaveBeenCalledWith(
+				expect.any(Buffer),
+				'application/pdf',
+				'pdf'
+			);
+		});
 	});
 
 	describe('getExpenses', () => {
@@ -211,6 +258,24 @@ describe('expenseController', () => {
 			expect(res.body.id).toBe(8);
 			expect(prismaMock.expense.update).toHaveBeenCalled();
 		});
+
+		test('updates pdf attachment and removes old pdf from S3', async () => {
+			prismaMock.expense.findUnique.mockResolvedValue({
+				id: 9,
+				image: null,
+				pdf: 'https://s3.example.com/bucket/old.pdf',
+				group: 'Others',
+			});
+			prismaMock.expense.update.mockResolvedValue({ id: 9, pdf: 'https://s3.example.com/bucket/new-key.png' });
+			const res = await request(app)
+				.put('/expense/9')
+				.set('x-mock-file', 'pdf')
+				.send({ memberId: 'MID-1', amount: 120, group: 'Others' });
+			expect(res.status).toBe(200);
+			const updatePayload = prismaMock.expense.update.mock.calls.at(-1)?.[0]?.data;
+			expect(updatePayload?.pdf).toBe('https://s3.example.com/bucket/new-key.png');
+			expect(deleteFromS3).toHaveBeenCalled();
+		});
 	});
 
 	describe('deleteExpenseById', () => {
@@ -221,11 +286,15 @@ describe('expenseController', () => {
 		});
 
 		test('deletes expense and image', async () => {
-			prismaMock.expense.findUnique.mockResolvedValue({ image: 'https://s3.example.com/bucket/key.png' });
+			prismaMock.expense.findUnique.mockResolvedValue({
+				image: 'https://s3.example.com/bucket/key.png',
+				pdf: 'https://s3.example.com/bucket/file.pdf',
+			});
 			prismaMock.expense.delete.mockResolvedValue({ id: 3 });
 			const res = await request(app).delete('/expense/3').send({ memberId: 'MID-1' });
 			expect(res.status).toBe(200);
 			expect(res.body.message).toMatch(/deleted/i);
+			expect(deleteFromS3).toHaveBeenCalledTimes(2);
 		});
 	});
 
