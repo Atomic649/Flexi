@@ -155,7 +155,7 @@ export default function ExpenseCard({
                     {type === "ads" ? note : sName || desc}
                   </CustomText>
                   <CustomText
-                    className="text-base font-psemibold"
+                    className="text-base font-psemibold pt-1"
                     weight="semibold"
                     style={{ color: NoteColor }}
                     numberOfLines={1}

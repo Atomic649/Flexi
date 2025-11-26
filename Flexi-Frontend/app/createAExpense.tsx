@@ -1844,7 +1844,15 @@ export default function CreateExpense({
                         size={22}
                         color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                       />
-                      <CustomText className="ml-2">
+                      <CustomText className="ml-2"
+                      style={{ color:
+                              group === "Fuel"
+                                ? theme === "dark"
+                                  ? "#666666"
+                                  : "#999999"
+                                : theme === "dark"
+                                ? "#b4b3b3"
+                                : "#2a2a2a",}}>
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
                     </TouchableOpacity>
@@ -1868,7 +1876,14 @@ export default function CreateExpense({
                           color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                         />
                         <CustomText
-                          style={{ textAlign: "right", marginLeft: 8 }}
+                          style={{ textAlign: "right", marginLeft: 8, color:
+                              group === "Fuel"
+                                ? theme === "dark"
+                                  ? "#666666"
+                                  : "#999999"
+                                : theme === "dark"
+                                ? "#b4b3b3"
+                                : "#2a2a2a", }}
                         >
                           {t("expense.detail.withHoldingTax")}
                         </CustomText>

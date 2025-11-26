@@ -6,7 +6,6 @@ import {
   Animated as RNAnimated,
 } from "react-native";
 import React, { useRef, useState, useCallback } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
 import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";

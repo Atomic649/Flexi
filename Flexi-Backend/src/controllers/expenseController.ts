@@ -1264,6 +1264,28 @@ const updateExpenseById = async (req: Request, res: Response) => {
       }
     }
 
+    if (pdfUrl) {
+      imageUrl = "";
+    } else if (imageUrl) {
+      pdfUrl = "";
+    }
+
+    const normalizeGroupValue = (value?: string | null) => {
+      if (typeof value !== "string") return "";
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.toLowerCase() === "null") {
+        return "";
+      }
+      return trimmed;
+    };
+
+    const normalizedGroup =
+      normalizeGroupValue(req.body.group) ||
+      normalizeGroupValue(existingExpense.group) ||
+      "Others";
+
+    const memberId = req.body.memberId || existingExpense.memberId;
+
     // Merge the uploaded file S3 URL key into the expense object
     // Convert string 'true'/'false' to boolean for vat and withHoldingTax
     // Preserve existing image URL when no new file is uploaded
@@ -1273,12 +1295,12 @@ const updateExpenseById = async (req: Request, res: Response) => {
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
-      group: req.body.group || existingExpense.group || "Others",
+      group: normalizedGroup,
+      memberId,
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
     };
     const { id } = req.params;
-    const { memberId } = req.body;
 
     // Recalculate vatAmount if vat is true and amount is present
     if (expenseInput.vat && expenseInput.amount) {
@@ -1561,7 +1583,23 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     const amountNum = Number(amount) || 0;
     const amountStr = amountNum.toFixed(2);
 
-    const dateObj = new Date(date);
+    let dateObj: Date | null = null;
+    if (date) {
+      const parsedFlexible = parseFlexibleDate(date);
+      if (parsedFlexible && !isNaN(parsedFlexible.getTime())) {
+        dateObj = parsedFlexible;
+      } else {
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+          dateObj = parsedDate;
+        }
+      }
+    }
+
+    if (!dateObj) {
+      return res.status(400).json({ message: "Invalid date provided for WHT document" });
+    }
+
     const buddhistYear = dateObj.getFullYear() + 543;
     const dateStr = `${format(dateObj, "dd/MM")}/${buddhistYear} `;
     const ThaiMonth = format(dateObj, "MMMM", { locale: th });

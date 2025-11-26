@@ -238,9 +238,6 @@ export default function ExpenseDetail({
   const pdfPreviewUri = isPdfAttachment ? attachment?.uri : pdfUrl;
   const hasImagePreview = Boolean(imagePreviewUri);
   const hasPdfPreview = Boolean(pdfPreviewUri);
-  const pdfDisplayName = isPdfAttachment
-    ? attachment?.name
-    : extractFileName(pdfUrl);
 
   // Direct handler for group changes to avoid effect-as-event-handler
   const handleGroupChange = (nextGroup: string) => {
@@ -793,7 +790,7 @@ export default function ExpenseDetail({
                           group === "Fuel"
                             ? theme === "dark"
                               ? "#666666"
-                              : "#999999"
+                              : "#c1c1c1"
                             : theme === "dark"
                             ? "#d0d0d0"
                             : "#c1c1c1"
@@ -801,16 +798,15 @@ export default function ExpenseDetail({
                       />
                       <CustomText
                         className="ml-2"
-                        style={{
-                          color:
-                            group === "Fuel"
-                              ? theme === "dark"
-                                ? "#666666"
-                                : "#999999"
-                              : theme === "dark"
-                              ? "#d0d0d0"
-                              : "#c1c1c1",
-                        }}
+                        style={{ color:
+                              group === "Fuel"
+                                ? theme === "dark"
+                                  ? "#666666"
+                                  : "#999999"
+                                : theme === "dark"
+                                ? "#b4b3b3"
+                                : "#2a2a2a",
+                          }}
                       >
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
@@ -840,7 +836,7 @@ export default function ExpenseDetail({
                             group === "Fuel"
                               ? theme === "dark"
                                 ? "#666666"
-                                : "#999999"
+                                : "#c1c1c1"
                               : theme === "dark"
                               ? "#d0d0d0"
                               : "#c1c1c1"
@@ -856,8 +852,8 @@ export default function ExpenseDetail({
                                   ? "#666666"
                                   : "#999999"
                                 : theme === "dark"
-                                ? "#d0d0d0"
-                                : "#c1c1c1",
+                                ? "#b4b3b3"
+                                : "#2a2a2a",
                           }}
                         >
                           {t("expense.detail.withHoldingTax")}
