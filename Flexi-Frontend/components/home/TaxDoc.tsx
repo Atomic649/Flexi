@@ -4,6 +4,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
@@ -202,15 +204,24 @@ export default function TaxDoc() {
     });
   }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
+  const keyboardVerticalOffset = Platform.select({ ios: 160, android: 0, default: 0 }) ?? 0;
+
   return (
-    <View className={`h-full ${useBackgroundColorClass()}`}>
-      <ScrollView
-        style={{
-          width: isMobile() ? "100%" : "40%",
-          alignSelf: "center", // Center the content on larger screens
-          padding: 10,
-        }}
-      >
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+      style={{ flex: 1 }}
+    >
+      <View className={`flex-1 h-full ${useBackgroundColorClass()}`}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          style={{
+            width: isMobile() ? "100%" : "40%",
+            alignSelf: "center", // Center the content on larger screens
+            padding: 10,
+          }}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        >
         {/* VAT7% */}
         {/* {vat && (
           <View
@@ -527,8 +538,7 @@ export default function TaxDoc() {
           className="p-4"
           style={{
             backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-            borderRadius: 10,
-            margin: 10,
+            borderRadius: 10,        
           }}
         >
           <View className="px-4 flex-row gap-2 mb-2">
@@ -817,7 +827,8 @@ export default function TaxDoc() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }

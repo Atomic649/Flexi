@@ -18,6 +18,7 @@ import { getMemberId } from "@/utils/utility";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CustomText } from "@/components/CustomText";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 type Platform = {
   id: number;
@@ -106,16 +107,9 @@ export default function ads() {
             />
           )}
           ListHeaderComponent={() => (
-            <View className="flex px-4 my-6 space-y-6 items-center">
-              {/* <Text
-                className={`text-xl my-6 font-bold ${
-                  theme === "dark" ? "text-white" : "text-[#5d5a54]"
-                }`}
-              >
-                {t("ads.title")}
-              </Text> */}
+            <View className="flex px-4 my-6 space-y-6 items-center">             
               <CustomText
-                className={`text-sm font-normal ${
+                className={`text-sm font-normal pt-1 ${
                   theme === "dark" ? "text-white" : "text-[#5d5a54]"
                 }`}
               >
@@ -174,8 +168,8 @@ export default function ads() {
               router.push("/createads");
             }}
           >
-            <Ionicons
-              name="add"
+            <AntDesign
+              name="api"
               size={24}
               color={theme === "dark" ? "#ffffff" : "#444541"}
             />

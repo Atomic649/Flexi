@@ -85,6 +85,7 @@ const getPlatforms = async (req: Request, res: Response) => {
         deleted: false,
       },
     });
+    console.log("🚀 Get Platforms:", platforms);
     res.json(platforms);
   } catch (e) {
     console.error(e);

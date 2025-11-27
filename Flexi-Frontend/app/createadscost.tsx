@@ -56,7 +56,7 @@ export default function createAdsCost() {
 
   // Data for dropdowns
   const [platforms, setPlatforms] = useState<
-    Array<{ id: number; platform: string }>
+    Array<{ id: number; platform: string; accName: string }>
   >([]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -141,8 +141,8 @@ export default function createAdsCost() {
     if (!adsCost || !platformId || !businessAcc || !product) {
       setAlertConfig({
         visible: true,
-        title: t("adsCost.validation.incomplete"),
-        message: t("adsCost.validation.invalidData"),
+        title: t("ads.validation.incomplete"),
+        message: t("ads.validation.invalidData"),
         buttons: [
           {
             text: t("common.ok"),
@@ -175,14 +175,14 @@ export default function createAdsCost() {
 
       setAlertConfig({
         visible: true,
-        title: t("adsCost.alerts.successTitle"),
-        message: t("adsCost.alerts.successMessage"),
+        title: t("ads.alerts.successTitleAdded"),
+        message: t("ads.alerts.successMessage"),
         buttons: [
           {
             text: t("common.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.replace("/ads");
+              router.replace("/expense");
             },
           },
         ],
@@ -204,6 +204,12 @@ export default function createAdsCost() {
 
     setCalendarVisible(false);
   }; // force to chose only one date
+
+  const selectedPlatformLabel = platformId
+    ? platforms.find((p) => p.id === platformId)?.accName ||
+      platforms.find((p) => p.id === platformId)?.platform ||
+      ""
+    : "";
 
   return (
     <SafeAreaView
@@ -267,15 +273,15 @@ export default function createAdsCost() {
 
           {/* Platform Dropdown */}
           <Dropdown2
-            title={t("ads.platform")}
+            title={t("ads.adsAccount")}
             options={platforms.map((p) => ({
-              label: p.platform,
+              label: p.accName || p.platform,
               value: p.id.toString(),
             }))}
-            placeholder={t("ads.choosePlatform")}
-            selectedValue={platformId?.toString() || ""}
+            placeholder={t("ads.chooseAdsAccount")}
+            selectedValue={selectedPlatformLabel}
             onValueChange={(value: string) => {
-              console.log("Platform selected:", value);
+              console.log("AdsAccount selected:", value);
               setPlatformId(parseInt(value));
             }}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -317,7 +323,7 @@ export default function createAdsCost() {
           ) : null}
 
           <CustomButton
-            title={t("adsCost.createButton")}
+            title={t("ads.createAdCostButton")}
             handlePress={handleCreateAdsCost}
             containerStyles="mt-5"
             textStyles="!text-white"

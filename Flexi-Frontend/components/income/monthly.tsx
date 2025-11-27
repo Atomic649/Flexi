@@ -58,56 +58,68 @@ const monthly = () => {
   const { marketingPreference } = useMarketing();
 
   // Generate months starting from oldest month in database or fallback to 12 months ago
-  const generateMonths = (backendData: MonthlyCardProps[] = [], months: number = 12) => {
+  const generateMonths = (
+    backendData: MonthlyCardProps[] = [],
+    months: number = 12
+  ) => {
     let startDate: Date;
-    
+
     if (backendData.length > 0) {
       // Find the oldest month from backend data
       const oldestMonth = backendData
-        .map(item => new Date(item.month + '-01')) // Convert YYYY-MM to Date
+        .map((item) => new Date(item.month + "-01")) // Convert YYYY-MM to Date
         .sort((a, b) => a.getTime() - b.getTime())[0]; // Sort ascending and get first
-      
+
       startDate = new Date(oldestMonth);
     } else {
       // Fallback: start from 12 months ago if no backend data
       startDate = new Date();
       startDate.setMonth(startDate.getMonth() - (months - 1));
     }
-    
+
     const monthsList = [];
     const currentDate = new Date();
-    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    
+    const endDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+
     // Generate months from oldest to current
     const iterDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-    
+
     while (iterDate <= endDate) {
       const year = iterDate.getFullYear();
-      const month = (iterDate.getMonth() + 1).toString().padStart(2, '0');
+      const month = (iterDate.getMonth() + 1).toString().padStart(2, "0");
       monthsList.push(`${year}-${month}`);
       iterDate.setMonth(iterDate.getMonth() + 1);
     }
-    
+
     // Reverse to show newest first (current month at top)
     return monthsList.reverse();
   };
 
   // Merge backend data with generated months
-  const mergeDataWithMonths = (backendData: MonthlyCardProps[], generatedMonths: string[]) => {
-    const dataMap = new Map(backendData.map(item => [item.month, item]));
-    
-    return generatedMonths.map(month => {
+  const mergeDataWithMonths = (
+    backendData: MonthlyCardProps[],
+    generatedMonths: string[]
+  ) => {
+    const dataMap = new Map(backendData.map((item) => [item.month, item]));
+
+    return generatedMonths.map((month) => {
       const existingData = dataMap.get(month);
-      return existingData || {
-        month,
-        amount: 0,
-        sale: 0,
-        adsCost: 0,
-        expenses: 0,
-        profit: 0,
-        percentageAds: 0,
-        ROI: 0,
-      };
+      return (
+        existingData || {
+          month,
+          amount: 0,
+          sale: 0,
+          adsCost: 0,
+          expenses: 0,
+          profit: 0,
+          percentageAds: 0,
+          ROI: 0,
+        }
+      );
     });
   };
 
@@ -120,7 +132,10 @@ const monthly = () => {
           const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
           // Generate months starting from oldest in database and merge with backend data
           const generatedMonths = generateMonths(response || []);
-          const mergedData = mergeDataWithMonths(response || [], generatedMonths);
+          const mergedData = mergeDataWithMonths(
+            response || [],
+            generatedMonths
+          );
           setMonthlyReport(mergedData);
         } else {
           console.log("Member ID is null");
@@ -185,7 +200,7 @@ const monthly = () => {
       : theme === "dark"
       ? "#b4b4b5"
       : "#4b5563",
-   // fontWeight: "900" as "900",
+    // fontWeight: "900" as "900",
     fontFamily:
       i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
   };
@@ -227,7 +242,9 @@ const monthly = () => {
           <View className="flex flex-row m-3 items-start justify-evenly w-full pl-5 ">
             <View
               className="flex flex-col items-start"
-              style={{ width: marketingPreference === "organic" ? "18%" : "15%" }}
+              style={{
+                width: marketingPreference === "organic" ? "18%" : "15%",
+              }}
             >
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.month")}
@@ -236,7 +253,9 @@ const monthly = () => {
 
             <View
               className="flex flex-col items-center"
-              style={{ width: marketingPreference === "organic" ? "15%" : "12%" }}
+              style={{
+                width: marketingPreference === "organic" ? "15%" : "12%",
+              }}
             >
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.amount")}
@@ -245,7 +264,9 @@ const monthly = () => {
 
             <View
               className="flex flex-col items-center"
-              style={{ width: marketingPreference === "organic" ? "18%" : "15%" }}
+              style={{
+                width: marketingPreference === "organic" ? "18%" : "15%",
+              }}
             >
               <Text style={textStyle} numberOfLines={3}>
                 {t("income.table.sales")}
@@ -263,25 +284,6 @@ const monthly = () => {
                 <Text style={textStyle} numberOfLines={1}>
                   {t("income.table.adCost")}
                 </Text>
-                {/* Information sign */}
-                <Ionicons
-                  name="information-circle-outline"
-                  size={getIconSize()}
-                  color={
-                    isMobile()
-                      ? theme === "dark"
-                        ? "#27272a"
-                        : "#4b5563"
-                      : theme === "dark"
-                      ? "#b4b4b5"
-                      : "#4b5563"
-                  }
-                  style={isMobile() ? {} : { marginLeft: 5 }}
-                  onPress={() => {
-                    // Show tooltip or alert with more information
-                    alert(t("income.table.adCostInfo"));
-                  }}
-                />
               </View>
             )}
 
@@ -295,25 +297,6 @@ const monthly = () => {
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.expense")}
               </Text>
-              {/* Information sign */}
-              <Ionicons
-                name="information-circle-outline"
-                size={getIconSize()}
-                color={
-                  isMobile()
-                    ? theme === "dark"
-                      ? "#27272a"
-                      : "#4b5563"
-                    : theme === "dark"
-                    ? "#b4b4b5"
-                    : "#4b5563"
-                }
-                style={isMobile() ? {} : { marginLeft: 5 }}
-                onPress={() => {
-                  // Show tooltip or alert with more information
-                  alert(t("income.table.expenseInfo"));
-                }}
-              />
             </View>
 
             <View
@@ -326,36 +309,18 @@ const monthly = () => {
               <Text style={textStyle} numberOfLines={1}>
                 {t("income.table.profit")}
               </Text>
-              {/* Information sign */}
-              <Ionicons
-                name="information-circle-outline"
-                size={getIconSize()}
-                color={
-                  isMobile()
-                    ? theme === "dark"
-                      ? "#27272a"
-                      : "#4b5563"
-                    : theme === "dark"
-                    ? "#b4b4b5"
-                    : "#4b5563"
-                }
-                style={isMobile() ? {} : { marginLeft: 5 }}
-                onPress={() => {
-                  // Show tooltip or alert with more information
-                  alert(t("income.table.profitInfo"));
+            </View>
+            {marketingPreference !== "organic" && (
+              <View
+                className="flex flex-col items-center"
+                style={{
+                  width: marketingPreference === "organic" ? "13%" : "13%",
                 }}
-              />
-            </View>
-                {marketingPreference !== "organic" && (
-
-            <View
-              className="flex flex-col items-center"
-              style={{ width: marketingPreference === "organic" ? "13%" : "13%" }}
-            >
-              <Text style={textStyle} numberOfLines={1}>
-                {t("income.table.percentAd")}
-              </Text>
-            </View>
+              >
+                <Text style={textStyle} numberOfLines={1}>
+                  {t("income.table.percentAd")}
+                </Text>
+              </View>
             )}
           </View>
         </View>
@@ -366,10 +331,10 @@ const monthly = () => {
           renderItem={({ item }) => (
             <MonthlyCard
               month={item.month}
-              amount={item.amount}
+              amount={formatNumberDisplay(item.amount)}
               sale={formatNumberDisplay(item.sale)}
               adsCost={formatNumberDisplay(item.adsCost)}
-              expenses={item.expenses}
+              expenses={formatNumberDisplay(item.expenses)}
               profit={formatNumberDisplay(item.profit)}
               percentageAds={item.percentageAds}
               ROI={item.ROI}

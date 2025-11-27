@@ -612,6 +612,9 @@
     "accName": "Account Name",
     "accId": "Account ID",
     "createbutton": "Connect",
+    "createAdCostButton": "Create Ad Cost",
+    "chooseAdsAccount": "Select Ads Account",
+    "adsAccount": "Ads Account",
     "alerts": {
       "error": "Error",
       "ok": "OK",

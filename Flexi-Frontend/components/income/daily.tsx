@@ -247,7 +247,7 @@ const Daily = () => {
             <TouchableOpacity onPress={() => handleItemPress(item)} activeOpacity={0.8}>
               <DailyCard
                 date={item.date}
-                amount={item.amount}
+                amount={formatNumberDisplay(item.amount)}
                 sale={formatNumberDisplay(item.sale)}
                 adsCost={formatNumberDisplay(item.adsCost)}
                 profit={formatNumberDisplay(item.profit)}

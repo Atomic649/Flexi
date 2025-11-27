@@ -613,12 +613,16 @@
     "accName": "ชื่อบัญชี",
     "accId": "รหัสบัญชี",
     "createbutton": "เชื่อมต่อ",
+    "createAdCostButton": "ลงค่าโฆษณา",
+    "chooseAdsAccount": "เลือกบัญชีโฆษณา",
+    "adsAccount": "บัญชีโฆษณา",   
     "alerts": {
       "error": "ข้อผิดพลาด",
       "ok": "ตกลง",
       "success": "สำเร็จ",
       "successTitle": "เชื่อมต่อโฆษณาสำเร็จ",
-      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
+      "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
+      "successTitleAdded": "ลงค่าโฆษณาสำเร็จ"
     },
     "validation": {
       "incomplete": "ข้อมูลไม่ครบถ้วน",
