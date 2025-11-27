@@ -24,7 +24,7 @@ import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as Print from "expo-print";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
@@ -164,6 +164,7 @@ export default function CreateExpense({
   const hasAttachment = Boolean(attachment);
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
+  const [showAllFormField, setShowAllFormField] = useState(false);
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -359,6 +360,8 @@ export default function CreateExpense({
       type: attachment.type,
     } as unknown as Blob);
   };
+  //show all formfild
+
 
   // Apply selected OCR data and resubmit expense
   const applySelectedOCRData = async () => {
@@ -1844,15 +1847,19 @@ export default function CreateExpense({
                         size={22}
                         color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                       />
-                      <CustomText className="ml-2"
-                      style={{ color:
-                              group === "Fuel"
-                                ? theme === "dark"
-                                  ? "#666666"
-                                  : "#999999"
-                                : theme === "dark"
-                                ? "#b4b3b3"
-                                : "#2a2a2a",}}>
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color:
+                            group === "Fuel"
+                              ? theme === "dark"
+                                ? "#666666"
+                                : "#999999"
+                              : theme === "dark"
+                              ? "#b4b3b3"
+                              : "#2a2a2a",
+                        }}
+                      >
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
                     </TouchableOpacity>
@@ -1876,14 +1883,18 @@ export default function CreateExpense({
                           color={theme === "dark" ? "#d0d0d0" : "#c1c1c1"}
                         />
                         <CustomText
-                          style={{ textAlign: "right", marginLeft: 8, color:
+                          style={{
+                            textAlign: "right",
+                            marginLeft: 8,
+                            color:
                               group === "Fuel"
                                 ? theme === "dark"
                                   ? "#666666"
                                   : "#999999"
                                 : theme === "dark"
                                 ? "#b4b3b3"
-                                : "#2a2a2a", }}
+                                : "#2a2a2a",
+                          }}
                         >
                           {t("expense.detail.withHoldingTax")}
                         </CustomText>
@@ -1910,6 +1921,21 @@ export default function CreateExpense({
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
                         </>
                       )}
+                       {(!vatIncluded && !withHoldingTax ) && (
+                      <TouchableOpacity
+                        style={{
+                          marginLeft: 10,
+                        }}
+                        onPress={() => setShowAllFormField((prev) => !prev)}
+                        activeOpacity={0.5}                        
+                      >
+                        <MaterialIcons
+                          name="expand-more"
+                          size={24}
+                          color={theme === "dark" ? "#888888" : "#555555"}
+                        />
+                      </TouchableOpacity>
+                       )}
                     </>
                   )}
                 </View>
@@ -1925,7 +1951,7 @@ export default function CreateExpense({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax) && (
+                {(vatIncluded || withHoldingTax || showAllFormField) && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View
@@ -2171,7 +2197,7 @@ export default function CreateExpense({
                     </CustomText>
                   </TouchableOpacity>
 
-                  {(isImageAttachment || isPdfAttachment) && (
+                  {isImageAttachment && (
                     <TouchableOpacity
                       onPress={() => {
                         handleCreateExpenseWithOCR();

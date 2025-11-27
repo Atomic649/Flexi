@@ -740,7 +740,7 @@
       "description": "รายละเอียด(ไม่บังคับ)",
       "chooseAttachmentType": "เลือกประเภทไฟล์แนบ",
       "pickPdf": "ไฟล์ PDF",
-      "pickImage": "เลือกภาพ .png .jpg",      
+      "pickImage": "รูปภาพ",      
       "amount": "จำนวนเงิน",
       "note": "บันทึกค่าใช้จ่ายทางบัญชี",
       "exclVat": "มูลค่าไม่รวมภาษีมูลค่าเพิ่ม",
