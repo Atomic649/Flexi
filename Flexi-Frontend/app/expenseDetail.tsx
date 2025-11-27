@@ -19,7 +19,7 @@ import { CustomText } from "@/components/CustomText";
 import { FloatingLabelInput } from "@/components/formfield/FloatingLabelInput";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
@@ -141,6 +141,8 @@ export default function ExpenseDetail({
   const hasAttachment = Boolean(attachment);
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
+  const [showAllFormField, setShowAllFormField] = useState(false);
+
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -890,6 +892,21 @@ export default function ExpenseDetail({
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
                         </>
                       )}
+                         {(!vatIncluded && !withHoldingTax ) && (
+                                            <TouchableOpacity
+                                              style={{
+                                                marginLeft: 10,
+                                              }}
+                                              onPress={() => setShowAllFormField((prev) => !prev)}
+                                              activeOpacity={0.5}                        
+                                            >
+                                              <MaterialIcons
+                                                name="expand-more"
+                                                size={24}
+                                                color={theme === "dark" ? "#888888" : "#555555"}
+                                              />
+                                            </TouchableOpacity>
+                                             )}
                     </>
                   )}
                 </View>
@@ -906,7 +923,7 @@ export default function ExpenseDetail({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax || group === "Fuel") && (
+                {(vatIncluded || withHoldingTax || showAllFormField || group === "Fuel") && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View

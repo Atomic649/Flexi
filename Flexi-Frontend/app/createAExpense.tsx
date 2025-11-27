@@ -1951,7 +1951,7 @@ export default function CreateExpense({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax || showAllFormField) && (
+                {(vatIncluded || withHoldingTax || showAllFormField || group === "Fuel") && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View
