@@ -143,7 +143,6 @@ export default function ExpenseDetail({
   const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(false);
 
-
   useEffect(() => {
     const fetchExpense = async () => {
       try {
@@ -800,15 +799,16 @@ export default function ExpenseDetail({
                       />
                       <CustomText
                         className="ml-2"
-                        style={{ color:
-                              group === "Fuel"
-                                ? theme === "dark"
-                                  ? "#666666"
-                                  : "#999999"
-                                : theme === "dark"
-                                ? "#b4b3b3"
-                                : "#2a2a2a",
-                          }}
+                        style={{
+                          color:
+                            group === "Fuel"
+                              ? theme === "dark"
+                                ? "#666666"
+                                : "#999999"
+                              : theme === "dark"
+                              ? "#b4b3b3"
+                              : "#2a2a2a",
+                        }}
                       >
                         {t("expense.detail.vatIncluded")}
                       </CustomText>
@@ -892,22 +892,24 @@ export default function ExpenseDetail({
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
                         </>
                       )}
-                         {(!vatIncluded && !withHoldingTax ) && (
-                                            <TouchableOpacity
-                                              style={{
-                                                marginLeft: 10,
-                                              }}
-                                              onPress={() => setShowAllFormField((prev) => !prev)}
-                                              activeOpacity={0.5}                        
-                                            >
-                                              <MaterialIcons
-                                                name="expand-more"
-                                                size={24}
-                                                color={theme === "dark" ? "#888888" : "#555555"}
-                                              />
-                                            </TouchableOpacity>
-                                             )}
                     </>
+                  )}
+                  {!vatIncluded && !withHoldingTax && (
+                    <TouchableOpacity
+                      style={{
+                        alignSelf: "flex-end",
+                        justifyContent: "flex-end",
+                        marginLeft: "auto",
+                      }}
+                      onPress={() => setShowAllFormField((prev) => !prev)}
+                      activeOpacity={0.5}
+                    >
+                      <MaterialIcons
+                        name="expand-more"
+                        size={24}
+                        color={theme === "dark" ? "#888888" : "#555555"}
+                      />
+                    </TouchableOpacity>
                   )}
                 </View>
 
@@ -923,7 +925,10 @@ export default function ExpenseDetail({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax || showAllFormField || group === "Fuel") && (
+                {(vatIncluded ||
+                  withHoldingTax ||
+                  showAllFormField ||
+                  group === "Fuel") && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View
@@ -1157,13 +1162,17 @@ export default function ExpenseDetail({
                 </View>
 
                 {error ? (
-                  <CustomText className=" mt-4"
-                  style= {{
-                    color: "#ff4d4f",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    marginHorizontal: 20,
-                  }}>{error}</CustomText>
+                  <CustomText
+                    className=" mt-4"
+                    style={{
+                      color: "#ff4d4f",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      marginHorizontal: 20,
+                    }}
+                  >
+                    {error}
+                  </CustomText>
                 ) : null}
 
                 <View className="flex-row justify-evenly mt-2">

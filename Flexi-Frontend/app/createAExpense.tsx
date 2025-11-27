@@ -362,7 +362,6 @@ export default function CreateExpense({
   };
   //show all formfild
 
-
   // Apply selected OCR data and resubmit expense
   const applySelectedOCRData = async () => {
     try {
@@ -1921,22 +1920,24 @@ export default function CreateExpense({
                           <CustomText style={{ marginLeft: 4 }}>%</CustomText>
                         </>
                       )}
-                       {(!vatIncluded && !withHoldingTax ) && (
-                      <TouchableOpacity
-                        style={{
-                          marginLeft: 10,
-                        }}
-                        onPress={() => setShowAllFormField((prev) => !prev)}
-                        activeOpacity={0.5}                        
-                      >
-                        <MaterialIcons
-                          name="expand-more"
-                          size={24}
-                          color={theme === "dark" ? "#888888" : "#555555"}
-                        />
-                      </TouchableOpacity>
-                       )}
                     </>
+                  )}
+                  {!vatIncluded && !withHoldingTax && (
+                    <TouchableOpacity
+                      style={{
+                        alignSelf: "flex-end",
+                        justifyContent: "flex-end",
+                        marginLeft: "auto",
+                      }}
+                      onPress={() => setShowAllFormField((prev) => !prev)}
+                      activeOpacity={0.5}
+                    >
+                      <MaterialIcons
+                        name="expand-more"
+                        size={24}
+                        color={theme === "dark" ? "#888888" : "#555555"}
+                      />
+                    </TouchableOpacity>
                   )}
                 </View>
                 <FloatingLabelInput
@@ -1951,7 +1952,10 @@ export default function CreateExpense({
                   onChangeText={setSName}
                 />
 
-                {(vatIncluded || withHoldingTax || showAllFormField || group === "Fuel") && (
+                {(vatIncluded ||
+                  withHoldingTax ||
+                  showAllFormField ||
+                  group === "Fuel") && (
                   <>
                     {/* Tax Type Checkboxes Row */}
                     <View
