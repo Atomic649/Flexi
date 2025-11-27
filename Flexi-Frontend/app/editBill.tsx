@@ -148,6 +148,7 @@ export default function EditBill() {
   const [availableDocumentTypes, setAvailableDocumentTypes] = useState<
     string[]
   >([]);
+  const [isDocumentTypeLocked, setIsDocumentTypeLocked] = useState(false);
 
   // Business details for PDF generation
   const [businessDetails, setBusinessDetails] = useState<any>(null);
@@ -696,8 +697,10 @@ export default function EditBill() {
           setRemark(billData.remark);
         }
         // Set document type from API data, but only if it's available in business
+        let isReceiptDocument = false;
         if (billData.DocumentType) {
           const billDocType = getDocumentTypeFromAPI(billData.DocumentType);
+          isReceiptDocument = billDocType === "RE";
           // Check if the bill's document type is available in the business settings
           const billDocTypeName = getDocumentTypeForAPI(billDocType);
           if (
@@ -716,6 +719,7 @@ export default function EditBill() {
             }
           }
         }
+        setIsDocumentTypeLocked(isReceiptDocument);
 
         // Set progress section visibility based on business document types
         if (
@@ -1238,7 +1242,34 @@ export default function EditBill() {
                                   break;
                               }
                             } else {
-                              // Edit mode: allow changing document type
+                              // Edit mode: allow changing document type unless Receipt is locked
+                              if (
+                                isDocumentTypeLocked &&
+                                step !== "RE"
+                              ) {
+                                setAlertConfig({
+                                  visible: true,
+                                  title: t("bill.alerts.receiptLockedTitle"),
+                                  message: t(
+                                    "bill.alerts.receiptLockedMessage"
+                                  ),
+                                  buttons: [
+                                    {
+                                      text: t("common.ok"),
+                                      onPress: () =>
+                                        setAlertConfig((prev) => ({
+                                          ...prev,
+                                          visible: false,
+                                        })),
+                                    },
+                                  ],
+                                });
+                                console.log(
+                                  "🔒 Receipt stage locked. Cannot switch to:",
+                                  step
+                                );
+                                return;
+                              }
                               console.log("✏️ Setting document type:", step);
                               setSelectedDocumentType(step);
                             }

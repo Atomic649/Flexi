@@ -1286,7 +1286,9 @@
       "deleteMessage": "Are you sure you want to delete this document?",
       "deleteSuccess": "Document deleted successfully",
       "deleteError": "Error deleting document",
-      "repeatSuccessMessage": "Document will be repeated every"
+      "repeatSuccessMessage": "Document will be repeated every",
+      "receiptLockedTitle": "Receipt finalized",
+      "receiptLockedMessage": "Receipts that are already saved cannot move back to previous steps."
     },
     "validation": {
       "incomplete": "Incomplete Data",
