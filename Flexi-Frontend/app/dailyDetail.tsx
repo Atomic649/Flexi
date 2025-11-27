@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
 import CallAPIReport from "@/api/report_api";
@@ -129,7 +129,12 @@ export default function DailyDetail() {
 
 
   return (
-    <View className={`flex-1  ${backgroundColorClass}`}>
+    <View className={`flex-1  ${backgroundColorClass}`}
+    style={{
+              width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
+              maxWidth: 900,
+              alignSelf: "center",
+            }}>
       {/* Header */}
       <View
         className={`flex-row items-center justify-center p-4 border-b ${

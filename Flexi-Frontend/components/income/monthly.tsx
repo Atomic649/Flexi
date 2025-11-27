@@ -20,6 +20,7 @@ import {
   isMobile,
   getResponsiveStyles,
   getDeviceType,
+  isTablet,
 } from "@/utils/responsive";
 import { Ionicons } from "@expo/vector-icons";
 import { useMarketing } from "@/providers/MarketingProvider";
@@ -193,7 +194,7 @@ const monthly = () => {
   // Adjust font size and color of Title Table with responsive styling
   const textStyle = {
     fontSize: responsiveStyles.smallFontSize,
-    color: isMobile()
+    color: isMobile() || isTablet() 
       ? theme === "dark"
         ? "#27272a"
         : "#4b5563"
@@ -221,8 +222,8 @@ const monthly = () => {
       <View
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
-          width: Dimensions.get("window").width > 768 ? "60%" : "100%",
-          maxWidth: 800,
+          width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
+          maxWidth: 900,
           alignSelf: "center",
         }}
       >

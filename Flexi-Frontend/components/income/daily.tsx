@@ -18,10 +18,9 @@ import { useRouter } from "expo-router";
 import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
-import { isMobile } from "@/utils/responsive";
+import { isMobile, isTablet } from "@/utils/responsive";
 import { useMarketing } from "@/providers/MarketingProvider";
 import { getResponsiveStyles } from "@/utils/responsive";
-
 
 // Function to format numbers for display, handling the large values properly
 const formatNumberDisplay = (num: number) => {
@@ -45,18 +44,16 @@ type DailyCardProps = {
   expenses: number;
 };
 
-
-
 const Daily = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { marketingPreference } = useMarketing();
   const router = useRouter();
-  
+
   // Theme classes - must be called at component level
   const backgroundColorClass = useBackgroundColorClass();
   const textColorClass = useTextColorClass();
-  
+
   const [refreshing, setRefreshing] = useState(false);
   const [dailyReport, setDailyReport] = useState<DailyCardProps[]>([]);
 
@@ -66,27 +63,32 @@ const Daily = () => {
     for (let i = 0; i < days; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      dates.push(date.toISOString().split('T')[0]); // Format: YYYY-MM-DD
+      dates.push(date.toISOString().split("T")[0]); // Format: YYYY-MM-DD
     }
     return dates;
   };
 
   // Merge backend data with generated dates
-  const mergeDataWithDates = (backendData: DailyCardProps[], generatedDates: string[]) => {
-    const dataMap = new Map(backendData.map(item => [item.date, item]));
-    
-    return generatedDates.map(date => {
+  const mergeDataWithDates = (
+    backendData: DailyCardProps[],
+    generatedDates: string[]
+  ) => {
+    const dataMap = new Map(backendData.map((item) => [item.date, item]));
+
+    return generatedDates.map((date) => {
       const existingData = dataMap.get(date);
-      return existingData || {
-        date,
-        amount: 0,
-        sale: 0,
-        adsCost: 0,
-        profit: 0,
-        percentageAds: 0,
-        ROI: 0,
-        expenses: 0,
-      };
+      return (
+        existingData || {
+          date,
+          amount: 0,
+          sale: 0,
+          adsCost: 0,
+          profit: 0,
+          percentageAds: 0,
+          ROI: 0,
+          expenses: 0,
+        }
+      );
     });
   };
 
@@ -153,15 +155,22 @@ const Daily = () => {
       pathname: "/dailyDetail",
       params: {
         date: item.date,
-        selectedItem: JSON.stringify(item)
-      }
+        selectedItem: JSON.stringify(item),
+      },
     });
   };
 
   // Adjust front size and color of Title Table
   const textStyle = {
     fontSize: getResponsiveStyles().smallFontSize,
-    color: isMobile() ? theme === "dark" ? "#27272a" : "#4b5563": theme === "dark" ? "#b4b4b5" : "#4b5563",
+    color:
+      isMobile() || isTablet()
+        ? theme === "dark"
+          ? "#27272a"
+          : "#4b5563"
+        : theme === "dark"
+        ? "#b4b4b5"
+        : "#4b5563",
     //fontWeight: "900" as "900", // or any other acceptable value
     fontFamily:
       i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
@@ -174,30 +183,31 @@ const Daily = () => {
       <View
         className={`h-full ${backgroundColorClass}`}
         style={{
-          width: Dimensions.get("window").width > 768  ? "60%" : "100%",
-          maxWidth: 800,
+          width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
+          maxWidth: 900,
           alignSelf: "center",
-         // paddingTop: Platform.OS === "web" ? "1.5%":0
         }}
       >
         <View
           className={`flex flex-col items-end `}
-         style={{
-                     backgroundColor:
-                       Platform.OS === "web"
-                   ? "transparent"
-                   : theme === "dark"
-                   ? "#adacac"
-                   : "#d0cfcb",
-                   borderBottomWidth: 1,
-                   borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
-                   }}
+          style={{
+            backgroundColor:
+              Platform.OS === "web"
+                ? "transparent"
+                : theme === "dark"
+                ? "#adacac"
+                : "#d0cfcb",
+            borderBottomWidth: 1,
+            borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+          }}
         >
           <View
             className="flex flex-row m-3 items-start justify-evenly w-full pl-5 "
-            style={{
-              marginHorizontal: 10,
-            }}
+            style={
+              {
+                marginHorizontal: 10,
+              }
+            }
           >
             <View className="flex flex-col items-start  w-1/6">
               <Text style={textStyle} numberOfLines={1}>
@@ -230,12 +240,12 @@ const Daily = () => {
                 + / -
               </Text>
             </View>
-              {marketingPreference !== "organic" && (
-            <View className="flex flex-col items-center w-1/6">
-              <Text style={textStyle} numberOfLines={1}>
-                {t("income.table.percentAd")}
-              </Text>
-            </View>
+            {marketingPreference !== "organic" && (
+              <View className="flex flex-col items-center w-1/6">
+                <Text style={textStyle} numberOfLines={1}>
+                  {t("income.table.percentAd")}
+                </Text>
+              </View>
             )}
           </View>
         </View>
@@ -244,7 +254,10 @@ const Daily = () => {
           data={dailyReport}
           keyExtractor={(item) => item.date.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)} activeOpacity={0.8}>
+            <TouchableOpacity
+              onPress={() => handleItemPress(item)}
+              activeOpacity={0.8}
+            >
               <DailyCard
                 date={item.date}
                 amount={formatNumberDisplay(item.amount)}

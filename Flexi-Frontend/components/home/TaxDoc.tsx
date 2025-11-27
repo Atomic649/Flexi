@@ -17,7 +17,7 @@ import CallAPIBusiness from "@/api/business_api";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
 import { TextStyle } from "react-native";
-import { isMobile } from "@/utils/responsive";
+import { isMobile, isTablet } from "@/utils/responsive";
 import TaxBracketStairs3D from "../TaxBracketStairs3D";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIExpense from "@/api/expense_api";
@@ -216,36 +216,14 @@ export default function TaxDoc() {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           style={{
-            width: isMobile() ? "100%" : "40%",
+            width: isMobile()   ? "100%" : "60%",
             alignSelf: "center", // Center the content on larger screens
             padding: 10,
+            maxWidth: 500,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
         >
-        {/* VAT7% */}
-        {/* {vat && (
-          <View
-            className="p-4"
-            style={{
-              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-              borderRadius: 10,
-              margin: 10,
-            }}
-          >
-            <View className="px-4 flex-row gap-2">
-              <Ionicons>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={24}
-                  color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
-                />
-              </Ionicons>
-              <CustomText className="text-lg font-bold">
-                {t("taxDoc.vatRegistration")}
-              </CustomText>
-            </View>
-          </View>
-        )} */}
+       
         {!vat && (
           <View
             className="p-4"

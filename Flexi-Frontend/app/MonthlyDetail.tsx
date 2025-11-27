@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -136,7 +137,12 @@ export default function MonthlyDetail() {
 
   
   return (
-    <View className={`flex-1 ${backgroundColorClass}`}>
+    <View className={`flex-1 ${backgroundColorClass}`}
+    style={{
+              width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
+              maxWidth: 900,
+              alignSelf: "center",
+            }}>
       {/* Header */}
       <View
         className={`flex-row items-center justify-center p-4 border-b ${

@@ -21,7 +21,7 @@ import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "@/i18n";
 import { router } from "expo-router";
-import { getResponsiveStyles, isDesktop, isMobileWeb } from "@/utils/responsive";
+import { getResponsiveStyles, isDesktop, isMobileApp, isMobileWeb } from "@/utils/responsive";
 import icons from "@/constants/icons";
 
 type Bill = {
@@ -473,7 +473,7 @@ const ByOrder = () => {
         renderItem={({ item: date }) => (
           <View
             style={{
-              alignItems: Platform.OS === "web" ? "center" : "flex-start",
+              alignItems: isMobileApp() ? "flex-start" : "center",
             }}
           >
             <Text
