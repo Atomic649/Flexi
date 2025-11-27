@@ -20,7 +20,7 @@ import CallAPIPrint from "@/api/print_api";
 import { getMemberId, getBusinessId } from "@/utils/utility";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
-import { isMobile } from "@/utils/responsive";
+import { isMobile, isTablet } from "@/utils/responsive";
 import * as Sharing from "expo-sharing";
 import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
@@ -694,7 +694,7 @@ export default function Print() {
           },
         ],
       });
-    } else if (isMobile()) {
+    } else if (isMobile() || isTablet()) {
       // Show options for mobile: "Save as PDF" or "Cancel"
       setAlertConfig({
         visible: true,

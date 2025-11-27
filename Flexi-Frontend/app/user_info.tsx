@@ -182,7 +182,7 @@ export default function UserInfo() {
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
           style={{
-            width: Dimensions.get("window").width > 768 ? "40%" : "100%",
+            width: Dimensions.get("window").width > 1024 ? "40%" : "100%",
             maxWidth: 600,
             alignSelf: "center",
           }}
