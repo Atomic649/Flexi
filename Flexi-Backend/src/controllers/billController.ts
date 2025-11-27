@@ -901,18 +901,82 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
 const deleteBill = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const bill = await prisma.bill.delete({
+    // Fetch the deleted bill including DocumentType and businessAcc
+    const bill = await prisma.bill.findUnique({
       where: {
         id: Number(id),
       },
+      select: {
+        DocumentType: true,
+        businessAcc: true,
+        id: true,
+      },
+    });
+
+    if (!bill) {
+      console.warn("🚀 Bill not found for stock restoration:", { billId: id });
+      return;
+    }
+
+    // update stock product back if DocumentType is Receipt
+    if (bill.DocumentType === "Receipt") {
+      const productItems = await prisma.productItem.findMany({
+        where: {
+          billId: bill.id,
+        },
+        select: {
+          product: true,
+          quantity: true,
+        },
+      });
+
+      for (const item of productItems) {
+        const productRecord = await prisma.product.findFirst({
+          where: {
+            businessAcc: bill.businessAcc,
+            name: item.product,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (!productRecord?.id) {
+          console.warn("🚀 Product not found for stock restoration:", {
+            businessAcc: bill.businessAcc,
+            productName: item.product,
+          });
+          continue;
+        }
+
+        const updatedProduct = await prisma.product.update({
+          where: {
+            id: productRecord.id,
+          },
+          data: {
+            stock: { increment: item.quantity },
+          },
+        });
+
+        console.log("🚀 Stock restored for product:", {
+          productName: item.product,
+          restoredQuantity: item.quantity,
+          updatedStock: updatedProduct.stock,
+        });
+      }
+    }
+    // delete the bill
+    await prisma.bill.delete({
+      where: {
+        id: Number(id),
+      },
+      select: { id: true },
     });
     res.json({
       status: "ok",
       message: `Deleted successfully`,
       bill: {
         id: bill.id,
-        cName: bill.cName,
-        cLastName: bill.cLastName,
       },
     });
   } catch (e) {
