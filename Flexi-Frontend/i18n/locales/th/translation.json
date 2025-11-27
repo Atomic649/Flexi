@@ -30,7 +30,8 @@
     "OCR": "สแกน",
     "complete": "เสร็จสิ้น",
     "noOptions": "ไม่มีตัวเลือก",
-    "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​"
+    "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​",
+    "orders":"คำสั่งซื้อ"
   },
   "months": {
     "january": "มกราคม",

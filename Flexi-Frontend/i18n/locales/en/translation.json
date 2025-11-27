@@ -30,7 +30,8 @@
     "OCR": "Scan",
     "complete": "Complete",
     "noOptions": "No options",
-    "networkError": "Network API Error"
+    "networkError": "Network API Error",
+    "orders":"orders"
   },
   "months": {
     "january": "January",

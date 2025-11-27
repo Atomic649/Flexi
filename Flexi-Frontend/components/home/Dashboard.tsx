@@ -411,7 +411,7 @@ export default function Dashboard() {
               {/* Calendar date picker */}
               <TouchableOpacity
                 onPress={() => setCalendarVisible(true)}
-                 activeOpacity={1}
+                activeOpacity={1}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -581,8 +581,8 @@ export default function Dashboard() {
                 >
                   <Ionicons
                     name="analytics"
-                    size={20}
-                    color={theme === "dark" ? "#a78bfa" : "#8b5cf6"}
+                    size={18}
+                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
                     style={{ marginRight: 8 }}
                   />
                   <CustomText weight="bold" className="text-lg">
@@ -601,10 +601,7 @@ export default function Dashboard() {
                   }}
                 >
                   {salesChartData.length > 0 ? (
-                    <LinearChart
-                      data={salesChartData}
-                      height={220}
-                    />
+                    <LinearChart data={salesChartData} height={220} />
                   ) : (
                     <>
                       <Ionicons
@@ -638,8 +635,8 @@ export default function Dashboard() {
                 >
                   <Ionicons
                     name="list"
-                    size={20}
-                    color={theme === "dark" ? "#02c796" : "#02c796"}
+                    size={18}
+                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
                     style={{ marginRight: 8 }}
                   />
                   <CustomText weight="bold" className="text-lg">
@@ -654,7 +651,7 @@ export default function Dashboard() {
                       marginLeft: 8,
                     }}
                   >
-                    <CustomText weight="bold" className="text-sm">
+                    <CustomText weight="bold" className="text-sm pt-1">
                       {topProducts.length}
                     </CustomText>
                   </View>
@@ -690,17 +687,22 @@ export default function Dashboard() {
                               {product.orders}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              orders •
+                            {`${t("common.orders")} •`}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
                               {product.sales}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              units
+                              {t(`product.unit.${product.unit}`)}
                             </CustomText>
                           </View>
                         </View>
-                        <CustomText weight="bold" style={{ color: "#02c796" }}>
+                        <CustomText
+                          weight="bold"
+                          style={{
+                            color: theme === "dark" ? "#00fad9" : "#09ddc1",
+                          }}
+                        >
                           {formatCurrency(product.revenue)}
                         </CustomText>
                       </View>
@@ -719,7 +721,7 @@ export default function Dashboard() {
                       size={48}
                       color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
                     />
-                    <CustomText className="mt-4 opacity-50">
+                    <CustomText className="mt-4 opacity-50 pt-1">
                       {t("dashboard.topProducts.noData")}
                     </CustomText>
                   </View>
@@ -744,11 +746,11 @@ export default function Dashboard() {
                 >
                   <Ionicons
                     name="storefront"
-                    size={20}
-                    color={theme === "dark" ? "#02c796" : "#02c796"}
+                    size={18}
+                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
                     style={{ marginRight: 8 }}
                   />
-                  <CustomText weight="bold" className="text-lg">
+                  <CustomText weight="bold" className="text-lg pt-1">
                     {t("dashboard.topStores.title")}
                   </CustomText>
                   <View
@@ -760,7 +762,7 @@ export default function Dashboard() {
                       marginLeft: 8,
                     }}
                   >
-                    <CustomText weight="bold" className="text-sm">
+                    <CustomText weight="bold" className="text-sm pt-1">
                       {topStores.length}
                     </CustomText>
                   </View>
@@ -796,17 +798,22 @@ export default function Dashboard() {
                               {store.orders}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              orders •
+                              {`${t("common.orders")} •`}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
                               {store.sales}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              units
+                               {t(`product.unit.${store.unit}`)}
                             </CustomText>
                           </View>
                         </View>
-                        <CustomText weight="bold" style={{ color: "#02c796" }}>
+                        <CustomText
+                          weight="bold"
+                          style={{
+                            color: theme === "dark" ? "#00fad9" : "#09ddc1",
+                          }}
+                        >
                           {formatCurrency(store.revenue)}
                         </CustomText>
                       </View>

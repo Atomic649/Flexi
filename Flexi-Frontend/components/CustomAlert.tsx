@@ -61,7 +61,7 @@ const CustomAlert = ({
         <AntDesign
           name={button.iconName}
           size={button.iconSize ?? 25}
-          color={button.iconColor || (button.style)}
+          color={button.iconColor || (theme === 'dark' ? '#b4b3b3' : '#2a2a2a')}
           style={{ marginRight: 10 }}
         />
       )}

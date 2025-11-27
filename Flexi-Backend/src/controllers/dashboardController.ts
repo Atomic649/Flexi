@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1, Unit } from "../generated/client1";
 import { format } from "date-fns";
 
 // Create instance of PrismaClient
@@ -411,20 +411,28 @@ export const getTopProducts = async (req: Request, res: Response) => {
         ...storeFilter
       },
       select: {
-        product: true
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            unitPrice: true,
+            unitDiscount: true,
+            unit: true
+          }
+        }
       }
-    });
+    }); 
 
     // Flatten all product items with discount consideration
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
       product: item.product,
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
-      unitDiscount: Number(item.unitDiscount || 0)
-    })));
-
+      unitDiscount: Number(item.unitDiscount || 0),
+      unit: item.unit || "Unit"
+    })));  
     // Aggregate by product name (account for unit discounts)
-    const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
+    const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
     allProductItems.forEach(item => {
       if (!productMetrics[item.product]) {
         productMetrics[item.product] = {
@@ -432,7 +440,8 @@ export const getTopProducts = async (req: Request, res: Response) => {
           revenue: 0,
           sales: 0,
           orders: 0,
-          totalDiscount: 0
+          totalDiscount: 0,
+          unit: item.unit
         };
       }
       // Calculate revenue after unit discount
@@ -444,13 +453,16 @@ export const getTopProducts = async (req: Request, res: Response) => {
       productMetrics[item.product].sales += item.quantity;
       productMetrics[item.product].orders += 1;
       productMetrics[item.product].totalDiscount += discountAmount;
+      if (!productMetrics[item.product].unit && item.unit) {
+        productMetrics[item.product].unit = item.unit;
+      }
     });
 
     // Convert to array and sort by revenue
     const topProducts = Object.values(productMetrics)
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, parseInt(limit as string));
-
+  
     res.json(topProducts);
   } catch (error) {
     console.error("Error fetching top products:", error);
@@ -767,7 +779,15 @@ export const getTopStores = async (req: Request, res: Response) => {
       },
       select: {
         storeId: true,
-        product: true
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            unitPrice: true,
+            unitDiscount: true,
+            unit: true
+          }
+        }
       }
     });
 
@@ -799,11 +819,12 @@ export const getTopStores = async (req: Request, res: Response) => {
       storeId: bill.storeId,
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
-      unitDiscount: Number(item.unitDiscount || 0)
+      unitDiscount: Number(item.unitDiscount || 0),
+      unit: item.unit || 'Unit'
     })));
 
     // Aggregate by storeId (account for unit discounts)
-    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
+    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
     allProductItems.forEach(item => {
       const storeInfo = storeMap[item.storeId] || { name: 'Unknown Store', platform: 'Unknown' };
       if (!storeMetrics[item.storeId]) {
@@ -814,7 +835,8 @@ export const getTopStores = async (req: Request, res: Response) => {
           revenue: 0,
           sales: 0,
           orders: 0,
-          totalDiscount: 0
+          totalDiscount: 0,
+          unit: item.unit
         };
       }
       // Calculate revenue after unit discount
@@ -826,13 +848,17 @@ export const getTopStores = async (req: Request, res: Response) => {
       storeMetrics[item.storeId].sales += item.quantity;
       storeMetrics[item.storeId].orders += 1;
       storeMetrics[item.storeId].totalDiscount += discountAmount;
+      if (!storeMetrics[item.storeId].unit && item.unit) {
+        storeMetrics[item.storeId].unit = item.unit;
+      }
     });
 
     // Convert to array and sort by revenue
     const topStores = Object.values(storeMetrics)
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, parseInt(limit as string));
-
+    
+console.log("Top Stores:", topStores);
     res.json(topStores);
   } catch (error) {
     console.error("Error fetching top stores:", error);
