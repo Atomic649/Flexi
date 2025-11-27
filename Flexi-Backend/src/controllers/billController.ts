@@ -56,7 +56,7 @@ interface billInput {
   DocumentType: ("Invoice" | "Receipt" | "Quotation")[];
   note?: string; // Optional note
   discount?: number; // Optional discount field
-  priceValid?: Date; // Optional price valid 
+  priceValid?: Date; // Optional price valid
   beforeDiscount?: number; // Optional field for total before discount
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
@@ -164,10 +164,10 @@ const createBill = async (req: Request, res: Response) => {
       }
     }
     billInput.billId = `INV${currentYear}/${runningNumber}`;
-    
+
     // Calculate beforeDiscount (total before any discounts)
     const beforeDiscount = billInput.productItems.reduce(
-      (sum, item) => sum + (item.quantity * item.unitPrice),
+      (sum, item) => sum + item.quantity * item.unitPrice,
       0
     );
 
@@ -233,14 +233,18 @@ const createBill = async (req: Request, res: Response) => {
             const monthBillId = `INV${billYear}/${monthRunningNumber}`;
 
             // Determine which total to use based on DocumentType
-            const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-              ? 0 
-              : total;
-            
+            const finalTotal =
+              billInput.DocumentType[0] === "Invoice" ||
+              billInput.DocumentType[0] === "Quotation"
+                ? 0
+                : total;
+
             // Set cashStatus based on DocumentType
-            const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-              ? false 
-              : true; // Receipt should always be true
+            const finalCashStatus =
+              billInput.DocumentType[0] === "Invoice" ||
+              billInput.DocumentType[0] === "Quotation"
+                ? false
+                : true; // Receipt should always be true
 
             const bill = await prisma.bill.create({
               data: {
@@ -296,14 +300,18 @@ const createBill = async (req: Request, res: Response) => {
       } else {
         // Create single bill
         // Determine which total to use based on DocumentType
-        const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-          ? 0 
-          : total;
-        
+        const finalTotal =
+          billInput.DocumentType[0] === "Invoice" ||
+          billInput.DocumentType[0] === "Quotation"
+            ? 0
+            : total;
+
         // Set cashStatus based on DocumentType
-        const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-          ? false 
-          : true; // Receipt should always be true
+        const finalCashStatus =
+          billInput.DocumentType[0] === "Invoice" ||
+          billInput.DocumentType[0] === "Quotation"
+            ? false
+            : true; // Receipt should always be true
 
         const bill = await prisma.bill.create({
           data: {
@@ -345,6 +353,45 @@ const createBill = async (req: Request, res: Response) => {
             remark: billInput.remark || "", // Optional remark
           },
         });
+        if (billInput.DocumentType[0] === "Receipt") {
+          //find product id by businessAcc and product name
+          const product = await prisma.product.findFirst({
+            where: {
+              businessAcc: billInput.businessAcc,
+              name: billInput.productItems[0].product,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          console.log("🚀 Product to reduce stock:", product);
+
+          // Reduce stock - update product stock using prisma.update only if product was found
+          if (product && product.id) {
+            const reductStock = await prisma.product.update({
+              where: {
+                id: product.id,
+              },
+              data: {
+                stock: { decrement: billInput.productItems[0].quantity },
+              },
+            });
+            console.log("🚀 Stock reduced:", reductStock);
+          } else {
+            console.warn(
+              "🚨 Product not found for stock reduction:",
+              billInput.productItems[0].product,
+              "businessAcc:",
+              billInput.businessAcc
+            );
+          }
+        } else {
+          console.log(
+            "ℹ️ Skipping stock reduction for non-receipt document type:",
+            billInput.DocumentType[0]
+          );
+        }
 
         res.json({
           status: "ok",
@@ -364,12 +411,12 @@ const getBills = async (req: Request, res: Response) => {
   try {
     // Find business ID by member ID from member table
     const businessId = await prisma.member.findUnique({
-      where : { uniqueId: memberId },
-      select:{ businessId: true },
+      where: { uniqueId: memberId },
+      select: { businessId: true },
     });
     const bills = await prisma.bill.findMany({
       where: {
-        businessAcc : businessId?.businessId ?? 0,
+        businessAcc: businessId?.businessId ?? 0,
         deleted: false,
       },
       select: {
@@ -452,7 +499,7 @@ const updateBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
-    
+
     // First, get the existing bill to check its current purchaseAt date
     const existingBill = await prisma.bill.findUnique({
       where: {
@@ -463,11 +510,11 @@ const updateBill = async (req: Request, res: Response) => {
         purchaseAt: true,
       },
     });
-    
+
     if (!existingBill) {
       return res.status(404).json({ message: "Bill not found" });
     }
-    
+
     const store = await prisma.store.findUnique({
       where: {
         id: billInput.storeId,
@@ -481,21 +528,25 @@ const updateBill = async (req: Request, res: Response) => {
     // Bills cannot be updated after the 15th of the next month from the ORIGINAL purchaseAt
     // Use the existing bill's purchaseAt date for cutoff calculation, not the new one
     const originalPurchaseDate = new Date(existingBill.purchaseAt);
-    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const nextMonth = new Date(
+      originalPurchaseDate.getFullYear(),
+      originalPurchaseDate.getMonth() + 1,
+      15
+    );
     const currentDate = new Date();
-    
+
     if (currentDate > nextMonth) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
         cutoffDate: nextMonth.toISOString(),
         originalPurchaseDate: originalPurchaseDate.toISOString(),
-        currentDate: currentDate.toISOString()
+        currentDate: currentDate.toISOString(),
       });
     }
-    
+
     // Calculate beforeDiscount (total before any discounts)
     const beforeDiscount = billInput.productItems.reduce(
-      (sum, item) => sum + (item.quantity * item.unitPrice),
+      (sum, item) => sum + item.quantity * item.unitPrice,
       0
     );
 
@@ -518,21 +569,34 @@ const updateBill = async (req: Request, res: Response) => {
         0
       ) - billLevelDiscount;
     try {
+      // Capture current product quantities for inventory adjustments
+      const existingProductItems = await prisma.productItem.findMany({
+        where: { billId: Number(id) },
+        select: {
+          product: true,
+          quantity: true,
+        },
+      });
+
       // Delete existing product items for this bill (to fully replace)
       await prisma.productItem.deleteMany({
         where: { billId: Number(id) },
       });
-      
+
       // Determine which total to use based on DocumentType
-      const finalTotal = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-        ? 0 
-        : total;
-      
+      const finalTotal =
+        billInput.DocumentType[0] === "Invoice" ||
+        billInput.DocumentType[0] === "Quotation"
+          ? 0
+          : total;
+
       // Set cashStatus based on DocumentType
-      const finalCashStatus = (billInput.DocumentType[0] === "Invoice" || billInput.DocumentType[0] === "Quotation") 
-        ? false 
-        : true; // Receipt should always be true
-        
+      const finalCashStatus =
+        billInput.DocumentType[0] === "Invoice" ||
+        billInput.DocumentType[0] === "Quotation"
+          ? false
+          : true; // Receipt should always be true
+
       const bill = await prisma.bill.update({
         where: {
           id: Number(id),
@@ -576,10 +640,82 @@ const updateBill = async (req: Request, res: Response) => {
           remark: billInput.remark || "", // Optional remark
         },
       });
+      if (billInput.DocumentType[0] === "Receipt") {
+        const aggregateQuantities = (
+          items: { product: string; quantity: number }[]
+        ) => {
+          return items.reduce<Record<string, number>>((acc, item) => {
+            const quantity = Number(item.quantity) || 0;
+            acc[item.product] = (acc[item.product] || 0) + quantity;
+            return acc;
+          }, {});
+        };
+
+        const previousQuantities = aggregateQuantities(existingProductItems);
+        const newQuantities = aggregateQuantities(billInput.productItems);
+        const affectedProducts = new Set([
+          ...Object.keys(previousQuantities),
+          ...Object.keys(newQuantities),
+        ]);
+
+        for (const productName of affectedProducts) {
+          const previousQty = previousQuantities[productName] || 0;
+          const newQty = newQuantities[productName] || 0;
+          const delta = newQty - previousQty;
+
+          if (delta === 0) {
+            continue; // No adjustment needed
+          }
+
+          const productRecord = await prisma.product.findFirst({
+            where: {
+              businessAcc: billInput.businessAcc,
+              name: productName,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          if (!productRecord?.id) {
+            console.warn("� Product not found for stock adjustment:", {
+              businessAcc: billInput.businessAcc,
+              productName,
+            });
+            continue;
+          }
+
+          const stockUpdate =
+            delta > 0 ? { decrement: delta } : { increment: Math.abs(delta) };
+
+          const updatedProduct = await prisma.product.update({
+            where: {
+              id: productRecord.id,
+            },
+            data: {
+              stock: stockUpdate,
+            },
+          });
+
+          console.log("� Stock adjusted for product:", {
+            productName,
+            previousQty,
+            newQty,
+            delta,
+            updatedStock: updatedProduct.stock,
+          });
+        }
+      } else {
+        console.log(
+          "ℹ️ Skipping stock adjustment for non-receipt document type:",
+          billInput.DocumentType[0]
+        );
+      }
+
       res.json({
-        status: "ok",
-        message: "Updated bill successfully",
-        bill: bill,
+        id: bill.id,
+        billId: bill.billId,
+        message: `Updated bill successfully`,
       });
     } catch (e) {
       console.error(e);
@@ -603,7 +739,7 @@ const updateCashStatusById = async (req: Request, res: Response) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  
+
   try {
     // First, get the existing bill to check its purchaseAt date for update restrictions
     const existingBill = await prisma.bill.findUnique({
@@ -615,7 +751,7 @@ const updateCashStatusById = async (req: Request, res: Response) => {
         purchaseAt: true,
       },
     });
-    
+
     if (!existingBill) {
       return res.status(404).json({ message: "Bill not found" });
     }
@@ -623,18 +759,22 @@ const updateCashStatusById = async (req: Request, res: Response) => {
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the original purchaseAt
     const originalPurchaseDate = new Date(existingBill.purchaseAt);
-    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const nextMonth = new Date(
+      originalPurchaseDate.getFullYear(),
+      originalPurchaseDate.getMonth() + 1,
+      15
+    );
     const currentDate = new Date();
-    
+
     if (currentDate > nextMonth) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
         cutoffDate: nextMonth.toISOString(),
         originalPurchaseDate: originalPurchaseDate.toISOString(),
-        currentDate: currentDate.toISOString()
+        currentDate: currentDate.toISOString(),
       });
     }
-    
+
     const bill = await prisma.bill.update({
       where: {
         id: Number(id),
@@ -660,7 +800,9 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
 
   // validate the request body
   const schema = Joi.object({
-    DocumentType: Joi.string().valid("Invoice", "Receipt", "Quotation").required(),
+    DocumentType: Joi.string()
+      .valid("Invoice", "Receipt", "Quotation")
+      .required(),
   });
 
   // If the request body is invalid, return error 400 Bad request
@@ -687,15 +829,19 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the original purchaseAt
     const originalPurchaseDate = new Date(currentBill.purchaseAt);
-    const nextMonth = new Date(originalPurchaseDate.getFullYear(), originalPurchaseDate.getMonth() + 1, 15);
+    const nextMonth = new Date(
+      originalPurchaseDate.getFullYear(),
+      originalPurchaseDate.getMonth() + 1,
+      15
+    );
     const currentDate = new Date();
-    
+
     if (currentDate > nextMonth) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
         cutoffDate: nextMonth.toISOString(),
         originalPurchaseDate: originalPurchaseDate.toISOString(),
-        currentDate: currentDate.toISOString()
+        currentDate: currentDate.toISOString(),
       });
     }
 
@@ -709,18 +855,23 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
     // Set cashStatus and total based on DocumentType
     if (DocumentType === "Receipt") {
       updateData.cashStatus = true;
-      
+
       // If changing to Receipt, use totalQuotation or calculate from products
-      if (currentBill.totalQuotation !== null && currentBill.totalQuotation !== undefined) {
+      if (
+        currentBill.totalQuotation !== null &&
+        currentBill.totalQuotation !== undefined
+      ) {
         updateData.total = currentBill.totalQuotation;
       } else {
         // Calculate total from product items if totalQuotation is not available
-        const calculatedTotal = currentBill.product.reduce(
-          (sum, item) =>
-            sum +
-            (item.quantity * item.unitPrice - (item.unitDiscount || 0) * item.quantity),
-          0
-        ) - (currentBill.billLevelDiscount || 0);
+        const calculatedTotal =
+          currentBill.product.reduce(
+            (sum, item) =>
+              sum +
+              (item.quantity * item.unitPrice -
+                (item.unitDiscount || 0) * item.quantity),
+            0
+          ) - (currentBill.billLevelDiscount || 0);
         updateData.total = calculatedTotal;
       }
     } else {
@@ -817,8 +968,8 @@ const getthisYearSales = async (req: Request, res: Response) => {
     }
     // Find business ID by member ID from member table
     const businessId = await prisma.member.findUnique({
-      where : { uniqueId: String(memberId) },
-      select:{ businessId: true },
+      where: { uniqueId: String(memberId) },
+      select: { businessId: true },
     });
 
     const sales = await prisma.bill.aggregate({
@@ -826,7 +977,7 @@ const getthisYearSales = async (req: Request, res: Response) => {
         total: true,
       },
       where: {
-        businessAcc : businessId?.businessId ?? 0,
+        businessAcc: businessId?.businessId ?? 0,
         purchaseAt: {
           gte: new Date(new Date().getFullYear(), 0, 1),
           lte: new Date(new Date().getFullYear(), 11, 31),
