@@ -17,6 +17,7 @@ const dailyReport = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
+        DocumentType: "Receipt",
       },
        select: {
         purchaseAt: true,        
@@ -118,6 +119,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
+        DocumentType: "Receipt",
       },
        select: {
         purchaseAt: true,

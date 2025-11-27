@@ -78,6 +78,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
        businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter,
+        DocumentType: "Receipt",
         ...storeFilter
       },
       select: {
@@ -222,6 +223,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter,
+        DocumentType: "Receipt",
         ...storeFilter
       },
       select: {
@@ -403,7 +405,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
+        DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
         ...storeFilter
@@ -521,6 +523,7 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
+        DocumentType: "Receipt",
         purchaseAt: dateFilter
       },
       select: {
@@ -758,7 +761,7 @@ export const getTopStores = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
+        DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter
       },
