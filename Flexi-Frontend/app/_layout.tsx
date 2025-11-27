@@ -220,6 +220,16 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* EditAdsCost */}
+        <Stack.Screen
+          name="editAdsCost"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("ads.editAdCost"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
+        {/* CreateStore */}
         <Stack.Screen
           name="createstore"
           options={{

@@ -613,6 +613,7 @@
     "accId": "Account ID",
     "createbutton": "Connect",
     "createAdCostButton": "Create Ad Cost",
+    "editAdCost": "Edit Ad Cost",
     "chooseAdsAccount": "Select Ads Account",
     "adsAccount": "Ads Account",
     "alerts": {
@@ -620,7 +621,8 @@
       "ok": "OK",
       "success": "Success",
       "successTitle": "Ad connected successfully",
-      "successMessage": "Please press OK to proceed"
+      "successMessage": "Please press OK to proceed",
+      "successTitleUpdated": "Ad updated successfully"
     },
     "validation": {
       "incomplete": "Incomplete data",

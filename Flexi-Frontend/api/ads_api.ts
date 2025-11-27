@@ -49,6 +49,50 @@ class CallAPIAds {
       }
     }
   }
+
+  async getAdsCostById(id: number): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/ads/${id}`);
+
+      console.log("🚀 Get AdsCost By Id API Response:", response.data);
+      
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get AdsCost By Id API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
+  async updateAdsCostAPI(
+    id: number,
+    data: {
+      date: Date;
+      memberId: string;
+      adsCost: number;
+      platformId: number;
+      businessAcc: number;
+      product: string;
+    }
+  ): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.put(`/ads/update/${id}`, data);
+      console.log("🚀 Update AdsCost API Response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Update AdsCost API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
 }
 
 export default new CallAPIAds();

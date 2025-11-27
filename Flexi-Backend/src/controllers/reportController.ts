@@ -261,6 +261,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         memberId: memberId,
       },
       select: {
+        id: true,
         date: true,
         adsCost: true,
         platform: {
@@ -294,6 +295,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
     const result = adsCost
       .map((adsCost) => {
         return {
+          id: adsCost.id,  
           date: adsCost.date,
           expenses: adsCost.adsCost,
           type: "ads",

@@ -127,6 +127,15 @@ export default function ExpenseCard({
                   type,
                 },
               });
+            } else if (type === "ads") {
+              router.push({
+                pathname: "/editAdsCost",
+                params: {
+                  id,
+                  date,
+                  expenses                 
+                },
+              });
             } else {
               // setDetailVisible(true);
             }
@@ -172,21 +181,22 @@ export default function ExpenseCard({
                 >
                   -{formatNumber(expenses)}
                 </Text>
-
-                <Ionicons
-                  className="text-end mt-2 justify-end"
-                  name="document-text-outline"
-                  size={16}
-                  color={
-                    !image
-                      ? theme === "dark"
-                        ? "rgba(255, 255, 255, 0.3)"
-                        : "rgba(103, 103, 103, 0.3)"
-                      : theme === "dark"
-                      ? "white"
-                      : "#676767"
-                  }
-                />
+                {type === "expense" && (
+                  <Ionicons
+                    className="text-end mt-2 justify-end"
+                    name="document-text-outline"
+                    size={16}
+                    color={
+                      !image
+                        ? theme === "dark"
+                          ? "rgba(255, 255, 255, 0.3)"
+                          : "rgba(103, 103, 103, 0.3)"
+                        : theme === "dark"
+                        ? "white"
+                        : "#676767"
+                    }
+                  />
+                )}
               </View>
             </View>
           </View>
@@ -321,5 +331,3 @@ export default function ExpenseCard({
     </>
   );
 }
-
-

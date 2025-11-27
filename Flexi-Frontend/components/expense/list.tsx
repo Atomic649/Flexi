@@ -252,9 +252,20 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                           sName: expense.sName,
                         },
                       });
+                    } else if (expense.type === "ads") {
+                      router.push({
+                        pathname: "/editAdsCost",
+                        params: {
+                          id: expense.id,
+                          date: expense.date,
+                          expenses: expense.expenses,
+                          note: expense.note,
+                          desc: expense.desc,
+                        },
+                      });
                     } else {
                       globalThis.console.warn(
-                        "Edit functionality not available for ads expenses"
+                        `Edit functionality not available for expense type: ${expense.type}`
                       );
                     }
                   }} // Navigate to edit screen

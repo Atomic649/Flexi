@@ -700,7 +700,7 @@ const Section = ({
           <Pressable onPress={router}>
             <CustomText
               link={true}
-              className={`text-sm mb-2 ${textColorClass}`}
+              className={`text-sm mb-2 pt-1 ${textColorClass}`}
             >
               {subtitle}
             </CustomText>

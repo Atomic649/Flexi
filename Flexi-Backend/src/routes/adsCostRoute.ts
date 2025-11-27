@@ -31,10 +31,7 @@ router.get("/business/:businessAcc",authenticateToken, getAdsCosts);
 router.get("/:id",authenticateToken,getAdsCostById);
 
 // Updating a Ads Cost by ID 
-router.put("/:id",authenticateToken, updateAdsCost);
-
-// Updating Date by ID 
-router.put("/date/:id",authenticateToken, updateAdsDateById);
+router.put("/update/:id",authenticateToken, updateAdsCost);
 
 // Delete a Ads Cost by ID 
 router.delete("/:id", authenticateToken,deleteAdsCost);

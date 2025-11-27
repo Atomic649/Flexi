@@ -615,6 +615,7 @@
     "createbutton": "เชื่อมต่อ",
     "createAdCostButton": "ลงค่าโฆษณา",
     "chooseAdsAccount": "เลือกบัญชีโฆษณา",
+    "editAdCost": "แก้ไขค่าโฆษณา",    
     "adsAccount": "บัญชีโฆษณา",   
     "alerts": {
       "error": "ข้อผิดพลาด",
@@ -622,7 +623,8 @@
       "success": "สำเร็จ",
       "successTitle": "เชื่อมต่อโฆษณาสำเร็จ",
       "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
-      "successTitleAdded": "ลงค่าโฆษณาสำเร็จ"
+      "successTitleAdded": "ลงค่าโฆษณาสำเร็จ",
+      "successTitleUpdated": "แก้ไขค่าโฆษณาสำเร็จ"
     },
     "validation": {
       "incomplete": "ข้อมูลไม่ครบถ้วน",
