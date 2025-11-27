@@ -694,7 +694,7 @@ export default function Print() {
           },
         ],
       });
-    } else if (isMobile() || isTablet()) {
+    } else if (isMobile()|| isTablet()) {
       // Show options for mobile: "Save as PDF" or "Cancel"
       setAlertConfig({
         visible: true,

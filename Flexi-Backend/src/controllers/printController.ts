@@ -188,6 +188,8 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
   try {
     const { memberId, customerName } = req.query;
 
+    console.log("Search Bills By Customer API - memberId:", memberId, "customerName:", customerName);
+
     if (!memberId || !customerName) {
       return res.status(400).json({
         error: "Member ID and customer name are required",
@@ -222,7 +224,12 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
       orderBy: {
         purchaseAt: "desc",
       },
+      include: {
+        product: true, // ensure line items are available for invoice modal
+      },
     });
+
+    console.log("🚀 Search Bills By Customer API:", bills);
 
     return res.status(200).json(bills);
   } catch (error) {
