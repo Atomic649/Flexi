@@ -2302,10 +2302,12 @@ export default function CreateExpense({
           buttons={[
             {
               text: t("expense.detail.pickPdf") || "Pick PDF",
+              iconName: "file-pdf",
               onPress: handlePickPdf,
             },
             {
               text: t("expense.detail.pickImage") || "Pick Image",
+              iconName: "file-image",
               onPress: () => pickImage(false),
             },
             {

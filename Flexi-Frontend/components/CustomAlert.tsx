@@ -3,11 +3,15 @@ import { Modal, View, TouchableOpacity, Pressable, Platform } from 'react-native
 import { CustomText } from './CustomText';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useTranslation } from 'react-i18next';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 interface AlertButton {
   text: string;
   onPress: () => void;
   style?: 'default' | 'cancel' | 'destructive';
+  iconName?: keyof typeof AntDesign.glyphMap;
+  iconColor?: string;
+  iconSize?: number;
 }
 
 interface CustomAlertProps {
@@ -16,9 +20,18 @@ interface CustomAlertProps {
   message: string;
   buttons: AlertButton[];
   onClose: () => void;
+  titleIconName?: keyof typeof AntDesign.glyphMap;
+  titleIconColor?: string;
+  titleIconSize?: number;
 }
 
-const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertProps) => {
+const CustomAlert = ({
+  visible,
+  title,
+  message,
+  buttons,
+  onClose,
+  }: CustomAlertProps) => {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
 
@@ -32,6 +45,35 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
         return theme === 'dark' ? 'text-blue-400' : 'text-blue-500';
     }
   };
+
+
+  const getButtonFontFamily = (style?: string) => {
+    const isCancel = style === 'cancel';
+    if (i18n.language === 'th') {
+      return isCancel ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium';
+    }
+    return isCancel ? 'Poppins-Regular' : 'Poppins-Medium';
+  };
+
+  const renderButtonContent = (button: AlertButton) => (
+    <View className="flex-row items-center justify-center">
+      {button.iconName && (
+        <AntDesign
+          name={button.iconName}
+          size={button.iconSize ?? 25}
+          color={button.iconColor || (button.style)}
+          style={{ marginRight: 10 }}
+        />
+      )}
+      <CustomText
+        weight={button.style === 'cancel' ? 'regular' : 'medium'}
+        className={`text-center ${getButtonStyle(button.style)}`}
+        style={{ fontFamily: getButtonFontFamily(button.style) }}
+      >
+        {button.text}
+      </CustomText>
+    </View>
+  );
 
   return (
     <Modal
@@ -102,17 +144,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
                         color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
                       }}
                     >
-                      <CustomText 
-                        weight={button.style === 'cancel' ? 'regular' : 'medium'}
-                        className={`text-center ${getButtonStyle(button.style)}`}
-                        style={{ 
-                          fontFamily: i18n.language === 'th' 
-                            ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
-                            : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
-                        }}
-                      >
-                        {button.text}
-                      </CustomText>
+                      {renderButtonContent(button)}
                     </Pressable>
                   ) : (
                     <TouchableOpacity
@@ -122,17 +154,7 @@ const CustomAlert = ({ visible, title, message, buttons, onClose }: CustomAlertP
                       } ${isLastButton || isOnlyButton ? 'rounded-b-2xl' : ''}`}
                       activeOpacity={0.7}
                     >
-                      <CustomText 
-                      weight={button.style === 'cancel' ? 'regular' : 'medium'}
-                      className={`text-center ${getButtonStyle(button.style)}`}
-                      style={{ 
-                        fontFamily: i18n.language === 'th' 
-                        ? button.style === 'cancel' ? 'IBMPlexSansThai-Regular' : 'IBMPlexSansThai-Medium'
-                        : button.style === 'cancel' ? 'Poppins-Regular' : 'Poppins-Medium'
-                      }}
-                      >
-                      {button.text}
-                      </CustomText>
+                      {renderButtonContent(button)}
                     </TouchableOpacity>
                   )}
                 </React.Fragment>
