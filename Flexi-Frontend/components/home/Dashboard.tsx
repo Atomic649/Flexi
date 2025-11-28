@@ -82,7 +82,7 @@ const MetricCard = ({
         }}
       >
         <CustomText
-          className="text-sm opacity-70"
+          className="text-sm opacity-70 pt-1"
           style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
         >
           {title}

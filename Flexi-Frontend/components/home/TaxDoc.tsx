@@ -204,7 +204,8 @@ export default function TaxDoc() {
     });
   }, [carRentals.length, carRentals.map((car) => car.yearly).join(",")]);
 
-  const keyboardVerticalOffset = Platform.select({ ios: 160, android: 0, default: 0 }) ?? 0;
+  const keyboardVerticalOffset =
+    Platform.select({ ios: 160, android: 0, default: 0 }) ?? 0;
 
   return (
     <KeyboardAvoidingView
@@ -216,505 +217,371 @@ export default function TaxDoc() {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           style={{
-            width: isMobile()   ? "100%" : "60%",
+            width: isMobile() ? "100%" : "60%",
             alignSelf: "center", // Center the content on larger screens
             padding: 10,
             maxWidth: 500,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
         >
-       
-        {!vat && (
-          <View
-            className="p-4"
-            style={{
-              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-              borderRadius: 10,
-              margin: 10,
-            }}
-          >
-            <View className="pt-4 px-4">
-              <View className="mb-4">
-                <CustomText className="text-lg font-bold">
-                  {t("taxDoc.vatTitle")}
-                </CustomText>
-                <CustomText className="text-sm text-gray-600">
-                  {t("taxDoc.vatDesc")}
-                </CustomText>
-              </View>
-              <View className="mb-4 flex flex-row justify-around ">
-                <View className="flex-col">
-                  <CustomText className="text-base text-left">
-                    {t("taxDoc.annualSales")}
+          {!vat && (
+            <View
+              className="p-4"
+              style={{
+                backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+                borderRadius: 10,
+                margin: 10,
+              }}
+            >
+              <View className="pt-4 px-4">
+                <View className="mb-4">
+                  <CustomText className="text-lg mb-2 "
+                  weight="bold">
+                    {t("taxDoc.vatTitle")}
                   </CustomText>
-                  <CustomText className="text-base text-left">
-                    {anualSales.toLocaleString()}
+                  <CustomText className="text-sm text-gray-600">
+                    {t("taxDoc.vatDesc")}
                   </CustomText>
                 </View>
-                <View className="flex-col">
-                  <CustomText className="text-base text-right">
-                    {t("taxDoc.vatFullScore")}
-                  </CustomText>
-                  <CustomText className="text-base text-right">
-                    {(1800000).toLocaleString()}
-                  </CustomText>
+                <View className="mb-4 flex flex-row justify-around ">
+                  <View className="flex-col">
+                    <CustomText className="text-base text-left pt-1">
+                      {t("taxDoc.annualSales")}
+                    </CustomText>
+                    <CustomText className="text-base text-left">
+                      {anualSales.toLocaleString()}
+                    </CustomText>
+                  </View>
+                  <View className="flex-col">
+                    <CustomText className="text-base text-right pt-1">
+                      {t("taxDoc.vatFullScore")}
+                    </CustomText>
+                    <CustomText className="text-base text-right">
+                      {(1800000).toLocaleString()}
+                    </CustomText>
+                  </View>
                 </View>
               </View>
-            </View>
 
-            {/* VAT Power Tank limit */}
-            <View className="mb-4" style={{ position: "relative", height: 16, width: "100%" }}>
-              {/* Background (grey) bar */}
+              {/* VAT Power Tank limit */}
               <View
+                className="mb-4"
                 style={{
+                  position: "relative",
+                  height: 16,
                   width: "100%",
-                  height: 16,
+                  borderRadius: 10,
                   backgroundColor: theme === "dark" ? "#343436" : "#d9d8d5",
-                  borderRadius: 10,
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
+                  overflow: "hidden", // ensure children are cropped to this container
                 }}
-              />
-              {/* Foreground (teal) bar */}
-              <View
-                style={{
-                  width: `${score}%`,
-                  height: 16,
-                  backgroundColor: theme === "dark" ? "#06fbc6" : "#0efbd4",
-                  borderRadius: 10,
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                }}
-              />
-            </View>
-          </View>
-        )}
-
-        {/* Annual Tax */}
-        {/* {businessData?.taxType === "Juristic" && (
-          <View
-            className="p-4"
-            style={{
-              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-              borderRadius: 10,
-              margin: 10,
-            }}
-          >
-            <View className="px-4 flex-row gap-2">
-              <Ionicons>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={24}
-                  color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+              >
+                {/* Foreground (teal) bar */}
+                <View
+                  style={{
+                    width: `${score}%`,
+                    height: 16,
+                    backgroundColor: theme === "dark" ? "#06fbc6" : "#0efbd4",
+                    borderRadius: 10,
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                  }}
                 />
-              </Ionicons>
-              <CustomText className="text-lg font-bold">
-                {t("taxDoc.corpRegistration")}
-              </CustomText>
-            </View>
-          </View>
-        )} */}
-
-        {businessData?.taxType === "Individual" && (
-          <View
-            className="p-4"
-            style={{
-              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-              borderRadius: 10,
-              margin: 10,
-            }}
-          >
-            <View className="pt-4 px-4">
-              <CustomText className="text-lg font-bold">
-                {t("taxDoc.annualTaxTitle")}
-              </CustomText>
-              <View className="flex-row gap-2 items-center">
-                <Ionicons
-                  name="checkmark-circle"
-                  size={24}
-                  color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
-                />
-                <CustomText className="text-lg font-bold">
-                  {t(businessData?.taxType)}
-                </CustomText>
               </View>
-              <CustomText className="text-sm text-gray-600">
-                {t("taxDoc.annualTaxDesc")}
-              </CustomText>
-              <View className="mb-4 flex flex-row justify-around mt-2 ">
-                <View className="flex-col">
-                  <CustomText className="text-base text-left">
-                    {t("taxDoc.annualExpense")}
-                  </CustomText>
+            </View>
+          )}
 
-                  <CustomText className="text-base text-left">
-                    {annualExpense.toLocaleString()}
+          {businessData?.taxType === "Individual" && (
+            <View
+              className="p-4"
+              style={{
+                backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+                borderRadius: 10,
+                margin: 10,
+              }}
+            >
+              <View className="pt-4 px-4">
+                <CustomText className="text-lg mb-2 "
+                weight="bold">
+                  {t("taxDoc.annualTaxTitle")}
+                </CustomText>
+                <View className="flex-row gap-2 items-center">
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={24}
+                    color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+                  />
+                  <CustomText className="text-lg font-bold">
+                    {t(businessData?.taxType)}
                   </CustomText>
-                  <CustomText
-                    className="text-base text-left pt-2"
-                    weight="bold"
-                    style={{
-                      
-                      color:
-                        parseFloat(scoreExpensePercentage) > 60
-                          ? "red"
-                          : theme === "dark"
-                          ? "#ffffff"
-                          : "#000000",
-                    }}
-                  >
-                    {scoreExpensePercentage}
-                  </CustomText>
-                  {parseFloat(scoreExpensePercentage) > 60 && (
+                </View>
+                <CustomText className="text-sm text-gray-600 mt-1"
+               >
+                  {t("taxDoc.annualTaxDesc")}
+                </CustomText>
+                <View className="mb-4 flex flex-row justify-around mt-2 ">
+                  <View className="flex-col">
+                    <CustomText className="text-base text-left pt-1"
+                    >
+                      {t("taxDoc.annualExpense")}
+                    </CustomText>
+
+                    <CustomText className="text-base text-left">
+                      {annualExpense.toLocaleString()}
+                    </CustomText>
                     <CustomText
-                      className="text-sm text-left"
+                      className="text-base text-left pt-2"
+                      weight="bold"
                       style={{
-                        color: "red",
+                        color:
+                          parseFloat(scoreExpensePercentage) > 60
+                            ? "red"
+                            : theme === "dark"
+                            ? "#ffffff"
+                            : "#000000",
                       }}
                     >
-                      {t("taxDoc.taxDocAlert")}
+                      {scoreExpensePercentage}
                     </CustomText>
-                  )}
-                </View>
-                <View className="flex-col">
-                  <CustomText className="text-base text-right">
-                    {t("taxDoc.annualIncome")}
-                  </CustomText>
-                  <CustomText className="text-base text-right">
-                    {anualSales.toLocaleString()}
-                  </CustomText>
+                    {parseFloat(scoreExpensePercentage) > 60 && (
+                      <CustomText
+                        className="text-sm text-left"
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {t("taxDoc.taxDocAlert")}
+                      </CustomText>
+                    )}
+                  </View>
+                  <View className="flex-col">
+                    <CustomText className="text-base text-right pt-1">
+                      {t("taxDoc.annualIncome")}
+                    </CustomText>
+                    <CustomText className="text-base text-right">
+                      {anualSales.toLocaleString()}
+                    </CustomText>
+                  </View>
                 </View>
               </View>
-            </View>
 
-            {/* Tax Power Tank limit */}
-            <View className="mb-4 items-center">
+              {/* Tax Power Tank limit */}
               <View
+                className="mb-4 items-center"
                 style={{
                   width: "100%",
-                  height: 16, // Adjust height to fit content
+                  height: 16,
                   justifyContent: "center",
                   alignItems: "flex-start",
                   backgroundColor: theme === "dark" ? "#06fbc6" : "#9cffef",
-                  borderRadius: 10,                  
-                }}
-              ></View>
-              <View
-                style={{
-                  width: "60%", // Adjust width based on score
-                  height: 16, // Adjust height to fit content
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                  backgroundColor: theme === "dark" ? "#fe270b50" : "#fe270b73",                  
-                  borderTopLeftRadius: 10,
-                  borderBottomLeftRadius: 10,
-                  position: "absolute", // Position it on top of the background
-                  left: 0, // Align to the left
-                }}
-              ></View>
-              <View
-                style={{
-                  width: `${scoreExpense}%`, // Adjust width based on score
-                  maxWidth: "100%",
-                  height: 16, // Adjust height to fit content
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                  backgroundColor: theme === "dark" ? "#ff2d31" : "#ff2d31",
                   borderRadius: 10,
-                  margin: 10,
-                  position: "absolute", // Position it on top of the background
-                  left: 0, // Align to the left
+                  position: "relative",
+                  overflow: "hidden", // ensure children are cropped to this container
                 }}
-              ></View>
+              >
+                <View
+                  style={{
+                    width: "60%",
+                    height: 16,
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    backgroundColor:
+                      theme === "dark" ? "#fe270b50" : "#fe270b73",
+                    borderTopLeftRadius: 10,
+                    borderBottomLeftRadius: 10,
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                  }}
+                />
+                <View
+                  style={{
+                    width: `${Math.min(Math.max(scoreExpense, 0), 100)}%`, // capped 0-100%
+                    maxWidth: "100%",
+                    height: 16,
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    backgroundColor: theme === "dark" ? "#ff2d31" : "#ff2d31",
+                    borderRadius: 10,
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                  }}
+                />
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {/* 3D Tax Bracket Stairs before Individual Tax */}
-        <View style={{ marginVertical: 0 }}>
-          <TaxBracketStairs3D
-            taxBrackets={taxBrackets}
-            taxableIncome={yearlySum - (reductSum + exemption)}
-          />
-        </View>
-        {/* Individual Tax */}
-        <View
-          className="p-4"
-          style={{
-            backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-            borderRadius: 10,
-            marginBottom: 10,
-          }}
-        >
-          <View className="px-4 flex-row gap-2 items-start">
-            {/* Yearly Income */}
-            <View
-              className="
+          {/* 3D Tax Bracket Stairs before Individual Tax */}
+          <View style={{ marginVertical: 0 }}>
+            <TaxBracketStairs3D
+              taxBrackets={taxBrackets}
+              taxableIncome={yearlySum - (reductSum + exemption)}
+            />
+          </View>
+          {/* Individual Tax */}
+          <View
+            className="p-4"
+            style={{
+              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+              borderRadius: 10,
+              marginBottom: 10,
+            }}
+          >
+            <View className="px-4 flex-row gap-2 items-start">
+              {/* Yearly Income */}
+              <View
+                className="
               flex-col w-1/4 items-center"
-            >
-              <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-              <CustomText className="pt-2">
-                {yearlySum.toLocaleString()}
-              </CustomText>
+              >
+                <CustomText>{t("taxDoc.yearIncome")}</CustomText>
+                <CustomText className="pt-2">
+                  {yearlySum.toLocaleString()}
+                </CustomText>
+              </View>
+              {/* Reduct */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.reduction")}</CustomText>
+                <CustomText className="pt-2">
+                  {reductSum.toLocaleString()}
+                </CustomText>
+              </View>
+              {/* TextInput Exemption */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.exemption")}</CustomText>
+                <TextInput
+                  value={exemption.toString()}
+                  onChangeText={(value) => setExemption(Number(value) || 0)}
+                  placeholder="0"
+                  placeholderTextColor="#a5a5a5"
+                  keyboardType="numeric"
+                  style={{
+                    ...commonTextInputStyle,
+                    width: isMobile() ? 80 : 120,
+                    minWidth: 60,
+                    maxWidth: 160,
+                    alignSelf: "center",
+                  }}
+                />
+              </View>
+              {/* Taxable Income */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
+                <CustomText className="pt-2">
+                  {(yearlySum - (reductSum + exemption)).toLocaleString()}
+                </CustomText>
+              </View>
             </View>
-            {/* Reduct */}
-            <View className="flex-col w-1/4 items-center">
-              <CustomText>{t("taxDoc.reduction")}</CustomText>
-              <CustomText className="pt-2">
-                {reductSum.toLocaleString()}
-              </CustomText>
-            </View>
-            {/* TextInput Exemption */}
-            <View className="flex-col w-1/4 items-center">
-              <CustomText>{t("taxDoc.exemption")}</CustomText>
-              <TextInput
-                value={exemption.toString()}
-                onChangeText={(value) => setExemption(Number(value) || 0)}
-                placeholder="0"
-                placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
+            {/* Tax Calculation */}
+            <View className="p-4 flex-row gap-2 items-center justify-center">
+              <CustomText>{t("taxDoc.individualTax")}</CustomText>
+              <Text
                 style={{
-                  ...commonTextInputStyle,
-                  width: isMobile() ? 80 : 120,
-                  minWidth: 60,
-                  maxWidth: 160,
-                  alignSelf: "center",
+                  color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
+                  fontSize: 28,
+                  fontWeight: "900",
+                  marginLeft: 10,
                 }}
-              />
+              >
+                {(() => {
+                  const taxableIncome = yearlySum - (reductSum + exemption);
+                  return calculateTax(taxableIncome).toLocaleString();
+                })()}
+              </Text>
             </View>
-            {/* Taxable Income */}
-            <View className="flex-col w-1/4 items-center">
-              <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
-              <CustomText className="pt-2">
-                {(yearlySum - (reductSum + exemption)).toLocaleString()}
+          </View>
+
+          {/* Tip to take money from corparate to individual spend */}
+          <View
+            className="p-4"
+            style={{
+              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+              borderRadius: 10,
+            }}
+          >
+            <View className="px-4 flex-row gap-2 mb-2">
+              <Ionicons>
+                <Ionicons
+                  name="cash"
+                  size={24}
+                  color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+                  style={{ marginRight: 4 }}
+                />
+              </Ionicons>
+              <CustomText className="text-lg font-bold">
+                {t("taxDoc.tipTitle")}
               </CustomText>
             </View>
-          </View>
-          {/* Tax Calculation */}
-          <View className="p-4 flex-row gap-2 items-center justify-center">
-            <CustomText>{t("taxDoc.individualTax")}</CustomText>
-            <Text
-              style={{
-                color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
-                fontSize: 28,
-                fontWeight: "900",
-                marginLeft: 10,
+            {/* Add more carRental */}
+            <TouchableOpacity
+              className="flex-row gap-2 items-end mt-2 mb-6 justify-end"
+              onPress={() => {
+                if (carRentals.length < 5) {
+                  setCarRentals([
+                    ...carRentals,
+                    { value: 0, yearly: 0, reduct: "" },
+                  ]);
+                }
               }}
+              disabled={carRentals.length >= 5}
             >
-              {(() => {
-                const taxableIncome = yearlySum - (reductSum + exemption);
-                return calculateTax(taxableIncome).toLocaleString();
-              })()}
-            </Text>
-          </View>
-        </View>
-
-        {/* Tip to take money from corparate to individual spend */}
-        <View
-          className="p-4"
-          style={{
-            backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-            borderRadius: 10,        
-          }}
-        >
-          <View className="px-4 flex-row gap-2 mb-2">
-            <Ionicons>
               <Ionicons
-                name="cash"
+                name="add-circle"
                 size={24}
-                color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
+                color={
+                  carRentals.length >= 5
+                    ? "#ccc"
+                    : theme === "dark"
+                    ? "#06fbc6"
+                    : "#0be4c0"
+                }
                 style={{ marginRight: 4 }}
               />
-            </Ionicons>
-            <CustomText className="text-lg font-bold">
-              {t("taxDoc.tipTitle")}
-            </CustomText>
-          </View>
-          {/* Add more carRental */}
-          <TouchableOpacity
-            className="flex-row gap-2 items-end mt-2 mb-6 justify-end"
-            onPress={() => {
-              if (carRentals.length < 5) {
-                setCarRentals([
-                  ...carRentals,
-                  { value: 0, yearly: 0, reduct: "" },
-                ]);
-              }
-            }}
-            disabled={carRentals.length >= 5}
-          >
-            <Ionicons
-              name="add-circle"
-              size={24}
-              color={
-                carRentals.length >= 5
-                  ? "#ccc"
-                  : theme === "dark"
-                  ? "#06fbc6"
-                  : "#0be4c0"
-              }
-              style={{ marginRight: 4 }}
-            />
-            <CustomText className="text-base text-left">
-              {t("taxDoc.addMoreCar")}
-            </CustomText>
-          </TouchableOpacity>
-          {/* Table header */}
-          <View
-            style={{
-              flexDirection: "row",
-              borderBottomWidth: 1,
-              borderColor: "#e0e0e0",
-              paddingBottom: 4,
-              marginBottom: 4,
-            }}
-          >
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-              <CustomText> </CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{t("taxDoc.monthly")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{t("taxDoc.yearly")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{t("taxDoc.reduct")}</CustomText>
-            </View>
-          </View>
-          {/* Salary row (merged deduction with wage) */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 2,
-            }}
-          >
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-              <CustomText>{t("taxDoc.salary")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <TextInput
-                value={salary.toString()}
-                onChangeText={(value) => {
-                  const num = Number(value) || 0;
-                  setSalary(num);
-                  setYearIncome(num * 12);
-                }}
-                placeholder="0"
-                placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
-                style={{
-                  ...commonTextInputStyle,
-                  width: isMobile() ? 80 : 120,
-                  minWidth: 60,
-                  maxWidth: 160,
-                  alignSelf: "center",
-                }}
-              />
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{yearIncome.toLocaleString()}</CustomText>
-            </View>
+              <CustomText className="text-base text-left">
+                {t("taxDoc.addMoreCar")}
+              </CustomText>
+            </TouchableOpacity>
+            {/* Table header */}
             <View
               style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderColor: "#e0e0e0",
+                paddingBottom: 4,
+                marginBottom: 4,
               }}
             >
-              <CustomText style={{ textAlign: "center" }}>
-                {reductSalary.toLocaleString()}
-              </CustomText>
+              <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+                <CustomText> </CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{t("taxDoc.monthly")}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{t("taxDoc.yearly")}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{t("taxDoc.reduct")}</CustomText>
+              </View>
             </View>
-          </View>
-          {/* Wage row (deduction cell merged above) */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 2,
-            }}
-          >
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-              <CustomText>{t("taxDoc.wage")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <TextInput
-                value={wage.toString()}
-                onChangeText={(value) => {
-                  const num = Number(value) || 0;
-                  setWage(num);
-                  setAllYearWage(num * 12);
-                }}
-                placeholder="0"
-                placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
-                style={{
-                  ...commonTextInputStyle,
-                  width: isMobile() ? 80 : 120,
-                  minWidth: 60,
-                  maxWidth: 160,
-                  alignSelf: "center",
-                }}
-              />
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{allYearWage.toLocaleString()}</CustomText>
-            </View>
-            <View style={{ flex: 1 }} />
-          </View>
-          {/* Car rental rows (one per car rental) */}
-          {carRentals.map((car, idx) => (
+            {/* Salary row (merged deduction with wage) */}
             <View
-              key={idx}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 paddingVertical: 2,
               }}
             >
-              <View
-                style={{
-                  flex: isMobile() ? 1.5 : 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <CustomText>{t("taxDoc.carRental")}</CustomText>
-                <CustomText>
-                  {carRentals.length > 1 ? ` #${idx + 1}` : ""}
-                </CustomText>
-                {carRentals.length > 1 && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      const updated = carRentals.filter((_, i) => i !== idx);
-                      setCarRentals(updated);
-                    }}
-                    style={{ marginLeft: 6 }}
-                  >
-                    <Ionicons name="close-circle" size={16} color="#ff4d4f" />
-                  </TouchableOpacity>
-                )}
+              <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+                <CustomText>{t("taxDoc.salary")}</CustomText>
               </View>
               <View style={{ flex: 1, alignItems: "center" }}>
                 <TextInput
-                  value={car.value.toString()}
+                  value={salary.toString()}
                   onChangeText={(value) => {
-                    let num = Number(value) || 0;
-                    if (num > 36000) {
-                      alert(
-                        t("taxDoc.carRentalMaxAlert") ||
-                          "Car rental value cannot exceed 36,000"
-                      );
-                      num = 36000;
-                    }
-                    const updated = [...carRentals];
-                    updated[idx].value = num;
-                    updated[idx].yearly = num * 12;
-                    setCarRentals(updated);
+                    const num = Number(value) || 0;
+                    setSalary(num);
+                    setYearIncome(num * 12);
                   }}
                   placeholder="0"
                   placeholderTextColor="#a5a5a5"
@@ -729,82 +596,195 @@ export default function TaxDoc() {
                 />
               </View>
               <View style={{ flex: 1, alignItems: "center" }}>
-                <CustomText>{Number(car.yearly).toLocaleString()}</CustomText>
+                <CustomText>{yearIncome.toLocaleString()}</CustomText>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CustomText style={{ textAlign: "center" }}>
+                  {reductSalary.toLocaleString()}
+                </CustomText>
+              </View>
+            </View>
+            {/* Wage row (deduction cell merged above) */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 2,
+              }}
+            >
+              <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+                <CustomText>{t("taxDoc.wage")}</CustomText>
               </View>
               <View style={{ flex: 1, alignItems: "center" }}>
-                <CustomText>{Number(car.reduct).toLocaleString()}</CustomText>
+                <TextInput
+                  value={wage.toString()}
+                  onChangeText={(value) => {
+                    const num = Number(value) || 0;
+                    setWage(num);
+                    setAllYearWage(num * 12);
+                  }}
+                  placeholder="0"
+                  placeholderTextColor="#a5a5a5"
+                  keyboardType="numeric"
+                  style={{
+                    ...commonTextInputStyle,
+                    width: isMobile() ? 80 : 120,
+                    minWidth: 60,
+                    maxWidth: 160,
+                    alignSelf: "center",
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{allYearWage.toLocaleString()}</CustomText>
+              </View>
+              <View style={{ flex: 1 }} />
+            </View>
+            {/* Car rental rows (one per car rental) */}
+            {carRentals.map((car, idx) => (
+              <View
+                key={idx}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: 2,
+                }}
+              >
+                <View
+                  style={{
+                    flex: isMobile() ? 1.5 : 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <CustomText>{t("taxDoc.carRental")}</CustomText>
+                  <CustomText>
+                    {carRentals.length > 1 ? ` #${idx + 1}` : ""}
+                  </CustomText>
+                  {carRentals.length > 1 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const updated = carRentals.filter((_, i) => i !== idx);
+                        setCarRentals(updated);
+                      }}
+                      style={{ marginLeft: 6 }}
+                    >
+                      <Ionicons name="close-circle" size={16} color="#ff4d4f" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View style={{ flex: 1, alignItems: "center" }}>
+                  <TextInput
+                    value={car.value.toString()}
+                    onChangeText={(value) => {
+                      let num = Number(value) || 0;
+                      if (num > 36000) {
+                        alert(
+                          t("taxDoc.carRentalMaxAlert") ||
+                            "Car rental value cannot exceed 36,000"
+                        );
+                        num = 36000;
+                      }
+                      const updated = [...carRentals];
+                      updated[idx].value = num;
+                      updated[idx].yearly = num * 12;
+                      setCarRentals(updated);
+                    }}
+                    placeholder="0"
+                    placeholderTextColor="#a5a5a5"
+                    keyboardType="numeric"
+                    style={{
+                      ...commonTextInputStyle,
+                      width: isMobile() ? 80 : 120,
+                      minWidth: 60,
+                      maxWidth: 160,
+                      alignSelf: "center",
+                    }}
+                  />
+                </View>
+                <View style={{ flex: 1, alignItems: "center" }}>
+                  <CustomText>{Number(car.yearly).toLocaleString()}</CustomText>
+                </View>
+                <View style={{ flex: 1, alignItems: "center" }}>
+                  <CustomText>{Number(car.reduct).toLocaleString()}</CustomText>
+                </View>
+              </View>
+            ))}
+            {/* Office rental row */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 2,
+              }}
+            >
+              <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+                <CustomText>{t("taxDoc.officeRental")}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <TextInput
+                  value={officeRental.toString()}
+                  onChangeText={(value) => {
+                    const num = Number(value) || 0;
+                    setOfficeRental(num);
+                    setAllYearOfficeRental(num * 12);
+                  }}
+                  placeholder="0"
+                  placeholderTextColor="#a5a5a5"
+                  keyboardType="numeric"
+                  style={{
+                    ...commonTextInputStyle,
+                    width: isMobile() ? 80 : 120,
+                    minWidth: 60,
+                    maxWidth: 160,
+                    alignSelf: "center",
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{allYearOfficeRental.toLocaleString()}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText>{reductOfficeRental.toLocaleString()}</CustomText>
               </View>
             </View>
-          ))}
-          {/* Office rental row */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 2,
-            }}
-          >
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-              <CustomText>{t("taxDoc.officeRental")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <TextInput
-                value={officeRental.toString()}
-                onChangeText={(value) => {
-                  const num = Number(value) || 0;
-                  setOfficeRental(num);
-                  setAllYearOfficeRental(num * 12);
-                }}
-                placeholder="0"
-                placeholderTextColor="#a5a5a5"
-                keyboardType="numeric"
-                style={{
-                  ...commonTextInputStyle,
-                  width: isMobile() ? 80 : 120,
-                  minWidth: 60,
-                  maxWidth: 160,
-                  alignSelf: "center",
-                }}
-              />
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{allYearOfficeRental.toLocaleString()}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText>{reductOfficeRental.toLocaleString()}</CustomText>
+            {/* Sum row */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 2,
+                borderTopWidth: 1,
+                borderColor: "#e0e0e0",
+                marginTop: 4,
+              }}
+            >
+              <View style={{ flex: isMobile() ? 1.5 : 1 }}>
+                <CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText style={{ fontWeight: "bold" }}>
+                  {monthlySum.toLocaleString()}
+                </CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText style={{ fontWeight: "bold" }}>
+                  {yearlySum.toLocaleString()}
+                </CustomText>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <CustomText style={{ fontWeight: "bold" }}>
+                  {reductSum.toLocaleString()}
+                </CustomText>
+              </View>
             </View>
           </View>
-          {/* Sum row */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 2,
-              borderTopWidth: 1,
-              borderColor: "#e0e0e0",
-              marginTop: 4,
-            }}
-          >
-            <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-              <CustomText style={{ fontWeight: "bold" }}>{t("")}</CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText style={{ fontWeight: "bold" }}>
-                {monthlySum.toLocaleString()}
-              </CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText style={{ fontWeight: "bold" }}>
-                {yearlySum.toLocaleString()}
-              </CustomText>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <CustomText style={{ fontWeight: "bold" }}>
-                {reductSum.toLocaleString()}
-              </CustomText>
-            </View>
-          </View>
-        </View>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
