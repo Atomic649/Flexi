@@ -146,7 +146,7 @@ export default function TaxDoc() {
     { value: 0, yearly: 0, reduct: "" },
   ]);
   // Add exemption state
-  const [exemption, setExemption] = useState(0);
+  const [exemption, setExemption] = useState(60000);
 
   // Updated sum logic to include all car rentals
   const monthlySum =
@@ -235,11 +235,11 @@ export default function TaxDoc() {
             >
               <View className="pt-4 px-4">
                 <View className="mb-4">
-                  <CustomText className="text-lg mb-2 "
+                  <CustomText className="text-lg mb-1 "
                   weight="bold">
                     {t("taxDoc.vatTitle")}
                   </CustomText>
-                  <CustomText className="text-sm text-gray-600">
+                  <CustomText className="text-sm text-gray-600 pt-1">
                     {t("taxDoc.vatDesc")}
                   </CustomText>
                 </View>
@@ -334,20 +334,19 @@ export default function TaxDoc() {
                       weight="bold"
                       style={{
                         color:
-                          parseFloat(scoreExpensePercentage) > 60
-                            ? "red"
-                            : theme === "dark"
-                            ? "#ffffff"
-                            : "#000000",
+                          parseFloat(scoreExpensePercentage) > 60 
+                            ? "#ff2d31"
+                            : theme === 'dark' ? '#b4b3b3' : '#2a2a2a',
                       }}
                     >
                       {scoreExpensePercentage}
                     </CustomText>
-                    {parseFloat(scoreExpensePercentage) > 60 && (
+                    {/* income > 150K pay tax alert */}
+                    {parseFloat(scoreExpensePercentage) > 60 && anualSales >150000 && (
                       <CustomText
                         className="text-sm text-left"
                         style={{
-                          color: "red",
+                          color: "#ff2d31",
                         }}
                       >
                         {t("taxDoc.taxDocAlert")}
@@ -386,7 +385,7 @@ export default function TaxDoc() {
                     justifyContent: "center",
                     alignItems: "flex-start",
                     backgroundColor:
-                      theme === "dark" ? "#fe270b50" : "#fe270b73",
+                      theme === "dark" ? "#fe270b25" : "#fe270b15",
                     borderTopLeftRadius: 10,
                     borderBottomLeftRadius: 10,
                     position: "absolute",
@@ -411,15 +410,100 @@ export default function TaxDoc() {
               </View>
             </View>
           )}
-
+ {/* --------------------------TaxType Individual ---------------------------------------------*/}
+          {businessData?.taxType === "Individual" && (<View style={{ marginVertical: 0 }}>
+            <TaxBracketStairs3D
+              taxBrackets={taxBrackets}
+              taxableIncome={anualSales - (annualExpense + exemption)}
+            />
+          </View>
+          )}
+           {/* Individual Tax */}
+          {businessData?.taxType === "Individual" && (
+          <View
+            className="p-4"
+            style={{
+              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+              borderRadius: 10,
+              marginBottom: 10,
+            }}
+          >
+            <View className="px-4 flex-row gap-2 items-start">
+              {/* Yearly Income */}
+              <View
+                className="
+              flex-col w-1/4 items-center"
+              >
+                <CustomText>{t("taxDoc.yearIncome")}</CustomText>
+                <CustomText className="pt-2">
+                  {anualSales.toLocaleString()}
+                </CustomText>
+              </View>
+              {/* Reduct */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.reduction")}</CustomText>
+                <CustomText className="pt-2">
+                  {annualExpense.toLocaleString()}
+                </CustomText>
+              </View>
+              {/* TextInput Exemption */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.exemption")}</CustomText>
+                <TextInput
+                  value={exemption.toString()}
+                  onChangeText={(value) => setExemption(Number(value) || 0)}
+                  placeholder="0"
+                  placeholderTextColor="#a5a5a5"
+                  keyboardType="numeric"
+                  style={{
+                    ...commonTextInputStyle,
+                    width: isMobile() ? 80 : 120,
+                    minWidth: 60,
+                    maxWidth: 160,
+                    alignSelf: "center",
+                  }}
+                />
+              </View>
+              {/* Taxable Income */}
+              <View className="flex-col w-1/4 items-center">
+                <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
+                <CustomText className="pt-2">
+                  {(anualSales - (annualExpense + exemption)).toLocaleString()}
+                </CustomText>
+              </View>
+            </View>
+            {/* Tax Calculation */}
+            <View className="p-4 flex-row gap-2 items-center justify-center">
+              <CustomText>{t("taxDoc.individualTax")}</CustomText>
+              <Text
+                style={{
+                  color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
+                  fontSize: 28,
+                  fontWeight: "900",
+                  marginLeft: 10,
+                }}
+              >
+                {(() => {
+                  const taxableIncome = yearlySum - (reductSum + exemption);
+                  return calculateTax(taxableIncome).toLocaleString();
+                })()}
+              </Text>
+            </View>
+          </View>
+          )}
+ {/*-------------------------- TaxType Juristic ---------------------------------------------*/}
+ 
+         
           {/* 3D Tax Bracket Stairs before Individual Tax */}
-          <View style={{ marginVertical: 0 }}>
+           {businessData?.taxType === "Juristic" && (<View style={{ marginVertical: 0 }}>
             <TaxBracketStairs3D
               taxBrackets={taxBrackets}
               taxableIncome={yearlySum - (reductSum + exemption)}
             />
           </View>
+          )}
           {/* Individual Tax */}
+          {businessData?.taxType === "Juristic" && (
           <View
             className="p-4"
             style={{
@@ -490,8 +574,10 @@ export default function TaxDoc() {
               </Text>
             </View>
           </View>
-
+          )}
+          
           {/* Tip to take money from corparate to individual spend */}
+          {businessData?.taxType === "Juristic" && (
           <View
             className="p-4"
             style={{
@@ -785,6 +871,11 @@ export default function TaxDoc() {
               </View>
             </View>
           </View>
+          )}
+{/* ----------------------------------------------------------------------------------------- */}
+
+
+
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
