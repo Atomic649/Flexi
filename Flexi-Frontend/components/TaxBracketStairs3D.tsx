@@ -35,8 +35,8 @@ export default function TaxBracketStairs3D({
 
   if (deviceType === "mobile") {
     dynamicBlockWidth = 35;
-    dynamicBaseHeight = 18;
-    dynamicHeightStep = 10;
+    dynamicBaseHeight = 10;
+    dynamicHeightStep = 6;
     dynamicBlockGap = 4;
     labelFontSize = 10;
   } else if (deviceType === "tablet") {
@@ -63,18 +63,15 @@ export default function TaxBracketStairs3D({
     <View
       className="flex-col items-center justify-center"
       style={{
-        height: dynamicBaseHeight + dynamicHeightStep * steps + 60,
-        marginVertical: 0,
+        height: dynamicBaseHeight + dynamicHeightStep * steps,    
+        marginBottom: 20,
       }}
     >
       <View className="flex-row items-end justify-center">
         {Array.from({ length: steps }).map((_, i) => {
           const isHighlight = i === highlightIdx;
           const height = dynamicBaseHeight + i * dynamicHeightStep;
-          // Assume theme is available via context or prop (add as needed)
-          // For this example, let's get theme from a prop or default to 'light'
-          // You may need to adjust this to fit your actual theme management
-
+      
           return (
             <View
               key={i}
@@ -87,17 +84,17 @@ export default function TaxBracketStairs3D({
                 alignItems: "center",
                 justifyContent: "flex-end",
                 shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 2,
-                elevation: 2,
+                shadowOffset: { width: 0.2, height: 0.5 },
+                shadowOpacity: 0.2,
+                shadowRadius: 1,
+                elevation:1,
                 backgroundColor: isHighlight
                   ? theme === "dark"
                     ? "#53fadb"
                     : "#53fadb"
                   : theme === "dark"
-                  ? "#272727"
-                  : "#efefef",
+                  ? "#333333"
+                  : "#ffffff",
               }}
             />
           );
@@ -121,8 +118,8 @@ export default function TaxBracketStairs3D({
               style={{
                 width: dynamicBlockWidth,
                 textAlign: "center",
-                fontSize: labelFontSize * 0.8,
-                fontWeight: "600",
+                fontSize: labelFontSize ,
+                fontWeight: "800",
                 color: isHighlight ? "#00e6cf" : "transparent",
               }}
             >

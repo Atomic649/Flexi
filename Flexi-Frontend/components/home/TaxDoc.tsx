@@ -131,6 +131,9 @@ export default function TaxDoc() {
   const percentageExpense = annualExpense / anualSales;
   const scoreExpense = percentageExpense * 100; // Convert to percentage
   const scoreExpensePercentage = scoreExpense.toFixed(2) + "%"; // Convert to millions
+  const [selectedTaxOption, setSelectedTaxOption] = useState<"60" | "100">(
+    "60"
+  );
 
   // Handle form field values
   const [salary, setSalary] = useState(0);
@@ -231,7 +234,7 @@ export default function TaxDoc() {
               style={{
                 backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
                 borderRadius: 10,
-                margin: 10,
+                marginVertical: 10,
               }}
             >
               <View className="pt-4 px-4">
@@ -297,7 +300,7 @@ export default function TaxDoc() {
               style={{
                 backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
                 borderRadius: 10,
-                margin: 10,
+                marginVertical: 10,
               }}
             >
               <View className="pt-4 px-4">
@@ -411,56 +414,7 @@ export default function TaxDoc() {
             </View>
           )}
           {/* --------------------------TaxType Individual ---------------------------------------------*/}
-          {/* choice to submit tax */}
-          {businessData?.taxType === "Individual" && (
-            <View className="flex-row justify-around items-center mb-4 p-4"
-            style={{
-              backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
-              borderRadius: 10,
-              margin: 10,
-            }}>
-              <CustomText className="text-base text-left " weight="bold">
-                {t("taxDoc.chooseSubmitTax")}
-              </CustomText>
-            <TouchableOpacity
-              onPress={() => {
-                console.log("60% selected");
-              }}
-              className="px-4 items-center justify-center"
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                backgroundColor: theme === "dark" ? "#343436" : "#dcdada",                borderRadius: 8,
-              }}
-            >
-              <CustomText weight="medium">{t("taxDoc.60%")}</CustomText>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => {
-                console.log("100% selected");
-              }}
-              className="px-4 items-center justify-center"
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                backgroundColor: theme === "dark" ? "#222222" : "#dcdada",
-                borderRadius: 8,
-              }}
-            >
-              <CustomText weight="medium">{t("taxDoc.100%")}</CustomText>
-            </TouchableOpacity>
-            
-            </View>
-          )}
-          {businessData?.taxType === "Individual" && (
-            <View style={{ marginVertical: 0 }}>
-              <TaxBracketStairs3D
-                taxBrackets={taxBrackets}
-                taxableIncome={anualSales - (annualExpense + exemption)}
-              />
-            </View>
-          )}
           {/* Individual Tax */}
           {businessData?.taxType === "Individual" && (
             <View
@@ -468,7 +422,7 @@ export default function TaxDoc() {
               style={{
                 backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
                 borderRadius: 10,
-                marginBottom: 10,
+                //marginBottom: 10,
               }}
             >
               <View className="px-4 flex-row gap-2 items-start">
@@ -486,7 +440,9 @@ export default function TaxDoc() {
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.reduction")}</CustomText>
                   <CustomText className="pt-2">
-                    {annualExpense.toLocaleString()}
+                    {selectedTaxOption === "100"
+                      ? annualExpense.toLocaleString()
+                      : (anualSales * 0.6).toLocaleString()}
                   </CustomText>
                 </View>
                 {/* TextInput Exemption */}
@@ -512,8 +468,11 @@ export default function TaxDoc() {
                   <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
                   <CustomText className="pt-2">
                     {(
-                      anualSales -
-                      (annualExpense + exemption)
+                      Number(anualSales) -
+                      ((selectedTaxOption === "100"
+                        ? Number(annualExpense)
+                        : Number(anualSales) * 0.6) +
+                        Number(exemption))
                     ).toLocaleString()}
                   </CustomText>
                 </View>
@@ -530,24 +489,97 @@ export default function TaxDoc() {
                   }}
                 >
                   {(() => {
-                    const taxableIncome = yearlySum - (reductSum + exemption);
+                    // compute numeric deduction based on selected option
+                    const deduction =
+                      selectedTaxOption === "100"
+                        ? Number(annualExpense)
+                        : Number(anualSales) * 0.6;
+                    // use anualSales (yearly income) for Individual taxable income calculation
+                    const taxableIncome =
+                      Number(anualSales) - (deduction + Number(exemption));
                     return calculateTax(taxableIncome).toLocaleString();
                   })()}
                 </Text>
               </View>
+              {businessData?.taxType === "Individual" && (
+                <View style={{ marginVertical: 0 }}>
+                  <TaxBracketStairs3D
+                    taxBrackets={taxBrackets}
+                    taxableIncome={
+                      Number(anualSales) -
+                      ((selectedTaxOption === "100"
+                        ? Number(annualExpense)
+                        : Number(anualSales) * 0.6) +
+                        Number(exemption))
+                    }
+                  />
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* choice to submit tax */}
+          {businessData?.taxType === "Individual" && (
+            <View
+              className="flex-row justify-around items-center mb-4 p-4"
+              style={{
+                backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
+                borderRadius: 10,
+                marginVertical: 10,
+              }}
+            >
+              <CustomText className="text-base text-left " weight="bold">
+                {t("taxDoc.chooseSubmitTax")}
+              </CustomText>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  setSelectedTaxOption("60");
+                }}
+                className="px-4 items-center justify-center"
+                style={{
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  backgroundColor:
+                    selectedTaxOption === "60"
+                      ? theme === "dark"
+                        ? "#06fbc6"
+                        : "#9cffef"
+                      : theme === "dark"
+                      ? "#333333"
+                      : "#dcdada",
+                  borderRadius: 8,
+                }}
+              >
+                <CustomText weight="medium">{t("taxDoc.60%")}</CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  setSelectedTaxOption("100");
+                }}
+                className="px-4 items-center justify-center"
+                style={{
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  backgroundColor:
+                    selectedTaxOption === "100"
+                      ? theme === "dark"
+                        ? "#06fbc6"
+                        : "#9cffef"
+                      : theme === "dark"
+                      ? "#333333"
+                      : "#dcdada",
+                  borderRadius: 8,
+                }}
+              >
+                <CustomText weight="medium">{t("taxDoc.100%")}</CustomText>
+              </TouchableOpacity>
             </View>
           )}
           {/*-------------------------- TaxType Juristic ---------------------------------------------*/}
 
-          {/* 3D Tax Bracket Stairs before Individual Tax */}
-          {businessData?.taxType === "Juristic" && (
-            <View style={{ marginVertical: 0 }}>
-              <TaxBracketStairs3D
-                taxBrackets={taxBrackets}
-                taxableIncome={yearlySum - (reductSum + exemption)}
-              />
-            </View>
-          )}
           {/* Individual Tax */}
           {businessData?.taxType === "Juristic" && (
             <View
@@ -619,6 +651,15 @@ export default function TaxDoc() {
                   })()}
                 </Text>
               </View>
+              {/* 3D Tax Bracket Stairs before Individual Tax */}
+              {businessData?.taxType === "Juristic" && (
+                <View style={{ marginVertical: 0 }}>
+                  <TaxBracketStairs3D
+                    taxBrackets={taxBrackets}
+                    taxableIncome={yearlySum - (reductSum + exemption)}
+                  />
+                </View>
+              )}
             </View>
           )}
 
