@@ -1548,7 +1548,10 @@
     "exemption": "Exemption)",
     "taxableIncome": "= Net Income",
     "carRentalMaxAlert": "The Revenue Department allows a maximum expense deduction of 36,000 THB per month per car.",
-    "individualTax": "Individual Tax"
+    "individualTax": "Individual Tax",
+    "chooseSubmitTax":"Choose calculate tax:",
+    "60%": "60%",
+    "100%": "100%"
   },
   "Individual": "Individual",
   "Juristic": "Company",
