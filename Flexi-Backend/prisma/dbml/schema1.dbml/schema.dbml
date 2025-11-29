@@ -76,11 +76,26 @@ Table BusinessAcc {
   platform Platform [not null]
   storefront Store [not null]
   product Product [not null]
+  documentCounters DocumentCounter [not null]
+}
+
+Table DocumentCounter {
+  id Int [pk, increment]
+  businessId Int [not null]
+  documentType DocumentType [not null]
+  count Int [not null, default: 0]
+  business BusinessAcc [not null]
+
+  indexes {
+    (businessId, documentType) [unique]
+  }
 }
 
 Table Bill {
   id Int [pk, increment]
-  billId String [not null]
+  billId String
+  quotationId String
+  invoiceId String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   cName String [not null]
@@ -569,6 +584,8 @@ Ref: Member.userId > User.id
 Ref: Member.businessId > BusinessAcc.id
 
 Ref: BusinessAcc.userId > User.id
+
+Ref: DocumentCounter.businessId > BusinessAcc.id
 
 Ref: Bill.memberId > Member.uniqueId
 

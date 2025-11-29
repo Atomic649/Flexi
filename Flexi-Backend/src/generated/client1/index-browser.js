@@ -163,9 +163,18 @@ exports.Prisma.BusinessAccScalarFieldEnum = {
   DocumentType: 'DocumentType'
 };
 
+exports.Prisma.DocumentCounterScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  documentType: 'documentType',
+  count: 'count'
+};
+
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
+  quotationId: 'quotationId',
+  invoiceId: 'invoiceId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   cName: 'cName',
@@ -625,6 +634,7 @@ exports.Prisma.ModelName = {
   User: 'User',
   Member: 'Member',
   BusinessAcc: 'BusinessAcc',
+  DocumentCounter: 'DocumentCounter',
   Bill: 'Bill',
   ProductItem: 'ProductItem',
   AdsCost: 'AdsCost',

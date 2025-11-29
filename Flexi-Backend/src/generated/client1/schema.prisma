@@ -245,23 +245,23 @@ model Member {
 }
 
 model BusinessAcc {
-  id               Int            @id @default(autoincrement())
-  createdAt        DateTime?      @default(now())
-  updatedAt        DateTime?      @updatedAt
-  businessName     String         @unique
-  businessUserName String?        @unique
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime?         @default(now())
+  updatedAt        DateTime?         @updatedAt
+  businessName     String            @unique
+  businessUserName String?           @unique
   businessAvatar   String?
   businessAddress  String?
   businessWebsite  String?
   businessPhone    String?
-  vat              Boolean?       @default(false)
-  taxId            String         @unique
-  businessType     BusinessType   @default(OnlineSale)
-  taxType          taxType        @default(Individual)
+  vat              Boolean?          @default(false)
+  taxId            String            @unique
+  businessType     BusinessType      @default(OnlineSale)
+  taxType          taxType           @default(Individual)
   userId           Int
-  memberId         String[]       @default([]) // Track all member uniqueIds associated with this business
-  DocumentType     DocumentType[] @default([Receipt])
-  user             User           @relation(fields: [userId], references: [id])
+  memberId         String[]          @default([]) // Track all member uniqueIds associated with this business
+  DocumentType     DocumentType[]    @default([Receipt])
+  user             User              @relation(fields: [userId], references: [id])
   AllMember        Member[]
   billRecord       Bill[]
   expenseRecord    Expense[]
@@ -269,11 +269,24 @@ model BusinessAcc {
   platform         Platform[]
   storefront       Store[]
   product          Product[]
+  documentCounters DocumentCounter[]
+}
+
+model DocumentCounter {
+  id           Int          @id @default(autoincrement())
+  businessId   Int
+  documentType DocumentType
+  count        Int          @default(0)
+  business     BusinessAcc  @relation(fields: [businessId], references: [id])
+
+  @@unique([businessId, documentType])
 }
 
 model Bill {
   id                   Int           @id @default(autoincrement())
-  billId               String
+  billId               String?
+  quotationId          String?
+  invoiceId            String?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   cName                String

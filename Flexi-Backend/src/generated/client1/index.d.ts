@@ -29,6 +29,11 @@ export type Member = $Result.DefaultSelection<Prisma.$MemberPayload>
  */
 export type BusinessAcc = $Result.DefaultSelection<Prisma.$BusinessAccPayload>
 /**
+ * Model DocumentCounter
+ * 
+ */
+export type DocumentCounter = $Result.DefaultSelection<Prisma.$DocumentCounterPayload>
+/**
  * Model Bill
  * 
  */
@@ -573,6 +578,16 @@ export class PrismaClient<
     * ```
     */
   get businessAcc(): Prisma.BusinessAccDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.documentCounter`: Exposes CRUD operations for the **DocumentCounter** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocumentCounters
+    * const documentCounters = await prisma.documentCounter.findMany()
+    * ```
+    */
+  get documentCounter(): Prisma.DocumentCounterDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.bill`: Exposes CRUD operations for the **Bill** model.
@@ -1216,6 +1231,7 @@ export namespace Prisma {
     User: 'User',
     Member: 'Member',
     BusinessAcc: 'BusinessAcc',
+    DocumentCounter: 'DocumentCounter',
     Bill: 'Bill',
     ProductItem: 'ProductItem',
     AdsCost: 'AdsCost',
@@ -1254,7 +1270,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "member" | "businessAcc" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "store" | "product" | "chatSession" | "chatMessage" | "credit" | "post" | "reaction" | "comment" | "inbox" | "shop" | "order" | "option" | "optionValue" | "review" | "cart"
+      modelProps: "user" | "member" | "businessAcc" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "store" | "product" | "chatSession" | "chatMessage" | "credit" | "post" | "reaction" | "comment" | "inbox" | "shop" | "order" | "option" | "optionValue" | "review" | "cart"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1477,6 +1493,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BusinessAccCountArgs<ExtArgs>
             result: $Utils.Optional<BusinessAccCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocumentCounter: {
+        payload: Prisma.$DocumentCounterPayload<ExtArgs>
+        fields: Prisma.DocumentCounterFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentCounterFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentCounterFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentCounterFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentCounterFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentCounterFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentCounterCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentCounterCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentCounterCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentCounterDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          update: {
+            args: Prisma.DocumentCounterUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentCounterDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentCounterUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DocumentCounterUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>[]
+          }
+          upsert: {
+            args: Prisma.DocumentCounterUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentCounterPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentCounterAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocumentCounter>
+          }
+          groupBy: {
+            args: Prisma.DocumentCounterGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentCounterGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentCounterCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentCounterCountAggregateOutputType> | number
           }
         }
       }
@@ -3047,6 +3137,7 @@ export namespace Prisma {
     user?: UserOmit
     member?: MemberOmit
     businessAcc?: BusinessAccOmit
+    documentCounter?: DocumentCounterOmit
     bill?: BillOmit
     productItem?: ProductItemOmit
     adsCost?: AdsCostOmit
@@ -3392,6 +3483,7 @@ export namespace Prisma {
     platform: number
     storefront: number
     product: number
+    documentCounters: number
   }
 
   export type BusinessAccCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3402,6 +3494,7 @@ export namespace Prisma {
     platform?: boolean | BusinessAccCountOutputTypeCountPlatformArgs
     storefront?: boolean | BusinessAccCountOutputTypeCountStorefrontArgs
     product?: boolean | BusinessAccCountOutputTypeCountProductArgs
+    documentCounters?: boolean | BusinessAccCountOutputTypeCountDocumentCountersArgs
   }
 
   // Custom InputTypes
@@ -3462,6 +3555,13 @@ export namespace Prisma {
    */
   export type BusinessAccCountOutputTypeCountProductArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProductWhereInput
+  }
+
+  /**
+   * BusinessAccCountOutputType without action
+   */
+  export type BusinessAccCountOutputTypeCountDocumentCountersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentCounterWhereInput
   }
 
 
@@ -6969,6 +7069,7 @@ export namespace Prisma {
     platform?: boolean | BusinessAcc$platformArgs<ExtArgs>
     storefront?: boolean | BusinessAcc$storefrontArgs<ExtArgs>
     product?: boolean | BusinessAcc$productArgs<ExtArgs>
+    documentCounters?: boolean | BusinessAcc$documentCountersArgs<ExtArgs>
     _count?: boolean | BusinessAccCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["businessAcc"]>
 
@@ -7041,6 +7142,7 @@ export namespace Prisma {
     platform?: boolean | BusinessAcc$platformArgs<ExtArgs>
     storefront?: boolean | BusinessAcc$storefrontArgs<ExtArgs>
     product?: boolean | BusinessAcc$productArgs<ExtArgs>
+    documentCounters?: boolean | BusinessAcc$documentCountersArgs<ExtArgs>
     _count?: boolean | BusinessAccCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BusinessAccIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7061,6 +7163,7 @@ export namespace Prisma {
       platform: Prisma.$PlatformPayload<ExtArgs>[]
       storefront: Prisma.$StorePayload<ExtArgs>[]
       product: Prisma.$ProductPayload<ExtArgs>[]
+      documentCounters: Prisma.$DocumentCounterPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -7481,6 +7584,7 @@ export namespace Prisma {
     platform<T extends BusinessAcc$platformArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAcc$platformArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     storefront<T extends BusinessAcc$storefrontArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAcc$storefrontArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     product<T extends BusinessAcc$productArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAcc$productArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documentCounters<T extends BusinessAcc$documentCountersArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAcc$documentCountersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8090,6 +8194,30 @@ export namespace Prisma {
   }
 
   /**
+   * BusinessAcc.documentCounters
+   */
+  export type BusinessAcc$documentCountersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    where?: DocumentCounterWhereInput
+    orderBy?: DocumentCounterOrderByWithRelationInput | DocumentCounterOrderByWithRelationInput[]
+    cursor?: DocumentCounterWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentCounterScalarFieldEnum | DocumentCounterScalarFieldEnum[]
+  }
+
+  /**
    * BusinessAcc without action
    */
   export type BusinessAccDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8105,6 +8233,1093 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BusinessAccInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DocumentCounter
+   */
+
+  export type AggregateDocumentCounter = {
+    _count: DocumentCounterCountAggregateOutputType | null
+    _avg: DocumentCounterAvgAggregateOutputType | null
+    _sum: DocumentCounterSumAggregateOutputType | null
+    _min: DocumentCounterMinAggregateOutputType | null
+    _max: DocumentCounterMaxAggregateOutputType | null
+  }
+
+  export type DocumentCounterAvgAggregateOutputType = {
+    id: number | null
+    businessId: number | null
+    count: number | null
+  }
+
+  export type DocumentCounterSumAggregateOutputType = {
+    id: number | null
+    businessId: number | null
+    count: number | null
+  }
+
+  export type DocumentCounterMinAggregateOutputType = {
+    id: number | null
+    businessId: number | null
+    documentType: $Enums.DocumentType | null
+    count: number | null
+  }
+
+  export type DocumentCounterMaxAggregateOutputType = {
+    id: number | null
+    businessId: number | null
+    documentType: $Enums.DocumentType | null
+    count: number | null
+  }
+
+  export type DocumentCounterCountAggregateOutputType = {
+    id: number
+    businessId: number
+    documentType: number
+    count: number
+    _all: number
+  }
+
+
+  export type DocumentCounterAvgAggregateInputType = {
+    id?: true
+    businessId?: true
+    count?: true
+  }
+
+  export type DocumentCounterSumAggregateInputType = {
+    id?: true
+    businessId?: true
+    count?: true
+  }
+
+  export type DocumentCounterMinAggregateInputType = {
+    id?: true
+    businessId?: true
+    documentType?: true
+    count?: true
+  }
+
+  export type DocumentCounterMaxAggregateInputType = {
+    id?: true
+    businessId?: true
+    documentType?: true
+    count?: true
+  }
+
+  export type DocumentCounterCountAggregateInputType = {
+    id?: true
+    businessId?: true
+    documentType?: true
+    count?: true
+    _all?: true
+  }
+
+  export type DocumentCounterAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentCounter to aggregate.
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentCounters to fetch.
+     */
+    orderBy?: DocumentCounterOrderByWithRelationInput | DocumentCounterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentCounterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentCounters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentCounters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocumentCounters
+    **/
+    _count?: true | DocumentCounterCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DocumentCounterAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DocumentCounterSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentCounterMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentCounterMaxAggregateInputType
+  }
+
+  export type GetDocumentCounterAggregateType<T extends DocumentCounterAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocumentCounter]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocumentCounter[P]>
+      : GetScalarType<T[P], AggregateDocumentCounter[P]>
+  }
+
+
+
+
+  export type DocumentCounterGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentCounterWhereInput
+    orderBy?: DocumentCounterOrderByWithAggregationInput | DocumentCounterOrderByWithAggregationInput[]
+    by: DocumentCounterScalarFieldEnum[] | DocumentCounterScalarFieldEnum
+    having?: DocumentCounterScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentCounterCountAggregateInputType | true
+    _avg?: DocumentCounterAvgAggregateInputType
+    _sum?: DocumentCounterSumAggregateInputType
+    _min?: DocumentCounterMinAggregateInputType
+    _max?: DocumentCounterMaxAggregateInputType
+  }
+
+  export type DocumentCounterGroupByOutputType = {
+    id: number
+    businessId: number
+    documentType: $Enums.DocumentType
+    count: number
+    _count: DocumentCounterCountAggregateOutputType | null
+    _avg: DocumentCounterAvgAggregateOutputType | null
+    _sum: DocumentCounterSumAggregateOutputType | null
+    _min: DocumentCounterMinAggregateOutputType | null
+    _max: DocumentCounterMaxAggregateOutputType | null
+  }
+
+  type GetDocumentCounterGroupByPayload<T extends DocumentCounterGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentCounterGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentCounterGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentCounterGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentCounterGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentCounterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    businessId?: boolean
+    documentType?: boolean
+    count?: boolean
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentCounter"]>
+
+  export type DocumentCounterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    businessId?: boolean
+    documentType?: boolean
+    count?: boolean
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentCounter"]>
+
+  export type DocumentCounterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    businessId?: boolean
+    documentType?: boolean
+    count?: boolean
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentCounter"]>
+
+  export type DocumentCounterSelectScalar = {
+    id?: boolean
+    businessId?: boolean
+    documentType?: boolean
+    count?: boolean
+  }
+
+  export type DocumentCounterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "documentType" | "count", ExtArgs["result"]["documentCounter"]>
+  export type DocumentCounterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }
+  export type DocumentCounterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }
+  export type DocumentCounterIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    business?: boolean | BusinessAccDefaultArgs<ExtArgs>
+  }
+
+  export type $DocumentCounterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocumentCounter"
+    objects: {
+      business: Prisma.$BusinessAccPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      businessId: number
+      documentType: $Enums.DocumentType
+      count: number
+    }, ExtArgs["result"]["documentCounter"]>
+    composites: {}
+  }
+
+  type DocumentCounterGetPayload<S extends boolean | null | undefined | DocumentCounterDefaultArgs> = $Result.GetResult<Prisma.$DocumentCounterPayload, S>
+
+  type DocumentCounterCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DocumentCounterFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DocumentCounterCountAggregateInputType | true
+    }
+
+  export interface DocumentCounterDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocumentCounter'], meta: { name: 'DocumentCounter' } }
+    /**
+     * Find zero or one DocumentCounter that matches the filter.
+     * @param {DocumentCounterFindUniqueArgs} args - Arguments to find a DocumentCounter
+     * @example
+     * // Get one DocumentCounter
+     * const documentCounter = await prisma.documentCounter.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentCounterFindUniqueArgs>(args: SelectSubset<T, DocumentCounterFindUniqueArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DocumentCounter that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DocumentCounterFindUniqueOrThrowArgs} args - Arguments to find a DocumentCounter
+     * @example
+     * // Get one DocumentCounter
+     * const documentCounter = await prisma.documentCounter.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentCounterFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentCounterFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocumentCounter that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterFindFirstArgs} args - Arguments to find a DocumentCounter
+     * @example
+     * // Get one DocumentCounter
+     * const documentCounter = await prisma.documentCounter.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentCounterFindFirstArgs>(args?: SelectSubset<T, DocumentCounterFindFirstArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocumentCounter that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterFindFirstOrThrowArgs} args - Arguments to find a DocumentCounter
+     * @example
+     * // Get one DocumentCounter
+     * const documentCounter = await prisma.documentCounter.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentCounterFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentCounterFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DocumentCounters that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocumentCounters
+     * const documentCounters = await prisma.documentCounter.findMany()
+     * 
+     * // Get first 10 DocumentCounters
+     * const documentCounters = await prisma.documentCounter.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentCounterWithIdOnly = await prisma.documentCounter.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentCounterFindManyArgs>(args?: SelectSubset<T, DocumentCounterFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DocumentCounter.
+     * @param {DocumentCounterCreateArgs} args - Arguments to create a DocumentCounter.
+     * @example
+     * // Create one DocumentCounter
+     * const DocumentCounter = await prisma.documentCounter.create({
+     *   data: {
+     *     // ... data to create a DocumentCounter
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentCounterCreateArgs>(args: SelectSubset<T, DocumentCounterCreateArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DocumentCounters.
+     * @param {DocumentCounterCreateManyArgs} args - Arguments to create many DocumentCounters.
+     * @example
+     * // Create many DocumentCounters
+     * const documentCounter = await prisma.documentCounter.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentCounterCreateManyArgs>(args?: SelectSubset<T, DocumentCounterCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocumentCounters and returns the data saved in the database.
+     * @param {DocumentCounterCreateManyAndReturnArgs} args - Arguments to create many DocumentCounters.
+     * @example
+     * // Create many DocumentCounters
+     * const documentCounter = await prisma.documentCounter.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocumentCounters and only return the `id`
+     * const documentCounterWithIdOnly = await prisma.documentCounter.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentCounterCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentCounterCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DocumentCounter.
+     * @param {DocumentCounterDeleteArgs} args - Arguments to delete one DocumentCounter.
+     * @example
+     * // Delete one DocumentCounter
+     * const DocumentCounter = await prisma.documentCounter.delete({
+     *   where: {
+     *     // ... filter to delete one DocumentCounter
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentCounterDeleteArgs>(args: SelectSubset<T, DocumentCounterDeleteArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DocumentCounter.
+     * @param {DocumentCounterUpdateArgs} args - Arguments to update one DocumentCounter.
+     * @example
+     * // Update one DocumentCounter
+     * const documentCounter = await prisma.documentCounter.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentCounterUpdateArgs>(args: SelectSubset<T, DocumentCounterUpdateArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DocumentCounters.
+     * @param {DocumentCounterDeleteManyArgs} args - Arguments to filter DocumentCounters to delete.
+     * @example
+     * // Delete a few DocumentCounters
+     * const { count } = await prisma.documentCounter.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentCounterDeleteManyArgs>(args?: SelectSubset<T, DocumentCounterDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentCounters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocumentCounters
+     * const documentCounter = await prisma.documentCounter.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentCounterUpdateManyArgs>(args: SelectSubset<T, DocumentCounterUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentCounters and returns the data updated in the database.
+     * @param {DocumentCounterUpdateManyAndReturnArgs} args - Arguments to update many DocumentCounters.
+     * @example
+     * // Update many DocumentCounters
+     * const documentCounter = await prisma.documentCounter.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DocumentCounters and only return the `id`
+     * const documentCounterWithIdOnly = await prisma.documentCounter.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DocumentCounterUpdateManyAndReturnArgs>(args: SelectSubset<T, DocumentCounterUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DocumentCounter.
+     * @param {DocumentCounterUpsertArgs} args - Arguments to update or create a DocumentCounter.
+     * @example
+     * // Update or create a DocumentCounter
+     * const documentCounter = await prisma.documentCounter.upsert({
+     *   create: {
+     *     // ... data to create a DocumentCounter
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocumentCounter we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentCounterUpsertArgs>(args: SelectSubset<T, DocumentCounterUpsertArgs<ExtArgs>>): Prisma__DocumentCounterClient<$Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DocumentCounters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterCountArgs} args - Arguments to filter DocumentCounters to count.
+     * @example
+     * // Count the number of DocumentCounters
+     * const count = await prisma.documentCounter.count({
+     *   where: {
+     *     // ... the filter for the DocumentCounters we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentCounterCountArgs>(
+      args?: Subset<T, DocumentCounterCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentCounterCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocumentCounter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentCounterAggregateArgs>(args: Subset<T, DocumentCounterAggregateArgs>): Prisma.PrismaPromise<GetDocumentCounterAggregateType<T>>
+
+    /**
+     * Group by DocumentCounter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentCounterGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentCounterGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentCounterGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentCounterGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentCounterGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentCounterGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocumentCounter model
+   */
+  readonly fields: DocumentCounterFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocumentCounter.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentCounterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    business<T extends BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BusinessAccDefaultArgs<ExtArgs>>): Prisma__BusinessAccClient<$Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocumentCounter model
+   */
+  interface DocumentCounterFieldRefs {
+    readonly id: FieldRef<"DocumentCounter", 'Int'>
+    readonly businessId: FieldRef<"DocumentCounter", 'Int'>
+    readonly documentType: FieldRef<"DocumentCounter", 'DocumentType'>
+    readonly count: FieldRef<"DocumentCounter", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocumentCounter findUnique
+   */
+  export type DocumentCounterFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentCounter to fetch.
+     */
+    where: DocumentCounterWhereUniqueInput
+  }
+
+  /**
+   * DocumentCounter findUniqueOrThrow
+   */
+  export type DocumentCounterFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentCounter to fetch.
+     */
+    where: DocumentCounterWhereUniqueInput
+  }
+
+  /**
+   * DocumentCounter findFirst
+   */
+  export type DocumentCounterFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentCounter to fetch.
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentCounters to fetch.
+     */
+    orderBy?: DocumentCounterOrderByWithRelationInput | DocumentCounterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentCounters.
+     */
+    cursor?: DocumentCounterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentCounters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentCounters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentCounters.
+     */
+    distinct?: DocumentCounterScalarFieldEnum | DocumentCounterScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentCounter findFirstOrThrow
+   */
+  export type DocumentCounterFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentCounter to fetch.
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentCounters to fetch.
+     */
+    orderBy?: DocumentCounterOrderByWithRelationInput | DocumentCounterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentCounters.
+     */
+    cursor?: DocumentCounterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentCounters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentCounters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentCounters.
+     */
+    distinct?: DocumentCounterScalarFieldEnum | DocumentCounterScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentCounter findMany
+   */
+  export type DocumentCounterFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentCounters to fetch.
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentCounters to fetch.
+     */
+    orderBy?: DocumentCounterOrderByWithRelationInput | DocumentCounterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocumentCounters.
+     */
+    cursor?: DocumentCounterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentCounters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentCounters.
+     */
+    skip?: number
+    distinct?: DocumentCounterScalarFieldEnum | DocumentCounterScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentCounter create
+   */
+  export type DocumentCounterCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocumentCounter.
+     */
+    data: XOR<DocumentCounterCreateInput, DocumentCounterUncheckedCreateInput>
+  }
+
+  /**
+   * DocumentCounter createMany
+   */
+  export type DocumentCounterCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocumentCounters.
+     */
+    data: DocumentCounterCreateManyInput | DocumentCounterCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentCounter createManyAndReturn
+   */
+  export type DocumentCounterCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * The data used to create many DocumentCounters.
+     */
+    data: DocumentCounterCreateManyInput | DocumentCounterCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocumentCounter update
+   */
+  export type DocumentCounterUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocumentCounter.
+     */
+    data: XOR<DocumentCounterUpdateInput, DocumentCounterUncheckedUpdateInput>
+    /**
+     * Choose, which DocumentCounter to update.
+     */
+    where: DocumentCounterWhereUniqueInput
+  }
+
+  /**
+   * DocumentCounter updateMany
+   */
+  export type DocumentCounterUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocumentCounters.
+     */
+    data: XOR<DocumentCounterUpdateManyMutationInput, DocumentCounterUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentCounters to update
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * Limit how many DocumentCounters to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocumentCounter updateManyAndReturn
+   */
+  export type DocumentCounterUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * The data used to update DocumentCounters.
+     */
+    data: XOR<DocumentCounterUpdateManyMutationInput, DocumentCounterUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentCounters to update
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * Limit how many DocumentCounters to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocumentCounter upsert
+   */
+  export type DocumentCounterUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocumentCounter to update in case it exists.
+     */
+    where: DocumentCounterWhereUniqueInput
+    /**
+     * In case the DocumentCounter found by the `where` argument doesn't exist, create a new DocumentCounter with this data.
+     */
+    create: XOR<DocumentCounterCreateInput, DocumentCounterUncheckedCreateInput>
+    /**
+     * In case the DocumentCounter was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentCounterUpdateInput, DocumentCounterUncheckedUpdateInput>
+  }
+
+  /**
+   * DocumentCounter delete
+   */
+  export type DocumentCounterDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
+    /**
+     * Filter which DocumentCounter to delete.
+     */
+    where: DocumentCounterWhereUniqueInput
+  }
+
+  /**
+   * DocumentCounter deleteMany
+   */
+  export type DocumentCounterDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentCounters to delete
+     */
+    where?: DocumentCounterWhereInput
+    /**
+     * Limit how many DocumentCounters to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocumentCounter without action
+   */
+  export type DocumentCounterDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentCounter
+     */
+    select?: DocumentCounterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentCounter
+     */
+    omit?: DocumentCounterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentCounterInclude<ExtArgs> | null
   }
 
 
@@ -8147,6 +9362,8 @@ export namespace Prisma {
   export type BillMinAggregateOutputType = {
     id: number | null
     billId: string | null
+    quotationId: string | null
+    invoiceId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     cName: string | null
@@ -8186,6 +9403,8 @@ export namespace Prisma {
   export type BillMaxAggregateOutputType = {
     id: number | null
     billId: string | null
+    quotationId: string | null
+    invoiceId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     cName: string | null
@@ -8225,6 +9444,8 @@ export namespace Prisma {
   export type BillCountAggregateOutputType = {
     id: number
     billId: number
+    quotationId: number
+    invoiceId: number
     createdAt: number
     updatedAt: number
     cName: number
@@ -8290,6 +9511,8 @@ export namespace Prisma {
   export type BillMinAggregateInputType = {
     id?: true
     billId?: true
+    quotationId?: true
+    invoiceId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -8329,6 +9552,8 @@ export namespace Prisma {
   export type BillMaxAggregateInputType = {
     id?: true
     billId?: true
+    quotationId?: true
+    invoiceId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -8368,6 +9593,8 @@ export namespace Prisma {
   export type BillCountAggregateInputType = {
     id?: true
     billId?: true
+    quotationId?: true
+    invoiceId?: true
     createdAt?: true
     updatedAt?: true
     cName?: true
@@ -8493,7 +9720,9 @@ export namespace Prisma {
 
   export type BillGroupByOutputType = {
     id: number
-    billId: string
+    billId: string | null
+    quotationId: string | null
+    invoiceId: string | null
     createdAt: Date
     updatedAt: Date
     cName: string
@@ -8552,6 +9781,8 @@ export namespace Prisma {
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    quotationId?: boolean
+    invoiceId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8596,6 +9827,8 @@ export namespace Prisma {
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    quotationId?: boolean
+    invoiceId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8638,6 +9871,8 @@ export namespace Prisma {
   export type BillSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    quotationId?: boolean
+    invoiceId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8680,6 +9915,8 @@ export namespace Prisma {
   export type BillSelectScalar = {
     id?: boolean
     billId?: boolean
+    quotationId?: boolean
+    invoiceId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     cName?: boolean
@@ -8716,7 +9953,7 @@ export namespace Prisma {
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8745,7 +9982,9 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      billId: string
+      billId: string | null
+      quotationId: string | null
+      invoiceId: string | null
       createdAt: Date
       updatedAt: Date
       cName: string
@@ -9209,6 +10448,8 @@ export namespace Prisma {
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'Int'>
     readonly billId: FieldRef<"Bill", 'String'>
+    readonly quotationId: FieldRef<"Bill", 'String'>
+    readonly invoiceId: FieldRef<"Bill", 'String'>
     readonly createdAt: FieldRef<"Bill", 'DateTime'>
     readonly updatedAt: FieldRef<"Bill", 'DateTime'>
     readonly cName: FieldRef<"Bill", 'String'>
@@ -32144,9 +33385,21 @@ export namespace Prisma {
   export type BusinessAccScalarFieldEnum = (typeof BusinessAccScalarFieldEnum)[keyof typeof BusinessAccScalarFieldEnum]
 
 
+  export const DocumentCounterScalarFieldEnum: {
+    id: 'id',
+    businessId: 'businessId',
+    documentType: 'documentType',
+    count: 'count'
+  };
+
+  export type DocumentCounterScalarFieldEnum = (typeof DocumentCounterScalarFieldEnum)[keyof typeof DocumentCounterScalarFieldEnum]
+
+
   export const BillScalarFieldEnum: {
     id: 'id',
     billId: 'billId',
+    quotationId: 'quotationId',
+    invoiceId: 'invoiceId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     cName: 'cName',
@@ -33106,6 +34359,7 @@ export namespace Prisma {
     platform?: PlatformListRelationFilter
     storefront?: StoreListRelationFilter
     product?: ProductListRelationFilter
+    documentCounters?: DocumentCounterListRelationFilter
   }
 
   export type BusinessAccOrderByWithRelationInput = {
@@ -33133,6 +34387,7 @@ export namespace Prisma {
     platform?: PlatformOrderByRelationAggregateInput
     storefront?: StoreOrderByRelationAggregateInput
     product?: ProductOrderByRelationAggregateInput
+    documentCounters?: DocumentCounterOrderByRelationAggregateInput
   }
 
   export type BusinessAccWhereUniqueInput = Prisma.AtLeast<{
@@ -33163,6 +34418,7 @@ export namespace Prisma {
     platform?: PlatformListRelationFilter
     storefront?: StoreListRelationFilter
     product?: ProductListRelationFilter
+    documentCounters?: DocumentCounterListRelationFilter
   }, "id" | "businessName" | "businessUserName" | "taxId">
 
   export type BusinessAccOrderByWithAggregationInput = {
@@ -33211,12 +34467,67 @@ export namespace Prisma {
     DocumentType?: EnumDocumentTypeNullableListFilter<"BusinessAcc">
   }
 
+  export type DocumentCounterWhereInput = {
+    AND?: DocumentCounterWhereInput | DocumentCounterWhereInput[]
+    OR?: DocumentCounterWhereInput[]
+    NOT?: DocumentCounterWhereInput | DocumentCounterWhereInput[]
+    id?: IntFilter<"DocumentCounter"> | number
+    businessId?: IntFilter<"DocumentCounter"> | number
+    documentType?: EnumDocumentTypeFilter<"DocumentCounter"> | $Enums.DocumentType
+    count?: IntFilter<"DocumentCounter"> | number
+    business?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
+  }
+
+  export type DocumentCounterOrderByWithRelationInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    documentType?: SortOrder
+    count?: SortOrder
+    business?: BusinessAccOrderByWithRelationInput
+  }
+
+  export type DocumentCounterWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    businessId_documentType?: DocumentCounterBusinessIdDocumentTypeCompoundUniqueInput
+    AND?: DocumentCounterWhereInput | DocumentCounterWhereInput[]
+    OR?: DocumentCounterWhereInput[]
+    NOT?: DocumentCounterWhereInput | DocumentCounterWhereInput[]
+    businessId?: IntFilter<"DocumentCounter"> | number
+    documentType?: EnumDocumentTypeFilter<"DocumentCounter"> | $Enums.DocumentType
+    count?: IntFilter<"DocumentCounter"> | number
+    business?: XOR<BusinessAccScalarRelationFilter, BusinessAccWhereInput>
+  }, "id" | "businessId_documentType">
+
+  export type DocumentCounterOrderByWithAggregationInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    documentType?: SortOrder
+    count?: SortOrder
+    _count?: DocumentCounterCountOrderByAggregateInput
+    _avg?: DocumentCounterAvgOrderByAggregateInput
+    _max?: DocumentCounterMaxOrderByAggregateInput
+    _min?: DocumentCounterMinOrderByAggregateInput
+    _sum?: DocumentCounterSumOrderByAggregateInput
+  }
+
+  export type DocumentCounterScalarWhereWithAggregatesInput = {
+    AND?: DocumentCounterScalarWhereWithAggregatesInput | DocumentCounterScalarWhereWithAggregatesInput[]
+    OR?: DocumentCounterScalarWhereWithAggregatesInput[]
+    NOT?: DocumentCounterScalarWhereWithAggregatesInput | DocumentCounterScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"DocumentCounter"> | number
+    businessId?: IntWithAggregatesFilter<"DocumentCounter"> | number
+    documentType?: EnumDocumentTypeWithAggregatesFilter<"DocumentCounter"> | $Enums.DocumentType
+    count?: IntWithAggregatesFilter<"DocumentCounter"> | number
+  }
+
   export type BillWhereInput = {
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     id?: IntFilter<"Bill"> | number
-    billId?: StringFilter<"Bill"> | string
+    billId?: StringNullableFilter<"Bill"> | string | null
+    quotationId?: StringNullableFilter<"Bill"> | string | null
+    invoiceId?: StringNullableFilter<"Bill"> | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -33259,7 +34570,9 @@ export namespace Prisma {
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
-    billId?: SortOrder
+    billId?: SortOrderInput | SortOrder
+    quotationId?: SortOrderInput | SortOrder
+    invoiceId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -33305,7 +34618,9 @@ export namespace Prisma {
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
-    billId?: StringFilter<"Bill"> | string
+    billId?: StringNullableFilter<"Bill"> | string | null
+    quotationId?: StringNullableFilter<"Bill"> | string | null
+    invoiceId?: StringNullableFilter<"Bill"> | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -33348,7 +34663,9 @@ export namespace Prisma {
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
-    billId?: SortOrder
+    billId?: SortOrderInput | SortOrder
+    quotationId?: SortOrderInput | SortOrder
+    invoiceId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -33395,7 +34712,9 @@ export namespace Prisma {
     OR?: BillScalarWhereWithAggregatesInput[]
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Bill"> | number
-    billId?: StringWithAggregatesFilter<"Bill"> | string
+    billId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    quotationId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    invoiceId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     cName?: StringWithAggregatesFilter<"Bill"> | string
@@ -35272,6 +36591,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateInput = {
@@ -35298,6 +36618,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUpdateInput = {
@@ -35323,6 +36644,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateInput = {
@@ -35349,6 +36671,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccCreateManyInput = {
@@ -35406,8 +36729,55 @@ export namespace Prisma {
     DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
   }
 
+  export type DocumentCounterCreateInput = {
+    documentType: $Enums.DocumentType
+    count?: number
+    business: BusinessAccCreateNestedOneWithoutDocumentCountersInput
+  }
+
+  export type DocumentCounterUncheckedCreateInput = {
+    id?: number
+    businessId: number
+    documentType: $Enums.DocumentType
+    count?: number
+  }
+
+  export type DocumentCounterUpdateInput = {
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+    business?: BusinessAccUpdateOneRequiredWithoutDocumentCountersNestedInput
+  }
+
+  export type DocumentCounterUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    businessId?: IntFieldUpdateOperationsInput | number
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentCounterCreateManyInput = {
+    id?: number
+    businessId: number
+    documentType: $Enums.DocumentType
+    count?: number
+  }
+
+  export type DocumentCounterUpdateManyMutationInput = {
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentCounterUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    businessId?: IntFieldUpdateOperationsInput | number
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
   export type BillCreateInput = {
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -35447,7 +36817,9 @@ export namespace Prisma {
 
   export type BillUncheckedCreateInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -35486,7 +36858,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -35526,7 +36900,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -35566,7 +36942,9 @@ export namespace Prisma {
 
   export type BillCreateManyInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -35604,7 +36982,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateManyMutationInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -35640,7 +37020,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -37760,6 +39142,16 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type DocumentCounterListRelationFilter = {
+    every?: DocumentCounterWhereInput
+    some?: DocumentCounterWhereInput
+    none?: DocumentCounterWhereInput
+  }
+
+  export type DocumentCounterOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BusinessAccCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -37843,6 +39235,66 @@ export namespace Prisma {
     _max?: NestedEnumtaxTypeFilter<$PrismaModel>
   }
 
+  export type EnumDocumentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeFilter<$PrismaModel> | $Enums.DocumentType
+  }
+
+  export type BusinessAccScalarRelationFilter = {
+    is?: BusinessAccWhereInput
+    isNot?: BusinessAccWhereInput
+  }
+
+  export type DocumentCounterBusinessIdDocumentTypeCompoundUniqueInput = {
+    businessId: number
+    documentType: $Enums.DocumentType
+  }
+
+  export type DocumentCounterCountOrderByAggregateInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    documentType?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DocumentCounterAvgOrderByAggregateInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DocumentCounterMaxOrderByAggregateInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    documentType?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DocumentCounterMinOrderByAggregateInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    documentType?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DocumentCounterSumOrderByAggregateInput = {
+    id?: SortOrder
+    businessId?: SortOrder
+    count?: SortOrder
+  }
+
+  export type EnumDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
+  }
+
   export type EnumGenderNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -37894,11 +39346,6 @@ export namespace Prisma {
     isNot?: MemberWhereInput
   }
 
-  export type BusinessAccScalarRelationFilter = {
-    is?: BusinessAccWhereInput
-    isNot?: BusinessAccWhereInput
-  }
-
   export type StoreScalarRelationFilter = {
     is?: StoreWhereInput
     isNot?: StoreWhereInput
@@ -37911,6 +39358,8 @@ export namespace Prisma {
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    quotationId?: SortOrder
+    invoiceId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -37962,6 +39411,8 @@ export namespace Prisma {
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    quotationId?: SortOrder
+    invoiceId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -38001,6 +39452,8 @@ export namespace Prisma {
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    quotationId?: SortOrder
+    invoiceId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     cName?: SortOrder
@@ -40416,6 +41869,13 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
   }
 
+  export type DocumentCounterCreateNestedManyWithoutBusinessInput = {
+    create?: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput> | DocumentCounterCreateWithoutBusinessInput[] | DocumentCounterUncheckedCreateWithoutBusinessInput[]
+    connectOrCreate?: DocumentCounterCreateOrConnectWithoutBusinessInput | DocumentCounterCreateOrConnectWithoutBusinessInput[]
+    createMany?: DocumentCounterCreateManyBusinessInputEnvelope
+    connect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+  }
+
   export type MemberUncheckedCreateNestedManyWithoutBusinessInput = {
     create?: XOR<MemberCreateWithoutBusinessInput, MemberUncheckedCreateWithoutBusinessInput> | MemberCreateWithoutBusinessInput[] | MemberUncheckedCreateWithoutBusinessInput[]
     connectOrCreate?: MemberCreateOrConnectWithoutBusinessInput | MemberCreateOrConnectWithoutBusinessInput[]
@@ -40463,6 +41923,13 @@ export namespace Prisma {
     connectOrCreate?: ProductCreateOrConnectWithoutBusinessIdInput | ProductCreateOrConnectWithoutBusinessIdInput[]
     createMany?: ProductCreateManyBusinessIdInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput = {
+    create?: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput> | DocumentCounterCreateWithoutBusinessInput[] | DocumentCounterUncheckedCreateWithoutBusinessInput[]
+    connectOrCreate?: DocumentCounterCreateOrConnectWithoutBusinessInput | DocumentCounterCreateOrConnectWithoutBusinessInput[]
+    createMany?: DocumentCounterCreateManyBusinessInputEnvelope
+    connect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
   }
 
   export type EnumBusinessTypeFieldUpdateOperationsInput = {
@@ -40589,6 +42056,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type DocumentCounterUpdateManyWithoutBusinessNestedInput = {
+    create?: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput> | DocumentCounterCreateWithoutBusinessInput[] | DocumentCounterUncheckedCreateWithoutBusinessInput[]
+    connectOrCreate?: DocumentCounterCreateOrConnectWithoutBusinessInput | DocumentCounterCreateOrConnectWithoutBusinessInput[]
+    upsert?: DocumentCounterUpsertWithWhereUniqueWithoutBusinessInput | DocumentCounterUpsertWithWhereUniqueWithoutBusinessInput[]
+    createMany?: DocumentCounterCreateManyBusinessInputEnvelope
+    set?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    disconnect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    delete?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    connect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    update?: DocumentCounterUpdateWithWhereUniqueWithoutBusinessInput | DocumentCounterUpdateWithWhereUniqueWithoutBusinessInput[]
+    updateMany?: DocumentCounterUpdateManyWithWhereWithoutBusinessInput | DocumentCounterUpdateManyWithWhereWithoutBusinessInput[]
+    deleteMany?: DocumentCounterScalarWhereInput | DocumentCounterScalarWhereInput[]
+  }
+
   export type MemberUncheckedUpdateManyWithoutBusinessNestedInput = {
     create?: XOR<MemberCreateWithoutBusinessInput, MemberUncheckedCreateWithoutBusinessInput> | MemberCreateWithoutBusinessInput[] | MemberUncheckedCreateWithoutBusinessInput[]
     connectOrCreate?: MemberCreateOrConnectWithoutBusinessInput | MemberCreateOrConnectWithoutBusinessInput[]
@@ -40685,6 +42166,38 @@ export namespace Prisma {
     update?: ProductUpdateWithWhereUniqueWithoutBusinessIdInput | ProductUpdateWithWhereUniqueWithoutBusinessIdInput[]
     updateMany?: ProductUpdateManyWithWhereWithoutBusinessIdInput | ProductUpdateManyWithWhereWithoutBusinessIdInput[]
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  }
+
+  export type DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput = {
+    create?: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput> | DocumentCounterCreateWithoutBusinessInput[] | DocumentCounterUncheckedCreateWithoutBusinessInput[]
+    connectOrCreate?: DocumentCounterCreateOrConnectWithoutBusinessInput | DocumentCounterCreateOrConnectWithoutBusinessInput[]
+    upsert?: DocumentCounterUpsertWithWhereUniqueWithoutBusinessInput | DocumentCounterUpsertWithWhereUniqueWithoutBusinessInput[]
+    createMany?: DocumentCounterCreateManyBusinessInputEnvelope
+    set?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    disconnect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    delete?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    connect?: DocumentCounterWhereUniqueInput | DocumentCounterWhereUniqueInput[]
+    update?: DocumentCounterUpdateWithWhereUniqueWithoutBusinessInput | DocumentCounterUpdateWithWhereUniqueWithoutBusinessInput[]
+    updateMany?: DocumentCounterUpdateManyWithWhereWithoutBusinessInput | DocumentCounterUpdateManyWithWhereWithoutBusinessInput[]
+    deleteMany?: DocumentCounterScalarWhereInput | DocumentCounterScalarWhereInput[]
+  }
+
+  export type BusinessAccCreateNestedOneWithoutDocumentCountersInput = {
+    create?: XOR<BusinessAccCreateWithoutDocumentCountersInput, BusinessAccUncheckedCreateWithoutDocumentCountersInput>
+    connectOrCreate?: BusinessAccCreateOrConnectWithoutDocumentCountersInput
+    connect?: BusinessAccWhereUniqueInput
+  }
+
+  export type EnumDocumentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.DocumentType
+  }
+
+  export type BusinessAccUpdateOneRequiredWithoutDocumentCountersNestedInput = {
+    create?: XOR<BusinessAccCreateWithoutDocumentCountersInput, BusinessAccUncheckedCreateWithoutDocumentCountersInput>
+    connectOrCreate?: BusinessAccCreateOrConnectWithoutDocumentCountersInput
+    upsert?: BusinessAccUpsertWithoutDocumentCountersInput
+    connect?: BusinessAccWhereUniqueInput
+    update?: XOR<XOR<BusinessAccUpdateToOneWithWhereWithoutDocumentCountersInput, BusinessAccUpdateWithoutDocumentCountersInput>, BusinessAccUncheckedUpdateWithoutDocumentCountersInput>
   }
 
   export type ProductItemCreateNestedManyWithoutBillInput = {
@@ -42146,6 +43659,23 @@ export namespace Prisma {
     _max?: NestedEnumtaxTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumDocumentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeFilter<$PrismaModel> | $Enums.DocumentType
+  }
+
+  export type NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DocumentType | EnumDocumentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DocumentType[] | ListEnumDocumentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDocumentTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDocumentTypeFilter<$PrismaModel>
+    _max?: NestedEnumDocumentTypeFilter<$PrismaModel>
+  }
+
   export type NestedEnumGenderNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -42563,6 +44093,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutUserInput = {
@@ -42588,6 +44119,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutUserInput = {
@@ -43412,6 +44944,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutAllMemberInput = {
@@ -43437,6 +44970,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutAllMemberInput = {
@@ -43445,7 +44979,9 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutMemberInput = {
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43484,7 +45020,9 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutMemberInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -43877,6 +45415,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutAllMemberInput = {
@@ -43902,6 +45441,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type BillUpsertWithWhereUniqueWithoutMemberInput = {
@@ -43925,7 +45465,9 @@ export namespace Prisma {
     OR?: BillScalarWhereInput[]
     NOT?: BillScalarWhereInput | BillScalarWhereInput[]
     id?: IntFilter<"Bill"> | number
-    billId?: StringFilter<"Bill"> | string
+    billId?: StringNullableFilter<"Bill"> | string | null
+    quotationId?: StringNullableFilter<"Bill"> | string | null
+    invoiceId?: StringNullableFilter<"Bill"> | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     cName?: StringFilter<"Bill"> | string
@@ -44278,7 +45820,9 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutBusinessIdInput = {
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -44317,7 +45861,9 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutBusinessIdInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -44581,6 +46127,27 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DocumentCounterCreateWithoutBusinessInput = {
+    documentType: $Enums.DocumentType
+    count?: number
+  }
+
+  export type DocumentCounterUncheckedCreateWithoutBusinessInput = {
+    id?: number
+    documentType: $Enums.DocumentType
+    count?: number
+  }
+
+  export type DocumentCounterCreateOrConnectWithoutBusinessInput = {
+    where: DocumentCounterWhereUniqueInput
+    create: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput>
+  }
+
+  export type DocumentCounterCreateManyBusinessInputEnvelope = {
+    data: DocumentCounterCreateManyBusinessInput | DocumentCounterCreateManyBusinessInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutBusinessInput = {
     update: XOR<UserUpdateWithoutBusinessInput, UserUncheckedUpdateWithoutBusinessInput>
     create: XOR<UserCreateWithoutBusinessInput, UserUncheckedCreateWithoutBusinessInput>
@@ -44759,6 +46326,150 @@ export namespace Prisma {
     data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutBusinessIdInput>
   }
 
+  export type DocumentCounterUpsertWithWhereUniqueWithoutBusinessInput = {
+    where: DocumentCounterWhereUniqueInput
+    update: XOR<DocumentCounterUpdateWithoutBusinessInput, DocumentCounterUncheckedUpdateWithoutBusinessInput>
+    create: XOR<DocumentCounterCreateWithoutBusinessInput, DocumentCounterUncheckedCreateWithoutBusinessInput>
+  }
+
+  export type DocumentCounterUpdateWithWhereUniqueWithoutBusinessInput = {
+    where: DocumentCounterWhereUniqueInput
+    data: XOR<DocumentCounterUpdateWithoutBusinessInput, DocumentCounterUncheckedUpdateWithoutBusinessInput>
+  }
+
+  export type DocumentCounterUpdateManyWithWhereWithoutBusinessInput = {
+    where: DocumentCounterScalarWhereInput
+    data: XOR<DocumentCounterUpdateManyMutationInput, DocumentCounterUncheckedUpdateManyWithoutBusinessInput>
+  }
+
+  export type DocumentCounterScalarWhereInput = {
+    AND?: DocumentCounterScalarWhereInput | DocumentCounterScalarWhereInput[]
+    OR?: DocumentCounterScalarWhereInput[]
+    NOT?: DocumentCounterScalarWhereInput | DocumentCounterScalarWhereInput[]
+    id?: IntFilter<"DocumentCounter"> | number
+    businessId?: IntFilter<"DocumentCounter"> | number
+    documentType?: EnumDocumentTypeFilter<"DocumentCounter"> | $Enums.DocumentType
+    count?: IntFilter<"DocumentCounter"> | number
+  }
+
+  export type BusinessAccCreateWithoutDocumentCountersInput = {
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    businessName: string
+    businessUserName?: string | null
+    businessAvatar?: string | null
+    businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
+    vat?: boolean | null
+    taxId: string
+    businessType?: $Enums.BusinessType
+    taxType?: $Enums.taxType
+    memberId?: BusinessAccCreatememberIdInput | string[]
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
+    user: UserCreateNestedOneWithoutBusinessInput
+    AllMember?: MemberCreateNestedManyWithoutBusinessInput
+    billRecord?: BillCreateNestedManyWithoutBusinessIdInput
+    expenseRecord?: ExpenseCreateNestedManyWithoutBusinessIdInput
+    adsCostRecord?: AdsCostCreateNestedManyWithoutBusinessIdInput
+    platform?: PlatformCreateNestedManyWithoutBusinessIdInput
+    storefront?: StoreCreateNestedManyWithoutBusinessIdInput
+    product?: ProductCreateNestedManyWithoutBusinessIdInput
+  }
+
+  export type BusinessAccUncheckedCreateWithoutDocumentCountersInput = {
+    id?: number
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    businessName: string
+    businessUserName?: string | null
+    businessAvatar?: string | null
+    businessAddress?: string | null
+    businessWebsite?: string | null
+    businessPhone?: string | null
+    vat?: boolean | null
+    taxId: string
+    businessType?: $Enums.BusinessType
+    taxType?: $Enums.taxType
+    userId: number
+    memberId?: BusinessAccCreatememberIdInput | string[]
+    DocumentType?: BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
+    AllMember?: MemberUncheckedCreateNestedManyWithoutBusinessInput
+    billRecord?: BillUncheckedCreateNestedManyWithoutBusinessIdInput
+    expenseRecord?: ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
+    adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
+    platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
+    storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
+    product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+  }
+
+  export type BusinessAccCreateOrConnectWithoutDocumentCountersInput = {
+    where: BusinessAccWhereUniqueInput
+    create: XOR<BusinessAccCreateWithoutDocumentCountersInput, BusinessAccUncheckedCreateWithoutDocumentCountersInput>
+  }
+
+  export type BusinessAccUpsertWithoutDocumentCountersInput = {
+    update: XOR<BusinessAccUpdateWithoutDocumentCountersInput, BusinessAccUncheckedUpdateWithoutDocumentCountersInput>
+    create: XOR<BusinessAccCreateWithoutDocumentCountersInput, BusinessAccUncheckedCreateWithoutDocumentCountersInput>
+    where?: BusinessAccWhereInput
+  }
+
+  export type BusinessAccUpdateToOneWithWhereWithoutDocumentCountersInput = {
+    where?: BusinessAccWhereInput
+    data: XOR<BusinessAccUpdateWithoutDocumentCountersInput, BusinessAccUncheckedUpdateWithoutDocumentCountersInput>
+  }
+
+  export type BusinessAccUpdateWithoutDocumentCountersInput = {
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    businessName?: StringFieldUpdateOperationsInput | string
+    businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
+    businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
+    businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    taxId?: StringFieldUpdateOperationsInput | string
+    businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+    taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
+    memberId?: BusinessAccUpdatememberIdInput | string[]
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
+    user?: UserUpdateOneRequiredWithoutBusinessNestedInput
+    AllMember?: MemberUpdateManyWithoutBusinessNestedInput
+    billRecord?: BillUpdateManyWithoutBusinessIdNestedInput
+    expenseRecord?: ExpenseUpdateManyWithoutBusinessIdNestedInput
+    adsCostRecord?: AdsCostUpdateManyWithoutBusinessIdNestedInput
+    platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
+    storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
+    product?: ProductUpdateManyWithoutBusinessIdNestedInput
+  }
+
+  export type BusinessAccUncheckedUpdateWithoutDocumentCountersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    businessName?: StringFieldUpdateOperationsInput | string
+    businessUserName?: NullableStringFieldUpdateOperationsInput | string | null
+    businessAvatar?: NullableStringFieldUpdateOperationsInput | string | null
+    businessAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    businessWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    businessPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    vat?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    taxId?: StringFieldUpdateOperationsInput | string
+    businessType?: EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+    taxType?: EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
+    userId?: IntFieldUpdateOperationsInput | number
+    memberId?: BusinessAccUpdatememberIdInput | string[]
+    DocumentType?: BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
+    AllMember?: MemberUncheckedUpdateManyWithoutBusinessNestedInput
+    billRecord?: BillUncheckedUpdateManyWithoutBusinessIdNestedInput
+    expenseRecord?: ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
+    adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
+    platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
+    storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
+    product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+  }
+
   export type ProductItemCreateWithoutBillInput = {
     quantity: number
     unitPrice: number
@@ -44847,6 +46558,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutBillRecordInput = {
@@ -44872,6 +46584,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutBillRecordInput = {
@@ -45014,6 +46727,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutBillRecordInput = {
@@ -45039,6 +46753,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type StoreUpsertWithoutStorefrontIdInput = {
@@ -45076,7 +46791,9 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutProductInput = {
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -45115,7 +46832,9 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutProductInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -45213,7 +46932,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutProductInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -45252,7 +46973,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutProductInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -45428,6 +47151,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutAdsCostRecordInput = {
@@ -45453,6 +47177,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutAdsCostRecordInput = {
@@ -45616,6 +47341,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutAdsCostRecordInput = {
@@ -45641,6 +47367,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type ProductUpsertWithoutAdsRecordInput = {
@@ -45715,6 +47442,7 @@ export namespace Prisma {
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutExpenseRecordInput = {
@@ -45740,6 +47468,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutExpenseRecordInput = {
@@ -45819,6 +47548,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutExpenseRecordInput = {
@@ -45844,6 +47574,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type MemberUpsertWithoutExpenseInput = {
@@ -45944,6 +47675,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutPlatformInput = {
@@ -45969,6 +47701,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutPlatformInput = {
@@ -46064,6 +47797,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutPlatformInput = {
@@ -46089,6 +47823,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type MemberUpsertWithoutPlatformInput = {
@@ -46137,7 +47872,9 @@ export namespace Prisma {
   }
 
   export type BillCreateWithoutStoreInput = {
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -46176,7 +47913,9 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutStoreInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -46245,6 +47984,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostCreateNestedManyWithoutBusinessIdInput
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     product?: ProductCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutStorefrontInput = {
@@ -46270,6 +48010,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     product?: ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutStorefrontInput = {
@@ -46365,6 +48106,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUpdateManyWithoutBusinessIdNestedInput
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutStorefrontInput = {
@@ -46390,6 +48132,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type MemberUpsertWithoutStoreInput = {
@@ -46556,6 +48299,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostCreateNestedManyWithoutBusinessIdInput
     platform?: PlatformCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccUncheckedCreateWithoutProductInput = {
@@ -46581,6 +48325,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
     platform?: PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
     storefront?: StoreUncheckedCreateNestedManyWithoutBusinessIdInput
+    documentCounters?: DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   }
 
   export type BusinessAccCreateOrConnectWithoutProductInput = {
@@ -46698,6 +48443,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUpdateManyWithoutBusinessIdNestedInput
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutProductInput = {
@@ -46723,6 +48469,7 @@ export namespace Prisma {
     adsCostRecord?: AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type MemberCreateWithoutChatInput = {
@@ -49379,6 +51126,7 @@ export namespace Prisma {
     platform?: PlatformUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateWithoutUserInput = {
@@ -49404,6 +51152,7 @@ export namespace Prisma {
     platform?: PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
     storefront?: StoreUncheckedUpdateManyWithoutBusinessIdNestedInput
     product?: ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
+    documentCounters?: DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   }
 
   export type BusinessAccUncheckedUpdateManyWithoutUserInput = {
@@ -49799,7 +51548,9 @@ export namespace Prisma {
 
   export type BillCreateManyMemberInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -49927,7 +51678,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutMemberInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -49966,7 +51719,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutMemberInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -50005,7 +51760,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutMemberInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -50331,7 +52088,9 @@ export namespace Prisma {
 
   export type BillCreateManyBusinessIdInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -50449,6 +52208,12 @@ export namespace Prisma {
     deleted?: boolean | null
   }
 
+  export type DocumentCounterCreateManyBusinessInput = {
+    id?: number
+    documentType: $Enums.DocumentType
+    count?: number
+  }
+
   export type MemberUpdateWithoutBusinessInput = {
     uniqueId?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -50494,7 +52259,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutBusinessIdInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -50533,7 +52300,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutBusinessIdInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -50572,7 +52341,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -50857,6 +52628,23 @@ export namespace Prisma {
     deleted?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
+  export type DocumentCounterUpdateWithoutBusinessInput = {
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentCounterUncheckedUpdateWithoutBusinessInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type DocumentCounterUncheckedUpdateManyWithoutBusinessInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    documentType?: EnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType
+    count?: IntFieldUpdateOperationsInput | number
+  }
+
   export type ProductItemCreateManyBillInput = {
     id?: number
     product: string
@@ -50937,7 +52725,9 @@ export namespace Prisma {
 
   export type BillCreateManyStoreInput = {
     id?: number
-    billId: string
+    billId?: string | null
+    quotationId?: string | null
+    invoiceId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     cName: string
@@ -50974,7 +52764,9 @@ export namespace Prisma {
   }
 
   export type BillUpdateWithoutStoreInput = {
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -51013,7 +52805,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutStoreInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string
@@ -51052,7 +52846,9 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutStoreInput = {
     id?: IntFieldUpdateOperationsInput | number
-    billId?: StringFieldUpdateOperationsInput | string
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    quotationId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cName?: StringFieldUpdateOperationsInput | string

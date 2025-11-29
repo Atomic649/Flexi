@@ -270,11 +270,24 @@ model BusinessAcc {
   platform         Platform[]
   storefront       Store[]
   product          Product[]
+  documentCounters DocumentCounter[]
+}
+
+model DocumentCounter {
+  id           Int          @id @default(autoincrement())
+  businessId   Int
+  documentType DocumentType
+  count        Int          @default(0)  
+  business     BusinessAcc  @relation(fields: [businessId], references: [id])
+
+  @@unique([businessId, documentType])
 }
 
 model Bill {
   id                   Int           @id @default(autoincrement())
-  billId               String
+  billId               String?
+  quotationId          String?
+  invoiceId            String?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   cName                String
