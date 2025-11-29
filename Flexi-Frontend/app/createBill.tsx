@@ -172,10 +172,16 @@ export default function CreateBill() {
   const [productChoice, setProductChoice] = useState<any[]>([]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
+  const [validContactCalendarVisible, setValidContactCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
   ]);
+  const [validContactDate, setValidContactDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    return d;
+  });
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
@@ -827,6 +833,7 @@ export default function CreateBill() {
             : undefined,
         remark: remark || undefined,
         priceValid: priceValid || undefined,
+        validContactUntil: businessType === "Rental" ? validContactDate : undefined,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
@@ -862,6 +869,25 @@ export default function CreateBill() {
     setSelectedDates(selectedDates);
     setPurchaseAt(new Date(selectedDates[0]));
     setCalendarVisible(false);
+  };
+
+  const handleValidContactDatesChange = (selectedDates: string[]) => {
+    if (selectedDates && selectedDates.length > 0) {
+      const newDate = new Date(selectedDates[0]);
+     
+      setValidContactDate(newDate);
+     
+
+      // Calculate months difference
+      const diffTime = Math.abs(newDate.getTime() - purchaseAt.getTime());
+      const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+
+      if (diffMonths >= 1 && diffMonths <= 12) {
+        setRepeatMonths(diffMonths);
+        setRepeatMonthsInput(diffMonths.toString());
+      }
+    }
+    setValidContactCalendarVisible(false);
   };
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
@@ -956,6 +982,41 @@ export default function CreateBill() {
             }}
           >
             <MultiDateCalendar onDatesChange={handleDatesChange} />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Valid Contact Calendar Modal */}
+      <Modal
+        visible={validContactCalendarVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setValidContactCalendarVisible(false)}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+          activeOpacity={1}
+          onPress={() => setValidContactCalendarVisible(false)}
+        >
+          <View
+            style={{
+              width: isMobile() ? "90%" : "40%",
+              minWidth: 300,
+              maxWidth: 500,
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              borderRadius: 10,
+              padding: 20,
+            }}
+          >
+            <MultiDateCalendar 
+              onDatesChange={handleValidContactDatesChange}           
+              
+            />
           </View>
         </TouchableOpacity>
       </Modal>
@@ -1799,11 +1860,37 @@ export default function CreateBill() {
             )}
 
             {/* Repeat Bill Section - Only show for Rental business type */}
+            
             {businessType === "Rental" && (
               <View
-                className="flex flex-row items-center mt-4 mb-2"
+                className="flex flex-col mt-4 mb-2"
                 style={{ backgroundColor: "transparent" }}
               >
+                 {/* Date Selector for Valid Contact Until */}
+                 <View className="flex-row items-center mb-2">
+                    <CustomText className="mr-2" style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>{t("bill.validContactUntil")}</CustomText>
+                    <TouchableOpacity 
+                      onPress={() => setValidContactCalendarVisible(true)}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+                        padding: 8,
+                        borderRadius: 8
+                      }}
+                    >
+                        <CustomText style={{ marginRight: 8 }}>
+                          {formatDate(validContactDate.toISOString())}
+                        </CustomText>
+                        <Ionicons
+                          name="calendar"
+                          size={20}
+                          color={theme === "dark" ? "#ffffff" : "#444541"}
+                        />
+                    </TouchableOpacity>
+                 </View>
+
+                <View className="flex-row items-center">
                 <TouchableOpacity
                   style={{
                     flexDirection: "row",
@@ -1863,6 +1950,10 @@ export default function CreateBill() {
                               });
                             } else if (num >= 1 && num <= 12) {
                               setRepeatMonths(num);
+                              // Update valid contact date based on new months
+                              const newDate = new Date(purchaseAt);
+                              newDate.setMonth(newDate.getMonth() + num);
+                              setValidContactDate(newDate);
                             }
                           }
                         }
@@ -1912,6 +2003,7 @@ export default function CreateBill() {
 
                   </View>
                 )}
+                </View>
               </View>
             )}
 

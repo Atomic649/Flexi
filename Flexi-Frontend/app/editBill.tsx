@@ -87,6 +87,8 @@ export default function EditBill() {
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null
   );
+  const [validContactDate, setValidContactDate] = useState<Date | null>(null);
+  const [validContactCalendarVisible, setValidContactCalendarVisible] = useState(false);
 
   // Note state
   const [note, setNote] = useState("");
@@ -790,6 +792,12 @@ export default function EditBill() {
             setPriceValidDays(30);
           }
         }
+        
+        // Set validContactUntil from billData
+        if (billData.validContactUntil) {
+          setValidContactDate(new Date(billData.validContactUntil));
+        }
+
         // Set purchase date
         if (billData.purchaseAt) {
           setPurchaseAt(new Date(billData.purchaseAt));
@@ -1057,6 +1065,7 @@ export default function EditBill() {
           unitDiscount: Number(item.unitDiscount) || 0,
         })),
         priceValid: priceValid || undefined,
+        validContactUntil: contextBusinessType === "Rental" ? validContactDate || undefined : undefined,
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
       });
@@ -1091,6 +1100,13 @@ export default function EditBill() {
 
     setCalendarVisible(false);
   }; // force to chose only one date
+
+  const handleValidContactDatesChange = (selectedDates: string[]) => {
+    if (selectedDates && selectedDates.length > 0) {
+      setValidContactDate(new Date(selectedDates[0]));
+    }
+    setValidContactCalendarVisible(false);
+  };
 
   if (isLoading) {
     return (
@@ -1138,6 +1154,41 @@ export default function EditBill() {
             }}
           >
             <MultiDateCalendar onDatesChange={handleDatesChange} />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Valid Contact Calendar Modal */}
+      <Modal
+        visible={validContactCalendarVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setValidContactCalendarVisible(false)}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+          activeOpacity={1}
+          onPress={() => setValidContactCalendarVisible(false)}
+        >
+          <View
+            style={{
+              width: isMobile() ? "90%" : "40%",
+              minWidth: 300,
+              maxWidth: 500,
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              borderRadius: 10,
+              padding: 20,
+            }}
+          >
+            <MultiDateCalendar 
+              onDatesChange={handleValidContactDatesChange}
+              
+            />
           </View>
         </TouchableOpacity>
       </Modal>
@@ -2008,20 +2059,41 @@ export default function EditBill() {
               </View>
             )}
 
-            {priceValid && selectedDocumentType !== "RE" && (
-              <View className="mb-2 pt-2 flex-row item-center justify-center">
-                <CustomText
-                  className="text-sm"
-                  style={{ color: theme === "dark" ? "#888" : "#666" }}
-                >
-                  {t("bill.validUntil")}
-                </CustomText>
-                <CustomText
-                  className="text-sm"
-                  style={{ color: theme === "dark" ? "#888" : "#666" }}
-                >
-                  {formatDate(priceValid.toISOString())}
-                </CustomText>
+            {/* Valid Contact Until Section - Only show for Rental business type */}
+            {contextBusinessType === "Rental" && (
+              <View
+                className="flex flex-col mt-4 mb-2"
+                style={{ backgroundColor: "transparent" }}
+              >
+                 {/* Date Selector for Valid Contact Until */}
+                 <View className="flex-row items-center mb-2">
+                    <CustomText className="mr-2" style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>{t("bill.validContactUntil")}</CustomText>
+                    {isEditMode ? (
+                      <TouchableOpacity 
+                        onPress={() => setValidContactCalendarVisible(true)}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+                          padding: 8,
+                          borderRadius: 8
+                        }}
+                      >
+                          <CustomText style={{ marginRight: 8 }}>
+                            {validContactDate ? formatDate(validContactDate.toISOString()) : t("dashboard.selectDate")}
+                          </CustomText>
+                          <Ionicons
+                            name="calendar"
+                            size={20}
+                            color={theme === "dark" ? "#ffffff" : "#444541"}
+                          />
+                      </TouchableOpacity>
+                    ) : (
+                      <CustomText style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>
+                        {validContactDate ? formatDate(validContactDate.toISOString()) : "-"}
+                      </CustomText>
+                    )}
+                 </View>
               </View>
             )}
 

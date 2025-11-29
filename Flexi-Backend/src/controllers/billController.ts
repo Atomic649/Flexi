@@ -272,6 +272,12 @@ const createBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    if (billInput.validContactUntil) {
+      billInput.validContactUntil = new Date(billInput.validContactUntil);
+    }
+    if (billInput.priceValid) {
+      billInput.priceValid = new Date(billInput.priceValid);
+    }
     const repeatFlag = ["true", "1", "yes"].includes(
       String(billInput.repeat).toLowerCase()
     );
@@ -662,6 +668,12 @@ const updateBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    if (billInput.validContactUntil) {
+      billInput.validContactUntil = new Date(billInput.validContactUntil);
+    }
+    if (billInput.priceValid) {
+      billInput.priceValid = new Date(billInput.priceValid);
+    }
     const repeatFlag = ["true", "1", "yes"].includes(
       String(billInput.repeat).toLowerCase()
     );
@@ -1117,6 +1129,62 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         },
         data: updateData,
       });
+
+      // Update stock based on DocumentType change
+      if (
+        DocumentType === "Receipt" &&
+        currentBill.DocumentType !== "Receipt"
+      ) {
+        // Changing TO Receipt: Decrease stock
+        for (const item of currentBill.product) {
+          if (!item.product) continue;
+
+          const productRecord = await tx.product.findFirst({
+            where: {
+              businessAcc: currentBill.businessAcc,
+              name: item.product,
+            },
+            select: { id: true },
+          });
+
+          if (productRecord) {
+            await tx.product.update({
+              where: { id: productRecord.id },
+              data: { stock: { decrement: item.quantity } },
+            });
+            console.log(
+              `Stock decreased for product ${item.product} by ${item.quantity}`
+            );
+          }
+        }
+      } else if (
+        DocumentType !== "Receipt" &&
+        currentBill.DocumentType === "Receipt"
+      ) {
+        // Changing FROM Receipt: Increase stock (Restore)
+        for (const item of currentBill.product) {
+          if (!item.product) continue;
+
+          const productRecord = await tx.product.findFirst({
+            where: {
+              businessAcc: currentBill.businessAcc,
+              name: item.product,
+            },
+            select: { id: true },
+          });
+
+          if (productRecord) {
+            await tx.product.update({
+              where: { id: productRecord.id },
+              data: { stock: { increment: item.quantity } },
+            });
+            console.log(
+              `Stock restored for product ${item.product} by ${item.quantity}`
+            );
+          }
+        }
+      }
+
       return bill;
     });
 

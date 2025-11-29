@@ -1225,7 +1225,8 @@
     "gender": {
       "male": "ชาย",
       "female": "หญิง",
-      "notSpecified": "ไม่ระบุ"
+      "notSpecified": "ไม่ระบุ",
+      "notspecified": "-"
     },
     "duplicateConfirmTitle":"สร้างซ้ำเอกสารนี้?",
     "duplicateConfirmMessage":"สร้างเอกสารใหม่โดยใช้รายละเอียดของลูกค้ารายนี้หรือไม่?",   
