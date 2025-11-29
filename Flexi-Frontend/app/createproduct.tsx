@@ -77,6 +77,7 @@ export default function CreateProduct() {
       setProductTypes([
         { label: t("product.productTypes.service"), value: "Service" },
         { label: t("product.productTypes.product"), value: "Product" },
+        { label: t("product.productTypes.rental"), value: "Rental" },
       ]);
     };
 
@@ -207,6 +208,8 @@ export default function CreateProduct() {
           ? "Service"
           : normalizedProductType === "product"
           ? "Product"
+          : normalizedProductType === "rental"
+          ? "Rental"
           : productType;
 
       formData.append("name", trimmedName);
@@ -273,8 +276,8 @@ export default function CreateProduct() {
             }
             onValueChange={(value: string) => {
               setProductType(value);
-              if (value === "Service") {
-                // Batch dependent updates when switching to Service
+              if (value === "Service" || value === "Rental") {
+                // Batch dependent updates when switching to Service or Rental
                 setbarcode("");
                 setstock("1");
               }
@@ -316,7 +319,7 @@ export default function CreateProduct() {
           </View>
 
           {/* Barcode field is conditionally rendered based on product type */}
-          {productType !== "Service" && (
+          {productType !== "Service" && productType !== "Rental" && (
             <FormField2
               title={t("product.barcode")}
               value={barcode}
@@ -348,6 +351,7 @@ export default function CreateProduct() {
                   bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   keyboardType="number-pad"
+                  editable={productType !== "Rental"}
                 />
               </View>
             )}

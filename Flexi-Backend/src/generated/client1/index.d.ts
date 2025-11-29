@@ -288,7 +288,8 @@ export type Category = (typeof Category)[keyof typeof Category]
 
 export const ProductType: {
   Service: 'Service',
-  Product: 'Product'
+  Product: 'Product',
+  Rental: 'Rental'
 };
 
 export type ProductType = (typeof ProductType)[keyof typeof ProductType]

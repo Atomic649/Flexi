@@ -217,7 +217,12 @@
     },
     "productTypes": {
       "service": "Service",
-      "product": "Product"
+      "product": "Product",
+      "rental": "Rental"
+    },
+    "status": {
+      "available": "Available",
+      "booked": "Booked"
     },
     "alerts": {
       "error": "Error",

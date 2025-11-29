@@ -218,7 +218,12 @@
     },
     "productTypes": {
       "service": "บริการ",
-      "product": "สินค้า"
+      "product": "สินค้า",
+      "rental": "เช่า"
+    },
+    "status": {
+      "available": "ว่าง",
+      "booked": "เต็ม"
     },
     "alerts": {
       "error": "ข้อผิดพลาด",

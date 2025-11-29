@@ -43,7 +43,7 @@ const productSchema = Joi.object({
   statusId: Joi.number(),
   memberId: Joi.string().required(),
   unit: Joi.string().valid(...Object.values(Unit)).optional(), // Validate against Unit enum
-  productType: Joi.string().valid(...Object.values(ProductType)).optional(), // Validate against
+  productType: Joi.string().valid(...Object.values(ProductType)).optional(), // Validate against ProductType enum
 });
 
 // Create product
@@ -96,7 +96,7 @@ const createProduct = async (req: Request, res: Response) => {
           memberId: product.memberId,
           businessAcc: businessAcc?.businessId ?? 0,
           unit: product.unit || Unit.Piece, // Default to PIECE if not provided
-          productType: product.productType || ProductType.Product, // Default to NORMAL if not provided
+          productType: product.productType || ProductType.Product, // Default to Product if not provided
         },
       });      
       res.status(201).json(newProduct);

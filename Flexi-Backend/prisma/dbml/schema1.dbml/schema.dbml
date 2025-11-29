@@ -528,6 +528,7 @@ Enum Category {
 Enum ProductType {
   Service
   Product
+  Rental
 }
 
 Enum OptionName {

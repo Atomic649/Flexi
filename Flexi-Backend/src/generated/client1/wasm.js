@@ -597,7 +597,8 @@ exports.SocialMedia = exports.$Enums.SocialMedia = {
 
 exports.ProductType = exports.$Enums.ProductType = {
   Service: 'Service',
-  Product: 'Product'
+  Product: 'Product',
+  Rental: 'Rental'
 };
 
 exports.MediaType = exports.$Enums.MediaType = {

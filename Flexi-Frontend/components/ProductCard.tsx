@@ -155,13 +155,27 @@ export default function ProductCard({
                 </Text>
 
                 {producttype === "Product" && (
-                  <Text
-                    className="text-sm text-zinc-500 font-pregular"
+                  <CustomText
+                    className="text-sm font-pregular pt-1"
                     numberOfLines={1}
+                    style={{ color: "#71717a" }}
                   >
-                    Stock: {productstock ?? 0} {unit ? `${unit}` : ""}
-                  </Text>
+                    {t("product.stock")} {productstock ?? 0} {unit ? `${t(`product.units.${unit.toLowerCase()}`)}` : ""}
+                  </CustomText>
                 )}
+                {producttype === "Rental" && (
+                  <CustomText
+                    className="text-xl font-pregular pt-1"
+                    numberOfLines={1}
+                    weight="bold"
+                    style={{ color: Number(productstock) === 1 ? "#22c55e" : "#ef4444" }}
+                  >
+                    {Number(productstock) === 1
+                      ? t("product.status.available")
+                      : t("product.status.booked")}
+                  </CustomText>
+                )}
+               
               </View>
             </View>
           </View>
