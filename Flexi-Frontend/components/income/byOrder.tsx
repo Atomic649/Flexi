@@ -4,12 +4,10 @@ import {
   Text,
   FlatList,
   RefreshControl,
-  Platform,
   ScrollView,
   Dimensions,
   Image,
   TouchableOpacity,
-  TextStyle,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -19,13 +17,10 @@ import BillCard from "../billCard";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import i18n from "@/i18n";
 import { router } from "expo-router";
 import {
-  getResponsiveStyles,
   isDesktop,
   isMobileApp,
-  isMobileWeb,
 } from "@/utils/responsive";
 import icons from "@/constants/icons";
 
@@ -438,9 +433,20 @@ const ByOrder = () => {
                           className="font-bold"
                           style={{
                             flex: 1.5,
+                            alignItems: "flex-end",
+                            justifyContent: "flex-end",
+                            color: bill.total <= 0
+                              ? theme === "dark"
+                                ? "#7d7d7d27"
+                                : "#7d7d7d27"
+                              : theme === "dark"
+                              ? "#04ecd5"
+                              : "#01e0c6",
                           }}
                         >
-                          +{bill.total.toLocaleString()}
+                          {bill.total <= 0
+                            ? bill.totalQuotation.toLocaleString()
+                            : `${bill.total.toLocaleString()}`}
                         </CustomText>
                         <View
                           className={`flex items-center justify-center`}

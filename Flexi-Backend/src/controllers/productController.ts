@@ -62,15 +62,15 @@ const createProduct = async (req: Request, res: Response) => {
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
     };
 
-    if (typeof product.barcode === "string") {
-      const trimmedBarcode = product.barcode.trim();
-      product.barcode = trimmedBarcode.length > 0 ? trimmedBarcode : null;
-    }
-
     // Validate combined product fields
     const { error } = productSchema.validate(product);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
+    }
+
+    if (typeof product.barcode === "string") {
+      const trimmedBarcode = product.barcode.trim();
+      product.barcode = trimmedBarcode.length > 0 ? trimmedBarcode : null;
     }
 
 // Find business ID by member ID from member table

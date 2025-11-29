@@ -314,8 +314,8 @@ export default function Dashboard() {
       <ScrollView>
         <View
           style={{
-            maxWidth: isDesktop() ? "45%" : "100%",
-            width: "100%",
+            maxWidth: 1200,
+            width: isDesktop() ? "60%" : "100%",
             paddingHorizontal: 16,
             alignSelf: "center",
             marginTop: Platform.OS === "web" ? 80 : 10,
@@ -370,7 +370,7 @@ export default function Dashboard() {
                   weight="bold"
                   style={{
                     color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: 12,
+                    fontSize: getResponsiveStyles().bodyFontSize,
                   }}
                 >
                   {t("dashboard.today")}
@@ -398,10 +398,10 @@ export default function Dashboard() {
                 }}
               >
                 <CustomText
-                  weight="bold"
+                  weight="bold"                  
                   style={{
                     color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: 12,
+                    fontSize: getResponsiveStyles().bodyFontSize,
                   }}
                 >
                   {t("dashboard.thisMonth")}
@@ -432,8 +432,8 @@ export default function Dashboard() {
               >
                 <CustomText
                   className="mr-2"
-                  style={{
-                    fontSize: 12,
+                  style={{                
+                    fontSize: getResponsiveStyles().bodyFontSize,
                   }}
                 >
                   {formatDateRange()}

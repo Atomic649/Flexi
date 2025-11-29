@@ -26,6 +26,7 @@ import {
   isDesktop,
   isMobile,
   getDeviceType,
+  getResponsiveStyles,
 } from "@/utils/responsive";
 
 type Expense = {
@@ -206,24 +207,26 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 display: "flex",
               }}
             >
-              <Text style={[headerTextStyle, { width: "16.66%" }]}>
+              <CustomText
+              weight="bold"
+               style={{ width: "16.66%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.date")}
-              </Text>
-              <Text style={[headerTextStyle, { width: "16.66%" }]}>
+              </CustomText>
+              <CustomText weight="bold" style={{ width: "16.66%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.type")}
-              </Text>
-              <Text style={[headerTextStyle, { width: "33.33%" }]}>
+              </CustomText>
+              <CustomText weight="bold" style={{ width: "33.33%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.description")}
-              </Text>
-              <Text style={[headerTextStyle, { width: "16.66%" }]}>
+              </CustomText>
+              <CustomText weight="bold" style={{ width: "16.66%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.note")}
-              </Text>
-              <Text style={[headerTextStyle, { width: "8.33%" }]}>
+              </CustomText>
+              <CustomText weight="bold" style={{ width: "8.33%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.amount")}
-              </Text>
-              <Text style={[headerTextStyle, { width: "8.33%" }]}>
+              </CustomText>
+              <CustomText weight="bold" style={{ width: "8.33%",fontSize: getResponsiveStyles().bodyFontSize  }}>
                 {t("expense.table.delete")}
-              </Text>
+              </CustomText>
             </View>
 
             {/* Table Content */}
@@ -279,52 +282,38 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                       alignItems: "flex-start",
                     }}
                   >
-                    <Text
-                      className={`${
-                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      } `}
-                      style={{ width: "16.66%" }}
+                    <CustomText                     
+                      style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
                     >
                       {formatDate(expense.date)}
-                    </Text>
-                    <Text
-                      className={`${
-                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      } `}
-                      style={{ width: "16.66%" }}
+                    </CustomText>
+                    <CustomText
+                      
+                      style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
                     >
                       {expense.type}
-                    </Text>
-                    <Text
-                      className={`${
-                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      } `}
-                      style={{ width: "33.33%" }}
+                    </CustomText>
+                    <CustomText                      
+                      style={{ width: "33.33%", fontSize: getResponsiveStyles().smallFontSize }}
                       numberOfLines={1}
                     >
                       {expense.type === "ads" ? expense.note : (expense.sName || expense.desc )}
-                    </Text>
-                    <Text
-                      className={`${
-                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      } `}
+                    </CustomText>
+                    <CustomText                     
                       numberOfLines={1}
-                      style={{ width: "16.66%" }}
+                      style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
                     >
                       {expense.type === "ads"
                         ? "คาดการณ์ค่าโฆษณา"
                         : (expense.sName || expense.note)}
-                    </Text>
-                    <Text
-                      className={`${
-                        theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-                      }  font-bold`}
-                      style={
-                        { width: "8.33%", textAlign: "center" } as TextStyle
-                      }
+                    </CustomText>
+                    <CustomText                      
+                      style={{
+                        width: "8.33%", textAlign: "center", fontSize: getResponsiveStyles().smallFontSize
+                      } as TextStyle}
                     >
                       -{expense.expenses}
-                    </Text>
+                    </CustomText>
                     <View
                       className="flex flex-row w-24"
                       style={{ width: "8.33%", justifyContent: "center" }}
