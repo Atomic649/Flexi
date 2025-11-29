@@ -48,7 +48,7 @@ export function CustomText({ children, weight = 'medium', style, ...props }: Cus
   return (
     <RNText
       style={[
-      { 
+      { paddingTop:1,
         fontFamily: getFontFamily(),
         color: props.link ? '#00dec1' : theme === 'dark' ? '#b4b3b3' : '#2a2a2a',
        

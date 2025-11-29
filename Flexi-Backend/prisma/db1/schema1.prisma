@@ -279,7 +279,6 @@ model DocumentCounter {
   documentType DocumentType
   count        Int          @default(0)  
   business     BusinessAcc  @relation(fields: [businessId], references: [id])
-
   @@unique([businessId, documentType])
 }
 

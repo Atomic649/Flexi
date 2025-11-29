@@ -42,7 +42,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${t("print.invoice")} #${invoice.id}</title>
+        <title>${t("print.invoice")} #${invoice.invoiceId }</title>
         <style>
           @page {
             margin: 8mm;
@@ -510,9 +510,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="invoice-number"><span class="bill-label">${t(
                 "print.billNo"
-              )}</span> <span class="bill-id">${invoice.billId}</span></div>
-                
-                <p style="margin-top: 2px;">${(() => {
+              )}</span> <span class="bill-id">${invoice.invoiceId}</span></div>
+                <p style="margin-top: 1px;">REF :${invoice.quotationId}</p>
+                <p style="margin-top: 1px;">${(() => {
                   const d = new Date(invoice.purchaseAt);
                   if (isNaN(d.getTime())) return "";
                   const dd = String(d.getDate()).padStart(2, "0");

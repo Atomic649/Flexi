@@ -513,10 +513,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="invoice-number"><span class="bill-label">${t(
-                "print.billNo"
-              )}</span> <span class="bill-id">${invoice.billId}</span></div>
+                "print.billNo")}</span> 
+                <span class="bill-id">${invoice.billId}</span></div>
+              <p style="margin-top: 1px;">REF:${invoice.quotationId}, ${invoice.invoiceId}</p>            
                 
-                <p style="margin-top: 2px;">${(() => {
+                <p style="margin-top: 1px;">${(() => {
                   const d = new Date(invoice.purchaseAt);
                   if (isNaN(d.getTime())) return "";
                   const dd = String(d.getDate()).padStart(2, "0");

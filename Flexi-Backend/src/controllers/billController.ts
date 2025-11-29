@@ -578,7 +578,7 @@ const getBills = async (req: Request, res: Response) => {
       },
       select: {
         id: true,
-        billId: true,
+        billId: true,        
         cName: true,
         cLastName: true,
         // cPhone: true,

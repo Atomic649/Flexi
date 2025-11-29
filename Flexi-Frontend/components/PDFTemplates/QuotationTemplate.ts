@@ -40,7 +40,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${t("print.quotation")} #${quotation.billId || quotation.id}</title>
+        <title>${t("print.quotation")} #${quotation.quotationId}</title>
         <style>
           @page {
             margin: 8mm;
@@ -431,8 +431,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
             </div>
             <div class="quotation-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.billId || quotation.id}</span></div>
-              
+              <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.quotationId }</span></div>              
               <p style="margin-top: 2px;">${(() => { const d = new Date(quotation.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
             </div>
           </div>

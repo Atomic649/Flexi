@@ -54,10 +54,14 @@ prismaMock.product = {
   update: jest.fn(),
   findFirst: jest.fn(),
 };
+prismaMock.documentCounter = { upsert: jest.fn(), updateMany: jest.fn() };
 prismaMock.$transaction = jest.fn(async (cb: any) =>
   cb({
     product: prismaMock.product,
     bill: prismaMock.bill,
+    store: prismaMock.store,
+    documentCounter: prismaMock.documentCounter,
+    productItem: prismaMock.productItem,
   })
 );
 
@@ -128,6 +132,8 @@ describe("billController", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
+    prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
+    prismaMock.documentCounter.updateMany.mockResolvedValue({ count: 1 });
   });
 
   describe("createBill", () => {
@@ -136,6 +142,7 @@ describe("billController", () => {
         id: 10,
         platform: "Shop",
       });
+      prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
       prismaMock.bill.findFirst.mockResolvedValue(null);
       prismaMock.bill.create.mockResolvedValue({ id: 1, billId: "INV2025/1" });
 
