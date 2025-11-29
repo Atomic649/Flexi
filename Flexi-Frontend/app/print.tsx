@@ -20,7 +20,7 @@ import CallAPIPrint from "@/api/print_api";
 import { getMemberId, getBusinessId } from "@/utils/utility";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
-import { isMobile, isTablet } from "@/utils/responsive";
+import { getResponsiveStyles, isMobile, isTablet } from "@/utils/responsive";
 import * as Sharing from "expo-sharing";
 import * as ExpoPrint from "expo-print";
 import { useBusiness } from "@/providers/BusinessProvider";
@@ -37,6 +37,8 @@ import { useLocalSearchParams } from "expo-router";
 const SEARCH_TYPES = {
   CUSTOMER_NAME: "customerName",
   BILL_ID: "billId",
+  QUOTATION_ID: "quotationId",
+  INVOICE_ID: "invoiceId",
   DATE_RANGE: "dateRange",
 };
 
@@ -613,6 +615,8 @@ export default function Print() {
         searchByCustomerName();
         break;
       case SEARCH_TYPES.BILL_ID:
+      case SEARCH_TYPES.QUOTATION_ID:
+      case SEARCH_TYPES.INVOICE_ID:
         searchByBillId();
         break;
       case SEARCH_TYPES.DATE_RANGE:
@@ -1458,8 +1462,37 @@ export default function Print() {
     }
   };
 
+  // Helper to get display ID based on document type
+  const getDisplayId = (invoice: any) => {
+    if (!invoice) return "";
+    const docType = Array.isArray(invoice?.DocumentType)
+      ? invoice.DocumentType[0]
+      : invoice?.DocumentType;
+
+    return docType === "Quotation"
+      ? invoice.quotationId
+      : docType === "Invoice"
+      ? invoice.invoiceId
+      : invoice.billId;
+  };
+
+  // Helper to get document title based on document type
+  const getDocumentTitle = (invoice: any) => {
+    if (!invoice) return "";
+    const docType = Array.isArray(invoice?.DocumentType)
+      ? invoice.DocumentType[0]
+      : invoice?.DocumentType;
+
+    if (docType === "Quotation") return t("print.quotation");
+    if (docType === "Invoice") return t("print.invoice");
+
+    return isVatRegistered ? t("print.taxInvoice") : t("print.receipt");
+  };
+
   // Render invoice card
   const renderInvoiceCard = (invoice: any) => {
+    const displayId = getDisplayId(invoice);
+
     return (
       <TouchableOpacity
         key={invoice.id}
@@ -1475,7 +1508,7 @@ export default function Print() {
             <View className="flex-row">
               <CustomText className="mb-1">#</CustomText>
               <CustomText weight="bold" className="mb-1 text-base">
-                {invoice.billId}
+                {displayId}
               </CustomText>
             </View>
             <View className="flex-row gap-1">
@@ -1483,7 +1516,7 @@ export default function Print() {
               <CustomText className="mb-1">{invoice.cLastName}</CustomText>
             </View>
             <CustomText className="mb-1">
-              {formatDate(invoice.purchaseAt)}
+              {formatDate(invoice.updatedAt)}
             </CustomText>
           </View>
           <View className="items-end">
@@ -1576,17 +1609,15 @@ export default function Print() {
               <View ref={printRef} className="p-4">
                 <View className="flex-row justify-between items-center mb-6">
                   <View className="flex-col pt-1">
-                    <CustomText weight="bold" className="text-xl">
-                      {isVatRegistered
-                        ? t("print.taxInvoice")
-                        : t("print.receipt")}
+                    <CustomText weight="bold" className="text-xl pt-1">
+                      {getDocumentTitle(selectedInvoice)}
                     </CustomText>
                     <View className="flex-row">
                       <CustomText weight="regular" className="text-xl">
                         #
                       </CustomText>
                       <CustomText weight="regular" className="text-base">
-                        {selectedInvoice.billId}
+                        {getDisplayId(selectedInvoice)}
                       </CustomText>
                     </View>
                   </View>
@@ -1608,20 +1639,23 @@ export default function Print() {
                       {t("print.billedTo")}
                     </CustomText>
                     <View className="flex-row gap-1">
-                      <CustomText>{selectedInvoice.cName}</CustomText>
-                      <CustomText>{selectedInvoice.cLastName}</CustomText>
+                      <CustomText
+                      style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cName}</CustomText>
+                      <CustomText
+                      style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cLastName}</CustomText>
                     </View>
-                    <CustomText>{selectedInvoice.cPhone}</CustomText>
+                    <CustomText
+                    style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cPhone}</CustomText>
                     <CustomText
                       numberOfLines={3}
                       ellipsizeMode="tail"
-                      style={{ flexWrap: "wrap" }}
+                      style={{ flexWrap: "wrap",fontSize:getResponsiveStyles().smallFontSize }}
                     >
                       {selectedInvoice.cAddress}
                     </CustomText>
                     <View className="flex-row gap-1">
-                      <CustomText>{selectedInvoice.cProvince}</CustomText>
-                      <CustomText>{selectedInvoice.cPostId}</CustomText>
+                      <CustomText style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cProvince}</CustomText>
+                      <CustomText style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cPostId}</CustomText>
                     </View>
                   </View>
                   <View className="items-end">
@@ -1635,7 +1669,8 @@ export default function Print() {
                     <CustomText weight="bold" className="mb-1 mt-2">
                       {t("print.paymentMethod")}
                     </CustomText>
-                    <CustomText>{selectedInvoice.payment}</CustomText>
+                    <CustomText>
+                    {selectedInvoice.payment ? t(`bill.payment.${selectedInvoice.payment}`) : t("common.unknown")}</CustomText>
 
                     <CustomText weight="bold" className="mb-1 mt-2">
                       {t("print.status")}
@@ -1656,8 +1691,8 @@ export default function Print() {
                   </View>
                 </View>
 
-                <View className="mb-2">
-                  <View className="flex-row justify-between items-center pb-2 mb-2 border-b border-zinc-300">
+                <View className="">
+                  <View className="flex-row justify-between items-center mb-1 border-b border-zinc-300">
                     <CustomText weight="bold" style={{ width: "38%" }}>
                       {t("print.productName")}
                     </CustomText>
@@ -2161,7 +2196,7 @@ export default function Print() {
                 ) : (
                   <>
                     {/* Monthly Statistics */}
-                    <View className="flex-row flex-wrap mb-6">
+                    <View className="flex-row flex-wrap mb-4">
                       <View
                         className={`w-1/2 p-4 ${
                           isMobile() ? "w-full" : "w-1/2 pr-2"
@@ -2322,14 +2357,12 @@ export default function Print() {
 
                     {/* Monthly Invoices */}
                     <View className="flex-row">
-                      <CustomText weight="bold" className="mb-4 text-lg">
-                        {isVatRegistered
-                          ? t("print.monthlyTaxInvoices")
-                          : t("print.monthlyReceipts")}
+                      <CustomText weight="bold" className="mb-4 text-lg pt-4">
+                        {t("print.allDocuments")}                         
                       </CustomText>
 
-                      <CustomText weight="bold" className="mb-4 text-lg ml-2">
-                        {bills.length}
+                      <CustomText weight="bold" className="mb-4 text-lg ml-2 pt-4">
+                        ({bills.length})
                       </CustomText>
                     </View>
 
@@ -2375,6 +2408,14 @@ export default function Print() {
                           value: SEARCH_TYPES.BILL_ID,
                         },
                         {
+                          label: t("print.quotationId"),
+                          value: SEARCH_TYPES.QUOTATION_ID,
+                        },
+                        {
+                          label: t("print.invoiceId"),
+                          value: SEARCH_TYPES.INVOICE_ID,
+                        },
+                        {
                           label: t("print.dateRange"),
                           value: SEARCH_TYPES.DATE_RANGE,
                         },
@@ -2396,6 +2437,10 @@ export default function Print() {
                         title={
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("print.enterCustomerName")
+                            : searchType === SEARCH_TYPES.QUOTATION_ID
+                            ? t("print.enterQuotationId")
+                            : searchType === SEARCH_TYPES.INVOICE_ID
+                            ? t("print.enterInvoiceId")
                             : t("print.enterBillId")
                         }
                         value={searchQuery}
@@ -2403,18 +2448,18 @@ export default function Print() {
                         placeholder={
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("bill.enterName")
-                            : "INV2025/123 or 2025/123 or 123"
+                            : searchType === SEARCH_TYPES.QUOTATION_ID
+                            ? "QT2025/123 or 2025/123 or 123"
+                            : searchType === SEARCH_TYPES.INVOICE_ID
+                            ? "INV2025/123 or 2025/123 or 123"
+                            : "REC2025/123 or 2025/123 or 123"
                         }
                         bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                         placeholderTextColor={
                           theme === "dark" ? "#606060" : "#b1b1b1"
                         }
                         textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                        keyboardType={
-                          searchType === SEARCH_TYPES.BILL_ID
-                            ? "numeric"
-                            : "default"
-                        }
+                        keyboardType={ "default" }
                       />
                     </View>
                   )}

@@ -518,7 +518,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <p style="margin-top: 1px;">REF:${invoice.quotationId}, ${invoice.invoiceId}</p>            
                 
                 <p style="margin-top: 1px;">${(() => {
-                  const d = new Date(invoice.purchaseAt);
+                  const d = new Date(invoice.updatedAt);
                   if (isNaN(d.getTime())) return "";
                   const dd = String(d.getDate()).padStart(2, "0");
                   const mm = String(d.getMonth() + 1).padStart(2, "0");

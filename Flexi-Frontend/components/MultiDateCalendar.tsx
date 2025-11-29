@@ -76,6 +76,7 @@ const MultiDateCalendar: React.FC<MultiDateCalendarProps> = ({
           arrowColor: "#ffffff",
           monthTextColor: "#ffffff",
           indicatorColor: "#ffffff",
+          activeOpacity: 1,
         }
       : {
           backgroundColor: "#ffffff",
@@ -89,6 +90,7 @@ const MultiDateCalendar: React.FC<MultiDateCalendarProps> = ({
           arrowColor: "#ffb30e",
           monthTextColor: "#000000",
           indicatorColor: "#000000",
+          activeOpacity: 1,
         };
 
   const selectedDateKeys = Object.keys(selectedDates);

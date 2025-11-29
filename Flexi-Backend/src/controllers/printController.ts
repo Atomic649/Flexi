@@ -288,9 +288,12 @@ export const searchBillById = async (req: Request, res: Response) => {
     // Always use endsWith for flexible search
     const bill = await prisma.bill.findFirst({
       where: {
-        billId: { endsWith: billId as string },
-        businessAcc : businessId?.businessId ?? 0,
-
+        businessAcc: businessId?.businessId ?? 0,
+        OR: [
+          { billId: { endsWith: billId as string } },
+          { quotationId: { endsWith: billId as string } },
+          { invoiceId: { endsWith: billId as string } },
+        ],
       },
       include: {
         product: true, // Include products if needed

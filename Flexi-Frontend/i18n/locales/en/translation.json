@@ -31,7 +31,8 @@
     "complete": "Complete",
     "noOptions": "No options",
     "networkError": "Network API Error",
-    "orders":"orders"
+    "orders":"orders",
+    "unknown": "Unknown"
   },
   "months": {
     "january": "January",
@@ -1353,6 +1354,7 @@
   "print": {
     "title": "Print Center",
     "error": "Error",
+    "allDocuments": "All Documents of the Month",
     "fetchError": "Unable to fetch data",
     "searchError": "An error occurred during the search",
     "search": "Search",
@@ -1360,6 +1362,10 @@
     "noResults": "No results found",
     "customerName": "Customer Name",
     "billId": "Bill ID",
+    "quotationId": "Quotation ID",
+    "invoiceId": "Invoice ID",
+    "enterQuotationId": "Enter Quotation ID",
+    "enterInvoiceId": "Enter Invoice ID",
     "dateRange": "Date Range",
     "enterCustomerName": "Enter customer name",
     "noResultsMessage": "No matching results found",

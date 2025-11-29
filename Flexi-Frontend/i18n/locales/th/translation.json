@@ -31,7 +31,8 @@
     "complete": "เสร็จสิ้น",
     "noOptions": "ไม่มีตัวเลือก",
     "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​",
-    "orders":"คำสั่งซื้อ"
+    "orders":"คำสั่งซื้อ",
+    "unknown": "-"
   },
   "months": {
     "january": "มกราคม",
@@ -1258,7 +1259,8 @@
       "transfer": "โอนเงินผ่านธนาคาร",
       "creditcard": "บัตรเครดิต",
       "cash": "เงินสด",
-      "notspecified": "-"
+      "notspecified": "-",
+      "NotSpecified": "ไม่ระบุ"
     },
     "selectPayment": "เลือกวิธีการชำระเงิน",
     "paymentStatus": "สถานะการชำระเงิน",
@@ -1353,6 +1355,7 @@
   "print": {
     "title": "ศูนย์การพิมพ์และแชร์",
     "error": "ข้อผิดพลาด",
+    "allDocuments": "เอกสารทั้งหมดเดือนนี้",
     "fetchError": "ไม่สามารถดึงข้อมูลได้",
     "searchError": "เกิดข้อผิดพลาดระหว่างการค้นหา",
     "search": "ค้นหา",
@@ -1360,6 +1363,10 @@
     "noResults": "ไม่พบผลลัพธ์",
     "customerName": "ชื่อลูกค้า",
     "billId": "เลขที่ใบเสร็จ",
+    "quotationId": "เลขที่ใบเสนอราคา",
+    "invoiceId": "เลขที่ใบแจ้งหนี้",
+    "enterQuotationId": "กรอกเลขที่ใบเสนอราคา",
+    "enterInvoiceId": "กรอกเลขที่ใบแจ้งหนี้",
     "dateRange": "ช่วงวันที่",
     "enterCustomerName": "กรอกชื่อลูกค้า",
     "noResultsMessage": "ไม่พบผลลัพธ์ที่ตรงกัน",

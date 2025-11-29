@@ -509,24 +509,27 @@ export default function CreateBill() {
         setPriceValidDays(null);
       }
 
-      const documentTypeFromBill = getDocumentTypeFromAPI(
-        billData.DocumentType
-      );
-      if (
-        documentTypeFromBill &&
-        (availableDocumentTypes.length === 0 ||
-          availableDocumentTypes.includes(
-            getDocumentTypeForAPI(documentTypeFromBill)
-          ))
-      ) {
-        setSelectedDocumentType(documentTypeFromBill);
-      } else if (availableDocumentTypes.length > 0) {
-        if (availableDocumentTypes.includes("Quotation")) {
-          setSelectedDocumentType("QA");
-        } else if (availableDocumentTypes.includes("Invoice")) {
-          setSelectedDocumentType("IV");
-        } else if (availableDocumentTypes.includes("Receipt")) {
-          setSelectedDocumentType("RE");
+      // Default to Quotation when duplicating if available
+      if (availableDocumentTypes.includes("Quotation")) {
+        setSelectedDocumentType("QA");
+      } else {
+        const documentTypeFromBill = getDocumentTypeFromAPI(
+          billData.DocumentType
+        );
+        if (
+          documentTypeFromBill &&
+          (availableDocumentTypes.length === 0 ||
+            availableDocumentTypes.includes(
+              getDocumentTypeForAPI(documentTypeFromBill)
+            ))
+        ) {
+          setSelectedDocumentType(documentTypeFromBill);
+        } else if (availableDocumentTypes.length > 0) {
+          if (availableDocumentTypes.includes("Invoice")) {
+            setSelectedDocumentType("IV");
+          } else if (availableDocumentTypes.includes("Receipt")) {
+            setSelectedDocumentType("RE");
+          }
         }
       }
     };

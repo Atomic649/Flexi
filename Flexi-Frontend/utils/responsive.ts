@@ -103,7 +103,7 @@ export const getResponsiveStyles = () => {
       titleFontSize: 18,
       subtitleFontSize: 16,
       bodyFontSize: 14,
-      smallFontSize: 12,
+      smallFontSize: 13,
       lineHeight: 1.4
     }; // Mobile styles
   } else if (width >= 640 && width < 1024) {
@@ -114,7 +114,7 @@ export const getResponsiveStyles = () => {
       titleFontSize: 22,
       subtitleFontSize: 18,
       bodyFontSize: 16, 
-      smallFontSize: 13,
+      smallFontSize: 14,
       lineHeight: 1.5
     }; // Tablet styles
   } else {
