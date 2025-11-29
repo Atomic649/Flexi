@@ -510,7 +510,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             <table class="items-table">
               <thead>
                 <tr>
-                  <th style="width: 8%;">#</th>
+                  <th style="width: 8%;">${t("print.no")}</th>
                   <th style="width: 32%;">${t("print.productName")}</th>
                   <th style="width: 10%;">${t("print.quantity")}</th>
                   <th style="width: 10%;">${t("product.unitTitle")}</th>

@@ -607,21 +607,13 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <table class="items-table">
               <thead>
                 <tr>
-                  <th style="width: 7%;">${t("print.no")}</th>
-                  <th style="width: 30%;">${t("print.productName")}</th>
-                  <th style="width: 15%;">${t("product.unitTitle")}</th>
-                  <th class="text-center" style="width: 10%;">${t(
-                    "print.quantity"
-                  )}</th>
-                  <th class="text-right" style="width: 17.5%;">${t(
-                    "print.price"
-                  )}</th>
-                    <th class="text-right" style="width: 13%;">${t(
-                      "print.discount"
-                    )}</th>
-                  <th class="text-right" style="width: 17.5%;">${t(
-                    "print.total"
-                  )}</th>
+                  <th style="width: 8%;">${t("print.no")}</th>
+                  <th style="width: 32%;">${t("print.productName")}</th>
+                  <th style="width: 10%;">${t("print.quantity")}</th>
+                  <th style="width: 10%;">${t("product.unitTitle")}</th>
+                  <th style="width: 15%;">${t("print.unitPrice")}</th>
+                  <th style="width: 10%;">${t("print.discount")}</th>
+                  <th style="width: 15%;">${t("print.total")}</th>
                 </tr>
               </thead>
               <tbody>
