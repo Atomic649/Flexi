@@ -651,20 +651,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             </table>
           </div>
 
-           <!-- Terms and Summary Side by Side -->
-          <div class="terms-summary-container" style="display: flex; gap: 20px; margin-bottom: 20px;">
-            <!-- Payment Terms and Conditions -->
-            <div class="terms-section" style="flex: 1; width: 50%;">
-              <div class="note-section">
-                <h3>${t("print.termsAndConditions")}</h3>
-                <p>
-                  ${invoice.remark ? `• ${invoice.remark}` : ""}                  
-                </p>
-              </div>
-            </div>
-
+           <!-- Terms and Summary Stacked -->
+          <div class="terms-summary-container" style="margin-bottom: 20px;">
             <!-- Summary -->
-            <div class="summary-section" style="flex: 1; width: 50%; margin-bottom: 0;">
+            <div class="summary-section" style="width: 100%; margin-bottom: 20px;">
               <div class="summary-table">
                 ${
                   isVatRegistered
@@ -719,6 +709,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     grandTotal
                   )}</span>
                 </div>
+              </div>
+            </div>
+
+            <!-- Payment Terms and Conditions -->
+            <div class="terms-section" style="width: 100%; margin-bottom: 0;">
+              <div class="note-section">
+                <h3>${t("print.termsAndConditions")}</h3>
+                <p>
+                  ${invoice.remark ? `• ${invoice.remark}` : ""}                  
+                </p>
               </div>
             </div>
           </div>
