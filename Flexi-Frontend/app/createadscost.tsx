@@ -23,6 +23,7 @@ import { router } from "expo-router";
 import CallAPIProduct from "@/api/product_api";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
+import { isDesktop } from "@/utils/responsive";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -217,6 +218,7 @@ export default function createAdsCost() {
       style={{
         minHeight: Dimensions.get("window").height,
         alignItems: Platform.OS === "web" ? "center" : "center",
+       
       }}
     >
       <ScrollView>

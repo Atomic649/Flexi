@@ -20,7 +20,7 @@ import {
   isMobile,
   getResponsiveStyles,
   getDeviceType,
-  isTablet,
+  isDesktop,
 } from "@/utils/responsive";
 import { Ionicons } from "@expo/vector-icons";
 import { useMarketing } from "@/providers/MarketingProvider";
@@ -191,21 +191,6 @@ const monthly = () => {
     return 16;
   };
 
-  // Adjust font size and color of Title Table with responsive styling
-  const textStyle = {
-    fontSize: responsiveStyles.smallFontSize,
-    color: isMobile() || isTablet() 
-      ? theme === "dark"
-        ? "#27272a"
-        : "#4b5563"
-      : theme === "dark"
-      ? "#b4b4b5"
-      : "#4b5563",
-    // fontWeight: "900" as "900",
-    fontFamily:
-      i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
-  };
-
   // Handle MonthlyCard press to navigate to detail screen
   const handleItemPress = (item: MonthlyCardProps) => {
     router.push({
@@ -222,34 +207,39 @@ const monthly = () => {
       <View
         className={`h-full ${useBackgroundColorClass()}`}
         style={{
-          width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
-          maxWidth: 900,
+          width: isDesktop() ? "80%" : "100%",
+          maxWidth: 1200,
           alignSelf: "center",
         }}
       >
         <View
           className={`flex flex-col items-end `}
           style={{
-            backgroundColor:
-              Platform.OS === "web"
-                ? "transparent"
-                : theme === "dark"
-                ? "#adacac"
-                : "#d0cfcb",
+            backgroundColor: theme === "dark" ? "#1f1f1f" : "#f3f3f3",
             borderBottomWidth: 1,
-            borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+            borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
+            paddingTop: 8,
+            paddingBottom: 8,
           }}
         >
-          <View className="flex flex-row m-3 items-start justify-evenly w-full pl-5 ">
+          <View
+            className="flex flex-row items-start justify-evenly w-full pl-5 "
+            style={{
+              paddingHorizontal: 10,
+            }}
+          >
             <View
               className="flex flex-col items-start"
               style={{
                 width: marketingPreference === "organic" ? "18%" : "15%",
               }}
             >
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: responsiveStyles.smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.month")}
-              </Text>
+              </CustomText>
             </View>
 
             <View
@@ -258,9 +248,12 @@ const monthly = () => {
                 width: marketingPreference === "organic" ? "15%" : "12%",
               }}
             >
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: responsiveStyles.smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.amount")}
-              </Text>
+              </CustomText>
             </View>
 
             <View
@@ -269,9 +262,12 @@ const monthly = () => {
                 width: marketingPreference === "organic" ? "18%" : "15%",
               }}
             >
-              <Text style={textStyle} numberOfLines={3}>
+              <CustomText
+                style={{ fontSize: responsiveStyles.smallFontSize }}
+                numberOfLines={3}
+              >
                 {t("income.table.sales")}
-              </Text>
+              </CustomText>
             </View>
 
             {marketingPreference !== "organic" && (
@@ -282,9 +278,12 @@ const monthly = () => {
                   flexDirection: isMobile() ? "column" : "row",
                 }}
               >
-                <Text style={textStyle} numberOfLines={1}>
+                <CustomText
+                  style={{ fontSize: responsiveStyles.smallFontSize }}
+                  numberOfLines={1}
+                >
                   {t("income.table.adCost")}
-                </Text>
+                </CustomText>
               </View>
             )}
 
@@ -295,9 +294,12 @@ const monthly = () => {
                 flexDirection: isMobile() ? "column" : "row",
               }}
             >
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: responsiveStyles.smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.expense")}
-              </Text>
+              </CustomText>
             </View>
 
             <View
@@ -307,9 +309,12 @@ const monthly = () => {
                 flexDirection: isMobile() ? "column" : "row",
               }}
             >
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: responsiveStyles.smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.profit")}
-              </Text>
+              </CustomText>
             </View>
             {marketingPreference !== "organic" && (
               <View
@@ -318,9 +323,12 @@ const monthly = () => {
                   width: marketingPreference === "organic" ? "13%" : "13%",
                 }}
               >
-                <Text style={textStyle} numberOfLines={1}>
+                <CustomText
+                  style={{ fontSize: responsiveStyles.smallFontSize }}
+                  numberOfLines={1}
+                >
                   {t("income.table.percentAd")}
-                </Text>
+                </CustomText>
               </View>
             )}
           </View>

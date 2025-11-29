@@ -24,7 +24,8 @@ export const isTablet = () => {
 
 export const isDesktop = () => {
   const { width } = Dimensions.get('window');
-  return width >= 1024; // Desktop devices typically have a width of 1024px or more
+  const isWeb = Platform.OS === 'web';
+  return isWeb && width >= 1024; // Desktop devices typically have a width of 1024px or more
 }
 
 

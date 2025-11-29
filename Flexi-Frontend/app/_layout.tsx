@@ -19,6 +19,7 @@ import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
@@ -533,7 +534,8 @@ const HideTopBar = () => ({
 });
 
 const getHeaderTitleStyle = () => ({
-  fontSize: 15,
+  fontSize: getResponsiveStyles().subtitleFontSize,
+  textAlign: "center",
   fontFamily:
     i18n.language === "th" ? "IBMPlexSansThai-Bold" : "Poppins-Regular",
 });

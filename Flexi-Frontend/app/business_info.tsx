@@ -13,6 +13,7 @@ import { getMemberId, getUserId } from "@/utils/utility";
 import Dropdown2 from "@/components/dropdown/Dropdown2";
 import FormField2 from "@/components/formfield/FormField2";
 import { Ionicons } from "@expo/vector-icons";
+import { isDesktop } from "@/utils/responsive";
 
 
 export default function BusinessInfo() {
@@ -191,7 +192,7 @@ export default function BusinessInfo() {
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
           style={{
-            width: Dimensions.get("window").width > 1024 ? "40%" : "100%",
+            width: isDesktop() ? "40%" : "100%",
             maxWidth: 600,
             alignSelf: "center",
           }}

@@ -34,6 +34,7 @@ import AutoFillBill, {
   ParsedCustomerInfo,
 } from "@/components/autoFillBill";
 
+
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
@@ -248,6 +249,9 @@ export default function CreateBill() {
     return steps;
   };
 
+
+
+
   // Helper function to convert internal document type to API format
   const getDocumentTypeForAPI = (
     type: "QA" | "IV" | "RE"
@@ -350,6 +354,10 @@ export default function CreateBill() {
 
   // Derive businessType directly for render
   const businessType = contextBusinessType ?? null;
+
+  // Vilid Contact date calculate from purchaseDate * repeatMonth
+const repeatValidDate = 
+
 
   // Initialize progression visibility and selected step from available types
   useEffect(() => {
@@ -1697,7 +1705,7 @@ export default function CreateBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      7 days
+                      7 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
 
@@ -1723,7 +1731,7 @@ export default function CreateBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      15 days
+                      15 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
 
@@ -1745,7 +1753,7 @@ export default function CreateBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      30 days
+                      30 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
                 </View>
@@ -1782,6 +1790,7 @@ export default function CreateBill() {
                     marginRight: 20,
                   }}
                   onPress={() => setIsRepeat(!isRepeat)}
+                  activeOpacity={1}
                 >
                   <Ionicons
                     name={isRepeat ? "checkbox" : "square-outline"}
@@ -1798,7 +1807,7 @@ export default function CreateBill() {
 
                 {isRepeat && (
                   <View className="flex-1 ml-4">
-                    <FormFieldClear
+                    <FormFieldClear                    
                       title={t("bill.repeatMonths")}
                       value={repeatMonthsInput}
                       handleChangeText={(value: string) => {
@@ -1868,6 +1877,15 @@ export default function CreateBill() {
                       maxLength={2}
                       otherStyles="mt-0 mb-0"
                     />
+                    {/* show Vilid Contact date calculat from purchaseDate * repeatMonth */}
+                    <CustomText
+                      className="text-sm mt-2"
+                      style={{ color: theme === "dark" ? "#888" : "#666" }}
+                    >
+                      {t("bill.validContactUntil")}{" "}
+                    
+                    </CustomText>
+
                   </View>
                 )}
               </View>

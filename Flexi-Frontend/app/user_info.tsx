@@ -18,7 +18,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { getUserId } from "@/utils/utility";
 import FormField2 from "@/components/formfield/FormField2";
 import CallAPIUser from "@/api/auth_api";
-import FormField from "@/components/formfield/FormField";
+import { isDesktop } from "@/utils/responsive";
 
 export default function UserInfo() {
   const { theme } = useTheme();
@@ -182,7 +182,7 @@ export default function UserInfo() {
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
           style={{
-            width: Dimensions.get("window").width > 1024 ? "40%" : "100%",
+            width: isDesktop() ? "40%" : "100%",
             maxWidth: 600,
             alignSelf: "center",
           }}

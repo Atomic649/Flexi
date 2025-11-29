@@ -9,6 +9,7 @@ import list from "../../components/expense/list";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import { useFocusEffect } from "expo-router";
+import { getResponsiveStyles } from "@/utils/responsive";
 const Expense = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ const Expense = () => {
                   <CustomText
                     numberOfLines={1}
                     style={{
+                      fontSize: getResponsiveStyles().fontSize,
                       color: isActive
                         ? theme === "dark"
                           ? "#ffffff"

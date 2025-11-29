@@ -24,7 +24,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isMobile } from "@/utils/responsive";
+import { isDesktop, isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
@@ -1372,7 +1372,8 @@ export default function EditBill() {
           <View
             className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20"
             style={{
-              maxWidth: Platform.OS === "web" ? 600 : "100%",
+              width: isDesktop() ? "80%" : "100%",
+              maxWidth: 900,
               alignSelf: Platform.OS === "web" ? "center" : "auto",
             }}
           >

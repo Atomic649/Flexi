@@ -7,6 +7,7 @@ import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CallAPIUser from "@/api/auth_api";
 import { Ionicons } from "@expo/vector-icons";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
@@ -72,11 +73,12 @@ const MainTopBar = {
             )}
           </View>
         </TouchableOpacity>
-        <View className="min-w-[100] max-w-[150]">
+        <View className="min-w-[100] max-w-[250]">
           {isLoading ? (
             <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
           ) : (
-            <CustomText className="text-base font-bold " numberOfLines={1}>
+            <CustomText className="text-base font-bold pt-2" numberOfLines={1}
+            style={{ fontSize: getResponsiveStyles().fontSize }}>
               {businessName || ""}
             </CustomText>
           )}

@@ -18,7 +18,7 @@ import { useRouter } from "expo-router";
 import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
 import i18n from "@/i18n";
-import { isMobile, isTablet } from "@/utils/responsive";
+import { isDesktop } from "@/utils/responsive";
 import { useMarketing } from "@/providers/MarketingProvider";
 import { getResponsiveStyles } from "@/utils/responsive";
 
@@ -160,91 +160,90 @@ const Daily = () => {
     });
   };
 
-  // Adjust front size and color of Title Table
-  const textStyle = {
-    fontSize: getResponsiveStyles().smallFontSize,
-    color:
-      isMobile() || isTablet()
-        ? theme === "dark"
-          ? "#27272a"
-          : "#4b5563"
-        : theme === "dark"
-        ? "#b4b4b5"
-        : "#4b5563",
-    //fontWeight: "900" as "900", // or any other acceptable value
-    fontFamily:
-      i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
-  };
+
 
   const tableColor = theme === "dark" ? "#29292a00" : "#fcfcfc00";
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, }}>
       <View
         className={`h-full ${backgroundColorClass}`}
         style={{
-          width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
-          maxWidth: 900,
+          width: isDesktop() ? "80%" : "100%",
+          maxWidth: 1200,
           alignSelf: "center",
         }}
       >
         <View
           className={`flex flex-col items-end `}
           style={{
-            backgroundColor:
-              Platform.OS === "web"
-                ? "transparent"
-                : theme === "dark"
-                ? "#adacac"
-                : "#d0cfcb",
+            backgroundColor: theme === "dark" ? "#1f1f1f" : "#f3f3f3",
             borderBottomWidth: 1,
-            borderColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+            borderColor: theme === "dark" ? "#444444" : "#e5e5e5",
+            paddingTop: 8,
+            paddingBottom: 8,
           }}
         >
           <View
-            className="flex flex-row m-3 items-start justify-evenly w-full pl-5 "
-            style={
-              {
-                marginHorizontal: 10,
-              }
-            }
+            className="flex flex-row items-start justify-evenly w-full pl-5 "
+            style={{
+              paddingHorizontal: 10,
+            }}
           >
             <View className="flex flex-col items-start  w-1/6">
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.date")}
-              </Text>
+              </CustomText>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                numberOfLines={1}
+              >
                 {t("income.table.amount")}
-              </Text>
+              </CustomText>
             </View>
 
             <View className="flex flex-col items-center w-1/6">
-              <Text style={textStyle} numberOfLines={3}>
+              <CustomText
+                style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                numberOfLines={3}
+              >
                 {t("income.table.sales")}
-              </Text>
+              </CustomText>
             </View>
 
             {marketingPreference !== "organic" && (
               <View className="flex flex-col items-center w-1/6">
-                <Text style={textStyle} numberOfLines={1}>
+                <CustomText
+                  style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                  numberOfLines={1}
+                >
                   {t("income.table.adCost")}
-                </Text>
+                </CustomText>
               </View>
             )}
 
             <View className="flex flex-col items-center w-1/6">
-              <Text style={textStyle} numberOfLines={1}>
+              <CustomText
+                style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                numberOfLines={1}
+              >
                 + / -
-              </Text>
+              </CustomText>
             </View>
             {marketingPreference !== "organic" && (
               <View className="flex flex-col items-center w-1/6">
-                <Text style={textStyle} numberOfLines={1}>
+                <CustomText
+                  style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                  numberOfLines={1}
+                >
                   {t("income.table.percentAd")}
-                </Text>
+                </CustomText>
               </View>
             )}
           </View>

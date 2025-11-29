@@ -9,6 +9,7 @@ import Daily from "../../components/income/daily";
 import Monthly from "../../components/income/monthly";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 const Income = () => {
   const { theme } = useTheme();
@@ -71,7 +72,7 @@ const Income = () => {
                 >
                   <CustomText
                     numberOfLines={1}
-                    style={{
+                    style={{ fontSize: getResponsiveStyles().fontSize,
                       color: isActive
                         ? theme === "dark"
                           ? "#ffffff"

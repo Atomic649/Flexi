@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Animated, Image, Text, Platform, Dimensions } from "react-native";
+import {
+  View,
+  Animated,
+  Image,
+  Text,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
@@ -7,16 +14,52 @@ import CallAPIUser from "@/api/auth_api";
 import images from "@/constants/images";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import {CustomButton} from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
+import CustomAlert from "@/components/CustomAlert";
 import i18n from "@/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getUserId } from "@/utils/utility";
+const Clipboard = require("expo-clipboard");
+const { ToastAndroid } = require("react-native");
 
 export default function RoadMap() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [registeredUsers, setRegisteredUsers] = useState<number | null>(null);
   const animatedValue = useState(new Animated.Value(0))[0];
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: "",
+    message: "",
+    buttons: [] as Array<{
+      text: string;
+      onPress: () => void;
+      style?: "default" | "cancel" | "destructive";
+    }>,
+  });
+
+  const hideAlert = () =>
+    setAlertConfig((prev) => ({
+      ...prev,
+      visible: false,
+    }));
+
+  const showAlert = (title: string, message: string) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      buttons: [
+        {
+          text: t("common.ok"),
+          onPress: hideAlert,
+        },
+      ],
+    });
+  };
 
   useEffect(() => {
     const fetchRegisteredUsers = async () => {
@@ -33,7 +76,7 @@ export default function RoadMap() {
         const response = await CallAPIUser.getRegisteredUsersAPI();
         setRegisteredUsers(response);
         animateCounter(response);
-        
+
         // Update cache
         await AsyncStorage.setItem("registeredUsers", JSON.stringify(response));
       } catch (error) {
@@ -62,11 +105,67 @@ export default function RoadMap() {
     outputRange: [registeredUsers || 0, registeredUsers || 1],
   });
 
+  const loadUserProfile = async () => {
+    try {
+      const id = await getUserId();
+      if (!id) {
+        setError(t("auth.register.validation.invalidUserId"));
+        return;
+      }
+      const data = await CallAPIUser.getUserAPI(id);
+
+      setUsername(data.username || "");
+    } catch (err: any) {
+      console.error("Error loading user profile:", err);
+      setError(err?.message || "Failed to load user profile");
+    }
+  };
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const RoadMap = ({
+    title,
+    description,
+    numberUser,
+  }: {
+    title: string;
+    description: string;
+    numberUser: number;
+  }) => (
+    <View className="flex-row items-center mb-6">
+      <Ionicons
+        name="lock-closed"
+        size={26}
+        color={theme === "dark" ? "#03dcc7" : "#04ecd5"}
+        className="mr-4 mt-1"
+      />
+      <View className="flex-1">
+        <CustomText className="text-lg font-bold mb-1 pt-1">{title}</CustomText>
+        <CustomText
+          className="text-base"
+          style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+        >
+          {description}
+        </CustomText>
+      </View>
+      <Text
+      className="text-2xl font-bold"
+       style={{ color: theme === "dark" ? "#03dcc7" : "#04ecd5" }}>
+        {numberUser}
+        </Text>
+    </View>
+  );
+
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <View
         className="flex-row items-center justify-center m-4"
-        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "60%" } : {}}
+        style={
+          Dimensions.get("window").width > 768
+            ? { alignSelf: "center", width: "60%" }
+            : {}
+        }
       >
         <Image
           source={images.logo}
@@ -81,110 +180,73 @@ export default function RoadMap() {
           </Animated.Text>
         )}
       </View>
-      <View
-        className="flex-col h-1/3 gap-4 px-2"
-        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "30%" } : {}}
-      >
-        {/* mission 1 */}
-        <View className="flex-row items-center justify-between mx-2 px-8">
-          <View className="flex-col items-start justify-center">
-            <CustomText className="text-center text-lg font-bold text-white">
-              5 {t("roadmap.products")}
-            </CustomText>
-            <CustomText className="text-center text-base text-white">
-              100 {t("roadmap.users")}
-            </CustomText>
-          </View>
-          {/* lock icon */}
-          <Ionicons
-            name="lock-closed"
-            size={24}
-            color={theme === "dark" ? "#03dcc7" : "#04ecd5"}
-          />
-        </View>
-        {/* mission 2 */}
-        <View className="flex-row items-center justify-between mx-2 px-8">
-          <View className="flex-col items-start justify-center">
-            <CustomText className="text-center text-lg font-bold text-white">
-              2 {t("roadmap.business")}
-            </CustomText>
-            <CustomText className="text-center text-base text-white">
-              500 {t("roadmap.users")}
-            </CustomText>
-          </View>
-          {/* lock icon */}
-          <Ionicons
-            name="lock-closed"
-            size={24}
-            color={theme === "dark" ? "#03dcc7" : "#04ecd5"}
-          />
-        </View>
-        {/* mission 3 */}
-        <View className="flex-row items-center justify-between mx-2 px-8">
-          <View className="flex-col items-start justify-center">
-            <CustomText className="text-center text-lg font-bold text-white">
-              5 {t("roadmap.store")}
-            </CustomText>
-            <CustomText className="text-center text-base text-white">
-              1000 {t("roadmap.users")}
-            </CustomText>
-          </View>
-          {/* lock icon */}
-          <Ionicons
-            name="lock-closed"
-            size={24}
-            color={theme === "dark" ? "#03dcc7" : "#04ecd5"}
-          />
-        </View>
-        {/* mission 4 */}
-        <View className="flex-row items-center justify-between mx-2 px-8">
-          <View className="flex-col items-start justify-center">
-            <CustomText
-              className="text-center text-lg  text-white"
-              style={{ fontWeight: "bold" }}
-            >
-              5 {t("roadmap.ads")}
-            </CustomText>
-            <CustomText className="text-center text-base text-white">
-              2000 {t("roadmap.users")}
-            </CustomText>
-          </View>
-          {/* lock icon */}
-          <Ionicons
-            name="lock-closed"
-            size={24}
-            color={theme === "dark" ? "#03dcc7" : "#04ecd5"}
-          />
-        </View>
+      <View className="border-b border-gray-300 mt-4 mx-8">
+        <RoadMap
+          title={"ปลดล๊อค 5 สินค้า"}
+          description={"สามารถลงสินค้าได้เพิ่มถึง 5 รายการ"}
+          numberUser={100}
+        />
+        <RoadMap
+          title={t("ปลดล๊อค 2 บัญชีธุรกิจ")}
+          description={t("สามารถเพิ่มบัญชีธุรกิจได้ถึง 2 บัญชี")}
+          numberUser={500}
+        />
+      </View>
+      <View className="border-b border-gray-300 my-4 mx-8 pb-4">
+        <Text
+          className="text-2xl font-bold items-center justify-center"
+          style={{
+            color: theme === "dark" ? "#03dcc7" : "#01ecd4",
+            textAlign: "center",
+            ...(Platform.OS === "web" ? { cursor: "pointer" } : {}),
+          }}
+          onPress={async () => {
+            try {
+              const textToCopy = username;
+              if (
+                Platform.OS === "web" &&
+                typeof navigator !== "undefined" &&
+                navigator.clipboard?.writeText
+              ) {
+                await navigator.clipboard.writeText(textToCopy);
+              } else {
+                await Clipboard.setStringAsync(textToCopy);
+              }
+
+              if (Platform.OS === "android") {
+                ToastAndroid.show("Copied to clipboard", ToastAndroid.SHORT);
+              } else {
+                showAlert(
+                  "Done",
+                  t("roadmap.copiedClipboard", {
+                    defaultValue: "Copied to clipboard",
+                  })
+                );
+              }
+            } catch (err) {
+              console.error("Copy failed:", err);
+              showAlert(
+                t("common.error"),
+                t("roadmap.copyClipboardError", {
+                  defaultValue: "Unable to copy to clipboard",
+                })
+              );
+            }
+          }}
+        >
+          {username}
+        </Text>
       </View>
 
       {/* Vision */}
       <View
         className="flex-col items-center mx-8"
-        style={Dimensions.get("window").width > 768  ? { alignSelf: "center", width: "60%" } : {}}
+        style={
+          Dimensions.get("window").width > 768
+            ? { alignSelf: "center", width: "60%" }
+            : {}
+        }
       >
-        <View
-          className="w-full py-5 m-2 items-center justify-center"
-          style={{
-            width: Dimensions.get("window").width > 768  ? "50%" : "90%",
-            backgroundColor: theme === "dark" ? "#242422" : "#f0f0f0",
-            borderWidth: 1,
-            borderColor: theme === "dark" ? "#03dcc7" : "#04ecd5",
-            borderRadius: 10,
-          }}
-        >
-          <Text
-            className="text-center justify-center text-lg font-bold"
-            style={{
-              color: theme === "dark" ? "#08ffe6" : "#04ecd5",
-              fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
-              fontSize: 18,
-              fontWeight: "bold" as "bold",
-            }}
-          >
-            {t("roadmap.vision")}
-          </Text>
-        </View>
         <View className="w-full mt-5 items-center justify-center px-5">
           <CustomText className="text-center justify-center text-base text-white">
             {t("roadmap.mission")}
@@ -194,7 +256,9 @@ export default function RoadMap() {
 
       <View
         className="flex-row items-center justify-center m-6 gap-2 mt-6"
-        style={Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}}
+        style={
+          Platform.OS === "web" ? { alignSelf: "center", width: "60%" } : {}
+        }
       >
         <CustomButton
           title={t("common.joinTeam")}
@@ -210,6 +274,13 @@ export default function RoadMap() {
           textStyles="!text-white"
         />
       </View>
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={alertConfig.buttons}
+        onClose={hideAlert}
+      />
     </SafeAreaView>
   );
 }

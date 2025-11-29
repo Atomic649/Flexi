@@ -7,6 +7,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { isDesktop } from "@/utils/responsive";
 
 type DailyCardProps = {
   date: string;
@@ -131,7 +132,7 @@ export default function DailyDetail() {
   return (
     <View className={`flex-1  ${backgroundColorClass}`}
     style={{
-              width: Dimensions.get("window").width > 1024 ? "60%" : "100%",
+              width: isDesktop() ? "60%" : "100%",
               maxWidth: 900,
               alignSelf: "center",
             }}>

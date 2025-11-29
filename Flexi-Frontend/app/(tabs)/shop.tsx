@@ -12,6 +12,7 @@ import Bank from "@/components/shop/bank";
 import Coach from "@/components/shop/coach";
 import Office from "@/components/shop/office";
 import ORM from "@/components/shop/orm";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 const shop = () => {
   const { theme } = useTheme();
@@ -85,6 +86,7 @@ const shop = () => {
                   <CustomText
                     numberOfLines={1}
                     style={{
+                      fontSize: getResponsiveStyles().fontSize,
                       color: isActive
                         ? theme === "dark"
                           ? "#ffffff"

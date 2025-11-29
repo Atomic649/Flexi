@@ -26,6 +26,9 @@ export function CustomText({ children, weight = 'medium', style, ...props }: Cus
     }
     
     if (typeof children === 'object' && children !== null && !React.isValidElement(children)) {
+      if (Array.isArray(children)) {
+        return children;
+      }
       // If it's an object with message property, use that
       if ('message' in children && typeof children.message === 'string') {
         return children.message;

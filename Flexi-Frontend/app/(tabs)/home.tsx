@@ -10,6 +10,7 @@ import { useFocusEffect } from "expo-router";
 import SocialDashboard from "@/components/home/SocialDashboard";
 import Dashboard from "@/components/home/Dashboard";
 import TaxDoc from "@/components/home/TaxDoc";
+import { getResponsiveStyles } from "@/utils/responsive";
 
 
 const Home = () => {
@@ -89,6 +90,7 @@ const Home = () => {
                   <CustomText
                     numberOfLines={1}
                     style={{
+                      fontSize: getResponsiveStyles().fontSize,
                       color: isActive
                         ? theme === "dark"
                           ? "#ffffff"
