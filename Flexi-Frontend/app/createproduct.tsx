@@ -47,6 +47,8 @@ export default function CreateProduct() {
   >([]);
 
   const fieldStyles = "mt-2 mb-2";
+  const isFieldEmpty = (value: string | null | undefined) =>
+    !value || value.trim().length === 0;
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -151,39 +153,28 @@ export default function CreateProduct() {
   const handleCreateProduct = async () => {
     setError("");
 
-    // Different validation logic based on product type
-    if (productType === "Service") {
-      if (!name || !description || !price) {
-        setAlertConfig({
-          visible: true,
-          title: t("product.validation.incomplete"),
-          message: t("product.validation.invalidData"),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () =>
-                setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-        return;
-      }
-    } else {
-      if (!name || !description || !barcode || !stock || !price) {
-        setAlertConfig({
-          visible: true,
-          title: t("product.validation.incomplete"),
-          message: t("product.validation.invalidData"),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () =>
-                setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-        return;
-      }
+    const normalizedProductType = (productType || "").toLowerCase();
+    const requiresStock = normalizedProductType === "product";
+
+    const missingBaseFields = [name, description, price].some((value) =>
+      isFieldEmpty(value)
+    );
+    const missingStock = requiresStock && isFieldEmpty(stock);
+
+    if (missingBaseFields || missingStock) {
+      setAlertConfig({
+        visible: true,
+        title: t("product.validation.incomplete"),
+        message: t("product.validation.invalidData"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
     }
 
     try {
@@ -205,16 +196,29 @@ export default function CreateProduct() {
         }
       }
 
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("barcode", barcode);
-      formData.append("stock", stock);
-      formData.append("price", price);
+      const trimmedName = name.trim();
+      const trimmedDescription = description.trim();
+      const trimmedBarcode = barcode.trim();
+      const trimmedStock = stock.trim();
+      const trimmedPrice = price.trim();
+      const trimmedUnit = unit ? unit.trim() : "";
+      const resolvedProductType =
+        normalizedProductType === "service"
+          ? "Service"
+          : normalizedProductType === "product"
+          ? "Product"
+          : productType;
+
+      formData.append("name", trimmedName);
+      formData.append("description", trimmedDescription);
+      formData.append("barcode", trimmedBarcode);
+      formData.append("stock", trimmedStock.length > 0 ? trimmedStock : "0");
+      formData.append("price", trimmedPrice.length > 0 ? trimmedPrice : "0");
       formData.append("memberId", (await getMemberId()) || "");
 
       // Add the new unit and productType fields to the formData
-      if (unit) formData.append("unit", unit);
-      if (productType) formData.append("productType", productType);
+      if (trimmedUnit) formData.append("unit", trimmedUnit);
+      if (resolvedProductType) formData.append("productType", resolvedProductType);
 
       const data = await CallAPIProduct.createProductAPI(formData);
 

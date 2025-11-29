@@ -109,6 +109,8 @@ Table Bill {
   discount Int [default: 0]
   billLevelDiscount Int [default: 0]
   priceValid DateTime
+  validContactUntil DateTime
+  rentalStockReleased Boolean [not null, default: false]
   paymentTermCondition String
   remark String
   memberId String [not null]

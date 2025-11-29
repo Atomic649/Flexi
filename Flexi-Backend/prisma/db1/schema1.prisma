@@ -303,6 +303,8 @@ model Bill {
   discount             Int?          @default(0)
   billLevelDiscount    Int?          @default(0)
   priceValid           DateTime? // Optional field for expiration
+  validContactUntil    DateTime?
+  rentalStockReleased  Boolean      @default(false)
   paymentTermCondition String? // Optional field for payment
   remark               String?
 

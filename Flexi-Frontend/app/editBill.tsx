@@ -2046,7 +2046,7 @@ export default function EditBill() {
                               ...prev,
                               visible: false,
                             }));
-                            router.replace("/");
+                            router.replace("/income");
                           } catch (error) {
                             console.error("Error deleting bill:", error);
                           }

@@ -18,6 +18,99 @@ const upload = multer(multerConfig.multerConfigImage.config).single(
 // Create  instance of PrismaClient
 const prisma = new PrismaClient1();
 
+const calculateValidContactUntil = (
+  purchaseAt: Date,
+  repeatFlag?: boolean,
+  repeatMonths?: number | null
+): Date | null => {
+  if (!repeatFlag) {
+    return null;
+  }
+
+  const months = repeatMonths ?? 0;
+  if (months <= 0) {
+    return null;
+  }
+
+  const baseDate = new Date(purchaseAt);
+  if (Number.isNaN(baseDate.getTime())) {
+    return null;
+  }
+
+  const validUntil = new Date(baseDate);
+  validUntil.setMonth(validUntil.getMonth() + months);
+  return validUntil;
+};
+
+const restoreRentalStockForBusiness = async (businessAccId: number) => {
+  if (!businessAccId) {
+    return;
+  }
+
+  const now = new Date();
+  const expiredBills = await prisma.bill.findMany({
+    where: {
+      businessAcc: businessAccId,
+      repeat: true,
+      rentalStockReleased: false,
+      validContactUntil: {
+        lte: now,
+      },
+      DocumentType: "Receipt",
+      deleted: false,
+    } as any,
+    include: {
+      product: {
+        select: {
+          product: true,
+        },
+      },
+    },
+  });
+
+  if (expiredBills.length === 0) {
+    return;
+  }
+
+  await Promise.all(
+    expiredBills.map((bill) =>
+      prisma.$transaction(async (tx) => {
+        const products = Array.isArray((bill as any).product)
+          ? ((bill as any).product as { product: string | null }[])
+          : [];
+
+        for (const item of products) {
+          if (!item?.product) {
+            continue;
+          }
+
+          await tx.product.updateMany({
+            where: {
+              businessAcc: businessAccId,
+              name: item.product,
+              stock: {
+                lte: 0,
+              },
+            },
+            data: {
+              stock: 1,
+            },
+          });
+        }
+
+        await tx.bill.update({
+          where: {
+            id: bill.id,
+          },
+          data: {
+            rentalStockReleased: true,
+          } as any,
+        });
+      })
+    )
+  );
+};
+
 // Interface for request body from client
 interface ProductItemInput {
   product: string;
@@ -57,6 +150,7 @@ interface billInput {
   note?: string; // Optional note
   discount?: number; // Optional discount field
   priceValid?: Date; // Optional price valid
+  validContactUntil?: Date; // Optional valid contact date
   beforeDiscount?: number; // Optional field for total before discount
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
@@ -108,6 +202,7 @@ const schema = Joi.object({
   note: Joi.string().allow("").optional(), // Optional note field
   discount: Joi.number().min(0).optional(), // Optional discount field
   priceValid: Joi.date().optional(), // Optional price valid date
+  validContactUntil: Joi.date().optional(),
   beforeDiscount: Joi.number().optional(), // Optional field for total before discount
   paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
   remark: Joi.string().allow("").optional(), // Optional remark
@@ -123,6 +218,9 @@ const createBill = async (req: Request, res: Response) => {
       return res.status(500).json({ message: err.message });
     }
     const billInput: billInput = req.body;
+    if (!billInput.payment) {
+      billInput.payment = "NotSpecified" as Payment;
+    }
     // Validate the request body
     const { error } = schema.validate(billInput);
     if (error) {
@@ -135,6 +233,12 @@ const createBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    const repeatFlag = ["true", "1", "yes"].includes(
+      String(billInput.repeat).toLowerCase()
+    );
+    billInput.repeat = repeatFlag;
+    const repeatMonths = Number(billInput.repeatMonths ?? 0);
+    billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
     // find platform from Store id
     const store = await prisma.store.findUnique({
       where: {
@@ -195,6 +299,11 @@ const createBill = async (req: Request, res: Response) => {
       const createdBills = [];
       const currentDate = new Date();
       const originalDate = new Date(billInput.purchaseAt);
+      const contractValidUntil = calculateValidContactUntil(
+        originalDate,
+        billInput.repeat,
+        billInput.repeatMonths
+      );
 
       if (
         billInput.repeat &&
@@ -246,45 +355,54 @@ const createBill = async (req: Request, res: Response) => {
                 ? false
                 : true; // Receipt should always be true
 
-            const bill = await prisma.bill.create({
-              data: {
-                billId: monthBillId,
-                cName: billInput.cName,
-                cLastName: billInput.cLastName,
-                cPhone: billInput.cPhone,
-                cGender: billInput.cGender,
-                cAddress: billInput.cAddress,
-                cPostId: billInput.cPostId,
-                cProvince: billInput.cProvince,
-                cTaxId: billInput.cTaxId,
-                product: {
-                  create: billInput.productItems.map((item) => ({
-                    product: item.product,
-                    quantity: item.quantity,
-                    unitPrice: item.unitPrice,
-                    unitDiscount: item.unitDiscount || 0,
-                    unit: item.unit,
-                  })),
-                },
-                payment: billInput.payment,
-                platform: store.platform,
-                cashStatus: finalCashStatus,
-                memberId: billInput.memberId,
-                purchaseAt: billDate,
-                businessAcc: billInput.businessAcc,
-                storeId: billInput.storeId,
-                image: req.file?.filename ?? "",
-                discount: discount, // Unit discounts only
-                billLevelDiscount: billLevelDiscount, // Bill-level discount
-                priceValid: billInput.priceValid, // Include priceValid if provided
-                total: finalTotal,
-                totalQuotation: total, // Include totalQuotation field
-                beforeDiscount,
-                DocumentType: billInput.DocumentType[0], // Take first element from array
-                note: billInput.note || "", // Optional note field
-                paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
-                remark: billInput.remark || "", // Optional remark
+            const billData: any = {
+              billId: monthBillId,
+              cName: billInput.cName,
+              cLastName: billInput.cLastName,
+              cPhone: billInput.cPhone,
+              cGender: billInput.cGender,
+              cAddress: billInput.cAddress,
+              cPostId: billInput.cPostId,
+              cProvince: billInput.cProvince,
+              cTaxId: billInput.cTaxId,
+              product: {
+                create: billInput.productItems.map((item) => ({
+                  product: item.product,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  unitDiscount: item.unitDiscount || 0,
+                  unit: item.unit,
+                })),
               },
+              payment: billInput.payment||"NotSpecified",
+              platform: store.platform,
+              cashStatus: finalCashStatus,
+              memberId: billInput.memberId,
+              purchaseAt: billDate,
+              businessAcc: billInput.businessAcc,
+              storeId: billInput.storeId,
+              image: req.file?.filename ?? "",
+              discount: discount, // Unit discounts only
+              billLevelDiscount: billLevelDiscount, // Bill-level discount
+              priceValid: billInput.priceValid, // Include priceValid if provided
+              total: finalTotal,
+              totalQuotation: total, // Include totalQuotation field
+              beforeDiscount,
+              DocumentType: billInput.DocumentType[0], // Take first element from array
+              note: billInput.note || "", // Optional note field
+              paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+              remark: billInput.remark || "", // Optional remark
+              repeat: billInput.repeat,
+              repeatMonths: billInput.repeatMonths ?? 0,
+            };
+
+            if (contractValidUntil) {
+              billData.validContactUntil = contractValidUntil;
+              billData.rentalStockReleased = false;
+            }
+
+            const bill = await prisma.bill.create({
+              data: billData,
             });
 
             createdBills.push(bill);
@@ -313,45 +431,59 @@ const createBill = async (req: Request, res: Response) => {
             ? false
             : true; // Receipt should always be true
 
-        const bill = await prisma.bill.create({
-          data: {
-            billId: billInput.billId,
-            cName: billInput.cName,
-            cLastName: billInput.cLastName,
-            cPhone: billInput.cPhone,
-            cGender: billInput.cGender,
-            cAddress: billInput.cAddress,
-            cPostId: billInput.cPostId,
-            cProvince: billInput.cProvince,
-            cTaxId: billInput.cTaxId,
-            product: {
-              create: billInput.productItems.map((item) => ({
-                product: item.product,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                unitDiscount: item.unitDiscount || 0,
-                unit: item.unit,
-              })),
-            },
-            payment: billInput.payment,
-            platform: store.platform,
-            cashStatus: finalCashStatus,
-            memberId: billInput.memberId,
-            purchaseAt: billInput.purchaseAt,
-            businessAcc: billInput.businessAcc,
-            storeId: billInput.storeId,
-            image: req.file?.filename ?? "",
-            discount: discount, // Unit discounts only
-            billLevelDiscount: billLevelDiscount, // Bill-level discount
-            priceValid: billInput.priceValid, // Include priceValid if provided
-            total: finalTotal,
-            totalQuotation: total, // Include totalQuotation field
-            beforeDiscount,
-            DocumentType: billInput.DocumentType[0], // Take first element from array
-            note: billInput.note || "", // Optional note field
-            paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
-            remark: billInput.remark || "", // Optional remark
+        const singleBillData: any = {
+          billId: billInput.billId,
+          cName: billInput.cName,
+          cLastName: billInput.cLastName,
+          cPhone: billInput.cPhone,
+          cGender: billInput.cGender,
+          cAddress: billInput.cAddress,
+          cPostId: billInput.cPostId,
+          cProvince: billInput.cProvince,
+          cTaxId: billInput.cTaxId,
+          product: {
+            create: billInput.productItems.map((item) => ({
+              product: item.product,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              unitDiscount: item.unitDiscount || 0,
+              unit: item.unit,
+            })),
           },
+          payment: billInput.payment ||"NotSpecified",
+          platform: store.platform,
+          cashStatus: finalCashStatus,
+          memberId: billInput.memberId,
+          purchaseAt: billInput.purchaseAt,
+          businessAcc: billInput.businessAcc,
+          storeId: billInput.storeId,
+          image: req.file?.filename ?? "",
+          discount: discount, // Unit discounts only
+          billLevelDiscount: billLevelDiscount, // Bill-level discount
+          priceValid: billInput.priceValid, // Include priceValid if provided
+          total: finalTotal,
+          totalQuotation: total, // Include totalQuotation field
+          beforeDiscount,
+          DocumentType: billInput.DocumentType[0], // Take first element from array
+          note: billInput.note || "", // Optional note field
+          paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+          remark: billInput.remark || "", // Optional remark
+          repeat: billInput.repeat,
+          repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
+        };
+
+        const singleValidUntil = calculateValidContactUntil(
+          billInput.purchaseAt,
+          billInput.repeat,
+          billInput.repeatMonths
+        );
+        if (singleValidUntil) {
+          singleBillData.validContactUntil = singleValidUntil;
+          singleBillData.rentalStockReleased = false;
+        }
+
+        const bill = await prisma.bill.create({
+          data: singleBillData,
         });
         if (billInput.DocumentType[0] === "Receipt") {
           //find product id by businessAcc and product name
@@ -414,9 +546,12 @@ const getBills = async (req: Request, res: Response) => {
       where: { uniqueId: memberId },
       select: { businessId: true },
     });
+    const businessAccId = businessId?.businessId ?? 0;
+    await restoreRentalStockForBusiness(businessAccId);
+
     const bills = await prisma.bill.findMany({
       where: {
-        businessAcc: businessId?.businessId ?? 0,
+        businessAcc: businessAccId,
         deleted: false,
       },
       select: {
@@ -444,8 +579,11 @@ const getBills = async (req: Request, res: Response) => {
           },
         }, // Include product items
         repeat: true,
+        repeatMonths: true,
+        validContactUntil: true,
+        rentalStockReleased: true,
         DocumentType: true,
-      },
+      } as any,
       take: 100, // Limit to 100 records
     });
 
@@ -487,6 +625,9 @@ const updateBill = async (req: Request, res: Response) => {
       return res.status(500).json({ message: err.message });
     }
     const billInput: billInput = req.body;
+    if (!billInput.payment) {
+      billInput.payment = "NotSpecified" as Payment;
+    }
     // Validate the request body
     const { error } = schema.validate(billInput);
     if (error) {
@@ -499,17 +640,19 @@ const updateBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase()
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    const repeatFlag = ["true", "1", "yes"].includes(
+      String(billInput.repeat).toLowerCase()
+    );
+    billInput.repeat = repeatFlag;
+    const repeatMonths = Number(billInput.repeatMonths ?? 0);
+    billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
 
     // First, get the existing bill to check its current purchaseAt date
-    const existingBill = await prisma.bill.findUnique({
+    const existingBill = (await prisma.bill.findUnique({
       where: {
         id: Number(id),
       },
-      select: {
-        id: true,
-        purchaseAt: true,
-      },
-    });
+    })) as any;
 
     if (!existingBill) {
       return res.status(404).json({ message: "Bill not found" });
@@ -597,48 +740,67 @@ const updateBill = async (req: Request, res: Response) => {
           ? false
           : true; // Receipt should always be true
 
+      const validContactUntil = calculateValidContactUntil(
+        billInput.purchaseAt,
+        billInput.repeat,
+        billInput.repeatMonths
+      );
+
+      const updateData: any = {
+        updatedAt: new Date(),
+        cName: billInput.cName,
+        cLastName: billInput.cLastName,
+        cPhone: billInput.cPhone,
+        cGender: billInput.cGender,
+        cAddress: billInput.cAddress,
+        cPostId: billInput.cPostId,
+        cProvince: billInput.cProvince,
+        cTaxId: billInput.cTaxId,
+        product: {
+          create: billInput.productItems.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            unitDiscount: item.unitDiscount || 0,
+            unit: item.unit,
+          })),
+        },
+        payment: billInput.payment,
+        platform: store.platform, // IncomeChannel
+        storeId: billInput.storeId,
+        cashStatus: finalCashStatus,
+        memberId: billInput.memberId,
+        purchaseAt: billInput.purchaseAt,
+        businessAcc: billInput.businessAcc,
+        image: req.file?.filename ?? "",
+        total: finalTotal,
+        totalQuotation: total, // Include totalQuotation field
+        note: billInput.note || "", // Optional note field
+        discount: discount, // Unit discounts only
+        billLevelDiscount: billLevelDiscount, // Bill-level discount
+        beforeDiscount: beforeDiscount,
+        priceValid: billInput.priceValid, // Include priceValid if provided
+        DocumentType: billInput.DocumentType[0], // Take first element from array
+        paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
+        remark: billInput.remark || "", // Optional remark
+        repeat: billInput.repeat,
+        repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
+        validContactUntil: validContactUntil ?? null,
+      };
+
+      if (validContactUntil && validContactUntil > new Date()) {
+        updateData.rentalStockReleased = false;
+      } else if (!billInput.repeat) {
+        updateData.rentalStockReleased = true;
+      } else {
+        updateData.rentalStockReleased = existingBill.rentalStockReleased;
+      }
+
       const bill = await prisma.bill.update({
         where: {
           id: Number(id),
         },
-        data: {
-          updatedAt: new Date(),
-          cName: billInput.cName,
-          cLastName: billInput.cLastName,
-          cPhone: billInput.cPhone,
-          cGender: billInput.cGender,
-          cAddress: billInput.cAddress,
-          cPostId: billInput.cPostId,
-          cProvince: billInput.cProvince,
-          cTaxId: billInput.cTaxId,
-          product: {
-            create: billInput.productItems.map((item) => ({
-              product: item.product,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              unitDiscount: item.unitDiscount || 0,
-              unit: item.unit,
-            })),
-          },
-          payment: billInput.payment,
-          platform: store.platform, // IncomeChannel
-          storeId: billInput.storeId,
-          cashStatus: finalCashStatus,
-          memberId: billInput.memberId,
-          purchaseAt: billInput.purchaseAt,
-          businessAcc: billInput.businessAcc,
-          image: req.file?.filename ?? "",
-          total: finalTotal,
-          totalQuotation: total, // Include totalQuotation field
-          note: billInput.note || "", // Optional note field
-          discount: discount, // Unit discounts only
-          billLevelDiscount: billLevelDiscount, // Bill-level discount
-          beforeDiscount: beforeDiscount,
-          priceValid: billInput.priceValid, // Include priceValid if provided
-          DocumentType: billInput.DocumentType[0], // Take first element from array
-          paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
-          remark: billInput.remark || "", // Optional remark
-        },
+        data: updateData,
       });
       if (billInput.DocumentType[0] === "Receipt") {
         const aggregateQuantities = (
@@ -713,6 +875,7 @@ const updateBill = async (req: Request, res: Response) => {
       }
 
       res.json({
+        status: "ok",
         id: bill.id,
         billId: bill.billId,
         message: `Updated bill successfully`,

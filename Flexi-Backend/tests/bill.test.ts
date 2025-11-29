@@ -35,20 +35,31 @@ jest.mock("multer", () => {
 });
 
 // Prisma mock with the methods used by billController
-const prismaMock: any = {
-  store: { findUnique: jest.fn() },
-  bill: {
-    findFirst: jest.fn(),
-    create: jest.fn(),
-    findMany: jest.fn(),
-    findUnique: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    aggregate: jest.fn(),
-  },
-  member: { findUnique: jest.fn() },
-  productItem: { deleteMany: jest.fn() },
+const prismaMock: any = {};
+
+prismaMock.store = { findUnique: jest.fn() };
+prismaMock.bill = {
+  findFirst: jest.fn(),
+  create: jest.fn(),
+  findMany: jest.fn(),
+  findUnique: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  aggregate: jest.fn(),
 };
+prismaMock.member = { findUnique: jest.fn() };
+prismaMock.productItem = { deleteMany: jest.fn(), findMany: jest.fn() };
+prismaMock.product = {
+  updateMany: jest.fn(),
+  update: jest.fn(),
+  findFirst: jest.fn(),
+};
+prismaMock.$transaction = jest.fn(async (cb: any) =>
+  cb({
+    product: prismaMock.product,
+    bill: prismaMock.bill,
+  })
+);
 
 jest.mock("../src/generated/client1", () => {
   return { PrismaClient: jest.fn().mockImplementation(() => prismaMock) };
@@ -157,6 +168,44 @@ describe("billController", () => {
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBe(2);
     });
+
+    test("restores rental stock when valid contact has expired", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
+
+      prismaMock.member.findUnique.mockResolvedValue({ businessId: 5 });
+
+      const expiredBills = [
+        {
+          id: 42,
+          product: [{ product: "Rental Item" }],
+          validContactUntil: new Date("2025-11-01T00:00:00Z"),
+        },
+      ];
+
+      prismaMock.bill.findMany
+        .mockResolvedValueOnce(expiredBills)
+        .mockResolvedValueOnce([{ id: 7 }]);
+
+      prismaMock.product.updateMany.mockResolvedValue({ count: 1 });
+      prismaMock.bill.update.mockResolvedValue({ id: 42 });
+
+      const res = await request(app).get("/bills/MID-1");
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(prismaMock.product.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { stock: 1 },
+        })
+      );
+      expect(prismaMock.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 42 },
+          data: expect.objectContaining({ rentalStockReleased: true }),
+        })
+      );
+      expect(prismaMock.bill.findMany).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe("getBillById", () => {
@@ -187,6 +236,7 @@ describe("billController", () => {
         id: 10,
         platform: "Shop",
       });
+      prismaMock.productItem.findMany.mockResolvedValue([]);
 
       const res = await request(app).put("/bill/5").send(baseUpdate());
       expect(res.status).toBe(403);
@@ -205,6 +255,9 @@ describe("billController", () => {
         id: 10,
         platform: "Shop",
       });
+      prismaMock.productItem.findMany.mockResolvedValue([
+        { product: "A", quantity: 1 },
+      ]);
       prismaMock.productItem.deleteMany.mockResolvedValue({ count: 2 });
       prismaMock.bill.update.mockResolvedValue({
         id: 6,

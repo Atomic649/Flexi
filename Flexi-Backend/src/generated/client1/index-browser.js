@@ -193,6 +193,8 @@ exports.Prisma.BillScalarFieldEnum = {
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',
   priceValid: 'priceValid',
+  validContactUntil: 'validContactUntil',
+  rentalStockReleased: 'rentalStockReleased',
   paymentTermCondition: 'paymentTermCondition',
   remark: 'remark',
   memberId: 'memberId',

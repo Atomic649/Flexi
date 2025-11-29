@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import { CustomButton, GrayButton } from "@/components/CustomButton";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { saveRemark, getRemark } from "@/utils/utility";
 import {
   savePaymentTermCondition,
@@ -355,8 +355,26 @@ export default function CreateBill() {
   // Derive businessType directly for render
   const businessType = contextBusinessType ?? null;
 
-  // Vilid Contact date calculate from purchaseDate * repeatMonth
-const repeatValidDate = 
+  // Derive valid contact date by extending purchase date with repeat months
+  const repeatValidDate = useMemo(() => {
+    if (!isRepeat) {
+      return null;
+    }
+
+    const months = Number(repeatMonths);
+    if (!Number.isFinite(months) || months <= 0) {
+      return null;
+    }
+
+    const baseDate = new Date(purchaseAt);
+    if (Number.isNaN(baseDate.getTime())) {
+      return null;
+    }
+
+    const extendedDate = new Date(baseDate);
+    extendedDate.setMonth(extendedDate.getMonth() + months);
+    return extendedDate;
+  }, [isRepeat, purchaseAt, repeatMonths]);
 
 
   // Initialize progression visibility and selected step from available types
@@ -1883,7 +1901,10 @@ const repeatValidDate =
                       style={{ color: theme === "dark" ? "#888" : "#666" }}
                     >
                       {t("bill.validContactUntil")}{" "}
-                    
+                      {(repeatValidDate
+                        ? new Date(repeatValidDate).toLocaleDateString("en-GB")
+                        : new Date().toLocaleDateString("en-GB")
+                      )}
                     </CustomText>
 
                   </View>

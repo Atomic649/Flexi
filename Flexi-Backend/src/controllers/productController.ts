@@ -20,7 +20,7 @@ const prisma = new PrismaClient1();
 interface Product {
   name: string;
   description: string;
-  barcode: string;
+  barcode?: string | null;
   image: string;
   stock: number;
   price: number;
@@ -61,6 +61,11 @@ const createProduct = async (req: Request, res: Response) => {
       ...req.body,
       image: (req.file as any)?.location ?? "", // Use type assertion for custom property
     };
+
+    if (typeof product.barcode === "string") {
+      const trimmedBarcode = product.barcode.trim();
+      product.barcode = trimmedBarcode.length > 0 ? trimmedBarcode : null;
+    }
 
     // Validate combined product fields
     const { error } = productSchema.validate(product);
@@ -177,11 +182,27 @@ const updateProduct = async (req: Request, res: Response) => {
     const updateData = {
       ...req.body,
       image: req.file ? (req.file as any)?.location : existingProduct.image,
-    };
+    } as Record<string, any>;
 
     // Convert stock and price to integers
     updateData.stock = parseInt(updateData.stock?.toString() || existingProduct.stock.toString());
     updateData.price = parseInt(updateData.price?.toString() || existingProduct.price.toString());
+
+    const hasBarcodeField = Object.prototype.hasOwnProperty.call(updateData, "barcode");
+    let resolvedBarcode = existingProduct.barcode;
+
+    if (hasBarcodeField) {
+      const incomingBarcode = updateData.barcode;
+
+      if (typeof incomingBarcode === "string") {
+        const trimmedBarcode = incomingBarcode.trim();
+        resolvedBarcode = trimmedBarcode.length > 0 ? trimmedBarcode : null;
+      } else if (incomingBarcode === null || incomingBarcode === undefined) {
+        resolvedBarcode = null;
+      } else {
+        resolvedBarcode = incomingBarcode;
+      }
+    }
 
     try {
       const updatedProduct = await prisma.product.update({
@@ -191,7 +212,7 @@ const updateProduct = async (req: Request, res: Response) => {
         data: {
           name: updateData.name || existingProduct.name,
           description: updateData.description || existingProduct.description,
-          barcode: updateData.barcode || existingProduct.barcode,
+          barcode: resolvedBarcode,
           image: updateData.image,
           stock: updateData.stock,
           price: updateData.price,

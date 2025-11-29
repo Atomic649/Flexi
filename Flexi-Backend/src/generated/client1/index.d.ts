@@ -8174,6 +8174,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    validContactUntil: Date | null
+    rentalStockReleased: boolean | null
     paymentTermCondition: string | null
     remark: string | null
     memberId: string | null
@@ -8211,6 +8213,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    validContactUntil: Date | null
+    rentalStockReleased: boolean | null
     paymentTermCondition: string | null
     remark: string | null
     memberId: string | null
@@ -8248,6 +8252,8 @@ export namespace Prisma {
     discount: number
     billLevelDiscount: number
     priceValid: number
+    validContactUntil: number
+    rentalStockReleased: number
     paymentTermCondition: number
     remark: number
     memberId: number
@@ -8311,6 +8317,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    validContactUntil?: true
+    rentalStockReleased?: true
     paymentTermCondition?: true
     remark?: true
     memberId?: true
@@ -8348,6 +8356,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    validContactUntil?: true
+    rentalStockReleased?: true
     paymentTermCondition?: true
     remark?: true
     memberId?: true
@@ -8385,6 +8395,8 @@ export namespace Prisma {
     discount?: true
     billLevelDiscount?: true
     priceValid?: true
+    validContactUntil?: true
+    rentalStockReleased?: true
     paymentTermCondition?: true
     remark?: true
     memberId?: true
@@ -8509,6 +8521,8 @@ export namespace Prisma {
     discount: number | null
     billLevelDiscount: number | null
     priceValid: Date | null
+    validContactUntil: Date | null
+    rentalStockReleased: boolean
     paymentTermCondition: string | null
     remark: string | null
     memberId: string
@@ -8565,6 +8579,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    validContactUntil?: boolean
+    rentalStockReleased?: boolean
     paymentTermCondition?: boolean
     remark?: boolean
     memberId?: boolean
@@ -8607,6 +8623,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    validContactUntil?: boolean
+    rentalStockReleased?: boolean
     paymentTermCondition?: boolean
     remark?: boolean
     memberId?: boolean
@@ -8647,6 +8665,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    validContactUntil?: boolean
+    rentalStockReleased?: boolean
     paymentTermCondition?: boolean
     remark?: boolean
     memberId?: boolean
@@ -8687,6 +8707,8 @@ export namespace Prisma {
     discount?: boolean
     billLevelDiscount?: boolean
     priceValid?: boolean
+    validContactUntil?: boolean
+    rentalStockReleased?: boolean
     paymentTermCondition?: boolean
     remark?: boolean
     memberId?: boolean
@@ -8694,7 +8716,7 @@ export namespace Prisma {
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -8751,6 +8773,8 @@ export namespace Prisma {
       discount: number | null
       billLevelDiscount: number | null
       priceValid: Date | null
+      validContactUntil: Date | null
+      rentalStockReleased: boolean
       paymentTermCondition: string | null
       remark: string | null
       memberId: string
@@ -9212,6 +9236,8 @@ export namespace Prisma {
     readonly discount: FieldRef<"Bill", 'Int'>
     readonly billLevelDiscount: FieldRef<"Bill", 'Int'>
     readonly priceValid: FieldRef<"Bill", 'DateTime'>
+    readonly validContactUntil: FieldRef<"Bill", 'DateTime'>
+    readonly rentalStockReleased: FieldRef<"Bill", 'Boolean'>
     readonly paymentTermCondition: FieldRef<"Bill", 'String'>
     readonly remark: FieldRef<"Bill", 'String'>
     readonly memberId: FieldRef<"Bill", 'String'>
@@ -32148,6 +32174,8 @@ export namespace Prisma {
     discount: 'discount',
     billLevelDiscount: 'billLevelDiscount',
     priceValid: 'priceValid',
+    validContactUntil: 'validContactUntil',
+    rentalStockReleased: 'rentalStockReleased',
     paymentTermCondition: 'paymentTermCondition',
     remark: 'remark',
     memberId: 'memberId',
@@ -33216,6 +33244,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    validContactUntil?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    rentalStockReleased?: BoolFilter<"Bill"> | boolean
     paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
     remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
@@ -33257,6 +33287,8 @@ export namespace Prisma {
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
     priceValid?: SortOrderInput | SortOrder
+    validContactUntil?: SortOrderInput | SortOrder
+    rentalStockReleased?: SortOrder
     paymentTermCondition?: SortOrderInput | SortOrder
     remark?: SortOrderInput | SortOrder
     memberId?: SortOrder
@@ -33301,6 +33333,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    validContactUntil?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    rentalStockReleased?: BoolFilter<"Bill"> | boolean
     paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
     remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
@@ -33342,6 +33376,8 @@ export namespace Prisma {
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
     priceValid?: SortOrderInput | SortOrder
+    validContactUntil?: SortOrderInput | SortOrder
+    rentalStockReleased?: SortOrder
     paymentTermCondition?: SortOrderInput | SortOrder
     remark?: SortOrderInput | SortOrder
     memberId?: SortOrder
@@ -33387,6 +33423,8 @@ export namespace Prisma {
     discount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+    validContactUntil?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+    rentalStockReleased?: BoolWithAggregatesFilter<"Bill"> | boolean
     paymentTermCondition?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     remark?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     memberId?: StringWithAggregatesFilter<"Bill"> | string
@@ -35397,6 +35435,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
@@ -35435,6 +35475,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -35472,6 +35514,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
@@ -35510,6 +35554,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -35548,6 +35594,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -35584,6 +35632,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -35618,6 +35668,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -37826,6 +37878,11 @@ export namespace Prisma {
     not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type ProductItemListRelationFilter = {
     every?: ProductItemWhereInput
     some?: ProductItemWhereInput
@@ -37881,6 +37938,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    validContactUntil?: SortOrder
+    rentalStockReleased?: SortOrder
     paymentTermCondition?: SortOrder
     remark?: SortOrder
     memberId?: SortOrder
@@ -37930,6 +37989,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    validContactUntil?: SortOrder
+    rentalStockReleased?: SortOrder
     paymentTermCondition?: SortOrder
     remark?: SortOrder
     memberId?: SortOrder
@@ -37967,6 +38028,8 @@ export namespace Prisma {
     discount?: SortOrder
     billLevelDiscount?: SortOrder
     priceValid?: SortOrder
+    validContactUntil?: SortOrder
+    rentalStockReleased?: SortOrder
     paymentTermCondition?: SortOrder
     remark?: SortOrder
     memberId?: SortOrder
@@ -38034,6 +38097,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type EnumUnitNullableFilter<$PrismaModel = never> = {
@@ -38745,11 +38816,6 @@ export namespace Prisma {
     not?: NestedEnumMediaTypeNullableFilter<$PrismaModel> | $Enums.MediaType | null
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type PostCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -38805,14 +38871,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type EnumReactionTypeFilter<$PrismaModel = never> = {
@@ -40681,6 +40739,10 @@ export namespace Prisma {
     set?: $Enums.DocumentType | null
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type ProductItemUpdateManyWithoutBillNestedInput = {
     create?: XOR<ProductItemCreateWithoutBillInput, ProductItemUncheckedCreateWithoutBillInput> | ProductItemCreateWithoutBillInput[] | ProductItemUncheckedCreateWithoutBillInput[]
     connectOrCreate?: ProductItemCreateOrConnectWithoutBillInput | ProductItemCreateOrConnectWithoutBillInput[]
@@ -41282,10 +41344,6 @@ export namespace Prisma {
 
   export type NullableEnumMediaTypeFieldUpdateOperationsInput = {
     set?: $Enums.MediaType | null
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type UserUpdateOneRequiredWithoutPostsNestedInput = {
@@ -42123,6 +42181,11 @@ export namespace Prisma {
     not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -42171,6 +42234,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedEnumUnitNullableFilter<$PrismaModel = never> = {
@@ -42359,11 +42430,6 @@ export namespace Prisma {
     not?: NestedEnumMediaTypeNullableFilter<$PrismaModel> | $Enums.MediaType | null
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedEnumMediaTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.MediaType | EnumMediaTypeFieldRefInput<$PrismaModel> | null
     in?: $Enums.MediaType[] | ListEnumMediaTypeFieldRefInput<$PrismaModel> | null
@@ -42372,14 +42438,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumMediaTypeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedEnumReactionTypeFilter<$PrismaModel = never> = {
@@ -43415,6 +43473,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
@@ -43452,6 +43512,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     businessAcc: number
@@ -43891,6 +43953,8 @@ export namespace Prisma {
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
     priceValid?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    validContactUntil?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    rentalStockReleased?: BoolFilter<"Bill"> | boolean
     paymentTermCondition?: StringNullableFilter<"Bill"> | string | null
     remark?: StringNullableFilter<"Bill"> | string | null
     memberId?: StringFilter<"Bill"> | string
@@ -44242,6 +44306,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
@@ -44279,6 +44345,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -45036,6 +45104,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     member: MemberCreateNestedOneWithoutBillInput
@@ -45073,6 +45143,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -45169,6 +45241,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     member?: MemberUpdateOneRequiredWithoutBillNestedInput
@@ -45206,6 +45280,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -46089,6 +46165,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     product?: ProductItemCreateNestedManyWithoutBillInput
@@ -46126,6 +46204,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -49747,6 +49827,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     businessAcc: number
@@ -49873,6 +49955,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
@@ -49910,6 +49994,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
@@ -49947,6 +50033,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     businessAcc?: IntFieldUpdateOperationsInput | number
@@ -50271,6 +50359,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -50432,6 +50522,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
@@ -50469,6 +50561,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -50506,6 +50600,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -50869,6 +50965,8 @@ export namespace Prisma {
     discount?: number | null
     billLevelDiscount?: number | null
     priceValid?: Date | string | null
+    validContactUntil?: Date | string | null
+    rentalStockReleased?: boolean
     paymentTermCondition?: string | null
     remark?: string | null
     memberId: string
@@ -50904,6 +51002,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     product?: ProductItemUpdateManyWithoutBillNestedInput
@@ -50941,6 +51041,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string
@@ -50978,6 +51080,8 @@ export namespace Prisma {
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
     priceValid?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    validContactUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rentalStockReleased?: BoolFieldUpdateOperationsInput | boolean
     paymentTermCondition?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     memberId?: StringFieldUpdateOperationsInput | string

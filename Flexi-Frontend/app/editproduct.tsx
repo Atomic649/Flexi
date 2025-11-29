@@ -38,6 +38,8 @@ export default function EditProduct() {
   const [productTypes, setProductTypes] = useState<Array<{ label: string; value: string }>>([]);
 
   const fieldStyles = "mt-2 mb-2";
+  const isFieldEmpty = (value: string | null | undefined) =>
+    !value || value.trim().length === 0;
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -50,12 +52,22 @@ export default function EditProduct() {
         const product = await CallAPIProduct.getAProductAPI(Number(id));
         setproductname(product.name);
         setdescription(product.description);
-        setbarcode(product.barcode);
-        setstock(product.stock.toString());
-        setprice(product.price.toString());
+        setbarcode(product.barcode ?? "");
+        setstock(product.stock?.toString() ?? "");
+        setprice(product.price?.toString() ?? "");
         setImage(product.image);
-        setUnit(product.unit);
-        setProductType(product.productType);
+        setUnit(product.unit ?? "");
+
+        const incomingProductType = product.productType ?? "";
+        const normalizedIncomingType = incomingProductType.toLowerCase();
+
+        if (normalizedIncomingType === "service") {
+          setProductType("Service");
+        } else if (normalizedIncomingType === "product") {
+          setProductType("Product");
+        } else {
+          setProductType(incomingProductType);
+        }
       } catch (error) {
         console.error("Error fetching units or product types:", error);
       }
@@ -161,37 +173,27 @@ export default function EditProduct() {
   const handleUpdateProduct = async () => {
     setError("");
 
-    // Different validation logic based on product type
-    if (productType === "Service") {
-      if (!name || !description || !price) {
-        setAlertConfig({
-          visible: true,
-          title: t("product.validation.incomplete"),
-          message: t("product.validation.invalidData"),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-        return;
-      }
-    } else {
-      if (!name || !description || !barcode || !stock || !price) {
-        setAlertConfig({
-          visible: true,
-          title: t("product.validation.incomplete"),
-          message: t("product.validation.invalidData"),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
-        });
-        return;
-      }
+    const normalizedProductType = (productType || "").toLowerCase();
+    const requiresStock = normalizedProductType === "product";
+
+    const missingBaseFields = [name, description, price].some((value) =>
+      isFieldEmpty(value)
+    );
+    const missingStock = requiresStock && isFieldEmpty(stock);
+
+    if (missingBaseFields || missingStock) {
+      setAlertConfig({
+        visible: true,
+        title: t("product.validation.incomplete"),
+        message: t("product.validation.invalidData"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+      return;
     }
 
     try {
@@ -213,13 +215,30 @@ export default function EditProduct() {
         }
       }
 
-      formData.append('name', name);
-      formData.append('description', description);
-      formData.append('barcode', barcode);
-      formData.append('stock', stock.toString());
-      formData.append('price', price.toString());
-      formData.append('unit', unit);
-      formData.append('productType', productType);
+      const trimmedName = name.trim();
+      const trimmedDescription = description.trim();
+      const trimmedBarcode = barcode.trim();
+      const trimmedStock = stock.trim();
+      const trimmedPrice = price.trim();
+  const trimmedUnit = unit ? unit.trim() : "";
+      const resolvedProductType =
+        normalizedProductType === "service"
+          ? "Service"
+          : normalizedProductType === "product"
+          ? "Product"
+          : productType;
+
+      formData.append('name', trimmedName);
+      formData.append('description', trimmedDescription);
+      formData.append('barcode', trimmedBarcode);
+      formData.append('stock', trimmedStock.length > 0 ? trimmedStock : "0");
+      formData.append('price', trimmedPrice.length > 0 ? trimmedPrice : "0");
+      if (trimmedUnit) {
+        formData.append('unit', trimmedUnit);
+      }
+      if (resolvedProductType) {
+        formData.append('productType', resolvedProductType);
+      }
 
       const data = await CallAPIProduct.updateProductAPI(Number(id), formData);
 
