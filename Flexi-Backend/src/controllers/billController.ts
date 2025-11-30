@@ -193,6 +193,7 @@ interface billInput {
   beforeDiscount?: number; // Optional field for total before discount
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
+  TaxType?: "Juristic" | "Individual"; // Optional tax type
 }
 
 // Validate the request body
@@ -245,6 +246,7 @@ const schema = Joi.object({
   beforeDiscount: Joi.number().optional(), // Optional field for total before discount
   paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
   remark: Joi.string().allow("").optional(), // Optional remark
+  taxType: Joi.string().valid("Juristic", "Individual").optional(), // Optional tax type
 });
 
 //Create a New Bill - Post
@@ -266,6 +268,7 @@ const createBill = async (req: Request, res: Response) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+   
     billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.storeId = Number(billInput.storeId);
@@ -378,7 +381,7 @@ const createBill = async (req: Request, res: Response) => {
                 cAddress: billInput.cAddress,
                 cPostId: billInput.cPostId,
                 cProvince: billInput.cProvince,
-                cTaxId: billInput.cTaxId,
+                cTaxId: billInput.cTaxId,              
                 product: {
                   create: billInput.productItems.map((item) => ({
                     product: item.product,
@@ -408,6 +411,7 @@ const createBill = async (req: Request, res: Response) => {
                 remark: billInput.remark || "", // Optional remark
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
+                TaxType: billInput.TaxType || "Individual",
               };
 
               if (contractValidUntil) {
@@ -484,6 +488,7 @@ const createBill = async (req: Request, res: Response) => {
             remark: billInput.remark || "", // Optional remark
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
+            TaxType: billInput.TaxType || "Individual",
           };
 
           const singleValidUntil = calculateValidContactUntil(
@@ -612,6 +617,7 @@ const getBills = async (req: Request, res: Response) => {
         validContactUntil: true,
         rentalStockReleased: true,
         DocumentType: true,
+        TaxType: true,
       } as any,
       take: 100, // Limit to 100 records
     });
@@ -817,15 +823,29 @@ const updateBill = async (req: Request, res: Response) => {
           repeat: billInput.repeat,
           repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
           validContactUntil: validContactUntil ?? null,
+          TaxType: billInput.TaxType || "Individual",
         };
 
         // Generate ID if missing for the new DocumentType
-        if (docType === "Receipt" && !existingBill.billId) {
-          updateData.billId = await generateDocumentId(
-            tx,
-            billInput.businessAcc,
-            "Receipt"
-          );
+        if (docType === "Receipt") {
+          if (!existingBill.billId) {
+            updateData.billId = await generateDocumentId(
+              tx,
+              billInput.businessAcc,
+              "Receipt"
+            );
+          }
+          // If skipping from Quotation to Receipt, also generate Invoice ID if missing
+          if (
+            existingBill.DocumentType === "Quotation" &&
+            !existingBill.invoiceId
+          ) {
+            updateData.invoiceId = await generateDocumentId(
+              tx,
+              billInput.businessAcc,
+              "Invoice"
+            );
+          }
         } else if (docType === "Invoice" && !existingBill.invoiceId) {
           updateData.invoiceId = await generateDocumentId(
             tx,
@@ -1076,12 +1096,25 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       };
 
       // Generate ID if missing for the new DocumentType
-      if (DocumentType === "Receipt" && !currentBill.billId) {
-        updateData.billId = await generateDocumentId(
-          tx,
-          currentBill.businessAcc,
-          "Receipt"
-        );
+      if (DocumentType === "Receipt") {
+        if (!currentBill.billId) {
+          updateData.billId = await generateDocumentId(
+            tx,
+            currentBill.businessAcc,
+            "Receipt"
+          );
+        }
+        // If skipping from Quotation to Receipt, also generate Invoice ID if missing
+        if (
+          currentBill.DocumentType === "Quotation" &&
+          !currentBill.invoiceId
+        ) {
+          updateData.invoiceId = await generateDocumentId(
+            tx,
+            currentBill.businessAcc,
+            "Invoice"
+          );
+        }
       } else if (DocumentType === "Invoice" && !currentBill.invoiceId) {
         updateData.invoiceId = await generateDocumentId(
           tx,
@@ -1130,6 +1163,62 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         },
         data: updateData,
       });
+
+      // Update stock based on DocumentType change
+      if (
+        DocumentType === "Receipt" &&
+        currentBill.DocumentType !== "Receipt"
+      ) {
+        // Changing TO Receipt: Decrease stock
+        for (const item of currentBill.product) {
+          if (!item.product) continue;
+
+          const productRecord = await tx.product.findFirst({
+            where: {
+              businessAcc: currentBill.businessAcc,
+              name: item.product,
+            },
+            select: { id: true },
+          });
+
+          if (productRecord) {
+            await tx.product.update({
+              where: { id: productRecord.id },
+              data: { stock: { decrement: item.quantity } },
+            });
+            console.log(
+              `Stock decreased for product ${item.product} by ${item.quantity}`
+            );
+          }
+        }
+      } else if (
+        DocumentType !== "Receipt" &&
+        currentBill.DocumentType === "Receipt"
+      ) {
+        // Changing FROM Receipt: Increase stock (Restore)
+        for (const item of currentBill.product) {
+          if (!item.product) continue;
+
+          const productRecord = await tx.product.findFirst({
+            where: {
+              businessAcc: currentBill.businessAcc,
+              name: item.product,
+            },
+            select: { id: true },
+          });
+
+          if (productRecord) {
+            await tx.product.update({
+              where: { id: productRecord.id },
+              data: { stock: { increment: item.quantity } },
+            });
+            console.log(
+              `Stock restored for product ${item.product} by ${item.quantity}`
+            );
+          }
+        }
+      }
+
 
       // Update stock based on DocumentType change
       if (

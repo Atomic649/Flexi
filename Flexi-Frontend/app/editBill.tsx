@@ -1072,6 +1072,7 @@ export default function EditBill() {
         priceValid: priceValid || undefined,
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
+        TaxType: taxType,
       });
       if (data.error) throw new Error(data.error);
       setAlertConfig({
