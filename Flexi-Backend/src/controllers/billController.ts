@@ -249,6 +249,7 @@ const schema = Joi.object({
 
 //Create a New Bill - Post
 const createBill = async (req: Request, res: Response) => {
+  console.log("🚀 Incoming createBill request body:", req.body);
   upload(req, res, async (err) => {
     //Multer
     if (err instanceof multer.MulterError) {

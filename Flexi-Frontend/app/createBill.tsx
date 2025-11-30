@@ -30,10 +30,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
-import AutoFillBill, {
-  ParsedCustomerInfo,
-} from "@/components/autoFillBill";
-
+import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -59,7 +57,9 @@ export default function CreateBill() {
   const [memberId, setMemberId] = useState<string | null>(null);
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const searchParams = useLocalSearchParams<{ duplicateId?: string | string[] }>();
+  const searchParams = useLocalSearchParams<{
+    duplicateId?: string | string[];
+  }>();
   const duplicateIdParam = Array.isArray(searchParams.duplicateId)
     ? searchParams.duplicateId[0]
     : searchParams.duplicateId;
@@ -121,7 +121,6 @@ export default function CreateBill() {
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
 
-  
   // Handler to save payment terms to AsyncStorage
   const handleSavePaymentTerms = async () => {
     try {
@@ -172,16 +171,10 @@ export default function CreateBill() {
   const [productChoice, setProductChoice] = useState<any[]>([]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
-  const [validContactCalendarVisible, setValidContactCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
   ]);
-  const [validContactDate, setValidContactDate] = useState<Date>(() => {
-    const d = new Date();
-    d.setMonth(d.getMonth() + 1);
-    return d;
-  });
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
@@ -206,9 +199,8 @@ export default function CreateBill() {
 
   // Repeat bill state
   const [isRepeat, setIsRepeat] = useState(false);
-  const [repeatMonths, setRepeatMonths] = useState(2);
-  const [repeatMonthsInput, setRepeatMonthsInput] = useState("2");
-
+  const [repeatMonths, setRepeatMonths] = useState(1);
+  const [repeatMonthsInput, setRepeatMonthsInput] = useState("1");
 
   // Document type progression state
   const [selectedDocumentType, setSelectedDocumentType] = useState<
@@ -254,9 +246,6 @@ export default function CreateBill() {
     if (isDocumentTypeAvailable("Receipt")) steps.push("RE");
     return steps;
   };
-
-
-
 
   // Helper function to convert internal document type to API format
   const getDocumentTypeForAPI = (
@@ -348,7 +337,10 @@ export default function CreateBill() {
   }, []);
 
   // Access BusinessProvider context
-  const { DocumentType: contextDocumentTypes, businessType: contextBusinessType } = useBusiness();
+  const {
+    DocumentType: contextDocumentTypes,
+    businessType: contextBusinessType,
+  } = useBusiness();
 
   // Derive available document types directly from context
   const availableDocumentTypes = Array.isArray(contextDocumentTypes)
@@ -360,6 +352,12 @@ export default function CreateBill() {
 
   // Derive businessType directly for render
   const businessType = contextBusinessType ?? null;
+
+  useEffect(() => {
+    if (businessType === "Rental") {
+      setIsRepeat(true);
+    }
+  }, [businessType]);
 
   // Derive valid contact date by extending purchase date with repeat months
   const repeatValidDate = useMemo(() => {
@@ -382,14 +380,16 @@ export default function CreateBill() {
     return extendedDate;
   }, [isRepeat, purchaseAt, repeatMonths]);
 
-
   // Initialize progression visibility and selected step from available types
   useEffect(() => {
     if (duplicateBillId) {
       return;
     }
 
-    if (availableDocumentTypes.length === 1 && availableDocumentTypes[0] === "Receipt") {
+    if (
+      availableDocumentTypes.length === 1 &&
+      availableDocumentTypes[0] === "Receipt"
+    ) {
       setShowProgressSection(false);
       setSelectedDocumentType("RE");
     } else if (availableDocumentTypes.length > 0) {
@@ -482,7 +482,9 @@ export default function CreateBill() {
         ]);
       }
 
-      if (typeof billData.repeat === "boolean") {
+      if (businessType === "Rental") {
+        setIsRepeat(true);
+      } else if (typeof billData.repeat === "boolean") {
         setIsRepeat(billData.repeat);
       } else {
         setIsRepeat(false);
@@ -572,7 +574,7 @@ export default function CreateBill() {
     return () => {
       isCancelled = true;
     };
-  }, [duplicateBillId, availableDocumentTypesKey]);
+  }, [duplicateBillId, availableDocumentTypesKey, businessType]);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -680,7 +682,7 @@ export default function CreateBill() {
       router.push("/createproduct");
       return;
     }
-    
+
     setProductItems((prev) => [
       ...prev,
       { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
@@ -814,7 +816,12 @@ export default function CreateBill() {
         cPostId,
         cProvince,
         cTaxId: String(cTaxId),
-        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified",
+        payment: payment as
+          | "COD"
+          | "Transfer"
+          | "CreditCard"
+          | "Cash"
+          | "NotSpecified",
         memberId: memberId || "",
         businessAcc,
         storeId,
@@ -833,7 +840,6 @@ export default function CreateBill() {
             : undefined,
         remark: remark || undefined,
         priceValid: priceValid || undefined,
-        validContactUntil: businessType === "Rental" ? validContactDate : undefined,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
@@ -871,25 +877,6 @@ export default function CreateBill() {
     setCalendarVisible(false);
   };
 
-  const handleValidContactDatesChange = (selectedDates: string[]) => {
-    if (selectedDates && selectedDates.length > 0) {
-      const newDate = new Date(selectedDates[0]);
-     
-      setValidContactDate(newDate);
-     
-
-      // Calculate months difference
-      const diffTime = Math.abs(newDate.getTime() - purchaseAt.getTime());
-      const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
-
-      if (diffMonths >= 1 && diffMonths <= 12) {
-        setRepeatMonths(diffMonths);
-        setRepeatMonthsInput(diffMonths.toString());
-      }
-    }
-    setValidContactCalendarVisible(false);
-  };
-
   const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
     setPriceValidDays(days);
     // Calculate the date from current date
@@ -916,7 +903,7 @@ export default function CreateBill() {
     setTaxType("Individual");
     setMemberId(memberId); // keep memberId for context, but reset fields
     setStoreId(0); // Reset storeId to 0
-    setIsRepeat(false);
+    setIsRepeat(businessType === "Rental");
     setRepeatMonths(1);
     setRepeatMonthsInput("1");
   };
@@ -982,41 +969,6 @@ export default function CreateBill() {
             }}
           >
             <MultiDateCalendar onDatesChange={handleDatesChange} />
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* Valid Contact Calendar Modal */}
-      <Modal
-        visible={validContactCalendarVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setValidContactCalendarVisible(false)}
-      >
-        <TouchableOpacity
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-          activeOpacity={1}
-          onPress={() => setValidContactCalendarVisible(false)}
-        >
-          <View
-            style={{
-              width: isMobile() ? "90%" : "40%",
-              minWidth: 300,
-              maxWidth: 500,
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-              borderRadius: 10,
-              padding: 20,
-            }}
-          >
-            <MultiDateCalendar 
-              onDatesChange={handleValidContactDatesChange}           
-              
-            />
           </View>
         </TouchableOpacity>
       </Modal>
@@ -1190,7 +1142,13 @@ export default function CreateBill() {
           >
             {/* Clear Button in Top Right */}
             <View
-              style={{ position: "absolute", top: 0, right: 0, zIndex: 10 ,flexDirection: "row" }}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                zIndex: 10,
+                flexDirection: "row",
+              }}
             >
               <AutoFillBill
                 onApply={handleAutoFillApply}
@@ -1493,11 +1451,7 @@ export default function CreateBill() {
                       }}
                       activeOpacity={1}
                     >
-                      <Ionicons
-                        name="close-circle"
-                        size={20}
-                        color="#e74c3c"
-                      />
+                      <Ionicons name="close-circle" size={20} color="#e74c3c" />
                     </TouchableOpacity>
                   )}
                   <DropdownClear
@@ -1747,8 +1701,8 @@ export default function CreateBill() {
               onBlur={() => setIsNoteFocused(false)}
             />
 
-            {/* Price Valid Section - Hide for Receipt */}
-            {selectedDocumentType !== "RE" && (
+            {/* Price Valid Section - Hide for Receipt and Rental business */}
+            {selectedDocumentType !== "RE" && businessType !== "Rental" && (
               <>
                 <View
                   className="flex flex-row items-center mt-2 mb-2"
@@ -1860,49 +1814,23 @@ export default function CreateBill() {
             )}
 
             {/* Repeat Bill Section - Only show for Rental business type */}
-            
             {businessType === "Rental" && (
               <View
-                className="flex flex-col mt-4 mb-2"
+                className="flex flex-row items-center mt-4 mb-2"
                 style={{ backgroundColor: "transparent" }}
               >
-                 {/* Date Selector for Valid Contact Until */}
-                 <View className="flex-row items-center mb-2">
-                    <CustomText className="mr-2" style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>{t("bill.validContactUntil")}</CustomText>
-                    <TouchableOpacity 
-                      onPress={() => setValidContactCalendarVisible(true)}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
-                        padding: 8,
-                        borderRadius: 8
-                      }}
-                    >
-                        <CustomText style={{ marginRight: 8 }}>
-                          {formatDate(validContactDate.toISOString())}
-                        </CustomText>
-                        <Ionicons
-                          name="calendar"
-                          size={20}
-                          color={theme === "dark" ? "#ffffff" : "#444541"}
-                        />
-                    </TouchableOpacity>
-                 </View>
-
-                <View className="flex-row items-center">
                 <TouchableOpacity
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
                     marginRight: 20,
                   }}
-                  onPress={() => setIsRepeat(!isRepeat)}
+                  // onPress={() => setIsRepeat(!isRepeat)}
                   activeOpacity={1}
                 >
-                  <Ionicons
-                    name={isRepeat ? "checkbox" : "square-outline"}
-                    size={22}
+                  <MaterialCommunityIcons
+                    name="file-document-edit"
+                    size={24}
                     color={theme === "dark" ? "#b1b1b1" : "#606060"}
                   />
                   <CustomText
@@ -1915,7 +1843,7 @@ export default function CreateBill() {
 
                 {isRepeat && (
                   <View className="flex-1 ml-4">
-                    <FormFieldClear                    
+                    <FormFieldClear
                       title={t("bill.repeatMonths")}
                       value={repeatMonthsInput}
                       handleChangeText={(value: string) => {
@@ -1950,10 +1878,6 @@ export default function CreateBill() {
                               });
                             } else if (num >= 1 && num <= 12) {
                               setRepeatMonths(num);
-                              // Update valid contact date based on new months
-                              const newDate = new Date(purchaseAt);
-                              newDate.setMonth(newDate.getMonth() + num);
-                              setValidContactDate(newDate);
                             }
                           }
                         }
@@ -1991,19 +1915,16 @@ export default function CreateBill() {
                     />
                     {/* show Vilid Contact date calculat from purchaseDate * repeatMonth */}
                     <CustomText
-                      className="text-sm mt-2"
+                      className="text-sm mt-2 pt-1"
                       style={{ color: theme === "dark" ? "#888" : "#666" }}
                     >
-                      {t("bill.validContactUntil")}{" "}
-                      {(repeatValidDate
+                      {t("bill.validContractUntil")}{" "}
+                      {repeatValidDate
                         ? new Date(repeatValidDate).toLocaleDateString("en-GB")
-                        : new Date().toLocaleDateString("en-GB")
-                      )}
+                        : new Date().toLocaleDateString("en-GB")}
                     </CustomText>
-
                   </View>
                 )}
-                </View>
               </View>
             )}
 

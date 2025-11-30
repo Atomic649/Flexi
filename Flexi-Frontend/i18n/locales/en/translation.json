@@ -1237,7 +1237,7 @@
     "receipt": "Receipt/Tax Invoice",
     "quotation": "Quotation",
     "clearFields": "CLEAR",
-    "repeatBill": "Repeat Monthly",
+    "repeatBill": "Rental Contract Duration",
     "repeatMonths": "Repeat every",
     "customerTaxId": "Tax ID",
     "enterTaxId": "Enter Tax ID",
