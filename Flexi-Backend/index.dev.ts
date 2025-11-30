@@ -8,6 +8,22 @@ import fs from "fs";
 // Initialize dotenv
 dotenv.config();
 
+// Runtime patch: ensure express/send has a charset lookup even if mime v3 is hoisted
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const send = require("send");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mimeMod = require("mime");
+  if (mimeMod && (!mimeMod.charsets || !mimeMod.charsets.lookup)) {
+    mimeMod.charsets = { lookup: () => "UTF-8" };
+  }
+  if (send && send.mime && (!send.mime.charsets || !send.mime.charsets.lookup)) {
+    send.mime.charsets = { lookup: () => "UTF-8" };
+  }
+} catch (e) {
+  // no-op; fallback to default behavior
+}
+
 // Create a new express application instance
 const app = express();
 

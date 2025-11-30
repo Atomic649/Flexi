@@ -2,12 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {   
+  "scripts": {
     "build": "tsc",
+    "clean": "rm -rf dist && echo 'Done.'",
+    "dev": "bun index.ts",
     "test": "jest",
     "start:dev": "nodemon index.dev.ts",
     "start": "node dist/index.js",
-    "postinstall": "npm run prisma:generate:dev",
+    "postinstall": "npm run prisma:generate:dev && sed -i '' 's/!module.parent/false/g' node_modules/pdf-parse/index.js",           
     "prisma:generate": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
     "prisma:generate:dev": "npx prisma generate --schema=prisma/db1/schema1.prisma --generator=client && npx prisma generate --schema=prisma/db2/schema2.prisma --generator=client",
     "prisma:generate:prod": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
@@ -83,12 +85,17 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/src/generated/"
     ],
-    "roots": ["<rootDir>/src", "<rootDir>/tests"],
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
     "transform": {
       "^.+\\.(ts|tsx)$": [
         "ts-jest",
@@ -105,6 +112,9 @@
     "multer": "1.4.5-lts.2",
     "busboy": "1.6.0",
     "cross-spawn": "7.0.5",
-    "tmp": "0.2.4"
+    "tmp": "0.2.4",
+    "mime": "1.6.0",
+    "send": "0.18.0",
+    "express": "4.21.2"
   }
 }
