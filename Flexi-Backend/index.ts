@@ -8,22 +8,6 @@ import fs from "fs";
 // Initialize dotenv
 dotenv.config();
 
-// Runtime patch: ensure express/send has a charset lookup even if mime v3 is hoisted
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const send = require("send");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mimeMod = require("mime");
-  if (mimeMod && (!mimeMod.charsets || !mimeMod.charsets.lookup)) {
-    mimeMod.charsets = { lookup: () => "UTF-8" };
-  }
-  if (send && send.mime && (!send.mime.charsets || !send.mime.charsets.lookup)) {
-    send.mime.charsets = { lookup: () => "UTF-8" };
-  }
-} catch (e) {
-  // no-op; fallback to default behavior
-}
-
 // Create a new express application instance
 const app = express();
 
@@ -42,7 +26,9 @@ if (process.env.NODE_ENV !== "production") {
 // Use Static Files
 app.use("/uploads", express.static("uploads"));
 app.use("/uploads/images", express.static("uploads/images"));
-app.use("/uploads/pdf", express.static("uploads/pdf"));
+// Serve PDFs from configured upload directory (fallback to default)
+const pdfStaticDir = process.env.PDF_UPLOAD_DIR || "uploads/pdf";
+app.use("/uploads/pdf", express.static(pdfStaticDir));
 app.get(`/test`, (_, res) => {
   res.send("whatever it takes 🔥 ");
 });

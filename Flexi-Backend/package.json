@@ -5,14 +5,14 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist && echo 'Done.'",
-    "dev": "bun index.ts",
+    "dev": "bun index.ts",    
     "test": "jest",
     "start:dev": "nodemon index.dev.ts",
     "start": "node dist/index.js",
-    "postinstall": "npm run prisma:generate:dev && sed -i '' 's/!module.parent/false/g' node_modules/pdf-parse/index.js",           
+    "postinstall": "npm run prisma:generate:dev && node scripts/fix-pdf-parse.js",
     "prisma:generate": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
     "prisma:generate:dev": "npx prisma generate --schema=prisma/db1/schema1.prisma --generator=client && npx prisma generate --schema=prisma/db2/schema2.prisma --generator=client",
-    "prisma:generate:prod": "npx prisma generate --schema=prisma/db1/schema1.prisma && npx prisma generate --schema=prisma/db2/schema2.prisma",
+    "prisma:generate:prod": "npx prisma generate --schema=prisma/db1/schema1.prisma --generator=client && npx prisma generate --schema=prisma/db2/schema2.prisma --generator=client",
     "prisma:generate:db1": "npx prisma generate --schema=prisma/db1/schema1.prisma",
     "prisma:generate:db2": "npx prisma generate --schema=prisma/db2/schema2.prisma",
     "prisma:migrate": "npx prisma migrate dev --schema=prisma/db1/schema1.prisma --name initial && npx prisma migrate dev --schema=prisma/db2/schema2.prisma --name initial",
@@ -88,6 +88,9 @@
     "testMatch": [
       "**/tests/**/*.test.ts"
     ],
+    "setupFiles": [
+      "<rootDir>/tests/jest.setup.js"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/src/generated/"
@@ -112,8 +115,7 @@
     "multer": "1.4.5-lts.2",
     "busboy": "1.6.0",
     "cross-spawn": "7.0.5",
-    "tmp": "0.2.4",
-    "mime": "1.6.0",
+    "tmp": "0.2.4",    
     "send": "0.18.0",
     "express": "4.21.2"
   }

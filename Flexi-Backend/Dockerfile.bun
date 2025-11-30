@@ -1,0 +1,39 @@
+FROM oven/bun:1 AS base
+
+
+WORKDIR /app
+
+# Ensure OpenSSL is available for Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copy manifest first
+COPY package.json bun.lock ./
+
+# Copy Prisma schema before install so postinstall can access them
+COPY prisma ./prisma/
+
+# Copy postinstall scripts used during install
+COPY scripts ./scripts/
+
+# Install dependencies (runs postinstall which generates Prisma clients)
+RUN bun install
+
+# Copy source
+COPY . .
+
+# Generate Prisma client for the current platform (handled by postinstall too)
+RUN bun run prisma:generate:prod
+
+# Build the application (transpile TypeScript to JavaScript)
+RUN bun run build
+
+# Run app
+# Ensure runtime upload directories exist and are writable
+RUN mkdir -p /app/uploads/images /app/uploads/pdf \
+	&& chown -R bun:bun /app/uploads \
+	&& chmod -R 775 /app/uploads
+
+    
+USER bun
+EXPOSE 3000
+ENTRYPOINT ["bun", "run", "index.ts"]

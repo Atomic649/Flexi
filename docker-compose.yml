@@ -35,6 +35,31 @@ services:
     networks:
       - prosgres-docker-prisma
 
+  # Optional Bun-based backend (experimental). Keep NodeJS service for fallback.
+  bun-backend:
+    depends_on:
+      - postgresdb
+    build:
+      context: ./Flexi-Backend
+      dockerfile: Dockerfile.bun
+    container_name: bunexpress
+    environment:
+      - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
+      - NODE_ENV=production
+    ports:
+      - 3010:3000
+    restart: always
+    networks:
+      - prosgres-docker-prisma
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
   expo-web:
     build:
       context: ./Flexi-Frontend

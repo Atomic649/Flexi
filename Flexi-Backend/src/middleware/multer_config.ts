@@ -17,17 +17,27 @@ const imageFileFilter = (
   }
 }
 
-const storageImageS3 = multerS3({
-  s3,
-  bucket: process.env.BUCKET_NAME!,
-  contentType: multerS3.AUTO_CONTENT_TYPE,
-  acl: 'private', // ถ้าอยาก public เปลี่ยนเป็น 'public-read'
-  key: (_req, file, cb) => {  
-    const filename = `${file.fieldname}-${Date.now()}-${uuidv4()}`
-    const ext = file.mimetype.split("/")[1]
-    cb(null, `uploads/${filename}.${ext}`)
-  },
-})
+// Prefer S3 storage when configuration is present; fallback to memory to avoid runtime crashes
+const hasS3Config = Boolean(
+  process.env.BUCKET_NAME &&
+  process.env.BUCKET_REGION &&
+  process.env.ACCESS_KEY &&
+  process.env.SECRET_ACCESS_KEY
+)
+
+const storageImageS3 = hasS3Config
+  ? multerS3({
+      s3,
+      bucket: process.env.BUCKET_NAME as string,
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      acl: 'private', // ถ้าอยาก public เปลี่ยนเป็น 'public-read'
+      key: (_req, file, cb) => {
+        const filename = `${file.fieldname}-${Date.now()}-${uuidv4()}`
+        const ext = file.mimetype.split("/")[1]
+        cb(null, `uploads/${filename}.${ext}`)
+      },
+    })
+  : undefined
 
 const storageImageMemory = multer.memoryStorage()
 
@@ -50,7 +60,7 @@ const attachmentFileFilter = (
 
 export const multerConfigImage = {
   config: {
-    storage: storageImageS3,
+    storage: storageImageS3 ?? multer.memoryStorage(),
     limits: { fileSize: 1024 * 1024 * 10 }, 
     fileFilter: imageFileFilter,
   },
@@ -78,7 +88,7 @@ export const multerConfigExpenseAttachmentMemory = {
 
 export const multerConfigAvatar = {
   config: {
-    storage: storageImageS3,
+    storage: storageImageS3 ?? multer.memoryStorage(),
     limits: { fileSize: 1024 * 1024 * 10 },
     fileFilter: imageFileFilter,
   },
@@ -100,15 +110,38 @@ const storagePDF = multer.diskStorage({
     file: Express.Multer.File,
     callback: (error: Error | null, destination: string) => void
   ) => {
-    callback(null, folderPDF)
+    try {
+      // Ensure folder exists (best-effort). Never pass an error to the callback.
+      if (!fs.existsSync(folderPDF)) {
+        fs.mkdirSync(folderPDF, { recursive: true })
+      }
+      callback(null, folderPDF)
+    } catch (e) {
+      // swallow errors and fallback to a safe temp folder
+      const fallback = "/tmp/uploads/pdf/"
+      try {
+        if (!fs.existsSync(fallback)) {
+          fs.mkdirSync(fallback, { recursive: true })
+        }
+      } catch {
+        // intentionally ignore
+      }
+      callback(null, fallback)
+    }
   },
   filename: (
     req: Request,
     file: Express.Multer.File,
     callback: (error: Error | null, filename: string) => void
   ) => {
-    const ext = file.mimetype.split("/")[1]
-    callback(null, `${file.fieldname}-${Date.now()}.${ext}`)
+    try {
+      const ext = (file.mimetype && file.mimetype.split("/")[1]) || "pdf"
+      const name = `${file.fieldname}-${Date.now()}-${uuidv4()}.${ext}`
+      callback(null, name)
+    } catch {
+      // fallback name, never return an error
+      callback(null, `file-${Date.now()}.pdf`)
+    }
   },
 })
 

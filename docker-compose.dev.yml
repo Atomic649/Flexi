@@ -41,6 +41,44 @@ services:
     networks:
       - prosgres-docker-prisma
 
+  # Bun backend for faster dev iteration (hot reload with Bun). Keep nodejs for comparison.
+  bun-backend:
+    depends_on:
+      - postgresdb
+    build:
+      context: ./Flexi-Backend
+      dockerfile: Dockerfile.bun
+    container_name: bunexpress-dev
+    volumes:
+      - ./Flexi-Backend:/app
+    working_dir: /app
+    env_file:
+      - ./Flexi-Backend/.env.dev
+    environment:
+      - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+      - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
+      - NODE_ENV=development
+      # S3 configuration for multer-s3
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BUCKET_REGION=${BUCKET_REGION}
+      - ACCESS_KEY=${ACCESS_KEY}
+      - SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
+      # Use a writable path in dev to avoid host mount permission issues
+      - PDF_UPLOAD_DIR=/tmp/uploads/pdf
+    command: ["sh", "-c", "bun prisma:generate:dev && bun dist/index.js || (mkdir -p ./uploads/pdf && bun run dev)"]
+    ports:
+      - 3003:3000
+    restart: always
+    networks:
+      - prosgres-docker-prisma
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   expo-web:
     build:
       context: ./Flexi-Frontend
