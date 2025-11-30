@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { View } from "@/components/Themed";
-import {CustomButton} from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -31,6 +31,7 @@ import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import * as ExpoPrint from "expo-print";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -87,7 +88,8 @@ export default function EditBill() {
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null
   );
-
+  const [validContactUntil, setValidContactUntil] = useState("")
+ 
   // Note state
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
@@ -159,6 +161,8 @@ export default function EditBill() {
     DocumentType: contextDocumentTypes,
     businessType: contextBusinessType,
   } = useBusiness();
+
+  const businessType = contextBusinessType ?? null;
 
   // Ref for scroll view
   const scrollViewRef = useRef<ScrollView>(null);
@@ -684,6 +688,8 @@ export default function EditBill() {
         setStoreId(billData.storeId);
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
+        setValidContactUntil(billData.validContactUntil || "");
+
         // Set note from bill data
         if (billData.note) {
           setNote(billData.note);
@@ -741,7 +747,9 @@ export default function EditBill() {
               ? "Individual"
               : null
             : null;
-        const hasTaxId = Boolean(billData.cTaxId && billData.cTaxId.trim().length > 0);
+        const hasTaxId = Boolean(
+          billData.cTaxId && billData.cTaxId.trim().length > 0
+        );
         setTaxType(normalizedTaxType ?? (hasTaxId ? "Juristic" : "Individual"));
         // Set productItems from billData.product (array of items)
         if (
@@ -1037,7 +1045,12 @@ export default function EditBill() {
         cPostId,
         cProvince,
         cTaxId: cTaxId,
-        payment: payment as "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified",
+        payment: payment as
+          | "COD"
+          | "Transfer"
+          | "CreditCard"
+          | "Cash"
+          | "NotSpecified",
         memberId: memberId || "",
         businessAcc,
         storeId,
@@ -1243,10 +1256,7 @@ export default function EditBill() {
                               }
                             } else {
                               // Edit mode: allow changing document type unless Receipt is locked
-                              if (
-                                isDocumentTypeLocked &&
-                                step !== "RE"
-                              ) {
+                              if (isDocumentTypeLocked && step !== "RE") {
                                 setAlertConfig({
                                   visible: true,
                                   title: t("bill.alerts.receiptLockedTitle"),
@@ -1428,59 +1438,59 @@ export default function EditBill() {
                 </View>
               </View>
             </View>
-             {/* Tax Type Checkboxes Row */}
-                        <View
-                          className="flex flex-row items-center mt-2 mb-2"
-                          style={{ backgroundColor: "transparent", marginBottom: 8 }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginRight: 20,
-                            }}
-                            onPress={() => {
-                              setTaxType("Individual");
-                              setCGender(""); // Allow gender selection
-                            }}
-                            activeOpacity={1}
-                          >
-                            <Ionicons
-                              name={
-                                taxType === "Individual" ? "checkbox" : "square-outline"
-                              }
-                              size={22}
-                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                            />
-                            <CustomText
-                              className="ml-2"
-                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                            >
-                              {t("auth.businessRegister.taxTypeOption.Individual")}
-                            </CustomText>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            style={{ flexDirection: "row", alignItems: "center" }}
-                            onPress={() => {
-                              setTaxType("Juristic");
-                              setCGender("NotSpecified"); // Always set gender to NotSpecified
-                            }}
-                            activeOpacity={1}
-                          >
-                            <Ionicons
-                              name={taxType === "Juristic" ? "checkbox" : "square-outline"}
-                              size={22}
-                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                            />
-                            <CustomText
-                              className="ml-2"
-                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                            >
-                              {t("auth.businessRegister.taxTypeOption.Juristic")}
-                            </CustomText>
-                          </TouchableOpacity>
-                        </View>
-            
+            {/* Tax Type Checkboxes Row */}
+            <View
+              className="flex flex-row items-center mt-2 mb-2"
+              style={{ backgroundColor: "transparent", marginBottom: 8 }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
+                onPress={() => {
+                  setTaxType("Individual");
+                  setCGender(""); // Allow gender selection
+                }}
+                activeOpacity={1}
+              >
+                <Ionicons
+                  name={
+                    taxType === "Individual" ? "checkbox" : "square-outline"
+                  }
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("auth.businessRegister.taxTypeOption.Individual")}
+                </CustomText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center" }}
+                onPress={() => {
+                  setTaxType("Juristic");
+                  setCGender("NotSpecified"); // Always set gender to NotSpecified
+                }}
+                activeOpacity={1}
+              >
+                <Ionicons
+                  name={taxType === "Juristic" ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("auth.businessRegister.taxTypeOption.Juristic")}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
             <View className="flex flex-row justify-between">
               <View
                 className={taxType === "Juristic" ? "w-full" : "w-1/2 pr-2"}
@@ -1662,11 +1672,7 @@ export default function EditBill() {
                       }}
                       activeOpacity={1}
                     >
-                      <Ionicons
-                        name="close-circle"
-                        size={20}
-                        color="#e74c3c"
-                      />
+                      <Ionicons name="close-circle" size={20} color="#e74c3c" />
                     </TouchableOpacity>
                   )}
                   <DropdownClear
@@ -1788,7 +1794,10 @@ export default function EditBill() {
                         value: "CreditCard",
                       },
                       { label: t("bill.payment.cash"), value: "Cash" },
-                      { label: t("bill.payment.notspecified"), value: "NotSpecified" },
+                      {
+                        label: t("bill.payment.notspecified"),
+                        value: "NotSpecified",
+                      },
                     ]}
                     placeholder={t("bill.selectPayment")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -1868,7 +1877,7 @@ export default function EditBill() {
             {/* Remark Section */}
             <FormFieldClear
               title={t("bill.remark")}
-              value={remark}              
+              value={remark}
               handleChangeText={setRemark}
               placeholder={t("bill.enterRemark")}
               borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -1928,85 +1937,99 @@ export default function EditBill() {
             />
 
             {/* Price Valid Section */}
-            {isEditMode && selectedDocumentType !== "RE" && (
-              <View
-                className="flex flex-row items-center mt-2 mb-2"
-                style={{ backgroundColor: "transparent", marginBottom: 8 }}
-              >
-                <CustomText
-                  className="mr-4"
-                  style={{
-                    color: theme === "dark" ? "#b1b1b1" : "#606060",
-                    fontSize: 16,
-                    fontWeight: "500",
-                  }}
+            {isEditMode &&
+              businessType !== "Rental" &&
+              selectedDocumentType !== "RE" && (
+                <View
+                  className="flex flex-row items-center mt-2 mb-2"
+                  style={{ backgroundColor: "transparent", marginBottom: 8 }}
                 >
-                  {t("bill.priceValid")}
-                </CustomText>
-
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 20,
-                  }}
-                  onPress={() => handlePriceValidDaysChange(7)}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons
-                    name={priceValidDays === 7 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
                   <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                    className="mr-4"
+                    style={{
+                      color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      fontSize: 16,
+                      fontWeight: "500",
+                    }}
                   >
-                    7 days
+                    {t("bill.priceValid")}
                   </CustomText>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 20,
-                  }}
-                  onPress={() => handlePriceValidDaysChange(15)}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons
-                    name={priceValidDays === 15 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
-                  <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
+                    onPress={() => handlePriceValidDaysChange(7)}
+                    activeOpacity={0.8}
                   >
-                    15 days
-                  </CustomText>
-                </TouchableOpacity>
+                    <Ionicons
+                      name={
+                        priceValidDays === 7 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      7 days
+                    </CustomText>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={() => handlePriceValidDaysChange(30)}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons
-                    name={priceValidDays === 30 ? "checkbox" : "square-outline"}
-                    size={22}
-                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  />
-                  <CustomText
-                    className="ml-2"
-                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
+                    onPress={() => handlePriceValidDaysChange(15)}
+                    activeOpacity={0.8}
                   >
-                    30 days
-                  </CustomText>
-                </TouchableOpacity>
-              </View>
-            )}
+                    <Ionicons
+                      name={
+                        priceValidDays === 15 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      15 days
+                    </CustomText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                    onPress={() => handlePriceValidDaysChange(30)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name={
+                        priceValidDays === 30 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      30 days
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
+              )}
 
             {priceValid && selectedDocumentType !== "RE" && (
               <View className="mb-2 pt-2 flex-row item-center justify-center">
@@ -2021,6 +2044,39 @@ export default function EditBill() {
                   style={{ color: theme === "dark" ? "#888" : "#666" }}
                 >
                   {formatDate(priceValid.toISOString())}
+                </CustomText>
+              </View>
+            )}
+
+            {/* Repeat Bill Section - Only show for Rental business type */}
+            {businessType === "Rental" && (
+              <View
+                className="flex flex-row items-center mt-4 mb-2"
+                style={{ backgroundColor: "transparent" }}
+              >
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 10,
+                  }}
+                  // onPress={() => setIsRepeat(!isRepeat)}
+                  activeOpacity={1}
+                >
+                  <MaterialCommunityIcons
+                    name="file-document-edit"
+                    size={24}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  
+                </TouchableOpacity>
+                {/* show Vilid Contact date calculat from purchaseDate * repeatMonth */}
+                <CustomText
+                  className="text-base mt-2 pt-1"
+                  style={{ color: theme === "dark" ? "#888" : "#666" }}
+                >
+                  {t("bill.validContractUntil")}{" "}
+                  {validContactUntil ? formatDate(validContactUntil).split(" ")[0] : ""}
                 </CustomText>
               </View>
             )}
