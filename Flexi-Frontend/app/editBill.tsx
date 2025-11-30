@@ -1072,13 +1072,13 @@ export default function EditBill() {
         priceValid: priceValid || undefined,
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
-        TaxType: taxType,
+        taxType: taxType,
       });
       if (data.error) throw new Error(data.error);
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.success"),
-        message: data.message || t("bill.alerts.successMessage"),
+        message:  t("bill.alerts.successMessage")|| data.message ,
         buttons: [
           {
             text: t("common.ok"),
@@ -2083,7 +2083,10 @@ export default function EditBill() {
             )}
 
             {error ? (
-              <CustomText className="text-red-500 mt-4">{error}</CustomText>
+              <CustomText className=" mt-4"
+               style={{ color: theme === "dark" ? "#ff6b6b" : "#ff4d4d" }}
+              
+              >{error}</CustomText>
             ) : null}
 
             <View className="flex-row gap-3 justify-center items-left">

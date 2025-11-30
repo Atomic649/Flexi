@@ -843,6 +843,7 @@ export default function CreateBill() {
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
+        taxType: taxType,
       });
 
       if (data.error) throw new Error(data.error);

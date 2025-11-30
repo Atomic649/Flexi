@@ -197,7 +197,7 @@ exports.Prisma.BillScalarFieldEnum = {
   repeat: 'repeat',
   repeatMonths: 'repeatMonths',
   note: 'note',
-  TaxType: 'TaxType',
+  taxType: 'taxType',
   DocumentType: 'DocumentType',
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',

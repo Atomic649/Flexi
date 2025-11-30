@@ -119,7 +119,7 @@ Table Bill {
   repeat Boolean [default: false]
   repeatMonths Int [default: 0]
   note String
-  TaxType taxType [default: 'Individual']
+  taxType taxType [default: 'Individual']
   DocumentType DocumentType [default: 'Receipt']
   discount Int [default: 0]
   billLevelDiscount Int [default: 0]

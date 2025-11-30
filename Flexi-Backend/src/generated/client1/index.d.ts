@@ -9387,7 +9387,7 @@ export namespace Prisma {
     repeat: boolean | null
     repeatMonths: number | null
     note: string | null
-    TaxType: $Enums.taxType | null
+    taxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
     billLevelDiscount: number | null
@@ -9428,7 +9428,7 @@ export namespace Prisma {
     repeat: boolean | null
     repeatMonths: number | null
     note: string | null
-    TaxType: $Enums.taxType | null
+    taxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
     billLevelDiscount: number | null
@@ -9469,7 +9469,7 @@ export namespace Prisma {
     repeat: number
     repeatMonths: number
     note: number
-    TaxType: number
+    taxType: number
     DocumentType: number
     discount: number
     billLevelDiscount: number
@@ -9536,7 +9536,7 @@ export namespace Prisma {
     repeat?: true
     repeatMonths?: true
     note?: true
-    TaxType?: true
+    taxType?: true
     DocumentType?: true
     discount?: true
     billLevelDiscount?: true
@@ -9577,7 +9577,7 @@ export namespace Prisma {
     repeat?: true
     repeatMonths?: true
     note?: true
-    TaxType?: true
+    taxType?: true
     DocumentType?: true
     discount?: true
     billLevelDiscount?: true
@@ -9618,7 +9618,7 @@ export namespace Prisma {
     repeat?: true
     repeatMonths?: true
     note?: true
-    TaxType?: true
+    taxType?: true
     DocumentType?: true
     discount?: true
     billLevelDiscount?: true
@@ -9746,7 +9746,7 @@ export namespace Prisma {
     repeat: boolean | null
     repeatMonths: number | null
     note: string | null
-    TaxType: $Enums.taxType | null
+    taxType: $Enums.taxType | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
     billLevelDiscount: number | null
@@ -9806,7 +9806,7 @@ export namespace Prisma {
     repeat?: boolean
     repeatMonths?: boolean
     note?: boolean
-    TaxType?: boolean
+    taxType?: boolean
     DocumentType?: boolean
     discount?: boolean
     billLevelDiscount?: boolean
@@ -9852,7 +9852,7 @@ export namespace Prisma {
     repeat?: boolean
     repeatMonths?: boolean
     note?: boolean
-    TaxType?: boolean
+    taxType?: boolean
     DocumentType?: boolean
     discount?: boolean
     billLevelDiscount?: boolean
@@ -9896,7 +9896,7 @@ export namespace Prisma {
     repeat?: boolean
     repeatMonths?: boolean
     note?: boolean
-    TaxType?: boolean
+    taxType?: boolean
     DocumentType?: boolean
     discount?: boolean
     billLevelDiscount?: boolean
@@ -9940,7 +9940,7 @@ export namespace Prisma {
     repeat?: boolean
     repeatMonths?: boolean
     note?: boolean
-    TaxType?: boolean
+    taxType?: boolean
     DocumentType?: boolean
     discount?: boolean
     billLevelDiscount?: boolean
@@ -9954,7 +9954,7 @@ export namespace Prisma {
     storeId?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "TaxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "platform" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "memberId" | "businessAcc" | "storeId", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | Bill$productArgs<ExtArgs>
     member?: boolean | MemberDefaultArgs<ExtArgs>
@@ -10008,7 +10008,7 @@ export namespace Prisma {
       repeat: boolean | null
       repeatMonths: number | null
       note: string | null
-      TaxType: $Enums.taxType | null
+      taxType: $Enums.taxType | null
       DocumentType: $Enums.DocumentType | null
       discount: number | null
       billLevelDiscount: number | null
@@ -10473,7 +10473,7 @@ export namespace Prisma {
     readonly repeat: FieldRef<"Bill", 'Boolean'>
     readonly repeatMonths: FieldRef<"Bill", 'Int'>
     readonly note: FieldRef<"Bill", 'String'>
-    readonly TaxType: FieldRef<"Bill", 'taxType'>
+    readonly taxType: FieldRef<"Bill", 'taxType'>
     readonly DocumentType: FieldRef<"Bill", 'DocumentType'>
     readonly discount: FieldRef<"Bill", 'Int'>
     readonly billLevelDiscount: FieldRef<"Bill", 'Int'>
@@ -33423,7 +33423,7 @@ export namespace Prisma {
     repeat: 'repeat',
     repeatMonths: 'repeatMonths',
     note: 'note',
-    TaxType: 'TaxType',
+    taxType: 'taxType',
     DocumentType: 'DocumentType',
     discount: 'discount',
     billLevelDiscount: 'billLevelDiscount',
@@ -34551,7 +34551,7 @@ export namespace Prisma {
     repeat?: BoolNullableFilter<"Bill"> | boolean | null
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
-    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    taxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
@@ -34596,7 +34596,7 @@ export namespace Prisma {
     repeat?: SortOrderInput | SortOrder
     repeatMonths?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
-    TaxType?: SortOrderInput | SortOrder
+    taxType?: SortOrderInput | SortOrder
     DocumentType?: SortOrderInput | SortOrder
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
@@ -34644,7 +34644,7 @@ export namespace Prisma {
     repeat?: BoolNullableFilter<"Bill"> | boolean | null
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
-    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    taxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
@@ -34689,7 +34689,7 @@ export namespace Prisma {
     repeat?: SortOrderInput | SortOrder
     repeatMonths?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
-    TaxType?: SortOrderInput | SortOrder
+    taxType?: SortOrderInput | SortOrder
     DocumentType?: SortOrderInput | SortOrder
     discount?: SortOrderInput | SortOrder
     billLevelDiscount?: SortOrderInput | SortOrder
@@ -34738,7 +34738,7 @@ export namespace Prisma {
     repeat?: BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
     repeatMonths?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     note?: StringNullableWithAggregatesFilter<"Bill"> | string | null
-    TaxType?: EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
+    taxType?: EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableWithAggregatesFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableWithAggregatesFilter<"Bill"> | number | null
@@ -36801,7 +36801,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -36843,7 +36843,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -36884,7 +36884,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -36926,7 +36926,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -36968,7 +36968,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -37008,7 +37008,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -37046,7 +37046,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39383,7 +39383,7 @@ export namespace Prisma {
     repeat?: SortOrder
     repeatMonths?: SortOrder
     note?: SortOrder
-    TaxType?: SortOrder
+    taxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
     billLevelDiscount?: SortOrder
@@ -39436,7 +39436,7 @@ export namespace Prisma {
     repeat?: SortOrder
     repeatMonths?: SortOrder
     note?: SortOrder
-    TaxType?: SortOrder
+    taxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
     billLevelDiscount?: SortOrder
@@ -39477,7 +39477,7 @@ export namespace Prisma {
     repeat?: SortOrder
     repeatMonths?: SortOrder
     note?: SortOrder
-    TaxType?: SortOrder
+    taxType?: SortOrder
     DocumentType?: SortOrder
     discount?: SortOrder
     billLevelDiscount?: SortOrder
@@ -45005,7 +45005,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -45046,7 +45046,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -45491,7 +45491,7 @@ export namespace Prisma {
     repeat?: BoolNullableFilter<"Bill"> | boolean | null
     repeatMonths?: IntNullableFilter<"Bill"> | number | null
     note?: StringNullableFilter<"Bill"> | string | null
-    TaxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+    taxType?: EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
     DocumentType?: EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
     discount?: IntNullableFilter<"Bill"> | number | null
     billLevelDiscount?: IntNullableFilter<"Bill"> | number | null
@@ -45846,7 +45846,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -45887,7 +45887,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -46817,7 +46817,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -46858,7 +46858,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -46958,7 +46958,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -46999,7 +46999,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -47898,7 +47898,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -47939,7 +47939,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -51574,7 +51574,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -51704,7 +51704,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51745,7 +51745,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51786,7 +51786,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52114,7 +52114,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -52285,7 +52285,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52326,7 +52326,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52367,7 +52367,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52751,7 +52751,7 @@ export namespace Prisma {
     repeat?: boolean | null
     repeatMonths?: number | null
     note?: string | null
-    TaxType?: $Enums.taxType | null
+    taxType?: $Enums.taxType | null
     DocumentType?: $Enums.DocumentType | null
     discount?: number | null
     billLevelDiscount?: number | null
@@ -52790,7 +52790,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52831,7 +52831,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52872,7 +52872,7 @@ export namespace Prisma {
     repeat?: NullableBoolFieldUpdateOperationsInput | boolean | null
     repeatMonths?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
-    TaxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+    taxType?: NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
     DocumentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
     discount?: NullableIntFieldUpdateOperationsInput | number | null
     billLevelDiscount?: NullableIntFieldUpdateOperationsInput | number | null

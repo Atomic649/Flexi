@@ -124,7 +124,7 @@ class CallAPIBill {
         validContactUntil?: Date; // Optional valid contact date
         paymentTermCondition?: string; // Optional payment term condition
         remark?: string; // Optional remark
-        TaxType?: "Juristic" | "Individual"; // Optional tax type
+        taxType?: "Juristic" | "Individual"; // Optional tax type
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

@@ -193,7 +193,7 @@ interface billInput {
   beforeDiscount?: number; // Optional field for total before discount
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
-  TaxType?: "Juristic" | "Individual"; // Optional tax type
+  taxType?: "Juristic" | "Individual"; // Optional tax type
 }
 
 // Validate the request body
@@ -411,7 +411,7 @@ const createBill = async (req: Request, res: Response) => {
                 remark: billInput.remark || "", // Optional remark
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
-                TaxType: billInput.TaxType || "Individual",
+                taxType: billInput.taxType || "Individual",
               };
 
               if (contractValidUntil) {
@@ -488,7 +488,7 @@ const createBill = async (req: Request, res: Response) => {
             remark: billInput.remark || "", // Optional remark
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
-            TaxType: billInput.TaxType || "Individual",
+            taxType: billInput.taxType || "Individual",
           };
 
           const singleValidUntil = calculateValidContactUntil(
@@ -617,7 +617,7 @@ const getBills = async (req: Request, res: Response) => {
         validContactUntil: true,
         rentalStockReleased: true,
         DocumentType: true,
-        TaxType: true,
+        taxType: true,
       } as any,
       take: 100, // Limit to 100 records
     });
@@ -821,9 +821,8 @@ const updateBill = async (req: Request, res: Response) => {
           paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
           remark: billInput.remark || "", // Optional remark
           repeat: billInput.repeat,
-          repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
-          validContactUntil: validContactUntil ?? null,
-          TaxType: billInput.TaxType || "Individual",
+          repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,        
+          taxType: billInput.taxType || "Individual",
         };
 
         // Generate ID if missing for the new DocumentType
