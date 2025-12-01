@@ -1,4 +1,5 @@
 import express from "express";
+import mime from "mime";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -22,6 +23,29 @@ app.use(bodyParser.urlencoded({ extended: false }));
 if (process.env.NODE_ENV !== "production") {
   app.use(cors({ origin: "*" })); // Allow all origins in development
 }
+
+// Normalize mime API for Express/send compatibility (mime v3+ lacks charsets)
+const mimeAny: any = mime as any;
+if (mimeAny) {
+  if (!mimeAny.charsets || typeof mimeAny.charsets.lookup !== "function") {
+    mimeAny.charsets = { lookup: () => "UTF-8" };
+  }
+  if (typeof mimeAny.getType !== "function" && typeof (mimeAny as any).lookup === "function") {
+    mimeAny.getType = (mimeAny as any).lookup.bind(mimeAny);
+  }
+}
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const send = require("send");
+  if (send && send.mime) {
+    if (!send.mime.charsets || typeof send.mime.charsets.lookup !== "function") {
+      send.mime.charsets = { lookup: () => "UTF-8" };
+    }
+    if (typeof send.mime.getType !== "function" && typeof send.mime.lookup === "function") {
+      send.mime.getType = send.mime.lookup.bind(send.mime);
+    }
+  }
+} catch {}
 
 // Use Static Files
 app.use("/uploads", express.static("uploads"));
