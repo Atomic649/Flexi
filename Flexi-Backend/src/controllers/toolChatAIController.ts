@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { DynamicTool } from "@langchain/core/tools";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
 
-const prisma = new PrismaClient1();
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";;
+
+const prisma = flexiDBPrismaClient;
 
 // ---------------------- Date Utilities ----------------------
 function startOfDay(d: Date) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 import Joi from "joi";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -20,7 +20,7 @@ interface UserInput {
   username?: string;
 }
 
-const Prisma = new PrismaClient1();
+const Prisma = flexiDBPrismaClient
 
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };

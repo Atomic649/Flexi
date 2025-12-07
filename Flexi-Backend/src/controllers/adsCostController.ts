@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { Prisma, PrismaClient as PrismaClient1 } from "../generated/client1";
+import { Prisma, AdsCost } from "../generated/client1/client";
 import multer from "multer";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
 const upload: multer.Multer = multer();
 
 // Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient
 
 // Interface for request body from client
 interface adsCostInput {
@@ -23,6 +24,8 @@ interface adsCostInput {
 }
 
 
+
+
 // Create many ads cost - Post by Form Data
 const createManyAdsCosts = async (req: Request, res: Response) => {
   {
@@ -30,8 +33,8 @@ const createManyAdsCosts = async (req: Request, res: Response) => {
       if (err) {
         return res.status(400).json({ message: err.message });
       }
-      const jsonBody = req.body as Prisma.AdsCostCreateManyInput[];
-      const adsCostInput: adsCostInput[] = jsonBody as adsCostInput[];
+      const jsonBody = req.body as Prisma.AdsCostCreateInput[];
+      const adsCostInput: adsCostInput[] = jsonBody as unknown as adsCostInput[];
       //console.log("Request Body:", adsCostInput);
 
       // Don't have to Validate the request body because covert type anyway

@@ -65,7 +65,7 @@ prismaMock.$transaction = jest.fn(async (cb: any) =>
   })
 );
 
-jest.mock("../src/generated/client1", () => {
+jest.mock("../src/generated/client1/client", () => {
   return { PrismaClient: jest.fn().mockImplementation(() => prismaMock) };
 });
 

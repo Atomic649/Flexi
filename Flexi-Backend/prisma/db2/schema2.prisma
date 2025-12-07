@@ -1,32 +1,29 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../../src/generated/client2"
-  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator clientDist {
-  provider = "prisma-client-js"
-  output   = "../../dist/src/generated/client2"
-  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL2")
+  schemas  = ["flexiadsdb"]
 }
 
 generator dbml {
   provider = "prisma-dbml-generator"
   output   = "../dbml/schema2.dbml"
 }
+
+generator prismabox { 
+  provider                       = "prismabox"
+  typeboxImportDependencyName    = "elysia"
+  typeboxImportVariableName      = "t"
+  inputModel                     = true
+  output                         = "../generated/prismabox"
+} 
+
+//----------------------------------------------------
+// USER / MEMBER / BUSINESS (เหมือนเดิม)
+//----------------------------------------------------
 
 model User {
   id        Int           @id @default(autoincrement())
@@ -41,6 +38,8 @@ model User {
   username  String?       @unique
   Business  BusinessAcc[] @relation(name: "BusinessOwner")
   member    Member[]
+
+  @@schema("flexiadsdb")
 }
 
 model Member {
@@ -51,12 +50,11 @@ model Member {
   user       User         @relation(fields: [userId], references: [id])
   businessId Int?
   business   BusinessAcc? @relation(fields: [businessId], references: [id], name: "BusinessMembers")
-  office     Office[]
-  coach      Coach[]
-  bank       Bank[]
-  agency     Agency[]
-  orm        Orm[]
-  account    Account[]
+  // relations
+  products   Product[]
+  campaigns  BoostCampaign[]
+
+  @@schema("flexiadsdb")
 }
 
 model BusinessAcc {
@@ -68,110 +66,134 @@ model BusinessAcc {
   userId       Int
   user         User      @relation(fields: [userId], references: [id], name: "BusinessOwner")
   AllMember    Member[]  @relation(name: "BusinessMembers")
-  Office       Office[]
-  Coach        Coach[]
-  Bank         Bank[]
-  Agency       Agency[]
-  Orm          Orm[]
-  Account      Account[]
+  products     Product[]
+  campaigns    BoostCampaign[]
+
+  @@schema("flexiadsdb")
 }
 
-model Office {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Office)
+//----------------------------------------------------
+// PRODUCT SYSTEM (Flexible / Future-proof)
+//----------------------------------------------------
+
+model CategoryDef {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique      // e.g. "Office", "Coach", "Bank"
+  description String?
+  products    Product[]
+
+  @@schema("flexiadsdb")
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   title        String
   description  String
   image        String?
   callToAction String?
   businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
+  business     BusinessAcc   @relation(fields: [businessId], references: [id])
+  categoryId   Int
+  category     CategoryDef   @relation(fields: [categoryId], references: [id])
   authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
-  
+  author       Member        @relation(fields: [authorId], references: [uniqueId])
+  deleted       Boolean       @default(false)
+
+  // relation
+  details      ProductDetail[]
+  campaigns    BoostCampaign[]
+
+  @@schema("flexiadsdb")
 }
 
-model Coach {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Coach)
-  title        String
-  description  String
-  image        String?
-  callToAction String?
-  businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
-  authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
+model ProductDetail {
+  id         Int      @id @default(autoincrement())
+  key        String   // e.g. "location", "interestRate", "benefit1"
+  value      String   // JSON string allowed
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@schema("flexiadsdb")
 }
 
-model Bank {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Bank)
-  title        String
-  description  String
-  image        String?
-  callToAction String?
+//----------------------------------------------------
+// BOOST ADS SYSTEM
+//----------------------------------------------------
+
+model BoostCampaign {
+  id           Int          @id @default(autoincrement())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  name         String?
+  status       CampaignStatus @default(ACTIVE)
+
+  // Budget & Duration
+  budget       Float
+  dailyCap     Float?
+  startDate    DateTime
+  endDate      DateTime
+
+  // Bidding
+  bidStrategy  BidStrategy  @default(AUTO)
+  maxBid       Float?        // for manual bids
+
+  // Relations
   businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
-  authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
+  business     BusinessAcc   @relation(fields: [businessId], references: [id])
+
+  productId    Int
+  product      Product       @relation(fields: [productId], references: [id])
+
+  ownerId      String
+  owner        Member        @relation(fields: [ownerId], references: [uniqueId])
+
+  results      BoostResult[]
+  bidLogs      BoostBidLog[]
+  spendLogs    BoostSpendLog[]
+
+  @@schema("flexiadsdb")
 }
 
-model Agency {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Agency)
-  title        String
-  description  String
-  image        String?
-  callToAction String?
-  businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
-  authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
+model BoostResult {
+  id          Int        @id @default(autoincrement())
+  date        DateTime
+  impressions Int        @default(0)
+  clicks      Int        @default(0)
+  ctr         Float      @default(0)
+  costSpent   Float      @default(0)
+  campaignId  Int
+  campaign    BoostCampaign @relation(fields: [campaignId], references: [id])
+
+  @@schema("flexiadsdb")
 }
 
-model Orm {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Orm)
-  title        String
-  description  String
-  image        String?
-  callToAction String?
-  businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
-  authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
+model BoostBidLog {
+  id          Int        @id @default(autoincrement())
+  timestamp   DateTime   @default(now())
+  bidValue    Float
+  reason      String?    // e.g. "auto adjustment", "manual update"
+  campaignId  Int
+  campaign    BoostCampaign @relation(fields: [campaignId], references: [id])
+
+  @@schema("flexiadsdb")
 }
 
-model Account {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Category     Category    @default(Account)
-  title        String
-  description  String
-  image        String?
-  callToAction String?
-  businessId   Int
-  businessAcc  BusinessAcc @relation(fields: [businessId], references: [id])
-  authorId     String
-  author       Member      @relation(fields: [authorId], references: [uniqueId])
-  delete       Boolean     @default(false)
+model BoostSpendLog {
+  id          Int        @id @default(autoincrement())
+  timestamp   DateTime   @default(now())
+  spend       Float
+  campaignId  Int
+  campaign    BoostCampaign @relation(fields: [campaignId], references: [id])
+
+  @@schema("flexiadsdb")
 }
+
+//----------------------------------------------------
+// ENUMS
+//----------------------------------------------------
+
 enum Category {
   Office
   Coach
@@ -179,4 +201,22 @@ enum Category {
   Agency
   Account
   Orm
+
+  @@schema("flexiadsdb")
+}
+
+enum BidStrategy {
+  AUTO
+  MANUAL
+
+  @@schema("flexiadsdb")
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+
+  @@schema("flexiadsdb")
 }

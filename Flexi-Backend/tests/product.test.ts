@@ -50,7 +50,7 @@ const prismaMock: any = {
 	},
 };
 
-jest.mock('../src/generated/client1', () => {
+jest.mock('../src/generated/client1/client', () => {
 	const ProductType = { Product: 'Product', Service: 'Service' };
 	const Unit = { Piece: 'Piece', Hour: 'Hour', Kg: 'Kg' };
 	return {

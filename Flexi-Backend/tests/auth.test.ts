@@ -20,7 +20,7 @@ const prismaMock: {
 };
 
 // Mock Prisma client used inside authController (controller imports "../src/generated/client1")
-jest.mock('../src/generated/client1', () => {
+jest.mock('../src/generated/client1/client', () => {
   return {
     PrismaClient: jest.fn().mockImplementation(() => prismaMock),
   };

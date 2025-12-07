@@ -13,7 +13,7 @@ import { createSalesAnalyticsTool } from "../controllers/toolChatAIController";
 
 // WebSocket handler for AI chat functionality
 
-const prisma = new PrismaClient1();
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";;
 const MODEL_NAME = process.env.OPENAI_MODEL_NAME || "gpt-4o-mini";
 
 function coerceTemperature(t?: any) {

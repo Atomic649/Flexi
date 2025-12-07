@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
 
 
 //Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
+const prisma = flexiDBPrismaClient;
 
 const dailyReport = async (req: Request, res: Response) => {
   const { memberId } = req.params;

@@ -1,4 +1,4 @@
-import { taxType } from "../generated/client1";
+import { taxType } from "../generated/client1/client";
 
 // Thai juristic person keywords
 export const thaiJuristicKeywords = [

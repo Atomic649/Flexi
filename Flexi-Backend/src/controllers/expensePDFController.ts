@@ -1,4 +1,4 @@
-import { Bank, PrismaClient as PrismaClient1 } from "../generated/client1";
+import { Bank } from "../generated/client1/client";
 import { Request, Response } from "express";
 import fs from "fs";
 import pdfParse from "pdf-parse";
@@ -6,12 +6,14 @@ import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { decrypt } from "node-qpdf2"; // Replace hummus-recipe with node-qpdf2
 import { format } from "date-fns-tz";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
 
 const upload = multer(multerConfig.pdfMulterConfig.config).single(
   multerConfig.pdfMulterConfig.keyUpload
 );
 // Create instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // Interface for request body from client
 interface Expense {

@@ -10,7 +10,7 @@ const prismaMock: any = {
   expense: { findMany: jest.fn() },
 };
 
-jest.mock('../src/generated/client1', () => {
+jest.mock('../src/generated/client1/client', () => {
   return { __esModule: true, PrismaClient: jest.fn().mockImplementation(() => prismaMock) };
 });
 

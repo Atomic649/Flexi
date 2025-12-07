@@ -1,26 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../../src/generated/client1"
-  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator clientDist {
-  provider = "prisma-client-js"
-  output   = "../../dist/src/generated/client1"
-  // Include both local dev (native) and Docker Alpine (linux-musl with OpenSSL 3) engines
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL1")
+  schemas  = ["flexidb"]
 }
 
 generator dbml {
@@ -37,7 +22,8 @@ enum Unit {
   Pack
   Set
   Dozen
-  NotSpecified
+
+  @@schema("flexidb")
 }
 
 enum UserRole {
@@ -46,17 +32,24 @@ enum UserRole {
   accountant
   sales
   partner
+
+  @@schema("flexidb")
 }
 
 enum taxType {
   Juristic
   Individual
+
+    @@schema("flexidb")
+
 }
 
 enum Gender {
   Female
   Male
   NotSpecified
+
+    @@schema("flexidb")
 }
 
 enum Payment {
@@ -65,6 +58,8 @@ enum Payment {
   CreditCard
   Cash
   NotSpecified
+
+    @@schema("flexidb")
 }
 
 enum SocialMedia {
@@ -76,7 +71,9 @@ enum SocialMedia {
   Instagram
   X
   Youtube
-  Google
+  
+  
+    @@schema("flexidb")
 }
 
 enum IncomeChannel {
@@ -97,6 +94,8 @@ enum IncomeChannel {
   TMB
   Affiliate
   Offline
+
+    @@schema("flexidb")
 }
 
 enum Bank {
@@ -105,6 +104,8 @@ enum Bank {
   KTB
   BBL
   TMB
+
+    @@schema("flexidb")
 }
 
 enum BusinessType {
@@ -117,17 +118,23 @@ enum BusinessType {
   Tutor
   Influencer
   Other
+
+    @@schema("flexidb")
 }
 
 enum MediaType {
   VIDEO
   IMAGE
+
+    @@schema("flexidb")
 }
 
 enum ReactionType {
   CREDIT
   SPARK
   DISCREDIT
+
+    @@schema("flexidb")
 }
 
 enum Category {
@@ -138,12 +145,16 @@ enum Category {
   Packaging
   accountant
   Inventory
-}
+
+  @@schema("flexidb")
+  }
 
 enum ProductType {
   Service
   Product
-  Rental
+  Rental   
+  
+  @@schema("flexidb")
 }
 
 enum OptionName {
@@ -153,6 +164,8 @@ enum OptionName {
   Flavor
   CreditLimit
   QuantityLimit
+
+    @@schema("flexidb")
 }
 
 enum DocumentType {
@@ -162,12 +175,17 @@ enum DocumentType {
   DebitNote
   CreditNote
   WithholdingTax
+
+    @@schema("flexidb")
 }
 
 enum ExpenseStatus {
   Pass
   Fail
   Warning
+  
+  
+    @@schema("flexidb")
 }
 
 enum ExpenseGroup {
@@ -184,7 +202,7 @@ enum ExpenseGroup {
   Interest
   Influencer
   Accounting
-  Legal  
+  Legal
   Taxation
   Transport
   Product
@@ -193,6 +211,8 @@ enum ExpenseGroup {
   Fuel
   Maintenance
   Others
+
+    @@schema("flexidb")
 }
 
 model User {
@@ -211,29 +231,21 @@ model User {
   resetTokenExpiry DateTime? // Optional field for token expiry
   business         BusinessAcc[]
   member           Member[]
-  posts            Post[]
-  comments         Comment[]
-  reactions        Reaction[]
-  sentMessages     Inbox[]       @relation("SentMessages")
-  receivedMessages Inbox[]       @relation("ReceivedMessages")
-  seller           Shop[]        @relation("Seller")
-  buyer            Shop[]        @relation("Buyer")
-  Order            Order[]
-  review           Review[]
-  owner            Credit[]      @relation("Owner")
-  credit           Credit[]      @relation("Creditor")
+  
+
+    @@schema("flexidb")
 }
 
 model Member {
-  uniqueId   String   @id @default(uuid())
-  role       UserRole @default(owner)
+  uniqueId   String        @id @default(uuid())
+  role       UserRole      @default(owner)
   permission String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  deleted    Boolean? @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deleted    Boolean?      @default(false)
   // Relation
   userId     Int
-  user       User         @relation(fields: [userId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
   businessId Int?
   business   BusinessAcc?  @relation(fields: [businessId], references: [id])
   bill       Bill[]
@@ -242,28 +254,29 @@ model Member {
   product    Product[]
   platform   Platform[]
   store      Store[]
-  chat      ChatSession[]
+  chat       ChatSession[]
   
+    @@schema("flexidb")
 }
 
 model BusinessAcc {
-  id               Int            @id @default(autoincrement())
-  createdAt        DateTime?      @default(now())
-  updatedAt        DateTime?      @updatedAt
-  businessName     String         @unique
-  businessUserName String?        @unique
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime?         @default(now())
+  updatedAt        DateTime?         @updatedAt
+  businessName     String            @unique
+  businessUserName String?           @unique
   businessAvatar   String?
   businessAddress  String?
   businessWebsite  String?
   businessPhone    String?
-  vat              Boolean?       @default(false)
-  taxId            String         @unique
-  businessType     BusinessType   @default(OnlineSale)
-  taxType          taxType        @default(Individual)
+  vat              Boolean?          @default(false)
+  taxId            String            @unique
+  businessType     BusinessType      @default(OnlineSale)
+  taxType          taxType           @default(Individual)
   userId           Int
-  memberId        String[]       @default([]) // Track all member uniqueIds associated with this business
-  DocumentType     DocumentType[] @default([Receipt])
-  user             User           @relation(fields: [userId], references: [id])
+  memberId         String[]          @default([]) // Track all member uniqueIds associated with this business
+  DocumentType     DocumentType[]    @default([Receipt])
+  user             User              @relation(fields: [userId], references: [id])
   AllMember        Member[]
   billRecord       Bill[]
   expenseRecord    Expense[]
@@ -272,15 +285,19 @@ model BusinessAcc {
   storefront       Store[]
   product          Product[]
   documentCounters DocumentCounter[]
+
+    @@schema("flexidb")
 }
 
 model DocumentCounter {
   id           Int          @id @default(autoincrement())
   businessId   Int
   documentType DocumentType
-  count        Int          @default(0)  
+  count        Int          @default(0)
   business     BusinessAcc  @relation(fields: [businessId], references: [id])
+
   @@unique([businessId, documentType])
+    @@schema("flexidb")
 }
 
 model Bill {
@@ -306,7 +323,7 @@ model Bill {
   purchaseAt           DateTime      @default(now())
   platform             IncomeChannel
   cashStatus           Boolean?      @default(false)
-  image                String?  
+  image                String?
   deleted              Boolean?      @default(false)
   repeat               Boolean?      @default(false)
   repeatMonths         Int?          @default(0)
@@ -317,9 +334,10 @@ model Bill {
   billLevelDiscount    Int?          @default(0)
   priceValid           DateTime? // Optional field for expiration
   validContactUntil    DateTime?
-  rentalStockReleased  Boolean      @default(false)
+  rentalStockReleased  Boolean       @default(false)
   paymentTermCondition String? // Optional field for payment
   remark               String?
+
 
   // Relation   
   memberId    String
@@ -328,6 +346,8 @@ model Bill {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   storeId     Int
   store       Store       @relation(fields: [storeId], references: [id])
+
+    @@schema("flexidb")
 }
 
 model ProductItem {
@@ -342,6 +362,8 @@ model ProductItem {
   // Relation
   bill        Bill?   @relation(fields: [billId], references: [id])
   productList Product @relation(fields: [product], references: [name])
+
+    @@schema("flexidb")
 }
 
 model AdsCost {
@@ -360,13 +382,15 @@ model AdsCost {
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   productList Product     @relation(fields: [product], references: [name])
+
+    @@schema("flexidb")
 }
 
 model Expense {
   date           DateTime
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  id             Int         @id @default(autoincrement())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  id             Int            @id @default(autoincrement())
   expNo          String?
   amount         Decimal
   group          ExpenseGroup?
@@ -374,27 +398,29 @@ model Expense {
   pdf            String?
   note           String?
   desc           String?
-  deleted        Boolean?    @default(false)
-  save           Boolean?    @default(false)
+  deleted        Boolean?       @default(false)
+  save           Boolean?       @default(false)
   channel        Bank?
   code           String?
-  vat            Boolean?    @default(false)
-  vatAmount      Decimal?    @default(0)
-  withHoldingTax Boolean?    @default(false)
-  WHTpercent     Decimal?    @default(0)
-  WHTAmount      Decimal?    @default(0)
+  vat            Boolean?       @default(false)
+  vatAmount      Decimal?       @default(0)
+  withHoldingTax Boolean?       @default(false)
+  WHTpercent     Decimal?       @default(0)
+  WHTAmount      Decimal?       @default(0)
   sName          String?
   sTaxId         String?
   sAddress       String?
   taxInvoiceNo   String?
   branch         String?
-  taxType       taxType?    @default(Individual)
-  status        ExpenseStatus? 
+  taxType        taxType?       @default(Individual)
+  status         ExpenseStatus?
   // Relation
   businessAcc    Int
-  businessId     BusinessAcc @relation(fields: [businessAcc], references: [id])
+  businessId     BusinessAcc    @relation(fields: [businessAcc], references: [id])
   memberId       String
-  member         Member      @relation(fields: [memberId], references: [uniqueId])
+  member         Member         @relation(fields: [memberId], references: [uniqueId])
+
+    @@schema("flexidb")
 }
 
 model Platform {
@@ -410,6 +436,8 @@ model Platform {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   deleted     Boolean?    @default(false)
+
+    @@schema("flexidb")
 }
 
 model Store {
@@ -425,6 +453,8 @@ model Store {
   memberId     String
   member       Member        @relation(fields: [memberId], references: [uniqueId])
   deleted      Boolean?      @default(false)
+
+    @@schema("flexidb")
 }
 
 model Product {
@@ -444,6 +474,8 @@ model Product {
   updatedAt   DateTime     @updatedAt
   deleted     Boolean?     @default(false)
 
+    @@schema("flexidb")
+
   // relation
   billRecord  ProductItem[]
   adsRecord   AdsCost[]
@@ -453,178 +485,26 @@ model Product {
 }
 
 model ChatSession {
-  id       String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId   String
-  user      Member     @relation(fields: [userId], references: [uniqueId])
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  userId    String
+  user      Member        @relation(fields: [userId], references: [uniqueId])
   title     String?
   summary   String?
   messages  ChatMessage[]
-  deleted   Boolean?  @default(false)
+  deleted   Boolean?      @default(false)
+
+    @@schema("flexidb")
 }
+
 model ChatMessage {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id        Int         @id @default(autoincrement())
+  createdAt DateTime    @default(now())
   message   Json
   sessionId String
   session   ChatSession @relation(fields: [sessionId], references: [id])
+
+    @@schema("flexidb")
 }
 
-model Credit {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  ownerId    Int
-  creditorId Int
-
-  // relations
-  owner    User @relation("Owner", fields: [ownerId], references: [id])
-  creditor User @relation("Creditor", fields: [creditorId], references: [id])
-}
-
-model Post {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  hashtag   String[]
-  content   String?
-  mediaUrl  String?
-  mediaType MediaType?
-  published Boolean    @default(false)
-  authorId  Int
-  author    User       @relation(fields: [authorId], references: [id])
-  reactions Reaction[]
-  comments  Comment[]
-  deleted   Boolean?   @default(false)
-}
-
-model Reaction {
-  id        Int          @id @default(autoincrement())
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  type      ReactionType
-  postId    Int
-  post      Post         @relation(fields: [postId], references: [id])
-  userId    Int
-  user      User         @relation(fields: [userId], references: [id])
-}
-
-model Comment {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content   String
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  deleted   Boolean? @default(false)
-}
-
-model Inbox {
-  id         Int      @id @default(autoincrement())
-  senderId   Int
-  receiverId Int
-  message    String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  read       Boolean  @default(false)
-  unsent     Boolean  @default(false)
-  deleted    Boolean? @default(false)
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
-}
-
-model Shop {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String?
-  productType ProductType @default(Service)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  category    Category
-  sellerId    Int
-  buyerId     Int
-  deleted     Boolean?    @default(false)
-
-  // relation
-  seller User @relation("Seller", fields: [sellerId], references: [id])
-  buyer  User @relation("Buyer", fields: [buyerId], references: [id])
-
-  orders  Order?
-  options Option[]
-  review  Review[]
-}
-
-model Order {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  quantity  Int
-  shopId    Int      @unique
-  buyerId   Int
-  sellerId  Int
-  deleted   Boolean? @default(false)
-
-  // relation
-  seller Shop    @relation(fields: [shopId], references: [id])
-  buyer  User    @relation(fields: [sellerId], references: [id])
-  review Review?
-  cart   Cart    @relation(fields: [id], references: [orderId])
-}
-
-model Option {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  name      OptionName
-  shopId    Int
-
-  // relation
-  shop   Shop          @relation(fields: [shopId], references: [id])
-  values OptionValue[]
-}
-
-model OptionValue {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  value     String
-  price     Float?
-  interest  Float?
-  duration  Int?
-  optionId  Int
-
-  // relation
-  option Option @relation(fields: [optionId], references: [id])
-}
-
-model Review {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content   String
-  rating    Int
-  shopId    Int
-  userId    Int
-  orderId   Int      @unique
-
-  // relation
-
-  order Order @relation(fields: [orderId], references: [id])
-  user  User  @relation(fields: [userId], references: [id])
-  shop  Shop  @relation(fields: [shopId], references: [id])
-}
-
-model Cart {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orderId   Int      @unique
-  payment   Payment
-  status    String
-  total     Int
-
-  // relation
-  order Order[]
-}

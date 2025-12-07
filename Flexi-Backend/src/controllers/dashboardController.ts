@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1, Unit } from "../generated/client1";
+import { PrismaClient as PrismaClient1, Unit } from "../generated/client1/client";
 import { format } from "date-fns";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
 
 // Create instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // Get Dashboard Metrics
 export const getDashboardMetrics = async (req: Request, res: Response) => {

@@ -4,18 +4,20 @@ import {
   PrismaClient as PrismaClient1,
   taxType,
   IncomeChannel,
-} from "../generated/client1";
+} from "../generated/client1/client";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { deleteFromS3, extractS3Key } from "../services/imageService";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
 
 const upload = multer(multerConfig.multerConfigAvatar.config).single(
   multerConfig.multerConfigAvatar.keyUpload
 );
 
 // Create instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // Interface for request body from client
 interface businessAccInput {

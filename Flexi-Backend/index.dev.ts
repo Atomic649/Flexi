@@ -87,17 +87,8 @@ import productRoutes from "./src/routes/productRoute";
 // Import Dashboard Routes
 import dashboardRoutes from "./src/routes/dashboardRoute";
 
-// Import Credit Routes
-import creditRoutes from "./src/routes/creditRoute";
-
 // Import user Routes
 import userRoutes from "./src/routes/userRoute";
-
-// Import Post Routes
-import postRoutes from "./src/routes/postRoute";
-
-// Import Comment Routes
-import commentRoutes from "./src/routes/commentRoute";
 
 // Import report Routes
 import reportRoutes from "./src/routes/reportRoute";
@@ -145,17 +136,8 @@ app.use("/product", productRoutes);
 // Dashboard Routes
 app.use("/dashboard", dashboardRoutes);
 
-// Credit Routes
-app.use("/credit", creditRoutes);
-
 // User Routes
 app.use("/user", userRoutes);
-
-// Post Routes
-app.use("/post", postRoutes);
-
-// Comment Routes
-app.use("/comment", commentRoutes);
 
 // Report Routes
 app.use("/report", reportRoutes);

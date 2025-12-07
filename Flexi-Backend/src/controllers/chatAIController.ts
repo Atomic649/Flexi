@@ -6,11 +6,12 @@ import {
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
 import { createSalesAnalyticsTool } from "./toolChatAIController";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 // chatAIController.ts - Main AI chat functionality
 
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 const MODEL_NAME = process.env.OPENAI_MODEL_NAME || "gpt-4o-mini";
 

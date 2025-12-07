@@ -123,7 +123,7 @@ const prismaMock: any = {
 	member: { findUnique: jest.fn() },
 };
 
-jest.mock('../src/generated/client1', () => {
+jest.mock('../src/generated/client1/client', () => {
 	const taxType = { Individual: 'Individual', Juristic: 'Juristic' };
 	const Bank = {};
 	const ExpenseGroup = {};

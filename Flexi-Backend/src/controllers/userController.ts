@@ -1,8 +1,8 @@
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
 import { Request, Response } from "express";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
-// Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // get number of registered users - Get
 export const getNumberOfUsers = async (req: Request, res: Response) => {

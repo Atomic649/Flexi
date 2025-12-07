@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { format, startOfMonth, endOfMonth } from "date-fns";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
+import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
 import { console } from "inspector";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // Get monthly report data
 export const getMonthlyReport = async (req: Request, res: Response) => {

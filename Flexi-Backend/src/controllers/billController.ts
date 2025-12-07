@@ -2,21 +2,22 @@ import { Request, Response } from "express";
 import {
   Gender,
   Payment,
-  PrismaClient as PrismaClient1,
-  SocialMedia,
-  Unit,
   DocumentType,
-} from "../generated/client1";
+  Unit,
+} from "../generated/client1/client";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
+
 
 const upload = multer(multerConfig.multerConfigImage.config).single(
   multerConfig.multerConfigImage.keyUpload
 );
 
 // Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient
 
 const generateDocumentId = async (
   tx: any,

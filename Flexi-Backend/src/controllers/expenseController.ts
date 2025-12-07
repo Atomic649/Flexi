@@ -9,7 +9,7 @@ import {
   ExpenseStatus,
   PrismaClient as PrismaClient1,
   taxType,
-} from "../generated/client1";
+} from "../generated/client1/client";
 import Joi from "joi";
 import { format } from "date-fns-tz";
 import { th } from "date-fns/locale";
@@ -20,6 +20,9 @@ import {
   extractS3Key,
   uploadToS3,
 } from "../services/imageService";
+
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+
 
 const attachmentUploadConfig =
   multerConfig.multerConfigExpenseAttachmentMemory;
@@ -59,7 +62,7 @@ const getUploadedFile = (
 };
 
 //Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient ;
 
 // Helper: parse flexible date inputs including Thai long-form and numeric dd/mm/yyyy
 function parseFlexibleDate(raw: any): Date | null {

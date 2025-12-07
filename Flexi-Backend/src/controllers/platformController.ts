@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import {  SocialMedia ,PrismaClient as PrismaClient1 } from "../generated/client1";
+import {  SocialMedia ,PrismaClient as PrismaClient1 } from "../generated/client1/client";
 import Joi from "joi";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
-// Create  instance of PrismaClient
-const prisma = new PrismaClient1();
+const prisma = flexiDBPrismaClient;
 
 // Interface for request body from client
 interface platformInput {
