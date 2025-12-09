@@ -4,12 +4,15 @@ import { flexiAdsDBPrismaClient } from "../../lib/PrismaClient2";
 // Create  instance of PrismaClient
 const prisma = flexiAdsDBPrismaClient;
 // get all office
-const getAllOffices = async (req: Request, res: Response) => {
+const getAllOffices = async (_: Request, res: Response) => {
   try {
     const offices = await prisma.product.findMany({
       where: {
         deleted: false,
         categoryId: 3,
+        campaigns: {
+          some: {},
+        },
       },
       select: {
         id: true,
@@ -17,9 +20,14 @@ const getAllOffices = async (req: Request, res: Response) => {
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      //take: 12
     });
+    console.log("Offices fetched:", offices);
     res.json(offices);
   } catch (e) {
     console.error(e);
@@ -28,12 +36,15 @@ const getAllOffices = async (req: Request, res: Response) => {
 };
 
 // get all coach
-const getAllCoaches = async (req: Request, res: Response) => {
+const getAllCoaches = async (_: Request, res: Response) => {
   try {
     const coaches = await prisma.product.findMany({
       where: {
         deleted: false,
         categoryId: 2,
+        campaigns: {
+          some: {},
+        },
       },
       select: {
         id: true,
@@ -41,8 +52,12 @@ const getAllCoaches = async (req: Request, res: Response) => {
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      take: 12,
     });
     res.json(coaches);
   } catch (e) {
@@ -52,22 +67,30 @@ const getAllCoaches = async (req: Request, res: Response) => {
 };
 
 // get all Bank
-const getAllBanks = async (req: Request, res: Response) => {
+const getAllBanks = async (_: Request, res: Response) => {
   try {
     const banks = await prisma.product.findMany({
-      where:{
-        deleted:false,
+      where: {
+        deleted: false,
         categoryId: 1,
-      },     
+        campaigns: {
+          some: {},
+        },
+      },
       select: {
         id: true,
         title: true,
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      take: 12,
     });
+    console.log("Banks fetched:", banks);
     res.json(banks);
   } catch (e) {
     console.error(e);
@@ -76,21 +99,28 @@ const getAllBanks = async (req: Request, res: Response) => {
 };
 
 // get all Agency
-const getAllAgencies = async (req: Request, res: Response) => {
+const getAllAgencies = async (_: Request, res: Response) => {
   try {
     const agencies = await prisma.product.findMany({
-      where:{
-        deleted:false,
+      where: {
+        deleted: false,
         categoryId: 4,
-      },     
+        campaigns: {
+          some: {},
+        },
+      },
       select: {
         id: true,
         title: true,
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      take: 12,
     });
     res.json(agencies);
   } catch (e) {
@@ -103,18 +133,25 @@ const getAllAgencies = async (req: Request, res: Response) => {
 const getAllAccounts = async (req: Request, res: Response) => {
   try {
     const accounts = await prisma.product.findMany({
-      where:{
-        deleted:false,
+      where: {
+        deleted: false,
         categoryId: 5,
-      },     
+        campaigns: {
+          some: {},
+        },
+      },
       select: {
         id: true,
         title: true,
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      take: 12,
     });
     res.json(accounts);
   } catch (e) {
@@ -124,21 +161,28 @@ const getAllAccounts = async (req: Request, res: Response) => {
 };
 
 // get all Orms
-const getAllOrms = async (req: Request, res: Response) => {
+const getAllOrms = async (_: Request, res: Response) => {
   try {
     const orms = await prisma.product.findMany({
-      where:{
-        deleted:false,
+      where: {
+        deleted: false,
         categoryId: 6,
-      },     
+        campaigns: {
+          some: {},
+        },
+      },
       select: {
         id: true,
         title: true,
         description: true,
         image: true,
         callToAction: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
-      take: 12,
     });
     res.json(orms);
   } catch (e) {

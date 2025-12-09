@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -17,6 +17,8 @@ import images from "@/constants/images";
 import { CustomText } from "./CustomText";
 import { API_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
 import { getResponsiveStyles } from "@/utils/responsive";
+import CallAPIAdsEvent from "@/api/adsEvent_api";
+import { getMemberId } from "@/utils/utility";
 
 interface B2BAdsProps {
   officeData?: any[];
@@ -29,6 +31,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
   const { width, height } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isIOS = Platform.OS === "ios";
+  const [viewerId, setViewerId] = useState<string | null>(null);
 
   // Use responsive styles from utility
   const responsiveStyles = getResponsiveStyles();
@@ -41,6 +44,19 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
 
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, animated: true });
+  }, []);
+
+  // Load viewerId for tracking
+  useEffect(() => {
+    let mounted = true;
+    getMemberId()
+      .then((id) => {
+        if (mounted) setViewerId(id);
+      })
+      .catch((e) => console.error("Failed to load memberId", e));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Format image URL properly
@@ -87,6 +103,49 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
       alert(action);
     }
   };
+
+  // Resolve campaignId from item (prefer explicit, otherwise first from campaigns[])
+  const resolveCampaignId = useCallback((item: any): number | null => {
+    const direct = item?.campaignId ?? item?.campaign?.id;
+    if (direct !== undefined && direct !== null) {
+      const n = Number(direct);
+      return Number.isNaN(n) ? null : n;
+    }
+    const campaigns = item?.campaigns;
+    if (Array.isArray(campaigns) && campaigns.length > 0) {
+      // prefer an active campaign if such field exists
+      const active = campaigns.find(
+        (c: any) => (c?.status?.toString?.().toLowerCase?.() === "active") || c?.isActive === true
+      );
+      const chosen = active ?? campaigns[0];
+      const cid = chosen?.id ?? chosen?.campaignId;
+      if (cid !== undefined && cid !== null) {
+        const n = Number(cid);
+        return Number.isNaN(n) ? null : n;
+      }
+    }
+    return null;
+  }, []);
+
+  const trackClick = useCallback(
+    async (item: any) => {
+      try {
+        if (!viewerId) return;
+        const productId = Number(item?.productId ?? item?.id);
+        if (!productId || Number.isNaN(productId)) return;
+        const campaignId = resolveCampaignId(item);
+        await CallAPIAdsEvent.createAdsEvent({
+          productId,
+          viewerId,
+          type: "CLICK",
+          campaignId,
+        });
+      } catch (err) {
+        console.error("Failed to track ad CLICK", err);
+      }
+    },
+    [viewerId, resolveCampaignId]
+  );
 
   // If no data is provided, return placeholder content
   if (!officeData || officeData.length === 0) {
@@ -172,7 +231,11 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
                 marginTop: isSmallScreen ? 12 : 16,
               },
             ]}
-            onPress={() => handleCallToAction(item.callToAction)}
+            onPress={() => {
+              // fire-and-forget click tracking, then execute CTA
+              trackClick(item);
+              handleCallToAction(item.callToAction);
+            }}
           >
             <CustomText
               style={[
