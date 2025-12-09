@@ -18,17 +18,6 @@ Table User {
   resetTokenExpiry DateTime
   business BusinessAcc [not null]
   member Member [not null]
-  posts Post [not null]
-  comments Comment [not null]
-  reactions Reaction [not null]
-  sentMessages Inbox [not null]
-  receivedMessages Inbox [not null]
-  seller Shop [not null]
-  buyer Shop [not null]
-  Order Order [not null]
-  review Review [not null]
-  owner Credit [not null]
-  credit Credit [not null]
 }
 
 Table Member {
@@ -271,148 +260,6 @@ Table ChatMessage {
   session ChatSession [not null]
 }
 
-Table Credit {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  ownerId Int [not null]
-  creditorId Int [not null]
-  owner User [not null]
-  creditor User [not null]
-}
-
-Table Post {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  hashtag String[] [not null]
-  content String
-  mediaUrl String
-  mediaType MediaType
-  published Boolean [not null, default: false]
-  authorId Int [not null]
-  author User [not null]
-  reactions Reaction [not null]
-  comments Comment [not null]
-  deleted Boolean [default: false]
-}
-
-Table Reaction {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  type ReactionType [not null]
-  postId Int [not null]
-  post Post [not null]
-  userId Int [not null]
-  user User [not null]
-}
-
-Table Comment {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  content String [not null]
-  postId Int [not null]
-  post Post [not null]
-  userId Int [not null]
-  user User [not null]
-  deleted Boolean [default: false]
-}
-
-Table Inbox {
-  id Int [pk, increment]
-  senderId Int [not null]
-  receiverId Int [not null]
-  message String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  read Boolean [not null, default: false]
-  unsent Boolean [not null, default: false]
-  deleted Boolean [default: false]
-  sender User [not null]
-  receiver User [not null]
-}
-
-Table Shop {
-  id Int [pk, increment]
-  name String [not null]
-  description String
-  productType ProductType [not null, default: 'Service']
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  category Category [not null]
-  sellerId Int [not null]
-  buyerId Int [not null]
-  deleted Boolean [default: false]
-  seller User [not null]
-  buyer User [not null]
-  orders Order
-  options Option [not null]
-  review Review [not null]
-}
-
-Table Order {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  quantity Int [not null]
-  shopId Int [unique, not null]
-  buyerId Int [not null]
-  sellerId Int [not null]
-  deleted Boolean [default: false]
-  seller Shop [not null]
-  buyer User [not null]
-  review Review
-  cart Cart [not null]
-}
-
-Table Option {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  name OptionName [not null]
-  shopId Int [not null]
-  shop Shop [not null]
-  values OptionValue [not null]
-}
-
-Table OptionValue {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  value String [not null]
-  price Float
-  interest Float
-  duration Int
-  optionId Int [not null]
-  option Option [not null]
-}
-
-Table Review {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  content String [not null]
-  rating Int [not null]
-  shopId Int [not null]
-  userId Int [not null]
-  orderId Int [unique, not null]
-  order Order [not null]
-  user User [not null]
-  shop Shop [not null]
-}
-
-Table Cart {
-  id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  orderId Int [unique, not null]
-  payment Payment [not null]
-  status String [not null]
-  total Int [not null]
-  order Order [not null]
-}
-
 Enum Unit {
   Piece
   Hour
@@ -422,7 +269,6 @@ Enum Unit {
   Pack
   Set
   Dozen
-  NotSpecified
 }
 
 Enum UserRole {
@@ -461,7 +307,6 @@ Enum SocialMedia {
   Instagram
   X
   Youtube
-  Google
 }
 
 Enum IncomeChannel {
@@ -625,41 +470,3 @@ Ref: Product.businessAcc > BusinessAcc.id
 Ref: ChatSession.userId > Member.uniqueId
 
 Ref: ChatMessage.sessionId > ChatSession.id
-
-Ref: Credit.ownerId > User.id
-
-Ref: Credit.creditorId > User.id
-
-Ref: Post.authorId > User.id
-
-Ref: Reaction.postId > Post.id
-
-Ref: Reaction.userId > User.id
-
-Ref: Comment.postId > Post.id
-
-Ref: Comment.userId > User.id
-
-Ref: Inbox.senderId > User.id
-
-Ref: Inbox.receiverId > User.id
-
-Ref: Shop.sellerId > User.id
-
-Ref: Shop.buyerId > User.id
-
-Ref: Order.shopId - Shop.id
-
-Ref: Order.sellerId > User.id
-
-Ref: Order.id > Cart.orderId
-
-Ref: Option.shopId > Shop.id
-
-Ref: OptionValue.optionId > Option.id
-
-Ref: Review.orderId - Order.id
-
-Ref: Review.userId > User.id
-
-Ref: Review.shopId > Shop.id

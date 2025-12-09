@@ -1,5 +1,6 @@
 import express from "express";
-import mime from "mime";
+import mime from "mime-types";
+import send from "send";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -24,28 +25,29 @@ if (process.env.NODE_ENV !== "production") {
   app.use(cors({ origin: "*" })); // Allow all origins in development
 }
 
-// Normalize mime API for Express/send compatibility (mime v3+ lacks charsets)
+// Normalize mime API for Express/send compatibility using mime-types
 const mimeAny: any = mime as any;
 if (mimeAny) {
+  if (typeof mimeAny.lookup === "function") {
+    mimeAny.getType = mimeAny.lookup.bind(mimeAny);
+  }
   if (!mimeAny.charsets || typeof mimeAny.charsets.lookup !== "function") {
     mimeAny.charsets = { lookup: () => "UTF-8" };
   }
-  if (typeof mimeAny.getType !== "function" && typeof (mimeAny as any).lookup === "function") {
-    mimeAny.getType = (mimeAny as any).lookup.bind(mimeAny);
+}
+
+const sendMime: any = send?.mime;
+if (sendMime) {
+  if (!sendMime.charsets || typeof sendMime.charsets.lookup !== "function") {
+    sendMime.charsets = { lookup: () => "UTF-8" };
+  }
+  if (typeof sendMime.lookup !== "function" && typeof mimeAny.lookup === "function") {
+    sendMime.lookup = mimeAny.lookup.bind(mimeAny);
+  }
+  if (typeof sendMime.getType !== "function" && typeof sendMime.lookup === "function") {
+    sendMime.getType = sendMime.lookup.bind(sendMime);
   }
 }
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const send = require("send");
-  if (send && send.mime) {
-    if (!send.mime.charsets || typeof send.mime.charsets.lookup !== "function") {
-      send.mime.charsets = { lookup: () => "UTF-8" };
-    }
-    if (typeof send.mime.getType !== "function" && typeof send.mime.lookup === "function") {
-      send.mime.getType = send.mime.lookup.bind(send.mime);
-    }
-  }
-} catch {}
 
 // Use Static Files
 app.use("/uploads", express.static("uploads"));
@@ -106,8 +108,12 @@ import b2BRoutes from "./src/routes/B2BRoute";
 
 // Import Print Routes
 import printRoutes from "./src/routes/printRoute";
+
 // Import AI Chat Routes
 import chatAIRoutes from "./src/routes/chatAIRoute";
+
+// AdsEvent Routes
+import adsEventRoutes from "./src/routes/adsEventRoute";
 
 // --------------USE ROUTES-----------------
 
@@ -158,6 +164,9 @@ app.use("/print", printRoutes);
 
 // AI Chat Routes
 app.use("/ai", chatAIRoutes);
+
+// AdsTracking Routes
+app.use("/ads-tracking", adsEventRoutes);;
 
 
 // start server with out SSL

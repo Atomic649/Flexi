@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { flexiAdsDBPrismaClient } from "../../lib/PrismaClient2";
 
 // Create  instance of PrismaClient

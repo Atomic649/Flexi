@@ -393,7 +393,8 @@ export const ModelName = {
   BoostCampaign: 'BoostCampaign',
   BoostResult: 'BoostResult',
   BoostBidLog: 'BoostBidLog',
-  BoostSpendLog: 'BoostSpendLog'
+  BoostSpendLog: 'BoostSpendLog',
+  AdEvent: 'AdEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "member" | "businessAcc" | "categoryDef" | "product" | "productDetail" | "boostCampaign" | "boostResult" | "boostBidLog" | "boostSpendLog"
+    modelProps: "user" | "member" | "businessAcc" | "categoryDef" | "product" | "productDetail" | "boostCampaign" | "boostResult" | "boostBidLog" | "boostSpendLog" | "adEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1153,6 +1154,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AdEvent: {
+      payload: Prisma.$AdEventPayload<ExtArgs>
+      fields: Prisma.AdEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        findFirst: {
+          args: Prisma.AdEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        findMany: {
+          args: Prisma.AdEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>[]
+        }
+        create: {
+          args: Prisma.AdEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        createMany: {
+          args: Prisma.AdEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>[]
+        }
+        delete: {
+          args: Prisma.AdEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        update: {
+          args: Prisma.AdEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdEventPayload>
+        }
+        aggregate: {
+          args: Prisma.AdEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdEvent>
+        }
+        groupBy: {
+          args: Prisma.AdEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1321,6 +1396,18 @@ export const BoostSpendLogScalarFieldEnum = {
 export type BoostSpendLogScalarFieldEnum = (typeof BoostSpendLogScalarFieldEnum)[keyof typeof BoostSpendLogScalarFieldEnum]
 
 
+export const AdEventScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  type: 'type',
+  productId: 'productId',
+  campaignId: 'campaignId',
+  viewerId: 'viewerId'
+} as const
+
+export type AdEventScalarFieldEnum = (typeof AdEventScalarFieldEnum)[keyof typeof AdEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1455,6 +1542,20 @@ export type EnumBidStrategyFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
 export type ListEnumBidStrategyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BidStrategy[]'>
     
 
+
+/**
+ * Reference to a field of type 'EventType'
+ */
+export type EnumEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventType'>
+    
+
+
+/**
+ * Reference to a field of type 'EventType[]'
+ */
+export type ListEnumEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1560,6 +1661,7 @@ export type GlobalOmitConfig = {
   boostResult?: Prisma.BoostResultOmit
   boostBidLog?: Prisma.BoostBidLogOmit
   boostSpendLog?: Prisma.BoostSpendLogOmit
+  adEvent?: Prisma.AdEventOmit
 }
 
 /* Types for Logging */

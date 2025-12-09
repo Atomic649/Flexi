@@ -277,6 +277,7 @@ export type ProductWhereInput = {
   author?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   details?: Prisma.ProductDetailListRelationFilter
   campaigns?: Prisma.BoostCampaignListRelationFilter
+  adEvents?: Prisma.AdEventListRelationFilter
 }
 
 export type ProductOrderByWithRelationInput = {
@@ -296,6 +297,7 @@ export type ProductOrderByWithRelationInput = {
   author?: Prisma.MemberOrderByWithRelationInput
   details?: Prisma.ProductDetailOrderByRelationAggregateInput
   campaigns?: Prisma.BoostCampaignOrderByRelationAggregateInput
+  adEvents?: Prisma.AdEventOrderByRelationAggregateInput
 }
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -318,6 +320,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   author?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   details?: Prisma.ProductDetailListRelationFilter
   campaigns?: Prisma.BoostCampaignListRelationFilter
+  adEvents?: Prisma.AdEventListRelationFilter
 }, "id">
 
 export type ProductOrderByWithAggregationInput = {
@@ -369,6 +372,7 @@ export type ProductCreateInput = {
   author: Prisma.MemberCreateNestedOneWithoutProductsInput
   details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateInput = {
@@ -385,6 +389,7 @@ export type ProductUncheckedCreateInput = {
   deleted?: boolean
   details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
@@ -400,6 +405,7 @@ export type ProductUpdateInput = {
   author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
   details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateInput = {
@@ -416,6 +422,7 @@ export type ProductUncheckedUpdateInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
@@ -683,6 +690,20 @@ export type ProductUpdateOneRequiredWithoutCampaignsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutCampaignsInput, Prisma.ProductUpdateWithoutCampaignsInput>, Prisma.ProductUncheckedUpdateWithoutCampaignsInput>
 }
 
+export type ProductCreateNestedOneWithoutAdEventsInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutAdEventsInput, Prisma.ProductUncheckedCreateWithoutAdEventsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutAdEventsInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneRequiredWithoutAdEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutAdEventsInput, Prisma.ProductUncheckedCreateWithoutAdEventsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutAdEventsInput
+  upsert?: Prisma.ProductUpsertWithoutAdEventsInput
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutAdEventsInput, Prisma.ProductUpdateWithoutAdEventsInput>, Prisma.ProductUncheckedUpdateWithoutAdEventsInput>
+}
+
 export type ProductCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -695,6 +716,7 @@ export type ProductCreateWithoutAuthorInput = {
   category: Prisma.CategoryDefCreateNestedOneWithoutProductsInput
   details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutAuthorInput = {
@@ -710,6 +732,7 @@ export type ProductUncheckedCreateWithoutAuthorInput = {
   deleted?: boolean
   details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutAuthorInput = {
@@ -767,6 +790,7 @@ export type ProductCreateWithoutBusinessInput = {
   author: Prisma.MemberCreateNestedOneWithoutProductsInput
   details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutBusinessInput = {
@@ -782,6 +806,7 @@ export type ProductUncheckedCreateWithoutBusinessInput = {
   deleted?: boolean
   details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutBusinessInput = {
@@ -822,6 +847,7 @@ export type ProductCreateWithoutCategoryInput = {
   author: Prisma.MemberCreateNestedOneWithoutProductsInput
   details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCategoryInput = {
@@ -837,6 +863,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   deleted?: boolean
   details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
   campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -877,6 +904,7 @@ export type ProductCreateWithoutDetailsInput = {
   category: Prisma.CategoryDefCreateNestedOneWithoutProductsInput
   author: Prisma.MemberCreateNestedOneWithoutProductsInput
   campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutDetailsInput = {
@@ -892,6 +920,7 @@ export type ProductUncheckedCreateWithoutDetailsInput = {
   authorId: string
   deleted?: boolean
   campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutDetailsInput = {
@@ -922,6 +951,7 @@ export type ProductUpdateWithoutDetailsInput = {
   category?: Prisma.CategoryDefUpdateOneRequiredWithoutProductsNestedInput
   author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
   campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutDetailsInput = {
@@ -937,6 +967,7 @@ export type ProductUncheckedUpdateWithoutDetailsInput = {
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutCampaignsInput = {
@@ -951,6 +982,7 @@ export type ProductCreateWithoutCampaignsInput = {
   category: Prisma.CategoryDefCreateNestedOneWithoutProductsInput
   author: Prisma.MemberCreateNestedOneWithoutProductsInput
   details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCampaignsInput = {
@@ -966,6 +998,7 @@ export type ProductUncheckedCreateWithoutCampaignsInput = {
   authorId: string
   deleted?: boolean
   details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCampaignsInput = {
@@ -996,6 +1029,7 @@ export type ProductUpdateWithoutCampaignsInput = {
   category?: Prisma.CategoryDefUpdateOneRequiredWithoutProductsNestedInput
   author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
   details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCampaignsInput = {
@@ -1011,6 +1045,85 @@ export type ProductUncheckedUpdateWithoutCampaignsInput = {
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutAdEventsInput = {
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  title: string
+  description: string
+  image?: string | null
+  callToAction?: string | null
+  deleted?: boolean
+  business: Prisma.BusinessAccCreateNestedOneWithoutProductsInput
+  category: Prisma.CategoryDefCreateNestedOneWithoutProductsInput
+  author: Prisma.MemberCreateNestedOneWithoutProductsInput
+  details?: Prisma.ProductDetailCreateNestedManyWithoutProductInput
+  campaigns?: Prisma.BoostCampaignCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutAdEventsInput = {
+  id?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  title: string
+  description: string
+  image?: string | null
+  callToAction?: string | null
+  businessId: number
+  categoryId: number
+  authorId: string
+  deleted?: boolean
+  details?: Prisma.ProductDetailUncheckedCreateNestedManyWithoutProductInput
+  campaigns?: Prisma.BoostCampaignUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutAdEventsInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutAdEventsInput, Prisma.ProductUncheckedCreateWithoutAdEventsInput>
+}
+
+export type ProductUpsertWithoutAdEventsInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutAdEventsInput, Prisma.ProductUncheckedUpdateWithoutAdEventsInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutAdEventsInput, Prisma.ProductUncheckedCreateWithoutAdEventsInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutAdEventsInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutAdEventsInput, Prisma.ProductUncheckedUpdateWithoutAdEventsInput>
+}
+
+export type ProductUpdateWithoutAdEventsInput = {
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callToAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  business?: Prisma.BusinessAccUpdateOneRequiredWithoutProductsNestedInput
+  category?: Prisma.CategoryDefUpdateOneRequiredWithoutProductsNestedInput
+  author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
+  details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
+  campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutAdEventsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callToAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessId?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.IntFieldUpdateOperationsInput | number
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
+  campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyAuthorInput = {
@@ -1038,6 +1151,7 @@ export type ProductUpdateWithoutAuthorInput = {
   category?: Prisma.CategoryDefUpdateOneRequiredWithoutProductsNestedInput
   details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutAuthorInput = {
@@ -1053,6 +1167,7 @@ export type ProductUncheckedUpdateWithoutAuthorInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutAuthorInput = {
@@ -1093,6 +1208,7 @@ export type ProductUpdateWithoutBusinessInput = {
   author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
   details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutBusinessInput = {
@@ -1108,6 +1224,7 @@ export type ProductUncheckedUpdateWithoutBusinessInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutBusinessInput = {
@@ -1148,6 +1265,7 @@ export type ProductUpdateWithoutCategoryInput = {
   author?: Prisma.MemberUpdateOneRequiredWithoutProductsNestedInput
   details?: Prisma.ProductDetailUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCategoryInput = {
@@ -1163,6 +1281,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   details?: Prisma.ProductDetailUncheckedUpdateManyWithoutProductNestedInput
   campaigns?: Prisma.BoostCampaignUncheckedUpdateManyWithoutProductNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -1186,11 +1305,13 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
 export type ProductCountOutputType = {
   details: number
   campaigns: number
+  adEvents: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   details?: boolean | ProductCountOutputTypeCountDetailsArgs
   campaigns?: boolean | ProductCountOutputTypeCountCampaignsArgs
+  adEvents?: boolean | ProductCountOutputTypeCountAdEventsArgs
 }
 
 /**
@@ -1217,6 +1338,13 @@ export type ProductCountOutputTypeCountCampaignsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.BoostCampaignWhereInput
 }
 
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountAdEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdEventWhereInput
+}
+
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1235,6 +1363,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   author?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   details?: boolean | Prisma.Product$detailsArgs<ExtArgs>
   campaigns?: boolean | Prisma.Product$campaignsArgs<ExtArgs>
+  adEvents?: boolean | Prisma.Product$adEventsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
@@ -1293,6 +1422,7 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   author?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   details?: boolean | Prisma.Product$detailsArgs<ExtArgs>
   campaigns?: boolean | Prisma.Product$campaignsArgs<ExtArgs>
+  adEvents?: boolean | Prisma.Product$adEventsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1314,6 +1444,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     author: Prisma.$MemberPayload<ExtArgs>
     details: Prisma.$ProductDetailPayload<ExtArgs>[]
     campaigns: Prisma.$BoostCampaignPayload<ExtArgs>[]
+    adEvents: Prisma.$AdEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1726,6 +1857,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   author<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   details<T extends Prisma.Product$detailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$detailsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductDetailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   campaigns<T extends Prisma.Product$campaignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$campaignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BoostCampaignPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adEvents<T extends Prisma.Product$adEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$adEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2207,6 +2339,30 @@ export type Product$campaignsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.BoostCampaignScalarFieldEnum | Prisma.BoostCampaignScalarFieldEnum[]
+}
+
+/**
+ * Product.adEvents
+ */
+export type Product$adEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdEvent
+   */
+  select?: Prisma.AdEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdEvent
+   */
+  omit?: Prisma.AdEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdEventInclude<ExtArgs> | null
+  where?: Prisma.AdEventWhereInput
+  orderBy?: Prisma.AdEventOrderByWithRelationInput | Prisma.AdEventOrderByWithRelationInput[]
+  cursor?: Prisma.AdEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdEventScalarFieldEnum | Prisma.AdEventScalarFieldEnum[]
 }
 
 /**

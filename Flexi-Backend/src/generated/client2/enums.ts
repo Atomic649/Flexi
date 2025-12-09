@@ -37,3 +37,12 @@ export const CampaignStatus = {
 } as const
 
 export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]
+
+
+export const EventType = {
+  IMPRESSION: 'IMPRESSION',
+  CLICK: 'CLICK',
+  VIEW: 'VIEW'
+} as const
+
+export type EventType = (typeof EventType)[keyof typeof EventType]

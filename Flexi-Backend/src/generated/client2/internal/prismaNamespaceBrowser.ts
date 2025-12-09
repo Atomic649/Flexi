@@ -60,7 +60,8 @@ export const ModelName = {
   BoostCampaign: 'BoostCampaign',
   BoostResult: 'BoostResult',
   BoostBidLog: 'BoostBidLog',
-  BoostSpendLog: 'BoostSpendLog'
+  BoostSpendLog: 'BoostSpendLog',
+  AdEvent: 'AdEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -206,6 +207,18 @@ export const BoostSpendLogScalarFieldEnum = {
 } as const
 
 export type BoostSpendLogScalarFieldEnum = (typeof BoostSpendLogScalarFieldEnum)[keyof typeof BoostSpendLogScalarFieldEnum]
+
+
+export const AdEventScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  type: 'type',
+  productId: 'productId',
+  campaignId: 'campaignId',
+  viewerId: 'viewerId'
+} as const
+
+export type AdEventScalarFieldEnum = (typeof AdEventScalarFieldEnum)[keyof typeof AdEventScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Prisma, AdsCost } from "../generated/client1/client";
+import { Prisma } from "../generated/client1/client";
 import multer from "multer";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 

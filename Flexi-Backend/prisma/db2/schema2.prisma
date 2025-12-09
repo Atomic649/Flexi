@@ -18,7 +18,7 @@ generator prismabox {
   typeboxImportDependencyName    = "elysia"
   typeboxImportVariableName      = "t"
   inputModel                     = true
-  output                         = "../generated/prismabox"
+  output                         = ".../../src/generated/prismabox"
 } 
 
 //----------------------------------------------------
@@ -104,6 +104,7 @@ model Product {
   // relation
   details      ProductDetail[]
   campaigns    BoostCampaign[]
+  adEvents     AdEvent[]
 
   @@schema("flexiadsdb")
 }
@@ -152,6 +153,7 @@ model BoostCampaign {
   results      BoostResult[]
   bidLogs      BoostBidLog[]
   spendLogs    BoostSpendLog[]
+  adEvents     AdEvent[]
 
   @@schema("flexiadsdb")
 }
@@ -190,6 +192,25 @@ model BoostSpendLog {
   @@schema("flexiadsdb")
 }
 
+
+model AdEvent {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+
+  // Event Info
+  type        EventType
+  productId   Int
+  campaignId  Int?
+  
+  viewerId     String
+
+  // Relations
+  product     Product      @relation(fields: [productId], references: [id])
+  campaign    BoostCampaign? @relation(fields: [campaignId], references: [id])
+
+  @@schema("flexiadsdb")
+}
+
 //----------------------------------------------------
 // ENUMS
 //----------------------------------------------------
@@ -217,6 +238,13 @@ enum CampaignStatus {
   PAUSED
   COMPLETED
   CANCELLED
+
+  @@schema("flexiadsdb")
+}
+enum EventType {
+  IMPRESSION
+  CLICK
+  VIEW
 
   @@schema("flexiadsdb")
 }

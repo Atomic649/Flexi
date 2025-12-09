@@ -25,12 +25,8 @@ Table Member {
   user User [not null]
   businessId Int
   business BusinessAcc
-  office Office [not null]
-  coach Coach [not null]
-  bank Bank [not null]
-  agency Agency [not null]
-  orm Orm [not null]
-  account Account [not null]
+  products Product [not null]
+  campaigns BoostCampaign [not null]
 }
 
 Table BusinessAcc {
@@ -42,108 +38,106 @@ Table BusinessAcc {
   userId Int [not null]
   user User [not null]
   AllMember Member [not null]
-  Office Office [not null]
-  Coach Coach [not null]
-  Bank Bank [not null]
-  Agency Agency [not null]
-  Orm Orm [not null]
-  Account Account [not null]
+  products Product [not null]
+  campaigns BoostCampaign [not null]
 }
 
-Table Office {
+Table CategoryDef {
+  id Int [pk, increment]
+  name String [unique, not null]
+  description String
+  products Product [not null]
+}
+
+Table Product {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  Category Category [not null, default: 'Office']
   title String [not null]
   description String [not null]
   image String
   callToAction String
   businessId Int [not null]
-  businessAcc BusinessAcc [not null]
+  business BusinessAcc [not null]
+  categoryId Int [not null]
+  category CategoryDef [not null]
   authorId String [not null]
   author Member [not null]
-  delete Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  details ProductDetail [not null]
+  campaigns BoostCampaign [not null]
+  adEvents AdEvent [not null]
 }
 
-Table Coach {
+Table ProductDetail {
+  id Int [pk, increment]
+  key String [not null]
+  value String [not null]
+  productId Int [not null]
+  product Product [not null]
+}
+
+Table BoostCampaign {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  Category Category [not null, default: 'Coach']
-  title String [not null]
-  description String [not null]
-  image String
-  callToAction String
+  name String
+  status CampaignStatus [not null, default: 'ACTIVE']
+  budget Float [not null]
+  dailyCap Float
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  bidStrategy BidStrategy [not null, default: 'AUTO']
+  maxBid Float
   businessId Int [not null]
-  businessAcc BusinessAcc [not null]
-  authorId String [not null]
-  author Member [not null]
-  delete Boolean [not null, default: false]
+  business BusinessAcc [not null]
+  productId Int [not null]
+  product Product [not null]
+  ownerId String [not null]
+  owner Member [not null]
+  results BoostResult [not null]
+  bidLogs BoostBidLog [not null]
+  spendLogs BoostSpendLog [not null]
+  adEvents AdEvent [not null]
 }
 
-Table Bank {
+Table BoostResult {
   id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  Category Category [not null, default: 'Bank']
-  title String [not null]
-  description String [not null]
-  image String
-  callToAction String
-  businessId Int [not null]
-  businessAcc BusinessAcc [not null]
-  authorId String [not null]
-  author Member [not null]
-  delete Boolean [not null, default: false]
+  date DateTime [not null]
+  impressions Int [not null, default: 0]
+  clicks Int [not null, default: 0]
+  ctr Float [not null, default: 0]
+  costSpent Float [not null, default: 0]
+  campaignId Int [not null]
+  campaign BoostCampaign [not null]
 }
 
-Table Agency {
+Table BoostBidLog {
   id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  Category Category [not null, default: 'Agency']
-  title String [not null]
-  description String [not null]
-  image String
-  callToAction String
-  businessId Int [not null]
-  businessAcc BusinessAcc [not null]
-  authorId String [not null]
-  author Member [not null]
-  delete Boolean [not null, default: false]
+  timestamp DateTime [default: `now()`, not null]
+  bidValue Float [not null]
+  reason String
+  campaignId Int [not null]
+  campaign BoostCampaign [not null]
 }
 
-Table Orm {
+Table BoostSpendLog {
   id Int [pk, increment]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  Category Category [not null, default: 'Orm']
-  title String [not null]
-  description String [not null]
-  image String
-  callToAction String
-  businessId Int [not null]
-  businessAcc BusinessAcc [not null]
-  authorId String [not null]
-  author Member [not null]
-  delete Boolean [not null, default: false]
+  timestamp DateTime [default: `now()`, not null]
+  spend Float [not null]
+  campaignId Int [not null]
+  campaign BoostCampaign [not null]
 }
 
-Table Account {
+Table AdEvent {
   id Int [pk, increment]
   createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  Category Category [not null, default: 'Account']
-  title String [not null]
-  description String [not null]
-  image String
-  callToAction String
-  businessId Int [not null]
-  businessAcc BusinessAcc [not null]
-  authorId String [not null]
-  author Member [not null]
-  delete Boolean [not null, default: false]
+  type EventType [not null]
+  productId Int [not null]
+  campaignId Int
+  viewerId String [not null]
+  product Product [not null]
+  campaign BoostCampaign
 }
 
 Enum Category {
@@ -155,32 +149,50 @@ Enum Category {
   Orm
 }
 
+Enum BidStrategy {
+  AUTO
+  MANUAL
+}
+
+Enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+Enum EventType {
+  IMPRESSION
+  CLICK
+  VIEW
+}
+
 Ref: Member.userId > User.id
 
 Ref: Member.businessId > BusinessAcc.id
 
 Ref: BusinessAcc.userId > User.id
 
-Ref: Office.businessId > BusinessAcc.id
+Ref: Product.businessId > BusinessAcc.id
 
-Ref: Office.authorId > Member.uniqueId
+Ref: Product.categoryId > CategoryDef.id
 
-Ref: Coach.businessId > BusinessAcc.id
+Ref: Product.authorId > Member.uniqueId
 
-Ref: Coach.authorId > Member.uniqueId
+Ref: ProductDetail.productId > Product.id
 
-Ref: Bank.businessId > BusinessAcc.id
+Ref: BoostCampaign.businessId > BusinessAcc.id
 
-Ref: Bank.authorId > Member.uniqueId
+Ref: BoostCampaign.productId > Product.id
 
-Ref: Agency.businessId > BusinessAcc.id
+Ref: BoostCampaign.ownerId > Member.uniqueId
 
-Ref: Agency.authorId > Member.uniqueId
+Ref: BoostResult.campaignId > BoostCampaign.id
 
-Ref: Orm.businessId > BusinessAcc.id
+Ref: BoostBidLog.campaignId > BoostCampaign.id
 
-Ref: Orm.authorId > Member.uniqueId
+Ref: BoostSpendLog.campaignId > BoostCampaign.id
 
-Ref: Account.businessId > BusinessAcc.id
+Ref: AdEvent.productId > Product.id
 
-Ref: Account.authorId > Member.uniqueId
+Ref: AdEvent.campaignId > BoostCampaign.id

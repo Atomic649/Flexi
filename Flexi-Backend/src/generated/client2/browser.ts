@@ -67,3 +67,8 @@ export type BoostBidLog = Prisma.BoostBidLogModel
  * 
  */
 export type BoostSpendLog = Prisma.BoostSpendLogModel
+/**
+ * Model AdEvent
+ * 
+ */
+export type AdEvent = Prisma.AdEventModel

@@ -314,6 +314,7 @@ export type BoostCampaignWhereInput = {
   results?: Prisma.BoostResultListRelationFilter
   bidLogs?: Prisma.BoostBidLogListRelationFilter
   spendLogs?: Prisma.BoostSpendLogListRelationFilter
+  adEvents?: Prisma.AdEventListRelationFilter
 }
 
 export type BoostCampaignOrderByWithRelationInput = {
@@ -337,6 +338,7 @@ export type BoostCampaignOrderByWithRelationInput = {
   results?: Prisma.BoostResultOrderByRelationAggregateInput
   bidLogs?: Prisma.BoostBidLogOrderByRelationAggregateInput
   spendLogs?: Prisma.BoostSpendLogOrderByRelationAggregateInput
+  adEvents?: Prisma.AdEventOrderByRelationAggregateInput
 }
 
 export type BoostCampaignWhereUniqueInput = Prisma.AtLeast<{
@@ -363,6 +365,7 @@ export type BoostCampaignWhereUniqueInput = Prisma.AtLeast<{
   results?: Prisma.BoostResultListRelationFilter
   bidLogs?: Prisma.BoostBidLogListRelationFilter
   spendLogs?: Prisma.BoostSpendLogListRelationFilter
+  adEvents?: Prisma.AdEventListRelationFilter
 }, "id">
 
 export type BoostCampaignOrderByWithAggregationInput = {
@@ -424,6 +427,7 @@ export type BoostCampaignCreateInput = {
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateInput = {
@@ -444,6 +448,7 @@ export type BoostCampaignUncheckedCreateInput = {
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUpdateInput = {
@@ -463,6 +468,7 @@ export type BoostCampaignUpdateInput = {
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateInput = {
@@ -483,6 +489,7 @@ export type BoostCampaignUncheckedUpdateInput = {
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignCreateManyInput = {
@@ -614,6 +621,11 @@ export type BoostCampaignSumOrderByAggregateInput = {
 export type BoostCampaignScalarRelationFilter = {
   is?: Prisma.BoostCampaignWhereInput
   isNot?: Prisma.BoostCampaignWhereInput
+}
+
+export type BoostCampaignNullableScalarRelationFilter = {
+  is?: Prisma.BoostCampaignWhereInput | null
+  isNot?: Prisma.BoostCampaignWhereInput | null
 }
 
 export type BoostCampaignCreateNestedManyWithoutOwnerInput = {
@@ -808,6 +820,22 @@ export type BoostCampaignUpdateOneRequiredWithoutSpendLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BoostCampaignUpdateToOneWithWhereWithoutSpendLogsInput, Prisma.BoostCampaignUpdateWithoutSpendLogsInput>, Prisma.BoostCampaignUncheckedUpdateWithoutSpendLogsInput>
 }
 
+export type BoostCampaignCreateNestedOneWithoutAdEventsInput = {
+  create?: Prisma.XOR<Prisma.BoostCampaignCreateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedCreateWithoutAdEventsInput>
+  connectOrCreate?: Prisma.BoostCampaignCreateOrConnectWithoutAdEventsInput
+  connect?: Prisma.BoostCampaignWhereUniqueInput
+}
+
+export type BoostCampaignUpdateOneWithoutAdEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.BoostCampaignCreateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedCreateWithoutAdEventsInput>
+  connectOrCreate?: Prisma.BoostCampaignCreateOrConnectWithoutAdEventsInput
+  upsert?: Prisma.BoostCampaignUpsertWithoutAdEventsInput
+  disconnect?: Prisma.BoostCampaignWhereInput | boolean
+  delete?: Prisma.BoostCampaignWhereInput | boolean
+  connect?: Prisma.BoostCampaignWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BoostCampaignUpdateToOneWithWhereWithoutAdEventsInput, Prisma.BoostCampaignUpdateWithoutAdEventsInput>, Prisma.BoostCampaignUncheckedUpdateWithoutAdEventsInput>
+}
+
 export type BoostCampaignCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -824,6 +852,7 @@ export type BoostCampaignCreateWithoutOwnerInput = {
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutOwnerInput = {
@@ -843,6 +872,7 @@ export type BoostCampaignUncheckedCreateWithoutOwnerInput = {
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutOwnerInput = {
@@ -907,6 +937,7 @@ export type BoostCampaignCreateWithoutBusinessInput = {
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutBusinessInput = {
@@ -926,6 +957,7 @@ export type BoostCampaignUncheckedCreateWithoutBusinessInput = {
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutBusinessInput = {
@@ -970,6 +1002,7 @@ export type BoostCampaignCreateWithoutProductInput = {
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutProductInput = {
@@ -989,6 +1022,7 @@ export type BoostCampaignUncheckedCreateWithoutProductInput = {
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutProductInput = {
@@ -1033,6 +1067,7 @@ export type BoostCampaignCreateWithoutResultsInput = {
   owner: Prisma.MemberCreateNestedOneWithoutCampaignsInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutResultsInput = {
@@ -1052,6 +1087,7 @@ export type BoostCampaignUncheckedCreateWithoutResultsInput = {
   ownerId: string
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutResultsInput = {
@@ -1086,6 +1122,7 @@ export type BoostCampaignUpdateWithoutResultsInput = {
   owner?: Prisma.MemberUpdateOneRequiredWithoutCampaignsNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutResultsInput = {
@@ -1105,6 +1142,7 @@ export type BoostCampaignUncheckedUpdateWithoutResultsInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignCreateWithoutBidLogsInput = {
@@ -1123,6 +1161,7 @@ export type BoostCampaignCreateWithoutBidLogsInput = {
   owner: Prisma.MemberCreateNestedOneWithoutCampaignsInput
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutBidLogsInput = {
@@ -1142,6 +1181,7 @@ export type BoostCampaignUncheckedCreateWithoutBidLogsInput = {
   ownerId: string
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutBidLogsInput = {
@@ -1176,6 +1216,7 @@ export type BoostCampaignUpdateWithoutBidLogsInput = {
   owner?: Prisma.MemberUpdateOneRequiredWithoutCampaignsNestedInput
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutBidLogsInput = {
@@ -1195,6 +1236,7 @@ export type BoostCampaignUncheckedUpdateWithoutBidLogsInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignCreateWithoutSpendLogsInput = {
@@ -1213,6 +1255,7 @@ export type BoostCampaignCreateWithoutSpendLogsInput = {
   owner: Prisma.MemberCreateNestedOneWithoutCampaignsInput
   results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignUncheckedCreateWithoutSpendLogsInput = {
@@ -1232,6 +1275,7 @@ export type BoostCampaignUncheckedCreateWithoutSpendLogsInput = {
   ownerId: string
   results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
   bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
+  adEvents?: Prisma.AdEventUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type BoostCampaignCreateOrConnectWithoutSpendLogsInput = {
@@ -1266,6 +1310,7 @@ export type BoostCampaignUpdateWithoutSpendLogsInput = {
   owner?: Prisma.MemberUpdateOneRequiredWithoutCampaignsNestedInput
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutSpendLogsInput = {
@@ -1285,6 +1330,101 @@ export type BoostCampaignUncheckedUpdateWithoutSpendLogsInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
+}
+
+export type BoostCampaignCreateWithoutAdEventsInput = {
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  name?: string | null
+  status?: $Enums.CampaignStatus
+  budget: number
+  dailyCap?: number | null
+  startDate: Date | string
+  endDate: Date | string
+  bidStrategy?: $Enums.BidStrategy
+  maxBid?: number | null
+  business: Prisma.BusinessAccCreateNestedOneWithoutCampaignsInput
+  product: Prisma.ProductCreateNestedOneWithoutCampaignsInput
+  owner: Prisma.MemberCreateNestedOneWithoutCampaignsInput
+  results?: Prisma.BoostResultCreateNestedManyWithoutCampaignInput
+  bidLogs?: Prisma.BoostBidLogCreateNestedManyWithoutCampaignInput
+  spendLogs?: Prisma.BoostSpendLogCreateNestedManyWithoutCampaignInput
+}
+
+export type BoostCampaignUncheckedCreateWithoutAdEventsInput = {
+  id?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  name?: string | null
+  status?: $Enums.CampaignStatus
+  budget: number
+  dailyCap?: number | null
+  startDate: Date | string
+  endDate: Date | string
+  bidStrategy?: $Enums.BidStrategy
+  maxBid?: number | null
+  businessId: number
+  productId: number
+  ownerId: string
+  results?: Prisma.BoostResultUncheckedCreateNestedManyWithoutCampaignInput
+  bidLogs?: Prisma.BoostBidLogUncheckedCreateNestedManyWithoutCampaignInput
+  spendLogs?: Prisma.BoostSpendLogUncheckedCreateNestedManyWithoutCampaignInput
+}
+
+export type BoostCampaignCreateOrConnectWithoutAdEventsInput = {
+  where: Prisma.BoostCampaignWhereUniqueInput
+  create: Prisma.XOR<Prisma.BoostCampaignCreateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedCreateWithoutAdEventsInput>
+}
+
+export type BoostCampaignUpsertWithoutAdEventsInput = {
+  update: Prisma.XOR<Prisma.BoostCampaignUpdateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedUpdateWithoutAdEventsInput>
+  create: Prisma.XOR<Prisma.BoostCampaignCreateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedCreateWithoutAdEventsInput>
+  where?: Prisma.BoostCampaignWhereInput
+}
+
+export type BoostCampaignUpdateToOneWithWhereWithoutAdEventsInput = {
+  where?: Prisma.BoostCampaignWhereInput
+  data: Prisma.XOR<Prisma.BoostCampaignUpdateWithoutAdEventsInput, Prisma.BoostCampaignUncheckedUpdateWithoutAdEventsInput>
+}
+
+export type BoostCampaignUpdateWithoutAdEventsInput = {
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  budget?: Prisma.FloatFieldUpdateOperationsInput | number
+  dailyCap?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bidStrategy?: Prisma.EnumBidStrategyFieldUpdateOperationsInput | $Enums.BidStrategy
+  maxBid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  business?: Prisma.BusinessAccUpdateOneRequiredWithoutCampaignsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutCampaignsNestedInput
+  owner?: Prisma.MemberUpdateOneRequiredWithoutCampaignsNestedInput
+  results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
+  bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
+  spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+}
+
+export type BoostCampaignUncheckedUpdateWithoutAdEventsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  budget?: Prisma.FloatFieldUpdateOperationsInput | number
+  dailyCap?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bidStrategy?: Prisma.EnumBidStrategyFieldUpdateOperationsInput | $Enums.BidStrategy
+  maxBid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  businessId?: Prisma.IntFieldUpdateOperationsInput | number
+  productId?: Prisma.IntFieldUpdateOperationsInput | number
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
+  bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
+  spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignCreateManyOwnerInput = {
@@ -1319,6 +1459,7 @@ export type BoostCampaignUpdateWithoutOwnerInput = {
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutOwnerInput = {
@@ -1338,6 +1479,7 @@ export type BoostCampaignUncheckedUpdateWithoutOwnerInput = {
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateManyWithoutOwnerInput = {
@@ -1388,6 +1530,7 @@ export type BoostCampaignUpdateWithoutBusinessInput = {
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutBusinessInput = {
@@ -1407,6 +1550,7 @@ export type BoostCampaignUncheckedUpdateWithoutBusinessInput = {
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateManyWithoutBusinessInput = {
@@ -1457,6 +1601,7 @@ export type BoostCampaignUpdateWithoutProductInput = {
   results?: Prisma.BoostResultUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateWithoutProductInput = {
@@ -1476,6 +1621,7 @@ export type BoostCampaignUncheckedUpdateWithoutProductInput = {
   results?: Prisma.BoostResultUncheckedUpdateManyWithoutCampaignNestedInput
   bidLogs?: Prisma.BoostBidLogUncheckedUpdateManyWithoutCampaignNestedInput
   spendLogs?: Prisma.BoostSpendLogUncheckedUpdateManyWithoutCampaignNestedInput
+  adEvents?: Prisma.AdEventUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type BoostCampaignUncheckedUpdateManyWithoutProductInput = {
@@ -1503,12 +1649,14 @@ export type BoostCampaignCountOutputType = {
   results: number
   bidLogs: number
   spendLogs: number
+  adEvents: number
 }
 
 export type BoostCampaignCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   results?: boolean | BoostCampaignCountOutputTypeCountResultsArgs
   bidLogs?: boolean | BoostCampaignCountOutputTypeCountBidLogsArgs
   spendLogs?: boolean | BoostCampaignCountOutputTypeCountSpendLogsArgs
+  adEvents?: boolean | BoostCampaignCountOutputTypeCountAdEventsArgs
 }
 
 /**
@@ -1542,6 +1690,13 @@ export type BoostCampaignCountOutputTypeCountSpendLogsArgs<ExtArgs extends runti
   where?: Prisma.BoostSpendLogWhereInput
 }
 
+/**
+ * BoostCampaignCountOutputType without action
+ */
+export type BoostCampaignCountOutputTypeCountAdEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdEventWhereInput
+}
+
 
 export type BoostCampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1564,6 +1719,7 @@ export type BoostCampaignSelect<ExtArgs extends runtime.Types.Extensions.Interna
   results?: boolean | Prisma.BoostCampaign$resultsArgs<ExtArgs>
   bidLogs?: boolean | Prisma.BoostCampaign$bidLogsArgs<ExtArgs>
   spendLogs?: boolean | Prisma.BoostCampaign$spendLogsArgs<ExtArgs>
+  adEvents?: boolean | Prisma.BoostCampaign$adEventsArgs<ExtArgs>
   _count?: boolean | Prisma.BoostCampaignCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["boostCampaign"]>
 
@@ -1632,6 +1788,7 @@ export type BoostCampaignInclude<ExtArgs extends runtime.Types.Extensions.Intern
   results?: boolean | Prisma.BoostCampaign$resultsArgs<ExtArgs>
   bidLogs?: boolean | Prisma.BoostCampaign$bidLogsArgs<ExtArgs>
   spendLogs?: boolean | Prisma.BoostCampaign$spendLogsArgs<ExtArgs>
+  adEvents?: boolean | Prisma.BoostCampaign$adEventsArgs<ExtArgs>
   _count?: boolean | Prisma.BoostCampaignCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BoostCampaignIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1654,6 +1811,7 @@ export type $BoostCampaignPayload<ExtArgs extends runtime.Types.Extensions.Inter
     results: Prisma.$BoostResultPayload<ExtArgs>[]
     bidLogs: Prisma.$BoostBidLogPayload<ExtArgs>[]
     spendLogs: Prisma.$BoostSpendLogPayload<ExtArgs>[]
+    adEvents: Prisma.$AdEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -2070,6 +2228,7 @@ export interface Prisma__BoostCampaignClient<T, Null = never, ExtArgs extends ru
   results<T extends Prisma.BoostCampaign$resultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BoostCampaign$resultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BoostResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bidLogs<T extends Prisma.BoostCampaign$bidLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BoostCampaign$bidLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BoostBidLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   spendLogs<T extends Prisma.BoostCampaign$spendLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BoostCampaign$spendLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BoostSpendLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adEvents<T extends Prisma.BoostCampaign$adEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BoostCampaign$adEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2578,6 +2737,30 @@ export type BoostCampaign$spendLogsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.BoostSpendLogScalarFieldEnum | Prisma.BoostSpendLogScalarFieldEnum[]
+}
+
+/**
+ * BoostCampaign.adEvents
+ */
+export type BoostCampaign$adEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdEvent
+   */
+  select?: Prisma.AdEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdEvent
+   */
+  omit?: Prisma.AdEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdEventInclude<ExtArgs> | null
+  where?: Prisma.AdEventWhereInput
+  orderBy?: Prisma.AdEventOrderByWithRelationInput | Prisma.AdEventOrderByWithRelationInput[]
+  cursor?: Prisma.AdEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdEventScalarFieldEnum | Prisma.AdEventScalarFieldEnum[]
 }
 
 /**
