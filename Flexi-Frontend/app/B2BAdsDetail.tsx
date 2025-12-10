@@ -15,6 +15,9 @@ import CallAPIB2B from "@/api/B2B_api";
 import images from "@/constants/images";
 import { getResponsiveStyles } from "@/utils/responsive";
 import { MOCKUP_IMAGE_URL } from "@/utils/config";
+import { useBackgroundColorClass } from "@/utils/themeUtils";
+import CallAPIAdsEvent from "@/api/adsEvent_api";
+import { getMemberId } from "@/utils/utility";
 
 const B2BAdsDetailScreen: React.FC = () => {
   const { theme } = useTheme();
@@ -24,8 +27,22 @@ const B2BAdsDetailScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<any | null>(null);
+  const [viewerId, setViewerId] = useState<string | null>(null);
 
   const responsive = getResponsiveStyles();
+
+  // Load viewerId for tracking
+  useEffect(() => {
+    let mounted = true;
+    getMemberId()
+      .then((id) => {
+        if (mounted) setViewerId(id);
+      })
+      .catch((e) => console.error("Failed to load memberId", e));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleCallToAction = (action: string) => {
     if (!action) return;
@@ -37,8 +54,18 @@ const B2BAdsDetailScreen: React.FC = () => {
       const email = action.replace("email:", "").trim();
       Linking.openURL(`mailto:${email}`);
     } else if (action.includes("LINE ID:")) {
-      const lineId = action.split("09=p9")[1].trim();
-      Linking.openURL(`https://line.me/ti/p/${lineId}`);
+      // Safely extract LINE ID; support both known formats
+      const byToken = action.split("09=p9");
+      let lineId = byToken.length > 1 ? byToken[1]?.trim() : undefined;
+      if (!lineId) {
+        const parts = action.split("LINE ID:");
+        lineId = parts.length > 1 ? parts[1]?.trim() : undefined;
+      }
+      if (lineId) {
+        Linking.openURL(`https://line.me/ti/p/${lineId}`);
+      } else {
+        alert(action);
+      }
     } else {
       // Default action
       alert(action);
@@ -137,14 +164,60 @@ const B2BAdsDetailScreen: React.FC = () => {
         }))
       : [];
 
+  // Resolve campaignId from data (prefer explicit, otherwise first from campaigns[])
+  const resolveCampaignId = (item: any): number | null => {
+    const direct = item?.campaignId ?? item?.campaign?.id;
+    if (direct !== undefined && direct !== null) {
+      const n = Number(direct);
+      return Number.isNaN(n) ? null : n;
+    }
+    const campaigns = item?.campaigns;
+    if (Array.isArray(campaigns) && campaigns.length > 0) {
+      const active = campaigns.find(
+        (c: any) =>
+          c?.status?.toString?.().toLowerCase?.() === "active" ||
+          c?.isActive === true
+      );
+      const chosen = active ?? campaigns[0];
+      const cid = chosen?.id ?? chosen?.campaignId;
+      if (cid !== undefined && cid !== null) {
+        const n = Number(cid);
+        return Number.isNaN(n) ? null : n;
+      }
+    }
+    return null;
+  };
+
+  const trackClick = async () => {
+    try {
+      if (!viewerId || !data) return;
+      const productId = Number(data?.productId ?? data?.id);
+      if (!productId || Number.isNaN(productId)) return;
+      const campaignId = resolveCampaignId(data);
+      await CallAPIAdsEvent.createAdsEvent({
+        productId,
+        viewerId,
+        type: "CLICK",
+        campaignId,
+      });
+    } catch (err) {
+      console.error("Failed to track ad CLICK from detail", err);
+    }
+  };
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 16 }}>
+    <ScrollView
+      contentContainerStyle={{ padding: 16 }}
+      className={`h-full ${useBackgroundColorClass()}`}
+    >
       <CustomText
+        weight="bold"
         style={{
           fontSize: responsive.titleFontSize,
           fontWeight: "bold",
           color: theme === "dark" ? "#ffffff" : "#000000",
           marginBottom: 12,
+        
         }}
       >
         {title}
@@ -164,69 +237,71 @@ const B2BAdsDetailScreen: React.FC = () => {
         />
       ) : null}
 
-      <CustomText
-        style={{
-          fontSize: responsive.bodyFontSize,
-          lineHeight: responsive.lineHeight * responsive.bodyFontSize,
-          color: theme === "dark" ? "#cccccc" : "#555555",
-          marginTop: 12,
-        }}
-      >
-        {description}
-      </CustomText>
-
       {details.length > 0 ? (
         <View style={{ marginTop: 16 }}>
           <CustomText
+            weight="bold"
             style={{
-              fontWeight: "bold",
-              fontSize: responsive.smallFontSize,
+              fontSize: responsive.subtitleFontSize,
               color: theme === "dark" ? "#ffffff" : "#000000",
             }}
           >
             {t("common.details")}
           </CustomText>
           {details.map((d) => (
-            <View key={d.id} style={{ marginTop: 8 }}>
+            <View
+              key={d.id}
+              style={{ marginTop: 8, flexDirection: "row", gap: 4 }}
+            >
+              <CustomText
+                weight="bold"
+                style={{
+                  fontSize: responsive.smallFontSize,
+                  color: theme === "dark" ? "#cccccc" : "#555555",
+                }}
+              >
+                {t(`B2B.BankDetail.${d.key}`)}:
+              </CustomText>
               <CustomText
                 style={{
                   fontSize: responsive.smallFontSize,
                   color: theme === "dark" ? "#cccccc" : "#555555",
                 }}
               >
-                {t(`B2B.BankDetail.${d.key}`)}: {d.value}
+                {d.value}
               </CustomText>
             </View>
           ))}
         </View>
-    ) : null}
+      ) : null}
 
-    {callToAction ? (
-      <TouchableOpacity
-        style={{
-        marginTop: 20,
-        borderRadius: 5,
-        alignItems: "center",
-        backgroundColor: theme === "dark" ? "#424242" : "#ecebea",
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        }}
-        onPress={() => {
-        handleCallToAction(callToAction);
-        }}
-        activeOpacity={0.7}
-      >
-        <CustomText
-        style={{
-          fontSize: responsive.smallFontSize,
-          color: theme === "dark" ? "#ffffff" : "#000000",
-        }}
+      {callToAction ? (
+        <TouchableOpacity
+          style={{
+            marginTop: 20,
+            borderRadius: 5,
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? "#424242" : "#ecebea",
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+          }}
+          onPress={async () => {
+            // fire-and-forget click tracking, then execute CTA
+            trackClick();
+            handleCallToAction(callToAction);
+          }}
+          activeOpacity={0.7}
         >
-        {callToAction}
-        </CustomText>
-      </TouchableOpacity>
-    ) : null}
-      
+          <CustomText
+            style={{
+              fontSize: responsive.smallFontSize,
+              color: theme === "dark" ? "#ffffff" : "#000000",
+            }}
+          >
+            {callToAction}
+          </CustomText>
+        </TouchableOpacity>
+      ) : null}
     </ScrollView>
   );
 };

@@ -88,23 +88,34 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
     return 220; // Slightly reduced height for the two-column layout
   };
 
-  const handleCallToAction = (action: string) => {
-    if (!action) return;
-
-    if (action.startsWith("tel:")) {
-      const phoneNumber = action.replace("tel:", "").trim();
-      Linking.openURL(`tel:${phoneNumber}`);
-    } else if (action.startsWith("email:")) {
-      const email = action.replace("email:", "").trim();
-      Linking.openURL(`mailto:${email}`);
-    } else if (action.includes("LINE ID:")) {
-      const lineId = action.split("09=p9")[1].trim();
-      Linking.openURL(`https://line.me/ti/p/${lineId}`);
-    } else {
-      // Default action
-      alert(action);
-    }
-  };
+ const handleCallToAction = (action: string) => {
+     if (!action) return;
+ 
+     if (action.startsWith("tel:")) {
+       const phoneNumber = action.replace("tel:", "").trim();
+       Linking.openURL(`tel:${phoneNumber}`);
+     } else if (action.startsWith("email:")) {
+       const email = action.replace("email:", "").trim();
+       Linking.openURL(`mailto:${email}`);
+     } else if (action.includes("LINE ID:")) {
+       // Safely extract LINE ID; support both known formats
+       const byToken = action.split("09=p9");
+       let lineId = byToken.length > 1 ? byToken[1]?.trim() : undefined;
+       if (!lineId) {
+         const parts = action.split("LINE ID:");
+         lineId = parts.length > 1 ? parts[1]?.trim() : undefined;
+       }
+       if (lineId) {
+         Linking.openURL(`https://line.me/ti/p/${lineId}`);
+       } else {
+         alert(action);
+       }
+     } else {
+       // Default action
+       alert(action);
+     }
+   };
+ 
 
   // Resolve campaignId from item (prefer explicit, otherwise first from campaigns[])
   const resolveCampaignId = useCallback((item: any): number | null => {
@@ -149,6 +160,29 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
     [viewerId, resolveCampaignId]
   );
 
+  // track Veiw 
+  const trackView = useCallback(
+    async (item: any) => {
+      try {
+        if (!viewerId) return;
+        const productId = Number(item?.productId ?? item?.id);
+        if (!productId || Number.isNaN(productId)) return;
+        const campaignId = resolveCampaignId(item);
+        await CallAPIAdsEvent.createAdsEvent({
+          productId,
+          viewerId,
+          type: "VIEW",
+          campaignId,
+        });
+      } catch (err) {
+        console.error("Failed to track ad VIEW", err);
+      }
+    },
+    [viewerId, resolveCampaignId]
+  );
+
+
+
   // If no data is provided, return placeholder content
   if (!officeData || officeData.length === 0) {
     return (
@@ -174,6 +208,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
         if (idNum && !Number.isNaN(idNum)) {
           // Navigate to detail; cast to any to avoid strict route typing until screen is registered
           (router as any).push({ pathname: "/B2BAdsDetail", params: { id: String(idNum) } });
+          trackView(item);
         }
       }}
       key={index}
@@ -202,7 +237,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
       <View
         style={[
           styles.contentContainer,
-          { padding: isSmallScreen ? 12 : isLargeScreen ? 16 : 16 },
+          { padding: isSmallScreen ? 10 : isLargeScreen ? 16 : 16 },
         ]}
       >
         <CustomText
@@ -238,7 +273,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
               {
                 backgroundColor: theme === "dark" ? "#424242" : "#ecebea",
                 padding: isSmallScreen ? 8 : 10,
-                marginTop: isSmallScreen ? 12 : 16,
+                marginTop: isSmallScreen ? 8 : 16,
               },
             ]}
             onPress={() => {

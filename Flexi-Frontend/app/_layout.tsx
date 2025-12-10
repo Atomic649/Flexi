@@ -409,6 +409,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* B2B Ads Detail */}
+        <Stack.Screen
+          name="B2BAdsDetail"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("B2B.adsDetail"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* expense detail */}
         <Stack.Screen
           name="expenseDetailScreen"

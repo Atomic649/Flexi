@@ -1661,6 +1661,7 @@
   },
 
   "B2B": {
+    "adsDetail": "Detail",
     "BankDetail": {
       "productType": "Product Type",
       "interestRate": "Interest Rate",

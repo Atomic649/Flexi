@@ -201,11 +201,14 @@ const getProductDetailsById = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        description: true,
         image: true,
         callToAction: true,
-        details: true,       
-      
+        details: true,
+        campaigns: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (!product) {

@@ -1663,6 +1663,7 @@
       "deleteError": "ไม่สามารถลบสมาชิกได้"
   }},
     "B2B": {
+    "adsDetail": "รายละเอียด",
     "BankDetail": {
       "productType": "ประเภทสินค้า",
       "interestRate": "อัตราดอกเบี้ย",
