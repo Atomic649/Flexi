@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
@@ -25,6 +26,24 @@ const B2BAdsDetailScreen: React.FC = () => {
   const [data, setData] = useState<any | null>(null);
 
   const responsive = getResponsiveStyles();
+
+  const handleCallToAction = (action: string) => {
+    if (!action) return;
+
+    if (action.startsWith("tel:")) {
+      const phoneNumber = action.replace("tel:", "").trim();
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else if (action.startsWith("email:")) {
+      const email = action.replace("email:", "").trim();
+      Linking.openURL(`mailto:${email}`);
+    } else if (action.includes("LINE ID:")) {
+      const lineId = action.split("09=p9")[1].trim();
+      Linking.openURL(`https://line.me/ti/p/${lineId}`);
+    } else {
+      // Default action
+      alert(action);
+    }
+  };
 
   const fetchDetails = useCallback(async () => {
     try {
@@ -180,20 +199,34 @@ const B2BAdsDetailScreen: React.FC = () => {
             </View>
           ))}
         </View>
-      ) : null}
+    ) : null}
 
-      {callToAction ? (
-        <View style={{ marginTop: 20 }}>
-          <CustomText
-            style={{
-              fontSize: responsive.smallFontSize,
-              color: theme === "dark" ? "#ffffff" : "#000000",
-            }}
-          >
-            {t("common.action")}: {callToAction}
-          </CustomText>
-        </View>
-      ) : null}
+    {callToAction ? (
+      <TouchableOpacity
+        style={{
+        marginTop: 20,
+        borderRadius: 5,
+        alignItems: "center",
+        backgroundColor: theme === "dark" ? "#424242" : "#ecebea",
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        }}
+        onPress={() => {
+        handleCallToAction(callToAction);
+        }}
+        activeOpacity={0.7}
+      >
+        <CustomText
+        style={{
+          fontSize: responsive.smallFontSize,
+          color: theme === "dark" ? "#ffffff" : "#000000",
+        }}
+        >
+        {callToAction}
+        </CustomText>
+      </TouchableOpacity>
+    ) : null}
+      
     </ScrollView>
   );
 };
