@@ -191,6 +191,33 @@ const getAllOrms = async (_: Request, res: Response) => {
   }
 };
 
+// get product details by id
+const getProductDetailsById = async (req: Request, res: Response) => {
+  console.log("Fetching product details for ID:", req.params.id);
+  try {
+    const { id } = req.params;
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        image: true,
+        callToAction: true,
+        details: true,       
+      
+      },
+    });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get product details" });
+  }
+};
+
 export {
   getAllOffices,
   getAllCoaches,
@@ -198,4 +225,5 @@ export {
   getAllAgencies,
   getAllAccounts,
   getAllOrms,
+  getProductDetailsById,
 };

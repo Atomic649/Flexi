@@ -6,7 +6,8 @@ import {
   getAllBanks,
   getAllAgencies,
   getAllAccounts,
-  getAllOrms
+  getAllOrms,
+  getProductDetailsById,
 } from "../controllers/B2BController";
 
 // Create express router
@@ -29,6 +30,9 @@ router.get("/account", authenticateToken, getAllAccounts);
 
 // Get all orms
 router.get("/orm", authenticateToken, getAllOrms);
+
+// Get product details by id
+router.get("/product/:id", authenticateToken, getProductDetailsById);
 
 
 

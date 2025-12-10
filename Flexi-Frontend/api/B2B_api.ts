@@ -117,5 +117,24 @@ class CallAPIB2B {
       }
     }
   }
+
+  // get B2B/Product Details by ID
+  async getB2BProductDetailsByIdAPI(id: number): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/B2B/product/${id}`);
+
+      console.log("🚀 B2B Product Details API:", response.data);
+
+      return response.data;
+    } catch (error: unknown) {
+      console.error("🚨 Get B2B Product Details API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
+      }
+    }
+  }
 }
 export default new CallAPIB2B();

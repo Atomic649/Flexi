@@ -31,8 +31,9 @@
     "complete": "Complete",
     "noOptions": "No options",
     "networkError": "Network API Error",
-    "orders":"orders",
-    "unknown": "Unknown"
+    "orders": "orders",
+    "unknown": "Unknown",
+    "details": "Details"
   },
   "months": {
     "january": "January",
@@ -127,7 +128,7 @@
         "success": "Registration successful",
         "successMessage": "Please press OK to proceed",
         "ok": "OK",
-        "updatedSuccess":"Updated successfully",
+        "updatedSuccess": "Updated successfully",
         "updatedsuccessMessage": "Please press OK to proceed"
       },
       "businessName": "Business Name",
@@ -1229,10 +1230,10 @@
       "female": "Female",
       "notSpecified": "Not Specified"
     },
-    "duplicateConfirmTitle":"Duplicate bill?",
-    "duplicateConfirmMessage":"Create a new bill using this customer's details?",
-    "autoFill":" Auto-fill",
-    "autoFillInstructions":"Paste customer info text here to auto-fill the fields (separate with space) avoid (: ; , - _ )",   
+    "duplicateConfirmTitle": "Duplicate bill?",
+    "duplicateConfirmMessage": "Create a new bill using this customer's details?",
+    "autoFill": " Auto-fill",
+    "autoFillInstructions": "Paste customer info text here to auto-fill the fields (separate with space) avoid (: ; , - _ )",
     "invoice": "Invoice",
     "receipt": "Receipt/Tax Invoice",
     "quotation": "Quotation",
@@ -1376,7 +1377,7 @@
     "noResultsMessage": "No matching results found",
     "noResultsForDates": "No results found for the selected date range",
     "noBillFound": "No bill found with that ID",
-    "notSpecified":"Not Specified",
+    "notSpecified": "Not Specified",
     "notSupported": "Not supported",
     "printOnlyWeb": "Printing is only available on web browsers",
     "printCenter": "Print Center",
@@ -1560,7 +1561,7 @@
     "taxableIncome": "= Net Income",
     "carRentalMaxAlert": "The Revenue Department allows a maximum expense deduction of 36,000 THB per month per car.",
     "individualTax": "Individual Tax",
-    "chooseSubmitTax":"Choose calculate tax:",
+    "chooseSubmitTax": "Choose calculate tax:",
     "60%": "60%",
     "100%": "100%"
   },
@@ -1575,9 +1576,9 @@
       "warning": "Document quality is missing some requirements. in consideration of the revenue department to accept.",
       "fail": "Document quality is below the minimum standard required by the revenue department.",
       "error": "An error occurred during OCR processing. Please try again.",
-      "saveAnyway":" Save Anyway",
-      "close":"X",
-      "incompleteData":"Incomplete Data",
+      "saveAnyway": " Save Anyway",
+      "close": "X",
+      "incompleteData": "Incomplete Data",
       "fillNote": "Cannot save due to incomplete data\nPlease fill in the missing information",
       "continueEditToCompleteAllFill": "Go back to edit",
       "closeWithoutSaving": "Close without saving",
@@ -1616,7 +1617,8 @@
     "adsCost": "Ads Cost Forecast",
     "profit": "Profit",
     "bills": "Income",
-    "expenses": "Expenses"},
+    "expenses": "Expenses"
+  },
   "monthly": {
     "details": "Monthly Details",
     "summary": "Summary",
@@ -1624,10 +1626,12 @@
     "adsCost": "Ads Cost Forecast",
     "profit": "Profit",
     "bills": "Income",
-    "expenses": "Expenses"},
+    "expenses": "Expenses"
+  },
   "chatAI": {
-    "title": "Business Assistant"} ,
-      "team":{
+    "title": "Business Assistant"
+  },
+  "team": {
     "title": "Team Management",
     "addMember": "Add Member",
     "editMember": "Edit Member",
@@ -1639,8 +1643,8 @@
       "owner": "Owner",
       "partner": "Partner",
       "accountant": "Accountant",
-      "marketing":"Marketing",
-      "sales":"Sales"
+      "marketing": "Marketing",
+      "sales": "Sales"
     },
     "invitations": {
       "pending": "Pending Invitations",
@@ -1653,6 +1657,22 @@
       "deleteMessage": "Are you sure you want to delete this member?",
       "deleteSuccess": "Member deleted successfully",
       "deleteError": "Unable to delete member"
-  }}  
-  
+    }
+  },
+
+  "B2B": {
+    "BankDetail": {
+      "productType": "Product Type",
+      "interestRate": "Interest Rate",
+      "maxLoanAmount": "Max Loan Amount",
+      "tenure": "Tenure",
+      "collateral": "Collateral",
+      "eligibility": "Eligibility",
+      "processingTime": "Processing Time",
+      "fees": "Fees",
+      "documents": "Required Documents",
+      "repayment": "Repayment Method",
+      "contact": "Contact Information"
+    }
+  }
 }

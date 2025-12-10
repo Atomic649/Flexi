@@ -32,7 +32,8 @@
     "noOptions": "ไม่มีตัวเลือก",
     "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​",
     "orders":"คำสั่งซื้อ",
-    "unknown": "-"
+    "unknown": "-",
+    "details": "รายละเอียด"
   },
   "months": {
     "january": "มกราคม",
@@ -1660,5 +1661,20 @@
       "deleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบสมาชิกนี้?",
       "deleteSuccess": "ลบสมาชิกสำเร็จ",
       "deleteError": "ไม่สามารถลบสมาชิกได้"
-  }}
+  }},
+    "B2B": {
+    "BankDetail": {
+      "productType": "ประเภทสินค้า",
+      "interestRate": "อัตราดอกเบี้ย",
+      "maxLoanAmount": "วงเงินกู้สูงสุด",
+      "tenure": "ระยะเวลา",
+      "collateral": "หลักประกัน",
+      "eligibility": "คุณสมบัติที่ต้องมี",
+      "processingTime": "ระยะเวลาในการอนุมัติ",
+      "fees": "ค่าธรรมเนียม",
+      "documents": "เอกสารที่จำเป็น",
+      "repayment": "วิธีการชำระคืน",
+      "contact": "ข้อมูลการติดต่อ"
+    }
+  }
 }

@@ -19,6 +19,7 @@ import { API_URL, MOCKUP_IMAGE_URL } from "@/utils/config";
 import { getResponsiveStyles } from "@/utils/responsive";
 import CallAPIAdsEvent from "@/api/adsEvent_api";
 import { getMemberId } from "@/utils/utility";
+import { useRouter } from "expo-router";
 
 interface B2BAdsProps {
   officeData?: any[];
@@ -29,6 +30,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
   const { t } = useTranslation();
   const scrollViewRef = useRef<ScrollView>(null);
   const { width, height } = useWindowDimensions();
+  const router = useRouter();
   const isWeb = Platform.OS === "web";
   const isIOS = Platform.OS === "ios";
   const [viewerId, setViewerId] = useState<string | null>(null);
@@ -96,7 +98,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
       const email = action.replace("email:", "").trim();
       Linking.openURL(`mailto:${email}`);
     } else if (action.includes("LINE ID:")) {
-      const lineId = action.split("LINE ID:")[1].trim();
+      const lineId = action.split("09=p9")[1].trim();
       Linking.openURL(`https://line.me/ti/p/${lineId}`);
     } else {
       // Default action
@@ -165,7 +167,15 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
 
   // Render function for individual card
   const renderCard = (item: any, index: number) => (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => {
+        const idNum = Number(item?.productId ?? item?.id);
+        if (idNum && !Number.isNaN(idNum)) {
+          // Navigate to detail; cast to any to avoid strict route typing until screen is registered
+          (router as any).push({ pathname: "/B2BAdsDetail", params: { id: String(idNum) } });
+        }
+      }}
       key={index}
       style={[
         styles.cardContainer,
@@ -251,7 +261,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
