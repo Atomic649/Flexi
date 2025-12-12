@@ -106,6 +106,7 @@ Table BoostResult {
   date DateTime [not null]
   impressions Int [not null, default: 0]
   clicks Int [not null, default: 0]
+  views Int [not null, default: 0]
   ctr Float [not null, default: 0]
   costSpent Float [not null, default: 0]
   campaignId Int [not null]

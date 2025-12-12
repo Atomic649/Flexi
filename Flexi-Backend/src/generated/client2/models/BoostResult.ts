@@ -30,6 +30,7 @@ export type BoostResultAvgAggregateOutputType = {
   id: number | null
   impressions: number | null
   clicks: number | null
+  views: number | null
   ctr: number | null
   costSpent: number | null
   campaignId: number | null
@@ -39,6 +40,7 @@ export type BoostResultSumAggregateOutputType = {
   id: number | null
   impressions: number | null
   clicks: number | null
+  views: number | null
   ctr: number | null
   costSpent: number | null
   campaignId: number | null
@@ -49,6 +51,7 @@ export type BoostResultMinAggregateOutputType = {
   date: Date | null
   impressions: number | null
   clicks: number | null
+  views: number | null
   ctr: number | null
   costSpent: number | null
   campaignId: number | null
@@ -59,6 +62,7 @@ export type BoostResultMaxAggregateOutputType = {
   date: Date | null
   impressions: number | null
   clicks: number | null
+  views: number | null
   ctr: number | null
   costSpent: number | null
   campaignId: number | null
@@ -69,6 +73,7 @@ export type BoostResultCountAggregateOutputType = {
   date: number
   impressions: number
   clicks: number
+  views: number
   ctr: number
   costSpent: number
   campaignId: number
@@ -80,6 +85,7 @@ export type BoostResultAvgAggregateInputType = {
   id?: true
   impressions?: true
   clicks?: true
+  views?: true
   ctr?: true
   costSpent?: true
   campaignId?: true
@@ -89,6 +95,7 @@ export type BoostResultSumAggregateInputType = {
   id?: true
   impressions?: true
   clicks?: true
+  views?: true
   ctr?: true
   costSpent?: true
   campaignId?: true
@@ -99,6 +106,7 @@ export type BoostResultMinAggregateInputType = {
   date?: true
   impressions?: true
   clicks?: true
+  views?: true
   ctr?: true
   costSpent?: true
   campaignId?: true
@@ -109,6 +117,7 @@ export type BoostResultMaxAggregateInputType = {
   date?: true
   impressions?: true
   clicks?: true
+  views?: true
   ctr?: true
   costSpent?: true
   campaignId?: true
@@ -119,6 +128,7 @@ export type BoostResultCountAggregateInputType = {
   date?: true
   impressions?: true
   clicks?: true
+  views?: true
   ctr?: true
   costSpent?: true
   campaignId?: true
@@ -216,6 +226,7 @@ export type BoostResultGroupByOutputType = {
   date: Date
   impressions: number
   clicks: number
+  views: number
   ctr: number
   costSpent: number
   campaignId: number
@@ -249,6 +260,7 @@ export type BoostResultWhereInput = {
   date?: Prisma.DateTimeFilter<"BoostResult"> | Date | string
   impressions?: Prisma.IntFilter<"BoostResult"> | number
   clicks?: Prisma.IntFilter<"BoostResult"> | number
+  views?: Prisma.IntFilter<"BoostResult"> | number
   ctr?: Prisma.FloatFilter<"BoostResult"> | number
   costSpent?: Prisma.FloatFilter<"BoostResult"> | number
   campaignId?: Prisma.IntFilter<"BoostResult"> | number
@@ -260,6 +272,7 @@ export type BoostResultOrderByWithRelationInput = {
   date?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -274,6 +287,7 @@ export type BoostResultWhereUniqueInput = Prisma.AtLeast<{
   date?: Prisma.DateTimeFilter<"BoostResult"> | Date | string
   impressions?: Prisma.IntFilter<"BoostResult"> | number
   clicks?: Prisma.IntFilter<"BoostResult"> | number
+  views?: Prisma.IntFilter<"BoostResult"> | number
   ctr?: Prisma.FloatFilter<"BoostResult"> | number
   costSpent?: Prisma.FloatFilter<"BoostResult"> | number
   campaignId?: Prisma.IntFilter<"BoostResult"> | number
@@ -285,6 +299,7 @@ export type BoostResultOrderByWithAggregationInput = {
   date?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -303,6 +318,7 @@ export type BoostResultScalarWhereWithAggregatesInput = {
   date?: Prisma.DateTimeWithAggregatesFilter<"BoostResult"> | Date | string
   impressions?: Prisma.IntWithAggregatesFilter<"BoostResult"> | number
   clicks?: Prisma.IntWithAggregatesFilter<"BoostResult"> | number
+  views?: Prisma.IntWithAggregatesFilter<"BoostResult"> | number
   ctr?: Prisma.FloatWithAggregatesFilter<"BoostResult"> | number
   costSpent?: Prisma.FloatWithAggregatesFilter<"BoostResult"> | number
   campaignId?: Prisma.IntWithAggregatesFilter<"BoostResult"> | number
@@ -312,6 +328,7 @@ export type BoostResultCreateInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
   campaign: Prisma.BoostCampaignCreateNestedOneWithoutResultsInput
@@ -322,6 +339,7 @@ export type BoostResultUncheckedCreateInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
   campaignId: number
@@ -331,6 +349,7 @@ export type BoostResultUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
   campaign?: Prisma.BoostCampaignUpdateOneRequiredWithoutResultsNestedInput
@@ -341,6 +360,7 @@ export type BoostResultUncheckedUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
   campaignId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -351,6 +371,7 @@ export type BoostResultCreateManyInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
   campaignId: number
@@ -360,6 +381,7 @@ export type BoostResultUpdateManyMutationInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
 }
@@ -369,6 +391,7 @@ export type BoostResultUncheckedUpdateManyInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
   campaignId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -389,6 +412,7 @@ export type BoostResultCountOrderByAggregateInput = {
   date?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -398,6 +422,7 @@ export type BoostResultAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -408,6 +433,7 @@ export type BoostResultMaxOrderByAggregateInput = {
   date?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -418,6 +444,7 @@ export type BoostResultMinOrderByAggregateInput = {
   date?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -427,6 +454,7 @@ export type BoostResultSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   impressions?: Prisma.SortOrder
   clicks?: Prisma.SortOrder
+  views?: Prisma.SortOrder
   ctr?: Prisma.SortOrder
   costSpent?: Prisma.SortOrder
   campaignId?: Prisma.SortOrder
@@ -478,6 +506,7 @@ export type BoostResultCreateWithoutCampaignInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
 }
@@ -487,6 +516,7 @@ export type BoostResultUncheckedCreateWithoutCampaignInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
 }
@@ -525,6 +555,7 @@ export type BoostResultScalarWhereInput = {
   date?: Prisma.DateTimeFilter<"BoostResult"> | Date | string
   impressions?: Prisma.IntFilter<"BoostResult"> | number
   clicks?: Prisma.IntFilter<"BoostResult"> | number
+  views?: Prisma.IntFilter<"BoostResult"> | number
   ctr?: Prisma.FloatFilter<"BoostResult"> | number
   costSpent?: Prisma.FloatFilter<"BoostResult"> | number
   campaignId?: Prisma.IntFilter<"BoostResult"> | number
@@ -535,6 +566,7 @@ export type BoostResultCreateManyCampaignInput = {
   date: Date | string
   impressions?: number
   clicks?: number
+  views?: number
   ctr?: number
   costSpent?: number
 }
@@ -543,6 +575,7 @@ export type BoostResultUpdateWithoutCampaignInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
 }
@@ -552,6 +585,7 @@ export type BoostResultUncheckedUpdateWithoutCampaignInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
 }
@@ -561,6 +595,7 @@ export type BoostResultUncheckedUpdateManyWithoutCampaignInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   impressions?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.IntFieldUpdateOperationsInput | number
+  views?: Prisma.IntFieldUpdateOperationsInput | number
   ctr?: Prisma.FloatFieldUpdateOperationsInput | number
   costSpent?: Prisma.FloatFieldUpdateOperationsInput | number
 }
@@ -572,6 +607,7 @@ export type BoostResultSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   date?: boolean
   impressions?: boolean
   clicks?: boolean
+  views?: boolean
   ctr?: boolean
   costSpent?: boolean
   campaignId?: boolean
@@ -583,6 +619,7 @@ export type BoostResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   date?: boolean
   impressions?: boolean
   clicks?: boolean
+  views?: boolean
   ctr?: boolean
   costSpent?: boolean
   campaignId?: boolean
@@ -594,6 +631,7 @@ export type BoostResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   date?: boolean
   impressions?: boolean
   clicks?: boolean
+  views?: boolean
   ctr?: boolean
   costSpent?: boolean
   campaignId?: boolean
@@ -605,12 +643,13 @@ export type BoostResultSelectScalar = {
   date?: boolean
   impressions?: boolean
   clicks?: boolean
+  views?: boolean
   ctr?: boolean
   costSpent?: boolean
   campaignId?: boolean
 }
 
-export type BoostResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "impressions" | "clicks" | "ctr" | "costSpent" | "campaignId", ExtArgs["result"]["boostResult"]>
+export type BoostResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "impressions" | "clicks" | "views" | "ctr" | "costSpent" | "campaignId", ExtArgs["result"]["boostResult"]>
 export type BoostResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   campaign?: boolean | Prisma.BoostCampaignDefaultArgs<ExtArgs>
 }
@@ -631,6 +670,7 @@ export type $BoostResultPayload<ExtArgs extends runtime.Types.Extensions.Interna
     date: Date
     impressions: number
     clicks: number
+    views: number
     ctr: number
     costSpent: number
     campaignId: number
@@ -1062,6 +1102,7 @@ export interface BoostResultFieldRefs {
   readonly date: Prisma.FieldRef<"BoostResult", 'DateTime'>
   readonly impressions: Prisma.FieldRef<"BoostResult", 'Int'>
   readonly clicks: Prisma.FieldRef<"BoostResult", 'Int'>
+  readonly views: Prisma.FieldRef<"BoostResult", 'Int'>
   readonly ctr: Prisma.FieldRef<"BoostResult", 'Float'>
   readonly costSpent: Prisma.FieldRef<"BoostResult", 'Float'>
   readonly campaignId: Prisma.FieldRef<"BoostResult", 'Int'>

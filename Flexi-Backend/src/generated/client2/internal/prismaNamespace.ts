@@ -1367,6 +1367,7 @@ export const BoostResultScalarFieldEnum = {
   date: 'date',
   impressions: 'impressions',
   clicks: 'clicks',
+  views: 'views',
   ctr: 'ctr',
   costSpent: 'costSpent',
   campaignId: 'campaignId'

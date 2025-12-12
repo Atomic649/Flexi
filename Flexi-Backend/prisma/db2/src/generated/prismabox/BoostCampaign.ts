@@ -90,6 +90,7 @@ export const BoostCampaignRelations = t.Object(
           date: t.Date(),
           impressions: t.Integer(),
           clicks: t.Integer(),
+          views: t.Integer(),
           ctr: t.Number(),
           costSpent: t.Number(),
           campaignId: t.Integer(),

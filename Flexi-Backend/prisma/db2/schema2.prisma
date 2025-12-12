@@ -163,6 +163,7 @@ model BoostResult {
   date        DateTime
   impressions Int        @default(0)
   clicks      Int        @default(0)
+  views       Int        @default(0)
   ctr         Float      @default(0)
   costSpent   Float      @default(0)
   campaignId  Int
