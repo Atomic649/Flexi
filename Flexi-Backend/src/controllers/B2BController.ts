@@ -3,17 +3,34 @@ import { flexiAdsDBPrismaClient } from "../../lib/PrismaClient2";
 
 // Create  instance of PrismaClient
 const prisma = flexiAdsDBPrismaClient;
-// get all office
-const getAllOffices = async (_: Request, res: Response) => {
+
+const MAX_LIMIT = 50;
+const DEFAULT_LIMIT = 3;
+
+type CategoryId = 1 | 2 | 3 | 4 | 5 | 6;
+
+const buildPaginationParams = (req: Request) => {
+  const take = Math.min(Number(req.query.limit) || DEFAULT_LIMIT, MAX_LIMIT);
+  const cursorId = req.query.cursor ? Number(req.query.cursor) : undefined;
+  return { take, cursorId: cursorId && !Number.isNaN(cursorId) ? cursorId : undefined };
+};
+
+const pagedProducts = async (categoryId: CategoryId, req: Request, res: Response) => {
   try {
-    const offices = await prisma.product.findMany({
+    const { take, cursorId } = buildPaginationParams(req);
+    console.log(`Fetching products for category ${categoryId} with take=${take} and cursorId=${cursorId}`);
+
+    const products = await prisma.product.findMany({
       where: {
         deleted: false,
-        categoryId: 3,
-        campaigns: {
-          some: {},
-        },
-      },
+        categoryId,
+        // campaigns: {
+        //   some: {},
+        // },
+      },    
+       take: take + 1, // fetch one extra to compute hasMore
+      ...(cursorId ? { cursor: { id: cursorId }, skip: 1 } : {}),
+      orderBy: { id: "desc" },
       select: {
         id: true,
         title: true,
@@ -27,169 +44,36 @@ const getAllOffices = async (_: Request, res: Response) => {
         },
       },
     });
-    console.log("Offices fetched:", offices);
-    res.json(offices);
+
+    const hasMore = products.length > take;
+    const items = hasMore ? products.slice(0, take) : products;
+    const nextCursor = hasMore ? String(items[items.length - 1].id) : null;
+
+    res.json({ items, nextCursor, hasMore });
+    console.log(`Returned ${items.length} products for category ${categoryId} with nextCursor=${nextCursor} and hasMore=${hasMore}`);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "failed to get offices" });
+    res.status(500).json({ message: "failed to get products" });
   }
 };
+
+// get all office
+const getAllOffices = async (req: Request, res: Response) => pagedProducts(3, req, res);
 
 // get all coach
-const getAllCoaches = async (_: Request, res: Response) => {
-  try {
-    const coaches = await prisma.product.findMany({
-      where: {
-        deleted: false,
-        categoryId: 2,
-        campaigns: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        image: true,
-        callToAction: true,
-        campaigns: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    res.json(coaches);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to get coaches" });
-  }
-};
+const getAllCoaches = async (req: Request, res: Response) => pagedProducts(2, req, res);
 
 // get all Bank
-const getAllBanks = async (_: Request, res: Response) => {
-  try {
-    const banks = await prisma.product.findMany({
-      where: {
-        deleted: false,
-        categoryId: 1,
-        campaigns: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        image: true,
-        callToAction: true,
-        campaigns: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    console.log("Banks fetched:", banks);
-    res.json(banks);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to get banks" });
-  }
-};
+const getAllBanks = async (req: Request, res: Response) => pagedProducts(1, req, res);
 
 // get all Agency
-const getAllAgencies = async (_: Request, res: Response) => {
-  try {
-    const agencies = await prisma.product.findMany({
-      where: {
-        deleted: false,
-        categoryId: 4,
-        campaigns: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        image: true,
-        callToAction: true,
-        campaigns: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    res.json(agencies);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to get agencies" });
-  }
-};
+const getAllAgencies = async (req: Request, res: Response) => pagedProducts(4, req, res);
 
 // get all Account
-const getAllAccounts = async (req: Request, res: Response) => {
-  try {
-    const accounts = await prisma.product.findMany({
-      where: {
-        deleted: false,
-        categoryId: 5,
-        campaigns: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        image: true,
-        callToAction: true,
-        campaigns: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    res.json(accounts);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to get accounts" });
-  }
-};
+const getAllAccounts = async (req: Request, res: Response) => pagedProducts(5, req, res);
 
 // get all Orms
-const getAllOrms = async (_: Request, res: Response) => {
-  try {
-    const orms = await prisma.product.findMany({
-      where: {
-        deleted: false,
-        categoryId: 6,
-        campaigns: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        image: true,
-        callToAction: true,
-        campaigns: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    res.json(orms);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to get orms" });
-  }
-};
+const getAllOrms = async (req: Request, res: Response) => pagedProducts(6, req, res);
 
 // get product details by id
 const getProductDetailsById = async (req: Request, res: Response) => {

@@ -1,15 +1,17 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
-  ScrollView,
   View,
   Image,
-  Dimensions,
   Platform,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Linking,
   useWindowDimensions,
+  ActivityIndicator,
+  RefreshControlProps,
+  FlatList,
+  ListRenderItem,
+  ViewToken,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
@@ -23,17 +25,27 @@ import { useRouter } from "expo-router";
 
 interface B2BAdsProps {
   officeData?: any[];
+  onEndReached?: () => void;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
 }
 
-const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
+const B2BAds: React.FC<B2BAdsProps> = ({
+  officeData = [],
+  onEndReached,
+  isLoadingMore = false,
+  hasMore = true,
+  refreshControl,
+}) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const scrollViewRef = useRef<ScrollView>(null);
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const router = useRouter();
   const isWeb = Platform.OS === "web";
   const isIOS = Platform.OS === "ios";
   const [viewerId, setViewerId] = useState<string | null>(null);
+  const viewedImpressions = useRef<Set<number>>(new Set());
 
   // Use responsive styles from utility
   const responsiveStyles = getResponsiveStyles();
@@ -43,10 +55,6 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
   const isSmallScreen = width < 640;
   const isMediumScreen = width >= 640 && width < 1024;
   const isLargeScreen = width >= 1024;
-
-  useEffect(() => {
-    scrollViewRef.current?.scrollTo({ x: 0, animated: true });
-  }, []);
 
   // Load viewerId for tracking
   useEffect(() => {
@@ -200,7 +208,7 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
   }
 
   // Render function for individual card
-  const renderCard = (item: any, index: number) => (
+  const renderCard: ListRenderItem<any> = ({ item, index }) => (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={() => {
@@ -208,7 +216,6 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
         if (idNum && !Number.isNaN(idNum)) {
           // Navigate to detail; cast to any to avoid strict route typing until screen is registered
           (router as any).push({ pathname: "/B2BAdsDetail", params: { id: String(idNum) } });
-          trackView(item);
         }
       }}
       key={index}
@@ -299,37 +306,59 @@ const B2BAds: React.FC<B2BAdsProps> = ({ officeData = [] }) => {
     </TouchableOpacity>
   );
 
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: Array<ViewToken> }) => {
+      viewableItems.forEach(({ item }) => {
+        const idNum = Number(item?.productId ?? item?.id);
+        if (!idNum || Number.isNaN(idNum)) return;
+        if (viewedImpressions.current.has(idNum)) return;
+        viewedImpressions.current.add(idNum);
+        trackView(item);
+      });
+    }
+  );
+
   return (
     <View
       style={[
         styles.container,
         {
           width: width,
-          paddingTop: isSmallScreen ? 10 : 20,
+          paddingTop: isSmallScreen ? 0 : 20,
           paddingHorizontal: isLargeScreen ? 30 : 0, // Add padding on large screens
           maxWidth: isLargeScreen ? 1700 : "100%",
         },
       ]}
     >
-      <ScrollView
+      <FlatList
+        data={officeData}
+        renderItem={renderCard}
+        keyExtractor={(item, index) => String(item?.productId ?? item?.id ?? index)}
+        numColumns={isLargeScreen ? 2 : 1}
+        columnWrapperStyle={isLargeScreen ? styles.gridWrapper : undefined}
         contentContainerStyle={{
-          flexGrow: 1,
           justifyContent: "flex-start",
           alignItems: "center",
           paddingVertical: 10,
           paddingHorizontal: isSmallScreen ? 10 : "10%",
+          width: "100%",
         }}
         showsVerticalScrollIndicator={false}
-        ref={scrollViewRef}
-      >
-        {isLargeScreen ? (
-          <View style={styles.gridContainer}>
-            {officeData.map((item, index) => renderCard(item, index))}
-          </View>
-        ) : (
-          officeData.map((item, index) => renderCard(item, index))
-        )}
-      </ScrollView>
+        onEndReachedThreshold={0.4}
+        onEndReached={hasMore ? onEndReached : undefined}
+        refreshControl={refreshControl}
+        ListFooterComponent={
+          isLoadingMore ? (
+            <ActivityIndicator
+              size="small"
+              color={theme === "dark" ? "#ffffff" : "#0000ff"}
+              style={{ marginVertical: 12 }}
+            />
+          ) : null
+        }
+        viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
+        onViewableItemsChanged={onViewableItemsChanged.current}
+      />
     </View>
   );
 };
@@ -349,12 +378,15 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     width: "100%",
   },
+  gridWrapper: {
+    justifyContent: "space-around",
+  },
   placeholderContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "rgba(0,0,0,0.05)",
+    backgroundColor: "#00000000",
     borderRadius: 8,
     marginVertical: 20,
   },

@@ -1,88 +1,55 @@
-import {
-  View, 
-  ScrollView,
-  Dimensions,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import { View, ActivityIndicator, RefreshControl } from "react-native";
+import React, { useCallback } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import CallAPIB2B from "@/api/B2B_api";
 import B2BAds from "../B2BAds";
+import { useInfiniteB2BFeed } from "./useInfiniteB2BFeed";
 
 export default function ORM() {
-  const { t } = useTranslation();
   const { theme } = useTheme();
-  const [ormData, setOrmData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchOrmData = async () => {
-    try {
-      setLoading(true);
-      const response = await CallAPIB2B.getB2BOrmDataAPI();
-      setOrmData(response);
-      console.log("🚀 ORM Data Fetched:", response);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching ORM data:", err);
-      setError(
-        typeof err === "object" && err !== null && "message" in err
-          ? (err as Error).message
-          : "Failed to load data"
-      );
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchOrmData();
-  }, []);
-
-  useEffect(() => {
-    fetchOrmData();
-  }, []);
+  const {
+    data: ormData,
+    loading,
+    refreshing,
+    loadingMore,
+    error,
+    hasMore,
+    onRefresh,
+    loadMore,
+  } = useInfiniteB2BFeed(useCallback((cursor?: string) => CallAPIB2B.getB2BOrmDataAPI(cursor), []));
 
   return (
-    <View className={`h-full ${useBackgroundColorClass()}`}
-     >
-      <ScrollView
-        style={{
-          width: Dimensions.get("window").width > 768 ? "100%" : "100%",
-          alignSelf: "center", // Center the content on larger screens
-        }}
-        refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh}
-            colors={[theme === "dark" ? "#ffffff" : "#0000ff"]}
-            tintColor={theme === "dark" ? "#ffffff" : "#0000ff"}
+    <View className={`flex-1 ${useBackgroundColorClass()}`}>
+      <View className="flex-1 items-center justify-center ">
+        {loading && ormData.length === 0 ? (
+          <ActivityIndicator
+            size="large"
+            color={theme === "dark" ? "#ffffff" : "#0000ff"}
+            style={{ marginTop: 20 }}
           />
-        }
-      >
-        <View className="flex-1 items-center justify-center ">
-          {loading && !refreshing ? (
-            <ActivityIndicator
-              size="large"
-              color={theme === "dark" ? "#ffffff" : "#0000ff"}
-              style={{ marginTop: 20 }}
-            />
-          ) : error ? (
-            <CustomText className="text-red-500 text-center mt-4">
-              {error}
-            </CustomText>
-          ) : (
-            <B2BAds officeData={ormData} />
-          )}
-        </View>
-      </ScrollView>
+        ) : error && ormData.length === 0 ? (
+          <CustomText className="text-red-500 text-center mt-4">
+            {error}
+          </CustomText>
+        ) : (
+          <B2BAds
+            officeData={ormData}
+            refreshControl={
+              <RefreshControl 
+                refreshing={refreshing} 
+                onRefresh={onRefresh}
+                colors={[theme === "dark" ? "#ffffff" : "#0000ff"]}
+                tintColor={theme === "dark" ? "#ffffff" : "#0000ff"}
+              />
+            }
+            onEndReached={loadMore}
+            isLoadingMore={loadingMore}
+            hasMore={hasMore}
+          />
+        )}
+      </View>
     </View>
   );
 }

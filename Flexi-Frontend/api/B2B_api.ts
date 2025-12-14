@@ -1,121 +1,58 @@
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
 import axios from "axios";
-import Bank from '../components/shop/bank';
 import { t } from "i18next";
 
+export interface PagedResponse<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+const handleError = (error: unknown) => {
+  console.error("🚨 B2B API Error:", error);
+  if (axios.isAxiosError(error) && error.response) {
+    throw error.response.data;
+  }
+  throw new Error(error instanceof Error ? error.message : t("common.networkError"));
+};
 
 class CallAPIB2B {
-  // Get B2B/office Data
-  async getB2BOfficeDataAPI(): Promise<any> {
+  private async fetchPage<T>(path: string, cursor?: string, limit = 3): Promise<PagedResponse<T>> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/b2b/office`);
-
-      console.log("🚀 B2B Data API:", response.data);
-
+      const response = await axiosInstance.get(path, {
+        params: { cursor, limit },
+      });
+      console.log("🚀 B2B API Response:", response.data);
       return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
+    } catch (error) {
+      handleError(error);
+      return { items: [], nextCursor: null, hasMore: false };
     }
   }
 
-  // Get B2B/Bank Data
-  async getB2BBankDataAPI(): Promise<any> {
-    try {
-      const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/B2B/bank`);
-
-      console.log("🚀 B2B Bank Data API:", response.data);
-
-      return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Bank Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
-    }
-  }
-// get B2B/Coach Data
-  async getB2BCoachDataAPI(): Promise<any> {
-    try {
-      const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/B2B/coach`);
-
-      console.log("🚀 B2B Coach Data API:", response.data);
-
-      return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Coach Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
-    }
+  async getB2BOfficeDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/b2b/office`, cursor, limit);
   }
 
-  // get B2B/Agency Data
-  async getB2BAgencyDataAPI(): Promise<any> {
-    try {
-      const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/B2B/agency`);
-
-      console.log("🚀 B2B Agency Data API:", response.data);
-
-      return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Agency Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
-    }
+  async getB2BBankDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/B2B/bank`, cursor, limit);
   }
 
-  // get B2B/Account Data
-  async getB2BAccountDataAPI(): Promise<any> {
-    try {
-      const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/B2B/account`);
-
-      console.log("🚀 B2B Account Data API:", response.data);
-
-      return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Account Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
-    }
+  async getB2BCoachDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/B2B/coach`, cursor, limit);
   }
 
-  // get B2B/Orm Data
-  async getB2BOrmDataAPI(): Promise<any> {
-    try {
-      const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/B2B/orm`);
+  async getB2BAgencyDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/B2B/agency`, cursor, limit);
+  }
 
-      console.log("🚀 B2B Orm Data API:", response.data);
+  async getB2BAccountDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/B2B/account`, cursor, limit);
+  }
 
-      return response.data;
-    } catch (error: unknown) {
-      console.error("🚨 Get B2B Orm Data API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
-    }
+  async getB2BOrmDataAPI(cursor?: string, limit?: number) {
+    return this.fetchPage(`/B2B/orm`, cursor, limit);
   }
 
   // get B2B/Product Details by ID
@@ -128,12 +65,7 @@ class CallAPIB2B {
 
       return response.data;
     } catch (error: unknown) {
-      console.error("🚨 Get B2B Product Details API Error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error(error instanceof Error ? error.message : (t("common.networkError")));
-      }
+      handleError(error);
     }
   }
 }
