@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { flexiAdsDBPrismaClient } from "../../lib/PrismaClient2";
+import { trackEvent } from "./adsEventController";
 
 // Create  instance of PrismaClient
 const prisma = flexiAdsDBPrismaClient;
 
 const MAX_LIMIT = 50;
-const DEFAULT_LIMIT = 3;
-
+const DEFAULT_LIMIT = 1;
 type CategoryId = 1 | 2 | 3 | 4 | 5 | 6;
 
 const buildPaginationParams = (req: Request) => {
+ 
   const take = Math.min(Number(req.query.limit) || DEFAULT_LIMIT, MAX_LIMIT);
   const cursorId = req.query.cursor ? Number(req.query.cursor) : undefined;
   return { take, cursorId: cursorId && !Number.isNaN(cursorId) ? cursorId : undefined };
@@ -24,9 +25,9 @@ const pagedProducts = async (categoryId: CategoryId, req: Request, res: Response
       where: {
         deleted: false,
         categoryId,
-        // campaigns: {
-        //   some: {},
-        // },
+        campaigns: {
+          some: {},
+        },
       },    
        take: take + 1, // fetch one extra to compute hasMore
       ...(cursorId ? { cursor: { id: cursorId }, skip: 1 } : {}),
@@ -48,6 +49,39 @@ const pagedProducts = async (categoryId: CategoryId, req: Request, res: Response
     const hasMore = products.length > take;
     const items = hasMore ? products.slice(0, take) : products;
     const nextCursor = hasMore ? String(items[items.length - 1].id) : null;
+    const viewerId = (() => {
+      const fromQuery = (req.query.viewerId as string | undefined)?.toString?.();
+      const user: any = (req as any).user;
+      const fromUser =
+        user?.memberId?.toString?.() ||
+        user?.uniqueId?.toString?.() ||
+        user?.id?.toString?.();
+      return fromQuery || fromUser || undefined;
+    })();    
+   
+    const fakeRes = {
+      status: () => fakeRes,
+      json: () => fakeRes,
+    } as unknown as Response;
+
+    // Impression tracking
+    if (viewerId) {
+      Promise.all(
+        items.map((item) =>
+          trackEvent(
+            {
+              body: {
+                productId: item.id,
+                campaignId: item.campaigns?.[0]?.id ?? null,
+                viewerId,
+                type: "IMPRESSION",
+              },
+            } as Request,
+            fakeRes
+          ).catch((err) => console.error("Failed to track impression", err))
+        )
+      ).catch((err) => console.error("Failed to track impressions batch", err));
+    }
 
     res.json({ items, nextCursor, hasMore });
     console.log(`Returned ${items.length} products for category ${categoryId} with nextCursor=${nextCursor} and hasMore=${hasMore}`);

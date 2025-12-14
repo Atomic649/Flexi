@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { TabView, TabBar } from "react-native-tab-view";
 import { Dimensions } from "react-native";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
@@ -27,15 +27,22 @@ const shop = () => {
     { key: "orm", title: t("shop.tap.orm") },
   ]);
 
-  const renderScene = SceneMap({
-   // account: Account,
-    agency: Agency,
-    bank: Bank,
-    coach: Coach,
-    office: Office,
-    orm: ORM,
-
-  });
+  const renderScene = ({ route }: { route: { key: string } }) => {
+    switch (route.key) {
+      case "office":
+        return <Office />;
+      case "coach":
+        return <Coach />;
+      case "bank":
+        return <Bank />;
+      case "agency":
+        return <Agency />;
+      case "orm":
+        return <ORM />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <View
@@ -47,6 +54,13 @@ const shop = () => {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get("window").width }}
+        lazy
+        lazyPreloadDistance={0}
+        renderLazyPlaceholder={() => (
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <CustomText>Loading...</CustomText>
+          </View>
+        )}
         renderTabBar={(props) => (
           <TabBar
             {...props}

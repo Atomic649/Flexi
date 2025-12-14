@@ -1,6 +1,8 @@
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
+import { getMemberId } from "@/utils/utility";
 import axios from "axios";
 import { t } from "i18next";
+
 
 export interface PagedResponse<T> {
   items: T[];
@@ -17,11 +19,13 @@ const handleError = (error: unknown) => {
 };
 
 class CallAPIB2B {
-  private async fetchPage<T>(path: string, cursor?: string, limit = 3): Promise<PagedResponse<T>> {
+  private async fetchPage<T>(path: string, cursor?: string, limit = 1): Promise<PagedResponse<T>> {
     try {
+      const memberId = await getMemberId();
+      const viewerId = typeof memberId === "string" ? memberId : undefined;
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(path, {
-        params: { cursor, limit },
+        params: { cursor, limit, ...(viewerId ? { viewerId } : {}) },
       });
       console.log("🚀 B2B API Response:", response.data);
       return response.data;
