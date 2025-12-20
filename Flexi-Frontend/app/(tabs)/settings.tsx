@@ -22,8 +22,8 @@ import { useMarketing } from "@/providers/MarketingProvider";
 import {
   loginWithFacebook,
   logoutFromFacebook,
-  isFacebookAuthenticated,
 } from "@/utils/socialAuth/facebookAuth";
+import { useFacebookAuth } from "@/providers/FacebookAuthProvider";
 
 // Utility function to get switch colors
 const getSwitchPlatformColors = (theme: string, value: boolean) => ({
@@ -45,7 +45,8 @@ const toggleScaleStyle = { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] };
 
 export default function Setting() {
   const { marketingPreference, setMarketingPreference } = useMarketing();
-  const [Facebook, setFacebook] = useState(false); // Default to false
+  const { isFacebookLinked, setFacebookAuth, clearFacebookAuth, loading: fbLoading } = useFacebookAuth();
+  const Facebook = isFacebookLinked;
   const [Tiktok, setTiktok] = useState(false); // Default to false
   const [Shopee, setShopee] = useState(false); // Default to false
   const [Line, setLine] = useState(false); // Default to false
@@ -69,15 +70,7 @@ export default function Setting() {
     buttons: [],
   });
 
-  // Check Facebook authentication status on component mount
-  useEffect(() => {
-    const checkFacebookAuth = async () => {
-      const isAuthenticated = await isFacebookAuthenticated();
-      setFacebook(isAuthenticated);
-    };
 
-    checkFacebookAuth();
-  }, []);
 
   // ฟังก์ชันออกจากระบบ
   const handleLogout = async () => {
@@ -300,18 +293,18 @@ export default function Setting() {
   const handleFacebookToggle = async () => {
     // Prevent multiple rapid clicks
     if (isProcessingFacebook) return;
-    
+
     try {
       setIsProcessingFacebook(true);
-      //console.log('🔄 Facebook toggle pressed, current state:', Facebook);
-      
-      if (Facebook) {
+      //console.log('🔄 Facebook toggle pressed, current state:', isFacebookLinked);
+
+      if (isFacebookLinked) {
         // Logging out from Facebook        
         const success = await logoutFromFacebook();
        // console.log('🔄 Facebook logout result:', success);
         
         if (success) {
-          setFacebook(false);          
+          await clearFacebookAuth();
           setAlertConfig({
             visible: true,
             title: t("common.success"),
@@ -332,8 +325,8 @@ export default function Setting() {
         const result = await loginWithFacebook();
        // console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
 
-        if (result.success) {
-          setFacebook(true);         
+        if (result.success && result.data?.accessToken) {
+          await setFacebookAuth(result.data?.accessToken, result.data?.expirationDate);
           setAlertConfig({
             visible: true,
             title: t("common.success"),
@@ -349,7 +342,6 @@ export default function Setting() {
             ],
           });
         } else {
-         // console.log('🔄 Facebook login failed:', result.error);
           setAlertConfig({
             visible: true,
             title: t("common.error"),
@@ -412,11 +404,11 @@ export default function Setting() {
           >
             <View>
               {/* Facebook */}
-              <Pressable
-                className={`flex-row items-center justify-between p-4`}
-                onPress={handleFacebookToggle}
-              >
-                <View className="flex-row items-center !bg-transparent">
+              <View className={`flex-row items-center justify-between p-4`}>
+                <Pressable
+                  className="flex-row items-center !bg-transparent flex-1"
+                  onPress={() => router.push("/FacebookSetting")}
+                >
                   <FontAwesome
                     name="facebook"
                     size={24}
@@ -427,14 +419,15 @@ export default function Setting() {
                   weight="regular">
                     {t("settings.socialMedia.facebook")}
                   </CustomText>
-                </View>
+                </Pressable>
                 <Switch
                   value={Facebook} // Bind to state
                   onValueChange={handleFacebookToggle} // Toggle handler
                   {...getSwitchPlatformColors(theme, Facebook)} // Use utility function
+                  disabled={fbLoading}
                   style={toggleScaleStyle} // Use centralized style
                 />
-              </Pressable>
+              </View>
 
               <Divider />
 

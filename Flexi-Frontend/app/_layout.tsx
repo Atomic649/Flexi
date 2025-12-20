@@ -8,6 +8,7 @@ import { StatusBar, Platform } from "react-native";
 import { ThemeProvider, useTheme } from "@/providers/ThemeProvider";
 import * as NavigationBar from "expo-navigation-bar";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { FacebookAuthProvider } from "@/providers/FacebookAuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
@@ -459,7 +460,9 @@ export default function RootLayout() {
         <ThemeProvider>
           <BusinessProvider>
             <MarketingProvider>
-              <RootLayoutNav />
+              <FacebookAuthProvider>
+                <RootLayoutNav />
+              </FacebookAuthProvider>
             </MarketingProvider>
           </BusinessProvider>
         </ThemeProvider>

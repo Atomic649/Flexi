@@ -275,4 +275,113 @@ export const getFacebookCampaigns = async (req: Request, res: Response) => {
 	}
 };
 
-export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns };
+/**
+ * GET /facebook/adsets
+ * Lists ad sets for a given campaign.
+ * Query params:
+ *  - campaignId: string (required)
+ */
+export const getFacebookAdSets = async (req: Request, res: Response) => {
+	const campaignId = req.query.campaignId as string;
+
+	if (!accessToken) {
+		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
+	}
+
+	if (!campaignId) {
+		return res.status(400).json({ message: "campaignId is required (query param)" });
+	}
+
+	try {
+		const { data } = await axios.get(`${graphApiUrl}/${campaignId}/adsets`, {
+			params: {
+				access_token: accessToken,
+				fields: "id,name,status,effective_status,optimization_goal,daily_budget,lifetime_budget,start_time,end_time",
+				limit: 200,
+			},
+		});
+
+		const adSets = Array.isArray(data?.data)
+			? data.data.map((adset: any) => ({
+					id: adset?.id || "",
+					name: adset?.name || "",
+					status: adset?.status,
+					effectiveStatus: adset?.effective_status,
+					optimizationGoal: adset?.optimization_goal,
+					dailyBudget: adset?.daily_budget ? Number(adset.daily_budget) : null,
+					lifetimeBudget: adset?.lifetime_budget ? Number(adset.lifetime_budget) : null,
+					startTime: adset?.start_time,
+					endTime: adset?.end_time,
+				}))
+			: [];
+
+		return res.json({
+			campaignId,
+			count: adSets.length,
+			adSets,
+			raw: data?.data ?? [],
+		});
+	} catch (error: any) {
+		const status = error?.response?.status || 500;
+		const message = error?.response?.data || error?.message || "Failed to fetch Facebook ad sets";
+		console.error("Failed to fetch Facebook ad sets", message);
+		return res.status(status).json({ message });
+	}
+};
+
+/**
+ * GET /facebook/ads
+ * Lists ads for a given ad set.
+ * Query params:
+ *  - adSetId: string (required)
+ */
+export const getFacebookAds = async (req: Request, res: Response) => {
+	const adSetId = req.query.adSetId as string;
+
+	if (!accessToken) {
+		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
+	}
+
+	if (!adSetId) {
+		return res.status(400).json({ message: "adSetId is required (query param)" });
+	}
+
+	try {
+		const { data } = await axios.get(`${graphApiUrl}/${adSetId}/ads`, {
+			params: {
+				access_token: accessToken,
+				fields: "id,name,status,effective_status,creative{id,name},bid_strategy,daily_budget,lifetime_budget,adset_id,campaign_id",
+				limit: 200,
+			},
+		});
+
+		const ads = Array.isArray(data?.data)
+			? data.data.map((ad: any) => ({
+					id: ad?.id || "",
+					name: ad?.name || "",
+					status: ad?.status,
+					effectiveStatus: ad?.effective_status,
+					adSetId: ad?.adset_id,
+					campaignId: ad?.campaign_id,
+					bidStrategy: ad?.bid_strategy,
+					dailyBudget: ad?.daily_budget ? Number(ad.daily_budget) : null,
+					lifetimeBudget: ad?.lifetime_budget ? Number(ad.lifetime_budget) : null,
+					creative: ad?.creative ? { id: ad.creative.id, name: ad.creative.name } : null,
+				}))
+			: [];
+
+		return res.json({
+			adSetId,
+			count: ads.length,
+			ads,
+			raw: data?.data ?? [],
+		});
+	} catch (error: any) {
+		const status = error?.response?.status || 500;
+		const message = error?.response?.data || error?.message || "Failed to fetch Facebook ads";
+		console.error("Failed to fetch Facebook ads", message);
+		return res.status(status).json({ message });
+	}
+};
+
+export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds };

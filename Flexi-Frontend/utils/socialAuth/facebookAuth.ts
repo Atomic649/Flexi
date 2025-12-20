@@ -2,13 +2,12 @@ import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAxios } from '../axiosInstance';
-import  CallAPIPlatform  from '@/api/platform_api';
-import { getMemberId } from '../utility';
+import { FB_ACCESS_TOKEN } from '../config';
 
 // Register with the Facebook Developer Portal and get your app ID
 // Then replace this with your Facebook App ID
 const FB_APP_ID = '1393371655036716';
+// Optional: fallback access token from env (development override)
 
 // Configure Facebook permissions that you need
 const FB_PERMISSIONS = ['public_profile', 'email'];
@@ -30,6 +29,19 @@ export const loginWithFacebook = async (): Promise<{
   error?: string;
 }> => {
   try {
+
+    // Dev override: if an app-scoped access token is supplied via env, use it directly
+    if (FB_ACCESS_TOKEN) {
+      console.log('🔵 Using FACEBOOK_ACCESS_TOKEN from environment override');
+      return {
+        success: true,
+        data: {
+          accessToken: FB_ACCESS_TOKEN,
+          expirationDate: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days placeholder
+          source: 'env',
+        },
+      };
+    }
 
         // Check if already authenticated with Facebook
     const fbTokenData = await AsyncStorage.getItem('@facebook_auth_token');
