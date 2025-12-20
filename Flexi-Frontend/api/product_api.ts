@@ -108,6 +108,22 @@ class CallAPIProduct {
     }
   }
 
+  // Get Product Choice
+  async getProductChoiceIdAPI(memberId: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/product/choiceid/${memberId}`);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Product Choice API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
   // Get Product Choice with Price
   async getProductChoiceWithPriceAPI(memberId: string): Promise<any> {
     try {

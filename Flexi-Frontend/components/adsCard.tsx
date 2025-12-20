@@ -15,6 +15,7 @@ export default function AdsCard({
   platform,
   accName,
   accId,
+  productName,
   color,
   cardColor,
   onDelete,
@@ -116,12 +117,23 @@ export default function AdsCard({
             <Text className="font-bold text-sm text-zinc-500" numberOfLines={3}>
               {platform}
             </Text>
+            <View className="flex-row justify-start gap-1 items-center">
             <Text
               className="text-lg text-zinc-500 font-psemibold"
               numberOfLines={1}
             >
               {accName}
             </Text>
+            <Ionicons name="link" size={16} color="#0ed093" className="ml-1 mt-1"/>
+            {productName ? (
+              <Text
+                className="text-sm text-zinc-500 font-pregular"
+                numberOfLines={1}
+              >
+                {productName}
+              </Text>
+            ) : null}
+            </View>
             <Text
               className="text-base text-zinc-500 font-pregular"
               numberOfLines={1}

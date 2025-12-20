@@ -27,6 +27,7 @@ type Platform = {
   accId: string;
   businessAcc: number;
   memberId: string;
+  product?: { name?: string | null } | null;
 };
 
 export default function ads() {
@@ -101,6 +102,7 @@ export default function ads() {
               platform={item.platform}
               accName={item.accName}
               accId={item.accId}
+              productName={item.product?.name}
               color={theme === "dark" ? "#616161" : "#aeadac"}
               cardColor={theme === "dark" ? "#1b1b1b" : "#f2f2f2"}
               onDelete={handleDelete}

@@ -29,11 +29,13 @@ export type AggregatePlatform = {
 export type PlatformAvgAggregateOutputType = {
   id: number | null
   businessAcc: number | null
+  productId: number | null
 }
 
 export type PlatformSumAggregateOutputType = {
   id: number | null
   businessAcc: number | null
+  productId: number | null
 }
 
 export type PlatformMinAggregateOutputType = {
@@ -45,6 +47,7 @@ export type PlatformMinAggregateOutputType = {
   updatedAt: Date | null
   businessAcc: number | null
   memberId: string | null
+  productId: number | null
   deleted: boolean | null
 }
 
@@ -57,6 +60,7 @@ export type PlatformMaxAggregateOutputType = {
   updatedAt: Date | null
   businessAcc: number | null
   memberId: string | null
+  productId: number | null
   deleted: boolean | null
 }
 
@@ -69,6 +73,7 @@ export type PlatformCountAggregateOutputType = {
   updatedAt: number
   businessAcc: number
   memberId: number
+  productId: number
   deleted: number
   _all: number
 }
@@ -77,11 +82,13 @@ export type PlatformCountAggregateOutputType = {
 export type PlatformAvgAggregateInputType = {
   id?: true
   businessAcc?: true
+  productId?: true
 }
 
 export type PlatformSumAggregateInputType = {
   id?: true
   businessAcc?: true
+  productId?: true
 }
 
 export type PlatformMinAggregateInputType = {
@@ -93,6 +100,7 @@ export type PlatformMinAggregateInputType = {
   updatedAt?: true
   businessAcc?: true
   memberId?: true
+  productId?: true
   deleted?: true
 }
 
@@ -105,6 +113,7 @@ export type PlatformMaxAggregateInputType = {
   updatedAt?: true
   businessAcc?: true
   memberId?: true
+  productId?: true
   deleted?: true
 }
 
@@ -117,6 +126,7 @@ export type PlatformCountAggregateInputType = {
   updatedAt?: true
   businessAcc?: true
   memberId?: true
+  productId?: true
   deleted?: true
   _all?: true
 }
@@ -216,6 +226,7 @@ export type PlatformGroupByOutputType = {
   updatedAt: Date
   businessAcc: number
   memberId: string
+  productId: number | null
   deleted: boolean | null
   _count: PlatformCountAggregateOutputType | null
   _avg: PlatformAvgAggregateOutputType | null
@@ -251,8 +262,10 @@ export type PlatformWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntFilter<"Platform"> | number
   memberId?: Prisma.StringFilter<"Platform"> | string
+  productId?: Prisma.IntNullableFilter<"Platform"> | number | null
   deleted?: Prisma.BoolNullableFilter<"Platform"> | boolean | null
   platformId?: Prisma.AdsCostListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
 }
@@ -266,8 +279,10 @@ export type PlatformOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
   platformId?: Prisma.AdsCostOrderByRelationAggregateInput
+  product?: Prisma.ProductOrderByWithRelationInput
   businessId?: Prisma.BusinessAccOrderByWithRelationInput
   member?: Prisma.MemberOrderByWithRelationInput
 }
@@ -284,8 +299,10 @@ export type PlatformWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntFilter<"Platform"> | number
   memberId?: Prisma.StringFilter<"Platform"> | string
+  productId?: Prisma.IntNullableFilter<"Platform"> | number | null
   deleted?: Prisma.BoolNullableFilter<"Platform"> | boolean | null
   platformId?: Prisma.AdsCostListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
 }, "id" | "accName">
@@ -299,6 +316,7 @@ export type PlatformOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PlatformCountOrderByAggregateInput
   _avg?: Prisma.PlatformAvgOrderByAggregateInput
@@ -319,6 +337,7 @@ export type PlatformScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntWithAggregatesFilter<"Platform"> | number
   memberId?: Prisma.StringWithAggregatesFilter<"Platform"> | string
+  productId?: Prisma.IntNullableWithAggregatesFilter<"Platform"> | number | null
   deleted?: Prisma.BoolNullableWithAggregatesFilter<"Platform"> | boolean | null
 }
 
@@ -330,6 +349,7 @@ export type PlatformCreateInput = {
   updatedAt?: Date | string
   deleted?: boolean | null
   platformId?: Prisma.AdsCostCreateNestedManyWithoutPlatformInput
+  product?: Prisma.ProductCreateNestedOneWithoutPlatformInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutPlatformInput
   member: Prisma.MemberCreateNestedOneWithoutPlatformInput
 }
@@ -343,6 +363,7 @@ export type PlatformUncheckedCreateInput = {
   updatedAt?: Date | string
   businessAcc: number
   memberId: string
+  productId?: number | null
   deleted?: boolean | null
   platformId?: Prisma.AdsCostUncheckedCreateNestedManyWithoutPlatformInput
 }
@@ -355,6 +376,7 @@ export type PlatformUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUpdateManyWithoutPlatformNestedInput
+  product?: Prisma.ProductUpdateOneWithoutPlatformNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutPlatformNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutPlatformNestedInput
 }
@@ -368,6 +390,7 @@ export type PlatformUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUncheckedUpdateManyWithoutPlatformNestedInput
 }
@@ -381,6 +404,7 @@ export type PlatformCreateManyInput = {
   updatedAt?: Date | string
   businessAcc: number
   memberId: string
+  productId?: number | null
   deleted?: boolean | null
 }
 
@@ -402,6 +426,7 @@ export type PlatformUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
@@ -429,12 +454,14 @@ export type PlatformCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
 }
 
 export type PlatformAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
 }
 
 export type PlatformMaxOrderByAggregateInput = {
@@ -446,6 +473,7 @@ export type PlatformMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
 }
 
@@ -458,12 +486,14 @@ export type PlatformMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
 }
 
 export type PlatformSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
 }
 
 export type PlatformCreateNestedManyWithoutMemberInput = {
@@ -568,6 +598,48 @@ export type EnumSocialMediaFieldUpdateOperationsInput = {
   set?: $Enums.SocialMedia
 }
 
+export type PlatformCreateNestedManyWithoutProductInput = {
+  create?: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput> | Prisma.PlatformCreateWithoutProductInput[] | Prisma.PlatformUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.PlatformCreateOrConnectWithoutProductInput | Prisma.PlatformCreateOrConnectWithoutProductInput[]
+  createMany?: Prisma.PlatformCreateManyProductInputEnvelope
+  connect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+}
+
+export type PlatformUncheckedCreateNestedManyWithoutProductInput = {
+  create?: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput> | Prisma.PlatformCreateWithoutProductInput[] | Prisma.PlatformUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.PlatformCreateOrConnectWithoutProductInput | Prisma.PlatformCreateOrConnectWithoutProductInput[]
+  createMany?: Prisma.PlatformCreateManyProductInputEnvelope
+  connect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+}
+
+export type PlatformUpdateManyWithoutProductNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput> | Prisma.PlatformCreateWithoutProductInput[] | Prisma.PlatformUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.PlatformCreateOrConnectWithoutProductInput | Prisma.PlatformCreateOrConnectWithoutProductInput[]
+  upsert?: Prisma.PlatformUpsertWithWhereUniqueWithoutProductInput | Prisma.PlatformUpsertWithWhereUniqueWithoutProductInput[]
+  createMany?: Prisma.PlatformCreateManyProductInputEnvelope
+  set?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  disconnect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  delete?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  connect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  update?: Prisma.PlatformUpdateWithWhereUniqueWithoutProductInput | Prisma.PlatformUpdateWithWhereUniqueWithoutProductInput[]
+  updateMany?: Prisma.PlatformUpdateManyWithWhereWithoutProductInput | Prisma.PlatformUpdateManyWithWhereWithoutProductInput[]
+  deleteMany?: Prisma.PlatformScalarWhereInput | Prisma.PlatformScalarWhereInput[]
+}
+
+export type PlatformUncheckedUpdateManyWithoutProductNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput> | Prisma.PlatformCreateWithoutProductInput[] | Prisma.PlatformUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.PlatformCreateOrConnectWithoutProductInput | Prisma.PlatformCreateOrConnectWithoutProductInput[]
+  upsert?: Prisma.PlatformUpsertWithWhereUniqueWithoutProductInput | Prisma.PlatformUpsertWithWhereUniqueWithoutProductInput[]
+  createMany?: Prisma.PlatformCreateManyProductInputEnvelope
+  set?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  disconnect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  delete?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  connect?: Prisma.PlatformWhereUniqueInput | Prisma.PlatformWhereUniqueInput[]
+  update?: Prisma.PlatformUpdateWithWhereUniqueWithoutProductInput | Prisma.PlatformUpdateWithWhereUniqueWithoutProductInput[]
+  updateMany?: Prisma.PlatformUpdateManyWithWhereWithoutProductInput | Prisma.PlatformUpdateManyWithWhereWithoutProductInput[]
+  deleteMany?: Prisma.PlatformScalarWhereInput | Prisma.PlatformScalarWhereInput[]
+}
+
 export type PlatformCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   accName: string
@@ -576,6 +648,7 @@ export type PlatformCreateWithoutMemberInput = {
   updatedAt?: Date | string
   deleted?: boolean | null
   platformId?: Prisma.AdsCostCreateNestedManyWithoutPlatformInput
+  product?: Prisma.ProductCreateNestedOneWithoutPlatformInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutPlatformInput
 }
 
@@ -587,6 +660,7 @@ export type PlatformUncheckedCreateWithoutMemberInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
+  productId?: number | null
   deleted?: boolean | null
   platformId?: Prisma.AdsCostUncheckedCreateNestedManyWithoutPlatformInput
 }
@@ -629,6 +703,7 @@ export type PlatformScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntFilter<"Platform"> | number
   memberId?: Prisma.StringFilter<"Platform"> | string
+  productId?: Prisma.IntNullableFilter<"Platform"> | number | null
   deleted?: Prisma.BoolNullableFilter<"Platform"> | boolean | null
 }
 
@@ -640,6 +715,7 @@ export type PlatformCreateWithoutBusinessIdInput = {
   updatedAt?: Date | string
   deleted?: boolean | null
   platformId?: Prisma.AdsCostCreateNestedManyWithoutPlatformInput
+  product?: Prisma.ProductCreateNestedOneWithoutPlatformInput
   member: Prisma.MemberCreateNestedOneWithoutPlatformInput
 }
 
@@ -651,6 +727,7 @@ export type PlatformUncheckedCreateWithoutBusinessIdInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberId: string
+  productId?: number | null
   deleted?: boolean | null
   platformId?: Prisma.AdsCostUncheckedCreateNestedManyWithoutPlatformInput
 }
@@ -688,6 +765,7 @@ export type PlatformCreateWithoutPlatformIdInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  product?: Prisma.ProductCreateNestedOneWithoutPlatformInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutPlatformInput
   member: Prisma.MemberCreateNestedOneWithoutPlatformInput
 }
@@ -701,6 +779,7 @@ export type PlatformUncheckedCreateWithoutPlatformIdInput = {
   updatedAt?: Date | string
   businessAcc: number
   memberId: string
+  productId?: number | null
   deleted?: boolean | null
 }
 
@@ -727,6 +806,7 @@ export type PlatformUpdateWithoutPlatformIdInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  product?: Prisma.ProductUpdateOneWithoutPlatformNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutPlatformNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutPlatformNestedInput
 }
@@ -740,7 +820,59 @@ export type PlatformUncheckedUpdateWithoutPlatformIdInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+}
+
+export type PlatformCreateWithoutProductInput = {
+  platform: $Enums.SocialMedia
+  accName: string
+  accId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  platformId?: Prisma.AdsCostCreateNestedManyWithoutPlatformInput
+  businessId: Prisma.BusinessAccCreateNestedOneWithoutPlatformInput
+  member: Prisma.MemberCreateNestedOneWithoutPlatformInput
+}
+
+export type PlatformUncheckedCreateWithoutProductInput = {
+  id?: number
+  platform: $Enums.SocialMedia
+  accName: string
+  accId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  businessAcc: number
+  memberId: string
+  deleted?: boolean | null
+  platformId?: Prisma.AdsCostUncheckedCreateNestedManyWithoutPlatformInput
+}
+
+export type PlatformCreateOrConnectWithoutProductInput = {
+  where: Prisma.PlatformWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput>
+}
+
+export type PlatformCreateManyProductInputEnvelope = {
+  data: Prisma.PlatformCreateManyProductInput | Prisma.PlatformCreateManyProductInput[]
+  skipDuplicates?: boolean
+}
+
+export type PlatformUpsertWithWhereUniqueWithoutProductInput = {
+  where: Prisma.PlatformWhereUniqueInput
+  update: Prisma.XOR<Prisma.PlatformUpdateWithoutProductInput, Prisma.PlatformUncheckedUpdateWithoutProductInput>
+  create: Prisma.XOR<Prisma.PlatformCreateWithoutProductInput, Prisma.PlatformUncheckedCreateWithoutProductInput>
+}
+
+export type PlatformUpdateWithWhereUniqueWithoutProductInput = {
+  where: Prisma.PlatformWhereUniqueInput
+  data: Prisma.XOR<Prisma.PlatformUpdateWithoutProductInput, Prisma.PlatformUncheckedUpdateWithoutProductInput>
+}
+
+export type PlatformUpdateManyWithWhereWithoutProductInput = {
+  where: Prisma.PlatformScalarWhereInput
+  data: Prisma.XOR<Prisma.PlatformUpdateManyMutationInput, Prisma.PlatformUncheckedUpdateManyWithoutProductInput>
 }
 
 export type PlatformCreateManyMemberInput = {
@@ -751,6 +883,7 @@ export type PlatformCreateManyMemberInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
+  productId?: number | null
   deleted?: boolean | null
 }
 
@@ -762,6 +895,7 @@ export type PlatformUpdateWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUpdateManyWithoutPlatformNestedInput
+  product?: Prisma.ProductUpdateOneWithoutPlatformNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutPlatformNestedInput
 }
 
@@ -773,6 +907,7 @@ export type PlatformUncheckedUpdateWithoutMemberInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUncheckedUpdateManyWithoutPlatformNestedInput
 }
@@ -785,6 +920,7 @@ export type PlatformUncheckedUpdateManyWithoutMemberInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
@@ -796,6 +932,7 @@ export type PlatformCreateManyBusinessIdInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberId: string
+  productId?: number | null
   deleted?: boolean | null
 }
 
@@ -807,6 +944,7 @@ export type PlatformUpdateWithoutBusinessIdInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUpdateManyWithoutPlatformNestedInput
+  product?: Prisma.ProductUpdateOneWithoutPlatformNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutPlatformNestedInput
 }
 
@@ -818,6 +956,7 @@ export type PlatformUncheckedUpdateWithoutBusinessIdInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platformId?: Prisma.AdsCostUncheckedUpdateManyWithoutPlatformNestedInput
 }
@@ -829,6 +968,56 @@ export type PlatformUncheckedUpdateManyWithoutBusinessIdInput = {
   accId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+}
+
+export type PlatformCreateManyProductInput = {
+  id?: number
+  platform: $Enums.SocialMedia
+  accName: string
+  accId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  businessAcc: number
+  memberId: string
+  deleted?: boolean | null
+}
+
+export type PlatformUpdateWithoutProductInput = {
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  accName?: Prisma.StringFieldUpdateOperationsInput | string
+  accId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  platformId?: Prisma.AdsCostUpdateManyWithoutPlatformNestedInput
+  businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutPlatformNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutPlatformNestedInput
+}
+
+export type PlatformUncheckedUpdateWithoutProductInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  accName?: Prisma.StringFieldUpdateOperationsInput | string
+  accId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  platformId?: Prisma.AdsCostUncheckedUpdateManyWithoutPlatformNestedInput
+}
+
+export type PlatformUncheckedUpdateManyWithoutProductInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  accName?: Prisma.StringFieldUpdateOperationsInput | string
+  accId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
@@ -873,8 +1062,10 @@ export type PlatformSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   businessAcc?: boolean
   memberId?: boolean
+  productId?: boolean
   deleted?: boolean
   platformId?: boolean | Prisma.Platform$platformIdArgs<ExtArgs>
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformCountOutputTypeDefaultArgs<ExtArgs>
@@ -889,7 +1080,9 @@ export type PlatformSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   businessAcc?: boolean
   memberId?: boolean
+  productId?: boolean
   deleted?: boolean
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platform"]>
@@ -903,7 +1096,9 @@ export type PlatformSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   businessAcc?: boolean
   memberId?: boolean
+  productId?: boolean
   deleted?: boolean
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platform"]>
@@ -917,21 +1112,25 @@ export type PlatformSelectScalar = {
   updatedAt?: boolean
   businessAcc?: boolean
   memberId?: boolean
+  productId?: boolean
   deleted?: boolean
 }
 
-export type PlatformOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "accName" | "accId" | "createdAt" | "updatedAt" | "businessAcc" | "memberId" | "deleted", ExtArgs["result"]["platform"]>
+export type PlatformOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "accName" | "accId" | "createdAt" | "updatedAt" | "businessAcc" | "memberId" | "productId" | "deleted", ExtArgs["result"]["platform"]>
 export type PlatformInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   platformId?: boolean | Prisma.Platform$platformIdArgs<ExtArgs>
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PlatformIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
 }
 export type PlatformIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  product?: boolean | Prisma.Platform$productArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
 }
@@ -940,6 +1139,7 @@ export type $PlatformPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Platform"
   objects: {
     platformId: Prisma.$AdsCostPayload<ExtArgs>[]
+    product: Prisma.$ProductPayload<ExtArgs> | null
     businessId: Prisma.$BusinessAccPayload<ExtArgs>
     member: Prisma.$MemberPayload<ExtArgs>
   }
@@ -952,6 +1152,7 @@ export type $PlatformPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     updatedAt: Date
     businessAcc: number
     memberId: string
+    productId: number | null
     deleted: boolean | null
   }, ExtArgs["result"]["platform"]>
   composites: {}
@@ -1348,6 +1549,7 @@ readonly fields: PlatformFieldRefs;
 export interface Prisma__PlatformClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   platformId<T extends Prisma.Platform$platformIdArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Platform$platformIdArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdsCostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  product<T extends Prisma.Platform$productArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Platform$productArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   businessId<T extends Prisma.BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAccDefaultArgs<ExtArgs>>): Prisma.Prisma__BusinessAccClient<runtime.Types.Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   member<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1387,6 +1589,7 @@ export interface PlatformFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"Platform", 'DateTime'>
   readonly businessAcc: Prisma.FieldRef<"Platform", 'Int'>
   readonly memberId: Prisma.FieldRef<"Platform", 'String'>
+  readonly productId: Prisma.FieldRef<"Platform", 'Int'>
   readonly deleted: Prisma.FieldRef<"Platform", 'Boolean'>
 }
     
@@ -1805,6 +2008,25 @@ export type Platform$platformIdArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.AdsCostScalarFieldEnum | Prisma.AdsCostScalarFieldEnum[]
+}
+
+/**
+ * Platform.product
+ */
+export type Platform$productArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Product
+   */
+  select?: Prisma.ProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Product
+   */
+  omit?: Prisma.ProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductInclude<ExtArgs> | null
+  where?: Prisma.ProductWhereInput
 }
 
 /**

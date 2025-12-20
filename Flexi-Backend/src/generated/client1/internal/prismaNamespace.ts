@@ -1598,6 +1598,7 @@ export const PlatformScalarFieldEnum = {
   updatedAt: 'updatedAt',
   businessAcc: 'businessAcc',
   memberId: 'memberId',
+  productId: 'productId',
   deleted: 'deleted'
 } as const
 

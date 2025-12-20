@@ -197,6 +197,8 @@ Table Platform {
   platformId AdsCost [not null]
   businessAcc Int [not null]
   memberId String [not null]
+  productId Int
+  product Product
   businessId BusinessAcc [not null]
   member Member [not null]
   deleted Boolean [default: false]
@@ -235,6 +237,7 @@ Table Product {
   deleted Boolean [default: false]
   billRecord ProductItem [not null]
   adsRecord AdsCost [not null]
+  platform Platform [not null]
   member Member [not null]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
@@ -269,6 +272,7 @@ Enum Unit {
   Pack
   Set
   Dozen
+  NotSpecified
 }
 
 Enum UserRole {
@@ -307,6 +311,7 @@ Enum SocialMedia {
   Instagram
   X
   Youtube
+  Google
 }
 
 Enum IncomeChannel {
@@ -454,6 +459,8 @@ Ref: AdsCost.product > Product.name
 Ref: Expense.businessAcc > BusinessAcc.id
 
 Ref: Expense.memberId > Member.uniqueId
+
+Ref: Platform.productId > Product.id
 
 Ref: Platform.businessAcc > BusinessAcc.id
 

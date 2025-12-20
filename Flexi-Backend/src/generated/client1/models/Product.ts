@@ -326,6 +326,7 @@ export type ProductWhereInput = {
   businessAcc?: Prisma.IntFilter<"Product"> | number
   billRecord?: Prisma.ProductItemListRelationFilter
   adsRecord?: Prisma.AdsCostListRelationFilter
+  platform?: Prisma.PlatformListRelationFilter
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
 }
@@ -349,6 +350,7 @@ export type ProductOrderByWithRelationInput = {
   businessAcc?: Prisma.SortOrder
   billRecord?: Prisma.ProductItemOrderByRelationAggregateInput
   adsRecord?: Prisma.AdsCostOrderByRelationAggregateInput
+  platform?: Prisma.PlatformOrderByRelationAggregateInput
   member?: Prisma.MemberOrderByWithRelationInput
   businessId?: Prisma.BusinessAccOrderByWithRelationInput
 }
@@ -375,6 +377,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   businessAcc?: Prisma.IntFilter<"Product"> | number
   billRecord?: Prisma.ProductItemListRelationFilter
   adsRecord?: Prisma.AdsCostListRelationFilter
+  platform?: Prisma.PlatformListRelationFilter
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
 }, "id" | "name">
@@ -441,6 +444,7 @@ export type ProductCreateInput = {
   deleted?: boolean | null
   billRecord?: Prisma.ProductItemCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutProductInput
   member: Prisma.MemberCreateNestedOneWithoutProductInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutProductInput
 }
@@ -464,6 +468,7 @@ export type ProductUncheckedCreateInput = {
   businessAcc: number
   billRecord?: Prisma.ProductItemUncheckedCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
@@ -482,6 +487,7 @@ export type ProductUpdateInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billRecord?: Prisma.ProductItemUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutProductNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutProductNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutProductNestedInput
 }
@@ -505,6 +511,7 @@ export type ProductUncheckedUpdateInput = {
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   billRecord?: Prisma.ProductItemUncheckedUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
@@ -574,6 +581,11 @@ export type ProductOrderByRelationAggregateInput = {
 export type ProductScalarRelationFilter = {
   is?: Prisma.ProductWhereInput
   isNot?: Prisma.ProductWhereInput
+}
+
+export type ProductNullableScalarRelationFilter = {
+  is?: Prisma.ProductWhereInput | null
+  isNot?: Prisma.ProductWhereInput | null
 }
 
 export type ProductCountOrderByAggregateInput = {
@@ -763,6 +775,22 @@ export type ProductUpdateOneRequiredWithoutAdsRecordNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutAdsRecordInput, Prisma.ProductUpdateWithoutAdsRecordInput>, Prisma.ProductUncheckedUpdateWithoutAdsRecordInput>
 }
 
+export type ProductCreateNestedOneWithoutPlatformInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutPlatformInput, Prisma.ProductUncheckedCreateWithoutPlatformInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutPlatformInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneWithoutPlatformNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutPlatformInput, Prisma.ProductUncheckedCreateWithoutPlatformInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutPlatformInput
+  upsert?: Prisma.ProductUpsertWithoutPlatformInput
+  disconnect?: Prisma.ProductWhereInput | boolean
+  delete?: Prisma.ProductWhereInput | boolean
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutPlatformInput, Prisma.ProductUpdateWithoutPlatformInput>, Prisma.ProductUncheckedUpdateWithoutPlatformInput>
+}
+
 export type NullableEnumProductTypeFieldUpdateOperationsInput = {
   set?: $Enums.ProductType | null
 }
@@ -783,6 +811,7 @@ export type ProductCreateWithoutMemberInput = {
   deleted?: boolean | null
   billRecord?: Prisma.ProductItemCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutProductInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutProductInput
 }
 
@@ -804,6 +833,7 @@ export type ProductUncheckedCreateWithoutMemberInput = {
   businessAcc: number
   billRecord?: Prisma.ProductItemUncheckedCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutMemberInput = {
@@ -870,6 +900,7 @@ export type ProductCreateWithoutBusinessIdInput = {
   deleted?: boolean | null
   billRecord?: Prisma.ProductItemCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutProductInput
   member: Prisma.MemberCreateNestedOneWithoutProductInput
 }
 
@@ -891,6 +922,7 @@ export type ProductUncheckedCreateWithoutBusinessIdInput = {
   deleted?: boolean | null
   billRecord?: Prisma.ProductItemUncheckedCreateNestedManyWithoutProductListInput
   adsRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutBusinessIdInput = {
@@ -934,6 +966,7 @@ export type ProductCreateWithoutBillRecordInput = {
   updatedAt?: Date | string
   deleted?: boolean | null
   adsRecord?: Prisma.AdsCostCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutProductInput
   member: Prisma.MemberCreateNestedOneWithoutProductInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutProductInput
 }
@@ -956,6 +989,7 @@ export type ProductUncheckedCreateWithoutBillRecordInput = {
   deleted?: boolean | null
   businessAcc: number
   adsRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutBillRecordInput = {
@@ -989,6 +1023,7 @@ export type ProductUpdateWithoutBillRecordInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   adsRecord?: Prisma.AdsCostUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutProductNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutProductNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutProductNestedInput
 }
@@ -1011,6 +1046,7 @@ export type ProductUncheckedUpdateWithoutBillRecordInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   adsRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutAdsRecordInput = {
@@ -1028,6 +1064,7 @@ export type ProductCreateWithoutAdsRecordInput = {
   updatedAt?: Date | string
   deleted?: boolean | null
   billRecord?: Prisma.ProductItemCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutProductInput
   member: Prisma.MemberCreateNestedOneWithoutProductInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutProductInput
 }
@@ -1050,6 +1087,7 @@ export type ProductUncheckedCreateWithoutAdsRecordInput = {
   deleted?: boolean | null
   businessAcc: number
   billRecord?: Prisma.ProductItemUncheckedCreateNestedManyWithoutProductListInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutAdsRecordInput = {
@@ -1083,6 +1121,7 @@ export type ProductUpdateWithoutAdsRecordInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billRecord?: Prisma.ProductItemUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutProductNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutProductNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutProductNestedInput
 }
@@ -1105,6 +1144,105 @@ export type ProductUncheckedUpdateWithoutAdsRecordInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   billRecord?: Prisma.ProductItemUncheckedUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutPlatformInput = {
+  name: string
+  unit?: $Enums.Unit | null
+  productType?: $Enums.ProductType | null
+  description?: string | null
+  barcode?: string | null
+  image?: string | null
+  stock: number
+  price: number
+  categoryId?: number | null
+  statusId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  billRecord?: Prisma.ProductItemCreateNestedManyWithoutProductListInput
+  adsRecord?: Prisma.AdsCostCreateNestedManyWithoutProductListInput
+  member: Prisma.MemberCreateNestedOneWithoutProductInput
+  businessId: Prisma.BusinessAccCreateNestedOneWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutPlatformInput = {
+  id?: number
+  name: string
+  unit?: $Enums.Unit | null
+  productType?: $Enums.ProductType | null
+  description?: string | null
+  barcode?: string | null
+  image?: string | null
+  stock: number
+  price: number
+  categoryId?: number | null
+  memberId: string
+  statusId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  businessAcc: number
+  billRecord?: Prisma.ProductItemUncheckedCreateNestedManyWithoutProductListInput
+  adsRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutProductListInput
+}
+
+export type ProductCreateOrConnectWithoutPlatformInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutPlatformInput, Prisma.ProductUncheckedCreateWithoutPlatformInput>
+}
+
+export type ProductUpsertWithoutPlatformInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutPlatformInput, Prisma.ProductUncheckedUpdateWithoutPlatformInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutPlatformInput, Prisma.ProductUncheckedCreateWithoutPlatformInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutPlatformInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutPlatformInput, Prisma.ProductUncheckedUpdateWithoutPlatformInput>
+}
+
+export type ProductUpdateWithoutPlatformInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  productType?: Prisma.NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billRecord?: Prisma.ProductItemUpdateManyWithoutProductListNestedInput
+  adsRecord?: Prisma.AdsCostUpdateManyWithoutProductListNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutProductNestedInput
+  businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutPlatformInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  productType?: Prisma.NullableEnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  billRecord?: Prisma.ProductItemUncheckedUpdateManyWithoutProductListNestedInput
+  adsRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutProductListNestedInput
 }
 
 export type ProductCreateManyMemberInput = {
@@ -1141,6 +1279,7 @@ export type ProductUpdateWithoutMemberInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billRecord?: Prisma.ProductItemUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutProductNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutProductNestedInput
 }
 
@@ -1162,6 +1301,7 @@ export type ProductUncheckedUpdateWithoutMemberInput = {
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   billRecord?: Prisma.ProductItemUncheckedUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutMemberInput = {
@@ -1216,6 +1356,7 @@ export type ProductUpdateWithoutBusinessIdInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billRecord?: Prisma.ProductItemUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutProductNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutProductNestedInput
 }
 
@@ -1237,6 +1378,7 @@ export type ProductUncheckedUpdateWithoutBusinessIdInput = {
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billRecord?: Prisma.ProductItemUncheckedUpdateManyWithoutProductListNestedInput
   adsRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutProductListNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutBusinessIdInput = {
@@ -1265,11 +1407,13 @@ export type ProductUncheckedUpdateManyWithoutBusinessIdInput = {
 export type ProductCountOutputType = {
   billRecord: number
   adsRecord: number
+  platform: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   billRecord?: boolean | ProductCountOutputTypeCountBillRecordArgs
   adsRecord?: boolean | ProductCountOutputTypeCountAdsRecordArgs
+  platform?: boolean | ProductCountOutputTypeCountPlatformArgs
 }
 
 /**
@@ -1296,6 +1440,13 @@ export type ProductCountOutputTypeCountAdsRecordArgs<ExtArgs extends runtime.Typ
   where?: Prisma.AdsCostWhereInput
 }
 
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountPlatformArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatformWhereInput
+}
+
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1316,6 +1467,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   businessAcc?: boolean
   billRecord?: boolean | Prisma.Product$billRecordArgs<ExtArgs>
   adsRecord?: boolean | Prisma.Product$adsRecordArgs<ExtArgs>
+  platform?: boolean | Prisma.Product$platformArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -1386,6 +1538,7 @@ export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   billRecord?: boolean | Prisma.Product$billRecordArgs<ExtArgs>
   adsRecord?: boolean | Prisma.Product$adsRecordArgs<ExtArgs>
+  platform?: boolean | Prisma.Product$platformArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -1404,6 +1557,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     billRecord: Prisma.$ProductItemPayload<ExtArgs>[]
     adsRecord: Prisma.$AdsCostPayload<ExtArgs>[]
+    platform: Prisma.$PlatformPayload<ExtArgs>[]
     member: Prisma.$MemberPayload<ExtArgs>
     businessId: Prisma.$BusinessAccPayload<ExtArgs>
   }
@@ -1820,6 +1974,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   billRecord<T extends Prisma.Product$billRecordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$billRecordArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adsRecord<T extends Prisma.Product$adsRecordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$adsRecordArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdsCostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platform<T extends Prisma.Product$platformArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$platformArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   member<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   businessId<T extends Prisma.BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAccDefaultArgs<ExtArgs>>): Prisma.Prisma__BusinessAccClient<runtime.Types.Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -2308,6 +2463,30 @@ export type Product$adsRecordArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.AdsCostScalarFieldEnum | Prisma.AdsCostScalarFieldEnum[]
+}
+
+/**
+ * Product.platform
+ */
+export type Product$platformArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Platform
+   */
+  select?: Prisma.PlatformSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Platform
+   */
+  omit?: Prisma.PlatformOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformInclude<ExtArgs> | null
+  where?: Prisma.PlatformWhereInput
+  orderBy?: Prisma.PlatformOrderByWithRelationInput | Prisma.PlatformOrderByWithRelationInput[]
+  cursor?: Prisma.PlatformWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatformScalarFieldEnum | Prisma.PlatformScalarFieldEnum[]
 }
 
 /**

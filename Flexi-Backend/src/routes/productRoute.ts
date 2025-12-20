@@ -7,6 +7,7 @@ import {
   getProductByMemberId,
   getProductChoice,
   getProductChoiceWithPrice,
+  getProductChoiceWithId,
 } from "../controllers/productController";
 import authenticateToken from "../middleware/authMiddleware";
 // create express router
@@ -33,6 +34,10 @@ router.get("/choice/:memberId", authenticateToken, getProductChoice);
 
 //get product choice with price by member ID
  router.get("/choiceprice/:memberId", authenticateToken, getProductChoiceWithPrice);
+
+//get product choice with id by member ID
+router.get("/choiceid/:memberId", authenticateToken, getProductChoiceWithId);
+
 
 
 export default router;

@@ -17,7 +17,8 @@ export const Unit = {
   Box: 'Box',
   Pack: 'Pack',
   Set: 'Set',
-  Dozen: 'Dozen'
+  Dozen: 'Dozen',
+  NotSpecified: 'NotSpecified'
 } as const
 
 export type Unit = (typeof Unit)[keyof typeof Unit]
@@ -70,7 +71,8 @@ export const SocialMedia = {
   Lazada: 'Lazada',
   Instagram: 'Instagram',
   X: 'X',
-  Youtube: 'Youtube'
+  Youtube: 'Youtube',
+  Google: 'Google'
 } as const
 
 export type SocialMedia = (typeof SocialMedia)[keyof typeof SocialMedia]

@@ -4,15 +4,16 @@ import Joi from "joi";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
 const prisma = flexiDBPrismaClient;
+const platformModel: any = prisma.platform;
 
 // Interface for request body from client
 interface platformInput {
-
   platform: SocialMedia;
   accName: string;
   accId: string;
   adsCost?: number;
   memberId: string;
+  productId?: number | null;
 }
 
 // validate the request body
@@ -31,6 +32,7 @@ const schema = Joi.object({
   accName: Joi.string().required(),
   accId: Joi.string().required(),
   memberId: Joi.string().required(),
+  productId: Joi.number().allow(null).optional(),
 });
 
 //  Create a New platform - Post
@@ -60,14 +62,16 @@ const createPlatform = async (req: Request, res: Response) => {
       where : { uniqueId: platformInput.memberId },
       select:{ businessId: true }
     });
-    const newPlatform = await prisma.platform.create({
+    const newPlatform = await platformModel.create({
       data: {
         platform: platformInput.platform,
         accName: platformInput.accName,
         accId: platformInput.accId,
         businessAcc: businessAcc?.businessId ?? 0,
         memberId: platformInput.memberId,
+        productId: platformInput.productId ?? null,
       },
+      include: { product: true },
     });
     res.status(201).json(newPlatform);
   } catch (e) {
@@ -79,11 +83,12 @@ const createPlatform = async (req: Request, res: Response) => {
 const getPlatforms = async (req: Request, res: Response) => {
   const { memberId } = req.params;
   try {
-    const platforms = await prisma.platform.findMany({
+    const platforms = await platformModel.findMany({
       where: {
         memberId: memberId,
         deleted: false,
       },
+      include: { product: true },
     });
     console.log("🚀 Get Platforms:", platforms);
     res.json(platforms);
@@ -97,7 +102,7 @@ const getPlatforms = async (req: Request, res: Response) => {
 const getPlatformById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const platform = await prisma.platform.findUnique({
+    const platform = await platformModel.findUnique({
       where: {
         id: Number(id),
       },
@@ -137,7 +142,7 @@ const updatePlatform = async (req: Request, res: Response) => {
   const { id } = req.params;
   const platformInput: platformInput = req.body;
   try {
-    const platform = await prisma.platform.update({
+    const platform = await platformModel.update({
       where: {
         id: Number(id),
       },
@@ -145,9 +150,11 @@ const updatePlatform = async (req: Request, res: Response) => {
         platform: platformInput.platform,
         accName: platformInput.accName,
         accId: platformInput.accId,
+        productId: platformInput.productId ?? null,
       },
+      include: { product: true },
     });
-    res.json({});
+    res.json(platform);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to update platform" });
@@ -164,10 +171,11 @@ const searchPlatform = async (req: Request, res: Response) => {
   }
 
   try {
-    const platform = await prisma.platform.findMany({
+    const platform = await platformModel.findMany({
       where: {
         platform: SocialMedia as SocialMedia,
       },
+      include: { product: true },
     });
     res.json(platform);
   } catch (e) {

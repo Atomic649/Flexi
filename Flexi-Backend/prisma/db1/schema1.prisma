@@ -22,6 +22,7 @@ enum Unit {
   Pack
   Set
   Dozen
+  NotSpecified
 
   @@schema("flexidb")
 }
@@ -40,8 +41,7 @@ enum taxType {
   Juristic
   Individual
 
-    @@schema("flexidb")
-
+  @@schema("flexidb")
 }
 
 enum Gender {
@@ -49,7 +49,7 @@ enum Gender {
   Male
   NotSpecified
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum Payment {
@@ -59,7 +59,7 @@ enum Payment {
   Cash
   NotSpecified
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum SocialMedia {
@@ -71,9 +71,9 @@ enum SocialMedia {
   Instagram
   X
   Youtube
-  
-  
-    @@schema("flexidb")
+  Google
+
+  @@schema("flexidb")
 }
 
 enum IncomeChannel {
@@ -95,7 +95,7 @@ enum IncomeChannel {
   Affiliate
   Offline
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum Bank {
@@ -105,7 +105,7 @@ enum Bank {
   BBL
   TMB
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum BusinessType {
@@ -119,14 +119,14 @@ enum BusinessType {
   Influencer
   Other
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum MediaType {
   VIDEO
   IMAGE
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum ReactionType {
@@ -134,7 +134,7 @@ enum ReactionType {
   SPARK
   DISCREDIT
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum Category {
@@ -147,13 +147,13 @@ enum Category {
   Inventory
 
   @@schema("flexidb")
-  }
+}
 
 enum ProductType {
   Service
   Product
-  Rental   
-  
+  Rental
+
   @@schema("flexidb")
 }
 
@@ -165,7 +165,7 @@ enum OptionName {
   CreditLimit
   QuantityLimit
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum DocumentType {
@@ -176,16 +176,15 @@ enum DocumentType {
   CreditNote
   WithholdingTax
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 enum ExpenseStatus {
   Pass
   Fail
   Warning
-  
-  
-    @@schema("flexidb")
+
+  @@schema("flexidb")
 }
 
 enum ExpenseGroup {
@@ -212,7 +211,7 @@ enum ExpenseGroup {
   Maintenance
   Others
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model User {
@@ -231,9 +230,8 @@ model User {
   resetTokenExpiry DateTime? // Optional field for token expiry
   business         BusinessAcc[]
   member           Member[]
-  
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Member {
@@ -255,8 +253,8 @@ model Member {
   platform   Platform[]
   store      Store[]
   chat       ChatSession[]
-  
-    @@schema("flexidb")
+
+  @@schema("flexidb")
 }
 
 model BusinessAcc {
@@ -286,7 +284,7 @@ model BusinessAcc {
   product          Product[]
   documentCounters DocumentCounter[]
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model DocumentCounter {
@@ -297,7 +295,7 @@ model DocumentCounter {
   business     BusinessAcc  @relation(fields: [businessId], references: [id])
 
   @@unique([businessId, documentType])
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Bill {
@@ -338,7 +336,6 @@ model Bill {
   paymentTermCondition String? // Optional field for payment
   remark               String?
 
-
   // Relation   
   memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])
@@ -347,7 +344,7 @@ model Bill {
   storeId     Int
   store       Store       @relation(fields: [storeId], references: [id])
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model ProductItem {
@@ -363,7 +360,7 @@ model ProductItem {
   bill        Bill?   @relation(fields: [billId], references: [id])
   productList Product @relation(fields: [product], references: [name])
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model AdsCost {
@@ -383,7 +380,7 @@ model AdsCost {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   productList Product     @relation(fields: [product], references: [name])
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Expense {
@@ -420,7 +417,7 @@ model Expense {
   memberId       String
   member         Member         @relation(fields: [memberId], references: [uniqueId])
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Platform {
@@ -433,11 +430,13 @@ model Platform {
   platformId  AdsCost[]
   businessAcc Int
   memberId    String
+  productId   Int?
+  product     Product?    @relation("ProductPlatform", fields: [productId], references: [id])
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   deleted     Boolean?    @default(false)
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Store {
@@ -454,7 +453,7 @@ model Store {
   member       Member        @relation(fields: [memberId], references: [uniqueId])
   deleted      Boolean?      @default(false)
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model Product {
@@ -474,14 +473,15 @@ model Product {
   updatedAt   DateTime     @updatedAt
   deleted     Boolean?     @default(false)
 
-    @@schema("flexidb")
-
   // relation
   billRecord  ProductItem[]
   adsRecord   AdsCost[]
+  platform    Platform[]     @relation("ProductPlatform")
   member      Member        @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])
+
+  @@schema("flexidb")
 }
 
 model ChatSession {
@@ -495,7 +495,7 @@ model ChatSession {
   messages  ChatMessage[]
   deleted   Boolean?      @default(false)
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
 
 model ChatMessage {
@@ -505,6 +505,5 @@ model ChatMessage {
   sessionId String
   session   ChatSession @relation(fields: [sessionId], references: [id])
 
-    @@schema("flexidb")
+  @@schema("flexidb")
 }
-
