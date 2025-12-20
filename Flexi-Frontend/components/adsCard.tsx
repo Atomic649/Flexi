@@ -124,7 +124,9 @@ export default function AdsCard({
             >
               {accName}
             </Text>
-            <Ionicons name="link" size={16} color="#0ed093" className="ml-1 mt-1"/>
+            {productName ? (
+              <Ionicons name="link" size={16} color="#0ed093" className="ml-1 mt-1"/>
+            ) : null}
             {productName ? (
               <Text
                 className="text-sm text-zinc-500 font-pregular"
