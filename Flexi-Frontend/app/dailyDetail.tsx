@@ -55,6 +55,8 @@ type AdsDetail = {
   platform: {
     platform: string;
     accName: string;
+    accId?: string;
+    campaignId?: string;
   };
 };
 
@@ -495,8 +497,15 @@ export default function DailyDetail() {
                           <CustomText
                             className={`text-sm ${textColorClass} opacity-70`}
                           >
-                            {ad.platform.accName}
+                          {ad.platform.accName}
                           </CustomText>
+                          {(ad.platform.accId || ad.platform.campaignId) && (
+                            <CustomText
+                              className={`text-xs ${textColorClass} opacity-60 mt-1`}
+                            >
+                              {ad.platform.accId ? `${ad.platform.accId}` : ""}
+                            </CustomText>
+                          )}
                         </View>
                         <Text className={`font-bold text-base text-[#ef4444]`}>
                           {formatCurrency(ad.adsCost)}

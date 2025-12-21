@@ -412,6 +412,8 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
           select: {
             platform: true,
             accName: true,
+            accId: true,
+            campaignId: true,
           },
         },
       },
@@ -498,6 +500,8 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
           select: {
             platform: true,
             accName: true,
+            accId: true,
+            campaignId: true,
           },
         },
       },
