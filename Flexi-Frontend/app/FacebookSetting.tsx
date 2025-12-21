@@ -21,6 +21,7 @@ const FacebookSetting = () => {
 	const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
 	const [selectedAdSet, setSelectedAdSet] = useState<string | null>(null);
 	const [linkingPlatform, setLinkingPlatform] = useState(false);
+	const [linkedPlatforms, setLinkedPlatforms] = useState<any[]>([]);
 	const [alertConfig, setAlertConfig] = useState<{
 		visible: boolean;
 		title: string;
@@ -53,6 +54,18 @@ const FacebookSetting = () => {
 			setError(e?.message || "Failed to load ad accounts");
 		} finally {
 			setLoadingAccounts(false);
+		}
+	}, []);
+
+	const loadLinkedPlatforms = useCallback(async () => {
+		try {
+			const memberId = await getMemberId();
+			if (!memberId) return;
+			const data = await PlatformApi.getPlatformsAPI(memberId);
+			setLinkedPlatforms(data || []);
+		} catch (e) {
+			console.error("Failed to load linked platforms", e);
+			setLinkedPlatforms([]);
 		}
 	}, []);
 
@@ -123,7 +136,8 @@ const FacebookSetting = () => {
 
 	useEffect(() => {
 		loadAccounts();
-	}, [loadAccounts]);
+		loadLinkedPlatforms();
+	}, [loadAccounts, loadLinkedPlatforms]);
 
 	useEffect(() => {
 		loadCampaigns(selectedAccount);
@@ -160,19 +174,32 @@ const FacebookSetting = () => {
 
 	const renderCampaign = ({ item }: { item: FacebookCampaign }) => {
 		const active = selectedCampaign === item.id;
+		const linkedPlatform = linkedPlatforms.find((p: any) => p.accId === item.id);
+		const linkedProductName = linkedPlatform?.product?.name || linkedPlatform?.productName;
 		return (
-			<Pressable
-				onPress={() => setSelectedCampaign(item.id)}
-				style={[styles.row, active ? cardActive(theme) : cardInactive(theme)]}
-			>
-				<CustomText weight="medium">{item.name}</CustomText>
-				<CustomText className="text-sm" weight="regular">
-					{item.objective || ""}
-				</CustomText>
-				<CustomText className="text-xs" weight="regular">
-					{item.status || item.effectiveStatus || ""}
-				</CustomText>
-			</Pressable>
+			<View style={[styles.row, active ? cardActive(theme) : cardInactive(theme), styles.campaignRow]}>
+				<Pressable onPress={() => setSelectedCampaign(item.id)} style={{ flex: 1 }}>
+					<CustomText weight="medium">{item.name}</CustomText>
+					<CustomText className="text-sm" weight="regular">
+						{item.objective || ""}
+					</CustomText>
+					<CustomText className="text-xs" weight="regular">
+						{item.status || item.effectiveStatus || ""}
+					</CustomText>
+					{linkedProductName ? (
+						<CustomText className="text-xs" weight="regular">
+							Linked: {linkedProductName}
+						</CustomText>
+					) : null}
+				</Pressable>
+				<Ionicons
+					name="link"
+					size={22}
+					color={linkedProductName ? "#0ee9c5" : theme === "dark" ? "#ffffff" : "#000000"}
+					onPress={linkingPlatform ? undefined : () => handleLinkPlatform(item.id)}
+					style={linkingPlatform ? { opacity: 0.5, paddingLeft: 12 } : { paddingLeft: 12 }}
+				/>
+			</View>
 		);
 	};
 
@@ -260,15 +287,17 @@ const FacebookSetting = () => {
 		[showAlert]
 	);
 
-	const handleLinkPlatform = useCallback(async () => {
+	const handleLinkPlatform = useCallback(async (campaignIdParam?: string) => {
 		if (linkingPlatform) return;
 
-		if (!selectedCampaign) {
+		const targetCampaignId = campaignIdParam || selectedCampaign;
+
+		if (!targetCampaignId) {
 			showAlert("Select a campaign", "Please select a campaign to link.");
 			return;
 		}
 
-		const campaign = campaigns.find((c) => c.id === selectedCampaign);
+		const campaign = campaigns.find((c) => c.id === targetCampaignId);
 		if (!campaign) {
 			showAlert("Campaign not found", "Please try selecting the campaign again.");
 			return;
@@ -353,16 +382,9 @@ const FacebookSetting = () => {
 			<View style={{ height: 16 }} />
             {campaigns.length >= 1 && (
                 <View className='flex-row justify-between'>
-                    <CustomText weight="bold" className="text-lg mb-2">
-                        Campaigns
-                    </CustomText>
-                    <Ionicons
-                        name="link"
-                        size={24}
-                        color={theme === "dark" ? "#ffffff" : "#000000"}
-						onPress={linkingPlatform ? undefined : handleLinkPlatform}
-						style={linkingPlatform ? { opacity: 0.5 } : undefined}
-                    />
+					<CustomText weight="bold" className="text-lg mb-2">
+						Campaigns
+					</CustomText>
                 </View>
             )}
 
@@ -450,10 +472,14 @@ const styles = StyleSheet.create({
 		padding: 12,
 		borderRadius: 10,
 	},
+	campaignRow: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
 });
 
 const cardActive = (theme: string) => ({
-	backgroundColor: theme === "dark" ? "#0ee9c5" : "#e0f2fe",
+	backgroundColor: theme === "dark" ? "#0ee9c5" : "#d0f7f0",
 });
 
 const cardInactive = (theme: string) => ({
