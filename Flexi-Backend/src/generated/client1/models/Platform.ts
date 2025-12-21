@@ -43,6 +43,7 @@ export type PlatformMinAggregateOutputType = {
   platform: $Enums.SocialMedia | null
   accName: string | null
   accId: string | null
+  campaignId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   businessAcc: number | null
@@ -56,6 +57,7 @@ export type PlatformMaxAggregateOutputType = {
   platform: $Enums.SocialMedia | null
   accName: string | null
   accId: string | null
+  campaignId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   businessAcc: number | null
@@ -69,6 +71,7 @@ export type PlatformCountAggregateOutputType = {
   platform: number
   accName: number
   accId: number
+  campaignId: number
   createdAt: number
   updatedAt: number
   businessAcc: number
@@ -96,6 +99,7 @@ export type PlatformMinAggregateInputType = {
   platform?: true
   accName?: true
   accId?: true
+  campaignId?: true
   createdAt?: true
   updatedAt?: true
   businessAcc?: true
@@ -109,6 +113,7 @@ export type PlatformMaxAggregateInputType = {
   platform?: true
   accName?: true
   accId?: true
+  campaignId?: true
   createdAt?: true
   updatedAt?: true
   businessAcc?: true
@@ -122,6 +127,7 @@ export type PlatformCountAggregateInputType = {
   platform?: true
   accName?: true
   accId?: true
+  campaignId?: true
   createdAt?: true
   updatedAt?: true
   businessAcc?: true
@@ -222,6 +228,7 @@ export type PlatformGroupByOutputType = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId: string | null
   createdAt: Date
   updatedAt: Date
   businessAcc: number
@@ -258,6 +265,7 @@ export type PlatformWhereInput = {
   platform?: Prisma.EnumSocialMediaFilter<"Platform"> | $Enums.SocialMedia
   accName?: Prisma.StringFilter<"Platform"> | string
   accId?: Prisma.StringFilter<"Platform"> | string
+  campaignId?: Prisma.StringNullableFilter<"Platform"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntFilter<"Platform"> | number
@@ -275,6 +283,7 @@ export type PlatformOrderByWithRelationInput = {
   platform?: Prisma.SortOrder
   accName?: Prisma.SortOrder
   accId?: Prisma.SortOrder
+  campaignId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
@@ -290,6 +299,7 @@ export type PlatformOrderByWithRelationInput = {
 export type PlatformWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   accName?: string
+  campaignId?: string
   AND?: Prisma.PlatformWhereInput | Prisma.PlatformWhereInput[]
   OR?: Prisma.PlatformWhereInput[]
   NOT?: Prisma.PlatformWhereInput | Prisma.PlatformWhereInput[]
@@ -305,13 +315,14 @@ export type PlatformWhereUniqueInput = Prisma.AtLeast<{
   product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
-}, "id" | "accName">
+}, "id" | "accName" | "campaignId">
 
 export type PlatformOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   accName?: Prisma.SortOrder
   accId?: Prisma.SortOrder
+  campaignId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
@@ -333,6 +344,7 @@ export type PlatformScalarWhereWithAggregatesInput = {
   platform?: Prisma.EnumSocialMediaWithAggregatesFilter<"Platform"> | $Enums.SocialMedia
   accName?: Prisma.StringWithAggregatesFilter<"Platform"> | string
   accId?: Prisma.StringWithAggregatesFilter<"Platform"> | string
+  campaignId?: Prisma.StringNullableWithAggregatesFilter<"Platform"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Platform"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntWithAggregatesFilter<"Platform"> | number
@@ -345,6 +357,7 @@ export type PlatformCreateInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
@@ -359,6 +372,7 @@ export type PlatformUncheckedCreateInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -372,6 +386,7 @@ export type PlatformUpdateInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -386,6 +401,7 @@ export type PlatformUncheckedUpdateInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -400,6 +416,7 @@ export type PlatformCreateManyInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -412,6 +429,7 @@ export type PlatformUpdateManyMutationInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -422,6 +440,7 @@ export type PlatformUncheckedUpdateManyInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -450,6 +469,7 @@ export type PlatformCountOrderByAggregateInput = {
   platform?: Prisma.SortOrder
   accName?: Prisma.SortOrder
   accId?: Prisma.SortOrder
+  campaignId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
@@ -469,6 +489,7 @@ export type PlatformMaxOrderByAggregateInput = {
   platform?: Prisma.SortOrder
   accName?: Prisma.SortOrder
   accId?: Prisma.SortOrder
+  campaignId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
@@ -482,6 +503,7 @@ export type PlatformMinOrderByAggregateInput = {
   platform?: Prisma.SortOrder
   accName?: Prisma.SortOrder
   accId?: Prisma.SortOrder
+  campaignId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
@@ -644,6 +666,7 @@ export type PlatformCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
@@ -657,6 +680,7 @@ export type PlatformUncheckedCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -699,6 +723,7 @@ export type PlatformScalarWhereInput = {
   platform?: Prisma.EnumSocialMediaFilter<"Platform"> | $Enums.SocialMedia
   accName?: Prisma.StringFilter<"Platform"> | string
   accId?: Prisma.StringFilter<"Platform"> | string
+  campaignId?: Prisma.StringNullableFilter<"Platform"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   businessAcc?: Prisma.IntFilter<"Platform"> | number
@@ -711,6 +736,7 @@ export type PlatformCreateWithoutBusinessIdInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
@@ -724,6 +750,7 @@ export type PlatformUncheckedCreateWithoutBusinessIdInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberId: string
@@ -762,6 +789,7 @@ export type PlatformCreateWithoutPlatformIdInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
@@ -775,6 +803,7 @@ export type PlatformUncheckedCreateWithoutPlatformIdInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -803,6 +832,7 @@ export type PlatformUpdateWithoutPlatformIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -816,6 +846,7 @@ export type PlatformUncheckedUpdateWithoutPlatformIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -828,6 +859,7 @@ export type PlatformCreateWithoutProductInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
@@ -841,6 +873,7 @@ export type PlatformUncheckedCreateWithoutProductInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -880,6 +913,7 @@ export type PlatformCreateManyMemberInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -891,6 +925,7 @@ export type PlatformUpdateWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -904,6 +939,7 @@ export type PlatformUncheckedUpdateWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -917,6 +953,7 @@ export type PlatformUncheckedUpdateManyWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -929,6 +966,7 @@ export type PlatformCreateManyBusinessIdInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberId: string
@@ -940,6 +978,7 @@ export type PlatformUpdateWithoutBusinessIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -953,6 +992,7 @@ export type PlatformUncheckedUpdateWithoutBusinessIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -966,6 +1006,7 @@ export type PlatformUncheckedUpdateManyWithoutBusinessIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -978,6 +1019,7 @@ export type PlatformCreateManyProductInput = {
   platform: $Enums.SocialMedia
   accName: string
   accId: string
+  campaignId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   businessAcc: number
@@ -989,6 +1031,7 @@ export type PlatformUpdateWithoutProductInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1002,6 +1045,7 @@ export type PlatformUncheckedUpdateWithoutProductInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1015,6 +1059,7 @@ export type PlatformUncheckedUpdateManyWithoutProductInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   accName?: Prisma.StringFieldUpdateOperationsInput | string
   accId?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1058,6 +1103,7 @@ export type PlatformSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   platform?: boolean
   accName?: boolean
   accId?: boolean
+  campaignId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   businessAcc?: boolean
@@ -1076,6 +1122,7 @@ export type PlatformSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   platform?: boolean
   accName?: boolean
   accId?: boolean
+  campaignId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   businessAcc?: boolean
@@ -1092,6 +1139,7 @@ export type PlatformSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   platform?: boolean
   accName?: boolean
   accId?: boolean
+  campaignId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   businessAcc?: boolean
@@ -1108,6 +1156,7 @@ export type PlatformSelectScalar = {
   platform?: boolean
   accName?: boolean
   accId?: boolean
+  campaignId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   businessAcc?: boolean
@@ -1116,7 +1165,7 @@ export type PlatformSelectScalar = {
   deleted?: boolean
 }
 
-export type PlatformOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "accName" | "accId" | "createdAt" | "updatedAt" | "businessAcc" | "memberId" | "productId" | "deleted", ExtArgs["result"]["platform"]>
+export type PlatformOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "accName" | "accId" | "campaignId" | "createdAt" | "updatedAt" | "businessAcc" | "memberId" | "productId" | "deleted", ExtArgs["result"]["platform"]>
 export type PlatformInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   platformId?: boolean | Prisma.Platform$platformIdArgs<ExtArgs>
   product?: boolean | Prisma.Platform$productArgs<ExtArgs>
@@ -1148,6 +1197,7 @@ export type $PlatformPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     platform: $Enums.SocialMedia
     accName: string
     accId: string
+    campaignId: string | null
     createdAt: Date
     updatedAt: Date
     businessAcc: number
@@ -1585,6 +1635,7 @@ export interface PlatformFieldRefs {
   readonly platform: Prisma.FieldRef<"Platform", 'SocialMedia'>
   readonly accName: Prisma.FieldRef<"Platform", 'String'>
   readonly accId: Prisma.FieldRef<"Platform", 'String'>
+  readonly campaignId: Prisma.FieldRef<"Platform", 'String'>
   readonly createdAt: Prisma.FieldRef<"Platform", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Platform", 'DateTime'>
   readonly businessAcc: Prisma.FieldRef<"Platform", 'Int'>

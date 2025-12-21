@@ -128,6 +128,7 @@ export default function Dashboard() {
     income: 0,
     expense: 0,
     orders: 0,
+    adscost: 0,
   });
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
@@ -222,6 +223,7 @@ export default function Dashboard() {
         expense: metricsData.expense || 0,
         profitloss: metricsData.profitloss || 0,
         orders: metricsData.orders || 0,
+        adscost: metricsData.adscost || 0,
       });
 
       setSalesChartData(chartData || []);
@@ -558,6 +560,11 @@ export default function Dashboard() {
                   <MetricCard
                     title={t("dashboard.metrics.expense")}
                     value={formatCurrency(metrics.expense)}
+                    icon="cash-outline"
+                  />
+                  <MetricCard
+                    title={t("dashboard.metrics.adscost")}
+                    value={formatCurrency(metrics.adscost)}
                     icon="cash-outline"
                   />
                 </View>

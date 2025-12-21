@@ -11,7 +11,7 @@ interface platformInput {
   platform: SocialMedia;
   accName: string;
   accId: string;
-  adsCost?: number;
+  campaignId?: string;
   memberId: string;
   productId?: number | null;
 }
@@ -31,6 +31,7 @@ const schema = Joi.object({
   ),
   accName: Joi.string().required(),
   accId: Joi.string().required(),
+  campaignId: Joi.string().optional(),
   memberId: Joi.string().required(),
   productId: Joi.number().allow(null).optional(),
 });
@@ -50,6 +51,7 @@ const createPlatform = async (req: Request, res: Response) => {
         platform: platformInput.platform,
         accName: platformInput.accName,       
         memberId: platformInput.memberId, 
+        campaignId: platformInput.campaignId ?? null,
       },
     });
 
@@ -70,6 +72,7 @@ const createPlatform = async (req: Request, res: Response) => {
         businessAcc: businessAcc?.businessId ?? 0,
         memberId: platformInput.memberId,
         productId: platformInput.productId ?? null,
+        campaignId: platformInput.campaignId ?? null,
       },
       include: { product: true },
     });
@@ -88,7 +91,14 @@ const getPlatforms = async (req: Request, res: Response) => {
         memberId: memberId,
         deleted: false,
       },
-      include: { product: true },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
     console.log("🚀 Get Platforms:", platforms);
     res.json(platforms);
@@ -151,6 +161,7 @@ const updatePlatform = async (req: Request, res: Response) => {
         accName: platformInput.accName,
         accId: platformInput.accId,
         productId: platformInput.productId ?? null,
+        campaignId: platformInput.campaignId ?? null,
       },
       include: { product: true },
     });

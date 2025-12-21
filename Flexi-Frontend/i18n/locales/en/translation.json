@@ -603,7 +603,8 @@
       "income": "Income",
       "expense": "Expense",
       "profitloss": "Profit/Loss",
-      "orders": "Order"
+      "orders": "Order",
+      "adscost": "Ads Cost Forecast"
     }
   },
   "ads": {

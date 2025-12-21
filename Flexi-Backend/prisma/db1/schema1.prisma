@@ -425,6 +425,7 @@ model Platform {
   platform    SocialMedia
   accName     String      @unique
   accId       String
+  campaignId  String?      @unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   platformId  AdsCost[]

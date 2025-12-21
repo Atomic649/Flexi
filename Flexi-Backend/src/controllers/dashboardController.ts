@@ -114,7 +114,6 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const expensesAggregation = await prisma.expense.aggregate({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
         deleted: false,
         date: dateFilter,
         save: true
@@ -128,7 +127,6 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const adsCostAggregation = await prisma.adsCost.aggregate({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
         date: dateFilter,
         ...(productName ? { product: productName as string } : {})
       },
@@ -137,7 +135,12 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       }
     });
 
-    const expense = (expensesAggregation._sum.amount?.toNumber() || 0) + (adsCostAggregation._sum.adsCost?.toNumber() || 0);
+    const adsCostValue = adsCostAggregation._sum.adsCost?.toNumber() || 0;
+    const expenseOnly = expensesAggregation._sum.amount?.toNumber() || 0;
+    //const expense = expenseOnly + adsCostValue;
+     const expense = expenseOnly;
+
+
     const profitloss = income - expense;
 
     res.json({
@@ -147,7 +150,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       orders,
       totalDiscount,
       totalBillLevelDiscount,
-      totalBeforeDiscount
+      totalBeforeDiscount,
+      adscost: adsCostValue
     });
 
   } catch (error) {

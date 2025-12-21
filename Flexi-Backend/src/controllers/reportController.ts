@@ -79,26 +79,32 @@ const dailyReport = async (req: Request, res: Response) => {
       return acc;
     }, {});
 
-    // Merge dailyBills and dailyAdsCost
-    const result = Object.keys(dailyBills).map((date) => {
-      const adsCost = dailyAdsCost[date]?.adsCost ? Number(dailyAdsCost[date].adsCost) : 0;
-      const price = dailyBills[date].total;
-      const profit = price - adsCost;
-      const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
-      const ROI = adsCost ? parseFloat(((profit / adsCost) ).toFixed(1)) : 0.00;
+    // Merge dailyBills and dailyAdsCost (include days that have only adsCost)
+    const allDates = new Set([...Object.keys(dailyBills), ...Object.keys(dailyAdsCost)]);
+    const result = Array.from(allDates).map((date) => {
+      const bill = dailyBills[date];
+      const adsCostVal = dailyAdsCost[date]?.adsCost ? Number(dailyAdsCost[date].adsCost) : 0;
+      const price = bill?.total || 0;
+      const amount = bill?.amount || 0;
+      const totalDiscount = bill?.totalDiscount || 0;
+      const billLevelDiscount = bill?.billLevelDiscount || 0;
+      const beforeDiscount = bill?.beforeDiscount || 0;
+      const profit = price - adsCostVal;
+      const percentageAds = adsCostVal && price ? parseFloat(((adsCostVal / price) * 100).toFixed(2)) : 0.0;
+      const ROI = adsCostVal ? parseFloat(((profit / adsCostVal)).toFixed(1)) : 0.0;
       return {
         date: date,
-        amount: dailyBills[date].amount,
+        amount,
         sale: price,
-        adsCost: adsCost,
-        profit: profit,
-        percentageAds: percentageAds,
-        ROI: ROI,
-        totalDiscount: dailyBills[date].totalDiscount,
-        billLevelDiscount: dailyBills[date].billLevelDiscount,
-        beforeDiscount: dailyBills[date].beforeDiscount,
+        adsCost: adsCostVal,
+        profit,
+        percentageAds,
+        ROI,
+        totalDiscount,
+        billLevelDiscount,
+        beforeDiscount,
       };
-    });
+    }).sort((a, b) => (a.date < b.date ? -1 : 1));
     console.log(" 🚀 result", result);
     res.json(result);
   } catch (e) {
@@ -223,29 +229,39 @@ const monthlyReport = async (req: Request, res: Response) => {
     
     ;
 
-    // Merge monthlyBills , monthlyAdsCost and monthlyExpenses
-    const result = Object.keys(monthlyBills).map((date) => {
-      // Ensure adsCost is a number
+    // Merge monthlyBills , monthlyAdsCost and monthlyExpenses (include months with only ads/expenses)
+    const allMonths = new Set([
+      ...Object.keys(monthlyBills),
+      ...Object.keys(monthlyAdsCost),
+      ...Object.keys(monthlyExpenses),
+    ]);
+
+    const result = Array.from(allMonths).map((date) => {
+      const bill = monthlyBills[date];
       const adsCost = monthlyAdsCost[date]?.adsCost ? Number(monthlyAdsCost[date].adsCost) : 0;
       const expenses = monthlyExpenses[date]?.amount ? Number(monthlyExpenses[date].amount) : 0;
-      const price = monthlyBills[date].total;
+      const price = bill?.total || 0;
+      const amount = bill?.amount || 0;
+      const totalDiscount = bill?.totalDiscount || 0;
+      const billLevelDiscount = bill?.billLevelDiscount || 0;
+      const beforeDiscount = bill?.beforeDiscount || 0;
       const profit = price - expenses;
-      const percentageAds = adsCost ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.00;
-      const ROI = adsCost ? parseFloat(((profit / adsCost) ).toFixed(1)) : 0.00;
+      const percentageAds = adsCost && price ? parseFloat(((adsCost / price) * 100).toFixed(2)) : 0.0;
+      const ROI = adsCost ? parseFloat(((profit / adsCost)).toFixed(1)) : 0.0;
       return {
         month: date,
-        amount: monthlyBills[date].amount,
+        amount,
         sale: price,
-        adsCost: adsCost,
-        expenses: expenses,
-        profit: profit,
-        percentageAds: percentageAds,
-        ROI: ROI,
-        totalDiscount: monthlyBills[date].totalDiscount,
-        billLevelDiscount: monthlyBills[date].billLevelDiscount,
-        beforeDiscount: monthlyBills[date].beforeDiscount,
+        adsCost,
+        expenses,
+        profit,
+        percentageAds,
+        ROI,
+        totalDiscount,
+        billLevelDiscount,
+        beforeDiscount,
       };
-    });
+    }).sort((a, b) => (a.month < b.month ? -1 : 1));
 
     res.json(result);
       } catch (e) {

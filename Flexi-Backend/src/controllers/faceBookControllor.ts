@@ -1,9 +1,109 @@
 import { Request, Response } from "express";
 import axios from "axios";
+import cron from "node-cron";
+import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+import { Prisma, SocialMedia } from "../generated/client1/client";
 
 const graphApiVersion = process.env.FACEBOOK_GRAPH_VERSION || "v20.0";
 const graphApiUrl = `https://graph.facebook.com/${graphApiVersion}`;
 const accessToken = process.env.FACEBOOK_ACCESS_TOKEN ;
+
+const prisma = flexiDBPrismaClient;
+
+type CampaignSpendWithMeta = {
+	date: string;
+	campaignId: string;
+	campaignName: string;
+	spend: number;
+	currency: string;
+	platformId: number | null;
+	productId: number | null;
+	productName: string | null;
+	memberId: string | null;
+	businessAcc: number | null;
+	accId?: string | null;
+};
+
+const fetchFacebookCampaignDailySpend = async (params: {
+	adAccountId: string;
+	since: string;
+	until: string;
+	campaignId?: string;
+}): Promise<CampaignSpendWithMeta[]> => {
+	const { adAccountId, since, until, campaignId } = params;
+	const timeRange = { since, until };
+	const { data } = await axios.get(`${graphApiUrl}/${adAccountId}/insights`, {
+		params: {
+			fields: "campaign_id,campaign_name,spend,account_currency,date_start,date_stop",
+			time_increment: 1,
+			time_range: JSON.stringify(timeRange),
+			level: "campaign",
+			access_token: accessToken,
+			...(campaignId
+				? { filterings: JSON.stringify([{ field: "campaign.id", operator: "IN", value: [campaignId] }]) }
+				: {}),
+		},
+	});
+
+	const rows = Array.isArray(data?.data) ? data.data : [];
+	const campaignIds = rows
+		.map((row: any) => row?.campaign_id)
+		.filter((id: any): id is string => typeof id === "string" && id.length > 0);
+
+	let linkedPlatforms: Record<string, { platformId: number; productId: number | null; productName: string | null; memberId: string; businessAcc: number; }>; // map by campaignId and accId
+	linkedPlatforms = {};
+	if (campaignIds.length > 0) {
+		const platformRows = await prisma.platform.findMany({
+			where: {
+				platform: SocialMedia.Facebook,
+				deleted: false,
+				OR: [
+					{ campaignId: { in: campaignIds } },
+					{ accId: { in: [adAccountId, ...campaignIds] } },
+				],
+			},
+			select: {
+				id: true,
+				accId: true,
+				campaignId: true,
+				productId: true,
+				product: { select: { name: true } },
+				businessAcc: true,
+				memberId: true,
+			},
+		});
+
+		linkedPlatforms = platformRows.reduce((acc, row) => {
+			const payload = {
+				platformId: row.id,
+				productId: row.productId ?? null,
+				productName: row.product?.name ?? null,
+				memberId: row.memberId,
+				businessAcc: row.businessAcc,
+			};
+			if (row.campaignId) acc[row.campaignId] = payload;
+			if (row.accId) acc[row.accId] = payload;
+			return acc;
+		}, {} as Record<string, { platformId: number; productId: number | null; productName: string | null; memberId: string; businessAcc: number; }>);
+	}
+
+	return rows.map((row: any) => {
+		const linked = linkedPlatforms[row?.campaign_id || ""] || linkedPlatforms[adAccountId];
+		return {
+			date: row?.date_start || row?.date_stop,
+			campaignId: row?.campaign_id || "",
+			campaignName: row?.campaign_name || "",
+			spend: row?.spend ? Number(row.spend) : 0,
+			currency: row?.account_currency || "",
+			platformId: linked?.platformId ?? null,
+			productId: linked?.productId ?? null,
+			productName: linked?.productName ?? null,
+			memberId: linked?.memberId ?? null,
+			businessAcc: linked?.businessAcc ?? null,
+			accId: adAccountId,
+		} as CampaignSpendWithMeta;
+	});
+};
 
 
 
@@ -138,26 +238,7 @@ export const getFacebookCampaignDailySpend = async (req: Request, res: Response)
 	}
 
 	try {
-		const timeRange = { since, until };
-		const { data } = await axios.get(`${graphApiUrl}/${adAccountId}/insights`, {
-			params: {
-				fields: "campaign_id,campaign_name,spend,account_currency,date_start,date_stop",
-				time_increment: 1,
-				time_range: JSON.stringify(timeRange),
-				level: "campaign",
-				access_token: accessToken,
-				...(campaignId ? { filterings: JSON.stringify([{ field: "campaign.id", operator: "IN", value: [campaignId] }]) } : {}),
-			},
-		});
-
-		const rows = Array.isArray(data?.data) ? data.data : [];
-		const daily = rows.map((row: any) => ({
-			date: row?.date_start || row?.date_stop,
-			campaignId: row?.campaign_id || "",
-			campaignName: row?.campaign_name || "",
-			spend: row?.spend ? Number(row.spend) : 0,
-			currency: row?.account_currency || "",
-		}));
+		const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since, until, campaignId });
 
 		return res.json({
 			adAccountId,
@@ -383,5 +464,123 @@ export const getFacebookAds = async (req: Request, res: Response) => {
 		return res.status(status).json({ message });
 	}
 };
+
+const normalizeDateOnly = (dateStr: string, fallback: Date) => {
+	if (!dateStr) return fallback;
+	const parsed = new Date(`${dateStr}T00:00:00Z`);
+	return isNaN(parsed.getTime()) ? fallback : parsed;
+};
+
+const dedupeAdsCostRows = (rows: Prisma.AdsCostCreateManyInput[]) => {
+	const normalizeKeyDate = (value: Date | string) => {
+		const parsed = typeof value === "string" ? new Date(value) : value;
+		return isNaN(parsed.getTime()) ? "" : parsed.toISOString().slice(0, 10);
+	};
+
+	const map = new Map<string, Prisma.AdsCostCreateManyInput>();
+	for (const row of rows) {
+		const dateKey = normalizeKeyDate(row.date);
+		const key = `${dateKey}-${row.platformId}-${row.product}`;
+		if (!map.has(key)) map.set(key, row);
+	}
+	return Array.from(map.values());
+};
+
+const buildAdsCostRowsFromSpend = (daily: CampaignSpendWithMeta[], targetDate: Date) => {
+	return daily
+		.filter((row) => row.platformId && row.productName && row.memberId && row.businessAcc !== null && row.businessAcc !== undefined)
+		.map((row) => ({
+			date: normalizeDateOnly(row.date, targetDate),
+			adsCost: new Prisma.Decimal(row.spend || 0),
+			memberId: row.memberId as string,
+			platformId: row.platformId as number,
+			businessAcc: row.businessAcc as number,
+			product: row.productName as string,
+		})) as Prisma.AdsCostCreateManyInput[];
+};
+
+// Range ingestion (API): defaults to last 30 days, loops day-by-day per ad account
+const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; until?: string }) => {
+	if (!accessToken) {
+		console.warn("FACEBOOK_ACCESS_TOKEN is not configured; skipping Facebook ads cost ingestion job");
+		return { inserted: 0, message: "missing access token" };
+	}
+
+	const todayUtc = new Date();
+	const defaultUntil = new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth(), todayUtc.getUTCDate()));
+	const until = options?.until ? new Date(`${options.until}T00:00:00Z`) : defaultUntil;
+	const since = options?.since ? new Date(`${options.since}T00:00:00Z`) : new Date(until.getTime() - 29 * 24 * 60 * 60 * 1000);
+
+	const makeDateKey = (d: Date) => d.toISOString().slice(0, 10);
+	const dates: Date[] = [];
+	for (let ts = since.getTime(); ts <= until.getTime(); ts += 24 * 60 * 60 * 1000) {
+		dates.push(new Date(ts));
+	}
+
+	// Discover distinct Facebook ad accounts from platform table
+	const platformAccounts = await prisma.platform.findMany({
+		where: {
+			platform: SocialMedia.Facebook,
+			deleted: false,
+			accId: { notIn: ["", "null"] },
+		},
+		select: { accId: true },
+		distinct: ["accId"],
+	});
+
+	const adAccountIds = Array.from(
+		new Set(platformAccounts.map((p) => p.accId).filter((id): id is string => !!id && id.length > 0))
+	);
+
+	const rowsToInsert: Prisma.AdsCostCreateManyInput[] = [];
+	for (const adAccountId of adAccountIds) {
+		for (const date of dates) {
+			const dateStr = makeDateKey(date);
+			try {
+				const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since: dateStr, until: dateStr });
+				rowsToInsert.push(...buildAdsCostRowsFromSpend(daily, date));
+			} catch (error) {
+				console.error(`Failed to ingest spend for ad account ${adAccountId} on ${dateStr}`, error);
+			}
+		}
+	}
+
+	const deduped = dedupeAdsCostRows(rowsToInsert);
+	if (deduped.length === 0) {
+		console.log("Facebook ads cost ingestion: no rows to insert");
+		return { inserted: 0, message: "no rows" };
+	}
+
+	const result = await prisma.adsCost.createMany({ data: deduped, skipDuplicates: true });
+	console.log(`Facebook ads cost ingestion inserted ${result.count} rows from ${makeDateKey(since)} to ${makeDateKey(until)}`);
+	return { inserted: result.count, since: makeDateKey(since), until: makeDateKey(until) };
+};
+
+// Single-day ingestion (Cron): target yesterday only
+const ingestFacebookSpendYesterdayToAdsCosts = async () => {
+	const todayUtc = new Date();
+	const yesterday = new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth(), todayUtc.getUTCDate() - 1));
+	const dateStr = yesterday.toISOString().slice(0, 10);
+	return ingestFacebookSpendRangeToAdsCosts({ since: dateStr, until: dateStr });
+};
+
+export const runFacebookAdsCostIngestion = async (req: Request, res: Response) => {
+	try {
+		const { since, until } = req.query;
+		const result = await ingestFacebookSpendRangeToAdsCosts({
+			since: since ? String(since) : undefined,
+			until: until ? String(until) : undefined,
+		});
+		return res.status(200).json({ status: "ok", ...result });
+	} catch (error: any) {
+		console.error("Failed to run Facebook ads cost ingestion", error);
+		return res.status(500).json({ message: "Failed to ingest Facebook ads costs", error: error?.message || String(error) });
+	}
+};
+
+export const facebookAdsCostCronJob = cron.schedule("9 0 * * *", async () => {
+	console.log("Running Facebook ads cost ingestion cron (00:09)");
+	await ingestFacebookSpendYesterdayToAdsCosts();
+});
 
 export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds };

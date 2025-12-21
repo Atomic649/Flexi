@@ -45,6 +45,7 @@ class CallAPIPlatform {
     accId: string;   
     memberId: string;
     productId?: number | null;
+    campaignId?: string | null;
   }): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();

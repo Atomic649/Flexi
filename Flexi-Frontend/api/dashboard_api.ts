@@ -7,6 +7,7 @@ interface DashboardMetrics {
   expense: number;
   profitloss: number;
   orders: number;
+  adscost?: number;
   conversion?: number;
 }
 
