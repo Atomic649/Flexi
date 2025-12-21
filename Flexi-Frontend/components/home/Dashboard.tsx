@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import {
   ScrollView,
   View,
@@ -45,6 +45,7 @@ type MetricCardProps = {
   icon: keyof typeof Ionicons.glyphMap;
   flex?: number; // Add flex prop instead of width for better control
   valueColor?: string; // Add optional color prop for the value
+  children?: ReactNode;
 };
 
 const MetricCard = ({
@@ -53,6 +54,7 @@ const MetricCard = ({
   icon,
   flex = 1,
   valueColor,
+  children,
 }: MetricCardProps) => {
   const { theme } = useTheme();
 
@@ -104,6 +106,7 @@ const MetricCard = ({
       >
         {value}
       </Text>
+      {children}
     </View>
   );
 };
@@ -561,12 +564,39 @@ export default function Dashboard() {
                     title={t("dashboard.metrics.expense")}
                     value={formatCurrency(metrics.expense)}
                     icon="cash-outline"
-                  />
-                  <MetricCard
-                    title={t("dashboard.metrics.adscost")}
-                    value={formatCurrency(metrics.adscost)}
-                    icon="cash-outline"
-                  />
+                  >
+                    <View
+                      style={{
+                        marginTop: 12,
+                        paddingTop: 12,
+                        borderTopWidth: 1,
+                        borderTopColor:
+                          theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.05)",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <Ionicons
+                          name="megaphone-outline"
+                          size={16}
+                          color={theme === "dark" ? "#c9c9c9" : "#75726a"}
+                          style={{ marginRight: 6 }}
+                        />
+                        <CustomText style={{ fontSize: 13, opacity: 0.8 }}>
+                          {t("dashboard.metrics.adscost")}
+                        </CustomText>
+                      </View>
+                      <CustomText weight="bold" style={{ fontSize: 14 }}>
+                        {formatCurrency(metrics.adscost)}
+                      </CustomText>
+                    </View>
+                  </MetricCard>
                 </View>
               </View>
 
