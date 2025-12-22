@@ -1677,5 +1677,41 @@
       "repayment": "Repayment Method",
       "contact": "Contact Information"
     }
+  },
+  "facebook": {
+    "adAccounts": "Facebook Ad Accounts",
+    "campaigns": "Campaigns",
+    "adSets": "Ad Sets",
+    "ads": "Ads",
+    "noCampaigns": "No campaigns found.",
+    "noAdSets": "No ad sets found.",
+    "noAds": "No ads found.",
+    "linked": "Linked",
+    "dailyBudget": "Daily budget",
+    "lifetimeBudget": "Lifetime budget",
+    "creative": "Creative",
+    "errors": {
+      "loadAccounts": "Failed to load ad accounts",
+      "loadCampaigns": "Failed to load campaigns",
+      "loadAdSets": "Failed to load ad sets",
+      "loadAds": "Failed to load ads",
+      "missingAccount": "Missing ad account",
+      "missingAccountMsg": "Could not find ad account id. Please reselect an account.",
+      "linkSuccess": "Campaign linked to platform successfully.",
+      "linkFailed": "Failed to link platform",
+      "selectCampaign": "Select a campaign",
+      "selectCampaignMsg": "Please select a campaign to link.",
+      "campaignNotFound": "Campaign not found",
+      "campaignNotFoundMsg": "Please try selecting the campaign again.",
+      "missingMember": "Missing member",
+      "missingMemberMsg": "Could not find memberId. Please re-login.",
+      "noProducts": "No products",
+      "createProductMsg": "Please create a product before linking.",
+      "productsReadError": "Products could not be read. Please try again.",
+      "selectProduct": "Select product",
+      "selectProductMsg": "Choose a product to associate with this campaign.",
+      "productNoId": "Selected product has no id.",
+      "loadProducts": "Failed to load products"
+    }
   }
 }

@@ -240,8 +240,17 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+
+        <Stack.Screen
+          name="FacebookSetting"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("facebook.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         
-{/* product */}
+        {/* product */}
         <Stack.Screen
           name="product"
           options={{

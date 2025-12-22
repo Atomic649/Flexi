@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
-  FlatList,
   Pressable,
   ActivityIndicator,
-  StyleSheet,
+  ScrollView,
 } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { CustomText } from "@/components/CustomText";
@@ -20,10 +19,13 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getMemberId } from "@/utils/utility";
 import CustomAlert from "@/components/CustomAlert";
+import { useBackgroundColorClass } from "@/utils/themeUtils";
+import { useTranslation } from "react-i18next";
 
 const FacebookSetting = () => {
   const { theme } = useTheme();
   const router = useRouter();
+  const { t } = useTranslation();
   const [accounts, setAccounts] = useState<FacebookAdAccount[]>([]);
   const [campaigns, setCampaigns] = useState<FacebookCampaign[]>([]);
   const [adSets, setAdSets] = useState<FacebookAdSet[]>([]);
@@ -66,11 +68,11 @@ const FacebookSetting = () => {
         setSelectedAccount(data[0].id);
       }
     } catch (e: any) {
-      setError(e?.message || "Failed to load ad accounts");
+      setError(e?.message || t("facebook.errors.loadAccounts"));
     } finally {
       setLoadingAccounts(false);
     }
-  }, []);
+  }, [t]);
 
   const loadLinkedPlatforms = useCallback(async () => {
     try {
@@ -99,12 +101,12 @@ const FacebookSetting = () => {
         setSelectedCampaign(data[0].id);
       }
     } catch (e: any) {
-      setError(e?.message || "Failed to load campaigns");
+      setError(e?.message || t("facebook.errors.loadCampaigns"));
       setCampaigns([]);
     } finally {
       setLoadingCampaigns(false);
     }
-  }, []);
+  }, [t]);
 
   const loadAdSets = useCallback(async (campaignId: string | null) => {
     if (!campaignId) return;
@@ -116,14 +118,14 @@ const FacebookSetting = () => {
       setSelectedAdSet(data.length > 0 ? data[0].id : null);
       setAds([]);
     } catch (e: any) {
-      setAdSetError(e?.message || "Failed to load ad sets");
+      setAdSetError(e?.message || t("facebook.errors.loadAdSets"));
       setAdSets([]);
       setSelectedAdSet(null);
       setAds([]);
     } finally {
       setLoadingAdSets(false);
     }
-  }, []);
+  }, [t]);
 
   const loadAds = useCallback(async (adSetId: string | null) => {
     if (!adSetId) return;
@@ -133,12 +135,12 @@ const FacebookSetting = () => {
       const data = await FacebookApi.getAds(adSetId);
       setAds(data);
     } catch (e: any) {
-      setAdError(e?.message || "Failed to load ads");
+      setAdError(e?.message || t("facebook.errors.loadAds"));
       setAds([]);
     } finally {
       setLoadingAds(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadAccounts();
@@ -164,14 +166,33 @@ const FacebookSetting = () => {
     const displayId = item.id?.replace(/^act_/, "") || item.id;
     return (
       <Pressable
+        key={item.id}
         onPress={() => setSelectedAccount(item.id)}
-        style={[styles.card, active ? cardActive(theme) : cardInactive(theme)]}
+        style={{
+          backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+          borderColor: active
+            ? theme === "dark"
+              ? "#00fad9"
+              : "#09ddc1"
+            : theme === "dark"
+            ? "#3f3f42"
+            : "#e5e7eb",
+          borderWidth: active ? 2 : 1,
+          borderRadius: 16,
+          padding: 16,
+          marginRight: 12,
+          minWidth: 160,
+          shadowColor: theme === "dark" ? "#000" : "#ccc",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+        }}
       >
         <CustomText weight="medium">{item.name || item.id}</CustomText>
-        <CustomText className="text-xs" weight="regular">
+        <CustomText className="text-xs opacity-70" weight="regular">
           {displayId}
         </CustomText>
-        <CustomText className="text-sm" weight="regular">
+        <CustomText className="text-sm mt-1" weight="regular">
           {item.currency || ""}
         </CustomText>
       </Pressable>
@@ -187,26 +208,42 @@ const FacebookSetting = () => {
       linkedPlatform?.product?.name || linkedPlatform?.productName;
     return (
       <View
-        style={[
-          styles.row,
-          active ? cardActive(theme) : cardInactive(theme),
-          styles.campaignRow,
-        ]}
+        key={item.id}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+          borderColor: active
+            ? theme === "dark"
+              ? "#00fad9"
+              : "#09ddc1"
+            : theme === "dark"
+            ? "#3f3f42"
+            : "#e5e7eb",
+          borderWidth: active ? 2 : 1,
+          borderRadius: 16,
+          padding: 16,
+          marginBottom: 12,
+          shadowColor: theme === "dark" ? "#000" : "#ccc",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+        }}
       >
         <Pressable
           onPress={() => setSelectedCampaign(item.id)}
           style={{ flex: 1 }}
         >
           <CustomText weight="medium">{item.name}</CustomText>
-          <CustomText className="text-sm" weight="regular">
+          <CustomText className="text-sm opacity-70" weight="regular">
             {item.objective || ""}
           </CustomText>
-          <CustomText className="text-xs" weight="regular">
+          <CustomText className="text-xs opacity-50" weight="regular">
             {item.status || item.effectiveStatus || ""}
           </CustomText>
           {linkedProductName ? (
-            <CustomText className="text-xs" weight="regular">
-              Linked: {linkedProductName}
+            <CustomText className="text-xs" style={{ color: "#0ee9c5" }} weight="regular">
+              {t("facebook.linked")}: {linkedProductName}
             </CustomText>
           ) : null}
         </Pressable>
@@ -233,47 +270,81 @@ const FacebookSetting = () => {
     );
   };
 
-  const renderAdSet = ({ item }: { item: FacebookAdSet }) => (
-    <Pressable
-      onPress={() => setSelectedAdSet(item.id)}
-      style={[
-        styles.row,
-        selectedAdSet === item.id ? cardActive(theme) : cardInactive(theme),
-      ]}
-    >
-      <CustomText weight="medium">{item.name}</CustomText>
-      <CustomText className="text-sm" weight="regular">
-        {item.status || item.effectiveStatus || ""}
-      </CustomText>
-      <CustomText className="text-xs" weight="regular">
-        {item.optimizationGoal || ""}
-      </CustomText>
-      {(item.dailyBudget || item.lifetimeBudget) && (
-        <CustomText className="text-xs" weight="regular">
-          {item.dailyBudget ? `Daily budget: ${item.dailyBudget}` : ""}
-          {item.dailyBudget && item.lifetimeBudget ? " • " : ""}
-          {item.lifetimeBudget ? `Lifetime budget: ${item.lifetimeBudget}` : ""}
+  const renderAdSet = ({ item }: { item: FacebookAdSet }) => {
+    const active = selectedAdSet === item.id;
+    return (
+      <Pressable
+        key={item.id}
+        onPress={() => setSelectedAdSet(item.id)}
+        style={{
+          backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+          borderColor: active
+            ? theme === "dark"
+              ? "#00fad9"
+              : "#09ddc1"
+            : theme === "dark"
+            ? "#3f3f42"
+            : "#e5e7eb",
+          borderWidth: active ? 2 : 1,
+          borderRadius: 16,
+          padding: 16,
+          marginBottom: 12,
+          shadowColor: theme === "dark" ? "#000" : "#ccc",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+        }}
+      >
+        <CustomText weight="medium">{item.name}</CustomText>
+        <CustomText className="text-sm opacity-70" weight="regular">
+          {item.status || item.effectiveStatus || ""}
         </CustomText>
-      )}
-    </Pressable>
-  );
+        <CustomText className="text-xs opacity-50" weight="regular">
+          {item.optimizationGoal || ""}
+        </CustomText>
+        {(item.dailyBudget || item.lifetimeBudget) && (
+          <CustomText className="text-xs opacity-50" weight="regular">
+            {item.dailyBudget ? `${t("facebook.dailyBudget")}: ${item.dailyBudget}` : ""}
+            {item.dailyBudget && item.lifetimeBudget ? " • " : ""}
+            {item.lifetimeBudget
+              ? `${t("facebook.lifetimeBudget")}: ${item.lifetimeBudget}`
+              : ""}
+          </CustomText>
+        )}
+      </Pressable>
+    );
+  };
 
   const renderAd = ({ item }: { item: FacebookAd }) => (
-    <View style={[styles.row, cardInactive(theme)]}>
+    <View
+      key={item.id}
+      style={{
+        backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+        borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
+        borderWidth: 1,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: theme === "dark" ? "#000" : "#ccc",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      }}
+    >
       <CustomText weight="medium">{item.name}</CustomText>
-      <CustomText className="text-sm" weight="regular">
+      <CustomText className="text-sm opacity-70" weight="regular">
         {item.status || item.effectiveStatus || ""}
       </CustomText>
       {item.creative?.name && (
-        <CustomText className="text-xs" weight="regular">
-          Creative: {item.creative.name}
+        <CustomText className="text-xs opacity-50" weight="regular" numberOfLines={2}>
+          {t("facebook.creative")}: {item.creative.name}
         </CustomText>
       )}
       {(item.dailyBudget || item.lifetimeBudget) && (
-        <CustomText className="text-xs" weight="regular">
-          {item.dailyBudget ? `Daily budget: ${item.dailyBudget}` : ""}
+        <CustomText className="text-xs opacity-50" weight="regular">
+          {item.dailyBudget ? `${t("facebook.dailyBudget")}: ${item.dailyBudget}` : ""}
           {item.dailyBudget && item.lifetimeBudget ? " • " : ""}
-          {item.lifetimeBudget ? `Lifetime budget: ${item.lifetimeBudget}` : ""}
+          {item.lifetimeBudget ? `${t("facebook.lifetimeBudget")}: ${item.lifetimeBudget}` : ""}
         </CustomText>
       )}
     </View>
@@ -286,18 +357,18 @@ const FacebookSetting = () => {
       message,
       buttons: [
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: () =>
             setAlertConfig((prev) => ({ ...prev, visible: false })),
         },
       ],
     });
-  }, []);
+  }, [t]);
 
   const linkCampaignWithProduct = useCallback(
     async (campaign: FacebookCampaign, memberId: string, productId: number) => {
       if (!selectedAccount) {
-        showAlert("Missing ad account", "Could not find ad account id. Please reselect an account.");
+        showAlert(t("facebook.errors.missingAccount"), t("facebook.errors.missingAccountMsg"));
         return;
       }
       try {
@@ -311,17 +382,17 @@ const FacebookSetting = () => {
           productId,
         });
 
-        showAlert("Linked", "Campaign linked to platform successfully.");
+        showAlert(t("facebook.linked"), t("facebook.errors.linkSuccess"));
         router.replace("/ads");
       } catch (err: any) {
         const message =
-          err?.message || err?.data?.message || "Failed to link platform";
-        showAlert("Error", message);
+          err?.message || err?.data?.message || t("facebook.errors.linkFailed");
+        showAlert(t("common.error"), message);
       } finally {
         setLinkingPlatform(false);
       }
     },
-    [showAlert, selectedAccount]
+    [showAlert, selectedAccount, t]
   );
 
   const handleLinkPlatform = useCallback(
@@ -331,15 +402,15 @@ const FacebookSetting = () => {
       const targetCampaignId = campaignIdParam || selectedCampaign;
 
       if (!targetCampaignId) {
-        showAlert("Select a campaign", "Please select a campaign to link.");
+        showAlert(t("facebook.errors.selectCampaign"), t("facebook.errors.selectCampaignMsg"));
         return;
       }
 
       const campaign = campaigns.find((c) => c.id === targetCampaignId);
       if (!campaign) {
         showAlert(
-          "Campaign not found",
-          "Please try selecting the campaign again."
+          t("facebook.errors.campaignNotFound"),
+          t("facebook.errors.campaignNotFoundMsg")
         );
         return;
       }
@@ -348,15 +419,15 @@ const FacebookSetting = () => {
         const memberId = await getMemberId();
         if (!memberId) {
           showAlert(
-            "Missing member",
-            "Could not find memberId. Please re-login."
+            t("facebook.errors.missingMember"),
+            t("facebook.errors.missingMemberMsg")
           );
           return;
         }
 
         const products = await CallAPIProduct.getProductChoiceIdAPI(memberId);
         if (!Array.isArray(products) || products.length === 0) {
-          showAlert("No products", "Please create a product before linking.");
+          showAlert(t("facebook.errors.noProducts"), t("facebook.errors.createProductMsg"));
           return;
         }
 
@@ -369,30 +440,30 @@ const FacebookSetting = () => {
 
         if (normalizedProducts.length === 0) {
           showAlert(
-            "No products",
-            "Products could not be read. Please try again."
+            t("facebook.errors.noProducts"),
+            t("facebook.errors.productsReadError")
           );
           return;
         }
 
         setAlertConfig({
           visible: true,
-          title: "Select product",
-          message: "Choose a product to associate with this campaign.",
+          title: t("facebook.errors.selectProduct"),
+          message: t("facebook.errors.selectProductMsg"),
           buttons: [
             ...normalizedProducts.map((product: any) => ({
               text: product.name,
               onPress: () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
                 if (product.id === undefined || product.id === null) {
-                  showAlert("Error", "Selected product has no id.");
+                  showAlert(t("common.error"), t("facebook.errors.productNoId"));
                   return;
                 }
                 linkCampaignWithProduct(campaign, memberId, Number(product.id));
               },
             })),
             {
-              text: "Cancel",
+              text: t("common.cancel"),
               style: "cancel",
               onPress: () =>
                 setAlertConfig((prev) => ({ ...prev, visible: false })),
@@ -401,8 +472,8 @@ const FacebookSetting = () => {
         });
       } catch (err: any) {
         const message =
-          err?.message || err?.data?.message || "Failed to load products";
-        showAlert("Error", message);
+          err?.message || err?.data?.message || t("facebook.errors.loadProducts");
+        showAlert(t("common.error"), message);
       }
     },
     [
@@ -411,61 +482,52 @@ const FacebookSetting = () => {
       linkingPlatform,
       linkCampaignWithProduct,
       showAlert,
+      t,
     ]
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: theme === "dark" ? "#0f172a" : "#fff" },
-      ]}
-    >
-      <CustomText weight="bold" className="text-xl mb-3">
-        Facebook Ad Accounts
-      </CustomText>
-
-      {loadingAccounts ? (
-        <ActivityIndicator />
-      ) : error ? (
-        <CustomText className="text-red-500">{error}</CustomText>
-      ) : (
-        <FlatList
-          data={accounts}
-          keyExtractor={(item) => item.id}
-          renderItem={renderAccount}
-          horizontal
-          ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 8 }}
-        />
-      )}
-
-      <View style={{ height: 16 }} />
-      <View className="flex-row justify-between">
-        <CustomText weight="bold" className="text-lg mb-2">
-          Campaigns
+    <View className={`h-full ${useBackgroundColorClass()}`}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <CustomText weight="bold" className="text-xl mb-3">
+          {t("facebook.adAccounts")}
         </CustomText>
-      </View>
+
+        {loadingAccounts ? (
+          <ActivityIndicator />
+        ) : error ? (
+          <CustomText className="text-red-500">{error}</CustomText>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 16 }}
+          >
+            {accounts.map((item) => renderAccount({ item }))}
+          </ScrollView>
+        )}
+
+        <View style={{ height: 16 }} />
+        <View className="flex-row justify-between">
+          <CustomText weight="bold" className="text-lg mb-2">
+            {t("facebook.campaigns")}
+          </CustomText>
+        </View>
 
       {loadingCampaigns ? (
         <ActivityIndicator />
       ) : campaigns.length === 0 ? (
-        <CustomText>No campaigns found.</CustomText>
+        <CustomText>{t("facebook.noCampaigns")}</CustomText>
       ) : (
-        <FlatList
-          data={campaigns}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCampaign}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          contentContainerStyle={{ paddingVertical: 8 }}
-        />
+        <View style={{ paddingVertical: 8 }}>
+          {campaigns.map((item) => renderCampaign({ item }))}
+        </View>
       )}
 
       <View style={{ height: 16 }} />
 
       <CustomText weight="bold" className="text-lg mb-2">
-        Ad Sets
+        {t("facebook.adSets")}
       </CustomText>
 
       {loadingAdSets ? (
@@ -473,21 +535,17 @@ const FacebookSetting = () => {
       ) : adSetError ? (
         <CustomText className="text-red-500">{adSetError}</CustomText>
       ) : adSets.length === 0 ? (
-        <CustomText>No ad sets found.</CustomText>
+        <CustomText>{t("facebook.noAdSets")}</CustomText>
       ) : (
-        <FlatList
-          data={adSets}
-          keyExtractor={(item) => item.id}
-          renderItem={renderAdSet}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          contentContainerStyle={{ paddingVertical: 8 }}
-        />
+        <View style={{ paddingVertical: 8 }}>
+          {adSets.map((item) => renderAdSet({ item }))}
+        </View>
       )}
 
       <View style={{ height: 16 }} />
 
       <CustomText weight="bold" className="text-lg mb-2">
-        Ads
+        {t("facebook.ads")}
       </CustomText>
 
       {loadingAds ? (
@@ -495,15 +553,11 @@ const FacebookSetting = () => {
       ) : adError ? (
         <CustomText className="text-red-500">{adError}</CustomText>
       ) : ads.length === 0 ? (
-        <CustomText>No ads found.</CustomText>
+        <CustomText>{t("facebook.noAds")}</CustomText>
       ) : (
-        <FlatList
-          data={ads}
-          keyExtractor={(item) => item.id}
-          renderItem={renderAd}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          contentContainerStyle={{ paddingVertical: 8 }}
-        />
+        <View style={{ paddingVertical: 8 }}>
+          {ads.map((item) => renderAd({ item }))}
+        </View>
       )}
 
       <CustomAlert
@@ -513,37 +567,9 @@ const FacebookSetting = () => {
         buttons={alertConfig.buttons}
         onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
       />
+      </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  card: {
-    padding: 12,
-    borderRadius: 12,
-    minWidth: 160,
-    maxHeight: 150,
-  },
-  row: {
-    padding: 12,
-    borderRadius: 10,
-  },
-  campaignRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
-
-const cardActive = (theme: string) => ({
-  backgroundColor: theme === "dark" ? "#0ee9c5" : "#e1faf5",
-});
-
-const cardInactive = (theme: string) => ({
-  backgroundColor: theme === "dark" ? "#1f2937" : "#f3f4f6",
-});
 
 export default FacebookSetting;
