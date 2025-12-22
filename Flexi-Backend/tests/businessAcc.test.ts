@@ -19,7 +19,7 @@ const prismaMock: any = {
     create: jest.fn(),
   },
   product: { create: jest.fn() },
-  store: { create: jest.fn() },
+  platform: { create: jest.fn() },
   $transaction: (cb: any) => cb(prismaMock),
 };
 
@@ -85,7 +85,7 @@ describe("businessAccController", () => {
       ...data,
     }));
     prismaMock.member.update.mockResolvedValue({});
-    prismaMock.store.create.mockResolvedValue({ id: 201 });
+    prismaMock.platform.create.mockResolvedValue({ id: 201 });
     prismaMock.product.create.mockResolvedValue({ id: 301 });
   });
 
@@ -227,7 +227,7 @@ describe("businessAccController", () => {
         ...data,
       }));
       prismaMock.member.update.mockResolvedValue({});
-      prismaMock.store.create.mockResolvedValue({ id: 303 });
+      prismaMock.platform.create.mockResolvedValue({ id: 303 });
     });
 
     test("rejects WithholdingTax in DocumentType for AddMore (current validation list)", async () => {

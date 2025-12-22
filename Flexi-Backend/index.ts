@@ -100,9 +100,6 @@ import reportRoutes from "./src/routes/reportRoute";
 // Import pdf Routes
 import pdfRoutes from "./src/routes/pdfRoute";
 
-// Import Store Routes
-import storeRoutes from "./src/routes/storeRoute";
-
 // Import B2B Routes
 import b2BRoutes from "./src/routes/B2BRoute";
 
@@ -154,9 +151,6 @@ app.use("/report", reportRoutes);
 
 // Pdf Routes
 app.use("/pdf", pdfRoutes);
-
-// Store Routes
-app.use("/store", storeRoutes);
 
 // B2B Routes
 app.use("/b2b", b2BRoutes);

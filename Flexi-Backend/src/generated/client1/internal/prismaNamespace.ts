@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.1.0
- * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
+ * Prisma Client JS version: 7.2.0
+ * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.1.0",
-  engine: "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba"
+  client: "7.2.0",
+  engine: "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3"
 }
 
 /**
@@ -393,7 +393,6 @@ export const ModelName = {
   AdsCost: 'AdsCost',
   Expense: 'Expense',
   Platform: 'Platform',
-  Store: 'Store',
   Product: 'Product',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage'
@@ -412,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "member" | "businessAcc" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "store" | "product" | "chatSession" | "chatMessage"
+    modelProps: "user" | "member" | "businessAcc" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "product" | "chatSession" | "chatMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1082,80 +1081,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Store: {
-      payload: Prisma.$StorePayload<ExtArgs>
-      fields: Prisma.StoreFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.StoreFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.StoreFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        findFirst: {
-          args: Prisma.StoreFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.StoreFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        findMany: {
-          args: Prisma.StoreFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>[]
-        }
-        create: {
-          args: Prisma.StoreCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        createMany: {
-          args: Prisma.StoreCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.StoreCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>[]
-        }
-        delete: {
-          args: Prisma.StoreDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        update: {
-          args: Prisma.StoreUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        deleteMany: {
-          args: Prisma.StoreDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.StoreUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.StoreUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>[]
-        }
-        upsert: {
-          args: Prisma.StoreUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorePayload>
-        }
-        aggregate: {
-          args: Prisma.StoreAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateStore>
-        }
-        groupBy: {
-          args: Prisma.StoreGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.StoreGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.StoreCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.StoreCountAggregateOutputType> | number
-        }
-      }
-    }
     Product: {
       payload: Prisma.$ProductPayload<ExtArgs>
       fields: Prisma.ProductFieldRefs
@@ -1502,7 +1427,6 @@ export const BillScalarFieldEnum = {
   totalQuotation: 'totalQuotation',
   beforeDiscount: 'beforeDiscount',
   purchaseAt: 'purchaseAt',
-  platform: 'platform',
   cashStatus: 'cashStatus',
   image: 'image',
   deleted: 'deleted',
@@ -1518,9 +1442,10 @@ export const BillScalarFieldEnum = {
   rentalStockReleased: 'rentalStockReleased',
   paymentTermCondition: 'paymentTermCondition',
   remark: 'remark',
+  platform: 'platform',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
-  storeId: 'storeId'
+  platformId: 'platformId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -1604,21 +1529,6 @@ export const PlatformScalarFieldEnum = {
 } as const
 
 export type PlatformScalarFieldEnum = (typeof PlatformScalarFieldEnum)[keyof typeof PlatformScalarFieldEnum]
-
-
-export const StoreScalarFieldEnum = {
-  id: 'id',
-  platform: 'platform',
-  accName: 'accName',
-  accId: 'accId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  businessAcc: 'businessAcc',
-  memberId: 'memberId',
-  deleted: 'deleted'
-} as const
-
-export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {
@@ -1846,16 +1756,16 @@ export type ListEnumPaymentFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
 
 
 /**
- * Reference to a field of type 'IncomeChannel'
+ * Reference to a field of type 'SocialMedia'
  */
-export type EnumIncomeChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncomeChannel'>
+export type EnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia'>
     
 
 
 /**
- * Reference to a field of type 'IncomeChannel[]'
+ * Reference to a field of type 'SocialMedia[]'
  */
-export type ListEnumIncomeChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncomeChannel[]'>
+export type ListEnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia[]'>
     
 
 
@@ -1926,20 +1836,6 @@ export type EnumExpenseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ExpenseStatus[]'
  */
 export type ListEnumExpenseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExpenseStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'SocialMedia'
- */
-export type EnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia'>
-    
-
-
-/**
- * Reference to a field of type 'SocialMedia[]'
- */
-export type ListEnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia[]'>
     
 
 
@@ -2088,7 +1984,6 @@ export type GlobalOmitConfig = {
   adsCost?: Prisma.AdsCostOmit
   expense?: Prisma.ExpenseOmit
   platform?: Prisma.PlatformOmit
-  store?: Prisma.StoreOmit
   product?: Prisma.ProductOmit
   chatSession?: Prisma.ChatSessionOmit
   chatMessage?: Prisma.ChatMessageOmit

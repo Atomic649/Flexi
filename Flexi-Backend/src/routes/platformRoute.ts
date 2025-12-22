@@ -6,6 +6,7 @@ import {
   updatePlatform,
   deletePlatform,
   searchPlatform,
+  getPlatformListByMemberId
 } from "../controllers/platformController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -28,5 +29,8 @@ router.put("/:id", authenticateToken, updatePlatform);
 
 // Searching Platform by keyword
 router.get("/search/:keyword", authenticateToken, searchPlatform);
+
+// Getting Platform List by Member ID
+router.get("/platformEnum/:memberId", authenticateToken, getPlatformListByMemberId);
 
 export default router;

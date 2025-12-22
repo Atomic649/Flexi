@@ -60,7 +60,6 @@ export const ModelName = {
   AdsCost: 'AdsCost',
   Expense: 'Expense',
   Platform: 'Platform',
-  Store: 'Store',
   Product: 'Product',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage'
@@ -167,7 +166,6 @@ export const BillScalarFieldEnum = {
   totalQuotation: 'totalQuotation',
   beforeDiscount: 'beforeDiscount',
   purchaseAt: 'purchaseAt',
-  platform: 'platform',
   cashStatus: 'cashStatus',
   image: 'image',
   deleted: 'deleted',
@@ -183,9 +181,10 @@ export const BillScalarFieldEnum = {
   rentalStockReleased: 'rentalStockReleased',
   paymentTermCondition: 'paymentTermCondition',
   remark: 'remark',
+  platform: 'platform',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
-  storeId: 'storeId'
+  platformId: 'platformId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -269,21 +268,6 @@ export const PlatformScalarFieldEnum = {
 } as const
 
 export type PlatformScalarFieldEnum = (typeof PlatformScalarFieldEnum)[keyof typeof PlatformScalarFieldEnum]
-
-
-export const StoreScalarFieldEnum = {
-  id: 'id',
-  platform: 'platform',
-  accName: 'accName',
-  accId: 'accId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  businessAcc: 'businessAcc',
-  memberId: 'memberId',
-  deleted: 'deleted'
-} as const
-
-export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {

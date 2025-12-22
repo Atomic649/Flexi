@@ -16,7 +16,7 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { isDesktop, isMobile } from "@/utils/responsive";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
-import CallAPIStore from "@/api/store_api";
+import CallAPIPlatform from "@/api/platform_api";
 import CallDashboardAPI from "@/api/dashboard_api";
 import { format } from "date-fns";
 import Dropdown3 from "../dropdown/Dropdown3";
@@ -117,9 +117,9 @@ export default function Dashboard() {
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-  const [stores, setStores] = useState<any[]>([]);
+  const [platforms, setPlatforms] = useState<any[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-  const [selectedStore, setSelectedStore] = useState<string | null>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<
     "today" | "thisMonth" | "custom"
@@ -135,7 +135,7 @@ export default function Dashboard() {
   });
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
-  const [topStores, setTopStores] = useState<any[]>([]);
+  const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
 
   useEffect(() => {
     fetchInitialData();
@@ -144,7 +144,7 @@ export default function Dashboard() {
   useEffect(() => {
     // Fetch dashboard data when filters change
     fetchDashboardData();
-  }, [selectedDates, selectedProduct, selectedStore, selectedPeriod]);
+  }, [selectedDates, selectedProduct, selectedPlatform, selectedPeriod]);
 
   const fetchInitialData = async () => {
     setIsLoading(true);
@@ -152,14 +152,14 @@ export default function Dashboard() {
       const memberId = await getMemberId();
       console.log("Member ID:", memberId);
       if (memberId) {
-        // Fetch products and stores for filters
-        const [productResponse, storeResponse] = await Promise.all([
+        // Fetch products and platforms for filters
+        const [productResponse, platformResponse] = await Promise.all([
           CallAPIProduct.getProductChoiceAPI(memberId),
-          CallAPIStore.getStoresAPI(memberId),
+          CallAPIPlatform.getPlatformsAPI(memberId),
         ]);
 
         setProducts(productResponse || []);
-        setStores(storeResponse || []);
+        setPlatforms(platformResponse || []);
 
         // Fetch initial dashboard data
         await fetchDashboardData();
@@ -201,18 +201,18 @@ export default function Dashboard() {
         filters.productName = selectedProduct;
       }
 
-      // Add store filter if selected
-      if (selectedStore) {
-        const store = stores.find((s) => s.accName === selectedStore);
-        if (store) {
-          filters.storeId = store.id;
+      // Add platform filter if selected
+      if (selectedPlatform) {
+        const platform = platforms.find((p) => p.accName === selectedPlatform);
+        if (platform) {
+          filters.platformId = platform.id;
         }
       }
 
       console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData, storesData] =
+      const [metricsData, chartData, productsData, platformsData] =
         await Promise.all([
           CallDashboardAPI.getDashboardMetricsAPI(filters),
           CallDashboardAPI.getSalesChartDataAPI(filters),
@@ -231,7 +231,7 @@ export default function Dashboard() {
 
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
-      setTopStores(storesData || []);
+      setTopPlatforms(platformsData || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -265,15 +265,15 @@ export default function Dashboard() {
     }
   };
 
-  // Format products and stores data for dropdown
+  // Format products and platforms data for dropdown
   const productOptions = products.map((product) => ({
     label: product.name,
     value: product.name,
   }));
 
-  const storeOptions = stores.map((store) => ({
-    label: store.accName || "No Name",
-    value: store.accName || "No Name",
+  const platformOptions = platforms.map((platform) => ({
+    label: platform.accName || "No Name",
+    value: platform.accName || "No Name",
   }));
 
   return (
@@ -484,7 +484,7 @@ export default function Dashboard() {
                 />
               </View>
 
-              {/* Store Filter */}
+              {/* Platform Filter */}
               <View
                 style={{
                   flex: 1,
@@ -493,13 +493,13 @@ export default function Dashboard() {
               >
                 <Dropdown3
                   options={[
-                    { label: "All Stores", value: "" },
-                    ...storeOptions,
+                    { label: "All Platforms", value: "" },
+                    ...platformOptions,
                   ]}
-                  placeholder={t("dashboard.filter.chooseStore")}
-                  selectedValue={selectedStore || ""}
+                  placeholder={t("dashboard.filter.choosePlatform")}
+                  selectedValue={selectedPlatform || ""}
                   onValueChange={(value: string) =>
-                    setSelectedStore(value || null)
+                    setSelectedPlatform(value || null)
                   }
                   bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
                   bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
@@ -765,7 +765,7 @@ export default function Dashboard() {
                 )}
               </View>
 
-              {/* Top Stores - New Section */}
+              {/* Top Platforms - New Section */}
               <View
                 style={{
                   backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
@@ -788,7 +788,7 @@ export default function Dashboard() {
                     style={{ marginRight: 8 }}
                   />
                   <CustomText weight="bold" className="text-lg pt-1">
-                    {t("dashboard.topStores.title")}
+                    {t("dashboard.topPlatforms.title")}
                   </CustomText>
                   <View
                     style={{
@@ -800,14 +800,14 @@ export default function Dashboard() {
                     }}
                   >
                     <CustomText weight="bold" className="text-sm pt-1">
-                      {topStores.length}
+                      {topPlatforms.length}
                     </CustomText>
                   </View>
                 </View>
 
-                {topStores.length > 0 ? (
+                {topPlatforms.length > 0 ? (
                   <View>
-                    {topStores.map((store, index) => (
+                    {topPlatforms.map((platform, index) => (
                       <View
                         key={index}
                         style={{
@@ -816,7 +816,7 @@ export default function Dashboard() {
                           alignItems: "center",
                           paddingVertical: 12,
                           borderBottomWidth:
-                            index < topStores.length - 1 ? 1 : 0,
+                            index < topPlatforms.length - 1 ? 1 : 0,
                           borderBottomColor:
                             theme === "dark" ? "#3f3f42" : "#e5e7eb",
                         }}
@@ -828,20 +828,20 @@ export default function Dashboard() {
                               color: theme === "dark" ? "#c9c9c9" : "#48453e",
                             }}
                           >
-                            {store.name}
+                            {platform.name}
                           </CustomText>
                           <View className="flex-row gap-2">
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              {store.orders}
+                              {platform.orders}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
                               {`${t("common.orders")} •`}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                              {store.sales}
+                              {platform.sales}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                               {t(`product.unit.${store.unit}`)}
+                               {t(`product.unit.${platform.unit}`)}
                             </CustomText>
                           </View>
                         </View>
@@ -851,7 +851,7 @@ export default function Dashboard() {
                             color: theme === "dark" ? "#00fad9" : "#09ddc1",
                           }}
                         >
-                          {formatCurrency(store.revenue)}
+                          {formatCurrency(platform.revenue)}
                         </CustomText>
                       </View>
                     ))}
@@ -870,7 +870,7 @@ export default function Dashboard() {
                       color={theme === "dark" ? "#3f3f42" : "#e5e7eb"}
                     />
                     <CustomText className="mt-4 opacity-50">
-                      {t("dashboard.topStores.noData")}
+                      {t("dashboard.topPlatforms.noData")}
                     </CustomText>
                   </View>
                 )}

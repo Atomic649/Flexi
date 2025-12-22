@@ -10,7 +10,7 @@ const platformModel: any = prisma.platform;
 interface platformInput {
   platform: SocialMedia;
   accName: string;
-  accId: string;
+  accId?: string;
   campaignId?: string;
   memberId: string;
   productId?: number | null;
@@ -30,7 +30,7 @@ const schema = Joi.object({
     "Google"
   ),
   accName: Joi.string().required(),
-  accId: Joi.string().required(),
+  accId: Joi.string().optional(),
   campaignId: Joi.string().optional(),
   memberId: Joi.string().required(),
   productId: Joi.number().allow(null).optional(),
@@ -193,7 +193,30 @@ const searchPlatform = async (req: Request, res: Response) => {
     console.error(e);
     res.status(500).json({ message: "Failed to get platform" });
   }
-};
+}
+
+// get platformlist enum by memberID - Get
+const getPlatformListByMemberId = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  try {
+    const platformList = await platformModel.findMany({
+      where: {
+        memberId: memberId,
+        deleted: false,
+      },
+      select: {
+        platform: true,
+      },
+      distinct: ['platform'],
+    });
+    const platforms = platformList.map((item) => item.platform);
+    console.log("🚀 Get Platform List:", platforms);
+    res.json(platforms);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get platform list" });
+  }
+}
 export {
   createPlatform,
   getPlatforms,
@@ -201,4 +224,5 @@ export {
   deletePlatform,
   updatePlatform,
   searchPlatform,
+  getPlatformListByMemberId,
 };

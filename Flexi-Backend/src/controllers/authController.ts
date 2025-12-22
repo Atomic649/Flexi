@@ -312,24 +312,7 @@ const permanentlyDelete = async (req: Request, res: Response) => {
       },
     });
 
-    //Store
-    // First, get all stores for this businessAcc
-    const stores = await Prisma.store.findMany({
-      where: { businessAcc: businessAcc.businessId },
-    });
-    // For each store, delete all bills with that storeId
-    for (const store of stores) {
-      await Prisma.bill.deleteMany({
-        where: { storeId: store.id },
-      });
-    }
-    // Now delete the stores
-    await Prisma.store.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
-    });
-
+    
     //Product
     // First, get all products for this businessAcc
     const products = await Prisma.product.findMany({

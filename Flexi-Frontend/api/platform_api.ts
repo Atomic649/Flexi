@@ -99,6 +99,23 @@ class CallAPIPlatform {
       }
     }
   }
-}
 
+
+  // Get Platform List by Member ID
+  async getPlatformEnumAPI(memberId: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/platform/platformEnum/${memberId}`);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Platform List API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
+}
 export default new CallAPIPlatform();

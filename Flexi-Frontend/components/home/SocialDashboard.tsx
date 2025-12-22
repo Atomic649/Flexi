@@ -22,14 +22,14 @@ import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import { router } from "expo-router";
 import { isDesktop } from "@/utils/responsive";
-import CallAPIStore from "@/api/store_api";
+import CallAPIPlatform from "@/api/platform_api";
 export default function SocialDashboard() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [productChoice, setProductChoice] = useState<any[]>([]);
-  const [store, setStore] = useState<any[]>([]);
+  const [platform, setPlatform] = useState<any[]>([]);
   const [productChoiceVisible, setProductChoiceVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [marketingChecked, setMarketingChecked] = useState(false);
@@ -48,20 +48,20 @@ export default function SocialDashboard() {
       }
     };
 
-    const fetchStore = async () => {
+    const fetchPlatform = async () => {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIStore.getStoresAPI(memberId);
-          setStore(response);
+          const response = await CallAPIPlatform.getPlatformsAPI(memberId);
+          setPlatform(response);
         }
       } catch (error) {
-        console.error("Error fetching store:", error);
+        console.error("Error fetching platform:", error);
       }
     };
 
     fetchProductChoice();
-    fetchStore();
+    fetchPlatform();
   }, []);
 
   const handleDatesChange = (dates: string[]) => {
@@ -79,8 +79,8 @@ export default function SocialDashboard() {
       : t("dashboard.selectDate");
 
   let noProduct = productChoice.length === 0;
-  let noStore = store.length === 0;
-  let atleatOneOfProductOrStoreIsNone = noProduct || noStore;
+  let noPlatform = platform.length === 0;
+  let atleatOneOfProductOrStoreIsNone = noProduct || noPlatform;
 
   return (
     <LinearGradient
@@ -170,17 +170,17 @@ export default function SocialDashboard() {
                   )}
                 </View>
 
-                {/*Store */}
+                {/*Platform */}
                 <View className="flex-row space-x-4 items-start justify-start gap-2 m-2">
                   <Ionicons
                     name={
-                      store.length > 0
+                      platform.length > 0
                         ? "checkmark-circle-outline"
                         : "close-circle-outline"
                     }
                     size={20}
                     color={
-                      store.length > 0
+                      platform.length > 0
                         ? theme === "dark"
                           ? "#a1a1aa"
                           : "#02c796"
@@ -189,7 +189,7 @@ export default function SocialDashboard() {
                         : "#ff3a03"
                     }
                   />
-                  {/* Store request message */}
+                  {/* Platform request message */}
                   <CustomText
                     className="text-sm text-center"
                     style={{
@@ -198,11 +198,11 @@ export default function SocialDashboard() {
                   >
                     {t("dashboard.start.noStore")}
                   </CustomText>
-                  {/* Route to store */}
-                  {store.length === 0 && (
+                  {/* Route to platform */}
+                  {platform.length === 0 && (
                     <CustomText
                       className="text-sm underline"
-                      onPress={() => router.push("/createstore")}
+                      onPress={() => router.push("/createads")}
                       style={{
                         color: theme === "dark" ? "#a1a1aa" : "#02c796",
                       }}
@@ -312,7 +312,7 @@ export default function SocialDashboard() {
             </View>
           )}
 
-          {productChoice.length >= 1 && store.length >= 1 && (
+          {productChoice.length >= 1 && platform.length >= 1 && (
             <View
               style={{
                 width: isDesktop() ? "40%" : "100%",

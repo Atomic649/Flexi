@@ -72,33 +72,11 @@ export const SocialMedia = {
   Instagram: 'Instagram',
   X: 'X',
   Youtube: 'Youtube',
-  Google: 'Google'
-} as const
-
-export type SocialMedia = (typeof SocialMedia)[keyof typeof SocialMedia]
-
-
-export const IncomeChannel = {
-  Storefornt: 'Storefornt',
-  Facebook: 'Facebook',
-  Line: 'Line',
-  Tiktok: 'Tiktok',
-  Shopee: 'Shopee',
-  Lazada: 'Lazada',
-  Instagram: 'Instagram',
-  X: 'X',
-  Youtube: 'Youtube',
   Google: 'Google',
-  SCB: 'SCB',
-  KBANK: 'KBANK',
-  KTB: 'KTB',
-  BBL: 'BBL',
-  TMB: 'TMB',
-  Affiliate: 'Affiliate',
   Offline: 'Offline'
 } as const
 
-export type IncomeChannel = (typeof IncomeChannel)[keyof typeof IncomeChannel]
+export type SocialMedia = (typeof SocialMedia)[keyof typeof SocialMedia]
 
 
 export const Bank = {

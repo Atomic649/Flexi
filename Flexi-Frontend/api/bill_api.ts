@@ -56,7 +56,7 @@ class CallAPIBill {
         payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
         businessAcc: number;
-        storeId: number;
+        platform: string;
         image?: string;
         productItems: Array<{
             product: string;
@@ -107,7 +107,7 @@ class CallAPIBill {
         payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
         businessAcc: number;
-        storeId: number;
+        platform: string;
         image?: string;
         productItems: Array<{
             product: string;

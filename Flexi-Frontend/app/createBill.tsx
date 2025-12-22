@@ -22,7 +22,7 @@ import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
-import CallAPIStore from "@/api/store_api";
+import CallAPIPlatform from "@/api/platform_api";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -67,9 +67,8 @@ export default function CreateBill() {
   const duplicateBillId =
     parsedDuplicateId !== null && !Number.isNaN(parsedDuplicateId)
       ? parsedDuplicateId
-      : null;
-  const [storeId, setStoreId] = useState<number>(0);
-  const [stores, setStores] = useState<any[]>([]);
+      : null;const [platformOptions, setPlatformOptions] = useState<any[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
 
@@ -298,18 +297,16 @@ export default function CreateBill() {
           setPaymentTermCondition(defaultTerm);
         }
       }
-      // Fetch stores for this member
+      // Fetch platforms for this member
       if (uniqueId) {
         try {
-          const storesData = await CallAPIStore.getStoresAPI(uniqueId);
-          setStores(storesData);
-          // Do NOT auto-select the first store
-          // if (storesData.length > 0) {
-          //   setStoreId(storesData[0].id);
-          //   console.log("Store ID set to:", storesData[0].id);
-          // }
+          const platformData = await CallAPIPlatform.getPlatformEnumAPI(
+            uniqueId
+          );
+          setPlatformOptions(Array.isArray(platformData) ? platformData : []);
         } catch (error) {
-          console.error("Failed to fetch stores:", error);
+          console.error("Failed to fetch platforms:", error);
+          setPlatformOptions([]);
         }
       }
     };
@@ -433,7 +430,7 @@ export default function CreateBill() {
       setTaxId(billData.cTaxId ?? "");
       setPayment(billData.payment ?? "NotSpecified");
       setCashStatus(Boolean(billData.cashStatus));
-      setStoreId(billData.storeId ?? 0);
+      setSelectedPlatform(billData.platform ?? "");
       if (billData.businessAcc !== undefined && billData.businessAcc !== null) {
         setBusinessAcc(billData.businessAcc);
       }
@@ -634,15 +631,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
-
-          // Set storeId to the store with name "Tiktok Affiliate" if it exists
-          const tiktokStore = stores.find(
-            (store) => store.accName === "Tiktok"
-          );
-          if (tiktokStore) {
-            setStoreId(tiktokStore.id);
-            console.log("Store ID set to:", tiktokStore.id);
-          }
+          setSelectedPlatform("Tiktok")
         }
         // Auto-fill customer fields if product is Shopee Affiliate
         if (value === "Shopee Affiliate") {
@@ -660,15 +649,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
-
-          // Set storeId to the store with name "Shopee Affiliate" if it exists
-          const shopeeStore = stores.find(
-            (store) => store.accName === "Shopee"
-          );
-          if (shopeeStore) {
-            setStoreId(shopeeStore.id);
-            console.log("Store ID set to:", shopeeStore.id);
-          }
+          setSelectedPlatform("Shopee")
         }
       }
       return updated;
@@ -706,7 +687,7 @@ export default function CreateBill() {
     if (!cAddress) missingFields.push(t("bill.customerAddress"));
     if (!cPostId) missingFields.push(t("bill.customerPostal"));
     if (!cProvince) missingFields.push(t("bill.customerProvince"));
-    if (!storeId) missingFields.push(t("bill.store"));
+    if (!selectedPlatform) missingFields.push(t("bill.platform"));
 
     if (missingFields.length > 0) {
       setAlertConfig({
@@ -824,7 +805,7 @@ export default function CreateBill() {
           | "NotSpecified",
         memberId: memberId || "",
         businessAcc,
-        storeId,
+        platform: selectedPlatform,
         image,
         productItems: productItems.map((item) => ({
           product: item.product,
@@ -903,7 +884,7 @@ export default function CreateBill() {
     setCashStatus(false);
     setTaxType("Individual");
     setMemberId(memberId); // keep memberId for context, but reset fields
-    setStoreId(0); // Reset storeId to 0
+    setSelectedPlatform("");
     setIsRepeat(businessType === "Rental");
     setRepeatMonths(1);
     setRepeatMonthsInput("1");
@@ -1184,22 +1165,21 @@ export default function CreateBill() {
 
             <View className="flex flex-row justify-between items-center">
               <View className="w-1/2 pr-2">
-                {stores.length > 0 ? (
+                {platformOptions.length > 0 ? (
                   <DropdownClear
                     title={t("bill.store")}
-                    options={stores.map((store) => ({
-                      label: store.accName,
-                      value: store.id.toString(),
-                    }))}
+                    options={platformOptions.map((plat) => {
+                      if (typeof plat === "string") {
+                        return { label: plat, value: plat };
+                      }
+                      const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                      const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                      return { label, value };
+                    })}
                     placeholder={t("bill.selectStore")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    selectedValue={
-                      storeId
-                        ? stores.find((store) => store.id === storeId)
-                            ?.accName || ""
-                        : ""
-                    }
-                    onValueChange={(value: any) => setStoreId(Number(value))}
+                    selectedValue={selectedPlatform}
+                    onValueChange={(value: any) => setSelectedPlatform(value)}
                     borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
                     textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}

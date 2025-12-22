@@ -251,7 +251,6 @@ export type MemberWhereInput = {
   expense?: Prisma.ExpenseListRelationFilter
   product?: Prisma.ProductListRelationFilter
   platform?: Prisma.PlatformListRelationFilter
-  store?: Prisma.StoreListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
 }
 
@@ -271,7 +270,6 @@ export type MemberOrderByWithRelationInput = {
   expense?: Prisma.ExpenseOrderByRelationAggregateInput
   product?: Prisma.ProductOrderByRelationAggregateInput
   platform?: Prisma.PlatformOrderByRelationAggregateInput
-  store?: Prisma.StoreOrderByRelationAggregateInput
   chat?: Prisma.ChatSessionOrderByRelationAggregateInput
 }
 
@@ -294,7 +292,6 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   expense?: Prisma.ExpenseListRelationFilter
   product?: Prisma.ProductListRelationFilter
   platform?: Prisma.PlatformListRelationFilter
-  store?: Prisma.StoreListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
 }, "uniqueId">
 
@@ -342,7 +339,6 @@ export type MemberCreateInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -360,7 +356,6 @@ export type MemberUncheckedCreateInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -378,7 +373,6 @@ export type MemberUpdateInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -396,7 +390,6 @@ export type MemberUncheckedUpdateInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -645,20 +638,6 @@ export type MemberUpdateOneRequiredWithoutPlatformNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutPlatformInput, Prisma.MemberUpdateWithoutPlatformInput>, Prisma.MemberUncheckedUpdateWithoutPlatformInput>
 }
 
-export type MemberCreateNestedOneWithoutStoreInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutStoreInput, Prisma.MemberUncheckedCreateWithoutStoreInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutStoreInput
-  connect?: Prisma.MemberWhereUniqueInput
-}
-
-export type MemberUpdateOneRequiredWithoutStoreNestedInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutStoreInput, Prisma.MemberUncheckedCreateWithoutStoreInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutStoreInput
-  upsert?: Prisma.MemberUpsertWithoutStoreInput
-  connect?: Prisma.MemberWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutStoreInput, Prisma.MemberUpdateWithoutStoreInput>, Prisma.MemberUncheckedUpdateWithoutStoreInput>
-}
-
 export type MemberCreateNestedOneWithoutProductInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutProductInput, Prisma.MemberUncheckedCreateWithoutProductInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProductInput
@@ -700,7 +679,6 @@ export type MemberCreateWithoutUserInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -717,7 +695,6 @@ export type MemberUncheckedCreateWithoutUserInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -774,7 +751,6 @@ export type MemberCreateWithoutBusinessInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -791,7 +767,6 @@ export type MemberUncheckedCreateWithoutBusinessInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -834,7 +809,6 @@ export type MemberCreateWithoutBillInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -851,7 +825,6 @@ export type MemberUncheckedCreateWithoutBillInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -884,7 +857,6 @@ export type MemberUpdateWithoutBillInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -901,7 +873,6 @@ export type MemberUncheckedUpdateWithoutBillInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -918,7 +889,6 @@ export type MemberCreateWithoutAdsCostInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -935,7 +905,6 @@ export type MemberUncheckedCreateWithoutAdsCostInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -968,7 +937,6 @@ export type MemberUpdateWithoutAdsCostInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -985,7 +953,6 @@ export type MemberUncheckedUpdateWithoutAdsCostInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1002,7 +969,6 @@ export type MemberCreateWithoutExpenseInput = {
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -1019,7 +985,6 @@ export type MemberUncheckedCreateWithoutExpenseInput = {
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1052,7 +1017,6 @@ export type MemberUpdateWithoutExpenseInput = {
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -1069,7 +1033,6 @@ export type MemberUncheckedUpdateWithoutExpenseInput = {
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1086,7 +1049,6 @@ export type MemberCreateWithoutPlatformInput = {
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -1103,7 +1065,6 @@ export type MemberUncheckedCreateWithoutPlatformInput = {
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1136,7 +1097,6 @@ export type MemberUpdateWithoutPlatformInput = {
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -1153,91 +1113,6 @@ export type MemberUncheckedUpdateWithoutPlatformInput = {
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
-  chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type MemberCreateWithoutStoreInput = {
-  uniqueId?: string
-  role?: $Enums.UserRole
-  permission: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  deleted?: boolean | null
-  user: Prisma.UserCreateNestedOneWithoutMemberInput
-  business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
-  bill?: Prisma.BillCreateNestedManyWithoutMemberInput
-  adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
-  expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
-  product?: Prisma.ProductCreateNestedManyWithoutMemberInput
-  platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
-}
-
-export type MemberUncheckedCreateWithoutStoreInput = {
-  uniqueId?: string
-  role?: $Enums.UserRole
-  permission: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  deleted?: boolean | null
-  userId: number
-  businessId?: number | null
-  bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
-  adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
-  expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
-  product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
-  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type MemberCreateOrConnectWithoutStoreInput = {
-  where: Prisma.MemberWhereUniqueInput
-  create: Prisma.XOR<Prisma.MemberCreateWithoutStoreInput, Prisma.MemberUncheckedCreateWithoutStoreInput>
-}
-
-export type MemberUpsertWithoutStoreInput = {
-  update: Prisma.XOR<Prisma.MemberUpdateWithoutStoreInput, Prisma.MemberUncheckedUpdateWithoutStoreInput>
-  create: Prisma.XOR<Prisma.MemberCreateWithoutStoreInput, Prisma.MemberUncheckedCreateWithoutStoreInput>
-  where?: Prisma.MemberWhereInput
-}
-
-export type MemberUpdateToOneWithWhereWithoutStoreInput = {
-  where?: Prisma.MemberWhereInput
-  data: Prisma.XOR<Prisma.MemberUpdateWithoutStoreInput, Prisma.MemberUncheckedUpdateWithoutStoreInput>
-}
-
-export type MemberUpdateWithoutStoreInput = {
-  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  permission?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
-  business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
-  bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
-  adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
-  expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
-  product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
-  platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
-}
-
-export type MemberUncheckedUpdateWithoutStoreInput = {
-  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  permission?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
-  businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
-  adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
-  expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
-  product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
-  platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1254,7 +1129,6 @@ export type MemberCreateWithoutProductInput = {
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
 }
 
@@ -1271,7 +1145,6 @@ export type MemberUncheckedCreateWithoutProductInput = {
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1304,7 +1177,6 @@ export type MemberUpdateWithoutProductInput = {
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -1321,7 +1193,6 @@ export type MemberUncheckedUpdateWithoutProductInput = {
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1339,7 +1210,6 @@ export type MemberCreateWithoutChatInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutChatInput = {
@@ -1356,7 +1226,6 @@ export type MemberUncheckedCreateWithoutChatInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
-  store?: Prisma.StoreUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutChatInput = {
@@ -1389,7 +1258,6 @@ export type MemberUpdateWithoutChatInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutChatInput = {
@@ -1406,7 +1274,6 @@ export type MemberUncheckedUpdateWithoutChatInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -1432,7 +1299,6 @@ export type MemberUpdateWithoutUserInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -1449,7 +1315,6 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1486,7 +1351,6 @@ export type MemberUpdateWithoutBusinessInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
 }
 
@@ -1503,7 +1367,6 @@ export type MemberUncheckedUpdateWithoutBusinessInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
-  store?: Prisma.StoreUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1528,7 +1391,6 @@ export type MemberCountOutputType = {
   expense: number
   product: number
   platform: number
-  store: number
   chat: number
 }
 
@@ -1538,7 +1400,6 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   expense?: boolean | MemberCountOutputTypeCountExpenseArgs
   product?: boolean | MemberCountOutputTypeCountProductArgs
   platform?: boolean | MemberCountOutputTypeCountPlatformArgs
-  store?: boolean | MemberCountOutputTypeCountStoreArgs
   chat?: boolean | MemberCountOutputTypeCountChatArgs
 }
 
@@ -1590,13 +1451,6 @@ export type MemberCountOutputTypeCountPlatformArgs<ExtArgs extends runtime.Types
 /**
  * MemberCountOutputType without action
  */
-export type MemberCountOutputTypeCountStoreArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StoreWhereInput
-}
-
-/**
- * MemberCountOutputType without action
- */
 export type MemberCountOutputTypeCountChatArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ChatSessionWhereInput
 }
@@ -1618,7 +1472,6 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   expense?: boolean | Prisma.Member$expenseArgs<ExtArgs>
   product?: boolean | Prisma.Member$productArgs<ExtArgs>
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
-  store?: boolean | Prisma.Member$storeArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
@@ -1669,7 +1522,6 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   expense?: boolean | Prisma.Member$expenseArgs<ExtArgs>
   product?: boolean | Prisma.Member$productArgs<ExtArgs>
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
-  store?: boolean | Prisma.Member$storeArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1692,7 +1544,6 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     expense: Prisma.$ExpensePayload<ExtArgs>[]
     product: Prisma.$ProductPayload<ExtArgs>[]
     platform: Prisma.$PlatformPayload<ExtArgs>[]
-    store: Prisma.$StorePayload<ExtArgs>[]
     chat: Prisma.$ChatSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2105,7 +1956,6 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   expense<T extends Prisma.Member$expenseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$expenseArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   product<T extends Prisma.Member$productArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$productArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   platform<T extends Prisma.Member$platformArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$platformArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  store<T extends Prisma.Member$storeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$storeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chat<T extends Prisma.Member$chatArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$chatArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2676,30 +2526,6 @@ export type Member$platformArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.PlatformScalarFieldEnum | Prisma.PlatformScalarFieldEnum[]
-}
-
-/**
- * Member.store
- */
-export type Member$storeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Store
-   */
-  select?: Prisma.StoreSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Store
-   */
-  omit?: Prisma.StoreOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StoreInclude<ExtArgs> | null
-  where?: Prisma.StoreWhereInput
-  orderBy?: Prisma.StoreOrderByWithRelationInput | Prisma.StoreOrderByWithRelationInput[]
-  cursor?: Prisma.StoreWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StoreScalarFieldEnum | Prisma.StoreScalarFieldEnum[]
 }
 
 /**

@@ -83,11 +83,6 @@ export type Expense = Prisma.ExpenseModel
  */
 export type Platform = Prisma.PlatformModel
 /**
- * Model Store
- * 
- */
-export type Store = Prisma.StoreModel
-/**
  * Model Product
  * 
  */

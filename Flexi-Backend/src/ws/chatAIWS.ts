@@ -8,12 +8,15 @@ import {
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
-import { PrismaClient as PrismaClient1 } from "../generated/client1";
 import { createSalesAnalyticsTool } from "../controllers/toolChatAIController";
 
 // WebSocket handler for AI chat functionality
 
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";;
+
+const prisma = flexiDBPrismaClient;
+
+
 const MODEL_NAME = process.env.OPENAI_MODEL_NAME || "gpt-4o-mini";
 
 function coerceTemperature(t?: any) {

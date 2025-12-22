@@ -37,14 +37,13 @@ type Bill = {
   cProvince: string;
   payment: string;
   amount: number;
-  platform: string;
   cashStatus: boolean;
   total: number;
   memberId: string;
   purchaseAt: Date;
   businessAcc: number;
   image: string;
-  storeId: number;
+  platform:string;
   unit: string;
   discount: number;
   totalQuotation: number;

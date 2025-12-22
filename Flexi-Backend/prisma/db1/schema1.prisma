@@ -72,27 +72,6 @@ enum SocialMedia {
   X
   Youtube
   Google
-
-  @@schema("flexidb")
-}
-
-enum IncomeChannel {
-  Storefornt
-  Facebook
-  Line
-  Tiktok
-  Shopee
-  Lazada
-  Instagram
-  X
-  Youtube
-  Google
-  SCB
-  KBANK
-  KTB
-  BBL
-  TMB
-  Affiliate
   Offline
 
   @@schema("flexidb")
@@ -251,7 +230,6 @@ model Member {
   expense    Expense[]
   product    Product[]
   platform   Platform[]
-  store      Store[]
   chat       ChatSession[]
 
   @@schema("flexidb")
@@ -280,7 +258,6 @@ model BusinessAcc {
   expenseRecord    Expense[]
   adsCostRecord    AdsCost[]
   platform         Platform[]
-  storefront       Store[]
   product          Product[]
   documentCounters DocumentCounter[]
 
@@ -319,7 +296,6 @@ model Bill {
   totalQuotation       Int?
   beforeDiscount       Int?
   purchaseAt           DateTime      @default(now())
-  platform             IncomeChannel
   cashStatus           Boolean?      @default(false)
   image                String?
   deleted              Boolean?      @default(false)
@@ -335,14 +311,15 @@ model Bill {
   rentalStockReleased  Boolean       @default(false)
   paymentTermCondition String? // Optional field for payment
   remark               String?
+  platform             SocialMedia
 
   // Relation   
-  memberId    String
-  member      Member      @relation(fields: [memberId], references: [uniqueId])
-  businessAcc Int
-  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  storeId     Int
-  store       Store       @relation(fields: [storeId], references: [id])
+  memberId     String
+  member       Member      @relation(fields: [memberId], references: [uniqueId])
+  businessAcc  Int
+  businessId   BusinessAcc @relation(fields: [businessAcc], references: [id])
+  platformId   Int?
+  platformInfo Platform?   @relation(fields: [platformId], references: [id])
 
   @@schema("flexidb")
 }
@@ -424,8 +401,8 @@ model Platform {
   id          Int         @id @default(autoincrement())
   platform    SocialMedia
   accName     String      @unique
-  accId       String
-  campaignId  String?      @unique
+  accId       String?
+  campaignId  String?     @unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   platformId  AdsCost[]
@@ -436,23 +413,7 @@ model Platform {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   deleted     Boolean?    @default(false)
-
-  @@schema("flexidb")
-}
-
-model Store {
-  id           Int           @id @default(autoincrement())
-  platform     IncomeChannel
-  accName      String
-  accId        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  storefrontId Bill[]
-  businessAcc  Int
-  businessId   BusinessAcc   @relation(fields: [businessAcc], references: [id])
-  memberId     String
-  member       Member        @relation(fields: [memberId], references: [uniqueId])
-  deleted      Boolean?      @default(false)
+  billRecord  Bill[]
 
   @@schema("flexidb")
 }
@@ -477,7 +438,7 @@ model Product {
   // relation
   billRecord  ProductItem[]
   adsRecord   AdsCost[]
-  platform    Platform[]     @relation("ProductPlatform")
+  platform    Platform[]    @relation("ProductPlatform")
   member      Member        @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1, Unit } from "../generated/client1/client";
 import { format } from "date-fns";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
@@ -10,7 +9,7 @@ const prisma = flexiDBPrismaClient;
 // Get Dashboard Metrics
 export const getDashboardMetrics = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName, storeId } = req.query;
+    const { memberId, period, startDate, endDate, productName,platform } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -59,15 +58,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
           };
         }
         break;
-    }
-
-    // Build product filter (for nested ProductItem relation)
-    // const productFilter = productName ? { product: productName as string } : {};
-
-    // Build store filter
-    const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
-
-// Find business ID by member ID from member table
+    }// Find business ID by member ID from member table
     const businessId = await prisma.member.findUnique({
       where: { uniqueId: memberId as string },
       select: { businessId: true },
@@ -77,11 +68,11 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     // Get income from bills (use total field which already accounts for discounts)
     const billsAggregation = await prisma.bill.findMany({
       where: {
-       businessAcc : businessId?.businessId ?? 0,
+        businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         purchaseAt: dateFilter,
         DocumentType: "Receipt",
-        ...storeFilter
+        ...(platform ? { SocialMedia: platform as any } : {}),
       },
       select: {
         total: true,
@@ -90,8 +81,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         beforeDiscount: true,
         product: productName
           ? { where: { product: productName as string } }
-          : true
-      }
+          : true,
+      },
     });
 
     // Calculate income and orders from bills
@@ -163,7 +154,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 // Get Sales Chart Data
 export const getSalesChartData = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName, storeId } = req.query;
+    const { memberId, period, startDate, endDate, productName, platformId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -214,9 +205,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         break;
     }
 
-    // Build filters
-    const productFilter = productName ? { product: productName as string } : {};
-    const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
+const platformFilter = platformId ? { platformId: parseInt(platformId as string) } : {};
 // Find business ID by member ID from member table
     const businessId = await prisma.member.findUnique({
       where: { uniqueId: memberId as string },
@@ -230,7 +219,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         deleted: false,
         purchaseAt: dateFilter,
         DocumentType: "Receipt",
-        ...storeFilter
+        ...platformFilter
       },
       select: {
         purchaseAt: true,
@@ -348,7 +337,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
 // Get Top Products (multi-product support)
 export const getTopProducts = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, storeId, limit = 5 } = req.query;
+    const { memberId, period, startDate, endDate, platformId, limit = 5 } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -400,7 +389,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
     }
 
     // Build store filter
-    const storeFilter = storeId ? { storeId: parseInt(storeId as string) } : {};
+    const platformFilter = platformId ? { platformId: parseInt(platformId as string) } : {};
 // Find business ID by member ID from member table
     const businessId = await prisma.member.findUnique({
       where: { uniqueId: memberId as string },
@@ -414,7 +403,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
         DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
-        ...storeFilter
+        ...platformFilter
       },
       select: {
         product: {
@@ -552,7 +541,7 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
 
     // Flatten all product items with platform and discount info
     const allProductItems = platformBills.flatMap(bill => bill.product.map(item => ({
-      platform: bill.platform || 'Unknown',
+      platform: bill.platform,
       product: item.product,
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
@@ -716,7 +705,7 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
   }
 };
 
-// Get Top Stores (multi-product support)
+// Get Top Platforms (multi-product support)
 export const getTopStores = async (req: Request, res: Response) => {
   try {
     const { memberId, period, startDate, endDate, productName, limit = 5 } = req.query;
@@ -784,7 +773,7 @@ export const getTopStores = async (req: Request, res: Response) => {
         purchaseAt: dateFilter
       },
       select: {
-        storeId: true,
+        platformId: true,
         product: {
           select: {
             product: true,
@@ -797,11 +786,10 @@ export const getTopStores = async (req: Request, res: Response) => {
       }
     });
 
-    // Get store information
-    const stores = await prisma.store.findMany({
+    // Get platform information
+    const platforms = await prisma.platform.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
         deleted: false
       },
       select: {
@@ -811,33 +799,33 @@ export const getTopStores = async (req: Request, res: Response) => {
       }
     });
 
-    // Create a map of store information
-    const storeMap = stores.reduce((acc, store) => {
-      acc[store.id] = {
-        name: store.accName || 'Unknown Store',
-        platform: store.platform || 'Unknown'
+    // Create a map of platform information
+    const platformMap = platforms.reduce((acc, platform) => {
+      acc[platform.id] = {
+        name: platform.accName || 'Unknown Platform',
+        platform: platform.platform || 'Unknown'
       };
       return acc;
     }, {} as Record<number, { name: string; platform: string }>);
 
-    // Flatten all product items with storeId and discount info
+    // Flatten all product items with platformId and discount info
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
-      storeId: bill.storeId,
+      platformId: bill.platformId,
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
       unitDiscount: Number(item.unitDiscount || 0),
       unit: item.unit || 'Unit'
     })));
 
-    // Aggregate by storeId (account for unit discounts)
-    const storeMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
+    // Aggregate by platformId (account for unit discounts)
+    const platformMetrics: Record<number, { id: number; name: string; platform: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
     allProductItems.forEach(item => {
-      const storeInfo = storeMap[item.storeId] || { name: 'Unknown Store', platform: 'Unknown' };
-      if (!storeMetrics[item.storeId]) {
-        storeMetrics[item.storeId] = {
-          id: item.storeId,
-          name: storeInfo.name,
-          platform: storeInfo.platform,
+      const platformInfo = platformMap[item.platformId] || { name: 'Unknown Platform', platform: 'Unknown' };
+      if (!platformMetrics[item.platformId]) {
+        platformMetrics[item.platformId] = {
+          id: item.platformId,
+          name: platformInfo.name,
+          platform: platformInfo.platform,
           revenue: 0,
           sales: 0,
           orders: 0,
@@ -850,24 +838,24 @@ export const getTopStores = async (req: Request, res: Response) => {
       const discountAmount = item.unitDiscount * item.quantity;
       const netRevenue = grossRevenue - discountAmount;
       
-      storeMetrics[item.storeId].revenue += netRevenue;
-      storeMetrics[item.storeId].sales += item.quantity;
-      storeMetrics[item.storeId].orders += 1;
-      storeMetrics[item.storeId].totalDiscount += discountAmount;
-      if (!storeMetrics[item.storeId].unit && item.unit) {
-        storeMetrics[item.storeId].unit = item.unit;
+      platformMetrics[item.platformId].revenue += netRevenue;
+      platformMetrics[item.platformId].sales += item.quantity;
+      platformMetrics[item.platformId].orders += 1;
+      platformMetrics[item.platformId].totalDiscount += discountAmount;
+      if (!platformMetrics[item.platformId].unit && item.unit) {
+        platformMetrics[item.platformId].unit = item.unit;
       }
     });
 
     // Convert to array and sort by revenue
-    const topStores = Object.values(storeMetrics)
+    const topPlatforms = Object.values(platformMetrics)
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, parseInt(limit as string));
     
-console.log("Top Stores:", topStores);
-    res.json(topStores);
+console.log("Top Platforms:", topPlatforms);
+    res.json(topPlatforms);
   } catch (error) {
-    console.error("Error fetching top stores:", error);
-    res.status(500).json({ error: "Failed to fetch top stores" });
+    console.error("Error fetching top platforms:", error);
+    res.status(500).json({ error: "Failed to fetch top platforms" });
   }
 };

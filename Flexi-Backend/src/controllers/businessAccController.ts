@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
 import {
   BusinessType,
-  PrismaClient as PrismaClient1,
   taxType,
-  IncomeChannel,
+  SocialMedia,
 } from "../generated/client1/client";
 import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { deleteFromS3, extractS3Key } from "../services/imageService";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
-
 
 const upload = multer(multerConfig.multerConfigAvatar.config).single(
   multerConfig.multerConfigAvatar.keyUpload
@@ -21,7 +19,6 @@ const prisma = flexiDBPrismaClient;
 
 // Interface for request body from client
 interface businessAccInput {
-
   businessName: string;
   businessUserName?: string;
   taxId: string;
@@ -35,7 +32,7 @@ interface businessAccInput {
   businessWebsite?: string;
   businessPhone?: string;
   vat?: boolean;
-  DocumentType?: ("Invoice" | "Receipt" | "Quotation"|"WithholdingTax")[];
+  DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
 }
 
 // Username must start with '@' and include only English letters and numbers (no spaces or special characters)
@@ -43,7 +40,8 @@ const businessUsernameSchema = Joi.string()
   .trim()
   .pattern(/^@[A-Za-z0-9]+$/)
   .messages({
-    "string.pattern.base": "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
+    "string.pattern.base":
+      "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
   });
 
 // validate the request body
@@ -61,11 +59,12 @@ const schema = Joi.object({
   buisnessWebsite: Joi.string(),
   vat: Joi.boolean().optional().default(false),
   DocumentType: Joi.array()
-    .items(Joi.string().valid("Invoice", "Receipt", "Quotation", "WithholdingTax"))
+    .items(
+      Joi.string().valid("Invoice", "Receipt", "Quotation", "WithholdingTax")
+    )
     .optional()
     .default(["Receipt"]),
 });
-
 
 // Create a Business Account - Post
 const createBusinessAcc = async (req: Request, res: Response) => {
@@ -92,10 +91,18 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     }
 
     //List of DocumentType
-    const validDocumentTypes = ["Invoice", "Receipt", "Quotation", "WithholdingTax"];
-    if (businessAccInput.DocumentType && businessAccInput.DocumentType.length > 0) {
+    const validDocumentTypes = [
+      "Invoice",
+      "Receipt",
+      "Quotation",
+      "WithholdingTax",
+    ];
+    if (
+      businessAccInput.DocumentType &&
+      businessAccInput.DocumentType.length > 0
+    ) {
       const invalidTypes = businessAccInput.DocumentType.filter(
-        type => !validDocumentTypes.includes(type)
+        (type) => !validDocumentTypes.includes(type)
       );
       if (invalidTypes.length > 0) {
         return res.status(400).json({
@@ -118,10 +125,9 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         businessWebsite: businessAccInput.businessWebsite,
         businessPhone: businessAccInput.businessPhone,
         DocumentType: businessAccInput.DocumentType || ["Receipt"],
-      
       },
     });
-    
+
     // Set the owner's Member.businessId pointer to this new business
     try {
       await prisma.member.update({
@@ -129,19 +135,22 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         data: { businessId: businessAcc.id },
       });
     } catch (err) {
-      console.warn("Failed to set owner's Member.businessId after business creation", err);
+      console.warn(
+        "Failed to set owner's Member.businessId after business creation",
+        err
+      );
     }
 
-    // Create store as Offine for default
-    const store = await prisma.store.create({
+    // Create platform as Offline for default
+    const platform = await prisma.platform.create({
       data: {
+        platform: "Offline" as SocialMedia,
         accName: "Offline",
-        platform: "Offline" as IncomeChannel,
         memberId: businessAccInput.memberId,
         businessAcc: businessAcc.id,
       },
     });
-    console.log("store created", store);
+    console.log("platform created", platform);
 
     res.json({
       status: "ok",
@@ -160,53 +169,52 @@ const createBusinessAcc = async (req: Request, res: Response) => {
     // If businessType is "Influencer", create default products
     if (businessAccInput.businessType === "Influencer") {
       const defaultProducts = [
-      "Tiktok Affiliate",
-      "Shopee Affiliate",
-      "Clip",
-      "Live",
-      "Post"
+        "Tiktok Affiliate",
+        "Shopee Affiliate",
+        "Clip",
+        "Live",
+        "Post",
       ];
 
       for (const name of defaultProducts) {
-      const product = await prisma.product.create({
-        data: {
-        name,
-        productType: "Service",
-        price: 0,
-        memberId: businessAccInput.memberId,
-        stock: 0,
-        businessAcc: businessAcc.id        
-        },
-      });
-      console.log("product created", product);
+        const product = await prisma.product.create({
+          data: {
+            name,
+            productType: "Service",
+            price: 0,
+            memberId: businessAccInput.memberId,
+            stock: 0,
+            businessAcc: businessAcc.id,
+          },
+        });
+        console.log("product created", product);
       }
-   }
+    }
 
-   // create store if businessType is "Influencer"
-   if (businessAccInput.businessType === "Influencer") {
+    // create platform if businessType is "Influencer"
+    if (businessAccInput.businessType === "Influencer") {
       const defaultProducts = [
-      "Tiktok",
-      "Shopee",
-      "Facebook",
-      "Instagram",
-      "X",
-      "Youtube",
-      "Line",    
+        "Tiktok",
+        "Shopee",
+        "Facebook",
+        "Instagram",
+        "X",
+        "Youtube",
+        "Line",
       ];
 
       for (const name of defaultProducts) {
-     const store = await prisma.store.create({
-       data: {
-         accName: name,
-         platform: name as IncomeChannel,
-         memberId: businessAccInput.memberId,
-         businessAcc: businessAcc.id,
-        },
-      });
-      console.log("store created", store);
+        const platform = await prisma.platform.create({
+          data: {
+            platform: name as SocialMedia,
+            accName: name,
+            memberId: businessAccInput.memberId,
+            businessAcc: businessAcc.id,
+          },
+        });
+        console.log("platform created", platform);
+      }
     }
-  }
-
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to create business account" });
@@ -252,9 +260,12 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
 
     //List of DocumentType validation for AddMoreBusinessAcc
     const validDocumentTypes = ["Invoice", "Receipt", "Quotation"];
-    if (businessAccInput.DocumentType && businessAccInput.DocumentType.length > 0) {
+    if (
+      businessAccInput.DocumentType &&
+      businessAccInput.DocumentType.length > 0
+    ) {
       const invalidTypes = businessAccInput.DocumentType.filter(
-        type => !validDocumentTypes.includes(type)
+        (type) => !validDocumentTypes.includes(type)
       );
       if (invalidTypes.length > 0) {
         return res.status(400).json({
@@ -292,72 +303,75 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         },
       });
 
-        // Set the new owner's Member.businessId pointer to this new business
-        try {
-          await prisma.member.update({
-            where: { uniqueId: memberId.uniqueId },
-            data: { businessId: businessAcc.id },
-          });
-        } catch (err) {
-          console.warn("Failed to set new owner's Member.businessId after business creation", err);
-        }
+      // Set the new owner's Member.businessId pointer to this new business
+      try {
+        await prisma.member.update({
+          where: { uniqueId: memberId.uniqueId },
+          data: { businessId: businessAcc.id },
+        });
+      } catch (err) {
+        console.warn(
+          "Failed to set new owner's Member.businessId after business creation",
+          err
+        );
+      }
 
-      // Create store as Offline for default
-      const store = await prisma.store.create({
+      // Create platform as Offline for default
+      const platform = await prisma.platform.create({
         data: {
+          platform: "Offline" as SocialMedia,
           accName: "Offline",
-          platform: "Offline" as IncomeChannel,
-          memberId: memberId.uniqueId,
+          memberId: businessAccInput.memberId,
           businessAcc: businessAcc.id,
         },
       });
-      console.log("store created", store);
+      console.log("platform created", platform);
 
       // If businessType is "Influencer", create default products
       if (businessAccInput.businessType === "Influencer") {
         const defaultProducts = [
-        "Tiktok Affiliate",
-        "Shopee Affiliate",
-        "Clip",
-        "Live",
-        "Post"
+          "Tiktok Affiliate",
+          "Shopee Affiliate",
+          "Clip",
+          "Live",
+          "Post",
         ];
 
         for (const name of defaultProducts) {
-        const product = await prisma.product.create({
-          data: {
-          name,
-          productType: "Service",
-          price: 0,
-          memberId: memberId.uniqueId,
-          stock: 0,
-          businessAcc: businessAcc.id        
-          },
-        });
-        console.log("product created", product);
+          const product = await prisma.product.create({
+            data: {
+              name,
+              productType: "Service",
+              price: 0,
+              memberId: memberId.uniqueId,
+              stock: 0,
+              businessAcc: businessAcc.id,
+            },
+          });
+          console.log("product created", product);
         }
 
         // create additional stores if businessType is "Influencer"
         const defaultStores = [
-        "Tiktok",
-        "Shopee",
-        "Facebook",
-        "Instagram",
-        "X",
-        "Youtube",
-        "Line",    
+          "Tiktok",
+          "Shopee",
+          "Facebook",
+          "Instagram",
+          "X",
+          "Youtube",
+          "Line",
         ];
 
         for (const name of defaultStores) {
-       const influencerStore = await prisma.store.create({
-         data: {
-           accName: name,
-           platform: name as IncomeChannel,
-           memberId: memberId.uniqueId,
-           businessAcc: businessAcc.id,
-          },
-        });
-        console.log("influencer store created", influencerStore);
+          const InfluencerPlatform = await prisma.platform.create({
+            data: {
+              accName: name,
+              platform: name as SocialMedia,
+              memberId: memberId.uniqueId,
+              businessAcc: businessAcc.id,
+            },
+          });
+          console.log("influencer platform created", InfluencerPlatform);
         }
       }
 
@@ -378,7 +392,6 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         businessAvatar: result.businessAvatar,
       },
     });
-
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to create business account" });
@@ -441,7 +454,11 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
 
     // 2) From BusinessAcc.memberId (String[] contains member uniqueId)
     const memberUniqueIds = memberRecords.map((m) => m.uniqueId);
-    let fromArrayMembership: { businessName: string; memberId: string; id: number }[] = [];
+    let fromArrayMembership: {
+      businessName: string;
+      memberId: string;
+      id: number;
+    }[] = [];
     if (memberUniqueIds.length > 0) {
       const accs = await prisma.businessAcc.findMany({
         where: { memberId: { hasSome: memberUniqueIds } },
@@ -452,7 +469,11 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
         // For each business, emit one entry per matching memberId belonging to this user
         for (const mid of a.memberId) {
           if (memberIdSet.has(mid)) {
-            fromArrayMembership.push({ businessName: a.businessName, memberId: mid, id: a.id });
+            fromArrayMembership.push({
+              businessName: a.businessName,
+              memberId: mid,
+              id: a.id,
+            });
           }
         }
       }
@@ -471,7 +492,9 @@ const getBusinessAccByUserId = async (req: Request, res: Response) => {
     return res.json(result);
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: "failed to get business accounts for user" });
+    return res
+      .status(500)
+      .json({ message: "failed to get business accounts for user" });
   }
 };
 
@@ -486,14 +509,13 @@ const getBusinessDetail = async (req: Request, res: Response) => {
     },
     select: {
       role: true,
-      businessId:true
+      businessId: true,
     },
   });
   try {
-
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        id:business?.businessId,
+        id: business?.businessId,
       },
       select: {
         id: true,
@@ -534,7 +556,6 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     vat,
     businessAddress,
     DocumentType,
-
   } = req.body;
 
   console.log("Update Business Details", {
@@ -553,8 +574,10 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
 
   try {
     // Validate businessUserName if provided
-    if (typeof businessUserName !== 'undefined') {
-      const { error } = businessUsernameSchema.allow("").validate(businessUserName);
+    if (typeof businessUserName !== "undefined") {
+      const { error } = businessUsernameSchema
+        .allow("")
+        .validate(businessUserName);
       if (error) {
         return res.status(400).json({ message: error.details[0].message });
       }
@@ -571,7 +594,11 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
 
     // if permission is not admin, return error
     if (existing.permission !== "admin") {
-      return res.status(403).json({ message: "You do not have permission to update business details" });
+      return res
+        .status(403)
+        .json({
+          message: "You do not have permission to update business details",
+        });
     }
 
     const updated = await prisma.businessAcc.update({
@@ -609,7 +636,9 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     });
   } catch (e) {
     console.error("Failed to update business details:", e);
-    return res.status(500).json({ message: "Failed to update business details" });
+    return res
+      .status(500)
+      .json({ message: "Failed to update business details" });
   }
 };
 
@@ -731,14 +760,14 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
     });
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-       id : business.businessId
+        id: business.businessId,
       },
       select: {
         businessAvatar: true,
         businessName: true,
         businessType: true,
         DocumentType: true,
-        vat:true
+        vat: true,
       },
     });
     res.json({

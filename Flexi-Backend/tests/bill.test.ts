@@ -37,7 +37,7 @@ jest.mock("multer", () => {
 // Prisma mock with the methods used by billController
 const prismaMock: any = {};
 
-prismaMock.store = { findUnique: jest.fn() };
+prismaMock.platform = { findUnique: jest.fn() };
 prismaMock.bill = {
   findFirst: jest.fn(),
   create: jest.fn(),
@@ -59,7 +59,7 @@ prismaMock.$transaction = jest.fn(async (cb: any) =>
   cb({
     product: prismaMock.product,
     bill: prismaMock.bill,
-    store: prismaMock.store,
+    platform: prismaMock.platform,
     documentCounter: prismaMock.documentCounter,
     productItem: prismaMock.productItem,
   })
@@ -110,7 +110,7 @@ const validBillPayload = () => ({
   purchaseAt: new Date().toISOString(),
   businessAcc: 1,
   image: "",
-  storeId: 10,
+  platform: "Shopee",
   discount: 10,
   productItems: [
     {
@@ -134,13 +134,14 @@ describe("billController", () => {
     jest.useRealTimers();
     prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
     prismaMock.documentCounter.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.platform.findUnique.mockResolvedValue({ id: 10, name: "Shop" });
   });
 
   describe("createBill", () => {
     test("creates a bill successfully (single)", async () => {
-      prismaMock.store.findUnique.mockResolvedValue({
+      prismaMock.platform.findUnique.mockResolvedValue({
         id: 10,
-        platform: "Shop",
+        name: "Shop",
       });
       prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
       prismaMock.bill.findFirst.mockResolvedValue(null);
@@ -158,11 +159,11 @@ describe("billController", () => {
       expect(res.body.message).toMatch(/cName|required/i);
     });
 
-    test("returns 404 when store not found", async () => {
-      prismaMock.store.findUnique.mockResolvedValue(null);
+    test("returns 404 when platform not found", async () => {
+      prismaMock.platform.findUnique.mockResolvedValue(null);
       const res = await request(app).post("/bill").send(validBillPayload());
       expect(res.status).toBe(404);
-      expect(res.body.message).toMatch(/Store not found/i);
+      expect(res.body.message).toMatch(/platform not found/i);
     });
   });
 
@@ -238,10 +239,10 @@ describe("billController", () => {
         id: 5,
         purchaseAt: new Date("2025-01-01T00:00:00Z"),
       });
-      // store must exist before cutoff logic finishes
-      prismaMock.store.findUnique.mockResolvedValue({
+      // platform must exist before cutoff logic finishes
+      prismaMock.platform.findUnique.mockResolvedValue({
         id: 10,
-        platform: "Shop",
+        name: "Shop",
       });
       prismaMock.productItem.findMany.mockResolvedValue([]);
 
@@ -258,9 +259,9 @@ describe("billController", () => {
         id: 6,
         purchaseAt: new Date("2025-11-10T00:00:00Z"),
       });
-      prismaMock.store.findUnique.mockResolvedValue({
+      prismaMock.platform.findUnique.mockResolvedValue({
         id: 10,
-        platform: "Shop",
+        name: "Shop",
       });
       prismaMock.productItem.findMany.mockResolvedValue([
         { product: "A", quantity: 1 },

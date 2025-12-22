@@ -180,7 +180,8 @@ interface billInput {
   businessAcc: number;
   cTaxId: string;
   image: string;
-  storeId: number;
+  platformId?: number;
+  platform: string;
   total?: number;
   totalQuotation?: number; // Optional field for quotation total
   productItems: ProductItemInput[];
@@ -219,7 +220,8 @@ const schema = Joi.object({
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
   image: Joi.string().allow(""),
-  storeId: Joi.number(),
+  platformId: Joi.number().optional(),
+  platform: Joi.string().required(),
   total: Joi.number(),
   totalQuotation: Joi.number().optional(), // Optional field for quotation total
   repeat: Joi.boolean().optional(),
@@ -272,7 +274,8 @@ const createBill = async (req: Request, res: Response) => {
    
     billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
-    billInput.storeId = Number(billInput.storeId);
+    billInput.platformId = Number(billInput.platformId);
+    billInput.platform = String(billInput.platform);
     billInput.cashStatus = ["true", "1", "yes"].includes(
       String(billInput.cashStatus).toLowerCase()
     );
@@ -289,17 +292,17 @@ const createBill = async (req: Request, res: Response) => {
     billInput.repeat = repeatFlag;
     const repeatMonths = Number(billInput.repeatMonths ?? 0);
     billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
-    // find platform from Store id
+    // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
-        const store = await tx.store.findUnique({
-          where: {
-            id: billInput.storeId,
-          },
-        });
-        if (!store) {
-          throw new Error("Store not found");
-        }
+        // const platform = await tx.platform.findUnique({
+        //   where: {
+        //     id: billInput.platformId,
+        //   },
+        // });
+        // if (!platform) {
+        //   throw new Error("platform not found");
+        // }
 
         // Calculate beforeDiscount (total before any discounts)
         const beforeDiscount = billInput.productItems.reduce(
@@ -393,12 +396,12 @@ const createBill = async (req: Request, res: Response) => {
                   })),
                 },
                 payment: billInput.payment || "NotSpecified",
-                platform: store.platform,
                 cashStatus: finalCashStatus,
                 memberId: billInput.memberId,
                 purchaseAt: billDate,
                 businessAcc: billInput.businessAcc,
-                storeId: billInput.storeId,
+                platformId: billInput.platformId,
+                platform: billInput.platform,
                 image: req.file?.filename ?? "",
                 discount: discount, // Unit discounts only
                 billLevelDiscount: billLevelDiscount, // Bill-level discount
@@ -470,12 +473,12 @@ const createBill = async (req: Request, res: Response) => {
               })),
             },
             payment: billInput.payment || "NotSpecified",
-            platform: store.platform,
+            platform: billInput.platform,
             cashStatus: finalCashStatus,
             memberId: billInput.memberId,
             purchaseAt: billInput.purchaseAt,
             businessAcc: billInput.businessAcc,
-            storeId: billInput.storeId,
+            platformId: billInput.platformId,
             image: req.file?.filename ?? "",
             discount: discount, // Unit discounts only
             billLevelDiscount: billLevelDiscount, // Bill-level discount
@@ -565,8 +568,8 @@ const createBill = async (req: Request, res: Response) => {
       }
     } catch (e: any) {
       console.error(e);
-      if (e.message === "Store not found") {
-        return res.status(404).json({ message: "Store not found" });
+      if (e.message === "platform not found") {
+        return res.status(404).json({ message: "platform not found" });
       }
       res.status(500).json({ message: "failed to create bill" });
     }
@@ -598,7 +601,7 @@ const getBills = async (req: Request, res: Response) => {
         payment: true,
         // cashStatus: true,
         purchaseAt: true,
-        storeId: true,
+        platformId: true,
         discount: true, // Include discount
         priceValid: true, // Include priceValid
         total: true,
@@ -671,7 +674,7 @@ const updateBill = async (req: Request, res: Response) => {
     }
     billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
-    billInput.storeId = Number(billInput.storeId);
+    billInput.platformId = Number(billInput.platformId);
     billInput.cashStatus = ["true", "1", "yes"].includes(
       String(billInput.cashStatus).toLowerCase()
     );
@@ -700,13 +703,13 @@ const updateBill = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Bill not found" });
     }
 
-    const store = await prisma.store.findUnique({
+    const platform = await prisma.platform.findUnique({
       where: {
-        id: billInput.storeId,
+        id: billInput.platformId,
       },
     });
-    if (!store) {
-      return res.status(404).json({ message: "Store not found" });
+    if (!platform) {
+      return res.status(404).json({ message: "platform not found" });
     }
 
     // Check if bill can be updated based on purchaseAt date
@@ -804,8 +807,8 @@ const updateBill = async (req: Request, res: Response) => {
             })),
           },
           payment: billInput.payment,
-          platform: store.platform, // IncomeChannel
-          storeId: billInput.storeId,
+          platform: platform.platform, 
+          platformId: billInput.platformId,
           cashStatus: finalCashStatus,
           memberId: billInput.memberId,
           purchaseAt: billInput.purchaseAt,
@@ -1195,7 +1198,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         DocumentType !== "Receipt" &&
         currentBill.DocumentType === "Receipt"
       ) {
-        // Changing FROM Receipt: Increase stock (Restore)
+        // Changing FROM Receipt: Increase stock (Replatform)
         for (const item of currentBill.product) {
           if (!item.product) continue;
 

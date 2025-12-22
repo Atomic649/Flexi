@@ -284,13 +284,6 @@ export type EnumPaymentNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel> | $Enums.Payment | null
 }
 
-export type EnumIncomeChannelFilter<$PrismaModel = never> = {
-  equals?: $Enums.IncomeChannel | Prisma.EnumIncomeChannelFieldRefInput<$PrismaModel>
-  in?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  notIn?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel> | $Enums.IncomeChannel
-}
-
 export type EnumtaxTypeNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
   in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
@@ -308,6 +301,13 @@ export type EnumDocumentTypeNullableFilter<$PrismaModel = never> = {
 export type BoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type EnumSocialMediaFilter<$PrismaModel = never> = {
+  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
+  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel> | $Enums.SocialMedia
 }
 
 export type EnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -328,16 +328,6 @@ export type EnumPaymentNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel>
-}
-
-export type EnumIncomeChannelWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.IncomeChannel | Prisma.EnumIncomeChannelFieldRefInput<$PrismaModel>
-  in?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  notIn?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumIncomeChannelWithAggregatesFilter<$PrismaModel> | $Enums.IncomeChannel
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel>
 }
 
 export type EnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -366,6 +356,16 @@ export type BoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedBoolFilter<$PrismaModel>
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type EnumSocialMediaWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
+  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel> | $Enums.SocialMedia
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
 }
 
 export type EnumUnitNullableFilter<$PrismaModel = never> = {
@@ -488,23 +488,6 @@ export type EnumExpenseStatusNullableWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumExpenseStatusNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumExpenseStatusNullableFilter<$PrismaModel>
-}
-
-export type EnumSocialMediaFilter<$PrismaModel = never> = {
-  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
-  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel> | $Enums.SocialMedia
-}
-
-export type EnumSocialMediaWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
-  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel> | $Enums.SocialMedia
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
 }
 
 export type EnumProductTypeNullableFilter<$PrismaModel = never> = {
@@ -858,13 +841,6 @@ export type NestedEnumPaymentNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel> | $Enums.Payment | null
 }
 
-export type NestedEnumIncomeChannelFilter<$PrismaModel = never> = {
-  equals?: $Enums.IncomeChannel | Prisma.EnumIncomeChannelFieldRefInput<$PrismaModel>
-  in?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  notIn?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel> | $Enums.IncomeChannel
-}
-
 export type NestedEnumtaxTypeNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
   in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
@@ -882,6 +858,13 @@ export type NestedEnumDocumentTypeNullableFilter<$PrismaModel = never> = {
 export type NestedBoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type NestedEnumSocialMediaFilter<$PrismaModel = never> = {
+  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
+  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel> | $Enums.SocialMedia
 }
 
 export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -902,16 +885,6 @@ export type NestedEnumPaymentNullableWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPaymentNullableFilter<$PrismaModel>
-}
-
-export type NestedEnumIncomeChannelWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.IncomeChannel | Prisma.EnumIncomeChannelFieldRefInput<$PrismaModel>
-  in?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  notIn?: $Enums.IncomeChannel[] | Prisma.ListEnumIncomeChannelFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumIncomeChannelWithAggregatesFilter<$PrismaModel> | $Enums.IncomeChannel
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumIncomeChannelFilter<$PrismaModel>
 }
 
 export type NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -940,6 +913,16 @@ export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedBoolFilter<$PrismaModel>
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
+  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel> | $Enums.SocialMedia
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
 }
 
 export type NestedEnumUnitNullableFilter<$PrismaModel = never> = {
@@ -1062,23 +1045,6 @@ export type NestedEnumExpenseStatusNullableWithAggregatesFilter<$PrismaModel = n
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumExpenseStatusNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumExpenseStatusNullableFilter<$PrismaModel>
-}
-
-export type NestedEnumSocialMediaFilter<$PrismaModel = never> = {
-  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
-  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel> | $Enums.SocialMedia
-}
-
-export type NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SocialMedia | Prisma.EnumSocialMediaFieldRefInput<$PrismaModel>
-  in?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SocialMedia[] | Prisma.ListEnumSocialMediaFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSocialMediaWithAggregatesFilter<$PrismaModel> | $Enums.SocialMedia
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSocialMediaFilter<$PrismaModel>
 }
 
 export type NestedEnumProductTypeNullableFilter<$PrismaModel = never> = {

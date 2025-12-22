@@ -399,7 +399,7 @@ export default function Setting() {
           {/* Social Media Platform */}
           <Section
             title={t("settings.socialMedia.title")}
-            router={() => router.push("/store")}
+            router={() => router.push("/ads")}
             subtitle={t("settings.socialMedia.seeAll")}
           >
             <View>

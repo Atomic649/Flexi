@@ -17,8 +17,8 @@ import { useBackgroundColorClass } from "@/utils/themeUtils";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
-import CallAPIStore from "@/api/store_api";
 import CallAPIBusiness from "@/api/business_api";
+import CallAPIPlatform from "@/api/platform_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -68,8 +68,8 @@ export default function EditBill() {
   const { theme } = useTheme();
   const { id } = useLocalSearchParams();
   const [memberId, setMemberId] = useState<string | null>(null);
-  const [storeId, setStoreId] = useState<number>(0);
-  const [stores, setStores] = useState<any[]>([]);
+  const [platformOptions, setPlatformOptions] = useState<any[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
@@ -685,7 +685,7 @@ export default function EditBill() {
         setCProvince(billData.cProvince);
         setPayment(billData.payment);
         setCashStatus(billData.cashStatus);
-        setStoreId(billData.storeId);
+  setSelectedPlatform(billData.platform ?? "");
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
         setValidContactUntil(billData.validContactUntil || "");
@@ -824,13 +824,14 @@ export default function EditBill() {
         setBusinessAcc(businessId);
       }
 
-      // Fetch stores for this member
+      // Fetch platform for this member
       if (uniqueId) {
         try {
-          const storesData = await CallAPIStore.getStoresAPI(uniqueId);
-          setStores(storesData);
+          const PlatformData = await CallAPIPlatform.getPlatformEnumAPI(uniqueId);
+          setPlatformOptions(Array.isArray(PlatformData) ? PlatformData : []);
         } catch (error) {
-          console.error("Failed to fetch stores:", error);
+          console.error("Failed to fetch platforms:", error);
+          setPlatformOptions([]);
         }
       }
     };
@@ -931,7 +932,7 @@ export default function EditBill() {
           setCPostId("10310");
           setPayment("Transfer");
           setCashStatus(true);
-          setStoreId(0); // Set to 0 for Tiktok Affiliate
+          setSelectedPlatform("Tiktok");
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
         }
       }
@@ -970,7 +971,7 @@ export default function EditBill() {
     if (!cProvince) missingFields.push(t("bill.customerProvince"));
     if (selectedDocumentType === "RE" && !payment)
       missingFields.push(t("bill.paymentMethod"));
-    if (!storeId) missingFields.push(t("bill.store"));
+    if (!selectedPlatform) missingFields.push(t("bill.platform"));
     // Validate product items
     if (
       productItems.some(
@@ -1052,8 +1053,8 @@ export default function EditBill() {
           | "Cash"
           | "NotSpecified",
         memberId: memberId || "",
-        businessAcc,
-        storeId,
+  businessAcc,
+  platform: selectedPlatform,
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
@@ -1390,21 +1391,22 @@ export default function EditBill() {
           >
             <View className="flex flex-row justify-between items-center">
               <View className="w-1/2 pr-2">
-                {stores.length > 0 ? (
+                {platformOptions.length > 0 ? (
                   <DropdownClear
                     title={t("bill.store")}
-                    options={stores.map((store) => ({
-                      label: store.accName,
-                      value: store.id.toString(),
-                    }))}
+                    options={platformOptions.map((plat) => {
+                      if (typeof plat === "string") {
+                        return { label: plat, value: plat };
+                      }
+                      const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                      const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                      return { label, value };
+                    })}
                     placeholder={t("bill.selectStore")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    selectedValue={
-                      stores.find((store) => store.id === storeId)?.accName ||
-                      ""
-                    }
+                    selectedValue={selectedPlatform}
                     onValueChange={(value: any) => {
-                      if (isEditMode) setStoreId(Number(value));
+                      if (isEditMode) setSelectedPlatform(value);
                     }}
                     borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}

@@ -231,15 +231,7 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
-        {/* CreateStore */}
-        <Stack.Screen
-          name="createstore"
-          options={{
-            ...showTopBarAndBackIcon(theme),
-            title: t("store.createStore"),
-            headerTitleStyle: getHeaderTitleStyle(),
-          }}
-        />
+
         <Stack.Screen
           name="editads"
           options={{
@@ -248,24 +240,8 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
-        <Stack.Screen
-          name="editstore"
-          options={{
-            ...showTopBarAndBackIcon(theme),
-            title: t("store.editStore"),
-            headerTitleStyle: getHeaderTitleStyle(),
-          }}
-        />
-        {/* store */}
-        <Stack.Screen
-          name="store"
-          options={{
-            ...showTopBarAndBackToSetting(theme),
-            title: t("store.title"),
-            headerTitleStyle: getHeaderTitleStyle(),
-          }}
-        />
-        {/* product */}
+        
+{/* product */}
         <Stack.Screen
           name="product"
           options={{
