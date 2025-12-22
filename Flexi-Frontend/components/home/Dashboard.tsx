@@ -155,7 +155,7 @@ export default function Dashboard() {
         // Fetch products and platforms for filters
         const [productResponse, platformResponse] = await Promise.all([
           CallAPIProduct.getProductChoiceAPI(memberId),
-          CallAPIPlatform.getPlatformsAPI(memberId),
+          CallAPIPlatform.getPlatformEnumAPI(memberId),
         ]);
 
         setProducts(productResponse || []);
@@ -201,12 +201,9 @@ export default function Dashboard() {
         filters.productName = selectedProduct;
       }
 
-      // Add platform filter if selected
+      // Add platform filter if selected (platform string from enum API)
       if (selectedPlatform) {
-        const platform = platforms.find((p) => p.accName === selectedPlatform);
-        if (platform) {
-          filters.platformId = platform.id;
-        }
+        filters.platform = selectedPlatform;
       }
 
       console.log("📊 Dashboard API Filters:", filters);
@@ -271,10 +268,24 @@ export default function Dashboard() {
     value: product.name,
   }));
 
-  const platformOptions = platforms.map((platform) => ({
-    label: platform.accName || "No Name",
-    value: platform.accName || "No Name",
-  }));
+  const normalizePlatformLabel = (platform: any): string => {
+    if (!platform) return "";
+    if (typeof platform === "string") return platform;
+    return (
+      platform.platform ||
+      platform.plat ||
+      platform.accName ||
+      platform.accname ||
+      ""
+    );
+  };
+
+  const platformOptions = platforms
+    .map((platform) => {
+      const label = normalizePlatformLabel(platform);
+      return label ? { label, value: label } : null;
+    })
+    .filter(Boolean) as { label: string; value: string }[];
 
   return (
     <View className={`h-full ${useBackgroundColorClass()}`}>

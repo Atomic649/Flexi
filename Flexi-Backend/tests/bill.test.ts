@@ -159,11 +159,21 @@ describe("billController", () => {
       expect(res.body.message).toMatch(/cName|required/i);
     });
 
-    test("returns 404 when platform not found", async () => {
-      prismaMock.platform.findUnique.mockResolvedValue(null);
-      const res = await request(app).post("/bill").send(validBillPayload());
-      expect(res.status).toBe(404);
-      expect(res.body.message).toMatch(/platform not found/i);
+    test("creates bill with platform string when platformId missing", async () => {
+      prismaMock.bill.create.mockImplementation(async ({ data }: any) => ({
+        id: 2,
+        billId: "INV2025/2",
+        ...data,
+      }));
+
+      const res = await request(app)
+        .post("/bill")
+        .send({ ...validBillPayload(), platform: "Lazada" });
+
+      expect(res.status).toBe(200);
+      const call = prismaMock.bill.create.mock.calls[0][0];
+      expect(call.data.platform).toBe("Lazada");
+      expect(Number.isNaN(call.data.platformId)).toBe(true);
     });
   });
 
