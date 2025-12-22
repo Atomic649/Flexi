@@ -41,6 +41,8 @@ const formatCurrency = (amount: number) => {
 // Metric Card Component
 type MetricCardProps = {
   title: string;
+  subValue?: string | number;
+  percentage?: string | number;
   value: string | number; // Allow both string and number for flexibility
   icon: keyof typeof Ionicons.glyphMap;
   flex?: number; // Add flex prop instead of width for better control
@@ -50,13 +52,19 @@ type MetricCardProps = {
 
 const MetricCard = ({
   title,
+  subValue,
   value,
+  percentage,
   icon,
   flex = 1,
   valueColor,
   children,
 }: MetricCardProps) => {
   const { theme } = useTheme();
+  const formattedPercentage =
+    typeof percentage === "number"
+      ? percentage.toFixed(2)
+      : percentage;
 
   return (
     <View
@@ -95,17 +103,49 @@ const MetricCard = ({
           color={theme === "dark" ? "#fff" : "#75726a"}
         />
       </View>
-      <Text
-        style={{
-          fontSize: headerFontSize,
-          fontWeight: "bold",
-          color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
-        }}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-      >
-        {value}
-      </Text>
+      <View className="flex-row"
+        style={{ justifyContent: percentage !== undefined && percentage !== null ? "space-between" : "flex-start" }}>
+        <Text
+          style={{
+            fontSize: headerFontSize,
+            fontWeight: "bold",
+            color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+          }}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {value}
+        </Text>
+        {subValue !== undefined && subValue !== null && (
+          <Text
+            style={{
+              fontSize: headerFontSize,
+              fontWeight: "bold",
+              color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+              opacity: 0.2,
+            }}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            /{subValue}
+          </Text>
+        )}
+        {percentage !== undefined && percentage !== null && (
+          <Text
+            style={{
+              fontSize: headerFontSize*1.5,
+              fontWeight: "bold",
+              color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+              opacity: 0.5,
+            }}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+          {formattedPercentage}%
+          </Text>
+        )}
+
+      </View>
       {children}
     </View>
   );
@@ -131,7 +171,10 @@ export default function Dashboard() {
     income: 0,
     expense: 0,
     orders: 0,
+    allOrders: 0,
     adscost: 0,
+    forcastProfitloss: 0,
+    adsPercentage: 0,
   });
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
@@ -223,7 +266,10 @@ export default function Dashboard() {
         expense: metricsData.expense || 0,
         profitloss: metricsData.profitloss || 0,
         orders: metricsData.orders || 0,
+        allOrders: metricsData.allOrders || 0,
         adscost: metricsData.adscost || 0,
+        forcastProfitloss: metricsData.forcastProfitloss || 0,
+        adsPercentage: metricsData.adsPercentage || 0,
       });
 
       setSalesChartData(chartData || []);
@@ -287,6 +333,8 @@ export default function Dashboard() {
     })
     .filter(Boolean) as { label: string; value: string }[];
 
+  const isFiltered = Boolean(selectedProduct || selectedPlatform);
+
   return (
     <View className={`h-full ${useBackgroundColorClass()}`}>
       {/* Calendar Modal */}
@@ -345,7 +393,6 @@ export default function Dashboard() {
               borderRadius: 16,
               padding: 8,
               marginBottom: 12,
-
               shadowColor: theme === "dark" ? "#000" : "#ccc",
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.1,
@@ -414,7 +461,7 @@ export default function Dashboard() {
                 }}
               >
                 <CustomText
-                  weight="bold"                  
+                  weight="bold"
                   style={{
                     color: theme === "dark" ? "#c9c9c9" : "#48453e",
                     fontSize: getResponsiveStyles().bodyFontSize,
@@ -448,7 +495,7 @@ export default function Dashboard() {
               >
                 <CustomText
                   className="mr-2"
-                  style={{                
+                  style={{
                     fontSize: getResponsiveStyles().bodyFontSize,
                   }}
                 >
@@ -543,18 +590,34 @@ export default function Dashboard() {
                     flexDirection: isDesktop() ? "column" : "column",
                   }}
                 >
-                  <MetricCard
-                    title={t("dashboard.metrics.profitloss")}
-                    value={formatCurrency(metrics.profitloss)}
-                    icon="trending-up"
-                    valueColor={
-                      metrics.profitloss >= 0
-                        ? theme === "dark"
-                          ? "#00fad9"
-                          : "#09ddc1"
-                        : "#FF006E"
-                    }
-                  />
+                  {isFiltered ? (
+                    <MetricCard
+                      title={t("dashboard.metrics.forcastProfitloss")}
+                      value={formatCurrency(metrics.forcastProfitloss)}
+                      icon="trending-up"
+                      percentage={metrics.adsPercentage}
+                      valueColor={
+                        metrics.forcastProfitloss >= 0
+                          ? theme === "dark"
+                            ? "#00fad9"
+                            : "#09ddc1"
+                          : "#FF006E"
+                      }
+                    />
+                  ) : (
+                    <MetricCard
+                      title={t("dashboard.metrics.profitloss")}
+                      value={formatCurrency(metrics.profitloss)}
+                      icon="trending-up"
+                      valueColor={
+                        metrics.profitloss >= 0
+                          ? theme === "dark"
+                            ? "#00fad9"
+                            : "#09ddc1"
+                          : "#FF006E"
+                      }
+                    />
+                  )}
                   <View className="flex-row">
                     <MetricCard
                       title={t("dashboard.metrics.income")}
@@ -565,6 +628,7 @@ export default function Dashboard() {
                     <MetricCard
                       title={t("dashboard.metrics.orders")}
                       value={metrics.orders}
+                      subValue={metrics.allOrders}
                       icon="document-text-outline"
                       flex={0.3} // 30% of the row
                     />
@@ -573,7 +637,7 @@ export default function Dashboard() {
                 <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
                   <MetricCard
                     title={t("dashboard.metrics.expense")}
-                    value={formatCurrency(metrics.expense)}
+                    value={selectedProduct || selectedPlatform ? "~" : formatCurrency(metrics.expense)}
                     icon="cash-outline"
                   >
                     <View
@@ -735,7 +799,7 @@ export default function Dashboard() {
                               {product.orders}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                            {`${t("common.orders")} •`}
+                              {`${t("common.orders")} •`}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
                               {product.sales}
@@ -852,7 +916,7 @@ export default function Dashboard() {
                               {platform.sales}
                             </CustomText>
                             <CustomText style={{ fontSize: 12, opacity: 0.7 }}>
-                               {t(`product.unit.${platform.unit}`)}
+                              {t(`product.unit.${platform.unit}`)}
                             </CustomText>
                           </View>
                         </View>

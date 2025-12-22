@@ -7,7 +7,10 @@ interface DashboardMetrics {
   expense: number;
   profitloss: number;
   orders: number;
+  allOrders?: number;
   adscost?: number;
+  forcastProfitloss?: number;
+  adsPercentage?: number;
   conversion?: number;
 }
 

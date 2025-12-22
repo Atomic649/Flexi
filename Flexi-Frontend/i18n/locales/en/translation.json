@@ -573,9 +573,9 @@
       "title": "Top Products",
       "noData": "No product data available"
     },
-    "topStores": {
-      "title": "Top Stores",
-      "noData": "No store data available"
+    "topPlatform": {
+      "title": "Top Platforms",
+      "noData": "No platform data available"
     },
     "start": {
       "title": "Start Your Business Journey",
@@ -597,12 +597,13 @@
       "product": "Product",
       "chooseProduct": "Product",
       "store": "Store",
-      "chooseStore": "Store"
+      "choosePlatform": "Platform"
     },
     "metrics": {
       "income": "Income",
       "expense": "Expense",
-      "profitloss": "Profit/Loss",
+      "profitloss": "sProfit/Loss",
+      "forcastProfitloss": "Forecast Profit/Loss from Advertising",
       "orders": "Order",
       "adscost": "Ads Cost Forecast"
     }

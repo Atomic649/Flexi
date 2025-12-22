@@ -66,20 +66,24 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 
 
     // Get income from bills (use total field which already accounts for discounts)
+    const baseWhere = {
+      businessAcc: businessId?.businessId ?? 0,
+      deleted: false,
+      purchaseAt: dateFilter,
+      ...(platform ? { platform: platform as any } : {}),
+      ...(productName
+        ? {
+            product: {
+              some: { product: productName as string },
+            },
+          }
+        : {}),
+    };
+
     const billsAggregation = await prisma.bill.findMany({
       where: {
-        businessAcc: businessId?.businessId ?? 0,
-        deleted: false,
-        purchaseAt: dateFilter,
+        ...baseWhere,
         DocumentType: "Receipt",
-        ...(platform ? { platform: platform as any } : {}),
-        ...(productName
-          ? {
-              product: {
-                some: { product: productName as string },
-              },
-            }
-          : {}),
       },
       select: {
         total: true,
@@ -87,6 +91,11 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         billLevelDiscount: true,
         beforeDiscount: true,
       },
+    });
+
+    // Count all bills (all DocumentTypes) for subValue orders
+    const allBillsCount = await prisma.bill.count({
+      where: baseWhere,
     });
 
     // Calculate income and orders from bills
@@ -123,7 +132,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         date: dateFilter,
-        ...(productName ? { product: productName as string } : {})
+        ...(productName ? { product: productName as string } : {}),
+        ...(platform ? { platform: { is: { platform: platform as any } } } : {})
       },
       _sum: {
         adsCost: true
@@ -136,17 +146,22 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
      const expense = expenseOnly;
 
 
-    const profitloss = income - expense;
+  const profitloss = income - expense;
+  const forcastProfitloss = income - adsCostValue;
+  const adsPercentage = income > 0 ? (adsCostValue / income) * 100 : 0;
 
     res.json({
       income,
       expense,
       profitloss,
       orders,
+      allOrders: allBillsCount,
       totalDiscount,
       totalBillLevelDiscount,
       totalBeforeDiscount,
-      adscost: adsCostValue
+      adscost: adsCostValue,
+      forcastProfitloss,
+      adsPercentage
     });
 
   } catch (error) {
@@ -264,12 +279,19 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     });
 
     // Get ads cost data grouped by date
+    const adsPlatformFilter = platform
+      ? { platform: { is: { platform: platform as any } } }
+      : platformId
+      ? { platformId: parseInt(platformId as string) }
+      : {};
+
     const adsCosts = await prisma.adsCost.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
 
         date: dateFilter,
-        ...(productName ? { product: productName as string } : {})
+        ...(productName ? { product: productName as string } : {}),
+        ...adsPlatformFilter
       },
       select: {
         date: true,
