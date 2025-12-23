@@ -601,7 +601,7 @@ export default function Dashboard() {
                       icon="trending-up"
                       percentage={metrics.adsPercentage}
                       valueColor={
-                        metrics.forcastProfitloss >= 0
+                        metrics.forcastProfitloss >= 30
                           ? theme === "dark"
                             ? "#00fad9"
                             : "#09ddc1"
