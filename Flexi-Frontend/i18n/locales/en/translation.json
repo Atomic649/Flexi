@@ -33,7 +33,8 @@
     "networkError": "Network API Error",
     "orders": "orders",
     "unknown": "Unknown",
-    "details": "Details"
+    "details": "Details",
+    "noDataAvailable": "No data available"
   },
   "months": {
     "january": "January",

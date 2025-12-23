@@ -33,7 +33,8 @@
     "networkError": "ข้อผิดพลาดของการเชื่อมต่อ API​",
     "orders":"คำสั่งซื้อ",
     "unknown": "-",
-    "details": "รายละเอียด"
+    "details": "รายละเอียด",
+    "noDataAvailable": "ไม่มีข้อมูล"
   },
   "months": {
     "january": "มกราคม",

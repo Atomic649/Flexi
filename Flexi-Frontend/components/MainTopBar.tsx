@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity, Image, Text, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { CustomText } from "@/components/CustomText";
@@ -8,6 +8,70 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CallAPIUser from "@/api/auth_api";
 import { Ionicons } from "@expo/vector-icons";
 import { getResponsiveStyles } from "@/utils/responsive";
+import * as FileSystem from "expo-file-system/legacy";
+
+// Cache directory for avatars
+const CACHE_DIR = FileSystem.cacheDirectory ? FileSystem.cacheDirectory + "avatars/" : null;
+
+// Ensure directory exists
+const ensureDirExists = async () => {
+  if (!CACHE_DIR) return;
+  const dirInfo = await FileSystem.getInfoAsync(CACHE_DIR);
+  if (!dirInfo.exists) {
+    await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
+  }
+};
+
+// Cached Avatar Component
+const CachedAvatar = ({ uri, fallback }: { uri: string | null; fallback: any }) => {
+  const [source, setSource] = useState<any>(fallback);
+
+  useEffect(() => {
+    if (!uri) {
+      setSource(fallback);
+      return;
+    }
+
+    const cacheImage = async () => {
+      if (!CACHE_DIR) {
+        setSource({ uri });
+        return;
+      }
+
+      try {
+        await ensureDirExists();
+        // Create a safe filename from the URI
+        const filename = uri.replace(/[^a-zA-Z0-9]/g, "_");
+        const fileUri = CACHE_DIR + filename;
+
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
+
+        if (fileInfo.exists) {
+          console.log("Using cached avatar:", fileUri);
+          setSource({ uri: fileUri });
+        } else {
+          // Download if not cached
+          const downloadRes = await FileSystem.downloadAsync(uri, fileUri);
+          setSource({ uri: downloadRes.uri });
+        }
+      } catch (error) {
+        console.error("Error caching avatar:", error);
+        // Fallback to online URI if caching fails
+        setSource({ uri });
+      }
+    };
+
+    cacheImage();
+  }, [uri, fallback]);
+
+  return (
+    <Image
+      source={source}
+      className="w-full h-full"
+      resizeMode="contain"
+    />
+  );
+};
 
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
@@ -63,13 +127,7 @@ const MainTopBar = {
             {isLoading ? (
               <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
             ) : (
-              <Image
-                source={{
-                  uri: businessAvatar || images.empty,
-                }}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
+              <CachedAvatar uri={businessAvatar} fallback={images.empty} />
             )}
           </View>
         </TouchableOpacity>
