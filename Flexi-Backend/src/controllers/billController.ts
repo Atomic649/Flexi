@@ -703,15 +703,7 @@ const updateBill = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Bill not found" });
     }
 
-    const platform = await prisma.platform.findUnique({
-      where: {
-        id: billInput.platformId,
-      },
-    });
-    if (!platform) {
-      return res.status(404).json({ message: "platform not found" });
-    }
-
+   
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the ORIGINAL purchaseAt
     // Use the existing bill's purchaseAt date for cutoff calculation, not the new one
@@ -807,7 +799,7 @@ const updateBill = async (req: Request, res: Response) => {
             })),
           },
           payment: billInput.payment,
-          platform: platform.platform, 
+          platform: billInput.platform,
           platformId: billInput.platformId,
           cashStatus: finalCashStatus,
           memberId: billInput.memberId,

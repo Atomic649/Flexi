@@ -62,9 +62,7 @@ const MetricCard = ({
 }: MetricCardProps) => {
   const { theme } = useTheme();
   const formattedPercentage =
-    typeof percentage === "number"
-      ? percentage.toFixed(2)
-      : percentage;
+    typeof percentage === "number" ? percentage.toFixed(2) : percentage;
 
   return (
     <View
@@ -103,8 +101,15 @@ const MetricCard = ({
           color={theme === "dark" ? "#fff" : "#75726a"}
         />
       </View>
-      <View className="flex-row"
-        style={{ justifyContent: percentage !== undefined && percentage !== null ? "space-between" : "flex-start" }}>
+      <View
+        className="flex-row"
+        style={{
+          justifyContent:
+            percentage !== undefined && percentage !== null
+              ? "space-between"
+              : "flex-start",
+        }}
+      >
         <Text
           style={{
             fontSize: headerFontSize,
@@ -133,7 +138,7 @@ const MetricCard = ({
         {percentage !== undefined && percentage !== null && (
           <Text
             style={{
-              fontSize: headerFontSize*1.5,
+              fontSize: headerFontSize * 1.5,
               fontWeight: "bold",
               color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
               opacity: 0.5,
@@ -141,10 +146,9 @@ const MetricCard = ({
             numberOfLines={1}
             adjustsFontSizeToFit
           >
-          {formattedPercentage}%
+            {formattedPercentage}%
           </Text>
         )}
-
       </View>
       {children}
     </View>
@@ -635,43 +639,51 @@ export default function Dashboard() {
                   </View>
                 </View>
                 <View style={{ flexDirection: isDesktop() ? "row" : "column" }}>
-                  <MetricCard
-                    title={t("dashboard.metrics.expense")}
-                    value={selectedProduct || selectedPlatform ? "~" : formatCurrency(metrics.expense)}
-                    icon="cash-outline"
-                  >
-                    <View
-                      style={{
-                        marginTop: 12,
-                        paddingTop: 12,
-                        borderTopWidth: 1,
-                        borderTopColor:
-                          theme === "dark"
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.05)",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
+                  {isFiltered ? (
+                    <MetricCard
+                      title={t("dashboard.metrics.adscost")}
+                      value={formatCurrency(metrics.adscost)}
+                      icon="megaphone"
+                    ></MetricCard>
+                  ) : (
+                    <MetricCard
+                      title={t("dashboard.metrics.expense")}
+                      value={formatCurrency(metrics.expense)}
+                      icon="cash-outline"
                     >
                       <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
+                        style={{
+                          marginTop: 12,
+                          paddingTop: 12,
+                          borderTopWidth: 1,
+                          borderTopColor:
+                            theme === "dark"
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.05)",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
                       >
-                        <Ionicons
-                          name="megaphone-outline"
-                          size={16}
-                          color={theme === "dark" ? "#c9c9c9" : "#75726a"}
-                          style={{ marginRight: 6 }}
-                        />
-                        <CustomText style={{ fontSize: 13, opacity: 0.8 }}>
-                          {t("dashboard.metrics.adscost")}
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <Ionicons
+                            name="megaphone-outline"
+                            size={16}
+                            color={theme === "dark" ? "#c9c9c9" : "#75726a"}
+                            style={{ marginRight: 6 }}
+                          />
+                          <CustomText style={{ fontSize: 13, opacity: 0.8 }}>
+                            {t("dashboard.metrics.adscost")}
+                          </CustomText>
+                        </View>
+                        <CustomText weight="bold" style={{ fontSize: 14 }}>
+                          {formatCurrency(metrics.adscost)}
                         </CustomText>
                       </View>
-                      <CustomText weight="bold" style={{ fontSize: 14 }}>
-                        {formatCurrency(metrics.adscost)}
-                      </CustomText>
-                    </View>
-                  </MetricCard>
+                    </MetricCard>
+                  )}
                 </View>
               </View>
 
