@@ -3,8 +3,10 @@ FROM oven/bun:1 AS base
 
 WORKDIR /app
 
-# Ensure OpenSSL is available for Prisma
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Ensure OpenSSL and Node.js are available for Prisma (run Prisma CLI with Node to avoid bun lockfile issue)
+RUN apt-get update -y \
+	&& apt-get install -y openssl nodejs npm \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Copy manifest first
 COPY package.json bun.lock ./
@@ -15,14 +17,23 @@ COPY prisma ./prisma/
 # Copy postinstall scripts used during install
 COPY scripts ./scripts/
 
-# Install dependencies (runs postinstall which generates Prisma clients)
-RUN bun install
+# Provide Prisma env vars during build so postinstall generation doesn't fail
+ARG PPG_USER_DATABASE_URL1="postgresql://dummy:dummy@localhost:5432/dummy"
+ARG PPG_USER_DATABASE_URL2="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV PPG_USER_DATABASE_URL1=${PPG_USER_DATABASE_URL1}
+ENV PPG_USER_DATABASE_URL2=${PPG_USER_DATABASE_URL2}
+
+# Install dependencies without running lifecycle scripts (skip postinstall to avoid bun prisma generate)
+RUN bun install --ignore-scripts
+
+# Patch pdf-parse (remove debug block that reads missing test file)
+RUN node scripts/fix-pdf-parse.js
 
 # Copy source
 COPY . .
 
-# Generate Prisma client for the current platform (handled by postinstall too)
-RUN bun run prisma:generate:prod
+# Generate Prisma client for the current platform (use npm script to run Prisma under Node.js)
+RUN npm run prisma:generate:prod
 
 # Build the application (transpile TypeScript to JavaScript)
 RUN bun run build

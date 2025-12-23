@@ -8,8 +8,8 @@ RUN apk add --no-cache qpdf
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files to the container
-COPY package*.json ./
+# Copy the package.json and package-lock.json files to the container (explicit to ensure lockfile present)
+COPY package.json package-lock.json ./
 
 # Copy the Prisma schema files before install so postinstall can access them
 COPY prisma ./prisma/
@@ -28,15 +28,15 @@ RUN apk add --no-cache qpdf
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files to the container
-COPY package*.json ./
+# Copy the package.json and package-lock.json files to the container (explicit to ensure lockfile present)
+COPY package.json package-lock.json ./
 
 # Copy the Prisma schema files before install so postinstall can access them
 COPY prisma ./prisma/
 
 # Install dependencies without running lifecycle scripts (avoid postinstall prisma generate here)
 #ENV NODE_ENV=production
-RUN npm ci --only=production && npm cache clean --force
+RUN test -f package-lock.json && npm ci --omit=dev && npm cache clean --force
 
 # Copy the rest of the application code
 COPY . .

@@ -9,31 +9,31 @@ networks:
 # Define Services
 services:
   # NodeJS Backend (API)
-  nodejs:
-    depends_on:
-      - postgresdb
-    build:
-      context: ./Flexi-Backend
-      dockerfile: Dockerfile  
-    container_name: nodejsexpress    
-    volumes:
-      - ./Flexi-Backend:/app 
-      - /app/node_modules # Prevent overwriting node_modules in the container
-    working_dir: /app
-    command: sh -c "npm install && npm run prisma:generate:prod && npm run build && npm run start" # ensure prisma clients for linux-musl
-    ports:
-      - 3000:3000
-    env_file:
-      - ./Flexi-Backend/.env
-    environment:
-      - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-      - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-      - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
-      # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
-      - NODE_ENV=production
-    restart: always
-    networks:
-      - prosgres-docker-prisma
+  # nodejs:
+  #   depends_on:
+  #     - postgresdb
+  #   build:
+  #     context: ./Flexi-Backend
+  #     dockerfile: Dockerfile  
+  #   container_name: nodejsexpress    
+  #   volumes:
+  #     - ./Flexi-Backend:/app 
+  #     - /app/node_modules # Prevent overwriting node_modules in the container
+  #   working_dir: /app
+  #   command: sh -c "npm install && npm run prisma:generate:prod && npm run build && npm run start" # ensure prisma clients for linux-musl
+  #   ports:
+  #     - 3000:3000
+  #   env_file:
+  #     - ./Flexi-Backend/.env
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+  #     - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
+  #     - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
+  #     # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
+  #     - NODE_ENV=production
+  #   restart: always
+  #   networks:
+  #     - prosgres-docker-prisma
 
   # Optional Bun-based backend (experimental). Keep NodeJS service for fallback.
   bun-backend:
@@ -133,7 +133,7 @@ services:
       - 443:443    
     restart: always
     depends_on:
-      - nodejs
+      - bun-backend
       - expo-web
     networks:
       - prosgres-docker-prisma
