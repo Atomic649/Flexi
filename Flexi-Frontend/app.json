@@ -8,7 +8,11 @@
     "scheme": "flexi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -24,19 +28,29 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "fb1393371655036716"
+              "fb1393521459147449"
+            ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "fb1393521459147449"
             ]
           }
         ],
-        "FacebookAppID": "1393371655036716",
-        "FacebookDisplayName": "Flexi",
+        "FacebookAppID": "1393521459147449",
+        "FacebookDisplayName": "Flexi Marketing API",
         "LSApplicationQueriesSchemes": [
+          "fbapi",
+          "fb-messenger-share-api",
+          "fbauth2",
+          "fbshareextension",
           "fbapi",
           "fb-messenger-share-api",
           "fbauth2",
           "fbshareextension"
         ]
-      }
+      },
+      "bundleIdentifier": "com.tananyar.flexi"
     },
     "android": {
       "permissions": [
@@ -60,7 +74,24 @@
               "host": "facebook-auth"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "fb1393521459147449",
+              "host": "facebook-auth"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -75,8 +106,8 @@
           "include": [
             "expo-router"
           ]
-        }      
-      }        
+        }
+      }
     },
     "plugins": [
       "expo-router",

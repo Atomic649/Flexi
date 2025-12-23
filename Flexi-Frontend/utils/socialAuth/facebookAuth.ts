@@ -6,16 +6,23 @@ import { FB_ACCESS_TOKEN } from '../config';
 
 // Register with the Facebook Developer Portal and get your app ID
 // Then replace this with your Facebook App ID
-const FB_APP_ID = '1393371655036716';
+const FB_APP_ID = '1393521459147449';
 // Optional: fallback access token from env (development override)
 
 // Configure Facebook permissions that you need
-const FB_PERMISSIONS = ['public_profile', 'email'];
+const FB_PERMISSIONS = [
+  'public_profile', 
+  'email', 
+  'ads_management', 
+  'ads_read', 
+  'business_management', 
+  'pages_read_engagement', 
+  'pages_show_list'
+];
 
 // Make sure to register this URL scheme in your app.json for Expo
 const REDIRECT_URI = AuthSession.makeRedirectUri({
   scheme: 'flexi',
-  path: 'facebook-auth',
 });
 
 WebBrowser.maybeCompleteAuthSession();
@@ -31,17 +38,17 @@ export const loginWithFacebook = async (): Promise<{
   try {
 
     // Dev override: if an app-scoped access token is supplied via env, use it directly
-    if (FB_ACCESS_TOKEN) {
-      console.log('🔵 Using FACEBOOK_ACCESS_TOKEN from environment override');
-      return {
-        success: true,
-        data: {
-          accessToken: FB_ACCESS_TOKEN,
-          expirationDate: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days placeholder
-          source: 'env',
-        },
-      };
-    }
+    // if (FB_ACCESS_TOKEN) {
+    //   console.log('🔵 Using FACEBOOK_ACCESS_TOKEN from environment override');
+    //   return {
+    //     success: true,
+    //     data: {
+    //       accessToken: FB_ACCESS_TOKEN,
+    //       expirationDate: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days placeholder
+    //       source: 'env',
+    //     },
+    //   };
+    // }
 
         // Check if already authenticated with Facebook
     const fbTokenData = await AsyncStorage.getItem('@facebook_auth_token');
@@ -81,6 +88,13 @@ export const loginWithFacebook = async (): Promise<{
    
     const authRequest = new AuthSession.AuthRequest(authRequestConfig);  
     console.log('🦋 Starting Facebook auth request with config:', JSON.stringify(authRequestConfig, null, 2));
+    console.log('⚠️ IMPORTANT: Ensure this Redirect URI is added to "Valid OAuth Redirect URIs" in Facebook Developer Console:', authRequestConfig.redirectUri);
+    
+    // Log the full URL for debugging
+    const startUrl = await authRequest.makeAuthUrlAsync(discovery);
+    console.log('🚀 Full Auth URL:', startUrl);
+
+    // Try to use proxy if available, otherwise standard
     const authResult = await authRequest.promptAsync(discovery);
 
     console.log('💙 Facebook Auth Result:', JSON.stringify(authResult, null, 2));
@@ -101,7 +115,7 @@ export const loginWithFacebook = async (): Promise<{
 
       // const memberId = (await getMemberId()) || 'unknown';
 
-      // // add FB ID to platforms API
+      // // add FB ID to platforms APIw
       // const AddFacebookIdToPlatform = CallAPIPlatform.createPlatformAPI({
       //   platform: 'Facebook',
       //   accName: authResult.params.name || 'Facebook User',
