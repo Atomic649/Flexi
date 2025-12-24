@@ -11,8 +11,11 @@ COPY package.json bun.lock ./
 # Copy postinstall scripts used during install
 COPY scripts ./scripts/
 
-# Install dependencies (runs postinstall which generates Prisma clients)
-RUN bun install
+# Install dependencies (skip postinstall to avoid Prisma generate/migrate in image build)
+RUN bun install --frozen-lockfile --ignore-scripts
+
+# Patch pdf-parse after dependencies are installed
+RUN node scripts/fix-pdf-parse.js
 
 # Copy source
 COPY . .

@@ -9,7 +9,7 @@
     "test": "jest",
     "start:dev": "nodemon index.dev.ts",
     "start": "node dist/index.js",
-    "postinstall": "npm run prisma:generate:dev && node scripts/fix-pdf-parse.js",
+    "postinstall": "node scripts/fix-pdf-parse.js",
     "prisma:generate": "npx prisma generate --config=prisma/db1/prisma.config.ts && npx prisma generate --config=prisma/db2/prisma.config.ts",
     "prisma:generate:dev": "npx prisma generate --config=prisma/db1/prisma.config.ts --generator=client && npx prisma generate --config=prisma/db2/prisma.config.ts --generator=client",
     "prisma:generate:prod": "npx prisma generate --config=prisma/db1/prisma.config.ts --generator=client && npx prisma generate --config=prisma/db2/prisma.config.ts --generator=client",

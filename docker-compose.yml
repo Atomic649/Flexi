@@ -12,14 +12,7 @@ services:
     build:
       context: ./Flexi-Backend
       dockerfile: Dockerfile.bun
-      args:
-        - PPG_USER_DATABASE_URL1="postgresql://neondb_owner:npg_kKdm15JhETvG@ep-raspy-darkness-a1fp20tx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-        - PPG_USER_DATABASE_URL2="postgresql://neondb_owner:npg_3QUE7OSwusTI@ep-spring-meadow-a167dlu2-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
     container_name: bunexpress
-    environment:
-      - PPG_USER_DATABASE_URL1="postgresql://neondb_owner:npg_kKdm15JhETvG@ep-raspy-darkness-a1fp20tx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-      - PPG_USER_DATABASE_URL2="postgresql://neondb_owner:npg_3QUE7OSwusTI@ep-spring-meadow-a167dlu2-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-      - NODE_ENV=production
     ports:
       - 3010:3000
     restart: always

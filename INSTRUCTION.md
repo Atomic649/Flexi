@@ -199,7 +199,7 @@ rm -rf dist
 ```
 **Copy dist folder for localhost to cloud**
 ```bash
- scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Frontend/dist ubuntu@54.206.136.31:~/Flexi/Flexi-Frontend
+scp -r -i flexibusinesshubkey.pem /Users/tananyarukoon/Flexi/Flexi-Frontend/dist ec2-user@18.142.239.141:~/Flexi/Flexi-Frontend
  ```
 **Docker compose down volumes** 
 ```bash
@@ -215,14 +215,17 @@ docker compose -f docker-compose.dev.yml up
 ```
 **copy ssl to cloud**
 ```bash
-scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/ssl ubuntu@54.206.136.31:~/Flexi/Flexi-Backend
+scp -r -i flexibusinesshubkey.pem /Users/tananyarukoon/Flexi/Flexi-Backend/ssl ec2-user@18.142.239.141:~/Flexi/Flexi-Backend
 
 ```
 **copy .env to cloud**
 ```bash
-scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/.env ubuntu@54.206.136.31:~/Flexi/Flexi-Backend
+scp -r -i flexibusinesshubkey.pem /Users/tananyarukoon/Flexi/Flexi-Backend/.env ec2-user@18.142.239.141:~/Flexi/Flexi-Backend
 ```
 
 /Users/tananyarukoon/Flexi/Flexi-Backend/src/generated
 
-scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/src/generated ubuntu@54.206.136.31:~/Flexi/Flexi-Backend/src/generated
+scp -r -i flexibusinesshubkey.pem /Users/tananyarukoon/Flexi/Flexi-Backend/src/generated ec2-user@18.142.239.141:~/Flexi/Flexi-Backend/src/generated
+
+
+ssh -i flexibusinesshubkey.pem ec2-user@18.142.239.141
