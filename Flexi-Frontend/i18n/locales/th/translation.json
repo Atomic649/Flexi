@@ -202,7 +202,8 @@
       "Pack": "แพ็ค",
       "Set": "ชุด",
       "Dozen": "โหล",
-      "NotSpecified": ""
+      "NotSpecified": "",
+      "null":""
     },
     "selectUnit": "เลือกหน่วย",
     "type": "ประเภทสินค้า",

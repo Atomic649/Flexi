@@ -201,7 +201,8 @@
       "Pack": "Pack",
       "Set": "Set",
       "Dozen": "Dozen",
-      "NotSpecified": ""
+      "NotSpecified": "",
+      "null":""
     },
     "selectUnit": "Select unit",
     "type": "Product Type",

@@ -320,8 +320,8 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       const platform = await prisma.platform.create({
         data: {
           platform: "Offline" as SocialMedia,
-          accName: "Offline",
-          memberId: businessAccInput.memberId,
+          accName: `Offline-${businessAcc.id}`,
+          memberId: memberId.uniqueId,
           businessAcc: businessAcc.id,
         },
       });
@@ -365,7 +365,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         for (const name of defaultStores) {
           const InfluencerPlatform = await prisma.platform.create({
             data: {
-              accName: name,
+              accName: `${name}-${businessAcc.id}`,
               platform: name as SocialMedia,
               memberId: memberId.uniqueId,
               businessAcc: businessAcc.id,
