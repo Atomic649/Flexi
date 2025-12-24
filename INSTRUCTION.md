@@ -184,6 +184,7 @@ sudo apt-get install qpdf
 ### migrate database
 ```bash
 docker exec -it nodejsexpress npm run prisma:migrate:db1
+docker exec -it bunexpress bun run prisma:migrate
 ```
 
 
@@ -198,7 +199,7 @@ rm -rf dist
 ```
 **Copy dist folder for localhost to cloud**
 ```bash
- scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Frontend/dist ubuntu@52.63.120.114:~/Flexi/Flexi-Frontend
+ scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Frontend/dist ubuntu@54.206.136.31:~/Flexi/Flexi-Frontend
  ```
 **Docker compose down volumes** 
 ```bash
@@ -212,6 +213,16 @@ docker compose up --build  expo-web nginx
 ```bash
 docker compose -f docker-compose.dev.yml up     
 ```
+**copy ssl to cloud**
+```bash
+scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/ssl ubuntu@54.206.136.31:~/Flexi/Flexi-Backend
 
+```
+**copy .env to cloud**
+```bash
+scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/.env ubuntu@54.206.136.31:~/Flexi/Flexi-Backend
+```
 
+/Users/tananyarukoon/Flexi/Flexi-Backend/src/generated
 
+scp -r -i flexibusinesshub.pem /Users/tananyarukoon/Flexi/Flexi-Backend/src/generated ubuntu@54.206.136.31:~/Flexi/Flexi-Backend/src/generated

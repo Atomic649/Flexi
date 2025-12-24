@@ -15,9 +15,13 @@
     "prisma:generate:prod": "npx prisma generate --config=prisma/db1/prisma.config.ts --generator=client && npx prisma generate --config=prisma/db2/prisma.config.ts --generator=client",
     "prisma:generate:db1": "npx prisma generate --config=prisma/db1/prisma.config.ts",
     "prisma:generate:db2": "npx prisma generate --config=prisma/db2/prisma.config.ts",
-    "prisma:migrate": "npx prisma migrate dev --config=prisma/db1/prisma.config.ts --name initial && npx prisma migrate dev --config=prisma/db2/prisma.config.ts --name initial",
-    "prisma:migrate:db1": "npx prisma migrate dev --config=prisma/db1/prisma.config.ts --name initial",
-    "prisma:migrate:db2": "npx prisma migrate dev --config=prisma/db2/prisma.config.ts --name initial",
+    "prisma:migrate": "npm run prisma:migrate:deploy",
+    "prisma:migrate:deploy": "npx prisma migrate deploy --config=prisma/db1/prisma.config.ts && npx prisma migrate deploy --config=prisma/db2/prisma.config.ts",
+    "prisma:migrate:deploy:db1": "npx prisma migrate deploy --config=prisma/db1/prisma.config.ts",
+    "prisma:migrate:deploy:db2": "npx prisma migrate deploy --config=prisma/db2/prisma.config.ts",
+    "prisma:migrate:dev": "npx prisma migrate dev --config=prisma/db1/prisma.config.ts --name initial && npx prisma migrate dev --config=prisma/db2/prisma.config.ts --name initial",
+    "prisma:migrate:dev:db1": "npx prisma migrate dev --config=prisma/db1/prisma.config.ts --name initial",
+    "prisma:migrate:dev:db2": "npx prisma migrate dev --config=prisma/db2/prisma.config.ts --name initial",
     "prisma:reset": "npx prisma migrate reset --force --config=prisma/db1/prisma.config.ts && npx prisma migrate reset --force --config=prisma/db2/prisma.config.ts"
   },
   "keywords": [],
@@ -125,7 +129,6 @@
     "busboy": "1.6.0",
     "cross-spawn": "7.0.5",
     "tmp": "0.2.4",
-    "send": "0.18.0",
-    "express": "4.21.2"
+    "send": "0.18.0"
   }
 }

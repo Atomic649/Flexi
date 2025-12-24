@@ -73,6 +73,24 @@ class FacebookApi {
     });
     return (res.data?.ads ?? []) as FacebookAd[];
   }
+
+  /**
+   * Triggers backend ingestion of Facebook campaign spend into AdsCost.
+   * NOTE: Backend route currently has a typo: /facebook/aildy-spend/ingest
+   */
+  async ingestAdsCostRange(params: { since: string; until: string }) {
+    const axios = await getAxiosWithAuth();
+    const res = await axios.post("/facebook/daily-spend/ingest", null, {
+      params,
+    });
+    return res.data as {
+      status: string;
+      inserted?: number;
+      since?: string;
+      until?: string;
+      message?: string;
+    };
+  }
 }
 
 export default new FacebookApi();

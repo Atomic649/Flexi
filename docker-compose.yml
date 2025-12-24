@@ -1,52 +1,24 @@
-#version: '3.8'
+# Production compose: uses Neon for DB1 + DB2 (no local Postgres containers)
 
-# Define Network
 networks:
   prosgres-docker-prisma:
     name: prosgres-docker-prisma
     driver: bridge
 
-# Define Services
 services:
-  # NodeJS Backend (API)
-  # nodejs:
-  #   depends_on:
-  #     - postgresdb
-  #   build:
-  #     context: ./Flexi-Backend
-  #     dockerfile: Dockerfile  
-  #   container_name: nodejsexpress    
-  #   volumes:
-  #     - ./Flexi-Backend:/app 
-  #     - /app/node_modules # Prevent overwriting node_modules in the container
-  #   working_dir: /app
-  #   command: sh -c "npm install && npm run prisma:generate:prod && npm run build && npm run start" # ensure prisma clients for linux-musl
-  #   ports:
-  #     - 3000:3000
-  #   env_file:
-  #     - ./Flexi-Backend/.env
-  #   environment:
-  #     - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-  #     - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-  #     - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
-  #     # Keep devDependencies available during build/run to avoid missing types in ts builds/tests
-  #     - NODE_ENV=production
-  #   restart: always
-  #   networks:
-  #     - prosgres-docker-prisma
-
-  # Optional Bun-based backend (experimental). Keep NodeJS service for fallback.
   bun-backend:
-    depends_on:
-      - postgresdb
+    env_file:
+      - ./Flexi-Backend/.env
     build:
       context: ./Flexi-Backend
       dockerfile: Dockerfile.bun
+      args:
+        - PPG_USER_DATABASE_URL1="postgresql://neondb_owner:npg_kKdm15JhETvG@ep-raspy-darkness-a1fp20tx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        - PPG_USER_DATABASE_URL2="postgresql://neondb_owner:npg_3QUE7OSwusTI@ep-spring-meadow-a167dlu2-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
     container_name: bunexpress
     environment:
-      - DATABASE_URL=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-      - DATABASE_URL1=postgresql://postgres:123456@postgresdb:5432/prismatypedb
-      - DATABASE_URL2=postgresql://postgres:123456@postgresdb2:5432/prismatypedb2
+      - PPG_USER_DATABASE_URL1="postgresql://neondb_owner:npg_kKdm15JhETvG@ep-raspy-darkness-a1fp20tx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      - PPG_USER_DATABASE_URL2="postgresql://neondb_owner:npg_3QUE7OSwusTI@ep-spring-meadow-a167dlu2-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
       - NODE_ENV=production
     ports:
       - 3010:3000
@@ -63,7 +35,7 @@ services:
   expo-web:
     build:
       context: ./Flexi-Frontend
-      dockerfile: Dockerfile  # The one you created for static Nginx
+      dockerfile: Dockerfile
     container_name: expo-web
     ports:
       - 8080:80
@@ -71,133 +43,19 @@ services:
       - prosgres-docker-prisma
     restart: always
 
-  # Postgres Database
-  postgresdb:
-    image: postgres:15.6
-    container_name: flexidb
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: prismatypedb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - 9649:5432
-    restart: always
-    networks:
-      - prosgres-docker-prisma
-
-  # # Second Postgres Database
-  postgresdb2:
-    image: postgres:15.6
-    container_name: flexiadsdb
-    volumes:
-      - ./postgres_data2:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: prismatypedb2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - 8956:5432
-    restart: always
-    networks:
-      - prosgres-docker-prisma
-
-  # service สำหรับ PostgreSQL
-  postgresN8N:
-    image: postgres:15.6
-    container_name: n8n_postgres
-    restart: always
-    environment:
-      POSTGRES_DB: prismatypedb3
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - 9876:5432
-    volumes:
-      - ./postgres_data3:/var/lib/postgresql/data
-    networks:
-      - prosgres-docker-prisma
-
-
-  # Nginx Reverse Proxy
   nginx:
     image: nginx:latest
     container_name: nginx
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro     
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./Flexi-Backend/ssl:/etc/ssl
-      - ./Flexi-Frontend/dist:/usr/share/nginx/html   
+      - ./Flexi-Frontend/dist:/usr/share/nginx/html
     ports:
       - 80:80
-      - 443:443    
+      - 443:443
     restart: always
     depends_on:
       - bun-backend
       - expo-web
     networks:
       - prosgres-docker-prisma
-
-  # Jenkins CI/CD
-#   jenkins:
-#     build:
-#       context: ./jenkins
-#       dockerfile: Dockerfile      
-#     image: jenkins/jenkins:jdk21
-#     container_name: jenkins
-#     user: root
-#     volumes:
-#       - ./jenkins/jenkins_home:/var/jenkins_home # เพื่อให้ Jenkins สามารถเก็บข้อมูลไว้ใน host
-#       - /var/run/docker.sock:/var/run/docker.sock # เพื่อให้ Jenkins สามารถใช้งาน Docker daemon ที่รันบน host ได้
-#     environment:
-#       - JENKINS_OPTS=--httpPort=8888 # กำหนด Port สำหรับ Jenkins UI
-#     ports:
-#       - "8888:8888" # สำหรับ Jenkins UI
-#     restart: always
-#     networks:
-#       - prosgres-docker-prisma
-
-# # service สำหรับ n8n
-#   n8n:
-#     image: docker.n8n.io/n8nio/n8n:latest
-#     container_name: n8n_main
-#     restart: always
-#     environment:
-#       - DB_TYPE=postgresdb
-#       - DB_POSTGRESDB_HOST=postgresN8N
-#       - DB_POSTGRESDB_PORT=5432
-#       - DB_POSTGRESDB_DATABASE=prismatypedb3
-#       - DB_POSTGRESDB_USER=postgres
-#       - DB_POSTGRESDB_PASSWORD=123456
-#       - N8N_HOST=0.0.0.0
-#       - N8N_PORT=5678
-#       - N8N_PROTOCOL=https
-#       - N8N_SECURE_COOKIE=false
-#       - WEBHOOK_URL=https://your-ngrok-url.ngrok-free.app/
-#       - GENERIC_TIMEZONE=Asia/Bangkok
-#       - TZ=Asia/Bangkok
-#     ports:
-#       - "5678:5678"
-#     volumes:
-#       - ./n8n_data:/home/node/.n8n
-#     networks:
-#       - prosgres-docker-prisma
-#     depends_on:
-#       - postgresN8N  
-
-#   # service สำหรับ ngrok
-#   ngrok:
-#     image: ngrok/ngrok:latest
-#     container_name: n8n_ngrok_tunnel
-#     restart: unless-stopped
-#     environment:
-#       - NGROK_AUTHTOKEN=348cB4bzUlwn4SDe94BfImxfDHO_7nDYsuw3GYQ3NpiTs6FaW
-#     command: http n8n:5678
-#     ports:
-#       - "4040:4040" # สำหรับเข้าดูหน้า Web UI
-#     networks:
-#       - prosgres-docker-prisma
-#     depends_on:
-#       - n8n
-
-

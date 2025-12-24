@@ -382,6 +382,28 @@ const FacebookSetting = () => {
           productId,
         });
 
+        // After linking, ingest AdsCost for the last 60 days (including today).
+        // Fire-and-forget: we don't want to block the user if ingestion is slow.
+        // Backend expects query params: since/until (YYYY-MM-DD).
+        (async () => {
+          try {
+            const today = new Date();
+            const until = today.toISOString().slice(0, 10);
+            const sinceDate = new Date(today);
+            sinceDate.setDate(sinceDate.getDate() - 59);
+            const since = sinceDate.toISOString().slice(0, 10);
+
+            await FacebookApi.ingestAdsCostRange({ since, until });
+          } catch (e: any) {
+            // Linking succeeded, so keep UX positive; just inform about ingestion failure.
+            const msg =
+              e?.message ||
+              e?.data?.message ||
+              t("facebook.errors.linkSuccess");
+            showAlert(t("common.error"), `AdsCost ingest failed: ${msg}`);
+          }
+        })();
+
         showAlert(t("facebook.linked"), t("facebook.errors.linkSuccess"));
         router.replace("/ads");
       } catch (err: any) {
