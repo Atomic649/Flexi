@@ -24,7 +24,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isDesktop, isMobile } from "@/utils/responsive";
+import { isDesktop, isMobile, isMobileApp } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
@@ -88,8 +88,8 @@ export default function EditBill() {
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null
   );
-  const [validContactUntil, setValidContactUntil] = useState("")
- 
+  const [validContactUntil, setValidContactUntil] = useState("");
+
   // Note state
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
@@ -685,7 +685,7 @@ export default function EditBill() {
         setCProvince(billData.cProvince);
         setPayment(billData.payment);
         setCashStatus(billData.cashStatus);
-  setSelectedPlatform(billData.platform ?? "");
+        setSelectedPlatform(billData.platform ?? "");
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
         setValidContactUntil(billData.validContactUntil || "");
@@ -827,7 +827,9 @@ export default function EditBill() {
       // Fetch platform for this member
       if (uniqueId) {
         try {
-          const PlatformData = await CallAPIPlatform.getPlatformEnumAPI(uniqueId);
+          const PlatformData = await CallAPIPlatform.getPlatformEnumAPI(
+            uniqueId
+          );
           setPlatformOptions(Array.isArray(PlatformData) ? PlatformData : []);
         } catch (error) {
           console.error("Failed to fetch platforms:", error);
@@ -1053,8 +1055,8 @@ export default function EditBill() {
           | "Cash"
           | "NotSpecified",
         memberId: memberId || "",
-  businessAcc,
-  platform: selectedPlatform,
+        businessAcc,
+        platform: selectedPlatform,
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
@@ -1079,7 +1081,7 @@ export default function EditBill() {
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.success"),
-        message:  t("bill.alerts.successMessage")|| data.message ,
+        message: t("bill.alerts.successMessage") || data.message,
         buttons: [
           {
             text: t("common.ok"),
@@ -1162,7 +1164,15 @@ export default function EditBill() {
         style={{ flex: 1 }}
         //  keyboardVerticalOffset={5}
       >
-        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={{
+            width: isMobile() ? "100%" : "40%",
+            paddingHorizontal: isMobileApp() ? 0 : 15,
+            maxWidth: 600,
+          }}
+          ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
           {showProgressSection && (
             <View
@@ -1398,8 +1408,10 @@ export default function EditBill() {
                       if (typeof plat === "string") {
                         return { label: plat, value: plat };
                       }
-                      const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
-                      const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                      const label =
+                        plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                      const value =
+                        plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
                       return { label, value };
                     })}
                     placeholder={t("bill.selectStore")}
@@ -1750,10 +1762,9 @@ export default function EditBill() {
                 <View className="w-1/6 pr-2">
                   <FormFieldClear
                     title={
-                      t("bill.amount") +
-                      (item.unit && t(`product.unit.${item.unit}`)
-                        ? ` (${t(`product.unit.${item.unit}`)})`
-                        : "")
+                      item.unit
+                        ? t(`product.unit.${item.unit}`)
+                        : t("bill.amount")
                     }
                     value={item.quantity}
                     handleChangeText={(value: string) =>
@@ -2071,7 +2082,6 @@ export default function EditBill() {
                     size={24}
                     color={theme === "dark" ? "#b1b1b1" : "#606060"}
                   />
-                  
                 </TouchableOpacity>
                 {/* show Vilid Contact date calculat from purchaseDate * repeatMonth */}
                 <CustomText
@@ -2079,16 +2089,20 @@ export default function EditBill() {
                   style={{ color: theme === "dark" ? "#888" : "#666" }}
                 >
                   {t("bill.validContractUntil")}{" "}
-                  {validContactUntil ? formatDate(validContactUntil).split(" ")[0] : ""}
+                  {validContactUntil
+                    ? formatDate(validContactUntil).split(" ")[0]
+                    : ""}
                 </CustomText>
               </View>
             )}
 
             {error ? (
-              <CustomText className=" mt-4"
-               style={{ color: theme === "dark" ? "#ff6b6b" : "#ff4d4d" }}
-              
-              >{error}</CustomText>
+              <CustomText
+                className=" mt-4"
+                style={{ color: theme === "dark" ? "#ff6b6b" : "#ff4d4d" }}
+              >
+                {error}
+              </CustomText>
             ) : null}
 
             <View className="flex-row gap-3 justify-center items-left">

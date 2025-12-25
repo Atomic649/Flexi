@@ -28,7 +28,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isMobile } from "@/utils/responsive";
+import { isMobile, isMobileApp } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -67,7 +67,8 @@ export default function CreateBill() {
   const duplicateBillId =
     parsedDuplicateId !== null && !Number.isNaN(parsedDuplicateId)
       ? parsedDuplicateId
-      : null;const [platformOptions, setPlatformOptions] = useState<any[]>([]);
+      : null;
+  const [platformOptions, setPlatformOptions] = useState<any[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
@@ -631,7 +632,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Tiktok Affiliate
           setMemberId(memberId);
-          setSelectedPlatform("Tiktok")
+          setSelectedPlatform("Tiktok");
         }
         // Auto-fill customer fields if product is Shopee Affiliate
         if (value === "Shopee Affiliate") {
@@ -649,7 +650,7 @@ export default function CreateBill() {
           setCashStatus(true);
           setTaxType("Juristic"); // Set tax type to Juristic for Shopee Affiliate
           setMemberId(memberId);
-          setSelectedPlatform("Shopee")
+          setSelectedPlatform("Shopee");
         }
       }
       return updated;
@@ -959,7 +960,15 @@ export default function CreateBill() {
         style={{ flex: 1 }}
         //  keyboardVerticalOffset={5}
       >
-        <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={{
+            width: isMobile() ? "100%" : "40%",
+            paddingHorizontal: isMobileApp() ? 0 : 15,
+            maxWidth: 600,
+          }}
+          ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
           {showProgressSection && (
             <View
@@ -1172,8 +1181,10 @@ export default function CreateBill() {
                       if (typeof plat === "string") {
                         return { label: plat, value: plat };
                       }
-                      const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
-                      const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                      const label =
+                        plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                      const value =
+                        plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
                       return { label, value };
                     })}
                     placeholder={t("bill.selectStore")}
@@ -1504,10 +1515,9 @@ export default function CreateBill() {
                 <View className="w-1/6 pr-2">
                   <FormFieldClear
                     title={
-                      t("bill.amount") +
-                      (item.unit && t(`product.unit.${item.unit}`)
-                        ? ` (${t(`product.unit.${item.unit}`)})`
-                        : "")
+                      item.unit
+                        ? t(`product.unit.${item.unit}`)
+                        : t("bill.amount")
                     }
                     value={item.quantity}
                     handleChangeText={(value: string) =>
