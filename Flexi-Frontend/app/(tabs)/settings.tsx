@@ -325,23 +325,7 @@ export default function Setting() {
         const result = await loginWithFacebook();
        // console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
 
-        if (result.success && result.data?.accessToken) {
-          await setFacebookAuth(result.data?.accessToken, result.data?.expirationDate);
-          setAlertConfig({
-            visible: true,
-            title: t("common.success"),
-            message: t("settings.socialMedia.connected", {
-              platform: "Facebook",
-            }),
-            buttons: [
-              {
-                text: t("common.ok"),
-                onPress: () =>
-                  setAlertConfig((prev) => ({ ...prev, visible: false })),
-              },
-            ],
-          });
-        } else {
+        if (!result.success) {
           setAlertConfig({
             visible: true,
             title: t("common.error"),
@@ -356,7 +340,24 @@ export default function Setting() {
               },
             ],
           });
+          return;
         }
+
+        await setFacebookAuth(result.accessToken, result.expiresAt);
+        setAlertConfig({
+          visible: true,
+          title: t("common.success"),
+          message: t("settings.socialMedia.connected", {
+            platform: "Facebook",
+          }),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
       }
     } catch (error) {
       console.error('🔄 Facebook auth error:', error);

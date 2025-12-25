@@ -76,3 +76,5 @@ postgres_data3/
 #SSL
 cert.pem
 key.pem
+
+ONLYME.md
