@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { TextInput } from 'react-native-gesture-handler';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import CallAPIUser from '@/api/auth_api';
@@ -18,15 +17,35 @@ export default function ResetPassword() {
   const { token } = useLocalSearchParams();
   const { t } = useTranslation();
 
+  const rawToken = Array.isArray(token) ? token[0] : token;
+  // Some email clients can wrap long URLs and introduce whitespace/newlines.
+  const normalizedToken = typeof rawToken === 'string' ? rawToken.replace(/\s+/g, '') : rawToken;
+
+  const getErrorMessage = (err: unknown) => {
+    if (!err) return t("common.networkError");
+    if (typeof err === "string") return err;
+    if (err instanceof Error) return err.message;
+    if (typeof err === "object") {
+      const anyErr = err as any;
+      if (typeof anyErr.message === "string") return anyErr.message;
+      if (anyErr.error && typeof anyErr.error.message === "string") return anyErr.error.message;
+    }
+    return t("common.networkError");
+  };
+
+  // Must match backend password policy (authController passwordSchema)
+  const isStrongPassword = (value: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])(?!.*\s).+$/.test(value);
+
   useEffect(() => {
-    if (!token) {
+    if (!normalizedToken) {
       Alert.alert(
         t('resetPassword.invalidLink'),
         t('resetPassword.invalidLinkMessage'),
         [{ text: 'OK', onPress: () => router.push('/forgot_password') }]
       );
     }
-  }, [token, t, router]);
+  }, [normalizedToken, t, router]);
 
   const handleResetPassword = async () => {
     // Validate inputs
@@ -40,7 +59,7 @@ export default function ResetPassword() {
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8 || !isStrongPassword(newPassword)) {
       Alert.alert(t('resetPassword.error'), t('resetPassword.passwordLength'));
       return;
     }
@@ -48,7 +67,7 @@ export default function ResetPassword() {
     try {
       setIsLoading(true);
       await CallAPIUser.resetPasswordAPI({ 
-        token: token as string, 
+        token: (normalizedToken as string), 
         newPassword 
       });
       
@@ -64,7 +83,7 @@ export default function ResetPassword() {
       setIsLoading(false);
       Alert.alert(
         t('resetPassword.error'), 
-        error instanceof Error ? error.message : 'Failed to reset password. The link may have expired.'
+        getErrorMessage(error) || 'Failed to reset password. The link may have expired.'
       );
     }
   };
@@ -72,69 +91,77 @@ export default function ResetPassword() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
-    
 
-      <View style={styles.content}>
-        <Text style={styles.subtitle}>
-          {t('resetPassword.subtitle')}
-        </Text>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 24 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.subtitle}>
+            {t('resetPassword.subtitle')}
+          </Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>{t('resetPassword.newPasswordLabel')}</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder={t('resetPassword.newPasswordPlaceholder')}
-              secureTextEntry={!showPassword}
-              value={newPassword}
-              onChangeText={setNewPassword}
-            />
-            <TouchableOpacity 
-              style={styles.eyeIcon}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons 
-                name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                size={24} 
-                color="#777"
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>{t('resetPassword.newPasswordLabel')}</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder={t('resetPassword.newPasswordPlaceholder')}
+                secureTextEntry={!showPassword}
+                value={newPassword}
+                onChangeText={setNewPassword}
               />
-            </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Ionicons 
+                  name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                  size={24} 
+                  color="#777"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>{t('resetPassword.confirmPasswordLabel')}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={t('resetPassword.confirmPasswordPlaceholder')}
-            secureTextEntry={!showPassword}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>{t('resetPassword.confirmPasswordLabel')}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={t('resetPassword.confirmPasswordPlaceholder')}
+              secureTextEntry={!showPassword}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </View>
 
-        <TouchableOpacity 
-          style={[
-            styles.button, 
-            (!newPassword.trim() || !confirmPassword.trim()) && styles.buttonDisabled
-          ]} 
-          onPress={handleResetPassword}
-          disabled={isLoading || !newPassword.trim() || !confirmPassword.trim()}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>{t('resetPassword.resetButton')}</Text>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[
+              styles.button, 
+              (!newPassword.trim() || !confirmPassword.trim()) && styles.buttonDisabled
+            ]} 
+            onPress={handleResetPassword}
+            disabled={isLoading || !newPassword.trim() || !confirmPassword.trim()}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>{t('resetPassword.resetButton')}</Text>
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.linkButton} 
-          onPress={() => router.push('/login')}
-        >
-          <Text style={styles.linkText}>{t('resetPassword.backToLogin')}</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity 
+            style={styles.linkButton} 
+            onPress={() => router.push('/login')}
+          >
+            <Text style={styles.linkText}>{t('resetPassword.backToLogin')}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -143,7 +170,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'center',
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -210,14 +239,14 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   button: {
-    backgroundColor: '#fff',
+    backgroundColor: '#5e5d59',
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 16,
   },
   buttonDisabled: {
-    backgroundColor: '#5e5d59',
+    backgroundColor: '#cccccc',
   },
   buttonText: {
     color: '#fff',

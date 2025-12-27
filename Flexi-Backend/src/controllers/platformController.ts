@@ -210,7 +210,7 @@ const getPlatformListByMemberId = async (req: Request, res: Response) => {
       distinct: ['platform'],
     });
     const platforms = platformList.map((item) => item.platform);
-    console.log("🚀 Get Platform List:", platforms);
+    //console.log("🚀 Get Platform List:", platforms);
     res.json(platforms);
   } catch (e) {
     console.error(e);

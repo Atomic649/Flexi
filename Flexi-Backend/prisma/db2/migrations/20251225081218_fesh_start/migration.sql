@@ -47,6 +47,12 @@ CREATE TABLE "flexiadsdb"."BusinessAcc" (
     "updatedAt" TIMESTAMP(3),
     "name" TEXT NOT NULL,
     "businessType" "flexiadsdb"."Category" NOT NULL,
+    "taxId" TEXT,
+    "taxType" TEXT,
+    "businessUserName" TEXT,
+    "businessPhone" TEXT,
+    "businessAddress" TEXT,
+    "vat" BOOLEAN DEFAULT false,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "BusinessAcc_pkey" PRIMARY KEY ("id")

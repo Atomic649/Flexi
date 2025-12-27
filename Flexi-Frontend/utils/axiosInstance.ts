@@ -15,11 +15,10 @@ export const getAxios = () => {
 // Function to create an Axios instance with authentication
 export const getAxiosWithAuth = async () => {
   const token = await getToken();
+  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   return axios.create({
     baseURL: API_URL,
     timeout: 30000, // 30 seconds timeout
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
   });
 };

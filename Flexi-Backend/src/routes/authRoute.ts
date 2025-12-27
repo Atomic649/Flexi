@@ -12,6 +12,8 @@ import {
   changePassword,
   forgotPassword,
   resetPassword,
+  verifyEmail,
+  resendVerificationEmail,
 } from "../controllers/authController";
 
 // Create express router
@@ -51,5 +53,10 @@ router.post("/forgot-password", forgotPassword);
 
 // Reset password
 router.post("/reset-password", resetPassword);
+
+// Email verification
+router.get("/verify-email", verifyEmail);
+router.post("/verify-email", verifyEmail);
+router.post("/resend-verification", resendVerificationEmail);
 
 export default router;

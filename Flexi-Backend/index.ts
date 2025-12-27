@@ -6,9 +6,17 @@ import cors from "cors";
 import dotenv from "dotenv";
 import https from "https";
 import fs from "fs";
+import path from "path";
 
 // Initialize dotenv
-dotenv.config();
+// Prefer loading .env from the working directory (works for `node dist/index.js`),
+// then fall back to the directory of this file (works for `bun index.ts`).
+const envPathCandidates = [
+  path.resolve(process.cwd(), ".env"),
+  path.resolve(__dirname, ".env"),
+];
+const envPath = envPathCandidates.find((p) => fs.existsSync(p));
+dotenv.config(envPath ? { path: envPath } : undefined);
 
 // Create a new express application instance
 const app = express();

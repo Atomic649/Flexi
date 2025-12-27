@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import CallAPIUser from '@/api/auth_api';
 import { saveToken,  removeToken, removeMemberId } from '@/utils/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 
 // Define the AuthContextType
 type AuthContextType = {
@@ -25,6 +25,13 @@ AuthContext.displayName = 'AuthContext'; // Explicitly set displayName
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any | null>(null); // Update the type according to your backend response
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+
+  // Keep the latest pathname for async callbacks (deep links can change pathname after first render)
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
   // Note: Avoid flag-based navigation side-effects; navigate directly at the event source
 
   useEffect(() => {
@@ -40,8 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
         await removeToken(); // Remove the token
         await removeMemberId(); // Remove the memberId        
-        // Navigate directly on failure instead of deferring to another effect
-        router.replace('/landing');
+        
+        // Define public routes that don't require authentication
+        const publicRoutes = ['/landing', '/login', '/register', '/forgot_password', '/reset_password', '/business_register'];
+        const currentPathname = pathnameRef.current || '';
+        const isPublicRoute = publicRoutes.some(route => currentPathname.includes(route));
+
+        // Only redirect to landing if we're not on a public route
+        if (!isPublicRoute) {
+          router.replace('/landing');
+        }
       } finally {
         setLoading(false);
       }

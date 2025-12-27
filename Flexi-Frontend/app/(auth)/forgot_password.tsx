@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { TextInput } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import CallAPIUser from '@/api/auth_api';
 import { useTranslation } from 'react-i18next';
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
+
+  const getErrorMessage = (err: unknown) => {
+    if (!err) return t("common.networkError");
+    if (typeof err === "string") return err;
+    if (err instanceof Error) return err.message;
+    if (typeof err === "object") {
+      const anyErr = err as any;
+      if (typeof anyErr.message === "string") return anyErr.message;
+      if (anyErr.error && typeof anyErr.error.message === "string") return anyErr.error.message;
+    }
+    return t("common.networkError");
+  };
 
 
   const handleForgotPassword = async () => {
@@ -22,10 +32,9 @@ export default function ForgotPassword() {
 
     try {
       setIsLoading(true);
-      const response = await CallAPIUser.forgotPasswordAPI({ email: email.trim() });
+      await CallAPIUser.forgotPasswordAPI({ email: email.trim() });
       
       setIsLoading(false);
-      setEmailSent(true);
 
       // Show success message
       Alert.alert(
@@ -35,7 +44,7 @@ export default function ForgotPassword() {
       );
     } catch (error) {
       setIsLoading(false);
-      Alert.alert(t('common.error'), error instanceof Error ? error.message : 'Failed to process request');
+      Alert.alert(t('common.error'), getErrorMessage(error));
     }
   };
 

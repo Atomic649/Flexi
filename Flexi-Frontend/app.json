@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Flexi-React-Expo",
+    "name": "Flexi",
     "slug": "flexi",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -93,7 +93,8 @@
             "DEFAULT"
           ]
         }
-      ]
+      ],
+      "package": "com.tananyar.flexi"
     },
     "web": {
       "bundler": "metro",

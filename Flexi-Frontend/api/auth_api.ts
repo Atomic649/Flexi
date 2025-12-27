@@ -62,21 +62,23 @@ class CallAPIUser {
     }
     try {
       const token = await getToken();
+      if (!token) {
+        return { session: null };
+      }
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.get(`/auth/session/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.get(`/auth/session/`);
       console.log("🚀sessionAPI :", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Get Session API Error:", error);
       if (axios.isAxiosError(error) && error.response) {
+        // A missing/invalid auth token is a normal state (logged out).
+        if (error.response.status === 401) {
+          return { session: null };
+        }
         throw error.response.data;
-      } else {
-        throw new Error(t("common.networkError"));
       }
+      throw new Error(t("common.networkError"));
     }
   }
 

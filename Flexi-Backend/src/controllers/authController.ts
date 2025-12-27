@@ -56,8 +56,11 @@ let transporter: nodemailer.Transporter;
 // Initialize the email transporter based on environment
 async function initializeTransporter() {
   // Check if we're in a production environment
-  if (process.env.NODE_ENV === 'production') {
-    // For production, use the actual email service
+  const forceRealEmail = process.env.FORCE_REAL_EMAIL === 'true';
+  const hasGmailCreds = Boolean(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD);
+
+  if (process.env.NODE_ENV === 'production' || (forceRealEmail && hasGmailCreds)) {
+    // For production (or explicit dev override), use the actual email service
     transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -66,6 +69,13 @@ async function initializeTransporter() {
         // For App Password setup: https://support.google.com/accounts/answer/185833
         pass: process.env.EMAIL_APP_PASSWORD, 
       },
+    });
+  } else if (process.env.NODE_ENV === 'test') {
+    // Jest/test environment: avoid network calls (Ethereal) and keep handles clean
+    transporter = nodemailer.createTransport({
+      streamTransport: true,
+      newline: 'unix',
+      buffer: true,
     });
   } else {
     // For development/testing, create a test account with Ethereal
@@ -106,6 +116,59 @@ async function initializeTransporter() {
   await initializeTransporter();
 })();
 
+async function ensureTransporterReady() {
+  if (!transporter) {
+    await initializeTransporter();
+  }
+}
+
+function buildAppBaseUrl(req: Request) {
+  const configured = process.env.BACKEND_URL;
+  if (configured) return configured.replace(/\/$/, "");
+  return `${req.protocol}://${req.get("host")}`;
+}
+
+async function sendVerificationEmail(params: {
+  req: Request;
+  to: string;
+  token: string;
+}) {
+  const { req, to, token } = params;
+  await ensureTransporterReady();
+
+  const backendBase = buildAppBaseUrl(req);
+  const verifyUrl = `${backendBase}/auth/verify-email?token=${encodeURIComponent(token)}`;
+
+  const mailOptions = {
+    from:
+      process.env.NODE_ENV === "production"
+        ? process.env.EMAIL_USER
+        : "dev@example.com",
+    to,
+    subject: "Verify your email",
+    html: `
+      <h1>Verify your email</h1>
+      <p>Thanks for signing up. Please verify your email by clicking the link below:</p>
+      <a href="${verifyUrl}">Verify Email</a>
+      <p>This link expires in 24 hours.</p>
+      <p>If you did not create an account, you can ignore this email.</p>
+    `,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+
+  if (process.env.NODE_ENV !== "production") {
+    console.log("Verification email sent in development mode");
+    if (nodemailer.getTestMessageUrl(info)) {
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    }
+    if ((info as any).message) {
+      console.log("Email content:", (info as any).message.toString());
+    }
+    console.log("Verify URL (for development testing):", verifyUrl);
+  }
+}
+
 const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
@@ -136,6 +199,11 @@ const register = async (req: Request, res: Response) => {
   // Hash password
   const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
+
+    // Email verification token (24 hours)
+    const emailVerifyToken = crypto.randomBytes(32).toString("hex");
+    const emailVerifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
     const user = await Prisma.user.create({
       data: {
         email: userInput.email,
@@ -144,8 +212,21 @@ const register = async (req: Request, res: Response) => {
         lastName: userInput.lastName,
         phone: userInput.phone,
         username: userInput.username,
+        // These fields exist in prisma/db1/schema1.prisma; keep cast to avoid breakage if client isn't regenerated yet
+        ...( {
+          emailVerifiedAt: null,
+          emailVerifyToken,
+          emailVerifyTokenExpiry,
+        } as any ),
       },
     });
+
+    // Send verification email (best-effort)
+    try {
+      await sendVerificationEmail({ req, to: user.email, token: emailVerifyToken });
+    } catch (mailError) {
+      console.error("Failed to send verification email:", mailError);
+    }
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);
 
@@ -158,8 +239,10 @@ const register = async (req: Request, res: Response) => {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        emailVerifiedAt: (user as any).emailVerifiedAt ?? null,
       },
       token: token,
+      emailVerificationRequired: true,
     });
   } catch (e) {
     console.error(e);
@@ -222,11 +305,127 @@ const login = async (req: Request, res: Response) => {
         username: user.username,
         memberId: businessAcc.memberId,
         businessId: businessAcc.id,
+        emailVerifiedAt: (user as any).emailVerifiedAt ?? null,
       },
     });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "failed to login" });
+  }
+};
+
+// Verify Email - token comes from email link
+const verifyEmail = async (req: Request, res: Response) => {
+  const token = (req.query.token as string) || (req.body?.token as string);
+
+  const schema = Joi.object({
+    token: Joi.string().required(),
+  });
+  const { error } = schema.validate({ token });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    const user = await Prisma.user.findFirst({
+      where: {
+        ...( {
+          emailVerifyToken: token,
+          emailVerifyTokenExpiry: { gt: new Date() },
+          emailVerifiedAt: null,
+        } as any ),
+      },
+    });
+
+    if (!user) {
+      // Return HTML if request seems like a browser navigation
+      if (req.method === "GET" && (req.get("accept") || "").includes("text/html")) {
+        return res
+          .status(400)
+          .send(
+            "<h1>Invalid or expired link</h1><p>Please request a new verification email.</p>"
+          );
+      }
+
+      return res.status(400).json({ message: "Invalid or expired verification token" });
+    }
+
+    await Prisma.user.update({
+      where: { id: user.id },
+      data: {
+        ...( {
+          emailVerifiedAt: new Date(),
+          emailVerifyToken: null,
+          emailVerifyTokenExpiry: null,
+        } as any ),
+      },
+    });
+
+    if (req.method === "GET" && (req.get("accept") || "").includes("text/html")) {
+      return res
+        .status(200)
+        .send(
+          "<h1>Email verified</h1><p>Your email is verified. You can return to the app.</p>"
+        );
+    }
+
+    return res.status(200).json({ status: "ok", message: "Email verified" });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: "Failed to verify email" });
+  }
+};
+
+// Resend verification email (privacy-preserving)
+const resendVerificationEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+  const { error } = schema.validate({ email });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    const user = await Prisma.user.findUnique({
+      where: { email },
+    });
+
+    // Always return OK to avoid account enumeration
+    if (!user || (user as any).emailVerifiedAt) {
+      return res.status(200).json({
+        status: "ok",
+        message: "If your email is registered, you will receive a verification link",
+      });
+    }
+
+    const emailVerifyToken = crypto.randomBytes(32).toString("hex");
+    const emailVerifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await Prisma.user.update({
+      where: { id: user.id },
+      data: {
+        ...( {
+          emailVerifyToken,
+          emailVerifyTokenExpiry,
+        } as any ),
+      },
+    });
+
+    try {
+      await sendVerificationEmail({ req, to: user.email, token: emailVerifyToken });
+    } catch (mailError) {
+      console.error("Failed to resend verification email:", mailError);
+    }
+
+    return res.status(200).json({
+      status: "ok",
+      message: "If your email is registered, you will receive a verification link",
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: "Failed to resend verification email" });
   }
 };
 
@@ -444,7 +643,7 @@ const session = async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
+  if (!token || token === "null" || token === "undefined") {
     return res.status(401).json({ message: "No token provided" });
   }
 
@@ -456,9 +655,14 @@ const session = async (req: Request, res: Response) => {
       },
     });
     res.json({ session: user, message: "session found" });
-  } catch (e) {
+  } catch (e: any) {
+    // JWT errors are client/auth issues, not server errors
+    if (e?.name === "JsonWebTokenError" || e?.name === "TokenExpiredError" || e?.name === "NotBeforeError") {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
     console.error(e);
-    res.status(500).json({ message: "failed to get session" });
+    return res.status(500).json({ message: "failed to get session" });
   }
 };
 
@@ -574,7 +778,8 @@ const forgotPassword = async (req: Request, res: Response) => {
     );
 
     // Email content
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${jwtResetToken}`;
+    // Frontend uses Expo Router route: app/(auth)/reset_password.tsx
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset_password?token=${encodeURIComponent(jwtResetToken)}`;
     const mailOptions = {
       from: process.env.NODE_ENV === 'production' ? process.env.EMAIL_USER : 'dev@example.com',
       to: user.email,
@@ -620,7 +825,13 @@ const forgotPassword = async (req: Request, res: Response) => {
 
 // Reset Password - Validates token and updates password
 const resetPassword = async (req: Request, res: Response) => {
-  const { token, newPassword } = req.body;
+
+  const tokenInput = req.body?.token;
+  const newPassword = req.body?.newPassword;
+  // Some email clients wrap long URLs and introduce whitespace/newlines.
+  const token = typeof tokenInput === "string" ? tokenInput.replace(/\s+/g, "") : tokenInput;
+  // console.log("Reset Password called with token:", token);
+  // console.log("New Password:", newPassword);
 
   // Validate input
   const schema = Joi.object({
@@ -630,27 +841,39 @@ const resetPassword = async (req: Request, res: Response) => {
   
   const { error } = schema.validate({ token, newPassword });
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    return res.status(400).json({ message: error.details[0].message, reason: "VALIDATION_ERROR" });
   }
 
   try {
     // Verify JWT token
-    const decoded = jwt.verify(token, "reset-secret") as { id: number, token: string };
-    
-    // Find user with valid token
-    const user = await Prisma.user.findFirst({
-      where: {
-        id: decoded.id,
-        resetToken: decoded.token,
-        resetTokenExpiry: {
-          gt: new Date(),
-        },
-      },
+    const decoded = jwt.verify(token, "reset-secret") as { id: number; token: string };
+
+    // Load the user first so we can provide clearer client-facing messages.
+    const userById = await Prisma.user.findUnique({
+      where: { id: decoded.id },
     });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired reset token" });
+    if (!userById) {
+      return res.status(400).json({ message: "Invalid or expired reset token", reason: "USER_NOT_FOUND" });
     }
+
+    // If the token was cleared, it was either already used or never requested.
+    if (!userById.resetToken || !userById.resetTokenExpiry) {
+      return res.status(400).json({ message: "Reset link is no longer valid. Please request a new reset link.", reason: "RESET_TOKEN_CLEARED" });
+    }
+
+    // If the stored reset token doesn't match, the user requested a newer link.
+    if (userById.resetToken !== decoded.token) {
+      return res.status(400).json({ message: "This reset link has been replaced by a newer one. Please request a new reset link.", reason: "RESET_TOKEN_MISMATCH" });
+    }
+
+    // Expiry check
+    if (userById.resetTokenExpiry.getTime() <= Date.now()) {
+      return res.status(400).json({ message: "Reset link has expired. Please request a new reset link.", reason: "RESET_TOKEN_EXPIRED" });
+    }
+
+    // At this point, token is valid and matches DB.
+    const user = userById;
 
     // Hash new password
   const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
@@ -672,9 +895,14 @@ const resetPassword = async (req: Request, res: Response) => {
       status: "ok",
       message: "Password has been reset successfully",
     });
-  } catch (e) {
+  } catch (e: any) {
+    // JWT errors should be treated as client errors
+    if (e?.name === "JsonWebTokenError" || e?.name === "TokenExpiredError" || e?.name === "NotBeforeError") {
+      return res.status(400).json({ message: "Invalid or expired reset token", reason: e?.name || "JWT_ERROR" });
+    }
+
     console.error(e);
-    res.status(500).json({ message: "Failed to reset password" });
+    return res.status(500).json({ message: "Failed to reset password" });
   }
 };
 
@@ -690,5 +918,7 @@ export {
   session,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyEmail,
+  resendVerificationEmail,
 };
