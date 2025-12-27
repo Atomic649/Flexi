@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
 	Modal,
 	StyleSheet,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
@@ -39,8 +38,6 @@ const clampInt = (value: number, min: number, max: number) => {
 	return Math.min(max, Math.max(min, value));
 };
 
-const digits2 = (text: string) => text.replace(/\D/g, "").slice(0, 2);
-
 export default function DateTimePicker({
 	visible,
 	value,
@@ -51,18 +48,26 @@ export default function DateTimePicker({
 }: Props) {
 	const { theme } = useTheme();
 
-	const [cursorMonth, setCursorMonth] = useState<Date>(() => startOfMonth(value));
-	const [selectedDate, setSelectedDate] = useState<Date>(() => new Date(value));
-	const [hh, setHh] = useState(() => pad2(value.getHours()));
-	const [mm, setMm] = useState(() => pad2(value.getMinutes()));
+	const effectiveValue = useMemo(() => {
+		return isValidDate(value) ? value : new Date();
+	}, [value]);
+
+	const [cursorMonth, setCursorMonth] = useState<Date>(() =>
+		startOfMonth(effectiveValue)
+	);
+	const [selectedDate, setSelectedDate] = useState<Date>(
+		() => new Date(effectiveValue)
+	);
+	const [hour, setHour] = useState(() => effectiveValue.getHours());
+	const [minute, setMinute] = useState(() => effectiveValue.getMinutes());
 
 	useEffect(() => {
 		if (!visible) return;
-		setCursorMonth(startOfMonth(value));
-		setSelectedDate(new Date(value));
-		setHh(pad2(value.getHours()));
-		setMm(pad2(value.getMinutes()));
-	}, [visible, value]);
+		setCursorMonth(startOfMonth(effectiveValue));
+		setSelectedDate(new Date(effectiveValue));
+		setHour(effectiveValue.getHours());
+		setMinute(effectiveValue.getMinutes());
+	}, [visible, effectiveValue]);
 
 	const colors = useMemo(() => {
 		const isDark = theme === "dark";
@@ -92,10 +97,10 @@ export default function DateTimePicker({
 	};
 
 	const commit = () => {
-		const hour = clampInt(parseInt(hh || "0", 10), 0, 23);
-		const minute = clampInt(parseInt(mm || "0", 10), 0, 59);
+		const nextHour = clampInt(Number(hour), 0, 23);
+		const nextMinute = clampInt(Number(minute), 0, 59);
 		const next = new Date(selectedDate);
-		next.setHours(hour, minute, 0, 0);
+		next.setHours(nextHour, nextMinute, 0, 0);
 		onChange(next);
 		onClose();
 	};
@@ -151,9 +156,9 @@ export default function DateTimePicker({
 
 					{/* Weekdays */}
 					<View style={styles.weekRow}>
-						{["S", "M", "T", "W", "T", "F", "S"].map((d) => (
+						{["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
 							<CustomText
-								key={d}
+								key={`${d}-${idx}`}
 								style={[styles.weekday, { color: colors.mutedText }]}
 							>
 								{d}
@@ -207,36 +212,44 @@ export default function DateTimePicker({
 						<CustomText style={{ color: colors.mutedText }}>
 							Time
 						</CustomText>
-						<View style={styles.timeInputs}>
-							<TextInput
-								value={hh}
-								onChangeText={(txt) => setHh(digits2(txt))}
-								onBlur={() => {
-									const n = clampInt(parseInt(hh || "0", 10), 0, 23);
-									setHh(pad2(n));
-								}}
-								keyboardType="number-pad"
-								maxLength={2}
-								style={[
-									styles.timeInput,
-									{ color: colors.text, borderColor: colors.border },
-								]}
-							/>
+						<View style={styles.timeControls}>
+							<View style={styles.timeBlock}>
+								<TouchableOpacity
+									onPress={() => setHour((h) => (h + 23) % 24)}
+									style={[styles.stepBtn, { borderColor: colors.border }]}
+								>
+									<CustomText style={{ color: colors.text }}>{"-"}</CustomText>
+								</TouchableOpacity>
+								<CustomText weight="bold" style={{ color: colors.text }}>
+									{pad2(hour)}
+								</CustomText>
+								<TouchableOpacity
+									onPress={() => setHour((h) => (h + 1) % 24)}
+									style={[styles.stepBtn, { borderColor: colors.border }]}
+								>
+									<CustomText style={{ color: colors.text }}>{"+"}</CustomText>
+								</TouchableOpacity>
+							</View>
+
 							<CustomText style={{ color: colors.mutedText }}>:</CustomText>
-							<TextInput
-								value={mm}
-								onChangeText={(txt) => setMm(digits2(txt))}
-								onBlur={() => {
-									const n = clampInt(parseInt(mm || "0", 10), 0, 59);
-									setMm(pad2(n));
-								}}
-								keyboardType="number-pad"
-								maxLength={2}
-								style={[
-									styles.timeInput,
-									{ color: colors.text, borderColor: colors.border },
-								]}
-							/>
+
+							<View style={styles.timeBlock}>
+								<TouchableOpacity
+									onPress={() => setMinute((m) => (m + 59) % 60)}
+									style={[styles.stepBtn, { borderColor: colors.border }]}
+								>
+									<CustomText style={{ color: colors.text }}>{"-"}</CustomText>
+								</TouchableOpacity>
+								<CustomText weight="bold" style={{ color: colors.text }}>
+									{pad2(minute)}
+								</CustomText>
+								<TouchableOpacity
+									onPress={() => setMinute((m) => (m + 1) % 60)}
+									style={[styles.stepBtn, { borderColor: colors.border }]}
+								>
+									<CustomText style={{ color: colors.text }}>{"+"}</CustomText>
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
 
@@ -276,6 +289,10 @@ function endOfDay(d: Date) {
 	const x = new Date(d);
 	x.setHours(23, 59, 59, 999);
 	return x;
+}
+
+function isValidDate(d: Date) {
+	return d instanceof Date && !Number.isNaN(d.getTime());
 }
 
 const styles = StyleSheet.create({
@@ -335,18 +352,23 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 	},
-	timeInputs: {
+	timeControls: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 10,
+	},
+	timeBlock: {
 		flexDirection: "row",
 		alignItems: "center",
 		gap: 8,
 	},
-	timeInput: {
-		width: 54,
-		height: 38,
-		borderWidth: 1,
+	stepBtn: {
+		width: 34,
+		height: 34,
 		borderRadius: 10,
-		textAlign: "center",
-		fontSize: 16,
+		borderWidth: 1,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	actionRow: {
 		marginTop: 14,

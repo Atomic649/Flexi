@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
-import MultiDateCalendar from "@/components/MultiDateCalendar";
+import DateTimePicker from "@/components/DateTimePicker";
 import CallAPIProduct from "@/api/product_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
@@ -32,6 +32,7 @@ import { isMobile, isMobileApp } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { format } from "date-fns";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -854,10 +855,9 @@ export default function CreateBill() {
     }
   };
 
-  const handleDatesChange = (selectedDates: string[]) => {
-    setSelectedDates(selectedDates);
-    setPurchaseAt(new Date(selectedDates[0]));
-    setCalendarVisible(false);
+  const handleDateTimeChange = (next: Date) => {
+    setPurchaseAt(next);
+    setSelectedDates([format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")]);
   };
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
@@ -924,37 +924,13 @@ export default function CreateBill() {
         alignItems: Platform.OS === "web" ? "center" : "stretch",
       }}
     >
-      {/* Calendar Modal */}
-      <Modal
+      <DateTimePicker
         visible={calendarVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setCalendarVisible(false)}
-      >
-        <TouchableOpacity
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-          activeOpacity={1}
-          onPress={() => setCalendarVisible(false)}
-        >
-          <View
-            style={{
-              width: isMobile() ? "90%" : "40%",
-              minWidth: 300,
-              maxWidth: 500,
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-              borderRadius: 10,
-              padding: 20,
-            }}
-          >
-            <MultiDateCalendar onDatesChange={handleDatesChange} />
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        value={purchaseAt}
+        onChange={handleDateTimeChange}
+        onClose={() => setCalendarVisible(false)}
+        maxDate={new Date()}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}

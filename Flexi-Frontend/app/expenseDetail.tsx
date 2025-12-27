@@ -32,6 +32,8 @@ import {
   reverseCalculateFromFinal,
   DEFAULT_VAT_PERCENT,
 } from "@/utils/taxUtils";
+import DateTimePicker from "@/components/DateTimePicker";
+import { format } from "date-fns";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -119,6 +121,7 @@ export default function ExpenseDetail({
   const [group, setGroup] = useState(expense.group);
   const [error, setError] = useState("");
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   // Use the visible prop directly instead of mirroring to local state
   const { vat, DocumentType } = useBusiness();
@@ -179,6 +182,7 @@ export default function ExpenseDetail({
   useEffect(() => {
     const checkChanges = () => {
       if (
+        date !== expense.date ||
         note !== expense.note ||
         desc !== expense.desc ||
         amount !== expense.amount ||
@@ -204,6 +208,7 @@ export default function ExpenseDetail({
 
     checkChanges();
   }, [
+    date,
     note,
     desc,
     amount,
@@ -239,6 +244,10 @@ export default function ExpenseDetail({
   const pdfPreviewUri = isPdfAttachment ? attachment?.uri : pdfUrl;
   const hasImagePreview = Boolean(imagePreviewUri);
   const hasPdfPreview = Boolean(pdfPreviewUri);
+
+  const handleDateTimeChange = (next: Date) => {
+    setDate(format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
+  };
 
   // Direct handler for group changes to avoid effect-as-event-handler
   const handleGroupChange = (nextGroup: string) => {
@@ -656,9 +665,25 @@ export default function ExpenseDetail({
                     </TouchableOpacity>
                   </View>
                 )}
-                <CustomText className="text-center font-bold">
-                  {formatDate(date)}
-                </CustomText>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    marginBottom: 6,
+                  }}
+                >
+                  <CustomText className="text-center font-bold">
+                    {formatDate(date)}
+                  </CustomText>
+                  <Ionicons
+                    name="calendar"
+                    size={20}
+                    color={theme === "dark" ? "#ffffff" : "#444541"}
+                    onPress={() => setCalendarVisible(true)}
+                  />
+                </View>
 
                 <TextInput
                   style={{
@@ -1309,6 +1334,14 @@ export default function ExpenseDetail({
             },
           ]}
           onClose={closeAttachmentPicker}
+        />
+
+        <DateTimePicker
+          visible={calendarVisible}
+          value={new Date(date)}
+          onChange={handleDateTimeChange}
+          onClose={() => setCalendarVisible(false)}
+          maxDate={new Date()}
         />
       </TouchableOpacity>
     </Modal>
