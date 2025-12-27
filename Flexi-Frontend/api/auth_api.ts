@@ -67,7 +67,7 @@ class CallAPIUser {
       }
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/auth/session/`);
-      console.log("🚀sessionAPI :", response.data);
+     // console.log("🚀sessionAPI :", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Get Session API Error:", error);

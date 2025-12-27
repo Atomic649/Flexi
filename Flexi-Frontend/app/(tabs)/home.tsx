@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { TabView, TabBar } from "react-native-tab-view";
 import { Dimensions } from "react-native";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
-import { useFocusEffect } from "expo-router";
-import SocialDashboard from "@/components/home/SocialDashboard";
 import Dashboard from "@/components/home/Dashboard";
 import TaxDoc from "@/components/home/TaxDoc";
 import { getResponsiveStyles } from "@/utils/responsive";
@@ -17,30 +15,24 @@ const Home = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [routes] = useState([
-    { key: "Dashboard", title: t("home.Dashboard") },
-    { key: "TaxDoc", title: t("home.TaxDoc") }
-  ]);
-
-  // Refresh expense list when screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      // Increment refresh trigger to force list to reload
-      setRefreshTrigger(prev => prev + 1);
-    }, [])
+  const routes = useMemo(
+    () => [
+      { key: "Dashboard", title: t("home.Dashboard") },
+      { key: "TaxDoc", title: t("home.TaxDoc") },
+    ],
+    [t]
   );
 
-  // Create scene map with access to refresh trigger
-  const renderSceneWithProps = () => {
-    return {
-//SocialDashboard: SocialDashboard,
-      Dashboard: Dashboard,
-      TaxDoc: TaxDoc,
-    };
+  const renderScene = ({ route }: { route: { key: string } }) => {
+    switch (route.key) {
+      case "Dashboard":
+        return <Dashboard />;
+      case "TaxDoc":
+        return <TaxDoc />;
+      default:
+        return null;
+    }
   };
-
-  const renderScene = SceneMap(renderSceneWithProps());
 
   return (
     <View
@@ -52,6 +44,8 @@ const Home = () => {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get("window").width }}
+        lazy
+        lazyPreloadDistance={0}
         renderTabBar={(props) => (
           <TabBar
             {...props}

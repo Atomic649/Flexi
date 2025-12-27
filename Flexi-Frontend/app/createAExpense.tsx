@@ -28,7 +28,6 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
-import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { getMemberId } from "@/utils/utility";
 import { format } from "date-fns";
 import i18n from "@/i18n";
@@ -36,6 +35,7 @@ import { useBusiness } from "@/providers/BusinessProvider";
 import { getWHTPercentage } from "@/components/TaxVariable";
 import { formatNumber, reverseCalculateFromFinal } from "@/utils/taxUtils";
 import { DEFAULT_VAT_PERCENT, DEFAULT_WHT_PERCENT } from "@/utils/taxUtils";
+import DateTimePicker from "@/components/DateTimePicker";
 
 // Format date in DD/MM/YYYY H:MM AM/PM format
 const formatDate = (dateString: string) => {
@@ -1021,12 +1021,12 @@ export default function CreateExpense({
         : "bg-zinc-200 border-transparent"
     }`;
 
-  const handleDatesChange = (dates: string[]) => {
-    setSelectedDates(dates);
-    console.log("Selected Dates:", dates);
-    setDate(dates); // Store the dates as an array
-    setCalendarVisible(false);
-  }; // force to chose only one date
+  const handleDateTimeChange = (next: Date) => {
+    // Store in local-offset format (not UTC Z) to avoid timezone shifting
+    const formatted = format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    setSelectedDates([formatted]);
+    setDate([formatted]);
+  };
 
   // Reusable selectable list for OCR options to reduce duplication
   const SelectableOption = ({
@@ -2256,35 +2256,13 @@ export default function CreateExpense({
           </TouchableOpacity>
         </Modal>
 
-        {/* Modal for MultiDateCalendar */}
-        <Modal
+        <DateTimePicker
           visible={calendarVisible}
-          transparent={true}
-          animationType="none"
-          onRequestClose={() => setCalendarVisible(false)}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setCalendarVisible(false)}
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: theme === "dark" ? "#000000b5" : "#b4cac6a9",
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={1}
-              style={{
-                backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-                padding: 16,
-                borderRadius: 16,
-              }}
-            >
-              <MultiDateCalendar onDatesChange={handleDatesChange} />
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </Modal>
+          value={new Date(Array.isArray(date) ? date[0] : date)}
+          onChange={handleDateTimeChange}
+          onClose={() => setCalendarVisible(false)}
+          maxDate={new Date()}
+        />
 
         <CustomAlert
           visible={alertConfig.visible}

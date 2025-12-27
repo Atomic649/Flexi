@@ -19,7 +19,7 @@ export const checkNetwork = async (): Promise<boolean> => {
 export const saveToken = async (token: string) => {
   try {
     await AsyncStorage.setItem('token', token);
-    console.log('💾 Token saved:', token);
+    // console.log('💾 Token saved:', token);
   } catch (error) {
     console.error('Error saving token:', error);
   }
@@ -29,7 +29,7 @@ export const saveToken = async (token: string) => {
 export const getToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem('token');
-    console.log('✅ Token Get :', token);
+    // console.log('✅ Token Get :', token);
     return token;
   } catch (error) {
     console.error('Error getting token:', error);
@@ -41,7 +41,7 @@ export const getToken = async (): Promise<string | null> => {
 export const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('token');
-    console.log('🗑️ Token removed');
+    // console.log('🗑️ Token removed');
   } catch (error) {
     console.error('Error removing token:', error);
   }
@@ -51,7 +51,7 @@ export const removeToken = async () => {
 export const saveUserId = async (userId: number) => {
   try {
     await AsyncStorage.setItem('userId', userId.toString());
-    console.log('💾 userId saved:', userId);
+    // console.log('💾 userId saved:', userId);
   } catch (error) {
     console.error('Error saving userId:', error);
   }
@@ -75,7 +75,7 @@ export const saveMemberId = async (memberId: string) => {
     // Ensure a plain string is stored to avoid AsyncStorage warnings
     const value = String(memberId);
     await AsyncStorage.setItem('memberId', value);
-    console.log('💾 memberId saved:', memberId);
+    // console.log('💾 memberId saved:', memberId);
   } catch (error) {
     console.error('Error saving memberId:', error);
   }
@@ -97,7 +97,7 @@ export const getMemberId = async (): Promise<string | null> => {
 export const removeMemberId = async () => {
   try {
     await AsyncStorage.removeItem('memberId');
-    console.log('🗑️ memberId removed');
+    // console.log('🗑️ memberId removed');
   } catch (error) {
     console.error('Error removing memberId:', error);
   }
@@ -109,7 +109,7 @@ export const replaceMemberId = async (memberId: string) => {
     await AsyncStorage.removeItem('memberId');
     const value = String(memberId);
     await AsyncStorage.setItem('memberId', value);       
-    console.log('🔄 memberId replaced:', memberId);
+    // console.log('🔄 memberId replaced:', memberId);
   } catch (error) {
     console.error('Error replacing memberId:', error);
   }
@@ -129,7 +129,7 @@ export const saveBusinessId = async (businessId: number) => {
 export const getBusinessId = async (): Promise<number | null> => {
   try {
     const businessId = await AsyncStorage.getItem('businessId');
-    console.log('✅ businessId Get :', businessId);
+    // console.log('✅ businessId Get :', businessId);
     return businessId ? parseInt(businessId) : null;
   } catch (error) {
     console.error('Error getting businessId:', error);
@@ -151,7 +151,7 @@ export const removeBusinessId = async () => {
 export const savePaymentTermCondition = async (paymentTermCondition: string, memberId: string) => {
   try {
     await AsyncStorage.setItem(`paymentTermCondition_${memberId}`, paymentTermCondition);
-    console.log(`💾 paymentTermCondition saved for member ${memberId}:`, paymentTermCondition);
+    // console.log(`💾 paymentTermCondition saved for member ${memberId}:`, paymentTermCondition);
   } catch (error) {
     console.error('Error saving paymentTermCondition:', error);
   }
@@ -161,7 +161,7 @@ export const savePaymentTermCondition = async (paymentTermCondition: string, mem
 export const getPaymentTermCondition = async (memberId: string): Promise<string | null> => {
   try {
     const paymentTermCondition = await AsyncStorage.getItem(`paymentTermCondition_${memberId}`);
-    console.log(`✅ paymentTermCondition Get for member ${memberId}:`, paymentTermCondition);
+    // console.log(`✅ paymentTermCondition Get for member ${memberId}:`, paymentTermCondition);
     return paymentTermCondition;
   } catch (error) {
     console.error('Error getting paymentTermCondition:', error);
@@ -173,7 +173,7 @@ export const getPaymentTermCondition = async (memberId: string): Promise<string 
 export const removePaymentTermCondition = async (memberId: string) => {
   try {
     await AsyncStorage.removeItem(`paymentTermCondition_${memberId}`);
-    console.log(`🗑️ paymentTermCondition removed for member ${memberId}`);
+    // console.log(`🗑️ paymentTermCondition removed for member ${memberId}`);
   } catch (error) {
     console.error('Error removing paymentTermCondition:', error);
   }
@@ -183,7 +183,7 @@ export const removePaymentTermCondition = async (memberId: string) => {
 export const saveRemark = async (remark: string, memberId: string) => {
   try {
     await AsyncStorage.setItem(`remark_${memberId}`, remark);
-    console.log(`💾 remark saved for member ${memberId}:`, remark);
+    // console.log(`💾 remark saved for member ${memberId}:`, remark);
   } catch (error) {
     console.error('Error saving remark:', error);
   }
@@ -193,7 +193,7 @@ export const saveRemark = async (remark: string, memberId: string) => {
 export const getRemark = async (memberId: string): Promise<string | null> => {
   try {
     const remark = await AsyncStorage.getItem(`remark_${memberId}`);
-    console.log(`✅ remark Get for member ${memberId}:`, remark);
+    // console.log(`✅ remark Get for member ${memberId}:`, remark);
     return remark;
   } catch (error) {
     console.error('Error getting remark:', error);
@@ -205,7 +205,7 @@ export const getRemark = async (memberId: string): Promise<string | null> => {
 export const removeRemark = async (memberId: string) => {
   try {
     await AsyncStorage.removeItem(`remark_${memberId}`);
-    console.log(`🗑️ remark removed for member ${memberId}`);
+    // console.log(`🗑️ remark removed for member ${memberId}`);
   } catch (error) {
     console.error('Error removing remark:', error);
   }

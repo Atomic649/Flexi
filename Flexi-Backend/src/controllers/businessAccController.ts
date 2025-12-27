@@ -286,7 +286,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
         },
       });
 
-      console.log("memberId", memberId.uniqueId);
+    //  console.log("memberId", memberId.uniqueId);
 
       const businessAcc = await prisma.businessAcc.create({
         data: {

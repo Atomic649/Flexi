@@ -47,7 +47,7 @@ const CachedAvatar = ({ uri, fallback }: { uri: string | null; fallback: any }) 
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
         if (fileInfo.exists) {
-          console.log("Using cached avatar:", fileUri);
+       //   console.log("Using cached avatar:", fileUri);
           setSource({ uri: fileUri });
         } else {
           // Download if not cached

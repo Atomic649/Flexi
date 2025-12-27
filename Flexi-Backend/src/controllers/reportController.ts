@@ -105,7 +105,7 @@ const dailyReport = async (req: Request, res: Response) => {
         beforeDiscount,
       };
     }).sort((a, b) => (a.date < b.date ? -1 : 1));
-    console.log(" 🚀 result", result);
+    //console.log(" 🚀 result", result);
     res.json(result);
   } catch (e) {
     console.error(e);
@@ -139,7 +139,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       },
       });
 
-    console.log(bills);
+  //  console.log(bills);
 
     // Group by month and sum adsCost
     const adsCost = await prisma.adsCost.findMany({
@@ -168,7 +168,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       take: 100, // Limit to 100 records
     });
 
-    console.log(expenses);
+  //  console.log(expenses);
 
     // Group by mounth of purchaseAt and sum amount and total
     const monthlyBills = bills.reduce((acc: any, bill) => {
@@ -225,7 +225,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       acc[date].amount += Number(expense.amount);
       return acc;
     }, {});
-    console.log("🔥expenses", monthlyExpenses)
+   // console.log("🔥expenses", monthlyExpenses)
     
     ;
 
@@ -335,7 +335,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         })
       )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    console.log("🚀 result", result);
+//    console.log("🚀 result", result);
     res.json(result);
   } catch (e) {
     console.error(e);
@@ -420,9 +420,9 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
       take: 100, // Limit to 100 records
     });
 
-    console.log("🚀 bills", bills);
-    console.log("🚀 expenses", expenses);
-    console.log("🚀 ads", ads);
+    // console.log("🚀 bills", bills);
+    // console.log("🚀 expenses", expenses);
+    // console.log("🚀 ads", ads);
 
     res.json({ bills, expenses, ads });
   } catch (e) {
@@ -508,9 +508,9 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
       take: 100, // Limit to 100 records
     });
 
-    console.log("🚀 Mbills", bills);
-    console.log("🚀 Mexpenses", expenses);
-    console.log("🚀 Mads", ads);
+    // console.log("🚀 Mbills", bills);
+    // console.log("🚀 Mexpenses", expenses);
+    // console.log("🚀 Mads", ads);
     
     res.json({ bills, expenses, ads });
   } catch (e) {

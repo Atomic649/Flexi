@@ -197,7 +197,7 @@ export default function Dashboard() {
     setIsLoading(true);
     try {
       const memberId = await getMemberId();
-      console.log("Member ID:", memberId);
+      // console.log("Member ID:", memberId);
       if (memberId) {
         // Fetch products and platforms for filters
         const [productResponse, platformResponse] = await Promise.all([
@@ -207,9 +207,6 @@ export default function Dashboard() {
 
         setProducts(productResponse || []);
         setPlatforms(platformResponse || []);
-
-        // Fetch initial dashboard data
-        await fetchDashboardData();
       }
     } catch (error) {
       console.error("Error fetching initial data:", error);
@@ -221,7 +218,7 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const memberId = await getMemberId();
-      console.log("Fetching dashboard data for member ID:", memberId);
+   //   console.log("Fetching dashboard data for member ID:", memberId);
       if (!memberId) return;
 
       // Build filters for API calls
@@ -253,7 +250,7 @@ export default function Dashboard() {
         filters.platform = selectedPlatform;
       }
 
-      console.log("📊 Dashboard API Filters:", filters);
+   //   console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
       const [metricsData, chartData, productsData, platformsData] =
@@ -290,7 +287,7 @@ export default function Dashboard() {
     //setCalendarVisible(false); // Optionally close calendar after selection
     if (dates.length > 0) {
       setSelectedPeriod("custom");
-      console.log("Selected dates:", dates);
+    //  console.log("Selected dates:", dates);
     }
   };
 
