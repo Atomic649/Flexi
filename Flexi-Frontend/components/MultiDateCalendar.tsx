@@ -1,6 +1,9 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Calendar, DateData } from "react-native-calendars";
+import React, { useEffect, useMemo, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import DateTimePicker, {
+  type DateType,
+  useDefaultStyles,
+} from "react-native-ui-datepicker";
 import { useTheme } from "@/providers/ThemeProvider";
 import { eachDayOfInterval, format } from "date-fns";
 import { useTranslation } from "react-i18next";
@@ -14,104 +17,80 @@ const MultiDateCalendar: React.FC<MultiDateCalendarProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const [selectedDates, setSelectedDates] = useState<{ [date: string]: any }>(
-    {}
-  );
+  const defaultStyles = useDefaultStyles(theme === "dark" ? "dark" : "light");
+  const [startDate, setStartDate] = useState<DateType>();
+  const [endDate, setEndDate] = useState<DateType>();
 
-  const handleDayPress = (day: DateData) => {
-    const dateString = day.dateString;
-    const newSelectedDates = { ...selectedDates };
-
-    // Toggle the selected date
-    if (newSelectedDates[dateString]) {
-      delete newSelectedDates[dateString]; // Deselect the date
-    } else {
-      const selectedDateKeys = Object.keys(newSelectedDates);
-      if (selectedDateKeys.length > 0) {
-        const firstSelectedDate = new Date(selectedDateKeys[0]);
-        const newDate = new Date(dateString);
-
-        if (newDate < firstSelectedDate) {
-          // If the new date is before the first selected date, select the range
-          const datesInRange = eachDayOfInterval({ start: newDate, end: firstSelectedDate });
-          datesInRange.forEach(date => {
-            newSelectedDates[format(date, "yyyy-MM-dd")] = {
-              selected: true,
-              selectedColor: theme === "dark" ? "#ffb30e" : "#ffb30e",
-            };
-          });
-        } else {
-          // If the new date is after the first selected date, select the range
-          const datesInRange = eachDayOfInterval({ start: firstSelectedDate, end: newDate });
-          datesInRange.forEach(date => {
-            newSelectedDates[format(date, "yyyy-MM-dd")] = {
-              selected: true,
-              selectedColor: theme === "dark" ? "#ffb30e" : "#ffb30e",
-            };
-          });
-        }
-      } else {
-        newSelectedDates[dateString] = {
-          selected: true,
-          selectedColor: theme === "dark" ? "#ffb30e" : "#ffb30e",
-        }; // Select the date
-      }
-    }
-
-    setSelectedDates(newSelectedDates);
-    onDatesChange(Object.keys(newSelectedDates)); // Pass the selected dates to the parent
+  const toDate = (value?: DateType): Date | undefined => {
+    if (!value) return undefined;
+    if (value instanceof Date) return value;
+    if (typeof (value as any)?.toDate === "function") return (value as any).toDate();
+    return new Date(value as any);
   };
 
-  const calendarTheme =
+  const maxDate = useMemo(() => new Date(), []);
+
+  const selectedDates = useMemo(() => {
+    const start = toDate(startDate);
+    const end = toDate(endDate);
+    if (!start) return [] as string[];
+
+    if (!end) return [format(start, "yyyy-MM-dd")];
+
+    const startDay = start < end ? start : end;
+    const endDay = start < end ? end : start;
+    return eachDayOfInterval({ start: startDay, end: endDay }).map((d) =>
+      format(d, "yyyy-MM-dd")
+    );
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    onDatesChange(selectedDates);
+  }, [onDatesChange, selectedDates]);
+
+  const selectedDateRange =
+    selectedDates.length > 1
+      ? ` ${selectedDates[0]} ${t("common.to")} ${selectedDates[selectedDates.length - 1]}`
+      : selectedDates.length === 1
+        ? `${selectedDates[0]}`
+        : "";
+
+  const calendarStyles =
     theme === "dark"
       ? {
-          backgroundColor: "#8d8c8b",
-          calendarBackground: "#18181b",
-          textSectionTitleColor: "#ffffff",
-          textSectionTitleDisabledColor: "#868282",
-          dayTextColor: "#ffb30e",
-          todayTextColor: "#5bffef",
-          selectedDayTextColor: "#ffffff",
-          selectedDayBackgroundColor: "#ffb30e",
-          arrowColor: "#ffffff",
-          monthTextColor: "#ffffff",
-          indicatorColor: "#ffffff",
-          activeOpacity: 1,
+          ...defaultStyles,
+          today: { borderColor: "#5bffef", borderWidth: 1 },
+          selected: { backgroundColor: "#ffb30e" },
+          selected_label: { color: "#ffffff" },
         }
       : {
-          backgroundColor: "#ffffff",
-          calendarBackground: "#ffffff",
-          textSectionTitleColor: "#000000",
-          textSectionTitleDisabledColor: "#aaaaaa",
-          dayTextColor: "#000000",
-          todayTextColor: "#ffb30e",
-          selectedDayTextColor: "#ffffff",
-          selectedDayBackgroundColor: "#ffb30e",
-          arrowColor: "#ffb30e",
-          monthTextColor: "#000000",
-          indicatorColor: "#000000",
-          activeOpacity: 1,
+          ...defaultStyles,
+          today: { borderColor: "#ffb30e", borderWidth: 1 },
+          selected: { backgroundColor: "#ffb30e" },
+          selected_label: { color: "#ffffff" },
         };
 
-  const selectedDateKeys = Object.keys(selectedDates);
-  const selectedDateRange =
-    selectedDateKeys.length > 1
-      ? ` ${selectedDateKeys[0]} ${t('common.to')} ${selectedDateKeys[selectedDateKeys.length - 1]}`
-      : selectedDateKeys.length === 1
-      ? `${selectedDateKeys[0]}`
-      : "";
+  const pickerContainerStyle = useMemo(
+    () => ({ backgroundColor: theme === "dark" ? "#18181b" : "#ffffff" }),
+    [theme]
+  );
 
   return (
     <View style={styles.container}>
       <Text style={[styles.selectedDatesText, { color: "#ffb30e" }]}>
         {selectedDateRange}
       </Text>
-      <Calendar
-        onDayPress={handleDayPress}
-        markedDates={selectedDates}
-        theme={calendarTheme}
-        // Multi-date selection is handled manually
-        maxDate={new Date().toISOString().split("T")[0]} // Disable future dates
+      <DateTimePicker
+        mode="range"
+        startDate={startDate}
+        endDate={endDate}
+        onChange={({ startDate: nextStart, endDate: nextEnd }) => {
+          setStartDate(nextStart);
+          setEndDate(nextEnd);
+        }}
+        maxDate={maxDate}
+        style={pickerContainerStyle}
+        styles={calendarStyles}
       />
     </View>
   );
