@@ -26,6 +26,7 @@ Flexi-Backend/.env.dev
 Flexi-Backend/dist/
 Flexi-Frontend/dist/
 
+/Flexi-Frontend/.expo
 
 Flexi-Backend/tmp/
 Flexi-Frontend/tmp/
