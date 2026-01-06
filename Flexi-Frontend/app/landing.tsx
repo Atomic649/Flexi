@@ -1510,14 +1510,14 @@ export default function Landing() {
                             }}
                           >
                             <View style={{ 
-                              backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                              backgroundColor: accentColor,
                               paddingHorizontal: 6,
                               paddingVertical: 2,
                               borderRadius: 4,
                               marginRight: 4,
                               marginBottom: 4,
                             }}>
-                              <CustomText style={{ fontSize: 12, color: textSecondaryColor }}>Facebook</CustomText>
+                              <CustomText style={{ fontSize: 12, color: "#fff" }}>Facebook</CustomText>
                             </View>
                             <View style={{ 
                               backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
@@ -1554,23 +1554,23 @@ export default function Landing() {
                     </View>
                   </View>
 
-                  {/* Phase 3 - Upcoming */}
+                  {/* Phase 3 - In Progress */}
                   <View style={{ marginBottom: getResponsiveStyles().padding * 1.5, flexDirection: "row" }}>
                     <View
                       style={{
                         width: 40,
                         height: 40,
                         borderRadius: 20,
-                        backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                        backgroundColor: accentColor,
                         justifyContent: "center",
                         alignItems: "center",
                         marginRight: 16,
                       }}
                     >
                       <Ionicons
-                        name="lock-closed"
-                        size={20}
-                        color={theme === "dark" ? "#666" : "#9ca3af"}
+                        name="time"
+                        size={24}
+                        color="#fff"
                       />
                     </View>
                     <View style={{ flex: 1 }}>
@@ -1598,11 +1598,11 @@ export default function Landing() {
                         <CustomText
                           style={{
                             fontSize: getResponsiveStyles().smallFontSize,
-                            color: theme === "dark" ? "#666" : "#9ca3af",
+                            color: accentColor,
                             fontWeight: "500",
                           }}
                         >
-                          {t("roadmap.upcoming") || "Q3 2025"}
+                          {t("roadmap.inProgress") || "In Progress"}
                         </CustomText>
                       </View>
                       <CustomText
@@ -1662,9 +1662,10 @@ export default function Landing() {
                       </View>
                     </View>
                   </View>
+                  
 
                   {/* Phase 4 - Future */}
-                  <View style={{ flexDirection: "row" }}>
+                  <View style={{ marginBottom: getResponsiveStyles().padding * 1.5, flexDirection: "row" }}>
                     <View
                       style={{
                         width: 40,
@@ -1711,7 +1712,7 @@ export default function Landing() {
                             fontWeight: "500",
                           }}
                         >
-                          {t("roadmap.future") || "Q1 2026"}
+                          {"Q1 2027"}
                         </CustomText>
                       </View>
                       <CustomText
@@ -1726,6 +1727,73 @@ export default function Landing() {
                           "roadmap.phase4.description",
                           "Advanced marketing suite, AI-powered analytics, cross-border payment solutions"
                         )}
+                      </CustomText>
+                    </View>
+                  </View>
+
+                  {/* Phase 5 - Future */}
+                  <View style={{ flexDirection: "row" }}>
+                    <View
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        backgroundColor: theme === "dark" ? "#333" : "#e5e7eb",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginRight: 16,
+                      }}
+                    >
+                      <Ionicons
+                        name="lock-closed"
+                        size={20}
+                        color={theme === "dark" ? "#666" : "#9ca3af"}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginBottom: 4,
+                          flexWrap: isMobileWeb() ? "wrap" : "nowrap",
+                        }}
+                      >
+                        <CustomText
+                          weight="bold"
+                          style={{
+                            fontSize: getResponsiveStyles().subtitleFontSize,
+                            color: textPrimaryColor,
+                            marginBottom: isMobileWeb()
+                              ? getResponsiveStyles().padding * 0.5
+                              : 0,
+                            width: isMobileWeb() ? "100%" : "auto",
+                          }}
+                        >
+                          {t("roadmap.phase5.title") || "Phase 5"}
+                        </CustomText>
+                        <CustomText
+                          style={{
+                            fontSize: getResponsiveStyles().smallFontSize,
+                            color: theme === "dark" ? "#666" : "#9ca3af",
+                            fontWeight: "500",
+                          }}
+                        >
+                          {t("common.future") || "Future"}
+                        </CustomText>
+                      </View>
+                      <CustomText
+                        style={{
+                          color: textSecondaryColor,
+                          lineHeight:
+                            getResponsiveStyles().lineHeight *
+                            getResponsiveStyles().bodyFontSize,
+                          marginBottom: getResponsiveStyles().padding * 0.4,
+                          fontSize: getResponsiveStyles().bodyFontSize,
+                        }}
+                      >
+                        {t("roadmap.phase5.description") || ""}
                       </CustomText>
                     </View>
                   </View>

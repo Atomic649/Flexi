@@ -575,7 +575,7 @@
       "title": "Top Products",
       "noData": "No product data available"
     },
-    "topPlatform": {
+    "topPlatforms": {
       "title": "Top Platforms",
       "noData": "No platform data available"
     },
@@ -732,6 +732,7 @@
       "save": "Save",
       "pdf": "SCB ONLY"
     },
+    "forecastAdsCost": "Forecast Ads Cost",
     "table": {
       "date": "Date",
       "notedesc": "Note/Description",
@@ -909,7 +910,11 @@
       "description": "Develop and launch advertising platform, generate revenue from B2B store connections, expand development and marketing teams, expand to 1000 businesses"
     },
     "phase4": {
-      "title": "Phase 4: Regional Leadership",
+      "title": "Phase 4: Market Leadership",
+      "description": "Advanced AI features for financial management, expand marketing efforts, strategic partnerships, test with 2000 businesses"
+    },
+    "phase5": {
+      "title": "Phase 5: Regional Leadership",
       "description": "Advanced marketing tools, AI-powered analytics, expansion to other Southeast Asian countries, test with 5000 businesses"
     }
   },
@@ -1681,6 +1686,7 @@
     }
   },
   "facebook": {
+    "title": "Facebook Ads Integration",
     "adAccounts": "Facebook Ad Accounts",
     "campaigns": "Campaigns",
     "adSets": "Ad Sets",

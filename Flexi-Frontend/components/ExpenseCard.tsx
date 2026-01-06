@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { CustomText } from "./CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
+import { t } from "i18next";
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
@@ -163,7 +164,7 @@ export default function ExpenseCard({
                     style={{ color: NoteColor }}
                     numberOfLines={1}
                   >
-                    {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
+                    {type === "ads" ? t("expense.forecastAdsCost") : note}
                   </CustomText>
                 </View>
               </View>
@@ -286,7 +287,7 @@ export default function ExpenseCard({
                   }}
                   numberOfLines={1}
                 >
-                  {type === "ads" ? "คาดการณ์ค่าโฆษณา" : note}
+                  {type === "ads" ? t("expense.forecastAdsCost") : note}
                 </Text>
                 <Text
                   style={{

@@ -28,7 +28,7 @@ if (!i18n.isInitialized) {
     .use(initReactI18next)
     .init({
       // Your i18next configuration
-      fallbackLng: "th",
+      fallbackLng: "en",
       resources: {
         en: { translation: require("@/i18n/locales/en/translation.json") },
         th: { translation: require("@/i18n/locales/th/translation.json") },

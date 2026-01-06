@@ -9,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import CustomAlert from "@/components/CustomAlert";
 import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
+import { isMobile } from "@/utils/responsive";
 
 export default function AdsCard({
   id,
@@ -20,6 +21,7 @@ export default function AdsCard({
   cardColor,
   onDelete,
 }: any) {
+  const mobile = isMobile();
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
     title: string;
@@ -67,7 +69,7 @@ export default function AdsCard({
           style: "destructive",
           onPress: () => {
             setAlertConfig((prev) => ({ ...prev, visible: false }));
-            onDelete(id);
+            onDelete?.(id);
           },
         },
       ],
@@ -85,39 +87,31 @@ export default function AdsCard({
     },
   ];
 
-  return (
-    <View className="flex px-10 items-center">
-      <SwipeableRow
-        rightActions={rightActions}
-        threshold={60}
-        actionWidth={80}
-        actionHeight="90%"
-        actionBorderRadius={6}
-      >
-        <View
-          className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
+  const cardContent = (
+    <View
+      className={`flex flex-col items-center pt-2 pb-4 px-4  my-1  rounded-se-md 
                 bg-[#918b8b0d]
                 border-s-8 `}
-          style={{
-            width: Platform.OS === "web" ? 500 : 350,
-            borderColor: getBorderColor(platform),
-            backgroundColor: cardColor,
-          }}
-        >
-        <View
-          className="flex flex-row "
-          style={{
-            width: Platform.OS === "web" ? 500 : 350,
-            height: Platform.OS === "web" ? 100 : 80,
-            justifyContent: "space-between",
-            padding: 15,
-          }}
-        >
-          <View className="flex justify-center flex-1 ml-3 gap-y-1">
-            <Text className="font-bold text-sm text-zinc-500" numberOfLines={3}>
-              {platform}
-            </Text>
-            <View className="flex-row justify-start gap-1 items-center">
+      style={{
+        width: Platform.OS === "web" ? 500 : 350,
+        borderColor: getBorderColor(platform),
+        backgroundColor: cardColor,
+      }}
+    >
+      <View
+        className="flex flex-row "
+        style={{
+          width: Platform.OS === "web" ? 500 : 350,
+          height: Platform.OS === "web" ? 100 : 80,
+          justifyContent: "space-between",
+          padding: 15,
+        }}
+      >
+        <View className="justify-center flex-1 ml-3  ">
+          <Text className="font-bold text-sm text-zinc-500" numberOfLines={3}>
+            {platform}
+          </Text>
+          <View className="flex-row justify-start gap-1 items-center">
             <Text
               className="text-lg text-zinc-500 font-psemibold"
               numberOfLines={1}
@@ -125,7 +119,12 @@ export default function AdsCard({
               {accName}
             </Text>
             {productName ? (
-              <Ionicons name="link" size={16} color="#0ed093" className="ml-1 mt-1"/>
+              <Ionicons
+                name="link"
+                size={16}
+                color="#0ed093"
+                className="ml-1 mt-1"
+              />
             ) : null}
             {productName ? (
               <Text
@@ -135,30 +134,48 @@ export default function AdsCard({
                 {productName}
               </Text>
             ) : null}
-            </View>
-            <Text
-              className="text-base text-zinc-500 font-pregular"
-              numberOfLines={1}
-            >
-              {accId}
-            </Text>
           </View>
-          <View className="pt-2 flex-col gap-2">
-            <TouchableOpacity
-              onPress={() => {
-                router.push(`/editads?id=${id}`);
-              }}
-            >
-              <Ionicons
-                name="settings-sharp"
-                color={color}
-                size={22}
-              ></Ionicons>
+          <Text
+            className="text-base text-zinc-500 font-pregular"
+            numberOfLines={1}
+          >
+            {accId}
+          </Text>
+        </View>
+        <View className="pt-2 flex-col gap-2">
+          <TouchableOpacity
+            onPress={() => {
+              router.push(`/editads?id=${id}`);
+            }}
+          >
+            <Ionicons name="settings-sharp" color={color} size={22}></Ionicons>
+          </TouchableOpacity>
+
+          {!mobile && (
+            <TouchableOpacity onPress={handleDelete}>
+              <Ionicons name="trash-outline" color="#999999" size={22} />
             </TouchableOpacity>
-          </View>
+          )}
         </View>
-        </View>
-      </SwipeableRow>
+      </View>
+    </View>
+  );
+
+  return (
+    <View className="flex px-10 items-center">
+      {mobile ? (
+        <SwipeableRow
+          rightActions={rightActions}
+          threshold={60}
+          actionWidth={80}
+          actionHeight="90%"
+          actionBorderRadius={6}
+        >
+          {cardContent}
+        </SwipeableRow>
+      ) : (
+        cardContent
+      )}
 
       <CustomAlert
         visible={alertConfig.visible}

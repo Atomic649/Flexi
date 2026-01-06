@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -66,28 +65,12 @@ export default function ads() {
   };
 
   const handleDelete = async (id: number) => {
-    Alert.alert(
-      "Delete Ad Connection",
-      "Are you sure you want to delete this ad Connection?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await CallAPIPlatform.deletePlatformAPI(id);
-              setPlatforms(platforms.filter((platform) => platform.id !== id));
-            } catch (error) {
-              console.error("Error deleting platform:", error);
-            }
-          },
-        },
-      ]
-    );
+    try {
+      await CallAPIPlatform.deletePlatformAPI(id);
+      setPlatforms((prev) => prev.filter((platform) => platform.id !== id));
+    } catch (error) {
+      console.error("Error deleting platform:", error);
+    }
   };
 
   return (

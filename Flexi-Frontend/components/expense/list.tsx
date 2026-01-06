@@ -304,7 +304,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                       style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
                     >
                       {expense.type === "ads"
-                        ? "คาดการณ์ค่าโฆษณา"
+                        ? t("expense.forecastAdsCost")
                         : (expense.sName || expense.note)}
                     </CustomText>
                     <CustomText                      

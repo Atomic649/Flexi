@@ -145,6 +145,55 @@ export default function EditProduct() {
     buttons: [],
   });
 
+  const handleDeleteProduct = async () => {
+    setError("");
+    try {
+      await CallAPIProduct.deleteProductAPI(Number(id));
+      router.replace("/product");
+    } catch (err: any) {
+      const message = err?.message || t("product.deleteAlert.error") || "Error";
+      setError(message);
+      setAlertConfig({
+        visible: true,
+        title: t("product.deleteAlert.error") || "Error",
+        message,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    }
+  };
+
+  const confirmDeleteProduct = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("product.deleteAlert.title") || "Delete",
+      message:
+        t("product.deleteAlert.message") ||
+        "Are you sure you want to delete this product?",
+      buttons: [
+        {
+          text: t("common.delete") || "Delete",
+          style: "destructive",
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            handleDeleteProduct();
+          },
+        },
+        {
+          text: t("common.cancel") || "Cancel",
+          style: "cancel",
+          onPress: () =>
+            setAlertConfig((prev) => ({ ...prev, visible: false })),
+        },
+      ],
+    });
+  };
+
   // Note: Avoid using effects as event handlers for productType changes.
 
   useEffect(() => {
@@ -276,6 +325,20 @@ export default function EditProduct() {
             Platform.OS === "web" ? "max-w-4xl mx-auto" : ""
           }`}
         >
+          <View className="flex-row items-center justify-between">
+            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.8}>
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={theme === "dark" ? "#d6d6dc" : "#606060"}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={confirmDeleteProduct} activeOpacity={0.8}>
+              <Ionicons name="trash-outline" size={22} color="#999999" />
+            </TouchableOpacity>
+          </View>
+
           {image && (
             <Image
               source={{ uri: image|| '' }}

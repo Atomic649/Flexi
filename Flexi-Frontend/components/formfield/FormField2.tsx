@@ -48,7 +48,7 @@ const FormField = ({
         )}
       </View>
       <View
-        className="w-full  px-4 rounded-2xl border-2 border-transparent flex flex-row items-center"
+        className="w-full  px-4 rounded-2xl border-2 border-transparent flex-row items-start pt-3"
         style={{
           backgroundColor: bgColor,
           height: boxheight ? boxheight : 50,

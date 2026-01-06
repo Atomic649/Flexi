@@ -45,25 +45,60 @@ const createPlatform = async (req: Request, res: Response) => {
   }
 
   try {
-    // Check if the platform already exists
-    const existingPlatform = await prisma.platform.findFirst({
-      where: {
-        platform: platformInput.platform,
-        accName: platformInput.accName,       
-        memberId: platformInput.memberId, 
-        campaignId: platformInput.campaignId ?? null,
-      },
-    });
-
-    if (existingPlatform) {
-      return res.status(400).json({ message: "Platform already exists" });
-    }
-
-     // Find business ID by member ID from member table
+    // Find business ID by member ID from member table
     const businessAcc = await prisma.member.findUnique({
       where : { uniqueId: platformInput.memberId },
       select:{ businessId: true }
     });
+
+    // Platform has unique constraints (e.g. accName, campaignId). Treat a soft-deleted row as reusable.
+    const campaignIdOrNull = platformInput.campaignId ?? null;
+
+    const existingActivePlatform = await prisma.platform.findFirst({
+      where: {
+        deleted: false,
+        OR: [
+          { accName: platformInput.accName },
+          ...(campaignIdOrNull ? [{ campaignId: campaignIdOrNull }] : []),
+        ],
+      },
+    });
+
+    if (existingActivePlatform) {
+      return res.status(400).json({ message: "Platform already exists" });
+    }
+
+    const existingDeletedPlatform = await prisma.platform.findFirst({
+      where: {
+        deleted: true,
+        OR: [
+          { accName: platformInput.accName },
+          ...(campaignIdOrNull ? [{ campaignId: campaignIdOrNull }] : []),
+        ],
+      },
+      include: { product: true },
+    });
+
+    if (existingDeletedPlatform) {
+      const restoredPlatform = await platformModel.update({
+        where: {
+          id: existingDeletedPlatform.id,
+        },
+        data: {
+          platform: platformInput.platform,
+          accName: platformInput.accName,
+          accId: platformInput.accId,
+          businessAcc: businessAcc?.businessId ?? 0,
+          memberId: platformInput.memberId,
+          productId: platformInput.productId ?? null,
+          campaignId: campaignIdOrNull,
+          deleted: false,
+        },
+        include: { product: true },
+      });
+      return res.status(200).json(restoredPlatform);
+    }
+
     const newPlatform = await platformModel.create({
       data: {
         platform: platformInput.platform,
@@ -72,11 +107,11 @@ const createPlatform = async (req: Request, res: Response) => {
         businessAcc: businessAcc?.businessId ?? 0,
         memberId: platformInput.memberId,
         productId: platformInput.productId ?? null,
-        campaignId: platformInput.campaignId ?? null,
+        campaignId: campaignIdOrNull,
       },
       include: { product: true },
     });
-    res.status(201).json(newPlatform);
+    return res.status(201).json(newPlatform);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Failed to create platform" });

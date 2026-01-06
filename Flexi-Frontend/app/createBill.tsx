@@ -28,7 +28,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isMobile, isMobileApp } from "@/utils/responsive";
+import { isMobile, isMobileApp, isTabletWeb } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -926,9 +926,9 @@ export default function CreateBill() {
       >
         <ScrollView
           style={{
-            width: isMobile() ? "100%" : "40%",
+            width: "100%",
             paddingHorizontal: isMobileApp() ? 0 : 15,
-            maxWidth: 600,
+            maxWidth: isTabletWeb() ? 600 : 1000,
           }}
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"

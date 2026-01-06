@@ -22,6 +22,11 @@ export const isTablet = () => {
   return notWeb && width >= 768 && width < 1024; // Tablets typically have a width between 768px and 1024px
 }
 
+export const isTabletWeb = () => {
+  const { width } = Dimensions.get('window');
+  const isWeb = Platform.OS === 'web';
+  return isWeb && width >= 768 && width < 1024; // Tablets typically have a width between 768px and 1024px
+}
 export const isDesktop = () => {
   const { width } = Dimensions.get('window');
   const isWeb = Platform.OS === 'web';

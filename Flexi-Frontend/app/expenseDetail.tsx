@@ -34,6 +34,7 @@ import {
 } from "@/utils/taxUtils";
 import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
+import { isMobile } from "@/utils/responsive";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -587,15 +588,15 @@ export default function ExpenseDetail({
                   Platform.OS === "web"
                     ? image
                       ? 0.8
-                      : 0.4
+                      : 0.75
                     : image
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: "100%",
+                width: isMobile() ? "100%" : "60%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
-                padding: Platform.OS === "web" ? 20 : 0,
+                padding: Platform.OS === "web" ? 60 : 0,
               }}
               onPress={() => {}}
             >

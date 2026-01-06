@@ -495,10 +495,10 @@ export default function Dashboard() {
                 }}
               >
                 <CustomText
-                  className="mr-2"
                   style={{
                     fontSize: getResponsiveStyles().bodyFontSize,
                   }}
+                  numberOfLines={2}
                 >
                   {formatDateRange()}
                 </CustomText>

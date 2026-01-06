@@ -499,6 +499,14 @@ const buildAdsCostRowsFromSpend = (daily: CampaignSpendWithMeta[], targetDate: D
 		})) as Prisma.AdsCostCreateManyInput[];
 };
 
+const makeUtcDayKey = (value: Date | string) => {
+	const parsed = typeof value === "string" ? new Date(value) : value;
+	return isNaN(parsed.getTime()) ? "" : parsed.toISOString().slice(0, 10);
+};
+
+const startOfUtcDay = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+const addUtcDays = (d: Date, days: number) => new Date(d.getTime() + days * 24 * 60 * 60 * 1000);
+
 // Range ingestion (API): defaults to last 30 days, loops day-by-day per ad account
 const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; until?: string }) => {
 	if (!accessToken) {
@@ -551,9 +559,76 @@ const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; un
 		return { inserted: 0, message: "no rows" };
 	}
 
-	const result = await prisma.adsCost.createMany({ data: deduped, skipDuplicates: true });
-	console.log(`Facebook ads cost ingestion inserted ${result.count} rows from ${makeDateKey(since)} to ${makeDateKey(until)}`);
-	return { inserted: result.count, since: makeDateKey(since), until: makeDateKey(until) };
+	// Replace/Update strategy (requested): if an AdsCost row already exists for the same UTC day + platform,
+	// update it (and delete any accidental duplicates). Otherwise, create a new row.
+	const rangeStart = startOfUtcDay(since);
+	const rangeEndExclusive = addUtcDays(startOfUtcDay(until), 1);
+	const platformIds = Array.from(new Set(deduped.map((r) => r.platformId).filter((v): v is number => typeof v === "number")));
+	const existing = platformIds.length
+		? await prisma.adsCost.findMany({
+				where: {
+					platformId: { in: platformIds },
+					date: { gte: rangeStart, lt: rangeEndExclusive },
+				},
+				select: { id: true, date: true, platformId: true },
+		  })
+		: [];
+
+	const existingByKey = new Map<string, number[]>();
+	for (const row of existing) {
+		const dayKey = makeUtcDayKey(row.date);
+		if (!dayKey) continue;
+		const key = `${dayKey}-${row.platformId}`;
+		const list = existingByKey.get(key);
+		if (list) list.push(row.id);
+		else existingByKey.set(key, [row.id]);
+	}
+
+	let inserted = 0;
+	let updated = 0;
+	let deletedDuplicates = 0;
+	for (const row of deduped) {
+		const dayKey = makeUtcDayKey(row.date);
+		if (!dayKey) continue;
+		const key = `${dayKey}-${row.platformId}`;
+		const existingIds = existingByKey.get(key) ?? [];
+
+		if (existingIds.length === 0) {
+			await prisma.adsCost.create({ data: row as Prisma.AdsCostUncheckedCreateInput });
+			inserted += 1;
+			continue;
+		}
+
+		const [keepId, ...dupIds] = existingIds;
+		await prisma.adsCost.update({
+			where: { id: keepId },
+			data: {
+				date: row.date as Date,
+				adsCost: row.adsCost as Prisma.Decimal,
+				memberId: row.memberId as string,
+				platformId: row.platformId as number,
+				businessAcc: row.businessAcc as number,
+				product: row.product as string,
+			},
+		});
+		updated += 1;
+
+		if (dupIds.length > 0) {
+			const del = await prisma.adsCost.deleteMany({ where: { id: { in: dupIds } } });
+			deletedDuplicates += del.count;
+		}
+	}
+
+	console.log(
+		`Facebook ads cost ingestion finished: inserted=${inserted}, updated=${updated}, deletedDuplicates=${deletedDuplicates} (${makeDateKey(since)}..${makeDateKey(until)})`
+	);
+	return {
+		inserted,
+		updated,
+		deletedDuplicates,
+		since: makeDateKey(since),
+		until: makeDateKey(until),
+	};
 };
 
 // Single-day ingestion (Cron): target yesterday only

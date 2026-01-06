@@ -24,7 +24,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isDesktop, isMobile, isMobileApp } from "@/utils/responsive";
+import { isDesktop, isMobile, isMobileApp, isTabletWeb } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
@@ -1126,9 +1126,9 @@ export default function EditBill() {
       >
         <ScrollView
           style={{
-            width: isMobile() ? "100%" : "40%",
+            width: "100%",
             paddingHorizontal: isMobileApp() ? 0 : 15,
-            maxWidth: 600,
+            maxWidth:  isTabletWeb() ? 600 : 1000,
           }}
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
