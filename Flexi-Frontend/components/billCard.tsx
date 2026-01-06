@@ -10,23 +10,12 @@ import { CustomText } from "./CustomText";
 import { useTranslation } from "react-i18next";
 import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";
 import CustomAlert from "./CustomAlert";
+import { format } from "date-fns";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const year = parsedDate.getFullYear();
-
-  // Get hours in 12-hour format
-  let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-
-  // Get minutes
-  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
-
-  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+  if (Number.isNaN(parsedDate.getTime())) return "";
+  return format(parsedDate, "dd/MM/yyyy HH:mm");
 };
 
 export default function BillCard({

@@ -37,7 +37,7 @@ import { formatNumber, reverseCalculateFromFinal } from "@/utils/taxUtils";
 import { DEFAULT_VAT_PERCENT, DEFAULT_WHT_PERCENT } from "@/utils/taxUtils";
 import DateTimePicker from "@/components/DateTimePicker";
 
-// Format date in DD/MM/YYYY H:MM AM/PM format
+// Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
 
@@ -70,16 +70,8 @@ const formatDate = (dateString: string) => {
     const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
     const year = parsedDate.getFullYear();
 
-    // Get hours in 12-hour format
-    let hours = parsedDate.getHours();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-
-    // Get minutes
-    const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
-
-    return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+    const time24h = format(parsedDate, "HH:mm");
+    return `${day}/${month}/${year} ${time24h}`;
   } catch (error) {
     console.error("❌ Error formatting date:", error, "Original:", dateString);
     return dateString; // Return original string if any error occurs

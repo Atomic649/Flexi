@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  Modal,
   Platform,
   ScrollView,
   TouchableOpacity,
@@ -21,28 +20,17 @@ import Dropdown2 from "@/components/dropdown/Dropdown2";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
 import CallAPIProduct from "@/api/product_api";
-import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
 import { isDesktop } from "@/utils/responsive";
+import { format } from "date-fns";
+import DateTimePicker from "@/components/DateTimePicker";
 
-// Format date in DD/MM/YYYY H:MM AM/PM format
+// Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
   const parsedDate = new Date(dateString);
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const year = parsedDate.getFullYear();
-
-  // Get hours in 12-hour format
-  let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-
-  // Get minutes
-  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
-
-  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+  if (Number.isNaN(parsedDate.getTime())) return "";
+  return format(parsedDate, "dd/MM/yyyy HH:mm");
 };
 
 export default function createAdsCost() {
@@ -193,18 +181,11 @@ export default function createAdsCost() {
     }
   };
 
-  const handleDatesChange = (dates: string[]) => {
-    setSelectedDates(dates);
-    console.log("Selected Dates:", dates);
-    setDate(dates); // Store the dates as an array
-
-    // Update the date state to the first selected date
-    if (dates && dates.length > 0) {
-      setDate([new Date(dates[0]).toISOString()]);
-    }
-
-    setCalendarVisible(false);
-  }; // force to chose only one date
+  const handleDateTimeChange = (next: Date) => {
+    const formatted = format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    setDate([formatted]);
+    setSelectedDates([formatted]);
+  };
 
   const selectedPlatformLabel = platformId
     ? platforms.find((p) => p.id === platformId)?.accName ||
@@ -221,37 +202,14 @@ export default function createAdsCost() {
        
       }}
     >
+      <DateTimePicker
+        visible={calendarVisible}
+        value={new Date(date[0])}
+        onChange={handleDateTimeChange}
+        onClose={() => setCalendarVisible(false)}
+        maxDate={new Date()}
+      />
       <ScrollView>
-        {/* Calendar Modal */}
-        <Modal
-          visible={calendarVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setCalendarVisible(false)}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "rgba(0,0,0,0.5)",
-            }}
-            activeOpacity={1}
-            onPress={() => setCalendarVisible(false)}
-          >
-            <View
-              style={{
-                width: "90%",
-                backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-                borderRadius: 10,
-                padding: 20,
-              }}
-            >
-              <MultiDateCalendar onDatesChange={handleDatesChange} />
-            </View>
-          </TouchableOpacity>
-        </Modal>
-
         <View className="flex-1 justify-center mt-14 h-full px-4 py-5 pb-20">
           {/* Date selector */}
           <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">

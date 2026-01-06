@@ -280,7 +280,12 @@ export default function DailyDetail() {
                           className={`text-sm ${textColorClass} opacity-70`}
                         >
                           {new Date(bill.purchaseAt).toLocaleTimeString(
-                            "th-TH"
+                            "th-TH",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            }
                           )}
                         </Text>
                       </View>
@@ -420,7 +425,11 @@ export default function DailyDetail() {
                       }`}
                     >
                       <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(expense.date).toLocaleTimeString("th-TH")}
+                        {new Date(expense.date).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
                       </Text>
                       <View className="flex-row justify-between items-center">
                         <CustomText className={`font-medium ${textColorClass}`}>
@@ -485,7 +494,11 @@ export default function DailyDetail() {
                       }`}
                     >
                        <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(ad.date).toLocaleTimeString("th-TH")}
+                        {new Date(ad.date).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
                       </Text>
                       <View className="flex-row justify-between items-center mb-2">
                         <View className="flex-1">

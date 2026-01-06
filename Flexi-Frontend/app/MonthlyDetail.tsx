@@ -264,7 +264,12 @@ export default function MonthlyDetail() {
                       {/* Bill Info */}
                       <View className="flex-row justify-between items-center mb-2">
                         <Text className={`text-sm ${textColorClass} opacity-70`}>
-                          {new Date(bill.purchaseAt).toLocaleDateString('th-TH')} {new Date(bill.purchaseAt).toLocaleTimeString('th-TH')}
+                          {new Date(bill.purchaseAt).toLocaleDateString("th-TH")}{" "}
+                          {new Date(bill.purchaseAt).toLocaleTimeString("th-TH", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
                         </Text>
                       </View>
 
@@ -371,7 +376,12 @@ export default function MonthlyDetail() {
                     {(showAllExpenses ? reportDetails.expenses : reportDetails.expenses.slice(0, 5)).map((expense) => (
                       <View key={expense.id} className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}>
                       <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(expense.date).toLocaleDateString('th-TH')} {new Date(expense.date).toLocaleTimeString('th-TH')}
+                        {new Date(expense.date).toLocaleDateString("th-TH")}{" "}
+                        {new Date(expense.date).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
                       </Text>
                       <View className="flex-row justify-between items-center">
                         <CustomText className={`font-medium ${textColorClass}`}>
@@ -418,7 +428,12 @@ export default function MonthlyDetail() {
                     {(showAllAds ? reportDetails.ads : reportDetails.ads.slice(0, 5)).map((ad) => (
                       <View key={ad.id} className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}>
                       <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(ad.date).toLocaleDateString('th-TH')} {new Date(ad.date).toLocaleTimeString('th-TH')}
+                        {new Date(ad.date).toLocaleDateString("th-TH")}{" "}
+                        {new Date(ad.date).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
                       </Text>
                       <View className="flex-row justify-between items-center mb-2">
                         <View className="flex-1">

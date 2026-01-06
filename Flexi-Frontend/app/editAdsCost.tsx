@@ -23,21 +23,13 @@ import { router, useLocalSearchParams } from "expo-router";
 import CallAPIProduct from "@/api/product_api";
 import MultiDateCalendar from "@/components/MultiDateCalendar";
 import { Ionicons } from "@expo/vector-icons";
+import { format } from "date-fns";
 
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
   const parsedDate = new Date(dateString);
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const year = parsedDate.getFullYear();
-
-  let hours = parsedDate.getHours();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
-
-  return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+  if (Number.isNaN(parsedDate.getTime())) return "";
+  return format(parsedDate, "dd/MM/yyyy HH:mm");
 };
 
 export default function EditAdsCost() {
