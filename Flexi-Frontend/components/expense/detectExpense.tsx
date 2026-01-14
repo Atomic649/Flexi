@@ -29,6 +29,11 @@ import CustomAlert from "../CustomAlert";
 export default function DetectExpense() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const windowDimensions = Dimensions.get("window");
+  const previewHeight =
+    Platform.OS === "web"
+      ? Math.max(420, Math.round(windowDimensions.height * 0.7))
+      : ("62%" as const);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -374,7 +379,7 @@ export default function DetectExpense() {
         >
           <View
             className="bg-white p-4 rounded-lg "
-            style={{ width: "90%", height: "62%" }}
+            style={{ width: "90%", height: previewHeight }}
           >
             {loading && <ActivityIndicator size="large" />}
             {pdfUri &&
@@ -385,10 +390,11 @@ export default function DetectExpense() {
                   source={{ uri: pdfUri }}
                 />
               ) : (
-                <View className="flex-1 justify-center items-center">
+                <View className="flex-1" style={{ width: "100%", minHeight: 0 }}>
                   <iframe
                     src={pdfUri}
                     style={{
+                      display: "block",
                       width: "100%",
                       height: "100%",
                       border: "none",
