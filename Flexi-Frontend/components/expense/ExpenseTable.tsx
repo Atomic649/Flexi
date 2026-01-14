@@ -140,7 +140,7 @@ const ExpenseTable = ({
             }}
           >
             <Text className={dateClass} numberOfLines={2}>
-              {item.date.split("T")[0]}
+              {item.date.split("T")[0].split("-").reverse().join("/")}
               {"\n"}
               {item.date.split("T")[1].replace(/:\d{2}\.\d{3}Z$/, "")}
             </Text>

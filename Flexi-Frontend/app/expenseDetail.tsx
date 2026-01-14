@@ -36,12 +36,18 @@ import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
 import { isMobile } from "@/utils/responsive";
 
-// Format date in DD/MM/YYYY HH:MM (24-hour) format
+// Format date in DD/MM/YYYY HH:MM (24-hour) using the original UTC time
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
   const parsedDate = new Date(dateString);
   if (Number.isNaN(parsedDate.getTime())) return "";
-  return format(parsedDate, "dd/MM/yyyy HH:mm");
+
+  // Convert to UTC so we display the exact time from the API (avoid local TZ shift)
+  const utcDate = new Date(
+    parsedDate.getTime() + parsedDate.getTimezoneOffset() * 60000
+  );
+
+  return format(utcDate, "dd/MM/yyyy HH:mm");
 };
 
 interface ExpenseDetailProps {
