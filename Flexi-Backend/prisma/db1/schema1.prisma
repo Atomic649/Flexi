@@ -403,7 +403,7 @@ model Expense {
 model Platform {
   id          Int         @id @default(autoincrement())
   platform    SocialMedia
-  accName     String      @unique
+  accName     String      
   accId       String?
   campaignId  String?     @unique
   createdAt   DateTime    @default(now())

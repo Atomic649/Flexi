@@ -149,7 +149,7 @@ export default function UserInfo() {
       setConfirmPassword("");
       setAlertConfig({
         visible: true,
-        title: t("auth.register.alerts.success"),
+        title: t("auth.register.alerts.updatedSuccess"),
         message: t("auth.register.alerts.successMessage"),
         buttons: [
           {

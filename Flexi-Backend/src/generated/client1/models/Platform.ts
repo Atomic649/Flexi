@@ -300,12 +300,12 @@ export type PlatformOrderByWithRelationInput = {
 
 export type PlatformWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  accName?: string
   campaignId?: string
   AND?: Prisma.PlatformWhereInput | Prisma.PlatformWhereInput[]
   OR?: Prisma.PlatformWhereInput[]
   NOT?: Prisma.PlatformWhereInput | Prisma.PlatformWhereInput[]
   platform?: Prisma.EnumSocialMediaFilter<"Platform"> | $Enums.SocialMedia
+  accName?: Prisma.StringFilter<"Platform"> | string
   accId?: Prisma.StringNullableFilter<"Platform"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Platform"> | Date | string
@@ -318,7 +318,7 @@ export type PlatformWhereUniqueInput = Prisma.AtLeast<{
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   billRecord?: Prisma.BillListRelationFilter
-}, "id" | "accName" | "campaignId">
+}, "id" | "campaignId">
 
 export type PlatformOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

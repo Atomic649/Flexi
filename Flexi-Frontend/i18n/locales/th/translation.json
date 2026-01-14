@@ -130,7 +130,8 @@
       "alerts": {
         "success": "ลงทะเบียนสำเร็จ",
         "successMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ",
-        "ok": "ตกลง"
+        "ok": "ตกลง",
+        "updatedSuccess":"อัปเดตสำเร็จ"
       },
       "businessName": "ชื่อธุรกิจ",
       "taxType": "ประเภทภาษี",

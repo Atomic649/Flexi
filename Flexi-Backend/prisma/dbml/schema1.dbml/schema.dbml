@@ -191,7 +191,7 @@ Table Expense {
 Table Platform {
   id Int [pk, increment]
   platform SocialMedia [not null]
-  accName String [unique, not null]
+  accName String [not null]
   accId String
   campaignId String [unique]
   createdAt DateTime [default: `now()`, not null]
