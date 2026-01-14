@@ -226,7 +226,7 @@ const ExpenseTable = ({
     <View
       className="flex-1  "
       style={{
-        width: Dimensions.get("window").width > 768 ? "50%" : "100%",
+        width: Dimensions.get("window").width > 768 ? "55%" : "100%",
       }}
     >
       <View
