@@ -3,7 +3,9 @@ FROM oven/bun:1 AS base
 WORKDIR /app
 
 # Ensure OpenSSL is available 
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y \
+	&& apt-get install -y --no-install-recommends openssl qpdf \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Copy manifest first
 COPY package.json bun.lock ./
