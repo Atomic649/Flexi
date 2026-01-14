@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TouchableOpacity, FlatList, Text } from "react-native";
+import { View, TouchableOpacity, FlatList, Platform } from "react-native";
 import { CustomText } from '../CustomText'; // Make sure to import CustomText
 
 const Dropdown = ({
@@ -15,6 +15,7 @@ const Dropdown = ({
   ...props
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
+  const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
 
   return (
     <View className={`space-y-2 ${otherStyles}`}>
@@ -42,6 +43,9 @@ const Dropdown = ({
         <FlatList
           data={options}
           keyExtractor={(item) => item.value}
+          style={[{ maxHeight: 260 }, webScrollStyle]}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator
           renderItem={({ item }) => (
             <TouchableOpacity
               className="w-full h-16 px-4 bg-stone-600 rounded-2xl border-1 border-stone-200  flex-row items-center"

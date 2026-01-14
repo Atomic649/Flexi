@@ -24,9 +24,11 @@ const FormField = ({
   handleChangeText,
   otherStyles,
   theme,
+  secure,
   ...props
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const isSecureField = (secure ?? title === "Password") === true;
 
   return (
     <View className={`space-y-2 ${otherStyles ?? ""}`}>
@@ -42,7 +44,8 @@ const FormField = ({
       </View>
       <View className="w-full h-16 px-4 bg-[#423f39] rounded-2xl border-2 border-[#423f39] flex-row items-start pt-3">
         <TextInput
-          className="flex-1 text-white font-psemibold text-lg"
+          key={isSecureField ? (showPassword ? "password-visible" : "password-hidden") : "plain"}
+          className="flex-1 text-white font-psemibold text-lg "
           style={{
             fontFamily:
               i18n.language === "th"
@@ -53,17 +56,16 @@ const FormField = ({
           placeholder={placeholder}
           placeholderTextColor="#989795"
           onChangeText={handleChangeText}
-          secureTextEntry={
-            (props.secure ?? title === "Password") && !showPassword
-          }
           {...props}
+          secureTextEntry={isSecureField && !showPassword}
         />
 
-        {(props.secure ?? title === "Password") && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+        {isSecureField && (
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}
+          style={{ justifyContent: "center", alignItems: "center", paddingTop: 4 }}>
             <Image
               source={!showPassword ? icons.eye : icons.eyeHide}
-              className="w-6 h-6"
+              style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center" , tintColor: "#989795" }}
               resizeMode="contain"
             />
           </TouchableOpacity>

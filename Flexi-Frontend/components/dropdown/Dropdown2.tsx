@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TouchableOpacity, ScrollView, Text } from "react-native";
+import { View, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { CustomText } from '../CustomText'; // Make sure to import CustomText
 
 const Dropdown = ({
@@ -16,6 +16,7 @@ const Dropdown = ({
     ...props
 }: any) => {
     const [isOpen, setIsOpen] = useState(false);
+    const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
 
     const handlePress = () => {
         if (!disabled) {
@@ -45,31 +46,35 @@ const Dropdown = ({
             </TouchableOpacity>
 
             {isOpen && !disabled && (
-                <ScrollView
-                    nestedScrollEnabled
-                    keyboardShouldPersistTaps="handled"
-                    style={{ maxHeight: 240, borderRadius: 16, overflow: 'hidden' }}
-                    {...props}
-                >
-                    {options?.map((item: any) => (
-                        <TouchableOpacity
-                            key={item.value}
-                            className="w-full h-16 px-4 border-1 border-transparent flex flex-row items-center"
-                            onPress={() => {
-                                onValueChange(item.value);
-                                setIsOpen(false);
-                            }}
-                            style={{ backgroundColor: bgChoiceColor }}
-                        >
-                            <CustomText
-                                className="font-psemibold text-base"
-                                style={{ color: textcolor }}
+                <View style={{ maxHeight: 240, borderRadius: 16, overflow: 'hidden' }}>
+                    <ScrollView
+                        nestedScrollEnabled
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator
+                        persistentScrollbar
+                        style={webScrollStyle}
+                        {...props}
+                    >
+                        {options?.map((item: any) => (
+                            <TouchableOpacity
+                                key={item.value}
+                                className="w-full h-16 px-4 border-1 border-transparent flex flex-row items-center"
+                                onPress={() => {
+                                    onValueChange(item.value);
+                                    setIsOpen(false);
+                                }}
+                                style={{ backgroundColor: bgChoiceColor }}
                             >
-                                {item.label}
-                            </CustomText>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                                <CustomText
+                                    className="font-psemibold text-base"
+                                    style={{ color: textcolor }}
+                                >
+                                    {item.label}
+                                </CustomText>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
             )}
         </View>
     );

@@ -205,8 +205,19 @@ export default function Dashboard() {
           CallAPIPlatform.getPlatformEnumAPI(memberId),
         ]);
 
-        setProducts(productResponse || []);
-        setPlatforms(platformResponse || []);
+        const normalizedProducts = Array.isArray(productResponse)
+          ? productResponse
+          : Array.isArray(productResponse?.data)
+            ? productResponse.data
+            : [];
+        const normalizedPlatforms = Array.isArray(platformResponse)
+          ? platformResponse
+          : Array.isArray(platformResponse?.data)
+            ? platformResponse.data
+            : [];
+
+        setProducts(normalizedProducts);
+        setPlatforms(normalizedPlatforms);
       }
     } catch (error) {
       console.error("Error fetching initial data:", error);
@@ -310,10 +321,13 @@ export default function Dashboard() {
   };
 
   // Format products and platforms data for dropdown
-  const productOptions = products.map((product) => ({
-    label: product.name,
-    value: product.name,
-  }));
+  const productOptions = (Array.isArray(products) ? products : [])
+    .map((product: any) => {
+      const name =
+        typeof product === "string" ? product : (product?.name as string);
+      return name ? { label: name, value: name } : null;
+    })
+    .filter(Boolean) as { label: string; value: string }[];
 
   const normalizePlatformLabel = (platform: any): string => {
     if (!platform) return "";
@@ -327,7 +341,7 @@ export default function Dashboard() {
     );
   };
 
-  const platformOptions = platforms
+  const platformOptions = (Array.isArray(platforms) ? platforms : [])
     .map((platform) => {
       const label = normalizePlatformLabel(platform);
       return label ? { label, value: label } : null;
