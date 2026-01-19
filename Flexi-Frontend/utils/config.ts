@@ -4,8 +4,8 @@ export const MOCKUP_IMAGE_URL = 'http://192.168.1.103:3000/uploads/mock/';
 
 // Facebook Token
 
-export const FB_ACCESS_TOKEN='EAATzZAnZBPMrkBQIowL5pNqjKRGrqZB62ClYKeIlLEbNCjnsoocXCBuQ3gGLJTVZAUL0ISHve863VEINdcZBrmmSlqIvd4uZAUces1mZC6lJEMA63SD5W8oUdkbkhonemP99VezfwRDvSCuswddwqMMitYCSucYYXGnS1ydQM6ICZCQatJeDZBhQ12UA2KswOF2Da82MkJZAVUQDyoM0ajBZCad';
-
+export const FB_ACCESS_TOKEN='EAATzZAnZBPMrkBQR6r4SzNgol7GKwZBInM0fycL8KKkcdPYDnZCJRxzEnFFjPsa2nyZC94ZBCToTwrHGplnj3biEBpVf6iXxPI6EBgfzcd7l0ZCzdqZBL8w6mMjQwHcA1WUCUXTzvHdsZAdCcLwOh94MO5jE85k6urBLefZA17lP8gb9GiSrcadpUWEi7j2FQXUniP6GfFo38zHCivLwZDZD';
+export const FB_APP_SECRET='1393521459147449|NxfYjrJkokDiu1mfxnsYPPDM_CA'
 
 
  //-------------Production Mode------------------
