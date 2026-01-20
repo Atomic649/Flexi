@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Store" ALTER COLUMN "accId" DROP NOT NULL;

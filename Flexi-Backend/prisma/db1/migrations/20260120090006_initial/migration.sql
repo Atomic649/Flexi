@@ -57,6 +57,9 @@ CREATE TABLE "flexidb"."User" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "avatar" TEXT,
+    "emailVerifiedAt" TIMESTAMP(3),
+    "emailVerifyToken" TEXT,
+    "emailVerifyTokenExpiry" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "phone" TEXT NOT NULL,
@@ -283,6 +286,18 @@ CREATE TABLE "flexidb"."ChatMessage" (
     CONSTRAINT "ChatMessage_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "flexidb"."PlatformToken" (
+    "id" SERIAL NOT NULL,
+    "platform" "flexidb"."SocialMedia" NOT NULL,
+    "memberId" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PlatformToken_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "flexidb"."User"("email");
 
@@ -305,13 +320,13 @@ CREATE UNIQUE INDEX "BusinessAcc_taxId_key" ON "flexidb"."BusinessAcc"("taxId");
 CREATE UNIQUE INDEX "DocumentCounter_businessId_documentType_key" ON "flexidb"."DocumentCounter"("businessId", "documentType");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Platform_accName_key" ON "flexidb"."Platform"("accName");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Platform_campaignId_key" ON "flexidb"."Platform"("campaignId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_name_key" ON "flexidb"."Product"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PlatformToken_token_key" ON "flexidb"."PlatformToken"("token");
 
 -- AddForeignKey
 ALTER TABLE "flexidb"."Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "flexidb"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -378,3 +393,6 @@ ALTER TABLE "flexidb"."ChatSession" ADD CONSTRAINT "ChatSession_userId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "flexidb"."ChatMessage" ADD CONSTRAINT "ChatMessage_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "flexidb"."ChatSession"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "flexidb"."PlatformToken" ADD CONSTRAINT "PlatformToken_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "flexidb"."Member"("uniqueId") ON DELETE RESTRICT ON UPDATE CASCADE;

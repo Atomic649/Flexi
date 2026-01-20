@@ -252,6 +252,7 @@ export type MemberWhereInput = {
   product?: Prisma.ProductListRelationFilter
   platform?: Prisma.PlatformListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
+  platformToken?: Prisma.PlatformTokenListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -271,6 +272,7 @@ export type MemberOrderByWithRelationInput = {
   product?: Prisma.ProductOrderByRelationAggregateInput
   platform?: Prisma.PlatformOrderByRelationAggregateInput
   chat?: Prisma.ChatSessionOrderByRelationAggregateInput
+  platformToken?: Prisma.PlatformTokenOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -293,6 +295,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   product?: Prisma.ProductListRelationFilter
   platform?: Prisma.PlatformListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
+  platformToken?: Prisma.PlatformTokenListRelationFilter
 }, "uniqueId">
 
 export type MemberOrderByWithAggregationInput = {
@@ -340,6 +343,7 @@ export type MemberCreateInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -357,6 +361,7 @@ export type MemberUncheckedCreateInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUpdateInput = {
@@ -374,6 +379,7 @@ export type MemberUpdateInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -391,6 +397,7 @@ export type MemberUncheckedUpdateInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -666,6 +673,20 @@ export type MemberUpdateOneRequiredWithoutChatNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutChatInput, Prisma.MemberUpdateWithoutChatInput>, Prisma.MemberUncheckedUpdateWithoutChatInput>
 }
 
+export type MemberCreateNestedOneWithoutPlatformTokenInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPlatformTokenInput, Prisma.MemberUncheckedCreateWithoutPlatformTokenInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPlatformTokenInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneRequiredWithoutPlatformTokenNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutPlatformTokenInput, Prisma.MemberUncheckedCreateWithoutPlatformTokenInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutPlatformTokenInput
+  upsert?: Prisma.MemberUpsertWithoutPlatformTokenInput
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutPlatformTokenInput, Prisma.MemberUpdateWithoutPlatformTokenInput>, Prisma.MemberUncheckedUpdateWithoutPlatformTokenInput>
+}
+
 export type MemberCreateWithoutUserInput = {
   uniqueId?: string
   role?: $Enums.UserRole
@@ -680,6 +701,7 @@ export type MemberCreateWithoutUserInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
@@ -696,6 +718,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -752,6 +775,7 @@ export type MemberCreateWithoutBusinessInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutBusinessInput = {
@@ -768,6 +792,7 @@ export type MemberUncheckedCreateWithoutBusinessInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutBusinessInput = {
@@ -810,6 +835,7 @@ export type MemberCreateWithoutBillInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutBillInput = {
@@ -826,6 +852,7 @@ export type MemberUncheckedCreateWithoutBillInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutBillInput = {
@@ -858,6 +885,7 @@ export type MemberUpdateWithoutBillInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutBillInput = {
@@ -874,6 +902,7 @@ export type MemberUncheckedUpdateWithoutBillInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutAdsCostInput = {
@@ -890,6 +919,7 @@ export type MemberCreateWithoutAdsCostInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutAdsCostInput = {
@@ -906,6 +936,7 @@ export type MemberUncheckedCreateWithoutAdsCostInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutAdsCostInput = {
@@ -938,6 +969,7 @@ export type MemberUpdateWithoutAdsCostInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutAdsCostInput = {
@@ -954,6 +986,7 @@ export type MemberUncheckedUpdateWithoutAdsCostInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutExpenseInput = {
@@ -970,6 +1003,7 @@ export type MemberCreateWithoutExpenseInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutExpenseInput = {
@@ -986,6 +1020,7 @@ export type MemberUncheckedCreateWithoutExpenseInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutExpenseInput = {
@@ -1018,6 +1053,7 @@ export type MemberUpdateWithoutExpenseInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutExpenseInput = {
@@ -1034,6 +1070,7 @@ export type MemberUncheckedUpdateWithoutExpenseInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutPlatformInput = {
@@ -1050,6 +1087,7 @@ export type MemberCreateWithoutPlatformInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutPlatformInput = {
@@ -1066,6 +1104,7 @@ export type MemberUncheckedCreateWithoutPlatformInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutPlatformInput = {
@@ -1098,6 +1137,7 @@ export type MemberUpdateWithoutPlatformInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutPlatformInput = {
@@ -1114,6 +1154,7 @@ export type MemberUncheckedUpdateWithoutPlatformInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutProductInput = {
@@ -1130,6 +1171,7 @@ export type MemberCreateWithoutProductInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutProductInput = {
@@ -1146,6 +1188,7 @@ export type MemberUncheckedCreateWithoutProductInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutProductInput = {
@@ -1178,6 +1221,7 @@ export type MemberUpdateWithoutProductInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProductInput = {
@@ -1194,6 +1238,7 @@ export type MemberUncheckedUpdateWithoutProductInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutChatInput = {
@@ -1210,6 +1255,7 @@ export type MemberCreateWithoutChatInput = {
   expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutChatInput = {
@@ -1226,6 +1272,7 @@ export type MemberUncheckedCreateWithoutChatInput = {
   expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutChatInput = {
@@ -1258,6 +1305,7 @@ export type MemberUpdateWithoutChatInput = {
   expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutChatInput = {
@@ -1274,6 +1322,91 @@ export type MemberUncheckedUpdateWithoutChatInput = {
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+}
+
+export type MemberCreateWithoutPlatformTokenInput = {
+  uniqueId?: string
+  role?: $Enums.UserRole
+  permission: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  user: Prisma.UserCreateNestedOneWithoutMemberInput
+  business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
+  bill?: Prisma.BillCreateNestedManyWithoutMemberInput
+  adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
+  expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
+  product?: Prisma.ProductCreateNestedManyWithoutMemberInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
+  chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+}
+
+export type MemberUncheckedCreateWithoutPlatformTokenInput = {
+  uniqueId?: string
+  role?: $Enums.UserRole
+  permission: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  userId: number
+  businessId?: number | null
+  bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
+  adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
+  expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
+  product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
+  chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type MemberCreateOrConnectWithoutPlatformTokenInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPlatformTokenInput, Prisma.MemberUncheckedCreateWithoutPlatformTokenInput>
+}
+
+export type MemberUpsertWithoutPlatformTokenInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutPlatformTokenInput, Prisma.MemberUncheckedUpdateWithoutPlatformTokenInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutPlatformTokenInput, Prisma.MemberUncheckedCreateWithoutPlatformTokenInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutPlatformTokenInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutPlatformTokenInput, Prisma.MemberUncheckedUpdateWithoutPlatformTokenInput>
+}
+
+export type MemberUpdateWithoutPlatformTokenInput = {
+  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  permission?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
+  business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
+  bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
+  adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
+  expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
+  product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
+  chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutPlatformTokenInput = {
+  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  permission?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
+  adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
+  expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
+  product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
+  chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -1300,6 +1433,7 @@ export type MemberUpdateWithoutUserInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
@@ -1316,6 +1450,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
@@ -1352,6 +1487,7 @@ export type MemberUpdateWithoutBusinessInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutBusinessInput = {
@@ -1368,6 +1504,7 @@ export type MemberUncheckedUpdateWithoutBusinessInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutBusinessInput = {
@@ -1392,6 +1529,7 @@ export type MemberCountOutputType = {
   product: number
   platform: number
   chat: number
+  platformToken: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1401,6 +1539,7 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   product?: boolean | MemberCountOutputTypeCountProductArgs
   platform?: boolean | MemberCountOutputTypeCountPlatformArgs
   chat?: boolean | MemberCountOutputTypeCountChatArgs
+  platformToken?: boolean | MemberCountOutputTypeCountPlatformTokenArgs
 }
 
 /**
@@ -1455,6 +1594,13 @@ export type MemberCountOutputTypeCountChatArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.ChatSessionWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountPlatformTokenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatformTokenWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   uniqueId?: boolean
@@ -1473,6 +1619,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   product?: boolean | Prisma.Member$productArgs<ExtArgs>
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
+  platformToken?: boolean | Prisma.Member$platformTokenArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -1523,6 +1670,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   product?: boolean | Prisma.Member$productArgs<ExtArgs>
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
+  platformToken?: boolean | Prisma.Member$platformTokenArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1545,6 +1693,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     product: Prisma.$ProductPayload<ExtArgs>[]
     platform: Prisma.$PlatformPayload<ExtArgs>[]
     chat: Prisma.$ChatSessionPayload<ExtArgs>[]
+    platformToken: Prisma.$PlatformTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     uniqueId: string
@@ -1957,6 +2106,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   product<T extends Prisma.Member$productArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$productArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   platform<T extends Prisma.Member$platformArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$platformArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chat<T extends Prisma.Member$chatArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$chatArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platformToken<T extends Prisma.Member$platformTokenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$platformTokenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2550,6 +2700,30 @@ export type Member$chatArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.ChatSessionScalarFieldEnum | Prisma.ChatSessionScalarFieldEnum[]
+}
+
+/**
+ * Member.platformToken
+ */
+export type Member$platformTokenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformToken
+   */
+  select?: Prisma.PlatformTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformToken
+   */
+  omit?: Prisma.PlatformTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformTokenInclude<ExtArgs> | null
+  where?: Prisma.PlatformTokenWhereInput
+  orderBy?: Prisma.PlatformTokenOrderByWithRelationInput | Prisma.PlatformTokenOrderByWithRelationInput[]
+  cursor?: Prisma.PlatformTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatformTokenScalarFieldEnum | Prisma.PlatformTokenScalarFieldEnum[]
 }
 
 /**

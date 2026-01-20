@@ -6,7 +6,55 @@ import { Prisma, SocialMedia } from "../generated/client1/client";
 
 const graphApiVersion = process.env.FACEBOOK_GRAPH_VERSION || "v20.0";
 const graphApiUrl = `https://graph.facebook.com/${graphApiVersion}`;
-const accessToken = process.env.FACEBOOK_ACCESS_TOKEN ;
+// NOTE: access token is no longer taken from env. We resolve per-member tokens
+// from the `PlatformToken` table (platform = SocialMedia.Facebook).
+
+// Helper: find a stored Facebook token by memberId
+const findFacebookTokenByMemberId = async (memberId?: string) => {
+	if (!memberId) return null;
+	try {
+		const rec = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
+		return rec?.token ?? null;
+	} catch (err) {
+		console.error("Error fetching platform token for member", memberId, err);
+		return null;
+	}
+};
+
+// Try to infer memberId from the authenticated request (if available)
+const getMemberIdFromRequest = async (req: Request) => {
+	const userObj = (req as any).user;
+	const userId = userObj?.id;
+	if (!userId) return null;
+	try {
+		const member = await prisma.member.findFirst({ where: { userId: Number(userId) } });
+		return member?.uniqueId ?? null;
+	} catch (err) {
+		console.error("Error resolving memberId from request user", err);
+		return null;
+	}
+};
+
+// Resolve an access token for the incoming request. Priority:
+// 1) explicit memberId in query/body
+// 2) member inferred from authenticated user
+// 3) first available Facebook token in DB (fallback)
+const resolveFacebookAccessTokenForRequest = async (req: Request) => {
+	const memberIdParam = (req.query.memberId as string) || (req.body?.memberId as string);
+	if (memberIdParam) {
+		const t = await findFacebookTokenByMemberId(memberIdParam);
+		if (t) return t;
+	}
+
+	const inferred = await getMemberIdFromRequest(req);
+	if (inferred) {
+		const t = await findFacebookTokenByMemberId(inferred);
+		if (t) return t;
+	}
+
+	const any = await prisma.platformToken.findFirst({ where: { platform: SocialMedia.Facebook } });
+	return any?.token ?? null;
+};
 
 const prisma = flexiDBPrismaClient;
 
@@ -29,8 +77,9 @@ const fetchFacebookCampaignDailySpend = async (params: {
 	since: string;
 	until: string;
 	campaignId?: string;
+	accessToken: string;
 }): Promise<CampaignSpendWithMeta[]> => {
-	const { adAccountId, since, until, campaignId } = params;
+	const { adAccountId, since, until, campaignId, accessToken } = params;
 	const timeRange = { since, until };
 	const { data } = await axios.get(`${graphApiUrl}/${adAccountId}/insights`, {
 		params: {
@@ -117,9 +166,8 @@ export const getFacebookDailySpend = async (req: Request, res: Response) => {
 	const adAccountId = (req.query.adAccountId as string) || process.env.FACEBOOK_AD_ACCOUNT_ID;
 	const dateParam = (req.query.date as string) || new Date().toISOString().slice(0, 10);
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!adAccountId) {
 		return res.status(400).json({ message: "adAccountId is required (query param or env FACEBOOK_AD_ACCOUNT_ID)" });
@@ -134,7 +182,7 @@ export const getFacebookDailySpend = async (req: Request, res: Response) => {
 				time_increment: 1,
 				time_range: JSON.stringify(timeRange),
 				level: "account",
-				access_token: accessToken,
+				access_token: token,
 			},
 		});
 
@@ -170,9 +218,8 @@ export const getFacebookDailySpendRange = async (req: Request, res: Response) =>
 	const until = (req.query.until as string) || new Date().toISOString().slice(0, 10);
 	const since = (req.query.since as string) || new Date(Date.now() - (daysParam - 1) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!adAccountId) {
 		return res.status(400).json({ message: "adAccountId is required (query param or env FACEBOOK_AD_ACCOUNT_ID)" });
@@ -186,7 +233,7 @@ export const getFacebookDailySpendRange = async (req: Request, res: Response) =>
 				time_increment: 1,
 				time_range: JSON.stringify(timeRange),
 				level: "account",
-				access_token: accessToken,
+				access_token: token,
 			},
 		});
 
@@ -229,16 +276,15 @@ export const getFacebookCampaignDailySpend = async (req: Request, res: Response)
 	const since = (req.query.since as string) || new Date(Date.now() - (daysParam - 1) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 	const campaignId = req.query.campaignId as string | undefined;
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!adAccountId) {
 		return res.status(400).json({ message: "adAccountId is required (query param or env FACEBOOK_AD_ACCOUNT_ID)" });
 	}
 
 	try {
-		const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since, until, campaignId });
+		const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since, until, campaignId, accessToken: token });
 
 		return res.json({
 			adAccountId,
@@ -264,15 +310,14 @@ export const getFacebookCampaignDailySpend = async (req: Request, res: Response)
 export const getFacebookAdAccounts = async (req: Request, res: Response) => {
 	const businessId = req.query.businessId as string | undefined;
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	try {
 		const endpoint = businessId ? `${graphApiUrl}/${businessId}/adaccounts` : `${graphApiUrl}/me/adaccounts`;
 		const { data } = await axios.get(endpoint, {
 			params: {
-				access_token: accessToken,
+				access_token: token,
 				fields: "id,name,account_status,currency,business_name",
 				limit: 200,
 			},
@@ -312,9 +357,8 @@ export const getFacebookCampaigns = async (req: Request, res: Response) => {
 	const adAccountId = (req.query.adAccountId as string) || process.env.FACEBOOK_AD_ACCOUNT_ID;
 	const statusParam = req.query.status as string | undefined;
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!adAccountId) {
 		return res.status(400).json({ message: "adAccountId is required (query param or env FACEBOOK_AD_ACCOUNT_ID)" });
@@ -323,7 +367,7 @@ export const getFacebookCampaigns = async (req: Request, res: Response) => {
 	try {
 		const { data } = await axios.get(`${graphApiUrl}/${adAccountId}/campaigns`, {
 			params: {
-				access_token: accessToken,
+				access_token: token,
 				fields: "id,name,status,effective_status,objective,start_time,stop_time",
 				limit: 200,
 				...(statusParam ? { filtering: JSON.stringify([{ field: "campaign.effective_status", operator: "IN", value: statusParam.split(",") }]) } : {}),
@@ -365,9 +409,8 @@ export const getFacebookCampaigns = async (req: Request, res: Response) => {
 export const getFacebookAdSets = async (req: Request, res: Response) => {
 	const campaignId = req.query.campaignId as string;
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!campaignId) {
 		return res.status(400).json({ message: "campaignId is required (query param)" });
@@ -376,7 +419,7 @@ export const getFacebookAdSets = async (req: Request, res: Response) => {
 	try {
 		const { data } = await axios.get(`${graphApiUrl}/${campaignId}/adsets`, {
 			params: {
-				access_token: accessToken,
+				access_token: token,
 				fields: "id,name,status,effective_status,optimization_goal,daily_budget,lifetime_budget,start_time,end_time",
 				limit: 200,
 			},
@@ -419,9 +462,8 @@ export const getFacebookAdSets = async (req: Request, res: Response) => {
 export const getFacebookAds = async (req: Request, res: Response) => {
 	const adSetId = req.query.adSetId as string;
 
-	if (!accessToken) {
-		return res.status(500).json({ message: "FACEBOOK_ACCESS_TOKEN is not configured" });
-	}
+	const token = await resolveFacebookAccessTokenForRequest(req);
+	if (!token) return res.status(500).json({ message: "Facebook access token not found; please save token for a member via /facebook/token" });
 
 	if (!adSetId) {
 		return res.status(400).json({ message: "adSetId is required (query param)" });
@@ -430,7 +472,7 @@ export const getFacebookAds = async (req: Request, res: Response) => {
 	try {
 		const { data } = await axios.get(`${graphApiUrl}/${adSetId}/ads`, {
 			params: {
-				access_token: accessToken,
+				access_token: token,
 				fields: "id,name,status,effective_status,creative{id,name},bid_strategy,daily_budget,lifetime_budget,adset_id,campaign_id",
 				limit: 200,
 			},
@@ -509,10 +551,6 @@ const addUtcDays = (d: Date, days: number) => new Date(d.getTime() + days * 24 *
 
 // Range ingestion (API): defaults to last 30 days, loops day-by-day per ad account
 const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; until?: string }) => {
-	if (!accessToken) {
-		console.warn("FACEBOOK_ACCESS_TOKEN is not configured; skipping Facebook ads cost ingestion job");
-		return { inserted: 0, message: "missing access token" };
-	}
 
 	const todayUtc = new Date();
 	const defaultUntil = new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth(), todayUtc.getUTCDate()));
@@ -542,10 +580,26 @@ const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; un
 
 	const rowsToInsert: Prisma.AdsCostCreateManyInput[] = [];
 	for (const adAccountId of adAccountIds) {
+		// Find a platform row for this ad account to identify the member who owns it
+		const platformRow = await prisma.platform.findFirst({ where: { accId: adAccountId, platform: SocialMedia.Facebook, deleted: false }, select: { memberId: true } });
+		const memberIdForAccount = platformRow?.memberId;
+		// Resolve token for this ad account's member (fallback to any Facebook token)
+		let tokenForAccount: string | null = null;
+		if (memberIdForAccount) tokenForAccount = await findFacebookTokenByMemberId(memberIdForAccount);
+		if (!tokenForAccount) {
+			const any = await prisma.platformToken.findFirst({ where: { platform: SocialMedia.Facebook } });
+			tokenForAccount = any?.token ?? null;
+		}
+
+		if (!tokenForAccount) {
+			console.warn(`No Facebook token found for ad account ${adAccountId}; skipping`);
+			continue;
+		}
+
 		for (const date of dates) {
 			const dateStr = makeDateKey(date);
 			try {
-				const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since: dateStr, until: dateStr });
+				const daily = await fetchFacebookCampaignDailySpend({ adAccountId, since: dateStr, until: dateStr, accessToken: tokenForAccount });
 				rowsToInsert.push(...buildAdsCostRowsFromSpend(daily, date));
 			} catch (error) {
 				console.error(`Failed to ingest spend for ad account ${adAccountId} on ${dateStr}`, error);
@@ -658,4 +712,43 @@ export const facebookAdsCostCronJob = cron.schedule("9 0 * * *", async () => {
 	await ingestFacebookSpendYesterdayToAdsCosts();
 });
 
-export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds };
+/**
+ * POST /facebook/token
+ * Body: { memberId: string, token: string, expiresAt: string|number }
+ * Stores or updates the Facebook access token for a member in PlatformToken table.
+ */
+export const saveFacebookToken = async (req: Request, res: Response) => {
+	try {
+		const { memberId, token, expiresAt } = req.body as { memberId?: string; token?: string; expiresAt?: string | number };
+
+		if (!memberId || !token || !expiresAt) {
+			return res.status(400).json({ message: "memberId, token and expiresAt are required" });
+		}
+
+		const expiresDate = typeof expiresAt === "number" ? new Date(Number(expiresAt)) : new Date(String(expiresAt));
+		if (isNaN(expiresDate.getTime())) {
+			return res.status(400).json({ message: "expiresAt must be a valid date or timestamp" });
+		}
+
+		// Try to find existing token record for this member + platform
+		const existing = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
+
+		if (existing) {
+			const updated = await prisma.platformToken.update({ where: { id: existing.id }, data: { token, expiresAt: expiresDate } });
+			return res.status(200).json({ status: "updated", token: updated });
+		}
+
+		const created = await prisma.platformToken.create({ data: { memberId, platform: SocialMedia.Facebook, token, expiresAt: expiresDate } });
+		return res.status(201).json({ status: "created", token: created });
+	} catch (err: any) {
+		// Handle unique constraint or other Prisma errors gracefully
+		const code = err?.code || err?.response?.status || 500;
+		console.error("Failed to save Facebook token", err?.message || err);
+		if (err?.code === "P2002") {
+			return res.status(409).json({ message: "Token already exists" });
+		}
+		return res.status(Number(code) || 500).json({ message: err?.message || "Failed to save token" });
+	}
+};
+
+export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, saveFacebookToken };

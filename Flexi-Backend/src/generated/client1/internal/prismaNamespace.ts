@@ -395,7 +395,8 @@ export const ModelName = {
   Platform: 'Platform',
   Product: 'Product',
   ChatSession: 'ChatSession',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  PlatformToken: 'PlatformToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "member" | "businessAcc" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "product" | "chatSession" | "chatMessage"
+    modelProps: "user" | "member" | "businessAcc" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "product" | "chatSession" | "chatMessage" | "platformToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1303,6 +1304,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PlatformToken: {
+      payload: Prisma.$PlatformTokenPayload<ExtArgs>
+      fields: Prisma.PlatformTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlatformTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlatformTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.PlatformTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlatformTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        findMany: {
+          args: Prisma.PlatformTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>[]
+        }
+        create: {
+          args: Prisma.PlatformTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        createMany: {
+          args: Prisma.PlatformTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlatformTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.PlatformTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        update: {
+          args: Prisma.PlatformTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.PlatformTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlatformTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlatformTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.PlatformTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.PlatformTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatformToken>
+        }
+        groupBy: {
+          args: Prisma.PlatformTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlatformTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformTokenCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1577,6 +1652,18 @@ export const ChatMessageScalarFieldEnum = {
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const PlatformTokenScalarFieldEnum = {
+  id: 'id',
+  platform: 'platform',
+  memberId: 'memberId',
+  token: 'token',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type PlatformTokenScalarFieldEnum = (typeof PlatformTokenScalarFieldEnum)[keyof typeof PlatformTokenScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1990,6 +2077,7 @@ export type GlobalOmitConfig = {
   product?: Prisma.ProductOmit
   chatSession?: Prisma.ChatSessionOmit
   chatMessage?: Prisma.ChatMessageOmit
+  platformToken?: Prisma.PlatformTokenOmit
 }
 
 /* Types for Logging */

@@ -40,6 +40,7 @@ Table Member {
   product Product [not null]
   platform Platform [not null]
   chat ChatSession [not null]
+  platformToken PlatformToken [not null]
 }
 
 Table BusinessAcc {
@@ -251,6 +252,16 @@ Table ChatMessage {
   session ChatSession [not null]
 }
 
+Table PlatformToken {
+  id Int [pk, increment]
+  platform SocialMedia [not null]
+  memberId String [not null]
+  member Member [not null]
+  token String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  expiresAt DateTime [not null]
+}
+
 Enum Unit {
   Piece
   Hour
@@ -442,3 +453,5 @@ Ref: Product.businessAcc > BusinessAcc.id
 Ref: ChatSession.userId > Member.uniqueId
 
 Ref: ChatMessage.sessionId > ChatSession.id
+
+Ref: PlatformToken.memberId > Member.uniqueId

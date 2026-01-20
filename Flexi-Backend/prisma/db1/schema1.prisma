@@ -234,6 +234,7 @@ model Member {
   product    Product[]
   platform   Platform[]
   chat       ChatSession[]
+  platformToken PlatformToken[]
 
   @@schema("flexidb")
 }
@@ -469,6 +470,18 @@ model ChatMessage {
   message   Json
   sessionId String
   session   ChatSession @relation(fields: [sessionId], references: [id])
+
+  @@schema("flexidb")
+}
+
+model PlatformToken {
+  id        Int      @id @default(autoincrement())
+  platform  SocialMedia
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [uniqueId])
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 
   @@schema("flexidb")
 }

@@ -1,6 +1,8 @@
 import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CONFIGURATION_ID, FB_APP_SECRET } from "../config";
+import { getAxiosWithAuth } from "../axiosInstance";
+import { getMemberId } from "../utility";
 import * as WebBrowser from 'expo-web-browser';
 
 // This is critical for returning to the app correctly
@@ -59,6 +61,20 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
     );
     
       console.log('Facebook Token 💙',accessToken,expiresAt)
+
+    // Send token to backend to store in database (if user is logged in)
+    try {
+      const memberId = await getMemberId();
+      if (memberId) {
+        const axios = await getAxiosWithAuth();
+        await axios.post("/facebook/token", { memberId, token: accessToken, expiresAt });
+        console.log("Saved Facebook token to backend for member", memberId);
+      } else {
+        console.warn("No memberId found; skipping backend token save");
+      }
+    } catch (err) {
+      console.warn("Failed to save Facebook token to backend:", err);
+    }
 
     return { success: true, accessToken, expiresAt };
   } catch (err: any) {
