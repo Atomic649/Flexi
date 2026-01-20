@@ -1,108 +1,74 @@
-import * as AuthSession from 'expo-auth-session';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FB_APP_SECRET } from '../config';
+import * as AuthSession from "expo-auth-session";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CONFIGURATION_ID, FB_APP_SECRET } from "../config";
+import * as WebBrowser from 'expo-web-browser';
+
+// This is critical for returning to the app correctly
+WebBrowser.maybeCompleteAuthSession();
 
 // Facebook app settings
-const FB_APP_ID = '1393521459147449';
-const FB_SCOPES = ['public_profile', 'email'];
+const FB_APP_ID = "1393521459147449";
 
 // Redirect handling
-const REDIRECT_URI = AuthSession.makeRedirectUri({ scheme: 'flexi' });
+// const REDIRECT_URI = AuthSession.makeRedirectUri({ scheme: "flexi",path: "oauthredirect"});
+
+const REDIRECT_URI = AuthSession.makeRedirectUri();
+// Log it to verify what you need to paste into the Meta Dashboard
+console.log('Target Redirect URI:', REDIRECT_URI);
 
 const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v18.0/dialog/oauth',
+  authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth",
 };
 
 type LoginResult =
-  | { success: true; accessToken: string; expiresAt: number; profile: any }
+  | { success: true; accessToken: string; expiresAt: number; }
   | { success: false; error: string };
 
 /**
  * Minimal Facebook login flow that works on Expo Go (proxy) and standalone builds.
  */
-// export const loginWithFacebook = async (): Promise<LoginResult> => {
-//   try {
-//     const request = new AuthSession.AuthRequest({
-//       clientId: FB_APP_ID,
-//       redirectUri: REDIRECT_URI,
-//       responseType: AuthSession.ResponseType.Token,
-//       scopes: FB_SCOPES,
-//     });
 
-//     await request.makeAuthUrlAsync(discovery); // Ensures the request is built before prompting
-
-//     const result = await request.promptAsync(discovery);
-
-//     if (result.type !== 'success' || !result.params.access_token) {
-//       return { success: false, error: 'Facebook login was cancelled or failed' };
-//     }
-
-//     const accessToken = result.params.access_token;
-//     const expiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
-
-//     // Cache token for reuse
-//     await AsyncStorage.setItem(
-//       '@facebook_auth_token',
-//       JSON.stringify({ accessToken, expiresAt })
-//     );
-
-//     const profileResp = await fetch(
-//       `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${accessToken}`
-//     );
-//     const profile = await profileResp.json();
-
-//     if (profile.error) {
-//       throw new Error(profile.error.message || 'Failed to fetch Facebook profile');
-//     }
-
-//     return { success: true, accessToken, expiresAt, profile };
-//   } catch (err: any) {
-//     return { success: false, error: err?.message || 'Facebook login failed' };
-//   }
-// };
 export const loginWithFacebook = async (): Promise<LoginResult> => {
   try {
     const request = new AuthSession.AuthRequest({
       clientId: FB_APP_ID,
       redirectUri: REDIRECT_URI,
       responseType: AuthSession.ResponseType.Token,
-      scopes: FB_SCOPES,
+      extraParams: {
+        config_id: CONFIGURATION_ID,
+      },
     });
-    await request.makeAuthUrlAsync(discovery); // Ensures the request is built before prompting
-    const result = await request.promptAsync(discovery);
-    if (result.type !== 'success' || !result.params.access_token) {
-      return { success: false, error: 'Facebook login was cancelled or failed' };
-    }
-    const accessToken = result.params.access_token;
-    const expiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
-    // Cache token for reuse
-    await AsyncStorage.setItem('@facebook_auth_token', JSON.stringify({ accessToken, expiresAt }));
-    const appAccessToken = `${FB_APP_ID}|${FB_APP_SECRET}`;
-    const profileResp = await fetch(
-      `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${accessToken}&app_access_token=${appAccessToken}`
-    );
-    const profile = await profileResp.json();
-    if (profile.error) {
-      throw new Error(profile.error.message || 'Failed to fetch Facebook profile');
-    }
-    return { success: true, accessToken, expiresAt, profile };
-  } catch (err: any) {
-    return { success: false, error: err?.message || 'Facebook login failed' };
-  }
-};
 
-export const logoutFromFacebook = async (): Promise<boolean> => {
-  try {
-    await AsyncStorage.removeItem('@facebook_auth_token');
-    return true;
-  } catch {
-    return false;
+    const result = await request.promptAsync(discovery,
+      {showInRecents : true}
+    );
+    console.log('result 💙',result)
+
+    if (result.type !== "success" || !result.params.access_token) {
+      return { success: false, error: "Meta login failed" };
+    }
+
+    const accessToken = result.params.access_token;
+    console.log('Facebook Token 💙',accessToken)
+    const expiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
+
+    // Cache token for reuse
+    await AsyncStorage.setItem(
+      "@facebook_auth_token",
+      JSON.stringify({ accessToken, expiresAt }),
+    );
+    
+      console.log('Facebook Token 💙',accessToken,expiresAt)
+
+    return { success: true, accessToken, expiresAt };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Facebook login failed" };
   }
 };
 
 export const isFacebookAuthenticated = async (): Promise<boolean> => {
   try {
-    const tokenData = await AsyncStorage.getItem('@facebook_auth_token');
+    const tokenData = await AsyncStorage.getItem("@facebook_auth_token");
     if (!tokenData) return false;
     const { expiresAt } = JSON.parse(tokenData);
     return Date.now() < expiresAt;

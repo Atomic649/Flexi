@@ -2,6 +2,10 @@ import { Redirect } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { LogBox } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from 'expo-web-browser'; // 1. Import this
+
+// 2. Call this at the top level
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Index() {
   // State สำหรับเก็บสถานะ login และการโหลดข้อมูล
