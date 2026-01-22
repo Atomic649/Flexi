@@ -511,7 +511,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <div class="invoice-number"><span class="bill-label">${t(
                 "print.billNo"
               )}</span> <span class="bill-id">${invoice.invoiceId}</span></div>
-                <p style="margin-top: 1px;">REF :${invoice.quotationId}</p>
+                ${invoice.quotationId ? `<p style="margin-top: 1px;">REF :${invoice.quotationId}</p>` : ""}
                 <p style="margin-top: 1px;">${(() => {
                   const d = new Date(invoice.updatedAt);
                   if (isNaN(d.getTime())) return "";

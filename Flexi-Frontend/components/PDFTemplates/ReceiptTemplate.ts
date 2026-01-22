@@ -511,11 +511,19 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 "print.original"
               )})</p>
             </div>
-            <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
+              <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="invoice-number"><span class="bill-label">${t(
                 "print.billNo")}</span> 
                 <span class="bill-id">${invoice.billId}</span></div>
-              <p style="margin-top: 1px;">REF:${invoice.quotationId}, ${invoice.invoiceId}</p>            
+              ${(() => {
+                const q = invoice.quotationId ?? "";
+                const inv = invoice.invoiceId ?? "";
+                const parts: string[] = [];
+                if (q && String(q).toLowerCase() !== "null" && String(q).toLowerCase() !== "undefined") parts.push(q);
+                if (inv && String(inv).toLowerCase() !== "null" && String(inv).toLowerCase() !== "undefined") parts.push(inv);
+                const ref = parts.join(", ");
+                return ref ? `<p style="margin-top: 1px;">REF: ${ref}</p>` : "";
+              })()}            
                 
                 <p style="margin-top: 1px;">${(() => {
                   const d = new Date(invoice.updatedAt);
