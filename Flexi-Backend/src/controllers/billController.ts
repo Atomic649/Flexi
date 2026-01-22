@@ -304,6 +304,12 @@ const createBill = async (req: Request, res: Response) => {
     );
     billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
     billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
+    // normalize withholding inputs (may come as strings from form-data)
+    billInput.withholdingTax = ["true", "1", "yes"].includes(
+      String(billInput.withholdingTax).toLowerCase()
+    );
+    billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
+    billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
     // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
