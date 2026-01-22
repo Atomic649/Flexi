@@ -301,19 +301,31 @@ export default function Profile() {
         <View className="mt-4 px-8 mb-2 items-center font-bold">
           <TouchableOpacity onPress={() => setBusinessAccChoiceVisible(true)}>
             <View
-              className="flex-row items-center justify-center rounded-full w-full px-2 p-3"
+              className="flex-row items-center justify-center rounded-full w-full px-5 p-3"
               style={{
-                backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
+              backgroundColor: theme === "dark" ? "#27272a" : "#48453e",
               }}
             >
               <CustomText
-                className="text-base font-bold text-center w-full"
-                style={{
-                  color: theme === "dark" ? "#c9c9c9" : "#ffffff",
-                }}
+              className="text-base font-bold text-center w-full"
+              style={{
+                color: theme === "dark" ? "#c9c9c9" : "#ffffff",
+              }}
               >
-                {selectedBusiness || businessData.businessName}
-              </CustomText>
+              {selectedBusiness || businessData.businessName}
+              </CustomText>              
+              <View
+              className="rounded-full p-1"
+              style={{
+                backgroundColor: theme === "dark" ? "#3f3f46" : "#5a5a52",
+              }}
+              >
+              <Ionicons
+                name="chevron-down"
+                size={18}
+                color={theme === "dark" ? "#c9c9c9" : "#ffffff"}
+              />
+              </View>
             </View>
           </TouchableOpacity>
         </View>
@@ -322,7 +334,7 @@ export default function Profile() {
           style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
         >
           {businessData.businessUserName}
-        </Text>
+        </Text>    
 
         <Text
           className="text-sm text-center"
