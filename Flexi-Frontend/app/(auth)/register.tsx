@@ -456,7 +456,9 @@ export default function Register() {
               </RNView>
 
               {error ? (
-                <CustomText className="text-red-500 mt-4">{error}</CustomText>
+                <CustomText className=" mt-4"
+                style={{ color: "#ff2d31" }}>{error}
+                </CustomText>
               ) : null}
 
               <CustomButton
