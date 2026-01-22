@@ -751,4 +751,46 @@ export const saveFacebookToken = async (req: Request, res: Response) => {
 	}
 };
 
-export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, saveFacebookToken };
+/**
+ * POST /facebook/exchange
+ * Body: { accessToken: string }
+ * Exchanges a short-lived Facebook token for a long-lived token using the app secret.
+ * Requires server env vars: FACEBOOK_APP_ID and FACEBOOK_APP_SECRET
+ */
+export const exchangeFacebookToken = async (req: Request, res: Response) => {
+	try {
+		const { accessToken: shortLived } = req.body as { accessToken?: string };
+		if (!shortLived) return res.status(400).json({ message: "accessToken is required" });
+
+		const appId = process.env.FACEBOOK_APP_ID;
+		const appSecret = process.env.FACEBOOK_APP_SECRET;
+		if (!appId || !appSecret) {
+			console.error("Missing FACEBOOK_APP_ID or FACEBOOK_APP_SECRET env vars");
+			return res.status(500).json({ message: "Facebook app credentials not configured on server" });
+		}
+
+		const url = `${graphApiUrl}/oauth/access_token`;
+		const params = {
+			grant_type: "fb_exchange_token",
+			client_id: appId,
+			client_secret: appSecret,
+			fb_exchange_token: shortLived,
+		};
+
+		const r = await axios.get(url, { params });
+		const longToken = r.data?.access_token;
+		const expiresIn = Number(r.data?.expires_in || 0);
+		const expiresAt = Date.now() + expiresIn * 1000;
+
+		if (!longToken) return res.status(500).json({ message: "Failed to obtain long-lived token from Facebook", details: r.data });
+
+		return res.json({ accessToken: longToken, expiresAt });
+	} catch (err: any) {
+		console.error("Failed to exchange facebook token", err?.message || err);
+		const status = err?.response?.status || 500;
+		const details = err?.response?.data || err?.message;
+		return res.status(status).json({ message: "Failed to exchange token", details });
+	}
+};
+
+export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, saveFacebookToken, exchangeFacebookToken };
