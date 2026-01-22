@@ -3,7 +3,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Alert,
   Platform,
   Modal,
 } from "react-native";
@@ -13,6 +12,9 @@ import { useRouter } from "expo-router";
 import { CustomText } from "./CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
 import { t } from "i18next";
+import CallAPIExpense from "@/api/expense_api";
+import { getMemberId } from "@/utils/utility";
+import CustomAlert from "@/components/CustomAlert";
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
@@ -52,6 +54,11 @@ export default function ExpenseCard({
   const [detailVisible, setDetailVisible] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
+  const [isDuplicating, setIsDuplicating] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [infoAlert, setInfoAlert] = useState<{ title: string; message: string } | null>(null);
+  const [resultAlert, setResultAlert] = useState<{ title: string; message: string } | null>(null);
 
   const getExpenseTextColor = (type: string) => {
     switch (type) {
@@ -76,25 +83,39 @@ export default function ExpenseCard({
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete", "Are you sure you want to delete this report?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => onDelete(id),
-      },
-    ]);
+    setShowDeleteConfirm(true);
+  };
+
+  const onConfirmDelete = () => {
+    setShowDeleteConfirm(false);
+    onDelete(id);
   };
 
   const handleEdit = () => {
-    Alert.alert(
-      "Not available",
-      "Coming Soon, Please Delete and create new expense",
-      []
-    );
+    setInfoAlert({ title: "Not available", message: "Coming Soon, Please Delete and create new expense" });
+  };
+
+  const duplicateExpense = async () => {
+    try {
+      setIsDuplicating(true);
+      // Call backend duplicate endpoint which clones the expense without copying image and marks save=true
+      await CallAPIExpense.duplicateExpenseAPI(Number(id));
+      setResultAlert({ title: t("common.success") || "Success", message: t("expense.duplicateSuccess") || "Expense duplicated successfully" });
+    } catch (err) {
+      console.error("Failed to duplicate expense", err);
+      setResultAlert({ title: "Error", message: String((err as any)?.message || err) });
+    } finally {
+      setIsDuplicating(false);
+    }
+  };
+
+  const handleLongPress = () => {
+    setShowConfirm(true);
+  };
+
+  const onConfirmDuplicate = () => {
+    setShowConfirm(false);
+    duplicateExpense();
   };
 
   return (
@@ -135,6 +156,8 @@ export default function ExpenseCard({
               // setDetailVisible(true);
             }
           }}
+          onLongPress={handleLongPress}
+          delayLongPress={500}
         >
           <View
             className={`flex flex-col pt-3 pb-4 px-4 pe-16 my-1 rounded-se-md`}
@@ -199,6 +222,47 @@ export default function ExpenseCard({
       </View>
 
       {/* ExpenseDetail Modal for ads */}
+      <CustomAlert
+        visible={showConfirm}
+        title={t("expense.confirmDuplicate") || "Duplicate expense?"}
+        message={""}
+        onClose={() => setShowConfirm(false)}
+        buttons={[
+          { text: t("common.cancel") || "Cancel", onPress: () => setShowConfirm(false), style: "cancel" },
+          { text: t("common.ok") || "OK", onPress: onConfirmDuplicate },
+        ]}
+      />
+
+      <CustomAlert
+        visible={showDeleteConfirm}
+        title={"Delete"}
+        message={"Are you sure you want to delete this report?"}
+        onClose={() => setShowDeleteConfirm(false)}
+        buttons={[
+          { text: t("common.cancel") || "Cancel", onPress: () => setShowDeleteConfirm(false), style: "cancel" },
+          { text: "Delete", onPress: onConfirmDelete, style: "destructive" },
+        ]}
+      />
+
+      {infoAlert && (
+        <CustomAlert
+          visible={true}
+          title={infoAlert.title}
+          message={infoAlert.message}
+          onClose={() => setInfoAlert(null)}
+          buttons={[{ text: t("common.ok") || "OK", onPress: () => setInfoAlert(null) }]}
+        />
+      )}
+
+      {resultAlert && (
+        <CustomAlert
+          visible={true}
+          title={resultAlert.title}
+          message={resultAlert.message}
+          onClose={() => setResultAlert(null)}
+          buttons={[{ text: t("common.ok") || "OK", onPress: () => setResultAlert(null) }]}
+        />
+      )}
       {detailVisible && (
         <Modal
           visible={detailVisible}

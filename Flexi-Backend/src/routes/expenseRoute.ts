@@ -9,7 +9,8 @@ import {
   getThisYearExpensesAPI,
   deleteExpenseById,
   generateWHTDocument,
-  updateExpenseWithOCRData
+  updateExpenseWithOCRData,
+  duplicateExpense,
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -20,6 +21,8 @@ router.post("/", authenticateToken, createExpense);
 
 // Creating a New Expense with OCR
 router.post("/ocr", authenticateToken, createExpenseWithOCR);
+// Duplicate an existing expense (no image copy, mark as saved)
+router.post("/duplicate/:id", authenticateToken, duplicateExpense);
 
 // Getting all Expenses
 router.get("/all/:memberId", authenticateToken, getExpenses);

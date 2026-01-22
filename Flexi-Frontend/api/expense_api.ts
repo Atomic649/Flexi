@@ -197,6 +197,28 @@ class CallAPIExpense {
     }
   }
 
+  // duplicate expense by id (server will duplicate without image and set save=true)
+  async duplicateExpenseAPI(id: number): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/expense/duplicate/${id}`);
+
+      console.log("🚀DuplicateExpenseAPI:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Duplicate Expense API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          throw new Error("API endpoint not found (404)");
+        }
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
     // create expense
   async createAExpenseWithOCRAPI(formData: FormData): Promise<any> {
     try {

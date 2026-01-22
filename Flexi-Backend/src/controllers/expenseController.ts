@@ -1,5 +1,5 @@
 import { fillWHTTemplateWithThaiFont } from "../utils/pdfWHTTemplateThai";
-import { extractTextFromImage, detectDataPresence } from "../utils/ocrUtils";
+import { extractTextFromImage } from "../utils/ocrUtils";
 import { autoDetectTaxType } from "../utils/ocrKeywords";
 import path from "path";
 import { Request, Response } from "express";
@@ -7,7 +7,6 @@ import {
   Bank,
   ExpenseGroup,
   ExpenseStatus,
-  PrismaClient as PrismaClient1,
   taxType,
 } from "../generated/client1/client";
 import Joi from "joi";
@@ -1110,6 +1109,70 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
   });
 };
 
+/**
+ * POST /expense/duplicate/:id
+ * Duplicates an existing expense record but does NOT copy/upload the image
+ * and sets `save` to true on the duplicated record.
+ */
+const duplicateExpense = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id || req.body.id);
+    if (!id) return res.status(400).json({ message: "Expense id is required" });
+
+    const original = await prisma.expense.findUnique({ where: { id } });
+    if (!original) return res.status(404).json({ message: "Original expense not found" });
+
+    // Try to find businessAcc for the original memberId
+    const businessAcc = await prisma.businessAcc.findFirst({ where: { memberId: { has: original.memberId } }, select: { id: true } });
+    const businessAccId = businessAcc ? businessAcc.id : null;
+
+    // Generate a new expNo similar to createExpense
+    const datePart = format(new Date(), "yyyyMMdd");
+    const randomPart = Math.floor(1000 + Math.random() * 9000);
+    const newExpNo = `EXP${datePart}${randomPart}`;
+
+    // Use current date/time for duplicated record
+    const nowFormatted = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    const created = await prisma.expense.create({
+      data: {
+        date: nowFormatted,
+        amount: original.amount,
+        desc: original.desc,
+        group: original.group,
+        // do NOT copy image (user requested without upload image)
+        image: "",
+        // copy pdf if present (optional)
+        pdf: original.pdf ?? "",
+        memberId: original.memberId,
+        businessAcc: businessAccId ?? original.businessAcc,
+        note: original.note,
+        channel: original.channel,
+        // mark duplicated record as saved
+        save: true,
+        vat: original.vat,
+        vatAmount: original.vatAmount ?? 0,
+        withHoldingTax: original.withHoldingTax ?? false,
+        WHTAmount: original.WHTAmount ?? 0,
+        WHTpercent: original.WHTpercent ?? 0,
+        sName: original.sName ?? "",
+        taxInvoiceNo: original.taxInvoiceNo ?? "",
+        sTaxId: original.sTaxId ?? "",
+        sAddress: original.sAddress ?? "",
+        branch: original.branch ?? "",
+        taxType: original.taxType ?? undefined,
+        expNo: newExpNo,
+      },
+    });
+
+    return res.status(201).json(created);
+  } catch (err: any) {
+    console.error("Failed to duplicate expense", err?.message || err);
+    return res.status(500).json({ message: "Failed to duplicate expense" });
+  }
+};
+
+// 
 // Get All Expenses - Get
 // use in DetectExpense
 const getExpenses = async (req: Request, res: Response) => {
@@ -1923,6 +1986,7 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
 export {
   createExpense,
   createExpenseWithOCR,
+  duplicateExpense,
   getExpenses,
   getExpenseById,
   updateExpenseById,
