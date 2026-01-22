@@ -1239,6 +1239,9 @@
       "female": "Female",
       "notSpecified": "Not Specified"
     },
+    "withHoldingTax": "Withholding Tax",
+    "enterWithHoldingTax": "Enter Withholding Tax (%)",
+    "withHoldingTaxAmount": "Withholding Tax Amount",  
     "duplicateConfirmTitle": "Duplicate bill?",
     "duplicateConfirmMessage": "Create a new bill using this customer's details?",
     "autoFill": " Auto-fill",

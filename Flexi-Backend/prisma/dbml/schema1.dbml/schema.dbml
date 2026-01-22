@@ -116,6 +116,9 @@ Table Bill {
   priceValid DateTime
   validContactUntil DateTime
   rentalStockReleased Boolean [not null, default: false]
+  withHoldingTax Boolean [default: false]
+  WHTpercent Decimal [default: 0]
+  WHTAmount Decimal [default: 0]
   paymentTermCondition String
   remark String
   platform SocialMedia [not null]

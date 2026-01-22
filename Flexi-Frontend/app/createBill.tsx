@@ -144,6 +144,8 @@ export default function CreateBill() {
     }
   };
   const [remark, setRemark] = useState("");
+  const [withholdingTax, setWithholdingTax] = useState(false);
+  const [withholdingPercent, setWithholdingPercent] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null
@@ -169,6 +171,18 @@ export default function CreateBill() {
   const [productItems, setProductItems] = useState([
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
+  const withholdingTaxAmount = useMemo(() => {
+    if (!withholdingTax) return 0;
+    const subtotal = productItems.reduce((sum, item) => {
+      const qty = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const unitDisc = Number(item.unitDiscount) || 0;
+      return sum + (qty * price - unitDisc * qty);
+    }, 0);
+    const pct = Number(withholdingPercent) || 0;
+    const amt = Math.round(subtotal * (pct / 100));
+    return amt;
+  }, [withholdingTax, withholdingPercent, productItems]);
   const duplicatePrefillCacheRef = useRef<{ id: number; data: any } | null>(
     null
   );
@@ -810,6 +824,9 @@ export default function CreateBill() {
             ? paymentTermCondition
             : undefined,
         remark: remark || undefined,
+        withholdingTax: withholdingTax,
+        withholdingPercent: withholdingTax ? Number(withholdingPercent) : undefined,
+        WHTAmount: withholdingTax ? withholdingTaxAmount : undefined,
         priceValid: priceValid || undefined,
         repeat: isRepeat,
         repeatMonths: isRepeat ? repeatMonths : 1,
@@ -1632,6 +1649,81 @@ export default function CreateBill() {
               onBlur={() => setIsRemarkFocused(false)}
             />
 
+                        {/* Withholding Tax Section */}
+                        <View
+                          className="mt-2 mb-2"
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <TouchableOpacity
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              marginRight: 20,
+                            }}
+                            onPress={() => setWithholdingTax((prev) => !prev)}
+                            activeOpacity={0.8}
+                          >
+                            <Ionicons
+                              name={withholdingTax ? "checkbox" : "square-outline"}
+                              size={22}
+                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                            />
+                            <CustomText
+                              className="ml-2"
+                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                            >
+                              {t("bill.withHoldingTax")}
+                            </CustomText>
+                          </TouchableOpacity>
+
+                            {withholdingTax && (
+                              <>
+                                <FormFieldClear
+                                  title={t("bill.withHoldingTaxPercent")}
+                                  value={withholdingPercent}
+                                  handleChangeText={(value: string) => {
+                                    const numeric = value.replace(/[^0-9.]/g, "");
+                                    setWithholdingPercent(numeric);
+                                  }}
+                                  placeholder={t("bill.enterWithHoldingTax")}
+                                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                                  placeholderTextColor={
+                                    theme === "dark" ? "#606060" : "#b1b1b1"
+                                  }
+                                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                                  otherStyles={fieldStyles}
+                                  keyboardType="numeric"
+                                  maxLength={6}
+                                />
+
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                    marginTop: 6
+                                    
+                                  }}
+                                >
+                                  <CustomText
+                                    className="text-sm pt-1"
+                                    style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                                  >
+                                    {t("bill.withHoldingTaxAmount")}: 
+                                  </CustomText>
+                                  <CustomText
+                                    className="text-sm ml-2"
+                                    weight="bold"
+                                    style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                                  >
+                                    {withholdingTaxAmount.toLocaleString()}
+                                  </CustomText>
+                                </View>
+                              </>
+                            )}
+                        </View>
+
+           
             {/* Note Section */}
             <FormFieldClear
               title={t("bill.note")}
@@ -1795,6 +1887,7 @@ export default function CreateBill() {
                     {t("bill.repeatBill")}
                   </CustomText>
                 </TouchableOpacity>
+                
 
                 {isRepeat && (
                   <View className="flex-1 ml-4">

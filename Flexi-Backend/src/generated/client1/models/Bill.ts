@@ -34,6 +34,8 @@ export type BillAvgAggregateOutputType = {
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
+  WHTpercent: runtime.Decimal | null
+  WHTAmount: runtime.Decimal | null
   businessAcc: number | null
   platformId: number | null
 }
@@ -46,6 +48,8 @@ export type BillSumAggregateOutputType = {
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
+  WHTpercent: runtime.Decimal | null
+  WHTAmount: runtime.Decimal | null
   businessAcc: number | null
   platformId: number | null
 }
@@ -83,6 +87,9 @@ export type BillMinAggregateOutputType = {
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean | null
+  withHoldingTax: boolean | null
+  WHTpercent: runtime.Decimal | null
+  WHTAmount: runtime.Decimal | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
@@ -124,6 +131,9 @@ export type BillMaxAggregateOutputType = {
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean | null
+  withHoldingTax: boolean | null
+  WHTpercent: runtime.Decimal | null
+  WHTAmount: runtime.Decimal | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
@@ -165,6 +175,9 @@ export type BillCountAggregateOutputType = {
   priceValid: number
   validContactUntil: number
   rentalStockReleased: number
+  withHoldingTax: number
+  WHTpercent: number
+  WHTAmount: number
   paymentTermCondition: number
   remark: number
   platform: number
@@ -183,6 +196,8 @@ export type BillAvgAggregateInputType = {
   repeatMonths?: true
   discount?: true
   billLevelDiscount?: true
+  WHTpercent?: true
+  WHTAmount?: true
   businessAcc?: true
   platformId?: true
 }
@@ -195,6 +210,8 @@ export type BillSumAggregateInputType = {
   repeatMonths?: true
   discount?: true
   billLevelDiscount?: true
+  WHTpercent?: true
+  WHTAmount?: true
   businessAcc?: true
   platformId?: true
 }
@@ -232,6 +249,9 @@ export type BillMinAggregateInputType = {
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
+  withHoldingTax?: true
+  WHTpercent?: true
+  WHTAmount?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -273,6 +293,9 @@ export type BillMaxAggregateInputType = {
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
+  withHoldingTax?: true
+  WHTpercent?: true
+  WHTAmount?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -314,6 +337,9 @@ export type BillCountAggregateInputType = {
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
+  withHoldingTax?: true
+  WHTpercent?: true
+  WHTAmount?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -442,6 +468,9 @@ export type BillGroupByOutputType = {
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean
+  withHoldingTax: boolean | null
+  WHTpercent: runtime.Decimal | null
+  WHTAmount: runtime.Decimal | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia
@@ -506,6 +535,9 @@ export type BillWhereInput = {
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
+  withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -551,6 +583,9 @@ export type BillOrderByWithRelationInput = {
   priceValid?: Prisma.SortOrderInput | Prisma.SortOrder
   validContactUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
+  withHoldingTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -599,6 +634,9 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
+  withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -644,6 +682,9 @@ export type BillOrderByWithAggregationInput = {
   priceValid?: Prisma.SortOrderInput | Prisma.SortOrder
   validContactUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
+  withHoldingTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -693,6 +734,9 @@ export type BillScalarWhereWithAggregatesInput = {
   priceValid?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolWithAggregatesFilter<"Bill"> | boolean
+  withHoldingTax?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
+  WHTpercent?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaWithAggregatesFilter<"Bill"> | $Enums.SocialMedia
@@ -733,6 +777,9 @@ export type BillCreateInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -775,6 +822,9 @@ export type BillUncheckedCreateInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -816,6 +866,9 @@ export type BillUpdateInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -858,6 +911,9 @@ export type BillUncheckedUpdateInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -900,6 +956,9 @@ export type BillCreateManyInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -940,6 +999,9 @@ export type BillUpdateManyMutationInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -978,6 +1040,9 @@ export type BillUncheckedUpdateManyInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1029,6 +1094,9 @@ export type BillCountOrderByAggregateInput = {
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
+  withHoldingTax?: Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1045,6 +1113,8 @@ export type BillAvgOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
 }
@@ -1082,6 +1152,9 @@ export type BillMaxOrderByAggregateInput = {
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
+  withHoldingTax?: Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1123,6 +1196,9 @@ export type BillMinOrderByAggregateInput = {
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
+  withHoldingTax?: Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1139,6 +1215,8 @@ export type BillSumOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  WHTpercent?: Prisma.SortOrder
+  WHTAmount?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
 }
@@ -1252,6 +1330,14 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type EnumSocialMediaFieldUpdateOperationsInput = {
   set?: $Enums.SocialMedia
 }
@@ -1346,6 +1432,9 @@ export type BillCreateWithoutMemberInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1387,6 +1476,9 @@ export type BillUncheckedCreateWithoutMemberInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1457,6 +1549,9 @@ export type BillScalarWhereInput = {
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
+  withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -1497,6 +1592,9 @@ export type BillCreateWithoutBusinessIdInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1538,6 +1636,9 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1604,6 +1705,9 @@ export type BillCreateWithoutProductInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1645,6 +1749,9 @@ export type BillUncheckedCreateWithoutProductInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1701,6 +1808,9 @@ export type BillUpdateWithoutProductInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1742,6 +1852,9 @@ export type BillUncheckedUpdateWithoutProductInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1782,6 +1895,9 @@ export type BillCreateWithoutPlatformInfoInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1823,6 +1939,9 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1890,6 +2009,9 @@ export type BillCreateManyMemberInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1929,6 +2051,9 @@ export type BillUpdateWithoutMemberInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1970,6 +2095,9 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2011,6 +2139,9 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2051,6 +2182,9 @@ export type BillCreateManyBusinessIdInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2090,6 +2224,9 @@ export type BillUpdateWithoutBusinessIdInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2131,6 +2268,9 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2172,6 +2312,9 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2212,6 +2355,9 @@ export type BillCreateManyPlatformInfoInput = {
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2251,6 +2397,9 @@ export type BillUpdateWithoutPlatformInfoInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2292,6 +2441,9 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2333,6 +2485,9 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2404,6 +2559,9 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean
+  WHTpercent?: boolean
+  WHTAmount?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -2450,6 +2608,9 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean
+  WHTpercent?: boolean
+  WHTAmount?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -2494,6 +2655,9 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean
+  WHTpercent?: boolean
+  WHTAmount?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -2538,6 +2702,9 @@ export type BillSelectScalar = {
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
+  withHoldingTax?: boolean
+  WHTpercent?: boolean
+  WHTAmount?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -2546,7 +2713,7 @@ export type BillSelectScalar = {
   platformId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -2606,6 +2773,9 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     priceValid: Date | null
     validContactUntil: Date | null
     rentalStockReleased: boolean
+    withHoldingTax: boolean | null
+    WHTpercent: runtime.Decimal | null
+    WHTAmount: runtime.Decimal | null
     paymentTermCondition: string | null
     remark: string | null
     platform: $Enums.SocialMedia
@@ -3071,6 +3241,9 @@ export interface BillFieldRefs {
   readonly priceValid: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly validContactUntil: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly rentalStockReleased: Prisma.FieldRef<"Bill", 'Boolean'>
+  readonly withHoldingTax: Prisma.FieldRef<"Bill", 'Boolean'>
+  readonly WHTpercent: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly WHTAmount: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly paymentTermCondition: Prisma.FieldRef<"Bill", 'String'>
   readonly remark: Prisma.FieldRef<"Bill", 'String'>
   readonly platform: Prisma.FieldRef<"Bill", 'SocialMedia'>

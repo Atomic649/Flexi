@@ -1239,6 +1239,10 @@
       "notSpecified": "ไม่ระบุ",
       "notspecified": "-"
     },
+    "withHoldingTax": "หัก ณ ที่จ่าย",
+    "enterWithHoldingTax": "กรอกจำนวนหัก ณ ที่จ่าย (%)",
+    "withHoldingTaxAmount": "จำนวนหัก ณ ที่จ่าย",
+    "withHoldingTaxPercent": "เปอร์เซ็นต์หัก ณ ที่จ่าย",
     "duplicateConfirmTitle":"สร้างซ้ำเอกสารนี้?",
     "duplicateConfirmMessage":"สร้างเอกสารใหม่โดยใช้รายละเอียดของลูกค้ารายนี้หรือไม่?",   
     "autoFill":"ลงข้อมูลอัตโนมัติ",

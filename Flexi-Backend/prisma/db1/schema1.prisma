@@ -313,6 +313,9 @@ model Bill {
   priceValid           DateTime? // Optional field for expiration
   validContactUntil    DateTime?
   rentalStockReleased  Boolean       @default(false)
+  withHoldingTax       Boolean?      @default(false)
+  WHTpercent           Decimal?      @default(0)
+  WHTAmount            Decimal?      @default(0)
   paymentTermCondition String? // Optional field for payment
   remark               String?
   platform             SocialMedia

@@ -74,6 +74,9 @@ class CallAPIBill {
         paymentTermCondition?: string; // Optional payment term condition
         remark?: string; // Optional remark
         taxType?: "Juristic" | "Individual"; // Optional tax type
+        withholdingTax?: boolean; // Optional withholding tax
+        withholdingPercent?: number; // Optional withholding 
+        WHTAmount?: number; // Optional WHT amount
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

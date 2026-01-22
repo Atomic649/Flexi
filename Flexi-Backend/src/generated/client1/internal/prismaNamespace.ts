@@ -1518,6 +1518,9 @@ export const BillScalarFieldEnum = {
   priceValid: 'priceValid',
   validContactUntil: 'validContactUntil',
   rentalStockReleased: 'rentalStockReleased',
+  withHoldingTax: 'withHoldingTax',
+  WHTpercent: 'WHTpercent',
+  WHTAmount: 'WHTAmount',
   paymentTermCondition: 'paymentTermCondition',
   remark: 'remark',
   platform: 'platform',
@@ -1846,6 +1849,20 @@ export type ListEnumPaymentFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
 
 
 /**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
  * Reference to a field of type 'SocialMedia'
  */
 export type EnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia'>
@@ -1870,20 +1887,6 @@ export type EnumUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Unit[]'
  */
 export type ListEnumUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Unit[]'>
-    
-
-
-/**
- * Reference to a field of type 'Decimal'
- */
-export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
-    
-
-
-/**
- * Reference to a field of type 'Decimal[]'
- */
-export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 

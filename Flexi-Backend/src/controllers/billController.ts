@@ -196,6 +196,9 @@ interface billInput {
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
   taxType?: "Juristic" | "Individual"; // Optional tax type
+  withholdingTax?: boolean;
+  withholdingPercent?: number;
+  WHTAmount?: number;
 }
 
 // Validate the request body
@@ -246,6 +249,9 @@ const schema = Joi.object({
   discount: Joi.number().min(0).optional(), // Optional discount field
   priceValid: Joi.date().optional(), // Optional price valid date
   validContactUntil: Joi.date().optional(),
+  withholdingTax: Joi.boolean().optional(),
+  withholdingPercent: Joi.number().min(0).max(100).optional(),
+  WHTAmount: Joi.number().min(0).optional(),
   beforeDiscount: Joi.number().optional(), // Optional field for total before discount
   paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
   remark: Joi.string().allow("").optional(), // Optional remark
@@ -292,6 +298,12 @@ const createBill = async (req: Request, res: Response) => {
     billInput.repeat = repeatFlag;
     const repeatMonths = Number(billInput.repeatMonths ?? 0);
     billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
+    // normalize withholding inputs (may come as strings from form-data)
+    billInput.withholdingTax = ["true", "1", "yes"].includes(
+      String(billInput.withholdingTax).toLowerCase()
+    );
+    billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
+    billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
     // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
@@ -413,6 +425,16 @@ const createBill = async (req: Request, res: Response) => {
                 note: billInput.note || "", // Optional note field
                 paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
                 remark: billInput.remark || "", // Optional remark
+                withHoldingTax: billInput.withholdingTax ?? false,
+                WHTpercent: billInput.withholdingPercent ?? 0,
+                WHTAmount:
+                  billInput.WHTAmount && Number(billInput.WHTAmount) > 0
+                    ? Number(billInput.WHTAmount)
+                    : billInput.withholdingTax
+                    ? Math.round(
+                        total * (Number(billInput.withholdingPercent ?? 0) / 100)
+                      )
+                    : 0,
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
                 taxType: billInput.taxType || "Individual",
@@ -490,6 +512,16 @@ const createBill = async (req: Request, res: Response) => {
             note: billInput.note || "", // Optional note field
             paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
             remark: billInput.remark || "", // Optional remark
+            withHoldingTax: billInput.withholdingTax ?? false,
+            WHTpercent: billInput.withholdingPercent ?? 0,
+            WHTAmount:
+              billInput.WHTAmount && Number(billInput.WHTAmount) > 0
+                ? Number(billInput.WHTAmount)
+                : billInput.withholdingTax
+                ? Math.round(
+                    total * (Number(billInput.withholdingPercent ?? 0) / 100)
+                  )
+                : 0,
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
             taxType: billInput.taxType || "Individual",
