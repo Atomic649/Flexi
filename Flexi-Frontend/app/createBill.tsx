@@ -33,6 +33,7 @@ import FormFieldClear from "@/components/formfield/FormFieldClear";
 import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
+import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -61,6 +62,7 @@ export default function CreateBill() {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
+  const { vat } = useBusiness();
 
   // Note: Avoid reacting to memberId via effect to fetch defaults; handled during credentials fetch
 
@@ -145,10 +147,10 @@ export default function CreateBill() {
   };
   const [remark, setRemark] = useState("");
   const [withholdingTax, setWithholdingTax] = useState(false);
-  const [withholdingPercent, setWithholdingPercent] = useState("");
+  const [withholdingPercent, setWithholdingPercent] = useState("3");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
-    null
+    null,
   );
 
   // Product information
@@ -171,20 +173,39 @@ export default function CreateBill() {
   const [productItems, setProductItems] = useState([
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
+
+  // Discount from price before VAT 
   const withholdingTaxAmount = useMemo(() => {
     if (!withholdingTax) return 0;
     const subtotal = productItems.reduce((sum, item) => {
       const qty = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
-      const unitDisc = Number(item.unitDiscount) || 0;
-      return sum + (qty * price - unitDisc * qty);
+      return sum + qty * price;
     }, 0);
+
+    const subTotalWitoutVat =
+      subtotal / (1 + (vat ? DEFAULT_VAT_PERCENT : 0) / 100);
+
+    const unitDisc = productItems.reduce((sum, item) => {
+      const qty = Number(item.quantity) || 0;
+      const unitDisc = Number(item.unitDiscount) || 0;
+      return sum + qty * unitDisc;
+    }, 0);
+    let taxableBase = subtotal - unitDisc;
+    if (vat) {
+      taxableBase = subTotalWitoutVat - unitDisc;
+    }
+
     const pct = Number(withholdingPercent) || 0;
-    const amt = Math.round(subtotal * (pct / 100));
+    const raw = taxableBase * (pct / 100);
+    // keep two decimal places
+    const amt = Number(raw.toFixed(2));
     return amt;
   }, [withholdingTax, withholdingPercent, productItems]);
+
+
   const duplicatePrefillCacheRef = useRef<{ id: number; data: any } | null>(
-    null
+    null,
   );
 
   const fieldStyles = "mt-2 mb-2";
@@ -197,7 +218,7 @@ export default function CreateBill() {
 
   // Tax type state
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
-    "Individual"
+    "Individual",
   );
 
   // Repeat bill state
@@ -252,7 +273,7 @@ export default function CreateBill() {
 
   // Helper function to convert internal document type to API format
   const getDocumentTypeForAPI = (
-    type: "QA" | "IV" | "RE"
+    type: "QA" | "IV" | "RE",
   ): "Quotation" | "Invoice" | "Receipt" => {
     const mapping = {
       QA: "Quotation" as const,
@@ -263,7 +284,7 @@ export default function CreateBill() {
   };
 
   const getDocumentTypeFromAPI = (
-    docType?: string | string[] | null
+    docType?: string | string[] | null,
   ): "QA" | "IV" | "RE" | null => {
     if (!docType) return null;
     const value = Array.isArray(docType) ? docType[0] : docType;
@@ -304,9 +325,8 @@ export default function CreateBill() {
       // Fetch platforms for this member
       if (uniqueId) {
         try {
-          const platformData = await CallAPIPlatform.getPlatformEnumAPI(
-            uniqueId
-          );
+          const platformData =
+            await CallAPIPlatform.getPlatformEnumAPI(uniqueId);
           setPlatformOptions(Array.isArray(platformData) ? platformData : []);
         } catch (error) {
           console.error("Failed to fetch platforms:", error);
@@ -322,9 +342,8 @@ export default function CreateBill() {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(
-            memberId
-          );
+          const response =
+            await CallAPIProduct.getProductChoiceWithPriceAPI(memberId);
           setProductChoice(response || []);
           console.log("Product choice with price fetched:", response);
         }
@@ -347,8 +366,8 @@ export default function CreateBill() {
   const availableDocumentTypes = Array.isArray(contextDocumentTypes)
     ? contextDocumentTypes
     : contextDocumentTypes
-    ? [contextDocumentTypes]
-    : [];
+      ? [contextDocumentTypes]
+      : [];
   const availableDocumentTypesKey = availableDocumentTypes.join(",");
 
   // Derive businessType directly for render
@@ -469,7 +488,7 @@ export default function CreateBill() {
               item.unitDiscount !== undefined && item.unitDiscount !== null
                 ? item.unitDiscount.toString()
                 : "",
-          }))
+          })),
         );
       } else {
         setProductItems([
@@ -506,7 +525,7 @@ export default function CreateBill() {
           : new Date();
         const diffDays = Math.round(
           (priceValidDate.getTime() - baseDate.getTime()) /
-            (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24),
         );
         if (diffDays === 7 || diffDays === 15 || diffDays === 30) {
           setPriceValidDays(diffDays as 7 | 15 | 30);
@@ -523,13 +542,13 @@ export default function CreateBill() {
         setSelectedDocumentType("QA");
       } else {
         const documentTypeFromBill = getDocumentTypeFromAPI(
-          billData.DocumentType
+          billData.DocumentType,
         );
         if (
           documentTypeFromBill &&
           (availableDocumentTypes.length === 0 ||
             availableDocumentTypes.includes(
-              getDocumentTypeForAPI(documentTypeFromBill)
+              getDocumentTypeForAPI(documentTypeFromBill),
             ))
         ) {
           setSelectedDocumentType(documentTypeFromBill);
@@ -565,7 +584,7 @@ export default function CreateBill() {
       } catch (error) {
         console.error("Failed to prefill bill for duplication:", error);
         setError(
-          error instanceof Error ? error.message : "Failed to duplicate bill"
+          error instanceof Error ? error.message : "Failed to duplicate bill",
         );
       }
     };
@@ -602,7 +621,7 @@ export default function CreateBill() {
   const handleProductItemChange = (
     index: number,
     field: string,
-    value: string
+    value: string,
   ) => {
     setProductItems((prev) => {
       const updated = [...prev];
@@ -627,7 +646,7 @@ export default function CreateBill() {
           setTaxId("0105562003561");
           setCGender("NotSpecified");
           setCAddress(
-            "เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง"
+            "เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง",
           );
           setCProvince("กรุงเทพมหานคร");
           setCPostId("10310");
@@ -645,7 +664,7 @@ export default function CreateBill() {
           setTaxId("0105558019581");
           setCGender("NotSpecified");
           setCAddress(
-            "89 อาคารเอไอเอ แคปปิตอล เซ็นเตอร์ ชั้นที่ 24 ถนนรัชดาภิเษก ดินแดง"
+            "89 อาคารเอไอเอ แคปปิตอล เซ็นเตอร์ ชั้นที่ 24 ถนนรัชดาภิเษก ดินแดง",
           );
           setCProvince("กรุงเทพมหานคร");
           setCPostId("10400");
@@ -732,7 +751,7 @@ export default function CreateBill() {
     // Validate product items
     if (
       productItems.some(
-        (item) => !item.product || !item.price || !item.quantity
+        (item) => !item.product || !item.price || !item.quantity,
       )
     ) {
       setAlertConfig({
@@ -825,7 +844,9 @@ export default function CreateBill() {
             : undefined,
         remark: remark || undefined,
         withholdingTax: withholdingTax,
-        withholdingPercent: withholdingTax ? Number(withholdingPercent) : undefined,
+        withholdingPercent: withholdingTax
+          ? Number(withholdingPercent)
+          : undefined,
         WHTAmount: withholdingTax ? withholdingTaxAmount : undefined,
         priceValid: priceValid || undefined,
         repeat: isRepeat,
@@ -842,7 +863,7 @@ export default function CreateBill() {
         message: isRepeat
           ? t("bill.alerts.repeatSuccessMessage").replace(
               "{months}",
-              repeatMonths.toString()
+              repeatMonths.toString(),
             )
           : t("bill.alerts.successMessage"),
         buttons: [
@@ -1023,8 +1044,8 @@ export default function CreateBill() {
                               borderColor: isStepCompleted(step)
                                 ? "#04ecc1"
                                 : theme === "dark"
-                                ? "#666"
-                                : "#ccc",
+                                  ? "#666"
+                                  : "#ccc",
                               alignItems: "center",
                               justifyContent: "center",
                               opacity: getStepOpacity(step),
@@ -1085,12 +1106,12 @@ export default function CreateBill() {
                                   backgroundColor:
                                     index <
                                     availableSteps.findIndex(
-                                      (s) => s === selectedDocumentType
+                                      (s) => s === selectedDocumentType,
                                     )
                                       ? "#04ecc1"
                                       : theme === "dark"
-                                      ? "#444"
-                                      : "#ddd",
+                                        ? "#444"
+                                        : "#ddd",
                                 }}
                               />
                             ))}
@@ -1365,8 +1386,8 @@ export default function CreateBill() {
                 isAddressFocused
                   ? 110
                   : cAddress
-                  ? Math.max(60, Math.min(110, cAddress.length * 0.8 + 40))
-                  : undefined
+                    ? Math.max(60, Math.min(110, cAddress.length * 0.8 + 40))
+                    : undefined
               }
               focus={() => {
                 setIsAddressFocused(true);
@@ -1480,7 +1501,7 @@ export default function CreateBill() {
                       handleProductItemChange(
                         idx,
                         "unitDiscount",
-                        numericValue
+                        numericValue,
                       );
                     }}
                     placeholder="0"
@@ -1565,8 +1586,8 @@ export default function CreateBill() {
                       cashStatus === true
                         ? t("bill.status.paid")
                         : cashStatus === false && payment
-                        ? t("bill.status.unpaid")
-                        : ""
+                          ? t("bill.status.unpaid")
+                          : ""
                     }
                     onValueChange={() => {}} // Disabled - backend handles cashStatus automatically
                     borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -1601,11 +1622,11 @@ export default function CreateBill() {
                   isPaymentTermFocused
                     ? 110
                     : paymentTermCondition
-                    ? Math.max(
-                        60,
-                        Math.min(110, paymentTermCondition.length * 0.8 + 40)
-                      )
-                    : undefined
+                      ? Math.max(
+                          60,
+                          Math.min(110, paymentTermCondition.length * 0.8 + 40),
+                        )
+                      : undefined
                 }
                 onFocus={() => {
                   setIsPaymentTermFocused(true);
@@ -1637,8 +1658,8 @@ export default function CreateBill() {
                 isRemarkFocused
                   ? 110
                   : remark
-                  ? Math.max(60, Math.min(110, remark.length * 0.8 + 40))
-                  : undefined
+                    ? Math.max(60, Math.min(110, remark.length * 0.8 + 40))
+                    : undefined
               }
               onFocus={() => {
                 setIsRemarkFocused(true);
@@ -1649,81 +1670,82 @@ export default function CreateBill() {
               onBlur={() => setIsRemarkFocused(false)}
             />
 
-                        {/* Withholding Tax Section */}
-                        <View
-                          className="mt-2 mb-2"
-                          style={{ backgroundColor: "transparent" }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginRight: 20,
-                            }}
-                            onPress={() => setWithholdingTax((prev) => !prev)}
-                            activeOpacity={0.8}
-                          >
-                            <Ionicons
-                              name={withholdingTax ? "checkbox" : "square-outline"}
-                              size={22}
-                              color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                            />
-                            <CustomText
-                              className="ml-2"
-                              style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
-                            >
-                              {t("bill.withHoldingTax")}
-                            </CustomText>
-                          </TouchableOpacity>
+            {/* Withholding Tax Section */}
+            <View
+              className="mt-2 mb-2"
+              style={{ backgroundColor: "transparent" }}
+            >
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 20,
+                }}
+                onPress={() => setWithholdingTax((prev) => !prev)}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name={withholdingTax ? "checkbox" : "square-outline"}
+                  size={22}
+                  color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                />
+                <CustomText
+                  className="ml-2"
+                  style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                >
+                  {t("bill.withHoldingTax")}
+                </CustomText>
+              </TouchableOpacity>
 
-                            {withholdingTax && (
-                              <>
-                                <FormFieldClear
-                                  title={t("bill.withHoldingTaxPercent")}
-                                  value={withholdingPercent}
-                                  handleChangeText={(value: string) => {
-                                    const numeric = value.replace(/[^0-9.]/g, "");
-                                    setWithholdingPercent(numeric);
-                                  }}
-                                  placeholder={t("bill.enterWithHoldingTax")}
-                                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                                  placeholderTextColor={
-                                    theme === "dark" ? "#606060" : "#b1b1b1"
-                                  }
-                                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                                  otherStyles={fieldStyles}
-                                  keyboardType="numeric"
-                                  maxLength={6}
-                                />
+              {withholdingTax && (
+                <>
+                  <FormFieldClear
+                    title={t("bill.withHoldingTaxPercent")}
+                    value={withholdingPercent}
+                    handleChangeText={(value: string) => {
+                      const numeric = value.replace(/[^0-9.]/g, "");
+                      setWithholdingPercent(numeric);
+                    }}
+                    placeholder={t("bill.enterWithHoldingTax")}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={
+                      theme === "dark" ? "#606060" : "#b1b1b1"
+                    }
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles={fieldStyles}
+                    keyboardType="numeric"
+                    maxLength={6}
+                  />
 
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    justifyContent: "flex-end",
-                                    alignItems: "center",
-                                    marginTop: 6
-                                    
-                                  }}
-                                >
-                                  <CustomText
-                                    className="text-sm pt-1"
-                                    style={{ color: theme === "dark" ? "#bbb" : "#666" }}
-                                  >
-                                    {t("bill.withHoldingTaxAmount")}: 
-                                  </CustomText>
-                                  <CustomText
-                                    className="text-sm ml-2"
-                                    weight="bold"
-                                    style={{ color: theme === "dark" ? "#fff" : "#222" }}
-                                  >
-                                    {withholdingTaxAmount.toLocaleString()}
-                                  </CustomText>
-                                </View>
-                              </>
-                            )}
-                        </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      marginTop: 6,
+                    }}
+                  >
+                    <CustomText
+                      className="text-sm pt-1"
+                      style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                    >
+                      {t("bill.withHoldingTaxAmount")}:
+                    </CustomText>
+                    <CustomText
+                      className="text-sm ml-2"
+                      weight="bold"
+                      style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                    >
+                      {withholdingTaxAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </CustomText>
+                  </View>
+                </>
+              )}
+            </View>
 
-           
             {/* Note Section */}
             <FormFieldClear
               title={t("bill.note")}
@@ -1887,7 +1909,6 @@ export default function CreateBill() {
                     {t("bill.repeatBill")}
                   </CustomText>
                 </TouchableOpacity>
-                
 
                 {isRepeat && (
                   <View className="flex-1 ml-4">

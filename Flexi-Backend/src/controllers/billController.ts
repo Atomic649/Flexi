@@ -305,11 +305,6 @@ const createBill = async (req: Request, res: Response) => {
     billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
     billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
     // normalize withholding inputs (may come as strings from form-data)
-    billInput.withholdingTax = ["true", "1", "yes"].includes(
-      String(billInput.withholdingTax).toLowerCase()
-    );
-    billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
-    billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
     // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
@@ -433,14 +428,7 @@ const createBill = async (req: Request, res: Response) => {
                 remark: billInput.remark || "", // Optional remark
                 withHoldingTax: billInput.withholdingTax ?? false,
                 WHTpercent: billInput.withholdingPercent ?? 0,
-                WHTAmount:
-                  billInput.WHTAmount && Number(billInput.WHTAmount) > 0
-                    ? Number(billInput.WHTAmount)
-                    : billInput.withholdingTax
-                    ? Math.round(
-                        total * (Number(billInput.withholdingPercent ?? 0) / 100)
-                      )
-                    : 0,
+                WHTAmount: billInput.WHTAmount ?? 0,
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
                 taxType: billInput.taxType || "Individual",
@@ -520,14 +508,7 @@ const createBill = async (req: Request, res: Response) => {
             remark: billInput.remark || "", // Optional remark
             withHoldingTax: billInput.withholdingTax ?? false,
             WHTpercent: billInput.withholdingPercent ?? 0,
-            WHTAmount:
-              billInput.WHTAmount && Number(billInput.WHTAmount) > 0
-                ? Number(billInput.WHTAmount)
-                : billInput.withholdingTax
-                ? Math.round(
-                    total * (Number(billInput.withholdingPercent ?? 0) / 100)
-                  )
-                : 0,
+            WHTAmount: billInput.WHTAmount ?? 0,
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
             taxType: billInput.taxType || "Individual",
@@ -729,7 +710,13 @@ const updateBill = async (req: Request, res: Response) => {
     billInput.repeat = repeatFlag;
     const repeatMonths = Number(billInput.repeatMonths ?? 0);
     billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
-
+     // normalize withholding inputs (may come as strings from form-data)
+    billInput.withholdingTax = ["true", "1", "yes"].includes(
+      String(billInput.withholdingTax).toLowerCase()
+    );
+    billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
+    billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
+   
     // First, get the existing bill to check its current purchaseAt date
     const existingBill = (await prisma.bill.findUnique({
       where: {
@@ -857,6 +844,10 @@ const updateBill = async (req: Request, res: Response) => {
           repeat: billInput.repeat,
           repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,        
           taxType: billInput.taxType || "Individual",
+          withHoldingTax: billInput.withholdingTax ?? false,
+          WHTpercent: billInput.withholdingPercent ?? 0,
+          WHTAmount: billInput.WHTAmount ?? 0,
+          validContactUntil: validContactUntil,
         };
 
         // Generate ID if missing for the new DocumentType

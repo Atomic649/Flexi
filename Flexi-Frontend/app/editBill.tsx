@@ -24,7 +24,12 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
-import { isDesktop, isMobile, isMobileApp, isTabletWeb } from "@/utils/responsive";
+import {
+  isDesktop,
+  isMobile,
+  isMobileApp,
+  isTabletWeb,
+} from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
@@ -33,6 +38,7 @@ import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemp
 import * as ExpoPrint from "expo-print";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
+import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -75,7 +81,7 @@ export default function EditBill() {
   const [cTaxId, setCTaxId] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
-    null
+    null,
   );
   const [validContactUntil, setValidContactUntil] = useState("");
 
@@ -94,22 +100,38 @@ export default function EditBill() {
   const [productItems, setProductItems] = useState([
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
-
+  const { vat } = useBusiness();
   const [withholdingTax, setWithholdingTax] = useState(false);
   const [withholdingPercent, setWithholdingPercent] = useState("");
-  const withholdingTaxAmount = useMemo(() => {
-    if (!withholdingTax) return 0;
-    const subtotal = productItems.reduce((sum, item) => {
-      const qty = Number(item.quantity) || 0;
-      const price = Number(item.price) || 0;
-      const unitDisc = Number(item.unitDiscount) || 0;
-      return sum + (qty * price - unitDisc * qty);
-    }, 0);
-    const pct = Number(withholdingPercent) || 0;
-    const amt = Math.round(subtotal * (pct / 100));
-    return amt;
-  }, [withholdingTax, withholdingPercent, productItems]);
 
+   const withholdingTaxAmount = useMemo(() => {
+      if (!withholdingTax) return 0;
+      const subtotal = productItems.reduce((sum, item) => {
+        const qty = Number(item.quantity) || 0;
+        const price = Number(item.price) || 0;
+        return sum + qty * price;
+      }, 0);
+  
+      const subTotalWitoutVat =
+        subtotal / (1 + (vat ? DEFAULT_VAT_PERCENT : 0) / 100);
+  
+      const unitDisc = productItems.reduce((sum, item) => {
+        const qty = Number(item.quantity) || 0;
+        const unitDisc = Number(item.unitDiscount) || 0;
+        return sum + qty * unitDisc;
+      }, 0);
+      let taxableBase = subtotal - unitDisc;
+      if (vat) {
+        taxableBase = subTotalWitoutVat - unitDisc;
+      }
+  
+      const pct = Number(withholdingPercent) || 0;
+      const raw = taxableBase * (pct / 100);
+      // keep two decimal places
+      const amt = Number(raw.toFixed(2));
+      return amt;
+    }, [withholdingTax, withholdingPercent, productItems]);
+  
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [selectedDates, setSelectedDates] = useState<string[]>([
@@ -143,7 +165,7 @@ export default function EditBill() {
 
   // Tax type state
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
-    "Individual"
+    "Individual",
   );
 
   // Document type progression state
@@ -198,7 +220,7 @@ export default function EditBill() {
 
   // Helper function to convert document type for API
   const getDocumentTypeForAPI = (
-    type: "QA" | "IV" | "RE"
+    type: "QA" | "IV" | "RE",
   ): "Quotation" | "Invoice" | "Receipt" => {
     const mapping = {
       QA: "Quotation" as const,
@@ -210,7 +232,7 @@ export default function EditBill() {
 
   // Helper function to convert API document type to internal format
   const getDocumentTypeFromAPI = (
-    type: "Quotation" | "Invoice" | "Receipt" | "Bill"
+    type: "Quotation" | "Invoice" | "Receipt" | "Bill",
   ): "QA" | "IV" | "RE" => {
     const mapping = {
       Quotation: "QA" as const,
@@ -659,9 +681,8 @@ export default function EditBill() {
         const memberId = await getMemberId();
         if (memberId) {
           try {
-            const businessData = await CallAPIBusiness.getBusinessDetailsAPI(
-              memberId
-            );
+            const businessData =
+              await CallAPIBusiness.getBusinessDetailsAPI(memberId);
             setBusinessDetails(businessData);
             setBusinessName(businessData?.businessName || "");
           } catch (error) {
@@ -748,11 +769,11 @@ export default function EditBill() {
             ? rawTaxType.toLowerCase() === "juristic"
               ? "Juristic"
               : rawTaxType.toLowerCase() === "individual"
-              ? "Individual"
-              : null
+                ? "Individual"
+                : null
             : null;
         const hasTaxId = Boolean(
-          billData.cTaxId && billData.cTaxId.trim().length > 0
+          billData.cTaxId && billData.cTaxId.trim().length > 0,
         );
         setTaxType(normalizedTaxType ?? (hasTaxId ? "Juristic" : "Individual"));
         // Set productItems from billData.product (array of items)
@@ -770,7 +791,7 @@ export default function EditBill() {
               unitDiscount: item.unitDiscount
                 ? item.unitDiscount.toString()
                 : "",
-            }))
+            })),
           );
         } else {
           setProductItems([
@@ -789,7 +810,7 @@ export default function EditBill() {
         setWithholdingPercent(
           billData.WHTpercent !== undefined && billData.WHTpercent !== null
             ? String(billData.WHTpercent)
-            : ""
+            : "",
         );
 
         // Set priceValid from billData
@@ -839,9 +860,8 @@ export default function EditBill() {
       // Fetch platform for this member
       if (uniqueId) {
         try {
-          const PlatformData = await CallAPIPlatform.getPlatformEnumAPI(
-            uniqueId
-          );
+          const PlatformData =
+            await CallAPIPlatform.getPlatformEnumAPI(uniqueId);
           setPlatformOptions(Array.isArray(PlatformData) ? PlatformData : []);
         } catch (error) {
           console.error("Failed to fetch platforms:", error);
@@ -857,9 +877,8 @@ export default function EditBill() {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceWithPriceAPI(
-            memberId
-          );
+          const response =
+            await CallAPIProduct.getProductChoiceWithPriceAPI(memberId);
           setProductChoice(response || []);
         }
       } catch (error) {
@@ -914,7 +933,7 @@ export default function EditBill() {
   const handleProductItemChange = (
     index: number,
     field: string,
-    value: string
+    value: string,
   ) => {
     setProductItems((prev) => {
       const updated = [...prev];
@@ -922,7 +941,7 @@ export default function EditBill() {
       // If product is changed, auto-fill price and unit
       if (field === "product") {
         const selectedProduct = productChoice.find(
-          (p: any) => p.name === value
+          (p: any) => p.name === value,
         );
         updated[index].price =
           selectedProduct && selectedProduct.price
@@ -940,7 +959,7 @@ export default function EditBill() {
           setCTaxId("0105562003561");
           setCGender("NotSpecified");
           setCAddress(
-            "เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง"
+            "เลขที่ 289/3 ซอยลาดพร้าว 80 แยก 22 แขวงวังทองหลาง เขตวังทองหลาง",
           );
           setCProvince("กรุงเทพมหานคร");
           setCPostId("10310");
@@ -989,7 +1008,7 @@ export default function EditBill() {
     // Validate product items
     if (
       productItems.some(
-        (item) => !item.product || !item.price || !item.quantity
+        (item) => !item.product || !item.price || !item.quantity,
       )
     ) {
       setAlertConfig({
@@ -1085,7 +1104,9 @@ export default function EditBill() {
           unitDiscount: Number(item.unitDiscount) || 0,
         })),
         withholdingTax: withholdingTax,
-        withholdingPercent: withholdingTax ? Number(withholdingPercent) : undefined,
+        withholdingPercent: withholdingTax
+          ? Number(withholdingPercent)
+          : undefined,
         WHTAmount: withholdingTax ? withholdingTaxAmount : undefined,
         priceValid: priceValid || undefined,
         repeat: false, // Set to false for single bill update
@@ -1154,7 +1175,7 @@ export default function EditBill() {
           style={{
             width: "100%",
             paddingHorizontal: isMobileApp() ? 0 : 15,
-            maxWidth:  isTabletWeb() ? 600 : 1000,
+            maxWidth: isTabletWeb() ? 600 : 1000,
           }}
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
@@ -1220,7 +1241,7 @@ export default function EditBill() {
                               "🎯 Circle pressed:",
                               step,
                               "isEditMode:",
-                              isEditMode
+                              isEditMode,
                             );
                             if (!isEditMode) {
                               // View document functionality when not in edit mode
@@ -1228,18 +1249,18 @@ export default function EditBill() {
                               if (!isStepCompleted(step)) {
                                 console.log(
                                   "⛔ Cannot view inactive document type:",
-                                  step
+                                  step,
                                 );
                                 return;
                               }
                               console.log(
                                 "📋 Viewing document for step:",
-                                step
+                                step,
                               );
                               switch (step) {
                                 case "QA":
                                   console.log(
-                                    "🔄 Calling viewQuotationDocument"
+                                    "🔄 Calling viewQuotationDocument",
                                   );
                                   viewQuotationDocument();
                                   break;
@@ -1259,7 +1280,7 @@ export default function EditBill() {
                                   visible: true,
                                   title: t("bill.alerts.receiptLockedTitle"),
                                   message: t(
-                                    "bill.alerts.receiptLockedMessage"
+                                    "bill.alerts.receiptLockedMessage",
                                   ),
                                   buttons: [
                                     {
@@ -1274,7 +1295,7 @@ export default function EditBill() {
                                 });
                                 console.log(
                                   "🔒 Receipt stage locked. Cannot switch to:",
-                                  step
+                                  step,
                                 );
                                 return;
                               }
@@ -1298,8 +1319,8 @@ export default function EditBill() {
                               borderColor: isStepCompleted(step)
                                 ? "#04ecc1"
                                 : theme === "dark"
-                                ? "#666"
-                                : "#ccc",
+                                  ? "#666"
+                                  : "#ccc",
                               alignItems: "center",
                               justifyContent: "center",
                               opacity: getStepOpacity(step),
@@ -1359,12 +1380,12 @@ export default function EditBill() {
                                   backgroundColor:
                                     index <
                                     availableSteps.findIndex(
-                                      (s) => s === selectedDocumentType
+                                      (s) => s === selectedDocumentType,
                                     )
                                       ? "#04ecc1"
                                       : theme === "dark"
-                                      ? "#444"
-                                      : "#ddd",
+                                        ? "#444"
+                                        : "#ddd",
                                 }}
                               />
                             ))}
@@ -1614,8 +1635,8 @@ export default function EditBill() {
                 isAddressFocused
                   ? 110
                   : cAddress
-                  ? Math.max(60, Math.min(110, cAddress.length * 0.8 + 40))
-                  : undefined
+                    ? Math.max(60, Math.min(110, cAddress.length * 0.8 + 40))
+                    : undefined
               }
               editable={isEditMode}
               focus={setIsAddressFocused}
@@ -1731,7 +1752,7 @@ export default function EditBill() {
                       handleProductItemChange(
                         idx,
                         "unitDiscount",
-                        numericValue
+                        numericValue,
                       );
                     }}
                     placeholder="0"
@@ -1857,11 +1878,11 @@ export default function EditBill() {
                   isPaymentTermFocused
                     ? 110
                     : paymentTermCondition
-                    ? Math.max(
-                        60,
-                        Math.min(110, paymentTermCondition.length * 0.8 + 40)
-                      )
-                    : undefined
+                      ? Math.max(
+                          60,
+                          Math.min(110, paymentTermCondition.length * 0.8 + 40),
+                        )
+                      : undefined
                 }
                 editable={isEditMode}
                 onFocus={() => {
@@ -1892,8 +1913,8 @@ export default function EditBill() {
                 isRemarkFocused
                   ? 110
                   : remark
-                  ? Math.max(60, Math.min(110, remark.length * 0.8 + 40))
-                  : undefined
+                    ? Math.max(60, Math.min(110, remark.length * 0.8 + 40))
+                    : undefined
               }
               editable={isEditMode}
               onFocus={() => {
@@ -1904,7 +1925,6 @@ export default function EditBill() {
               }}
               onBlur={() => setIsRemarkFocused(false)}
             />
-
 
             {/* Withholding Tax Section */}
             <View
@@ -1973,13 +1993,12 @@ export default function EditBill() {
                       weight="bold"
                       style={{ color: theme === "dark" ? "#fff" : "#222" }}
                     >
-                      {withholdingTaxAmount.toLocaleString()}
+                      {withholdingTaxAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </CustomText>
                   </View>
                 </>
               )}
             </View>
-
 
             {/* Note Section */}
             <FormFieldClear
@@ -1999,8 +2018,8 @@ export default function EditBill() {
                 isNoteFocused
                   ? 110
                   : note
-                  ? Math.max(60, Math.min(110, note.length * 0.8 + 40))
-                  : undefined
+                    ? Math.max(60, Math.min(110, note.length * 0.8 + 40))
+                    : undefined
               }
               editable={isEditMode}
               onFocus={() => {
