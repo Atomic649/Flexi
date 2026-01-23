@@ -10,22 +10,20 @@ import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
-
-
 const upload = multer(multerConfig.multerConfigImage.config).single(
-  multerConfig.multerConfigImage.keyUpload
+  multerConfig.multerConfigImage.keyUpload,
 );
 
 // Create  instance of PrismaClient
-const prisma = flexiDBPrismaClient
+const prisma = flexiDBPrismaClient;
 
 const generateDocumentId = async (
   tx: any,
   businessId: number,
-  documentType: DocumentType
+  documentType: DocumentType,
 ) => {
   const year = new Date().getFullYear();
-  
+
   // Upsert the counter for this business and document type
   const counter = await tx.documentCounter.upsert({
     where: {
@@ -61,7 +59,7 @@ const generateDocumentId = async (
 const calculateValidContactUntil = (
   purchaseAt: Date,
   repeatFlag?: boolean,
-  repeatMonths?: number | null
+  repeatMonths?: number | null,
 ): Date | null => {
   if (!repeatFlag) {
     return null;
@@ -146,8 +144,8 @@ const restoreRentalStockForBusiness = async (businessAccId: number) => {
             rentalStockReleased: true,
           } as any,
         });
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -237,7 +235,7 @@ const schema = Joi.object({
         unitPrice: Joi.number().min(0).required(),
         unitDiscount: Joi.number().min(0).optional(),
         unit: Joi.string().optional(), // Optional field for unit
-      })
+      }),
     )
     .min(1)
     .required(),
@@ -277,13 +275,13 @@ const createBill = async (req: Request, res: Response) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-   
+
     billInput.cTaxId = String(billInput.cTaxId);
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.platformId = Number(billInput.platformId);
     billInput.platform = String(billInput.platform);
     billInput.cashStatus = ["true", "1", "yes"].includes(
-      String(billInput.cashStatus).toLowerCase()
+      String(billInput.cashStatus).toLowerCase(),
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
     if (billInput.validContactUntil) {
@@ -293,14 +291,14 @@ const createBill = async (req: Request, res: Response) => {
       billInput.priceValid = new Date(billInput.priceValid);
     }
     const repeatFlag = ["true", "1", "yes"].includes(
-      String(billInput.repeat).toLowerCase()
+      String(billInput.repeat).toLowerCase(),
     );
     billInput.repeat = repeatFlag;
     const repeatMonths = Number(billInput.repeatMonths ?? 0);
     billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
     // normalize withholding inputs (may come as strings from form-data)
     billInput.withholdingTax = ["true", "1", "yes"].includes(
-      String(billInput.withholdingTax).toLowerCase()
+      String(billInput.withholdingTax).toLowerCase(),
     );
     billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
     billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
@@ -308,25 +306,16 @@ const createBill = async (req: Request, res: Response) => {
     // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // const platform = await tx.platform.findUnique({
-        //   where: {
-        //     id: billInput.platformId,
-        //   },
-        // });
-        // if (!platform) {
-        //   throw new Error("platform not found");
-        // }
-
         // Calculate beforeDiscount (total before any discounts)
         const beforeDiscount = billInput.productItems.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
-          0
+          0,
         );
 
         // Calculate discount from all product items (unit discounts only)
         const discount = billInput.productItems.reduce(
           (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
-          0
+          0,
         );
         console.log("🚀 Calculated discount:", discount);
 
@@ -335,34 +324,37 @@ const createBill = async (req: Request, res: Response) => {
         //console.log("🚀 Calculated billLevelDiscount:", billLevelDiscount);
 
         // Calculate total from all product items (subtract unit discounts and bill-level discount)
-        const normaltotal =
-          billInput.productItems.reduce(
-            (sum, item) =>
-              sum +
-              (item.quantity * item.unitPrice ),
-            0
-          )
-          //  - billLevelDiscount;
-          console.log("🚀 Calculated normaltotal:", normaltotal);
+        const normaltotal = billInput.productItems.reduce(
+          (sum, item) => sum + item.quantity * item.unitPrice,
+          0,
+        );
+        //  - billLevelDiscount;
+        console.log("🚀 Calculated normaltotal:", normaltotal);
         // check businessAcc is vat registered
-        const vatRegistered = prisma.businessAcc.findUnique({ 
+        const vatRegistered = prisma.businessAcc.findUnique({
           where: { id: billInput.businessAcc },
           select: { vat: true },
         });
-        
 
-        const totalBeforeTax = vatRegistered && (await vatRegistered).vat ? ((normaltotal / 1.07)-discount).toFixed(2) : (normaltotal-discount).toFixed(2);
-        const vatAmount = vatRegistered && (await vatRegistered).vat ? ((Number(totalBeforeTax) * 0.07)).toFixed(2) : 0;
+        const totalBeforeTax =
+          vatRegistered && (await vatRegistered).vat
+            ? (normaltotal / 1.07 - discount).toFixed(2)
+            : (normaltotal - discount).toFixed(2);
+        const vatAmount =
+          vatRegistered && (await vatRegistered).vat
+            ? (Number(totalBeforeTax) * 0.07).toFixed(2)
+            : 0;
         console.log("🚀 Calculated totalBeforeTax:", totalBeforeTax);
         console.log("🚀 Calculated vatAmount:", vatAmount);
         const WHTAmount = billInput.WHTAmount ?? 0;
         console.log("🚀 Calculated WHTAmount:", WHTAmount);
-        const totalVat = vatRegistered && (await vatRegistered).vat ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2) : totalBeforeTax;
-        console.log("🚀 Calculated final total:", totalVat)
-        const total = (Number(totalVat) - WHTAmount)
-        const totalAfterTax = Number(totalBeforeTax)+ Number(vatAmount);
-        
-
+        const totalVat =
+          vatRegistered && (await vatRegistered).vat
+            ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2)
+            : totalBeforeTax;
+        console.log("🚀 Calculated final total:", totalVat);
+        const total = Number(totalVat) - WHTAmount;
+        const totalAfterTax = Number(totalBeforeTax) + Number(vatAmount);
 
         const docType = billInput.DocumentType[0] as DocumentType;
 
@@ -378,7 +370,7 @@ const createBill = async (req: Request, res: Response) => {
           const contractValidUntil = calculateValidContactUntil(
             originalDate,
             billInput.repeat,
-            billInput.repeatMonths
+            billInput.repeatMonths,
           );
 
           // Create repeat bills for each month
@@ -393,7 +385,7 @@ const createBill = async (req: Request, res: Response) => {
               const newId = await generateDocumentId(
                 tx,
                 billInput.businessAcc,
-                docType
+                docType,
               );
 
               // Determine which ID field to populate
@@ -420,7 +412,7 @@ const createBill = async (req: Request, res: Response) => {
                 cAddress: billInput.cAddress,
                 cPostId: billInput.cPostId,
                 cProvince: billInput.cProvince,
-                cTaxId: billInput.cTaxId,              
+                cTaxId: billInput.cTaxId,
                 product: {
                   create: billInput.productItems.map((item) => ({
                     product: item.product,
@@ -478,7 +470,7 @@ const createBill = async (req: Request, res: Response) => {
           const newId = await generateDocumentId(
             tx,
             billInput.businessAcc,
-            docType
+            docType,
           );
 
           // Determine which ID field to populate
@@ -529,7 +521,7 @@ const createBill = async (req: Request, res: Response) => {
             totalQuotation: total, // Include totalQuotation field
             totalBeforeTax: totalBeforeTax,
             totalAfterTax: totalAfterTax,
-            totalTax:vatAmount,              
+            totalTax: vatAmount,
             vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
             beforeDiscount,
             DocumentType: docType,
@@ -540,14 +532,14 @@ const createBill = async (req: Request, res: Response) => {
             WHTpercent: billInput.withholdingPercent ?? 0,
             WHTAmount: billInput.WHTAmount ?? 0,
             repeat: billInput.repeat,
-            repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,
+            repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
             taxType: billInput.taxType || "Individual",
           };
 
           const singleValidUntil = calculateValidContactUntil(
             billInput.purchaseAt,
             billInput.repeat,
-            billInput.repeatMonths
+            billInput.repeatMonths,
           );
           if (singleValidUntil) {
             singleBillData.validContactUntil = singleValidUntil;
@@ -588,13 +580,13 @@ const createBill = async (req: Request, res: Response) => {
                 "🚨 Product not found for stock reduction:",
                 billInput.productItems[0].product,
                 "businessAcc:",
-                billInput.businessAcc
+                billInput.businessAcc,
               );
             }
           } else {
             console.log(
               "ℹ️ Skipping stock reduction for non-receipt document type:",
-              docType
+              docType,
             );
           }
           return { type: "single", bill: bill };
@@ -643,7 +635,7 @@ const getBills = async (req: Request, res: Response) => {
       },
       select: {
         id: true,
-        billId: true,        
+        billId: true,
         cName: true,
         cLastName: true,
         // cPhone: true,
@@ -656,7 +648,7 @@ const getBills = async (req: Request, res: Response) => {
         total: true,
         totalQuotation: true, // Include totalQuotation
         totalBeforeTax: true,
-        totalTax: true,              
+        totalTax: true,
         platform: true,
         product: {
           select: {
@@ -727,7 +719,7 @@ const updateBill = async (req: Request, res: Response) => {
     billInput.businessAcc = Number(billInput.businessAcc);
     billInput.platformId = Number(billInput.platformId);
     billInput.cashStatus = ["true", "1", "yes"].includes(
-      String(billInput.cashStatus).toLowerCase()
+      String(billInput.cashStatus).toLowerCase(),
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
     if (billInput.validContactUntil) {
@@ -737,18 +729,18 @@ const updateBill = async (req: Request, res: Response) => {
       billInput.priceValid = new Date(billInput.priceValid);
     }
     const repeatFlag = ["true", "1", "yes"].includes(
-      String(billInput.repeat).toLowerCase()
+      String(billInput.repeat).toLowerCase(),
     );
     billInput.repeat = repeatFlag;
     const repeatMonths = Number(billInput.repeatMonths ?? 0);
     billInput.repeatMonths = Number.isFinite(repeatMonths) ? repeatMonths : 0;
-     // normalize withholding inputs (may come as strings from form-data)
+    // normalize withholding inputs (may come as strings from form-data)
     billInput.withholdingTax = ["true", "1", "yes"].includes(
-      String(billInput.withholdingTax).toLowerCase()
+      String(billInput.withholdingTax).toLowerCase(),
     );
     billInput.withholdingPercent = Number(billInput.withholdingPercent ?? 0);
     billInput.WHTAmount = Number(billInput.WHTAmount ?? 0);
-   
+
     // First, get the existing bill to check its current purchaseAt date
     const existingBill = (await prisma.bill.findUnique({
       where: {
@@ -760,7 +752,6 @@ const updateBill = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Bill not found" });
     }
 
-   
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the ORIGINAL purchaseAt
     // Use the existing bill's purchaseAt date for cutoff calculation, not the new one
@@ -768,7 +759,7 @@ const updateBill = async (req: Request, res: Response) => {
     const nextMonth = new Date(
       originalPurchaseDate.getFullYear(),
       originalPurchaseDate.getMonth() + 1,
-      15
+      15,
     );
     const currentDate = new Date();
 
@@ -784,27 +775,53 @@ const updateBill = async (req: Request, res: Response) => {
     // Calculate beforeDiscount (total before any discounts)
     const beforeDiscount = billInput.productItems.reduce(
       (sum, item) => sum + item.quantity * item.unitPrice,
-      0
+      0,
     );
 
     // Calculate discount from all product items (unit discounts only)
     const discount = billInput.productItems.reduce(
       (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
-      0
+      0,
     );
+    console.log("🚀 Calculated discount:", discount);
 
     // Get bill-level discount from input
-    const billLevelDiscount = billInput.discount || 0;
+    //const billLevelDiscount = billInput.discount || 0;
+    //console.log("🚀 Calculated billLevelDiscount:", billLevelDiscount);
 
     // Calculate total from all product items (subtract unit discounts and bill-level discount)
-    const total =
-      billInput.productItems.reduce(
-        (sum, item) =>
-          sum +
-          (item.quantity * item.unitPrice -
-            (item.unitDiscount || 0) * item.quantity),
-        0
-      ) - billLevelDiscount;
+    const normaltotal = billInput.productItems.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0,
+    );
+    //  - billLevelDiscount;
+    console.log("🚀 Calculated normaltotal:", normaltotal);
+    // check businessAcc is vat registered
+    const vatRegistered = prisma.businessAcc.findUnique({
+      where: { id: billInput.businessAcc },
+      select: { vat: true },
+    });
+
+    const totalBeforeTax =
+      vatRegistered && (await vatRegistered).vat
+        ? (normaltotal / 1.07 - discount).toFixed(2)
+        : (normaltotal - discount).toFixed(2);
+    const vatAmount =
+      vatRegistered && (await vatRegistered).vat
+        ? (Number(totalBeforeTax) * 0.07).toFixed(2)
+        : 0;
+    console.log("🚀 Calculated totalBeforeTax:", totalBeforeTax);
+    console.log("🚀 Calculated vatAmount:", vatAmount);
+    const WHTAmount = billInput.WHTAmount ?? 0;
+    console.log("🚀 Calculated WHTAmount:", WHTAmount);
+    const totalVat =
+      vatRegistered && (await vatRegistered).vat
+        ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2)
+        : totalBeforeTax;
+    console.log("🚀 Calculated final total:", totalVat);
+    const total = Number(totalVat) - WHTAmount;
+    const totalAfterTax = Number(totalBeforeTax) + Number(vatAmount);
+
     try {
       const result = await prisma.$transaction(async (tx) => {
         // Capture current product quantities for inventory adjustments
@@ -833,7 +850,7 @@ const updateBill = async (req: Request, res: Response) => {
         const validContactUntil = calculateValidContactUntil(
           billInput.purchaseAt,
           billInput.repeat,
-          billInput.repeatMonths
+          billInput.repeatMonths,
         );
 
         const updateData: any = {
@@ -864,17 +881,21 @@ const updateBill = async (req: Request, res: Response) => {
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
           total: finalTotal,
-          totalQuotation: total, // Include totalQuotation field
+          totalQuotation: total, // Include totalQuotation field'
+          totalBeforeTax: Number(totalBeforeTax),
+          totalAfterTax: Number(totalAfterTax),
+          vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+          totalTax: Number(vatAmount),
           note: billInput.note || "", // Optional note field
           discount: discount, // Unit discounts only
-          billLevelDiscount: billLevelDiscount, // Bill-level discount
+          //billLevelDiscount: billLevelDiscount, // Bill-level discount
           beforeDiscount: beforeDiscount,
           priceValid: billInput.priceValid, // Include priceValid if provided
           DocumentType: docType, // Take first element from array
           paymentTermCondition: billInput.paymentTermCondition || "", // Optional payment term condition
           remark: billInput.remark || "", // Optional remark
           repeat: billInput.repeat,
-          repeatMonths: billInput.repeat ? billInput.repeatMonths ?? 0 : 0,        
+          repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
           taxType: billInput.taxType || "Individual",
           withHoldingTax: billInput.withholdingTax ?? false,
           WHTpercent: billInput.withholdingPercent ?? 0,
@@ -888,7 +909,7 @@ const updateBill = async (req: Request, res: Response) => {
             updateData.billId = await generateDocumentId(
               tx,
               billInput.businessAcc,
-              "Receipt"
+              "Receipt",
             );
           }
           // If skipping from Quotation to Receipt, also generate Invoice ID if missing
@@ -899,20 +920,20 @@ const updateBill = async (req: Request, res: Response) => {
             updateData.invoiceId = await generateDocumentId(
               tx,
               billInput.businessAcc,
-              "Invoice"
+              "Invoice",
             );
           }
         } else if (docType === "Invoice" && !existingBill.invoiceId) {
           updateData.invoiceId = await generateDocumentId(
             tx,
             billInput.businessAcc,
-            "Invoice"
+            "Invoice",
           );
         } else if (docType === "Quotation" && !existingBill.quotationId) {
           updateData.quotationId = await generateDocumentId(
             tx,
             billInput.businessAcc,
-            "Quotation"
+            "Quotation",
           );
         }
 
@@ -933,7 +954,7 @@ const updateBill = async (req: Request, res: Response) => {
 
         if (docType === "Receipt") {
           const aggregateQuantities = (
-            items: { product: string; quantity: number }[]
+            items: { product: string; quantity: number }[],
           ) => {
             return items.reduce<Record<string, number>>((acc, item) => {
               const quantity = Number(item.quantity) || 0;
@@ -999,7 +1020,7 @@ const updateBill = async (req: Request, res: Response) => {
         } else {
           console.log(
             "ℹ️ Skipping stock adjustment for non-receipt document type:",
-            docType
+            docType,
           );
         }
         return bill;
@@ -1056,7 +1077,7 @@ const updateCashStatusById = async (req: Request, res: Response) => {
     const nextMonth = new Date(
       originalPurchaseDate.getFullYear(),
       originalPurchaseDate.getMonth() + 1,
-      15
+      15,
     );
     const currentDate = new Date();
 
@@ -1127,13 +1148,13 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       const nextMonth = new Date(
         originalPurchaseDate.getFullYear(),
         originalPurchaseDate.getMonth() + 1,
-        15
+        15,
       );
       const currentDate = new Date();
 
       if (currentDate > nextMonth) {
         const error: any = new Error(
-          `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`
+          `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
         );
         error.statusCode = 403;
         error.details = {
@@ -1157,7 +1178,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
           updateData.billId = await generateDocumentId(
             tx,
             currentBill.businessAcc,
-            "Receipt"
+            "Receipt",
           );
         }
         // If skipping from Quotation to Receipt, also generate Invoice ID if missing
@@ -1168,20 +1189,20 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
           updateData.invoiceId = await generateDocumentId(
             tx,
             currentBill.businessAcc,
-            "Invoice"
+            "Invoice",
           );
         }
       } else if (DocumentType === "Invoice" && !currentBill.invoiceId) {
         updateData.invoiceId = await generateDocumentId(
           tx,
           currentBill.businessAcc,
-          "Invoice"
+          "Invoice",
         );
       } else if (DocumentType === "Quotation" && !currentBill.quotationId) {
         updateData.quotationId = await generateDocumentId(
           tx,
           currentBill.businessAcc,
-          "Quotation"
+          "Quotation",
         );
       }
 
@@ -1203,7 +1224,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
                 sum +
                 (item.quantity * item.unitPrice -
                   (item.unitDiscount || 0) * item.quantity),
-              0
+              0,
             ) - (currentBill.billLevelDiscount || 0);
           updateData.total = calculatedTotal;
         }
@@ -1243,7 +1264,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
               data: { stock: { decrement: item.quantity } },
             });
             console.log(
-              `Stock decreased for product ${item.product} by ${item.quantity}`
+              `Stock decreased for product ${item.product} by ${item.quantity}`,
             );
           }
         }
@@ -1269,12 +1290,11 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
               data: { stock: { increment: item.quantity } },
             });
             console.log(
-              `Stock restored for product ${item.product} by ${item.quantity}`
+              `Stock restored for product ${item.product} by ${item.quantity}`,
             );
           }
         }
       }
-
 
       // Update stock based on DocumentType change
       if (
@@ -1299,7 +1319,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
               data: { stock: { decrement: item.quantity } },
             });
             console.log(
-              `Stock decreased for product ${item.product} by ${item.quantity}`
+              `Stock decreased for product ${item.product} by ${item.quantity}`,
             );
           }
         }
@@ -1325,7 +1345,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
               data: { stock: { increment: item.quantity } },
             });
             console.log(
-              `Stock restored for product ${item.product} by ${item.quantity}`
+              `Stock restored for product ${item.product} by ${item.quantity}`,
             );
           }
         }
@@ -1590,7 +1610,7 @@ const getthisYearSales = async (req: Request, res: Response) => {
     if (!sales || !sales._sum.total) {
       return res.status(404).json({ message: "No sales found for this year" });
     }
-    sales._sum.total = (sales._sum.total);
+    sales._sum.total = sales._sum.total;
     const anualSalesM = sales._sum.total.toFixed(2); // Format to 2 decimal places
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Sales API:", anualSalesM);
