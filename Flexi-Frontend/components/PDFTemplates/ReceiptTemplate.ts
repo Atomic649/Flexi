@@ -33,10 +33,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     ) + (invoice.billLevelDiscount || 0);
 
   const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
-  console.log("VAT CALCULATED:", vat);
   const subTotal = rawTotal - totalDiscount - vat;
   const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
-  console.log("VAT TOTAL CALCULATED:", vatTotal);
   const grandTotal = (subTotal + vatTotal) - (invoice.withHoldingTax ? Number(invoice.WHTAmount || 0) : 0);
 
   // Compute sums for the items table (line discounts and displayed line totals)
@@ -104,8 +102,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .company-logo-section p {
             margin: 5px 0 0 0;
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 12px;
+            color: #5e5e5e;
             font-weight: 500;
           }
           .invoice-meta {
@@ -113,7 +111,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             min-width: 200px;
           }
           .invoice-number {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 700;
             color: #5e5e5e;
             margin: 0 0 5px 0;
@@ -125,14 +123,15 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             color: inherit;
           }
           .invoice-date {
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 12px;
+            color: #5e5e5e;
             margin: 0;
           }
           
           /* Business Info Section */
           .business-info-section {
-            background: #fafbfc;
+            background: #f5f7f8
+;
             padding: 9px 11px;
             border-radius: 8px;
             margin-bottom: 12px;
@@ -140,7 +139,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .business-info-section h3 {
             margin: 0 0 12px 0;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #5e5e5e;
             text-transform: uppercase;
@@ -176,11 +175,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             padding: 15px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .billing-section h3 {
             margin: 0 0 10px 0;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #5e5e5e;
             text-transform: uppercase;
@@ -196,7 +196,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           .customer-name {
             font-weight: 600;
             color: #111827;
-            font-size: 14px !important;
+            font-size: 12px !important;
           }
           .payment-status {
             display: inline-flex;
@@ -248,7 +248,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             padding: 12px 10px;
             border-bottom: 1px solid #e5e7eb;
             font-size: 12px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .items-table tbody tr:last-child td {
             border-bottom: none;
@@ -271,27 +272,27 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             display: flex; 
             justify-content: space-between; 
             padding: 8px 0;
-            font-size: 13px;
+            font-size: 12px;
             border-bottom: 1px solid #f3f4f6;
           }
           .summary-row:last-child {
             border-bottom: none;
           }
           .summary-row.subtotal {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.discount {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.tax {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.total { 
             border-top: 2px solid #5e5e5e;
             margin-top: 8px;
             padding-top: 12px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 12px;
             color: #5e5e5e;
           }
           .summary-label {
@@ -332,14 +333,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .note-section h3 {
             color: #374151;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             margin: 0 0 8px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
           }
           .note-section p {
-            color: #6b7280;
+            color: #5e5e5e;
             font-size: 12px;
             line-height: 1.4;
             margin: 0;
@@ -356,8 +357,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .thank-you {
             font-style: italic;
-            color: #6b7280;
-            font-size: 14px;
+            color: #5e5e5e;
+            font-size: 12px;
             font-weight: 500;
           }
           .generated-info {
@@ -398,14 +399,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             letter-spacing: 0.3px;
           }
           .signature-line {
-            border-bottom: 1px solid #6b7280;
+            border-bottom: 1px solid #5e5e5e;
             height: 50px;
             margin-bottom: 6px;
             position: relative;
           }
           .signature-name {
             font-size: 9px;
-            color: #6b7280;
+            color: #5e5e5e;
             margin-bottom: 3px;
           }
           .signature-date {
@@ -421,7 +422,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .stamp-text {
             font-size: 8px;
@@ -520,7 +522,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${
                 isVatRegistered ? t("print.taxInvoice") : t("print.receipt")
               }</h1>
-              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t(
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#5e5e5e;">(${t(
                 "print.original"
               )})</p>
             </div>

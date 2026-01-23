@@ -31,10 +31,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
   ) + (quotation.billLevelDiscount || 0);
 
   const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
-  console.log("VAT CALCULATED:", vat);
   const subTotal = rawTotal - totalDiscount - vat;
   const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
-  console.log("VAT TOTAL CALCULATED:", vatTotal);
   const grandTotal = (subTotal + vatTotal) - (quotation.withHoldingTax ? Number(quotation.WHTAmount || 0) : 0);
 
   // Compute sums for the items table (line discounts and displayed line totals)
@@ -100,8 +98,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .company-logo-section p {
             margin: 5px 0 0 0;
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 12px;
+            color: #5e5e5e;
             font-weight: 500;
           }
           .quotation-meta {
@@ -109,7 +107,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             min-width: 200px;
           }
           .quotation-number {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 700;
             color: #5e5e5e;
             margin: 0 0 5px 0;
@@ -121,8 +119,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             color: inherit;
           }
           .quotation-date {
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 12px;
+            color: #5e5e5e;
             margin: 0;
           }
           
@@ -136,7 +134,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .business-info-section h3 {
             margin: 0 0 12px 0;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #5e5e5e;
             text-transform: uppercase;
@@ -170,11 +168,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             padding: 15px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .billing-section h3 {
             margin: 0 0 10px 0;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #5e5e5e;
             text-transform: uppercase;
@@ -190,7 +189,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           .customer-name {
             font-weight: 600;
             color: #111827;
-            font-size: 14px !important;
+            font-size: 12px !important;
           }
           
           /* Items Table */
@@ -218,7 +217,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             padding: 12px 10px;
             border-bottom: 1px solid #e5e7eb;
             font-size: 12px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .items-table tbody tr:last-child td {
             border-bottom: none;
@@ -241,27 +241,27 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             display: flex; 
             justify-content: space-between; 
             padding: 8px 0;
-            font-size: 13px;
+            font-size: 12px;
             border-bottom: 1px solid #f3f4f6;
           }
           .summary-row:last-child {
             border-bottom: none;
           }
           .summary-row.subtotal {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.discount {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.tax {
-            color: #6b7280;
+            color: #5e5e5e;
           }
           .summary-row.total { 
             border-top: 2px solid #5e5e5e;
             margin-top: 8px;
             padding-top: 12px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 12px;
             color: #5e5e5e;
           }
           .summary-label {
@@ -302,7 +302,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .note-section h3 {
             margin: 0 0 10px 0;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #5e5e5e;
             text-transform: uppercase;
@@ -326,8 +326,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .thank-you {
             font-style: italic;
-            color: #6b7280;
-            font-size: 14px;
+            color: #5e5e5e;
+            font-size: 12px;
             font-weight: 500;
           }
           .generated-info {
@@ -368,19 +368,19 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             letter-spacing: 0.3px;
           }
           .signature-line {
-            border-bottom: 1px solid #6b7280;
+            border-bottom: 1px solid #5e5e5e;
             height: 50px;
             margin-bottom: 6px;
             position: relative;
           }
           .signature-name {
             font-size: 9px;
-            color: #6b7280;
+            color: #5e5e5e;
             margin-bottom: 3px;
           }
           .signature-date {
             font-size: 8px;
-            color: #9ca3af;
+            color: #5e5e5e;
           }
           .business-stamp {
             border: 2px dashed #9ca3af;
@@ -391,7 +391,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .stamp-text {
             font-size: 8px;
@@ -443,7 +444,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           <div class="quotation-header">
             <div class="company-logo-section" style="display: flex; align-items: center; height: 100%;">
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${t("print.quotation")}</h1>
-              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#6b7280;">(${t("print.original")})</p>
+              <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#5e5e5e;">(${t("print.original")})</p>
             </div>
             <div class="quotation-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.quotationId }</span></div>              

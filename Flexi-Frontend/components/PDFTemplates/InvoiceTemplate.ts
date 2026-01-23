@@ -33,10 +33,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     ) + (invoice.billLevelDiscount || 0);
 
   const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
-  console.log("VAT CALCULATED:", vat);
   const subTotal = rawTotal - totalDiscount - vat;
   const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
-  console.log("VAT TOTAL CALCULATED:", vatTotal);
   const grandTotal = (subTotal + vatTotal) - (invoice.withHoldingTax ? Number(invoice.WHTAmount || 0) : 0);
 
   // Compute sums for the items table (line discounts and displayed line totals)
@@ -130,7 +128,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Business Info Section */
           .business-info-section {
-            background: #fafbfc;
+            background: #f5f7f8
+;
             padding: 9px 11px;
             border-radius: 8px;
             margin-bottom: 12px;
@@ -174,7 +173,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             padding: 15px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .billing-section h3 {
             margin: 0 0 10px 0;
@@ -222,7 +222,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             padding: 12px 10px;
             border-bottom: 1px solid #e5e7eb;
             font-size: 12px;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .items-table tbody tr:last-child td {
             border-bottom: none;
@@ -298,7 +299,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Note Section */
           .note-section {
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 15px;
@@ -395,7 +397,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fafbfc;
+            background-color: #f5f7f8
+;
           }
           .stamp-text {
             font-size: 8px;
