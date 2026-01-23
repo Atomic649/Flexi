@@ -126,6 +126,9 @@ const validBillPayload = () => ({
   note: "",
   paymentTermCondition: "",
   remark: "",
+  priceValid: "",
+  WHTAmount: 0,
+  
 });
 
 describe("billController", () => {

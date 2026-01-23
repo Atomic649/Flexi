@@ -148,6 +148,7 @@ export default function CreateBill() {
   const [remark, setRemark] = useState("");
   const [withholdingTax, setWithholdingTax] = useState(false);
   const [withholdingPercent, setWithholdingPercent] = useState("3");
+  
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null,
@@ -461,6 +462,8 @@ export default function CreateBill() {
       setNote(billData.note ?? "");
       setPaymentTermCondition(billData.paymentTermCondition ?? "");
       setRemark(billData.remark ?? "");
+      setWithholdingTax(Boolean(billData.WHTAmount && billData.WHTAmount > 0));
+      setWithholdingPercent(billData.WHTPercent ? billData.WHTPercent.toString() : "3");
 
       const isJuristicCustomer =
         billData.TaxType === "Juristic" ||

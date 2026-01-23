@@ -296,9 +296,13 @@ model Bill {
   cTaxId               String?
   product              ProductItem[]
   payment              Payment?
-  total                Int
-  totalQuotation       Int?
-  beforeDiscount       Int?
+  total                Decimal?
+  totalQuotation       Decimal?
+  totalBeforeTax       Decimal?
+  totalAfterTax        Decimal?
+  totalTax             Decimal?
+  vatPercent           Int?        
+  beforeDiscount       Decimal?  
   purchaseAt           DateTime      @default(now())
   cashStatus           Boolean?      @default(false)
   image                String?

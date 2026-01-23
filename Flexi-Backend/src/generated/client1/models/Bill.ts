@@ -28,9 +28,13 @@ export type AggregateBill = {
 
 export type BillAvgAggregateOutputType = {
   id: number | null
-  total: number | null
-  totalQuotation: number | null
-  beforeDiscount: number | null
+  total: runtime.Decimal | null
+  totalQuotation: runtime.Decimal | null
+  totalBeforeTax: runtime.Decimal | null
+  totalAfterTax: runtime.Decimal | null
+  totalTax: runtime.Decimal | null
+  vatPercent: number | null
+  beforeDiscount: runtime.Decimal | null
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
@@ -42,9 +46,13 @@ export type BillAvgAggregateOutputType = {
 
 export type BillSumAggregateOutputType = {
   id: number | null
-  total: number | null
-  totalQuotation: number | null
-  beforeDiscount: number | null
+  total: runtime.Decimal | null
+  totalQuotation: runtime.Decimal | null
+  totalBeforeTax: runtime.Decimal | null
+  totalAfterTax: runtime.Decimal | null
+  totalTax: runtime.Decimal | null
+  vatPercent: number | null
+  beforeDiscount: runtime.Decimal | null
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
@@ -70,9 +78,13 @@ export type BillMinAggregateOutputType = {
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
-  total: number | null
-  totalQuotation: number | null
-  beforeDiscount: number | null
+  total: runtime.Decimal | null
+  totalQuotation: runtime.Decimal | null
+  totalBeforeTax: runtime.Decimal | null
+  totalAfterTax: runtime.Decimal | null
+  totalTax: runtime.Decimal | null
+  vatPercent: number | null
+  beforeDiscount: runtime.Decimal | null
   purchaseAt: Date | null
   cashStatus: boolean | null
   image: string | null
@@ -114,9 +126,13 @@ export type BillMaxAggregateOutputType = {
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
-  total: number | null
-  totalQuotation: number | null
-  beforeDiscount: number | null
+  total: runtime.Decimal | null
+  totalQuotation: runtime.Decimal | null
+  totalBeforeTax: runtime.Decimal | null
+  totalAfterTax: runtime.Decimal | null
+  totalTax: runtime.Decimal | null
+  vatPercent: number | null
+  beforeDiscount: runtime.Decimal | null
   purchaseAt: Date | null
   cashStatus: boolean | null
   image: string | null
@@ -160,6 +176,10 @@ export type BillCountAggregateOutputType = {
   payment: number
   total: number
   totalQuotation: number
+  totalBeforeTax: number
+  totalAfterTax: number
+  totalTax: number
+  vatPercent: number
   beforeDiscount: number
   purchaseAt: number
   cashStatus: number
@@ -192,6 +212,10 @@ export type BillAvgAggregateInputType = {
   id?: true
   total?: true
   totalQuotation?: true
+  totalBeforeTax?: true
+  totalAfterTax?: true
+  totalTax?: true
+  vatPercent?: true
   beforeDiscount?: true
   repeatMonths?: true
   discount?: true
@@ -206,6 +230,10 @@ export type BillSumAggregateInputType = {
   id?: true
   total?: true
   totalQuotation?: true
+  totalBeforeTax?: true
+  totalAfterTax?: true
+  totalTax?: true
+  vatPercent?: true
   beforeDiscount?: true
   repeatMonths?: true
   discount?: true
@@ -234,6 +262,10 @@ export type BillMinAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalBeforeTax?: true
+  totalAfterTax?: true
+  totalTax?: true
+  vatPercent?: true
   beforeDiscount?: true
   purchaseAt?: true
   cashStatus?: true
@@ -278,6 +310,10 @@ export type BillMaxAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalBeforeTax?: true
+  totalAfterTax?: true
+  totalTax?: true
+  vatPercent?: true
   beforeDiscount?: true
   purchaseAt?: true
   cashStatus?: true
@@ -322,6 +358,10 @@ export type BillCountAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalBeforeTax?: true
+  totalAfterTax?: true
+  totalTax?: true
+  vatPercent?: true
   beforeDiscount?: true
   purchaseAt?: true
   cashStatus?: true
@@ -451,9 +491,13 @@ export type BillGroupByOutputType = {
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
-  total: number
-  totalQuotation: number | null
-  beforeDiscount: number | null
+  total: runtime.Decimal | null
+  totalQuotation: runtime.Decimal | null
+  totalBeforeTax: runtime.Decimal | null
+  totalAfterTax: runtime.Decimal | null
+  totalTax: runtime.Decimal | null
+  vatPercent: number | null
+  beforeDiscount: runtime.Decimal | null
   purchaseAt: Date
   cashStatus: boolean | null
   image: string | null
@@ -518,9 +562,13 @@ export type BillWhereInput = {
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
-  total?: Prisma.IntFilter<"Bill"> | number
-  totalQuotation?: Prisma.IntNullableFilter<"Bill"> | number | null
-  beforeDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -566,8 +614,12 @@ export type BillOrderByWithRelationInput = {
   cPostId?: Prisma.SortOrderInput | Prisma.SortOrder
   cTaxId?: Prisma.SortOrderInput | Prisma.SortOrder
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
-  total?: Prisma.SortOrder
+  total?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  vatPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -617,9 +669,13 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
-  total?: Prisma.IntFilter<"Bill"> | number
-  totalQuotation?: Prisma.IntNullableFilter<"Bill"> | number | null
-  beforeDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -665,8 +721,12 @@ export type BillOrderByWithAggregationInput = {
   cPostId?: Prisma.SortOrderInput | Prisma.SortOrder
   cTaxId?: Prisma.SortOrderInput | Prisma.SortOrder
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
-  total?: Prisma.SortOrder
+  total?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
+  vatPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -717,9 +777,13 @@ export type BillScalarWhereWithAggregatesInput = {
   cPostId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableWithAggregatesFilter<"Bill"> | $Enums.Payment | null
-  total?: Prisma.IntWithAggregatesFilter<"Bill"> | number
-  totalQuotation?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
-  beforeDiscount?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  total?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  beforeDiscount?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
@@ -760,9 +824,13 @@ export type BillCreateInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -805,9 +873,13 @@ export type BillUncheckedCreateInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -849,9 +921,13 @@ export type BillUpdateInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -894,9 +970,13 @@ export type BillUncheckedUpdateInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -939,9 +1019,13 @@ export type BillCreateManyInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -982,9 +1066,13 @@ export type BillUpdateManyMutationInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1023,9 +1111,13 @@ export type BillUncheckedUpdateManyInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1079,6 +1171,10 @@ export type BillCountOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrder
+  totalTax?: Prisma.SortOrder
+  vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
   purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
@@ -1109,6 +1205,10 @@ export type BillAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrder
+  totalTax?: Prisma.SortOrder
+  vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
@@ -1137,6 +1237,10 @@ export type BillMaxOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrder
+  totalTax?: Prisma.SortOrder
+  vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
   purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
@@ -1181,6 +1285,10 @@ export type BillMinOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrder
+  totalTax?: Prisma.SortOrder
+  vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
   purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
@@ -1211,6 +1319,10 @@ export type BillSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalBeforeTax?: Prisma.SortOrder
+  totalAfterTax?: Prisma.SortOrder
+  totalTax?: Prisma.SortOrder
+  vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
@@ -1318,6 +1430,14 @@ export type NullableEnumPaymentFieldUpdateOperationsInput = {
   set?: $Enums.Payment | null
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
   set?: $Enums.taxType | null
 }
@@ -1328,14 +1448,6 @@ export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
-}
-
-export type NullableDecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type EnumSocialMediaFieldUpdateOperationsInput = {
@@ -1415,9 +1527,13 @@ export type BillCreateWithoutMemberInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1459,9 +1575,13 @@ export type BillUncheckedCreateWithoutMemberInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1532,9 +1652,13 @@ export type BillScalarWhereInput = {
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
-  total?: Prisma.IntFilter<"Bill"> | number
-  totalQuotation?: Prisma.IntNullableFilter<"Bill"> | number | null
-  beforeDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -1575,9 +1699,13 @@ export type BillCreateWithoutBusinessIdInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1619,9 +1747,13 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1688,9 +1820,13 @@ export type BillCreateWithoutProductInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1732,9 +1868,13 @@ export type BillUncheckedCreateWithoutProductInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1791,9 +1931,13 @@ export type BillUpdateWithoutProductInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1835,9 +1979,13 @@ export type BillUncheckedUpdateWithoutProductInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1878,9 +2026,13 @@ export type BillCreateWithoutPlatformInfoInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1922,9 +2074,13 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -1992,9 +2148,13 @@ export type BillCreateManyMemberInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -2034,9 +2194,13 @@ export type BillUpdateWithoutMemberInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2078,9 +2242,13 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2122,9 +2290,13 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2165,9 +2337,13 @@ export type BillCreateManyBusinessIdInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -2207,9 +2383,13 @@ export type BillUpdateWithoutBusinessIdInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2251,9 +2431,13 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2295,9 +2479,13 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2338,9 +2526,13 @@ export type BillCreateManyPlatformInfoInput = {
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
-  total: number
-  totalQuotation?: number | null
-  beforeDiscount?: number | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
@@ -2380,9 +2572,13 @@ export type BillUpdateWithoutPlatformInfoInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2424,9 +2620,13 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2468,9 +2668,13 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
-  total?: Prisma.IntFieldUpdateOperationsInput | number
-  totalQuotation?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  beforeDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2544,6 +2748,10 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalBeforeTax?: boolean
+  totalAfterTax?: boolean
+  totalTax?: boolean
+  vatPercent?: boolean
   beforeDiscount?: boolean
   purchaseAt?: boolean
   cashStatus?: boolean
@@ -2593,6 +2801,10 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalBeforeTax?: boolean
+  totalAfterTax?: boolean
+  totalTax?: boolean
+  vatPercent?: boolean
   beforeDiscount?: boolean
   purchaseAt?: boolean
   cashStatus?: boolean
@@ -2640,6 +2852,10 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalBeforeTax?: boolean
+  totalAfterTax?: boolean
+  totalTax?: boolean
+  vatPercent?: boolean
   beforeDiscount?: boolean
   purchaseAt?: boolean
   cashStatus?: boolean
@@ -2687,6 +2903,10 @@ export type BillSelectScalar = {
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalBeforeTax?: boolean
+  totalAfterTax?: boolean
+  totalTax?: boolean
+  vatPercent?: boolean
   beforeDiscount?: boolean
   purchaseAt?: boolean
   cashStatus?: boolean
@@ -2713,7 +2933,7 @@ export type BillSelectScalar = {
   platformId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -2756,9 +2976,13 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     cPostId: string | null
     cTaxId: string | null
     payment: $Enums.Payment | null
-    total: number
-    totalQuotation: number | null
-    beforeDiscount: number | null
+    total: runtime.Decimal | null
+    totalQuotation: runtime.Decimal | null
+    totalBeforeTax: runtime.Decimal | null
+    totalAfterTax: runtime.Decimal | null
+    totalTax: runtime.Decimal | null
+    vatPercent: number | null
+    beforeDiscount: runtime.Decimal | null
     purchaseAt: Date
     cashStatus: boolean | null
     image: string | null
@@ -3224,9 +3448,13 @@ export interface BillFieldRefs {
   readonly cPostId: Prisma.FieldRef<"Bill", 'String'>
   readonly cTaxId: Prisma.FieldRef<"Bill", 'String'>
   readonly payment: Prisma.FieldRef<"Bill", 'Payment'>
-  readonly total: Prisma.FieldRef<"Bill", 'Int'>
-  readonly totalQuotation: Prisma.FieldRef<"Bill", 'Int'>
-  readonly beforeDiscount: Prisma.FieldRef<"Bill", 'Int'>
+  readonly total: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly totalQuotation: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly totalBeforeTax: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly totalAfterTax: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly totalTax: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly vatPercent: Prisma.FieldRef<"Bill", 'Int'>
+  readonly beforeDiscount: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly purchaseAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly cashStatus: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly image: Prisma.FieldRef<"Bill", 'String'>

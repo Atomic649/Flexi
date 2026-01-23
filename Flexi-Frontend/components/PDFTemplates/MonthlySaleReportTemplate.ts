@@ -252,10 +252,18 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
               <tbody>
                 ${receiptBills.map((bill: any, index: number) => {
                   // Multi-product: sum all product items for this bill
+                 
                   const productItems = bill.product || [];
+                  const totalDiscount =
+                  productItems.reduce(
+                  (sum: number, item: any) =>
+                   sum + (item.unitDiscount || 0) * item.quantity,
+                   0
+                  ) + (bill.billLevelDiscount || 0);
+
                   const subtotal = productItems.reduce((sum: number, item: any) => sum + (item.unitPrice * item.quantity), 0);
                   const vatAmount = isVatRegistered ? (subtotal * vatRate) / (100 + vatRate) : 0;
-                  const total = subtotal;
+                  const total = subtotal- totalDiscount;
                   return `
                     <tr>
                       <td>${index + 1}</td>

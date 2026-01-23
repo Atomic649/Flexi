@@ -328,19 +328,41 @@ const createBill = async (req: Request, res: Response) => {
           (sum, item) => sum + (item.unitDiscount || 0) * item.quantity,
           0
         );
+        console.log("🚀 Calculated discount:", discount);
 
         // Get bill-level discount from input
-        const billLevelDiscount = billInput.discount || 0;
+        //const billLevelDiscount = billInput.discount || 0;
+        //console.log("🚀 Calculated billLevelDiscount:", billLevelDiscount);
 
         // Calculate total from all product items (subtract unit discounts and bill-level discount)
-        const total =
+        const normaltotal =
           billInput.productItems.reduce(
             (sum, item) =>
               sum +
-              (item.quantity * item.unitPrice -
-                (item.unitDiscount || 0) * item.quantity),
+              (item.quantity * item.unitPrice ),
             0
-          ) - billLevelDiscount;
+          )
+          //  - billLevelDiscount;
+          console.log("🚀 Calculated normaltotal:", normaltotal);
+        // check businessAcc is vat registered
+        const vatRegistered = prisma.businessAcc.findUnique({ 
+          where: { id: billInput.businessAcc },
+          select: { vat: true },
+        });
+        
+
+        const totalBeforeTax = vatRegistered && (await vatRegistered).vat ? ((normaltotal / 1.07)-discount).toFixed(2) : (normaltotal-discount).toFixed(2);
+        const vatAmount = vatRegistered && (await vatRegistered).vat ? ((Number(totalBeforeTax) * 0.07)).toFixed(2) : 0;
+        console.log("🚀 Calculated totalBeforeTax:", totalBeforeTax);
+        console.log("🚀 Calculated vatAmount:", vatAmount);
+        const WHTAmount = billInput.WHTAmount ?? 0;
+        console.log("🚀 Calculated WHTAmount:", WHTAmount);
+        const totalVat = vatRegistered && (await vatRegistered).vat ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2) : totalBeforeTax;
+        console.log("🚀 Calculated final total:", totalVat)
+        const total = (Number(totalVat) - WHTAmount)
+        const totalAfterTax = Number(totalBeforeTax)+ Number(vatAmount);
+        
+
 
         const docType = billInput.DocumentType[0] as DocumentType;
 
@@ -417,10 +439,14 @@ const createBill = async (req: Request, res: Response) => {
                 platform: billInput.platform,
                 image: req.file?.filename ?? "",
                 discount: discount, // Unit discounts only
-                billLevelDiscount: billLevelDiscount, // Bill-level discount
+                //billLevelDiscount: billLevelDiscount, // Bill-level discount
                 priceValid: billInput.priceValid, // Include priceValid if provided
                 total: finalTotal,
                 totalQuotation: total, // Include totalQuotation field
+                totalBeforeTax: Number(totalBeforeTax),
+                totalAfterTax: Number(totalAfterTax),
+                vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+                totalTax: Number(vatAmount),
                 beforeDiscount,
                 DocumentType: docType,
                 note: billInput.note || "", // Optional note field
@@ -497,10 +523,14 @@ const createBill = async (req: Request, res: Response) => {
             platformId: billInput.platformId,
             image: req.file?.filename ?? "",
             discount: discount, // Unit discounts only
-            billLevelDiscount: billLevelDiscount, // Bill-level discount
+            //billLevelDiscount: billLevelDiscount, // Bill-level discount
             priceValid: billInput.priceValid, // Include priceValid if provided
             total: finalTotal,
             totalQuotation: total, // Include totalQuotation field
+            totalBeforeTax: totalBeforeTax,
+            totalAfterTax: totalAfterTax,
+            totalTax:vatAmount,              
+            vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
             beforeDiscount,
             DocumentType: docType,
             note: billInput.note || "", // Optional note field
@@ -625,6 +655,8 @@ const getBills = async (req: Request, res: Response) => {
         priceValid: true, // Include priceValid
         total: true,
         totalQuotation: true, // Include totalQuotation
+        totalBeforeTax: true,
+        totalTax: true,              
         platform: true,
         product: {
           select: {
@@ -1558,7 +1590,7 @@ const getthisYearSales = async (req: Request, res: Response) => {
     if (!sales || !sales._sum.total) {
       return res.status(404).json({ message: "No sales found for this year" });
     }
-    sales._sum.total = Number(sales._sum.total);
+    sales._sum.total = (sales._sum.total);
     const anualSalesM = sales._sum.total.toFixed(2); // Format to 2 decimal places
     // Do not assign string to a number property; instead, return formatted value separately
     console.log("🚀 Get This Year Sales API:", anualSalesM);

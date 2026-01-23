@@ -99,9 +99,13 @@ Table Bill {
   cTaxId String
   product ProductItem [not null]
   payment Payment
-  total Int [not null]
-  totalQuotation Int
-  beforeDiscount Int
+  total Decimal
+  totalQuotation Decimal
+  totalBeforeTax Decimal
+  totalAfterTax Decimal
+  totalTax Decimal
+  vatPercent Int
+  beforeDiscount Decimal
   purchaseAt DateTime [default: `now()`, not null]
   cashStatus Boolean [default: false]
   image String
