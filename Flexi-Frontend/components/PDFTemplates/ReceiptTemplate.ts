@@ -32,11 +32,24 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       0
     ) + (invoice.billLevelDiscount || 0);
 
-  const vatTotal = isVatRegistered
-    ? ((rawTotal - totalDiscount) * vatRate) / (100 + vatRate)
-    : 0;
-  const subTotal = rawTotal - totalDiscount - vatTotal;
-  const grandTotal = rawTotal - totalDiscount;
+  const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
+  console.log("VAT CALCULATED:", vat);
+  const subTotal = rawTotal - totalDiscount - vat;
+  const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
+  console.log("VAT TOTAL CALCULATED:", vatTotal);
+  const grandTotal = (subTotal + vatTotal) - (invoice.withHoldingTax ? Number(invoice.WHTAmount || 0) : 0);
+
+  // Compute sums for the items table (line discounts and displayed line totals)
+  const lineDiscountSum = productItems.reduce(
+    (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
+    0
+  );
+  const lineTotalSum = productItems.reduce((sum: number, item: any) => {
+    const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
+    const lineDiscount = (item.unitDiscount || 0) * item.quantity;
+    const lineTotal = unitPriceDisplayed * item.quantity - lineDiscount;
+    return sum + lineTotal;
+  }, 0);
 
   return `
     <!DOCTYPE html>
@@ -630,32 +643,43 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 </tr>
               </thead>
               <tbody>
-                ${productItems
+                  ${productItems
                   .map(
-                    (item: any, idx: number) => `
+                    (item: any, idx: number) => {
+                      const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
+                      const lineTotal = unitPriceDisplayed * item.quantity - ((item.unitDiscount || 0) * item.quantity);
+                      return `
                   <tr>
                     <td class="text-center font-medium">${idx + 1}</td>
                     <td class="font-medium">${item.product || "-"}</td>
+                    <td class="text-center">${item.quantity}</td>
                     <td class="text-center">
                       ${item.unit ? t(`product.unit.${item.unit}`) : "-"}
-                    </td>
-                    <td class="text-center">${item.quantity}</td>
+                    </td>                   
                     <td class="text-right">${formatCurrencyForPDF(
-                      item.unitPrice
+                      unitPriceDisplayed
                     )}</td>
                       <td class="text-right">${
                         item.unitDiscount
-                          ? `${formatCurrencyForPDF(item.unitDiscount)}`
+                          ? `${formatCurrencyForPDF(item.unitDiscount * item.quantity)}`
                           : "-"
                       }</td>
                     <td class="text-right font-bold">${formatCurrencyForPDF(
-                      item.unitPrice * item.quantity -
-                        (item.unitDiscount || 0) * item.quantity
+                      lineTotal
                     )}</td>
                   </tr>
-                `
+                `;
+                    }
                   )
                   .join("")}
+
+                <!-- Totals row: sum only discount and total columns -->
+                <tr>
+                  <td colspan="5" class="text-right font-bold">${t("print.total")}</td>
+                  <td class="text-right font-bold">-${formatCurrencyForPDF(lineDiscountSum)}</td>
+                  <td class="text-right font-bold">${formatCurrencyForPDF(lineTotalSum)}</td>
+                </tr>
+              
               </tbody>
             </table>
           </div>
