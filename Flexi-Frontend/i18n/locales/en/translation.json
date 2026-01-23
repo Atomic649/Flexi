@@ -1410,6 +1410,8 @@
     "receipt": "Receipt",
     "taxInvoiceReceipt": "Tax Invoice/Receipt",
     "totalSales": "Total Sales",
+    "totalSalesBeforeTax": "Total Sales Before Tax",
+    "totalSalesAfterTax": "Total Sales After Tax",    
     "totalOrders": "Total Orders",
     "printInvoice": "Print Invoice",
     "printTaxInvoice": "Print Tax Invoice",

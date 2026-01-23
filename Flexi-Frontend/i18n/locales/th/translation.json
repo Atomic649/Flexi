@@ -1415,6 +1415,8 @@
     "receipt": "ใบเสร็จรับเงิน",
     "taxInvoiceReceipt": "ใบเสร็จรับเงิน/ใบกำกับภาษี",
     "totalSales": "ยอดขายรวม",
+    "totalSalesBeforeTax": "ยอดรวมก่อนภาษี",
+    "totalSalesAfterTax": "ยอดรวมหลังภาษี",
     "totalOrders": "คำสั่งซื้อรวม",
     "printInvoice": "พิมพ์ใบแจ้งหนี้",
     "printTaxInvoice": "พิมพ์ใบเสร็จรับเงิน/ใบกำกับภาษี",
