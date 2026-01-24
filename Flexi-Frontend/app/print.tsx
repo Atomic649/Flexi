@@ -136,6 +136,8 @@ export default function Print() {
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
 
+  
+
   const totalVat =
     (calculateInvoiceTotal(selectedInvoice) * vatRate) / (100 + vatRate);
 
@@ -1809,25 +1811,23 @@ export default function Print() {
                         <CustomText>{formatCurrency(selectedInvoice.totalTax)}</CustomText>
                       </View>
                     )}
+
+                    {selectedInvoice.WHTAmount>0 &&(
                      <View className="flex-row justify-between mb-2">
                         <View className="flex-row">
                           <CustomText weight="bold">
                             {t("print.WHT")}
                           </CustomText>
                          </View>
-
                         <CustomText>{formatCurrency(selectedInvoice.WHTAmount)}</CustomText>
                       </View>
+                    )}
                     <View className="flex-row justify-between mb-2">
                       <CustomText weight="bold">
                         {t("print.grandTotal")}
                       </CustomText>
                       <CustomText weight="bold">
-                        {isVatRegistered
-                          ? formatCurrency(selectedInvoice)
-                          : formatCurrency(
-                              calculateInvoiceTotal(selectedInvoice)
-                            )}
+                        {formatCurrency(selectedInvoice.totalQuotation)}
                       </CustomText>
                     </View>
                   </View>
