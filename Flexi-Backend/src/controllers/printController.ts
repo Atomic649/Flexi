@@ -47,39 +47,25 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
       },
       include: {
         product: true
-      }
+      },
     });
 
-    // Calculate report statistics
-    const Sales = bills.reduce(
-      (sum, bill) =>
-        sum + (bill.product && Array.isArray(bill.product)
-          ? bill.product.reduce((itemSum, item) => itemSum + Number(item.unitPrice) * Number(item.quantity), 0)
-          : 0),
-      0
-    );
-
-  const Discount = bills.reduce(
-    (sum, bill) =>
-      sum + (bill.product && Array.isArray(bill.product)
-        ? bill.product.reduce((itemSum, item) => itemSum + Number(item.unitDiscount) * Number(item.quantity), 0)
-        : 0),
-    0
-  );
-
-  const totalSales = Sales - Discount;
-
+//  find tatal sales from total in bills table
+    const totalSales = bills.reduce((sum, bill) => Number(bill.total) + sum, 0);
     const paidBills = bills.filter((bill) => bill.cashStatus);
     const unpaidBills = bills.filter((bill) => !bill.cashStatus);
 
     const reportStats = {
-      totalSales,
+      totalSales: totalSales,
       totalOrders: bills.length,
       paidOrders: paidBills.length,
       unpaidOrders: unpaidBills.length,
       averageOrderValue: bills.length > 0 ? totalSales / bills.length : 0,
       bills,
     };
+
+    console.log("🚀 Monthly Report Data:", reportStats);
+  
 
     return res.status(200).json(reportStats);
   } catch (error) {
@@ -127,7 +113,7 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       }
     });
 
-    console.log("🚀 Get Bills By Date Range API:", bills);
+    // console.log("🚀 Get Bills By Date Range API:", bills);
     return res.status(200).json(bills);
   } catch (error) {
     console.error("Error fetching bills by date range:", error);

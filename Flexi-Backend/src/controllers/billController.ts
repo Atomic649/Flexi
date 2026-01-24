@@ -649,6 +649,9 @@ const getBills = async (req: Request, res: Response) => {
         totalQuotation: true, // Include totalQuotation
         totalBeforeTax: true,
         totalTax: true,
+        totalAfterTax: true,
+        WHTAmount: true,
+        WHTpercent: true,
         platform: true,
         product: {
           select: {

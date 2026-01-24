@@ -81,29 +81,14 @@ const formatMonthYear = (date: Date, t: any) => {
   return `${translatedMonth} ${year}`;
 };
 
-// Helper function to calculate total from items and discounts so product included
+// Helper function to calculate total from sum total
 const calculateInvoiceTotal = (invoice: any) => {
   // Check if invoice is null or undefined
   if (!invoice) {
     return 0;
   }
-  
-  let itemsTotal = 0;
-  
-  // Calculate total from product items
-  if (Array.isArray(invoice.product) && invoice.product.length > 0) {
-    itemsTotal = invoice.product.reduce((sum: number, item: any) => {
-      return sum + (item.unitPrice * item.quantity);
-    }, 0);
-  } else {
-    // For single product (legacy format)
-    itemsTotal = (invoice.price || 0) * (invoice.amount || 1);
-  }
-  
-  // Subtract total discounts
-  const totalDiscount = (invoice.discount || 0) + (invoice.billLevelDiscount || 0);
-  
-  return itemsTotal - totalDiscount;
+  const total = Number(invoice.total);
+  return total;
 };
 
 export default function Print() {
@@ -151,10 +136,8 @@ export default function Print() {
   // Check business is Vat registered (use BusinessProvider vat value)
   const isVatRegistered = vat === true;
 
-  const totalIncVat = calculateInvoiceTotal(selectedInvoice);
   const totalVat =
     (calculateInvoiceTotal(selectedInvoice) * vatRate) / (100 + vatRate);
-  const totalExcVat = calculateInvoiceTotal(selectedInvoice) - totalVat;
 
   // Format currency with translation
   const formatCurrency = (amount: number) => {
@@ -310,7 +293,7 @@ export default function Print() {
         // Reuse existing search API by bill id
         const response = await CallAPIPrint.searchBillByIdAPI(
           memberId,
-          String(params.billId)
+          String(params.billId),
         );
         if (response) {
           viewInvoiceDetails(response);
@@ -361,7 +344,7 @@ export default function Print() {
       const response = await CallAPIPrint.getBillsByDateRangeAPI(
         memberId,
         format(startDate, "yyyy-MM-dd"),
-        format(endDate, "yyyy-MM-dd")
+        format(endDate, "yyyy-MM-dd"),
       );
 
       if (response.error) {
@@ -389,7 +372,7 @@ export default function Print() {
         }, 0);
 
         const paidOrders = response.filter(
-          (bill: any) => bill.cashStatus
+          (bill: any) => bill.cashStatus,
         ).length;
         const unpaidOrders = response.length - paidOrders;
 
@@ -450,7 +433,7 @@ export default function Print() {
     try {
       const response = await CallAPIPrint.searchBillsByCustomerAPI(
         memberId,
-        searchQuery
+        searchQuery,
       );
 
       if (response.error) {
@@ -499,7 +482,7 @@ export default function Print() {
     try {
       const response = await CallAPIPrint.searchBillByIdAPI(
         memberId,
-        searchQuery
+        searchQuery,
       );
       // If found, set as array for consistency
       if (response) {
@@ -559,14 +542,14 @@ export default function Print() {
         startDate = format(new Date(sortedDates[0]), "yyyy-MM-dd");
         endDate = format(
           new Date(sortedDates[sortedDates.length - 1]),
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         );
       }
 
       const response = await CallAPIPrint.getBillsByDateRangeAPI(
         memberId,
         startDate,
-        endDate
+        endDate,
       );
 
       if (response.error) {
@@ -698,7 +681,7 @@ export default function Print() {
           },
         ],
       });
-    } else if (isMobile()|| isTablet()) {
+    } else if (isMobile() || isTablet()) {
       // Show options for mobile: "Save as PDF" or "Cancel"
       setAlertConfig({
         visible: true,
@@ -750,7 +733,6 @@ export default function Print() {
       selectedMonth,
       businessDetails,
       businessName,
-      monthlyTotals,
       bills,
       t,
       formatCurrencyForPDF,
@@ -794,7 +776,7 @@ export default function Print() {
       const response = await CallAPIPrint.getExpenseByDateRangeAPI(
         memberId,
         format(startDate, "yyyy-MM-dd"),
-        format(endDate, "yyyy-MM-dd")
+        format(endDate, "yyyy-MM-dd"),
       );
 
       if (response.error) {
@@ -808,14 +790,14 @@ export default function Print() {
       const actualExpenses = response; // Include all expenses (including drafts)
       const totalExpenses = actualExpenses.reduce(
         (sum: number, expense: any) => sum + (Number(expense.amount) || 0),
-        0
+        0,
       );
       const totalExpenseCount = actualExpenses.length;
       const vatExpenses = actualExpenses.filter(
-        (expense: any) => expense.vat
+        (expense: any) => expense.vat,
       ).length;
       const whtExpenses = actualExpenses.filter(
-        (expense: any) => expense.withHoldingTax
+        (expense: any) => expense.withHoldingTax,
       ).length;
       const averageExpenseAmount =
         totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
@@ -965,7 +947,6 @@ export default function Print() {
         selectedMonth,
         businessDetails,
         businessName,
-        monthlyTotals,
         bills,
         t,
         formatCurrencyForPDF,
@@ -1034,7 +1015,7 @@ export default function Print() {
       const response = await CallAPIPrint.getExpenseByDateRangeAPI(
         memberId,
         format(startDate, "yyyy-MM-dd"),
-        format(endDate, "yyyy-MM-dd")
+        format(endDate, "yyyy-MM-dd"),
       );
 
       if (response.error) {
@@ -1048,14 +1029,14 @@ export default function Print() {
       const actualExpenses = response; // Include all expenses (including drafts)
       const totalExpenses = actualExpenses.reduce(
         (sum: number, expense: any) => sum + (Number(expense.amount) || 0),
-        0
+        0,
       );
       const totalExpenseCount = actualExpenses.length;
       const vatExpenses = actualExpenses.filter(
-        (expense: any) => expense.vat
+        (expense: any) => expense.vat,
       ).length;
       const whtExpenses = actualExpenses.filter(
-        (expense: any) => expense.withHoldingTax
+        (expense: any) => expense.withHoldingTax,
       ).length;
       const averageExpenseAmount =
         totalExpenseCount > 0 ? totalExpenses / totalExpenseCount : 0;
@@ -1472,8 +1453,8 @@ export default function Print() {
     return docType === "Quotation"
       ? invoice.quotationId
       : docType === "Invoice"
-      ? invoice.invoiceId
-      : invoice.billId;
+        ? invoice.invoiceId
+        : invoice.billId;
   };
 
   // Helper to get document title based on document type
@@ -1640,22 +1621,50 @@ export default function Print() {
                     </CustomText>
                     <View className="flex-row gap-1">
                       <CustomText
-                      style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cName}</CustomText>
+                        style={{
+                          fontSize: getResponsiveStyles().smallFontSize,
+                        }}
+                      >
+                        {selectedInvoice.cName}
+                      </CustomText>
                       <CustomText
-                      style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cLastName}</CustomText>
+                        style={{
+                          fontSize: getResponsiveStyles().smallFontSize,
+                        }}
+                      >
+                        {selectedInvoice.cLastName}
+                      </CustomText>
                     </View>
                     <CustomText
-                    style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cPhone}</CustomText>
+                      style={{ fontSize: getResponsiveStyles().smallFontSize }}
+                    >
+                      {selectedInvoice.cPhone}
+                    </CustomText>
                     <CustomText
                       numberOfLines={3}
                       ellipsizeMode="tail"
-                      style={{ flexWrap: "wrap",fontSize:getResponsiveStyles().smallFontSize }}
+                      style={{
+                        flexWrap: "wrap",
+                        fontSize: getResponsiveStyles().smallFontSize,
+                      }}
                     >
                       {selectedInvoice.cAddress}
                     </CustomText>
                     <View className="flex-row gap-1">
-                      <CustomText style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cProvince}</CustomText>
-                      <CustomText style={{fontSize:getResponsiveStyles().smallFontSize}}>{selectedInvoice.cPostId}</CustomText>
+                      <CustomText
+                        style={{
+                          fontSize: getResponsiveStyles().smallFontSize,
+                        }}
+                      >
+                        {selectedInvoice.cProvince}
+                      </CustomText>
+                      <CustomText
+                        style={{
+                          fontSize: getResponsiveStyles().smallFontSize,
+                        }}
+                      >
+                        {selectedInvoice.cPostId}
+                      </CustomText>
                     </View>
                   </View>
                   <View className="items-end">
@@ -1670,7 +1679,10 @@ export default function Print() {
                       {t("print.paymentMethod")}
                     </CustomText>
                     <CustomText>
-                    {selectedInvoice.payment ? t(`bill.payment.${selectedInvoice.payment}`) : t("common.unknown")}</CustomText>
+                      {selectedInvoice.payment
+                        ? t(`bill.payment.${selectedInvoice.payment}`)
+                        : t("common.unknown")}
+                    </CustomText>
 
                     <CustomText weight="bold" className="mb-1 mt-2">
                       {t("print.status")}
@@ -1717,8 +1729,7 @@ export default function Print() {
                   </View>
 
                   {/* Product item rows for multi-product */}
-                  {Array.isArray(selectedInvoice.product) &&
-                  selectedInvoice.product.length > 0 ? (
+                  {Array.isArray(selectedInvoice.product) &&                
                     selectedInvoice.product.map((item: any, idx: number) => (
                       <View
                         key={idx}
@@ -1733,34 +1744,32 @@ export default function Print() {
                           {item.quantity}
                           {/* {item.unit ? t(`product.unit.${item.unit}`) || item.unit : t("common.pcs")} */}
                         </CustomText>
+
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {item.unitPrice}
+                          {isVatRegistered
+                            ? (
+                                item.unitPrice /
+                                ((100 + vatRate) / 100)
+                              ).toFixed(1)
+                            : item.unitPrice}
                         </CustomText>
+
+                        {/* total unitPrice *quatity */}
                         <CustomText
                           style={{ width: "20%", textAlign: "right" }}
                         >
-                          {item.unitPrice * item.quantity}
+                          {isVatRegistered
+                            ? (
+                                (item.unitPrice / ((100 + vatRate) / 100)) *
+                                item.quantity
+                              ).toFixed(1)
+                            : (item.unitPrice * item.quantityz).toFixed(1)}
                         </CustomText>
                       </View>
                     ))
-                  ) : (
-                    <View className="flex-row justify-between items-center py-2">
-                      <CustomText style={{ width: "38%" }}>
-                        {selectedInvoice.product}
-                      </CustomText>
-                      <CustomText style={{ width: "22%", textAlign: "center" }}>
-                        {selectedInvoice.amount}
-                      </CustomText>
-                      <CustomText style={{ width: "20%", textAlign: "right" }}>
-                        {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
-                      </CustomText>
-                      <CustomText style={{ width: "20%", textAlign: "right" }}>
-                        {formatCurrency(calculateInvoiceTotal(selectedInvoice))}
-                      </CustomText>
-                    </View>
-                  )}
+                  }
                 </View>
 
                 <View className="flex-row justify-end mt-2">
@@ -1775,7 +1784,7 @@ export default function Print() {
                         <CustomText>
                           {formatCurrency(
                             (selectedInvoice.discount || 0) +
-                              (selectedInvoice.billLevelDiscount || 0)
+                              (selectedInvoice.billLevelDiscount || 0),
                           )}
                         </CustomText>
                       </View>
@@ -1785,7 +1794,7 @@ export default function Print() {
                         <CustomText weight="bold">
                           {t("print.subtotal")}
                         </CustomText>
-                        <CustomText>{formatCurrency(totalExcVat)}</CustomText>
+                        <CustomText>{formatCurrency(selectedInvoice.totalBeforeTax)}</CustomText>
                       </View>
                     )}
                     {isVatRegistered && (
@@ -1797,16 +1806,25 @@ export default function Print() {
                           <CustomText weight="bold">{` (${vatRate}%)`}</CustomText>
                         </View>
 
-                        <CustomText>{formatCurrency(totalVat)}</CustomText>
+                        <CustomText>{formatCurrency(selectedInvoice.totalTax)}</CustomText>
                       </View>
                     )}
+                     <View className="flex-row justify-between mb-2">
+                        <View className="flex-row">
+                          <CustomText weight="bold">
+                            {t("print.WHT")}
+                          </CustomText>
+                         </View>
+
+                        <CustomText>{formatCurrency(selectedInvoice.WHTAmount)}</CustomText>
+                      </View>
                     <View className="flex-row justify-between mb-2">
                       <CustomText weight="bold">
                         {t("print.grandTotal")}
                       </CustomText>
                       <CustomText weight="bold">
                         {isVatRegistered
-                          ? formatCurrency(totalIncVat)
+                          ? formatCurrency(selectedInvoice)
                           : formatCurrency(
                               calculateInvoiceTotal(selectedInvoice)
                             )}
@@ -1948,12 +1966,12 @@ export default function Print() {
                                 backgroundColor:
                                   index <
                                   availableSteps.findIndex(
-                                    (s) => s === selectedPrintType
+                                    (s) => s === selectedPrintType,
                                   )
                                     ? "#04ecc1"
                                     : theme === "dark"
-                                    ? "#444"
-                                    : "#ddd",
+                                      ? "#444"
+                                      : "#ddd",
                               }}
                             />
                           ))}
@@ -2090,8 +2108,8 @@ export default function Print() {
                       ? "transparent"
                       : "#ffffff"
                     : theme === "dark"
-                    ? "#212121"
-                    : "#e7e7e7",
+                      ? "#212121"
+                      : "#e7e7e7",
                 borderBottomWidth:
                   activeTab === TAB_INDICES.MONTHLY_REPORT ? 2 : 0,
                 borderBottomColor:
@@ -2126,8 +2144,8 @@ export default function Print() {
                       ? "transparent"
                       : "#ffffff"
                     : theme === "dark"
-                    ? "#212121"
-                    : "#e7e7e7",
+                      ? "#212121"
+                      : "#e7e7e7",
                 borderBottomWidth:
                   activeTab === TAB_INDICES.INDIVIDUAL_INVOICE ? 2 : 0,
                 borderBottomColor:
@@ -2288,7 +2306,7 @@ export default function Print() {
                                   ? `${Math.round(
                                       (monthlyTotals.paidOrders /
                                         monthlyTotals.totalOrders) *
-                                        100
+                                        100,
                                     )}%`
                                   : "0%"}
                               </CustomText>
@@ -2298,7 +2316,7 @@ export default function Print() {
                       </View>
 
                       <View
-                          className={`p-4 ${
+                        className={`p-4 ${
                           isMobile() ? "w-full" : "w-1/2 pr-2"
                         } mb-4`}
                       >
@@ -2325,7 +2343,7 @@ export default function Print() {
                                   ? `${Math.round(
                                       (monthlyTotals.unpaidOrders /
                                         monthlyTotals.totalOrders) *
-                                        100
+                                        100,
                                     )}%`
                                   : "0%"}
                               </CustomText>
@@ -2335,14 +2353,15 @@ export default function Print() {
                       </View>
 
                       <View
-                          className={`p-4 ${
+                        className={`p-4 ${
                           isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}>
+                        } mb-4`}
+                      >
                         <View
                           style={{
                             backgroundColor:
                               theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }} 
+                          }}
                           className="p-4 rounded-lg"
                         >
                           <CustomText className=" mb-1">
@@ -2358,10 +2377,13 @@ export default function Print() {
                     {/* Monthly Invoices */}
                     <View className="flex-row">
                       <CustomText weight="bold" className="mb-4 text-lg pt-4">
-                        {t("print.allDocuments")}                         
+                        {t("print.allDocuments")}
                       </CustomText>
 
-                      <CustomText weight="bold" className="mb-4 text-lg ml-2 pt-4">
+                      <CustomText
+                        weight="bold"
+                        className="mb-4 text-lg ml-2 pt-4"
+                      >
                         ({bills.length})
                       </CustomText>
                     </View>
@@ -2438,10 +2460,10 @@ export default function Print() {
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("print.enterCustomerName")
                             : searchType === SEARCH_TYPES.QUOTATION_ID
-                            ? t("print.enterQuotationId")
-                            : searchType === SEARCH_TYPES.INVOICE_ID
-                            ? t("print.enterInvoiceId")
-                            : t("print.enterBillId")
+                              ? t("print.enterQuotationId")
+                              : searchType === SEARCH_TYPES.INVOICE_ID
+                                ? t("print.enterInvoiceId")
+                                : t("print.enterBillId")
                         }
                         value={searchQuery}
                         handleChangeText={setSearchQuery}
@@ -2449,17 +2471,17 @@ export default function Print() {
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("bill.enterName")
                             : searchType === SEARCH_TYPES.QUOTATION_ID
-                            ? "QT2025/123 or 2025/123 or 123"
-                            : searchType === SEARCH_TYPES.INVOICE_ID
-                            ? "INV2025/123 or 2025/123 or 123"
-                            : "REC2025/123 or 2025/123 or 123"
+                              ? "QT2025/123 or 2025/123 or 123"
+                              : searchType === SEARCH_TYPES.INVOICE_ID
+                                ? "INV2025/123 or 2025/123 or 123"
+                                : "REC2025/123 or 2025/123 or 123"
                         }
                         bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                         placeholderTextColor={
                           theme === "dark" ? "#606060" : "#b1b1b1"
                         }
                         textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                        keyboardType={ "default" }
+                        keyboardType={"default"}
                       />
                     </View>
                   )}
@@ -2494,7 +2516,7 @@ export default function Print() {
                             {dateRange.length === 1
                               ? formatDate(dateRange[0])
                               : `${formatDate(dateRange[0])} - ${formatDate(
-                                  dateRange[dateRange.length - 1]
+                                  dateRange[dateRange.length - 1],
                                 )}`}
                           </CustomText>
                         </View>
