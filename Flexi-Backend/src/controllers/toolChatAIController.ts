@@ -25,7 +25,7 @@ async function aggregate(memberId: string, r: Range) {
     _count: { id: true },
   });
   return {
-    amount: res._sum.total || 0,
+    amount: Number(res._sum.total) || 0,
     count: res._count.id || 0,
     period: `${r.start.toISOString().split("T")[0]} to ${addDays(r.end, -1).toISOString().split("T")[0]}`,
   };

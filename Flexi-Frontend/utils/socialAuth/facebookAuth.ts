@@ -56,19 +56,19 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
     // Try to exchange short-lived token for a long-lived token via backend
     let finalAccessToken = accessToken;
     let finalExpiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
-    try {
-      const axios = await getAxiosWithAuth();
-      const resp = await axios.post("/facebook/exchange", { accessToken });
-      if (resp?.data?.accessToken) {
-        finalAccessToken = resp.data.accessToken;
-        finalExpiresAt = resp.data.expiresAt ? Number(resp.data.expiresAt) : finalExpiresAt;
-        console.log('Received long-lived Facebook token from backend', finalAccessToken, finalExpiresAt);
-      } else {
-        console.warn('Backend exchange did not return a long-lived token; using short-lived token');
-      }
-    } catch (err) {
-      console.warn('Facebook token exchange failed or not authenticated; using short-lived token', err);
-    }
+    // try {
+    //   const axios = await getAxiosWithAuth();
+    //   const resp = await axios.post("/facebook/exchange", { accessToken });
+    //   if (resp?.data?.accessToken) {
+    //     finalAccessToken = resp.data.accessToken;
+    //     finalExpiresAt = resp.data.expiresAt ? Number(resp.data.expiresAt) : finalExpiresAt;
+    //     console.log('Received long-lived Facebook token from backend', finalAccessToken, finalExpiresAt);
+    //   } else {
+    //     console.warn('Backend exchange did not return a long-lived token; using short-lived token');
+    //   }
+    // } catch (err) {
+    //   console.warn('Facebook token exchange failed or not authenticated; using short-lived token', err);
+    // }
 
     // Cache token for reuse
     await AsyncStorage.setItem(

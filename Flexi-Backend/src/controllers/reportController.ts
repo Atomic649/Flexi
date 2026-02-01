@@ -31,6 +31,8 @@ const dailyReport = async (req: Request, res: Response) => {
       },
      });
 
+     console.log(bills);
+
     // Group by date and sum adsCost
     const adsCost = await prisma.adsCost.findMany({
       where: {
@@ -40,6 +42,8 @@ const dailyReport = async (req: Request, res: Response) => {
         date: true,
         adsCost: true,
       }, });
+
+    console.log(adsCost);
 
     // Group by purchaseAt and sum amount and total
     const dailyBills = bills.reduce((acc: any, bill) => {
@@ -58,12 +62,14 @@ const dailyReport = async (req: Request, res: Response) => {
       if (bill.product && Array.isArray(bill.product)) {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
-      acc[date].total += bill.total;
-      acc[date].totalDiscount += (bill.discount || 0);
-      acc[date].billLevelDiscount += (bill.billLevelDiscount || 0);
-      acc[date].beforeDiscount += (bill.beforeDiscount || 0);
+        acc[date].total += Number(bill.total || 0);
+        acc[date].totalDiscount += Number(bill.discount || 0);
+        acc[date].billLevelDiscount += Number(bill.billLevelDiscount || 0);
+        acc[date].beforeDiscount += Number(bill.beforeDiscount || 0);
       return acc;
     }, {});
+
+    console.log(" 🚀 dailyBills", dailyBills);
 
     // Group by date and sum adsCost
     // Fix: Split the adsCost entries first and then sum them properly
@@ -78,6 +84,8 @@ const dailyReport = async (req: Request, res: Response) => {
       acc[date].adsCost += Number(ad.adsCost);
       return acc;
     }, {});
+
+    console.log(" 🚀 dailyAdsCost", dailyAdsCost);
 
     // Merge dailyBills and dailyAdsCost (include days that have only adsCost)
     const allDates = new Set([...Object.keys(dailyBills), ...Object.keys(dailyAdsCost)]);
@@ -105,7 +113,7 @@ const dailyReport = async (req: Request, res: Response) => {
         beforeDiscount,
       };
     }).sort((a, b) => (a.date < b.date ? -1 : 1));
-    //console.log(" 🚀 result", result);
+    console.log(" 🚀 result", result);
     res.json(result);
   } catch (e) {
     console.error(e);
@@ -187,10 +195,10 @@ const monthlyReport = async (req: Request, res: Response) => {
       if (bill.product && Array.isArray(bill.product)) {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
-      acc[date].total += bill.total;
-      acc[date].totalDiscount += (bill.discount || 0);
-      acc[date].billLevelDiscount += (bill.billLevelDiscount || 0);
-      acc[date].beforeDiscount += (bill.beforeDiscount || 0);
+        acc[date].total += Number(bill.total || 0);
+        acc[date].totalDiscount += Number(bill.discount || 0);
+        acc[date].billLevelDiscount += Number(bill.billLevelDiscount || 0);
+        acc[date].beforeDiscount += Number(bill.beforeDiscount || 0);
       return acc;
     }, {});
 
