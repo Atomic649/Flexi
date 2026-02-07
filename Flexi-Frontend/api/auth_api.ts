@@ -54,6 +54,25 @@ class CallAPIUser {
     }
   }
 
+  // Resend verification email API
+  async resendVerificationEmailAPI(data: { email: string }): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const response = await getAxios().post("/auth/resend-verification", data);
+      console.log("📧resendVerificationEmailAPI:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Resend Verification Email API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
   // Get Session
 
   async getSessionAPI(): Promise<any> {

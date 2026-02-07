@@ -66,6 +66,63 @@ const schema = Joi.object({
     .default(["Receipt"]),
 });
 
+function mapBusinessAccCreateError(err: unknown): {
+  httpStatus: number;
+  body: {
+    message: string;
+    reason: string;
+    details?: Record<string, unknown>;
+  };
+} {
+  const e = err as any;
+  const code = typeof e?.code === "string" ? e.code : undefined;
+
+  // Prisma KnownRequestError codes (common ones we care about)
+  // P2002: Unique constraint failed
+  if (code === "P2002") {
+    return {
+      httpStatus: 409,
+      body: {
+        message: "Business account already exists",
+        reason: "UNIQUE_CONSTRAINT",
+        details: {
+          target: e?.meta?.target,
+        },
+      },
+    };
+  }
+
+  // P2003: Foreign key constraint failed
+  if (code === "P2003") {
+    return {
+      httpStatus: 400,
+      body: {
+        message: "Invalid reference. Please check related IDs.",
+        reason: "FOREIGN_KEY_CONSTRAINT",
+        details: {
+          field: e?.meta?.field_name,
+        },
+      },
+    };
+  }
+
+  // Fallback
+  const body: { message: string; reason: string; details?: Record<string, unknown> } = {
+    message: "Failed to create business account",
+    reason: "INTERNAL_ERROR",
+  };
+
+  if (process.env.NODE_ENV !== "production") {
+    body.details = {
+      name: e?.name,
+      code,
+      message: e?.message,
+    };
+  }
+
+  return { httpStatus: 500, body };
+}
+
 // Create a Business Account - Post
 const createBusinessAcc = async (req: Request, res: Response) => {
   const businessAccInput: businessAccInput = req.body;
@@ -216,8 +273,9 @@ const createBusinessAcc = async (req: Request, res: Response) => {
       }
     }
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to create business account" });
+      console.error("Failed to create business account:", e);
+      const mapped = mapBusinessAccCreateError(e);
+      return res.status(mapped.httpStatus).json(mapped.body);
   }
 };
 
@@ -393,8 +451,9 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
       },
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to create business account" });
+    console.error("Failed to create business account:", e);
+    const mapped = mapBusinessAccCreateError(e);
+    return res.status(mapped.httpStatus).json(mapped.body);
   }
 };
 

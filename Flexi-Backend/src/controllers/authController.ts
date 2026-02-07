@@ -6,7 +6,6 @@ import Joi from "joi";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
-
 // Ensure this file is also converted to TypeScript
 // Define types for the user inputs
 interface UserInput {
@@ -20,7 +19,7 @@ interface UserInput {
   username?: string;
 }
 
-const Prisma = flexiDBPrismaClient
+const Prisma = flexiDBPrismaClient;
 
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };
@@ -36,7 +35,8 @@ const passwordSchema = Joi.string()
   .messages({
     "string.min": "Password must be at least 8 characters.",
     "string.max": "Password must be less than 128 characters.",
-    "string.pattern.base": "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
+    "string.pattern.base":
+      "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
   });
 
 // Username must start with '@' and include only English letters and numbers (no spaces or special characters)
@@ -44,7 +44,8 @@ const usernameSchema = Joi.string()
   .trim()
   .pattern(/^@[A-Za-z0-9]+$/)
   .messages({
-    "string.pattern.base": "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
+    "string.pattern.base":
+      "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
   });
 
 // Centralized bcrypt cost factor (env override; default 12 for stronger security)
@@ -56,10 +57,15 @@ let transporter: nodemailer.Transporter;
 // Initialize the email transporter based on environment
 async function initializeTransporter() {
   // Check if we're in a production environment
-  const forceRealEmail = process.env.FORCE_REAL_EMAIL === 'true';
-  const hasGmailCreds = Boolean(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD);
+  const forceRealEmail = process.env.FORCE_REAL_EMAIL === "true";
+  const hasGmailCreds = Boolean(
+    process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD,
+  );
 
-  if (process.env.NODE_ENV === 'production' || (forceRealEmail && hasGmailCreds)) {
+  if (
+    process.env.NODE_ENV === "production" ||
+    (forceRealEmail && hasGmailCreds)
+  ) {
     // For production (or explicit dev override), use the actual email service
     transporter = nodemailer.createTransport({
       service: "gmail",
@@ -67,27 +73,27 @@ async function initializeTransporter() {
         // Use OAuth2 or App Password
         user: process.env.EMAIL_USER,
         // For App Password setup: https://support.google.com/accounts/answer/185833
-        pass: process.env.EMAIL_APP_PASSWORD, 
+        pass: process.env.EMAIL_APP_PASSWORD,
       },
     });
-  } else if (process.env.NODE_ENV === 'test') {
+  } else if (process.env.NODE_ENV === "test") {
     // Jest/test environment: avoid network calls (Ethereal) and keep handles clean
     transporter = nodemailer.createTransport({
       streamTransport: true,
-      newline: 'unix',
+      newline: "unix",
       buffer: true,
     });
   } else {
     // For development/testing, create a test account with Ethereal
-    console.log('Development mode: Creating Ethereal test account');
-    
+    console.log("Development mode: Creating Ethereal test account");
+
     try {
       // Create a testing account with Ethereal
       const testAccount = await nodemailer.createTestAccount();
-      
+
       // Create a transporter with the test account
       transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
+        host: "smtp.ethereal.email",
         port: 587,
         secure: false,
         auth: {
@@ -95,17 +101,17 @@ async function initializeTransporter() {
           pass: testAccount.pass,
         },
       });
-      
-      console.log('Ethereal test account created successfully');
-      console.log('Ethereal credentials - User:', testAccount.user);
+
+      console.log("Ethereal test account created successfully");
+      console.log("Ethereal credentials - User:", testAccount.user);
     } catch (error) {
-      console.error('Failed to create Ethereal test account:', error);
-      
+      console.error("Failed to create Ethereal test account:", error);
+
       // Fallback to a nodemailer development transport that just logs messages
       transporter = nodemailer.createTransport({
         streamTransport: true,
-        newline: 'unix',
-        buffer: true
+        newline: "unix",
+        buffer: true,
       });
     }
   }
@@ -145,32 +151,30 @@ async function sendVerificationEmail(params: {
         ? process.env.EMAIL_USER
         : "dev@example.com",
     to,
-   subject: "ยืนยันอีเมลของคุณ (Verify your email)",
+    subject: "ยืนยันอีเมลของคุณ (Verify your email)",
     html: `
       <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111;">
         <h1 style="margin: 0 0 12px;">ยืนยันอีเมลของคุณ(Verify your email)</h1>
         <p style="margin: 0 0 12px;">ขอบคุณที่สมัครใช้งาน Flexi </p>
         <p style="margin: 0 0 12px;">กรุณายืนยันอีเมลของคุณโดยคลิกปุ่มหรือลิงก์ด้านล่าง</p>
-        
-        <p style="margin: 0 0 12px;">Thanks for signing up for Flexi.</p>
-        <p style="margin: 0 0 12px;">Please verify your email by clicking the button or link below.</p>
-
+        <p style="margin: 0 0 12px;">ลิงก์นี้หมดอายุใน 24 ชั่วโมง </p>
+        <p style="margin: 0;">หากคุณไม่ได้สร้างบัญชี คุณสามารถละเว้นอีเมลนี้ได้</p>
+       
         <p style="margin: 0 0 16px;">
           <a
             href="${verifyUrl}"
-            style="display: inline-block; padding: 10px 16px; background: #25ebc0; color: #fff; text-decoration: none; border-radius: 6px;"
+            style="display: inline-block; padding: 10px 16px; background: #24d6af; color: #fff; text-decoration: none; border-radius: 6px;"
           >ยืนยันอีเมล (Verify Email)</a>
         </p>
         
-        <p style="margin: 0 0 12px;">ลิงก์นี้หมดอายุใน 24 ชั่วโมง </p>
-        <p style="margin: 0;">หากคุณไม่ได้สร้างบัญชี คุณสามารถละเว้นอีเมลนี้ได้</p>
+        <p style="margin: 0 0 12px;">Thanks for signing up for Flexi.</p>
+        <p style="margin: 0 0 12px;">Please verify your email by clicking the button or link above.</p>
         <p style="margin: 0 0 12px;">This link expires in 24 hours.</p>
         <p style="margin: 0;">If you did not create an account, you can ignore this email.</p>
       
       </div>
     `,
   };
-
 
   const info = await transporter.sendMail(mailOptions);
 
@@ -184,6 +188,66 @@ async function sendVerificationEmail(params: {
     }
     console.log("Verify URL (for development testing):", verifyUrl);
   }
+}
+
+function mapRegisterError(err: unknown): {
+  httpStatus: number;
+  body: {
+    message: string;
+    reason: string;
+    details?: Record<string, unknown>;
+  };
+} {
+  const e = err as any;
+  const code = typeof e?.code === "string" ? e.code : undefined;
+
+  // Prisma KnownRequestError codes
+  // P2002: Unique constraint failed
+  if (code === "P2002") {
+    return {
+      httpStatus: 409,
+      body: {
+        message: "User already exists",
+        reason: "UNIQUE_CONSTRAINT",
+        details: {
+          target: e?.meta?.target,
+        },
+      },
+    };
+  }
+
+  // P2003: Foreign key constraint failed
+  if (code === "P2003") {
+    return {
+      httpStatus: 400,
+      body: {
+        message: "Invalid reference. Please check related IDs.",
+        reason: "FOREIGN_KEY_CONSTRAINT",
+        details: {
+          field: e?.meta?.field_name,
+        },
+      },
+    };
+  }
+
+  const body: {
+    message: string;
+    reason: string;
+    details?: Record<string, unknown>;
+  } = {
+    message: "Failed to register",
+    reason: "INTERNAL_ERROR",
+  };
+
+  if (process.env.NODE_ENV !== "production") {
+    body.details = {
+      name: e?.name,
+      code,
+      message: e?.message,
+    };
+  }
+
+  return { httpStatus: 500, body };
 }
 
 const register = async (req: Request, res: Response) => {
@@ -213,8 +277,8 @@ const register = async (req: Request, res: Response) => {
         message: "User already exists",
       });
     }
-  // Hash password
-  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
+    // Hash password
+    const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
 
     // Email verification token (24 hours)
@@ -230,17 +294,21 @@ const register = async (req: Request, res: Response) => {
         phone: userInput.phone,
         username: userInput.username,
         // These fields exist in prisma/db1/schema1.prisma; keep cast to avoid breakage if client isn't regenerated yet
-        ...( {
+        ...({
           emailVerifiedAt: null,
           emailVerifyToken,
           emailVerifyTokenExpiry,
-        } as any ),
+        } as any),
       },
     });
 
     // Send verification email (best-effort)
     try {
-      await sendVerificationEmail({ req, to: user.email, token: emailVerifyToken });
+      await sendVerificationEmail({
+        req,
+        to: user.email,
+        token: emailVerifyToken,
+      });
     } catch (mailError) {
       console.error("Failed to send verification email:", mailError);
     }
@@ -262,8 +330,9 @@ const register = async (req: Request, res: Response) => {
       emailVerificationRequired: true,
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: "failed to register" });
+    console.error("Failed to register:", e);
+    const mapped = mapRegisterError(e);
+    return res.status(mapped.httpStatus).json(mapped.body);
   }
 };
 
@@ -272,8 +341,8 @@ const register = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
-  email: Joi.string().email().required(),
-  password: passwordSchema.required(),
+    email: Joi.string().email().required(),
+    password: passwordSchema.required(),
   });
   const { error } = schema.validate(userInput);
   if (error) {
@@ -299,9 +368,8 @@ const login = async (req: Request, res: Response) => {
     // find businessAcc by userId
     const businessAcc = await Prisma.businessAcc.findFirst({
       where: {
-        userId:user.id
+        userId: user.id,
       },
-    
     });
     if (!businessAcc) {
       return res.status(404).json({ message: "Business account not found" });
@@ -324,6 +392,7 @@ const login = async (req: Request, res: Response) => {
         businessId: businessAcc.id,
         emailVerifiedAt: (user as any).emailVerifiedAt ?? null,
       },
+      emailVerificationRequired: !(user as any).emailVerifiedAt,
     });
   } catch (e) {
     console.error(e);
@@ -346,43 +415,51 @@ const verifyEmail = async (req: Request, res: Response) => {
   try {
     const user = await Prisma.user.findFirst({
       where: {
-        ...( {
+        ...({
           emailVerifyToken: token,
           emailVerifyTokenExpiry: { gt: new Date() },
           emailVerifiedAt: null,
-        } as any ),
+        } as any),
       },
     });
 
     if (!user) {
       // Return HTML if request seems like a browser navigation
-      if (req.method === "GET" && (req.get("accept") || "").includes("text/html")) {
+      if (
+        req.method === "GET" &&
+        (req.get("accept") || "").includes("text/html")
+      ) {
         return res
           .status(400)
           .send(
-            "<h1>Invalid or expired link</h1><p>Please request a new verification email.</p>"
+            "<h1>Invalid or expired link</h1><p>Please request a new verification email.</p>",
           );
       }
 
-      return res.status(400).json({ message: "Invalid or expired verification token" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification token" });
     }
 
     await Prisma.user.update({
       where: { id: user.id },
       data: {
-        ...( {
+        ...({
           emailVerifiedAt: new Date(),
           emailVerifyToken: null,
           emailVerifyTokenExpiry: null,
-        } as any ),
+        } as any),
       },
     });
 
-    if (req.method === "GET" && (req.get("accept") || "").includes("text/html")) {
+    if (
+      req.method === "GET" &&
+      (req.get("accept") || "").includes("text/html")
+    ) {
       return res
         .status(200)
         .send(
-          "<h1>Email verified</h1><p>Your email is verified. You can return to the app.</p>"
+          "<h1>Email verified</h1><p>Your email is verified. You can return to the app.</p>",
         );
     }
 
@@ -413,7 +490,8 @@ const resendVerificationEmail = async (req: Request, res: Response) => {
     if (!user || (user as any).emailVerifiedAt) {
       return res.status(200).json({
         status: "ok",
-        message: "If your email is registered, you will receive a verification link",
+        message:
+          "If your email is registered, you will receive a verification link",
       });
     }
 
@@ -423,26 +501,33 @@ const resendVerificationEmail = async (req: Request, res: Response) => {
     await Prisma.user.update({
       where: { id: user.id },
       data: {
-        ...( {
+        ...({
           emailVerifyToken,
           emailVerifyTokenExpiry,
-        } as any ),
+        } as any),
       },
     });
 
     try {
-      await sendVerificationEmail({ req, to: user.email, token: emailVerifyToken });
+      await sendVerificationEmail({
+        req,
+        to: user.email,
+        token: emailVerifyToken,
+      });
     } catch (mailError) {
       console.error("Failed to resend verification email:", mailError);
     }
 
     return res.status(200).json({
       status: "ok",
-      message: "If your email is registered, you will receive a verification link",
+      message:
+        "If your email is registered, you will receive a verification link",
     });
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ message: "Failed to resend verification email" });
+    return res
+      .status(500)
+      .json({ message: "Failed to resend verification email" });
   }
 };
 
@@ -484,19 +569,18 @@ const permanentlyDelete = async (req: Request, res: Response) => {
   }
 
   try {
-    // Find business account by memberId 
+    // Find business account by memberId
     const businessAcc = await Prisma.member.findUnique({
-          where: {
-            uniqueId: memberId,
-          },
-          select:{
-            businessId : true
-          }
-        });
-        if (!businessAcc) {
-          return res.status(404).json({ message: "Business account not found" });
-        }
-
+      where: {
+        uniqueId: memberId,
+      },
+      select: {
+        businessId: true,
+      },
+    });
+    if (!businessAcc) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
 
     // Delete all related data in BusinessAcc
 
@@ -528,7 +612,6 @@ const permanentlyDelete = async (req: Request, res: Response) => {
       },
     });
 
-    
     //Product
     // First, get all products for this businessAcc
     const products = await Prisma.product.findMany({
@@ -561,11 +644,9 @@ const permanentlyDelete = async (req: Request, res: Response) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Business account and all related data deleted successfully",
-      });
+    res.status(200).json({
+      message: "Business account and all related data deleted successfully",
+    });
   } catch (e) {
     console.error(e);
     res
@@ -593,7 +674,7 @@ const updateUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   try {
-  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
+    const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
     const user = await Prisma.user.update({
       where: {
@@ -674,7 +755,11 @@ const session = async (req: Request, res: Response) => {
     res.json({ session: user, message: "session found" });
   } catch (e: any) {
     // JWT errors are client/auth issues, not server errors
-    if (e?.name === "JsonWebTokenError" || e?.name === "TokenExpiredError" || e?.name === "NotBeforeError") {
+    if (
+      e?.name === "JsonWebTokenError" ||
+      e?.name === "TokenExpiredError" ||
+      e?.name === "NotBeforeError"
+    ) {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
 
@@ -697,7 +782,6 @@ const changePassword = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-
   try {
     const user = await Prisma.user.findUnique({
       where: {
@@ -713,7 +797,7 @@ const changePassword = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Old password is incorrect" });
     }
 
-  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
+    const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
     const updatedUser = await Prisma.user.update({
@@ -745,12 +829,12 @@ const changePassword = async (req: Request, res: Response) => {
 // Forgot Password - Sends reset token email
 const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
-  
+
   // Validate input
   const schema = Joi.object({
     email: Joi.string().email().required(),
   });
-  
+
   const { error } = schema.validate({ email });
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -766,14 +850,15 @@ const forgotPassword = async (req: Request, res: Response) => {
 
     if (!user) {
       // For security reasons, don't reveal that the user doesn't exist
-      return res.status(200).json({ 
+      return res.status(200).json({
         status: "ok",
-        message: "If your email is registered, you will receive a password reset link" 
+        message:
+          "If your email is registered, you will receive a password reset link",
       });
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
     // Store token in database
@@ -791,62 +876,70 @@ const forgotPassword = async (req: Request, res: Response) => {
     const jwtResetToken = jwt.sign(
       { id: user.id, token: resetToken },
       "reset-secret",
-      resetTokenConfig
+      resetTokenConfig,
     );
 
     // Email content
     // Frontend uses Expo Router route: app/(auth)/reset_password.tsx
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset_password?token=${encodeURIComponent(jwtResetToken)}`;
+    const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset_password?token=${encodeURIComponent(jwtResetToken)}`;
     const mailOptions = {
-      from: process.env.NODE_ENV === 'production' ? process.env.EMAIL_USER : 'dev@example.com',
+      from:
+        process.env.NODE_ENV === "production"
+          ? process.env.EMAIL_USER
+          : "dev@example.com",
       to: user.email,
-      subject: 'Password Reset Request',
+      subject: "Password Reset Request",
       html: `
         <h1>Password Reset</h1>
         <p>You requested a password reset. Please click the link below to reset your password:</p>
         <a href="${resetUrl}">Reset Password</a>
         <p>This link is valid for 1 hour.</p>
         <p>If you did not request a password reset, please ignore this email.</p>
-      `
+      `,
     };
 
     // Send email
     const info = await transporter.sendMail(mailOptions);
 
     // In development mode, log the test email URL
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Password reset email sent in development mode');
-      
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Password reset email sent in development mode");
+
       // Check if we have a preview URL from Ethereal
       if (nodemailer.getTestMessageUrl(info)) {
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
       }
-      
+
       // If using stream transport, show the message content
       if (info.message) {
-        console.log('Email content:', info.message.toString());
+        console.log("Email content:", info.message.toString());
       }
-      
-      console.log('Reset URL (for development testing):', resetUrl);
+
+      console.log("Reset URL (for development testing):", resetUrl);
     }
 
     res.status(200).json({
       status: "ok",
-      message: "If your email is registered, you will receive a password reset link",
+      message:
+        "If your email is registered, you will receive a password reset link",
     });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "Failed to process password reset request" });
+    res
+      .status(500)
+      .json({ message: "Failed to process password reset request" });
   }
 };
 
 // Reset Password - Validates token and updates password
 const resetPassword = async (req: Request, res: Response) => {
-
   const tokenInput = req.body?.token;
   const newPassword = req.body?.newPassword;
   // Some email clients wrap long URLs and introduce whitespace/newlines.
-  const token = typeof tokenInput === "string" ? tokenInput.replace(/\s+/g, "") : tokenInput;
+  const token =
+    typeof tokenInput === "string"
+      ? tokenInput.replace(/\s+/g, "")
+      : tokenInput;
   // console.log("Reset Password called with token:", token);
   // console.log("New Password:", newPassword);
 
@@ -855,15 +948,20 @@ const resetPassword = async (req: Request, res: Response) => {
     token: Joi.string().required(),
     newPassword: passwordSchema.required(),
   });
-  
+
   const { error } = schema.validate({ token, newPassword });
   if (error) {
-    return res.status(400).json({ message: error.details[0].message, reason: "VALIDATION_ERROR" });
+    return res
+      .status(400)
+      .json({ message: error.details[0].message, reason: "VALIDATION_ERROR" });
   }
 
   try {
     // Verify JWT token
-    const decoded = jwt.verify(token, "reset-secret") as { id: number; token: string };
+    const decoded = jwt.verify(token, "reset-secret") as {
+      id: number;
+      token: string;
+    };
 
     // Load the user first so we can provide clearer client-facing messages.
     const userById = await Prisma.user.findUnique({
@@ -871,29 +969,51 @@ const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!userById) {
-      return res.status(400).json({ message: "Invalid or expired reset token", reason: "USER_NOT_FOUND" });
+      return res
+        .status(400)
+        .json({
+          message: "Invalid or expired reset token",
+          reason: "USER_NOT_FOUND",
+        });
     }
 
     // If the token was cleared, it was either already used or never requested.
     if (!userById.resetToken || !userById.resetTokenExpiry) {
-      return res.status(400).json({ message: "Reset link is no longer valid. Please request a new reset link.", reason: "RESET_TOKEN_CLEARED" });
+      return res
+        .status(400)
+        .json({
+          message:
+            "Reset link is no longer valid. Please request a new reset link.",
+          reason: "RESET_TOKEN_CLEARED",
+        });
     }
 
     // If the stored reset token doesn't match, the user requested a newer link.
     if (userById.resetToken !== decoded.token) {
-      return res.status(400).json({ message: "This reset link has been replaced by a newer one. Please request a new reset link.", reason: "RESET_TOKEN_MISMATCH" });
+      return res
+        .status(400)
+        .json({
+          message:
+            "This reset link has been replaced by a newer one. Please request a new reset link.",
+          reason: "RESET_TOKEN_MISMATCH",
+        });
     }
 
     // Expiry check
     if (userById.resetTokenExpiry.getTime() <= Date.now()) {
-      return res.status(400).json({ message: "Reset link has expired. Please request a new reset link.", reason: "RESET_TOKEN_EXPIRED" });
+      return res
+        .status(400)
+        .json({
+          message: "Reset link has expired. Please request a new reset link.",
+          reason: "RESET_TOKEN_EXPIRED",
+        });
     }
 
     // At this point, token is valid and matches DB.
     const user = userById;
 
     // Hash new password
-  const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
+    const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     // Update user password and clear reset token
@@ -914,8 +1034,17 @@ const resetPassword = async (req: Request, res: Response) => {
     });
   } catch (e: any) {
     // JWT errors should be treated as client errors
-    if (e?.name === "JsonWebTokenError" || e?.name === "TokenExpiredError" || e?.name === "NotBeforeError") {
-      return res.status(400).json({ message: "Invalid or expired reset token", reason: e?.name || "JWT_ERROR" });
+    if (
+      e?.name === "JsonWebTokenError" ||
+      e?.name === "TokenExpiredError" ||
+      e?.name === "NotBeforeError"
+    ) {
+      return res
+        .status(400)
+        .json({
+          message: "Invalid or expired reset token",
+          reason: e?.name || "JWT_ERROR",
+        });
     }
 
     console.error(e);

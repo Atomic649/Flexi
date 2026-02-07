@@ -34,7 +34,8 @@
     "orders": "orders",
     "unknown": "Unknown",
     "details": "Details",
-    "noDataAvailable": "No data available"
+    "noDataAvailable": "No data available",
+    "continue": "Continue"
   },
   "months": {
     "january": "January",
@@ -80,6 +81,14 @@
         "success": "Login successful",
         "successMessage": "Please press OK to proceed",
         "ok": "OK"
+      },
+      "emailVerification": {
+        "title": "Please verify your email",
+        "message": "We’ve sent a verification link to your email. Please check your inbox or spam.\n\nYou can resend a new link if you haven’t received it.",
+        "resend": "Resend",
+        "sentTitle": "Verification email sent",
+        "sentMessage": "If your email is registered, you will receive a verification link within a few minutes.",
+        "resendFailed": "Failed to resend email. Please try again."
       }
     },
     "update": {

@@ -87,6 +87,71 @@ export default function Login() {
       saveMemberId(response.user.memberId);
       saveBusinessId(response.user.businessId);
 
+      const emailVerificationRequired =
+        response?.emailVerificationRequired ?? !response?.user?.emailVerifiedAt;
+
+      if (emailVerificationRequired) {
+        setAlertConfig({
+          visible: true,
+          title: t("auth.login.emailVerification.title"),
+          message: t("auth.login.emailVerification.message"),
+          buttons: [
+            {
+              text: t("auth.login.emailVerification.resend"),
+              onPress: async () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                setIsSubmitting(true);
+                try {
+                  await CallAPIUser.resendVerificationEmailAPI({
+                    email: response?.user?.email || form.email,
+                  });
+                  setAlertConfig({
+                    visible: true,
+                    title: t("auth.login.emailVerification.sentTitle"),
+                    message: t("auth.login.emailVerification.sentMessage"),
+                    buttons: [
+                      {
+                        text: t("common.continue"),
+                        onPress: () => {
+                          setAlertConfig((prev) => ({ ...prev, visible: false }));
+                          router.replace("/(tabs)/home");
+                        },
+                      },
+                    ],
+                  });
+                } catch (e: any) {
+                  const errorMessage =
+                    e?.message ||
+                    t("auth.login.emailVerification.resendFailed");
+                  setAlertConfig({
+                    visible: true,
+                    title: t("common.error"),
+                    message: errorMessage,
+                    buttons: [
+                      {
+                        text: t("common.ok"),
+                        onPress: () =>
+                          setAlertConfig((prev) => ({ ...prev, visible: false })),
+                      },
+                    ],
+                  });
+                } finally {
+                  setIsSubmitting(false);
+                }
+              },
+            },
+            {
+              text: t("common.continue"),
+              onPress: () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                router.replace("/(tabs)/home");
+              },
+            },
+          ],
+        });
+        return;
+      }
+
       setAlertConfig({
         visible: true,
         title: t("auth.login.alerts.success"),
