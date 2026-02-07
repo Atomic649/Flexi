@@ -426,7 +426,7 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
           <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
+            onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
             accessible={false}
           >
             <View
