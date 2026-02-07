@@ -99,6 +99,7 @@ const MultiDateCalendar: React.FC<MultiDateCalendarProps> = ({
 const styles = StyleSheet.create({
   container: {
     padding: 14,
+
   },
   selectedDatesText: {
     marginTop: 16,

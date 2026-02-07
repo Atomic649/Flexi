@@ -734,6 +734,7 @@
     }
   },
   "expense": {
+    "confirmDuplicate": "Do you want to duplicate this expense?",
     "titles": "Expense Management Made Easy",
     "title": {
       "expenseList": "All Expenses",
