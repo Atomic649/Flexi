@@ -29,9 +29,15 @@ export const getUserByID = async (req: Request, res: Response) => {
         email: true,
         avatar: true,
         bio : true,
-        username : true,        
+        username : true,
+        emailVerifiedAt : true,
+
       },
     });
+
+    // email is verified
+    const isEmailVerified = user?.emailVerifiedAt ? true : false;
+
 
     // find role of user
     const role = await prisma.member.findMany({
@@ -72,6 +78,8 @@ export const getUserByID = async (req: Request, res: Response) => {
       username : user.username,
       businessAddress: businessName[0].businessAddress,
       taxId: businessName[0].taxId,
+      isEmailVerified: isEmailVerified,
+
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });

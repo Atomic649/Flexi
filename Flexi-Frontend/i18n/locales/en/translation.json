@@ -120,6 +120,8 @@
         "successMessage": "Please press OK to proceed",
         "ok": "OK"
       },
+      "emailVerified": "Verified",
+      "pleaseVerifyEmail": "Please verify your email",
       "firstName": "First Name",
       "lastName": "Last Name",
       "phoneTitle": "Phone Number",

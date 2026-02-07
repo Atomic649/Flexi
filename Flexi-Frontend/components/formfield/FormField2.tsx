@@ -29,7 +29,12 @@ const FormField = ({
           {title}
         </CustomText>
         {subtitle && (
-          <CustomText className="text-sm text-zinc-400 font-pregular mb-2 ml-2">
+          <CustomText className="text-sm text-zinc-400 font-pregular mb-2 ml-2"
+          onPress={() => {
+            if (handlePress) {
+              handlePress();
+            }
+          }}>
             {subtitle}
           </CustomText>
         )}
@@ -45,7 +50,7 @@ const FormField = ({
             }}
             style={{ marginLeft: 8, marginBottom: 8, alignSelf: "center" }}
           />
-        )}
+        )}        
       </View>
       <View
         className="w-full  px-4 rounded-2xl border-2 border-transparent flex-row items-start pt-3"

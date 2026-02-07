@@ -122,6 +122,8 @@
         "updatedSuccess":"อัปเดตสำเร็จ",
         "updatedsuccessMessage": "กรุณากดตกลงเพื่อดำเนินการต่อ"
       },
+      "emailVerified": "ยืนยันแล้ว",
+      "pleaseVerifyEmail": "กรุณายืนยันอีเมลของคุณ",
       "firstName": "ชื่อ",
       "lastName": "นามสกุล",
       "phoneTitle": "หมายเลขโทรศัพท์",

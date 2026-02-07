@@ -32,6 +32,7 @@ export default function UserInfo() {
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
+  const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const [userId, setUserId] = useState<number | null>(null);
   const [error, setError] = useState("");
   // Confirm password modal state (top-level)
@@ -56,6 +57,62 @@ export default function UserInfo() {
 
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const showVerifyEmailAlert = () => {
+    if (emailVerified) return;
+
+    setAlertConfig({
+      visible: true,
+      title: t("auth.login.emailVerification.title") || "Please verify your email",
+      message: t("auth.login.emailVerification.message") ||
+        "We’ve sent a verification link to your email. Please check your inbox or spam.\n\nYou can resend a new link if you haven’t received it.",
+      buttons: [
+        {
+          text: t("auth.login.emailVerification.resend") || "Resend",
+          onPress: async () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            try {
+              await CallAPIUser.resendVerificationEmailAPI({ email });
+              setAlertConfig({
+                visible: true,
+                title: t("auth.login.emailVerification.sentTitle") || "Verification email sent",
+                message: t("auth.login.emailVerification.sentMessage") ||
+                  "If your email is registered, you will receive a verification link within a few minutes.",
+                buttons: [
+                  {
+                    text: t("common.ok"),
+                    onPress: () =>
+                      setAlertConfig((prev) => ({ ...prev, visible: false })),
+                  },
+                ],
+              });
+            } catch (e: any) {
+              setAlertConfig({
+                visible: true,
+                title: t("common.error"),
+                message:
+                  e?.message ||
+                  t("auth.login.emailVerification.resendFailed") ||
+                  "Failed to resend email. Please try again.",
+                buttons: [
+                  {
+                    text: t("common.ok"),
+                    onPress: () =>
+                      setAlertConfig((prev) => ({ ...prev, visible: false })),
+                  },
+                ],
+              });
+            }
+          },
+        },
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+        },
+      ],
+    });
+  };
+
   const loadUserProfile = async () => {
     try {
       const id = await getUserId();
@@ -73,6 +130,11 @@ export default function UserInfo() {
       setBio(data.bio || "");
       setPhone(data.phone || "");
       setAvatar(data.avatar || "");
+      // Backend currently returns `isEmailVerified` (and may also return `emailVerifiedAt` in other endpoints)
+      const isVerified = Boolean(
+        data?.emailVerified ?? data?.isEmailVerified ?? data?.emailVerifiedAt,
+      );
+      setEmailVerified(isVerified);
     } catch (err: any) {
       console.error("Error loading user profile:", err);
       setError(err?.message || "Failed to load user profile");
@@ -215,6 +277,11 @@ export default function UserInfo() {
 
             <FormField2
               title={t("auth.register.emailPlaceholder") || "Email"}
+              subtitle={t("auth.register.emailVerified") || "auth.register.pleaseVerifyEmail"}
+              icons={emailVerified ? "checkmark-circle-outline" : "alert-circle-outline"}
+              handlePress={() => {
+                showVerifyEmailAlert();
+              }}
               placeholder={
                 t("auth.register.emailPlaceholder") || "Enter your email"
               }
