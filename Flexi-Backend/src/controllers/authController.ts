@@ -145,15 +145,32 @@ async function sendVerificationEmail(params: {
         ? process.env.EMAIL_USER
         : "dev@example.com",
     to,
-    subject: "Verify your email",
+   subject: "ยืนยันอีเมลของคุณ (Verify your email)",
     html: `
-      <h1>Verify your email</h1>
-      <p>Thanks for signing up. Please verify your email by clicking the link below:</p>
-      <a href="${verifyUrl}">Verify Email</a>
-      <p>This link expires in 24 hours.</p>
-      <p>If you did not create an account, you can ignore this email.</p>
+      <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111;">
+        <h1 style="margin: 0 0 12px;">ยืนยันอีเมลของคุณ(Verify your email)</h1>
+        <p style="margin: 0 0 12px;">ขอบคุณที่สมัครใช้งาน Flexi </p>
+        <p style="margin: 0 0 12px;">กรุณายืนยันอีเมลของคุณโดยคลิกปุ่มหรือลิงก์ด้านล่าง</p>
+        
+        <p style="margin: 0 0 12px;">Thanks for signing up for Flexi.</p>
+        <p style="margin: 0 0 12px;">Please verify your email by clicking the button or link below.</p>
+
+        <p style="margin: 0 0 16px;">
+          <a
+            href="${verifyUrl}"
+            style="display: inline-block; padding: 10px 16px; background: #25ebc0; color: #fff; text-decoration: none; border-radius: 6px;"
+          >ยืนยันอีเมล (Verify Email)</a>
+        </p>
+        
+        <p style="margin: 0 0 12px;">ลิงก์นี้หมดอายุใน 24 ชั่วโมง </p>
+        <p style="margin: 0;">หากคุณไม่ได้สร้างบัญชี คุณสามารถละเว้นอีเมลนี้ได้</p>
+        <p style="margin: 0 0 12px;">This link expires in 24 hours.</p>
+        <p style="margin: 0;">If you did not create an account, you can ignore this email.</p>
+      
+      </div>
     `,
   };
+
 
   const info = await transporter.sendMail(mailOptions);
 
@@ -255,7 +272,7 @@ const register = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
   const schema = Joi.object({
-    email: Joi.string().email().required(),
+  email: Joi.string().email().required(),
   password: passwordSchema.required(),
   });
   const { error } = schema.validate(userInput);

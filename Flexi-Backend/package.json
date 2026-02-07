@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist && echo 'Done.'",
-    "dev": "bun index.ts",
+    "dev": " bun --watch index.ts",
     "test": "jest",
     "start:dev": "nodemon index.dev.ts",
     "start": "node dist/index.js",
