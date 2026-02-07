@@ -489,14 +489,7 @@ export default function ExpenseDetail({
       const dateStr = date ? formatDate(date) : "";
       const memberId = String(await getMemberId());
 
-      // Debug: Check computed WHTAmount value
-      console.log(
-        "🔍 Debug WHTAmount in downloadWHTDoc:",
-        computedWHTAmount,
-        typeof computedWHTAmount
-      );
-      console.log("🔍 Debug group in downloadWHTDoc:", group, typeof group);
-
+      
       // Call API to get WHT document PDF blob
       const pdfBlob = await CallAPIExpense.downloadWHTDocAPI({
         sName: supplierName,
@@ -516,10 +509,65 @@ export default function ExpenseDetail({
       const fileName = `WHTDocument_${expense.id}.pdf`;
       let fileUri: string;
       if (Platform.OS === "web") {
-        // For web, create object URL and print
-        fileUri = window.URL.createObjectURL(pdfBlob);
-        await Print.printAsync({ uri: fileUri });
-        window.URL.revokeObjectURL(fileUri);
+        // Web: show the PDF in a new tab and provide a friendly filename.
+        // NOTE: `expo-print` on web prints the current page in many setups (showing expense detail instead of the PDF).
+        const toSafeFileSegment = (name: string) =>
+          (name || "")
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[\\/:*?\"<>|]+/g, "")
+            .slice(0, 80);
+
+        const safeSupplier = toSafeFileSegment(supplierName);
+        const webFileName = `WHT_${safeSupplier || "document"}.pdf`;
+
+        const pdfUrl = window.URL.createObjectURL(
+          pdfBlob instanceof Blob
+            ? pdfBlob
+            : new Blob([pdfBlob as any], { type: "application/pdf" }),
+        );
+
+        // Wrap in an HTML blob so we can set the tab title (new tab) while embedding the PDF.
+        const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${webFileName}</title>
+    <style>
+      html, body { height: 100%; margin: 0; }
+      iframe { width: 100%; height: 100%; border: 0; }
+    </style>
+  </head>
+  <body>
+    <iframe src="${pdfUrl}" title="${webFileName}"></iframe>
+  </body>
+</html>`;
+
+        const htmlUrl = window.URL.createObjectURL(
+          new Blob([html], { type: "text/html" }),
+        );
+
+        const opened = window.open(htmlUrl, "_blank", "noopener,noreferrer");
+        if (!opened) {
+          // Popup blocked fallback: trigger a download with the desired filename.
+          const link = document.createElement("a");
+          link.href = pdfUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.download = webFileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+
+        // Give the browser time to load the object URLs before revoking.
+        setTimeout(() => {
+          try {
+            window.URL.revokeObjectURL(pdfUrl);
+            window.URL.revokeObjectURL(htmlUrl);
+          } catch {}
+        }, 60_000);
       } else {
         // For mobile, save and print
         fileUri = `${FileSystem.documentDirectory}${fileName}`;
