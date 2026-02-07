@@ -199,6 +199,7 @@ export const ExpenseGroup = {
   Utilities: 'Utilities',
   Fuel: 'Fuel',
   Maintenance: 'Maintenance',
+  Operation: 'Operation',
   Others: 'Others'
 } as const
 

@@ -812,7 +812,8 @@
         "accounting": "Accounting",
         "legal": "Legal",
         "fuel": "Fuel",
-        "maintenance": "Repair & Maintenance"
+        "maintenance": "Repair & Maintenance",
+        "operation": "Operation"
       },
       "attachBill": "Attach Bill"
     },

@@ -414,6 +414,7 @@ Enum ExpenseGroup {
   Utilities
   Fuel
   Maintenance
+  Operation
   Others
 }
 

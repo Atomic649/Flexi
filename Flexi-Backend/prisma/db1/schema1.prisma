@@ -188,6 +188,7 @@ enum ExpenseGroup {
   Utilities
   Fuel
   Maintenance
+  Operation
   Others
 
   @@schema("flexidb")

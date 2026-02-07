@@ -647,10 +647,10 @@ export default function ExpenseDetail({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() ? "100%" : "60%",
+                width: isMobile() ? "100%" : "100%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
-                padding: Platform.OS === "web" ? 60 : 0,
+                padding: Platform.OS === "web" ? "20%" : 0,
               }}
               onPress={() => {}}
             >
@@ -1214,6 +1214,10 @@ export default function ExpenseDetail({
                       {
                         key: "Utilities",
                         label: t("expense.detail.group.utility"),
+                      },
+                      {
+                        key: "Operation",
+                        label: t("expense.detail.group.operation"),
                       },
                       { key: "Others", label: t("expense.detail.group.other") },
                     ].map(({ key, label }) => (

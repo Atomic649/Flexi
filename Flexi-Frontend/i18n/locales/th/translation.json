@@ -813,7 +813,8 @@
         "accounting": "บัญชี",
         "legal": "กฎหมาย",
         "fuel": "เชื้อเพลิงรถ",
-        "maintenance": "ค่าซ่อมบำรุง"
+        "maintenance": "ค่าซ่อมบำรุง",
+        "operation": "ค่าดำเนินงาน"
       },
       "attachBill": "แนบใบเสร็จ"
     },

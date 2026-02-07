@@ -2159,6 +2159,10 @@ export default function CreateExpense({
                         key: "Utilities",
                         label: t("expense.detail.group.utility"),
                       },
+                      {
+                        key: "Operation",
+                        label: t("expense.detail.group.operation"),
+                      },
                       { key: "Others", label: t("expense.detail.group.other") },
                     ].map(({ key, label }) => (
                       <TouchableOpacity
