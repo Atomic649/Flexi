@@ -37,15 +37,15 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
 
   // Recalculate monthlyTotals based on receiptBills
   const totalSales = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (bill.total || 0),
+    (sum: number, bill: any) => sum + (Number(bill.total) || 0),
     0,
   );
   const totalSalesBeforeTax = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (bill.totalBeforeTax || 0),
+    (sum: number, bill: any) => sum + (Number(bill.totalBeforeTax) || 0),
     0,
   );
   const WHTAmount = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (bill.WHTAmount || 0),
+    (sum: number, bill: any) => sum + (Number(bill.WHTAmount) || 0),
     0,
   );
   const totalOrders = receiptBills.length;
@@ -59,18 +59,18 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
   // Calculate totals for all product items across all
   const vatTotal = isVatRegistered
     ? receiptBills.reduce(
-        (sum: number, bill: any) => sum + (bill.totalTax || 0),
+        (sum: number, bill: any) => sum + (Number(bill.totalTax) || 0),
         0,
       )
     : 0;
   const grandTotal = isVatRegistered
     ? receiptBills.reduce(
-        (sum: number, bill: any) => sum + (bill.totalAfterTax || 0),
+        (sum: number, bill: any) => sum + (Number(bill.totalAfterTax) || 0),
         0,
       )
     : totalSales;
   const rawTotal = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (bill.totalBeforeTax || 0),
+    (sum: number, bill: any) => sum + (Number(bill.totalBeforeTax) || 0),
     0,
   );
   return `

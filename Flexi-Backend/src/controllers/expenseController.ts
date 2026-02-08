@@ -199,6 +199,7 @@ const schema = Joi.object({
       "Fuel",
       "Utilities",
       "Maintenance",
+      "Operation",
       "Others"
     )
     .required(),
