@@ -44,6 +44,9 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
     (sum: number, bill: any) => sum + (Number(bill.totalBeforeTax) || 0),
     0,
   );
+  const whtBills = receiptBills.filter(
+    (bill: any) => (Number(bill.WHTAmount) || 0) > 0,
+  );
   const WHTAmount = receiptBills.reduce(
     (sum: number, bill: any) => sum + (Number(bill.WHTAmount) || 0),
     0,
@@ -83,6 +86,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
           @media print {
             body { margin: 0; }
             .no-print { display: none; }
+            .page-break { page-break-before: always; }
           }
           body { 
             font-family: Arial, sans-serif; 
@@ -313,6 +317,62 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
               ${t("print.noInvoicesFound")}
             </div>
           `
+          }
+
+          ${
+            whtBills.length > 0
+              ? `
+            <div class="page-break"></div>
+            <div style="height: 20px;"></div>
+            <h3>${t("print.whtDetailList") || "Withholding Tax List"}</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>${t("print.date")}</th>
+                  <th>${t("print.invoiceNo")}</th>
+                  <th>${t("print.customer")}</th>
+                  <th>${t("print.productDetails")}</th>
+                  <th class="text-right">${t("print.totalSalesBeforeTax")}</th>
+                  <th class="text-right">${t("print.whtPercent") || "WHT %"}</th>
+                  <th class="text-right">${t("print.whtAmount")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${whtBills
+                  .map((bill: any, index: number) => {
+                    const productItems = bill.product || [];
+                    return `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${formatDate(bill.purchaseAt)}</td>
+                      <td>#${bill.billId}</td>
+                      <td>${bill.cName || ""} ${bill.cLastName || ""}</td>
+                      <td>
+                        <ul style="margin:0; padding-left:16px;">
+                          ${productItems
+                            .map(
+                              (item: any, idx: any) =>
+                                `<li>${item.product || "-"} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ""}` : ""} </li>`,
+                            )
+                            .join("")}
+                        </ul>
+                      </td>
+                      <td class="text-right">${formatCurrencyForPDF(bill.totalBeforeTax)}</td>
+                      <td class="text-right">${bill.WHTpercent || 0}%</td>
+                      <td class="text-right">${formatCurrencyForPDF(bill.WHTAmount)}</td>
+                    </tr>
+                  `;
+                  })
+                  .join("")}
+                <tr style="background-color: #e5e7eb; font-weight: bold;">
+                  <td colspan="7" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(WHTAmount)}</td>
+                </tr>
+              </tbody>
+            </table>
+            `
+              : ""
           }
 
           <div class="footer">
