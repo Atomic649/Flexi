@@ -23,27 +23,32 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
   const isVatRegistered = businessDetails?.vat === true;
   const rawTotal = productItems.reduce(
     (sum: number, item: any) => sum + item.unitPrice * item.quantity,
-    0
+    0,
   );
   const totalDiscount =
     productItems.reduce(
       (sum: number, item: any) =>
         sum + (item.unitDiscount || 0) * item.quantity,
-      0
+      0,
     ) + (invoice.billLevelDiscount || 0);
 
-  const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
+  const vat = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
   const subTotal = rawTotal - totalDiscount - vat;
   const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
-  const grandTotal = (subTotal + vatTotal) - (invoice.withHoldingTax ? Number(invoice.WHTAmount || 0) : 0);
+  const grandTotal =
+    subTotal +
+    vatTotal -
+    (invoice.withHoldingTax ? Number(invoice.WHTAmount || 0) : 0);
 
   // Compute sums for the items table (line discounts and displayed line totals)
   const lineDiscountSum = productItems.reduce(
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
-    0
+    0,
   );
   const lineTotalSum = productItems.reduce((sum: number, item: any) => {
-    const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
+    const unitPriceDisplayed = isVatRegistered
+      ? item.unitPrice / (1 + vatRate / 100)
+      : item.unitPrice;
     const lineDiscount = (item.unitDiscount || 0) * item.quantity;
     const lineTotal = unitPriceDisplayed * item.quantity - lineDiscount;
     return sum + lineTotal;
@@ -55,7 +60,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${t("print.invoice")} #${invoice.invoiceId }</title>
+        <title>${t("print.invoice")} #${invoice.invoiceId}</title>
         <style>
           @page {
             margin: 8mm;
@@ -495,15 +500,15 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <div class="invoice-header">
             <div class="company-logo-section" style="display: flex; align-items: center; height: 100%;">
               <h1 style="padding-top: 20px; margin: 0 auto; text-align: center; width: 100%;">${t(
-                "print.invoice"
+                "print.invoice",
               )}</h1>
               <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#5e5e5e;">(${t(
-                "print.original"
+                "print.original",
               )})</p>
             </div>
             <div class="invoice-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="invoice-number"><span class="bill-label">${t(
-                "print.billNo"
+                "print.billNo",
               )}</span> <span class="bill-id">${invoice.invoiceId}</span></div>
                 ${invoice.quotationId ? `<p style="margin-top: 1px;">REF :${invoice.quotationId}</p>` : ""}
                 <p style="margin-top: 1px;">${(() => {
@@ -531,33 +536,37 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                       ? t("print.companyName")
                       : t("print.storeName")
                   }:</strong> ${
-    (businessDetails?.businessName || businessName || "Your Business Name") +
-    (businessDetails?.branch ? ` (${businessDetails.branch})` : "")
-  }</p>
+                    (businessDetails?.businessName ||
+                      businessName ||
+                      "Your Business Name") +
+                    (businessDetails?.branch
+                      ? ` (${businessDetails.branch})`
+                      : "")
+                  }</p>
               </div>
               <div>
                   <p><strong>${t("print.taxId")}:</strong> ${
-    businessDetails?.taxId || t("print.notSpecified")
-  }</p>
+                    businessDetails?.taxId || t("print.notSpecified")
+                  }</p>
               </div>
               <div class="full-width">
                   <p><strong>${t("print.address")}:</strong> ${
-    [
-      businessDetails?.businessAddress,
-      businessDetails?.businessSubDistrict,
-      businessDetails?.businessDistrict,
-      businessDetails?.businessProvince,
-      businessDetails?.businessPostId,
-    ]
-      .filter(Boolean)
-      .join(", ") || t("print.notSpecified")
-  }
+                    [
+                      businessDetails?.businessAddress,
+                      businessDetails?.businessSubDistrict,
+                      businessDetails?.businessDistrict,
+                      businessDetails?.businessProvince,
+                      businessDetails?.businessPostId,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || t("print.notSpecified")
+                  }
                   </p>
               </div>
               <div>
                   <p><strong>${t("print.contact")}:</strong> ${
-    businessDetails?.businessPhone || t("print.notSpecified")
-  }</p>
+                    businessDetails?.businessPhone || t("print.notSpecified")
+                  }</p>
               </div>
             </div>
           </div>
@@ -568,27 +577,27 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="business-details">
               <div>
                 <p><strong>${t("print.customerName")}:</strong> ${
-    invoice.cName || ""
-  } ${invoice.cLastName || ""}${
-    invoice.cBranch ? ` (${invoice.cBranch})` : ""
-  }</p>
+                  invoice.cName || ""
+                } ${invoice.cLastName || ""}${
+                  invoice.cBranch ? ` (${invoice.cBranch})` : ""
+                }</p>
               </div>
               <div>
                 <p><strong>${t("print.taxId")}:</strong> ${
-    invoice.cTaxId || t("print.notSpecified")
-  }</p>
+                  invoice.cTaxId || t("print.notSpecified")
+                }</p>
               </div>
               <div class="full-width">
                 <p><strong>${t("print.address")}:</strong> ${
-    [invoice.cAddress, invoice.cProvince, invoice.cPostId]
-      .filter(Boolean)
-      .join(", ") || t("print.addressNotProvided")
-  }</p>
+                  [invoice.cAddress, invoice.cProvince, invoice.cPostId]
+                    .filter(Boolean)
+                    .join(", ") || t("print.addressNotProvided")
+                }</p>
               </div>
               <div>
                 <p><strong>${t("print.contact")}:</strong> ${
-    invoice.cPhone || t("print.notSpecified")
-  }</p>
+                  invoice.cPhone || t("print.notSpecified")
+                }</p>
               </div>
             </div>
           </div>
@@ -609,11 +618,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               </thead>
               <tbody>
                 ${productItems
-                  .map(
-                    (item: any, idx: number) => {
-                      const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
-                      const lineTotal = unitPriceDisplayed * item.quantity - ((item.unitDiscount || 0) * item.quantity);
-                      return `
+                  .map((item: any, idx: number) => {
+                    const unitPriceDisplayed = isVatRegistered
+                      ? item.unitPrice / (1 + vatRate / 100)
+                      : item.unitPrice;
+                    const lineTotal =
+                      unitPriceDisplayed * item.quantity -
+                      (item.unitDiscount || 0) * item.quantity;
+                    return `
                   <tr>
                     <td class="text-center font-medium">${idx + 1}</td>
                     <td class="font-medium">${item.product || "-"}</td>
@@ -622,7 +634,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                       ${item.unit ? t(`product.unit.${item.unit}`) : "-"}
                     </td>                   
                     <td class="text-right">${formatCurrencyForPDF(
-                      unitPriceDisplayed
+                      unitPriceDisplayed,
                     )}</td>
                       <td class="text-right">${
                         item.unitDiscount
@@ -630,12 +642,11 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                           : "-"
                       }</td>
                     <td class="text-right font-bold">${formatCurrencyForPDF(
-                      lineTotal
+                      lineTotal,
                     )}</td>
                   </tr>
                 `;
-                    }
-                  )
+                  })
                   .join("")}
 
                 <!-- Totals row: sum only discount and total columns -->
@@ -667,7 +678,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                           const mm = String(d.getMonth() + 1).padStart(2, "0");
                           const yyyy = d.getFullYear();
                           return `• ${t(
-                            "print.validUntill"
+                            "print.validUntill",
                           )} ${dd}/${mm}/${yyyy}`;
                         })()}`
                       : ""
@@ -689,7 +700,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
+                    totalDiscount,
                   )}</span>
                 </div>`
                           : ""
@@ -697,13 +708,13 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    subTotal
+                    subTotal,
                   )}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.vat")} (7%)</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    vatTotal
+                    vatTotal,
                   )}</span>
                 </div>`
                     : `${
@@ -714,7 +725,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
+                    totalDiscount,
                   )}</span>
                 </div>`
                           : ""
@@ -722,23 +733,27 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    subTotal
+                    subTotal,
                   )}</span>
                 </div>`
                 } 
-                  ${invoice.withHoldingTax ? `
+                  ${
+                    invoice.withHoldingTax
+                      ? `
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.withHoldingTaxAmount")} (${invoice.WHTpercent}%)</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    Number(invoice.WHTAmount || 0)
+                    Number(invoice.WHTAmount || 0),
                   )}</span>
                 </div>
-                ` : ""}
+                `
+                      : ""
+                  }
               
                 <div class="summary-row total">
                   <span class="summary-label">${t("print.grandTotal")}</span>
                   <span class="summary-amount">${formatCurrencyForPDF(
-                    grandTotal
+                    grandTotal,
                   )}</span>
                 </div>
               </div>
@@ -756,7 +771,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 } </div>
 
 <div class="signature-date">${t("print.date")}: ${formatDate(
-    invoice.purchaseAt
+    invoice.purchaseAt,
   )}</div>
 
               </div>
@@ -769,10 +784,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <div class="signature-label">${t("print.receivedBy")}</div>
                 <div class="signature-line"></div>
                 <div class="signature-name"> ${invoice.cName} ${
-    invoice.cLastName
-  } </div>
+                  invoice.cLastName
+                } </div>
                 <div class="signature-date">${t(
-                  "print.date"
+                  "print.date",
                 )}: _______________</div>
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">               

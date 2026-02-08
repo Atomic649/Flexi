@@ -23,25 +23,32 @@ export const generateQuotationHTML = (data: QuotationData): string => {
   const isVatRegistered = businessDetails?.vat === true;
   const rawTotal = productItems.reduce(
     (sum: number, item: any) => sum + item.unitPrice * item.quantity,
-    0
+    0,
   );
-  const totalDiscount = productItems.reduce(
-    (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
-    0
-  ) + (quotation.billLevelDiscount || 0);
+  const totalDiscount =
+    productItems.reduce(
+      (sum: number, item: any) =>
+        sum + (item.unitDiscount || 0) * item.quantity,
+      0,
+    ) + (quotation.billLevelDiscount || 0);
 
-  const vat = isVatRegistered ? ((rawTotal) * vatRate) / (100 + vatRate) : 0;
+  const vat = isVatRegistered ? (rawTotal * vatRate) / (100 + vatRate) : 0;
   const subTotal = rawTotal - totalDiscount - vat;
   const vatTotal = isVatRegistered ? subTotal * (vatRate / 100) : 0;
-  const grandTotal = (subTotal + vatTotal) - (quotation.withHoldingTax ? Number(quotation.WHTAmount || 0) : 0);
+  const grandTotal =
+    subTotal +
+    vatTotal -
+    (quotation.withHoldingTax ? Number(quotation.WHTAmount || 0) : 0);
 
   // Compute sums for the items table (line discounts and displayed line totals)
   const lineDiscountSum = productItems.reduce(
     (sum: number, item: any) => sum + (item.unitDiscount || 0) * item.quantity,
-    0
+    0,
   );
   const lineTotalSum = productItems.reduce((sum: number, item: any) => {
-    const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
+    const unitPriceDisplayed = isVatRegistered
+      ? item.unitPrice / (1 + vatRate / 100)
+      : item.unitPrice;
     const lineDiscount = (item.unitDiscount || 0) * item.quantity;
     const lineTotal = unitPriceDisplayed * item.quantity - lineDiscount;
     return sum + lineTotal;
@@ -447,8 +454,15 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               <p style="text-align:center; margin:4px 0 0 0; font-size:12px; color:#5e5e5e;">(${t("print.original")})</p>
             </div>
             <div class="quotation-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
-              <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.quotationId }</span></div>              
-              <p style="margin-top: 2px;">${(() => { const d = new Date(quotation.purchaseAt); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}/${mm}/${yyyy}`; })()}</p>
+              <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.quotationId}</span></div>              
+              <p style="margin-top: 2px;">${(() => {
+                const d = new Date(quotation.purchaseAt);
+                if (isNaN(d.getTime())) return "";
+                const dd = String(d.getDate()).padStart(2, "0");
+                const mm = String(d.getMonth() + 1).padStart(2, "0");
+                const yyyy = d.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+              })()}</p>
             </div>
           </div>
 
@@ -466,30 +480,37 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                     ? t("print.companyName")
                     : t("print.storeName")
                 }:</strong> ${
-    (businessDetails?.businessName || businessName || "Your Business Name") + (businessDetails?.branch ? ` (${businessDetails.branch})` : '')
-  }</p>
+                  (businessDetails?.businessName ||
+                    businessName ||
+                    "Your Business Name") +
+                  (businessDetails?.branch
+                    ? ` (${businessDetails.branch})`
+                    : "")
+                }</p>
             </div>
             <div>
                 <p><strong>${t("print.taxId")}:</strong> ${
-    businessDetails?.taxId || t("print.notSpecified")
-  }</p>
+                  businessDetails?.taxId || t("print.notSpecified")
+                }</p>
             </div>
             <div class="full-width">
-                <p><strong>${t("print.address")}:</strong> ${[
-    businessDetails?.businessAddress,
-    businessDetails?.businessSubDistrict,
-    businessDetails?.businessDistrict,
-    businessDetails?.businessProvince,
-    businessDetails?.businessPostId,
-  ]
-    .filter(Boolean)
-    .join(', ') || t("print.notSpecified")}
+                <p><strong>${t("print.address")}:</strong> ${
+                  [
+                    businessDetails?.businessAddress,
+                    businessDetails?.businessSubDistrict,
+                    businessDetails?.businessDistrict,
+                    businessDetails?.businessProvince,
+                    businessDetails?.businessPostId,
+                  ]
+                    .filter(Boolean)
+                    .join(", ") || t("print.notSpecified")
+                }
                 </p>
             </div>
             <div>
                 <p><strong>${t("print.contact")}:</strong> ${
-    businessDetails?.businessPhone || t("print.notSpecified")
-  }</p>
+                  businessDetails?.businessPhone || t("print.notSpecified")
+                }</p>
             </div>
             </div>
           </div>
@@ -499,17 +520,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             <h3>${t("print.customerInformation")}</h3>
             <div class="business-details">
               <div>
-                <p><strong>${t("print.customerName")}:</strong> ${quotation.cName || ''} ${quotation.cLastName || ''}${quotation.cBranch ? ` (${quotation.cBranch})` : ''}</p>
+                <p><strong>${t("print.customerName")}:</strong> ${quotation.cName || ""} ${quotation.cLastName || ""}${quotation.cBranch ? ` (${quotation.cBranch})` : ""}</p>
               </div>
               <div>
                 <p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxId || t("print.notSpecified")}</p>
               </div>
               <div class="full-width">
-                <p><strong>${t("print.address")}:</strong> ${[
-    quotation.cAddress,
-    quotation.cProvince,
-    quotation.cPostId,
-  ].filter(Boolean).join(', ') || t("print.addressNotProvided")}</p>
+                <p><strong>${t("print.address")}:</strong> ${
+                  [quotation.cAddress, quotation.cProvince, quotation.cPostId]
+                    .filter(Boolean)
+                    .join(", ") || t("print.addressNotProvided")
+                }</p>
               </div>
               <div>
                 <p><strong>${t("print.contact")}:</strong> ${quotation.cPhone || t("print.notSpecified")}</p>
@@ -536,22 +557,26 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               </thead>
               <tbody>
                ${productItems
-                  .map(
-                    (item: any, index: number) => {
-                      const unitPriceDisplayed = isVatRegistered ? item.unitPrice / (1 + vatRate / 100) : item.unitPrice;
-                      const lineTotal = unitPriceDisplayed * item.quantity - ((item.unitDiscount || 0) * item.quantity);
-                      return `
+                 .map((item: any, index: number) => {
+                   const unitPriceDisplayed = isVatRegistered
+                     ? item.unitPrice / (1 + vatRate / 100)
+                     : item.unitPrice;
+                   const lineTotal =
+                     unitPriceDisplayed * item.quantity -
+                     (item.unitDiscount || 0) * item.quantity;
+                   return `
                      <tr>
                       <td class="text-center">${index + 1}</td>
                       <td class="font-medium">${item.product}</td>
                       <td class="text-center">${item.quantity}</td>
                       <td class="text-center">${item.unit !== "NotSpecified" ? t(`product.unit.${item.unit}`) : "-"}</td>
-                      <td class="text-right">${formatCurrencyForPDF( unitPriceDisplayed)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(unitPriceDisplayed)}</td>
                       <td class="text-right">${item.unitDiscount ? formatCurrencyForPDF(item.unitDiscount) : "-"}</td>
                       <td class="text-right font-bold">${formatCurrencyForPDF(lineTotal)}</td>
                     </tr>
                   `;
-                }).join("")}
+                 })
+                 .join("")}
 
                  <!-- Totals row: sum only discount and total columns -->
                 <tr>
@@ -574,39 +599,94 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   ${quotation.remark ? `• ${quotation.remark}` : ""}
                 </p>
                 <p>
-                  ${quotation.priceValid ? `\n${(() => { const d = new Date(quotation.priceValid); if (isNaN(d.getTime())) return ''; const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `• ${t("print.validUntill")}: ${dd}/${mm}/${yyyy}`; })()}` : ""}
+                  ${
+                    quotation.priceValid
+                      ? `\n${(() => {
+                          const d = new Date(quotation.priceValid);
+                          if (isNaN(d.getTime())) return "";
+                          const dd = String(d.getDate()).padStart(2, "0");
+                          const mm = String(d.getMonth() + 1).padStart(2, "0");
+                          const yyyy = d.getFullYear();
+                          return `• ${t("print.validUntill")}: ${dd}/${mm}/${yyyy}`;
+                        })()}`
+                      : ""
+                  }
                 </p>
               </div>
             </div>
-
-            <!-- Summary -->
-            <div class="summary-section">
+<!-- Summary -->
+            <div class="summary-section" style="flex: 1; width: 50%; margin-bottom: 0;">
               <div class="summary-table">
-                ${totalDiscount > 0 ? `
-                  <div class="summary-row discount">
-                    <span class="summary-label">${t("print.totalDiscount")}:</span>
-                    <span class="summary-amount">-${formatCurrencyForPDF(totalDiscount)}</span>
-                  </div>
-                ` : ""}
+                ${
+                  isVatRegistered
+                    ? `${
+                        totalDiscount > 0
+                          ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${
+                    t("print.totalDiscount") || "Total Discount"
+                  }:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount,
+                  )}</span>
+                </div>`
+                          : ""
+                      }
                 <div class="summary-row subtotal">
-                  <span class="summary-label">${t("print.subtotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(subTotal)}</span>
+                  <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subTotal,
+                  )}</span>
                 </div>
-                ${isVatRegistered ? `
-                  <div class="summary-row tax">
-                    <span class="summary-label">${t("print.vat")} (7%):</span>
-                    <span class="summary-amount">${formatCurrencyForPDF(vatTotal)}</span>
-                  </div>
-                ` : ""}
+                <div class="summary-row tax">
+                  <span class="summary-label">${t("print.vat")} (7%)</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    vatTotal,
+                  )}</span>
+                </div>`
+                    : `${
+                        totalDiscount > 0
+                          ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${
+                    t("print.totalDiscount") || "Total Discount"
+                  }:</span>
+                  <span class="summary-amount">-${formatCurrencyForPDF(
+                    totalDiscount,
+                  )}</span>
+                </div>`
+                          : ""
+                      }
+                <div class="summary-row subtotal">
+                  <span class="summary-label">${t("print.subtotal")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    subTotal,
+                  )}</span>
+                </div>`
+                } 
+                  ${
+                    quotation.withHoldingTax
+                      ? `
+                <div class="summary-row tax">
+                  <span class="summary-label">${t("print.withHoldingTaxAmount")} (${quotation.WHTpercent}%)</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    Number(quotation.WHTAmount || 0),
+                  )}</span>
+                </div>
+                `
+                      : ""
+                  }
+              
                 <div class="summary-row total">
-                  <span class="summary-label">${t("print.grandTotal")}:</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(grandTotal)}</span>
+                  <span class="summary-label">${t("print.grandTotal")}</span>
+                  <span class="summary-amount">${formatCurrencyForPDF(
+                    grandTotal,
+                  )}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!--  -->
 
           <!-- Footer -->
           <div class="signature-section" style="margin-bottom:0; padding-bottom:0;">
@@ -619,7 +699,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 } </div>
 
 <div class="signature-date">${t("print.date")}: ${formatDate(
-    quotation.purchaseAt
+    quotation.purchaseAt,
   )}</div>
 
               </div>
@@ -632,10 +712,10 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 <div class="signature-label">${t("print.receivedBy")}</div>
                 <div class="signature-line"></div>
                 <div class="signature-name"> ${quotation.cName} ${
-    quotation.cLastName
-  } </div>
+                  quotation.cLastName
+                } </div>
                 <div class= "signature-date">${t(
-                  "print.date"
+                  "print.date",
                 )}: _______________</div>
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">
