@@ -841,10 +841,7 @@ export default function CreateBill() {
           quantity: Number(item.quantity),
         })),
         note,
-        paymentTermCondition:
-          selectedDocumentType === "QA" && paymentTermCondition
-            ? paymentTermCondition
-            : undefined,
+        paymentTermCondition:paymentTermCondition,
         remark: remark || undefined,
         withholdingTax: withholdingTax,
         withholdingPercent: withholdingTax

@@ -1091,10 +1091,7 @@ export default function EditBill() {
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
-        paymentTermCondition:
-          selectedDocumentType === "QA" && paymentTermCondition
-            ? paymentTermCondition
-            : undefined,
+        paymentTermCondition:paymentTermCondition,           
         remark: remark || undefined,
         productItems: productItems.map((item) => ({
           product: item.product,

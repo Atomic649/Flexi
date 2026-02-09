@@ -74,6 +74,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           * {
             box-sizing: border-box;
           }
+           html, body {
+            height: 100%;
+          }
           body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -86,6 +89,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
           }
           
           /* Header Section */
@@ -93,8 +99,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 0px;
             border-bottom: 2px solid #5e5e5e;
           }
           .company-logo-section h1 { 
@@ -305,8 +311,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Note Section */
           .note-section {
-            background-color: #f5f7f8
-;
+            background-color: #f5f7f8;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 15px;
@@ -327,10 +332,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             margin: 0;
           }
           
+          /* Footer Wrapper */
+          .footer-wrapper {
+            margin-top: auto;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
           /* Footer */
           .invoice-footer {
-            margin-top: 30px;
-            padding-top: 15px;
+            padding-top: 5px;
             border-top: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
@@ -350,8 +361,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           
           /* Signature Section */
           .signature-section {
-            margin: 30px 0;
-            padding: 20px 0;
+            margin: 20px 0;
+            padding: 0px 0;
             border-top: 1px solid #e5e7eb;
           }
           .signature-row {
@@ -762,8 +773,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           </div>
 
           <!-- Footer -->
+          <div class="footer-wrapper">
           <div class="signature-section" style="margin-bottom:0; padding-bottom:0;">
-            <div class="signature-row" style="display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; width: 100%; gap: 10px; margin-top: 20px;">
+            <div class="signature-row" style="display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; width: 100%; gap: 10px; margin-top: 20px;margin-bottom:10px;">
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">
                 <div class="signature-label">${t("print.authorizedBy")}</div>
                 <div class="signature-line"></div>
@@ -803,6 +815,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               ${t("print.generatedOn")} 
               Flexi Business Hub
             </div>
+          </div>
           </div>
         </div>
       </body>

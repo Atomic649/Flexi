@@ -74,6 +74,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           * {
             box-sizing: border-box;
           }
+           html, body {
+            height: 100%;
+          }
           body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -86,6 +89,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
           }
           
           /* Header Section */
@@ -93,8 +99,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 0px;
             border-bottom: 2px solid #5e5e5e;
           }
           .company-logo-section h1 { 
@@ -176,8 +182,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             padding: 15px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
-            background-color: #f5f7f8
-;
+            background-color: #f5f7f8;
           }
           .billing-section h3 {
             margin: 0 0 10px 0;
@@ -225,8 +230,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             padding: 12px 10px;
             border-bottom: 1px solid #e5e7eb;
             font-size: 12px;
-            background-color: #f5f7f8
-;
+            background-color: #f5f7f8;
           }
           .items-table tbody tr:last-child td {
             border-bottom: none;
@@ -323,10 +327,16 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             color: #374151;
           }
           
+          /* Footer Wrapper */
+          .footer-wrapper {
+            margin-top: auto;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
           /* Footer */
           .quotation-footer {
-            margin-top: 30px;
-            padding-top: 15px;
+            padding-top: 5px;
             border-top: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
@@ -346,8 +356,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           
           /* Signature Section */
           .signature-section {
-            margin: 30px 0;
-            padding: 20px 0;
+            margin: 20px 0;
+            padding: 0px 0;
             border-top: 1px solid #e5e7eb;
           }
           .signature-row {
@@ -399,8 +409,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f5f7f8
-;
+            background-color: #f5f7f8;
           }
           .stamp-text {
             font-size: 8px;
@@ -597,8 +606,11 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               <div class="note-section">
                 <h3>${t("print.termsAndConditions")}</h3>
                 <p>
-                  ${quotation.remark ? `• ${quotation.remark}` : ""}
+                  ${quotation.paymentTermCondition ? `• ${quotation.paymentTermCondition}` : ""}
                 </p>
+                <p>
+                  ${quotation.remark ? `• ${quotation.remark}` : ""}
+                </p>                
                 <p>
                   ${
                     quotation.priceValid
@@ -615,7 +627,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 </p>
               </div>
             </div>
-<!-- Summary -->
+           <!-- Summary -->
             <div class="summary-section" style="flex: 1; width: 50%; margin-bottom: 0;">
               <div class="summary-table">
                 ${
@@ -690,8 +702,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
 
 
           <!-- Footer -->
+          <div class="footer-wrapper">
           <div class="signature-section" style="margin-bottom:0; padding-bottom:0;">
-            <div class="signature-row" style="display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; width: 100%; gap: 10px; margin-top: 20px;">
+            <div class="signature-row" style="display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; width: 100%; gap: 10px; margin-top: 20px; margin-bottom:10px;">
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">
                 <div class="signature-label">${t("print.authorizedBy")}</div>
                 <div class="signature-line"></div>
@@ -699,10 +712,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   businessDetails?.businessName || businessName
                 } </div>
 
-<div class="signature-date">${t("print.date")}: ${formatDate(
-    quotation.purchaseAt,
-  )}</div>
-
+              <div class="signature-date">${t("print.date")}: ${formatDate(quotation.purchaseAt)}</div>
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">            
               <div class="business-stamp">
@@ -731,6 +741,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               ${t("print.generatedOn")} 
               Flexi Business Hub
             </div>
+          </div>
           </div>
         </div>
       </body>
