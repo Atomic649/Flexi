@@ -769,6 +769,14 @@ export default function Print() {
 
   // Function to print HTML Expense Report content for web/desktop
   const printExpenseReportHTMLContent = async () => {
+    // Open window immediately to avoid popup blockers on web
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(
+        "<html><body><h3>Generating Report...</h3></body></html>",
+      );
+    }
+
     try {
       // Call api getExpenseByDateRangeAPI
       if (!memberId) throw new Error("Member ID is null");
@@ -834,9 +842,10 @@ export default function Print() {
         formatMonthYear,
       });
 
-      // Create a new window for printing
-      const printWindow = window.open("", "_blank");
+      // Update the existing window
       if (printWindow) {
+        // Clear previous "Loading..." content
+        printWindow.document.open();
         printWindow.document.write(htmlContent);
         printWindow.document.close();
 
@@ -858,6 +867,11 @@ export default function Print() {
         URL.revokeObjectURL(url);
       }
     } catch (error) {
+      // Close the window if we opened it but encountered an error
+      if (printWindow) {
+        printWindow.close();
+      }
+
       console.error("❌ Error generating expense report for web:", error);
       setAlertConfig({
         visible: true,

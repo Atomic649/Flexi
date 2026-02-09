@@ -37,6 +37,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
   // Recalculate totals based on all expenses
   const totalExpenses = actualExpenses.reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0);
   const vatExpensesList = actualExpenses.filter((expense: any) => expense.vat);
+  const whtExpensesList = actualExpenses.filter((expense: any) => expense.withHoldingTax);
   
 
   // Calculate total VAT and WHT amounts
@@ -339,53 +340,47 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
 
           <div class="page-break-with-margin">
             <h3>${t("print.whtDetailList")}</h3>
-            ${actualExpenses.filter((expense: any) => expense.withHoldingTax).length > 0 ? `
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>${t("print.date")}</th>
-                    <th>${t("print.supplier")}</th>
-                    <th>${t("print.taxId")}</th>
-                    <th>${t("print.category")}</th>
-                    <th class="text-center">${t("print.whtPercent")}</th>
-                    <th class="text-right">${t("print.amount")}</th>
-                    <th class="text-right">${t("print.whtAmount")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${actualExpenses.filter((expense: any) => expense.withHoldingTax).map((expense: any, index: number) => {
-                    const whtAmount = Number(expense.WHTAmount) || 0;
-                    const netAmount = (Number(expense.amount) || 0) - whtAmount;
-                    const whtPercent = Number(expense.WHTpercent) || 0;
-                    return `
-                      <tr>
-                        <td>${index + 1}</td>
-                        <td>${formatDate(expense.date)}</td>
-                        <td>${expense.sName || '-'}</td>
-                        <td>${expense.sTaxId || '-'}</td>
-                        <td><span class="expense-group">${t(`expense.detail.group.${expense.group?.toLowerCase()}`) || expense.group || '-'}</span></td>
-                        <td class="text-center">${whtPercent}%</td>
-                        <td class="text-right">${formatCurrencyForPDF(Number(expense.amount) || 0)}</td>
-                        <td class="text-right">${formatCurrencyForPDF(whtAmount)}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                  <tr style="background-color: #f8f9fa; font-weight: bold;">
-                    <td colspan="6" class="text-right bold">${t("print.total")}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(
-                      actualExpenses.filter((expense: any) => expense.withHoldingTax)
-                        .reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0)
-                    )}</td>
-                    <td class="text-right bold">${formatCurrencyForPDF(totalWhtAmount)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            ` : `
-              <div class="no-data">
-                ${t("print.noWhtExpensesFound")}
-              </div>
-            `}
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>${t("print.date")}</th>
+                  <th>${t("print.supplier")}</th>
+                  <th>${t("print.taxId")}</th>
+                  <th>${t("print.category")}</th>
+                  <th class="text-center">${t("print.whtPercent")}</th>
+                  <th class="text-right">${t("print.amount")}</th>
+                  <th class="text-right">${t("print.whtAmount")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${whtExpensesList.map((expense: any, index: number) => {
+                  const whtAmount = Number(expense.WHTAmount) || 0;
+                  const netAmount = (Number(expense.amount) || 0) - whtAmount;
+                  const whtPercent = Number(expense.WHTpercent) || 0;
+                  return `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${formatDate(expense.date)}</td>
+                      <td>${expense.sName || '-'}</td>
+                      <td>${expense.sTaxId || '-'}</td>
+                      <td><span class="expense-group">${t(`expense.detail.group.${expense.group?.toLowerCase()}`) || expense.group || '-'}</span></td>
+                      <td class="text-center">${whtPercent}%</td>
+                      <td class="text-right">${formatCurrencyForPDF(Number(expense.amount) || 0)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(whtAmount)}</td>
+                    </tr>
+                  `;
+                }).join('')}
+                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                  <td colspan="6" class="text-right bold">${t("print.total")}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(
+                    whtExpensesList
+                      .reduce((sum: number, expense: any) => sum + (Number(expense.amount) || 0), 0)
+                  )}</td>
+                  <td class="text-right bold">${formatCurrencyForPDF(totalWhtAmount)}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           
           <div class="footer">
