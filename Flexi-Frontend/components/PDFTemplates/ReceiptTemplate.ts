@@ -14,9 +14,16 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     businessDetails,
     businessName,
     t,
-    formatCurrencyForPDF,
     formatDate,
   } = data;
+
+  const formatNumber = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
 
   // Use correct field from backend: invoice.product (array of ProductItem)
   const productItems = invoice.product || [];
@@ -658,15 +665,15 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     <td class="text-center">
                       ${item.unit ? t(`product.unit.${item.unit}`) : "-"}
                     </td>                   
-                    <td class="text-right">${formatCurrencyForPDF(
+                    <td class="text-right">${formatNumber(
                       unitPriceDisplayed
                     )}</td>
                       <td class="text-right">${
                         item.unitDiscount
-                          ? `${formatCurrencyForPDF(item.unitDiscount * item.quantity)}`
+                          ? `${formatNumber(item.unitDiscount * item.quantity)}`
                           : "-"
                       }</td>
-                    <td class="text-right font-bold">${formatCurrencyForPDF(
+                    <td class="text-right font-bold">${formatNumber(
                       lineTotal
                     )}</td>
                   </tr>
@@ -678,8 +685,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <!-- Totals row: sum only discount and total columns -->
                 <tr>
                   <td colspan="5" class="text-right font-bold">${t("print.total")}</td>
-                  <td class="text-right font-bold">-${formatCurrencyForPDF(lineDiscountSum)}</td>
-                  <td class="text-right font-bold">${formatCurrencyForPDF(lineTotalSum)}</td>
+                  <td class="text-right font-bold">-${formatNumber(lineDiscountSum)}</td>
+                  <td class="text-right font-bold">${formatNumber(lineTotalSum)}</td>
                 </tr>
               
               </tbody>
@@ -687,9 +694,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           </div>
 
            <!-- Terms and Summary Stacked -->
-          <div class="terms-summary-container" style="margin-bottom: 20px;">
+          <div class="terms-summary-container" style="width: 100%;margin-bottom: 20px;">
             <!-- Summary -->
-            <div class="summary-section" style="width: 100%; margin-bottom: 20px;">
+            <div class="summary-section" style="width: 60%;margin-bottom: 20px;align-items: flex-end; margin-left: auto; margin-bottom: 20px;">
               <div class="summary-table">
                 ${
                   isVatRegistered
@@ -700,23 +707,23 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
-                  )}</span>
+                  <span class="summary-amount">-${formatNumber(
+                    totalDiscount,
+                  )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
                 <div class="summary-row subtotal">
-                  <span class="summary-label">${t("print.subtotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    subTotal
-                  )}</span>
+                  <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
+                  <span class="summary-amount">${formatNumber(
+                    subTotal,
+                  )} ${t("common.THB")}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.vat")} (7%)</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    vatTotal
-                  )}</span>
+                  <span class="summary-amount">${formatNumber(
+                    vatTotal,
+                  )} ${t("common.THB")}</span>
                 </div>`
                     : `${
                         totalDiscount > 0
@@ -725,24 +732,37 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
-                    totalDiscount
-                  )}</span>
+                  <span class="summary-amount">-${formatNumber(
+                    totalDiscount,
+                  )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    subTotal
-                  )}</span>
+                  <span class="summary-amount">${formatNumber(
+                    subTotal,
+                  )} ${t("common.THB")}</span>
                 </div>`
-                }
+                } 
+                  ${
+                    invoice.withHoldingTax
+                      ? `
+                <div class="summary-row tax">
+                  <span class="summary-label">${t("print.withHoldingTaxAmount")} (${invoice.WHTpercent}%)</span>
+                  <span class="summary-amount">${formatNumber(
+                    Number(invoice.WHTAmount || 0),
+                  )} ${t("common.THB")}</span>
+                </div>
+                `
+                      : ""
+                  }
+              
                 <div class="summary-row total">
                   <span class="summary-label">${t("print.grandTotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
-                    grandTotal
-                  )}</span>
+                  <span class="summary-amount">${formatNumber(
+                    grandTotal,
+                  )} ${t("common.THB")}</span>
                 </div>
               </div>
             </div>

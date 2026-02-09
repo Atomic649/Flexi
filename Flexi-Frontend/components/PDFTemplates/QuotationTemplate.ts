@@ -9,14 +9,15 @@ interface QuotationData {
 }
 
 export const generateQuotationHTML = (data: QuotationData): string => {
-  const {
-    quotation,
-    businessDetails,
-    businessName,
-    t,
-    formatCurrencyForPDF,
-    formatDate,
-  } = data;
+  const { quotation, businessDetails, businessName, t, formatDate } = data;
+
+  const formatNumber = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
 
   // Use correct field from backend: quotation.product (array of ProductItem)
   const productItems = quotation.product || [];
@@ -570,9 +571,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                       <td class="font-medium">${item.product}</td>
                       <td class="text-center">${item.quantity}</td>
                       <td class="text-center">${item.unit !== "NotSpecified" ? t(`product.unit.${item.unit}`) : "-"}</td>
-                      <td class="text-right">${formatCurrencyForPDF(unitPriceDisplayed)}</td>
-                      <td class="text-right">${item.unitDiscount ? formatCurrencyForPDF(item.unitDiscount) : "-"}</td>
-                      <td class="text-right font-bold">${formatCurrencyForPDF(lineTotal)}</td>
+                      <td class="text-right">${formatNumber(unitPriceDisplayed)}</td>
+                      <td class="text-right">${item.unitDiscount ? formatNumber(item.unitDiscount) : "-"}</td>
+                      <td class="text-right font-bold">${formatNumber(lineTotal)}</td>
                     </tr>
                   `;
                  })
@@ -581,8 +582,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                  <!-- Totals row: sum only discount and total columns -->
                 <tr>
                   <td colspan="5" class="text-right font-bold">${t("print.total")}</td>
-                  <td class="text-right font-bold">-${formatCurrencyForPDF(lineDiscountSum)}</td>
-                  <td class="text-right font-bold">${formatCurrencyForPDF(lineTotalSum)}</td>
+                  <td class="text-right font-bold">-${formatNumber(lineDiscountSum)}</td>
+                  <td class="text-right font-bold">${formatNumber(lineTotalSum)}</td>
                 </tr>
               
               </tbody>
@@ -626,23 +627,23 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
+                  <span class="summary-amount">-${formatNumber(
                     totalDiscount,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
+                  <span class="summary-amount">${formatNumber(
                     subTotal,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.vat")} (7%)</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
+                  <span class="summary-amount">${formatNumber(
                     vatTotal,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>`
                     : `${
                         totalDiscount > 0
@@ -651,17 +652,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
-                  <span class="summary-amount">-${formatCurrencyForPDF(
+                  <span class="summary-amount">-${formatNumber(
                     totalDiscount,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
+                  <span class="summary-amount">${formatNumber(
                     subTotal,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>`
                 } 
                   ${
@@ -669,9 +670,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                       ? `
                 <div class="summary-row tax">
                   <span class="summary-label">${t("print.withHoldingTaxAmount")} (${quotation.WHTpercent}%)</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
+                  <span class="summary-amount">${formatNumber(
                     Number(quotation.WHTAmount || 0),
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>
                 `
                       : ""
@@ -679,9 +680,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               
                 <div class="summary-row total">
                   <span class="summary-label">${t("print.grandTotal")}</span>
-                  <span class="summary-amount">${formatCurrencyForPDF(
+                  <span class="summary-amount">${formatNumber(
                     grandTotal,
-                  )}</span>
+                  )} ${t("common.THB")}</span>
                 </div>
               </div>
             </div>
