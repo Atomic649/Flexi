@@ -34,7 +34,7 @@ import {
 } from "@/utils/taxUtils";
 import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
-import { isMobile } from "@/utils/responsive";
+import { isMobile, isTablet } from "@/utils/responsive";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) using the original UTC time
 const formatDate = (dateString: string) => {
@@ -647,7 +647,7 @@ export default function ExpenseDetail({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() ? "auto" : "60%",
+                width: isMobile() || isTablet() ? "auto" : "60%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 60 : 0,

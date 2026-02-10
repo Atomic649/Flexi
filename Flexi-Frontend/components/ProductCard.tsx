@@ -29,6 +29,11 @@ export default function ProductCard({
   const isSmallScreen = width < 380;
   const { t } = useTranslation();
   const mobile = isMobile();
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -147,7 +152,7 @@ export default function ProductCard({
               } text-zinc-500 font-bold`}
               numberOfLines={1}
             >
-              {productprice}
+              {formatNumber(Number(productprice) || 0)}
             </Text>
 
             {producttype === "Product" && (
@@ -156,7 +161,7 @@ export default function ProductCard({
                 numberOfLines={1}
                 style={{ color: "#71717a" }}
               >
-                {t("product.stock")} {productstock ?? 0}{" "}
+                {t("product.stock")} {formatNumber(Number(productstock) || 0)}{" "}
                 {unit ? `${t(`product.units.${unit.toLowerCase()}`)}` : ""}
               </CustomText>
             )}

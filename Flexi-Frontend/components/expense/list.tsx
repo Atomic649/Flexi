@@ -74,6 +74,11 @@ interface ListProps {
 const List = ({ refreshTrigger = 0 }: ListProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
   const [refreshing, setRefreshing] = useState(false);
   const [expense, setExpense] = useState<Expense[]>([]);
   const router = useRouter();
@@ -312,7 +317,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                         width: "8.33%", textAlign: "center", fontSize: getResponsiveStyles().smallFontSize
                       } as TextStyle}
                     >
-                      -{expense.expenses}
+                      -{formatNumber(expense.expenses || 0)}
                     </CustomText>
                     <View
                       className="flex flex-row w-24"

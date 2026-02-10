@@ -83,6 +83,14 @@ export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
 
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
+  const parseNumberInput = (value: string) =>
+    Number(value.replace(/,/g, "").replace(/[^\d.]/g, "")) || 0;
+
   // State for annual sales
   const [anualSales, setAnualSales] = useState(0); // Default value, will be replaced by API
 
@@ -252,7 +260,7 @@ export default function TaxDoc() {
                       {t("taxDoc.annualSales")}
                     </CustomText>
                     <CustomText className="text-base text-left">
-                      {anualSales.toLocaleString()}
+                      {formatNumber(anualSales)}
                     </CustomText>
                   </View>
                   <View className="flex-col">
@@ -260,7 +268,7 @@ export default function TaxDoc() {
                       {t("taxDoc.vatFullScore")}
                     </CustomText>
                     <CustomText className="text-base text-right">
-                      {(1800000).toLocaleString()}
+                      {formatNumber(1800000)}
                     </CustomText>
                   </View>
                 </View>
@@ -327,7 +335,7 @@ export default function TaxDoc() {
                     </CustomText>
 
                     <CustomText className="text-base text-left">
-                      {annualExpense.toLocaleString()}
+                      {formatNumber(annualExpense)}
                     </CustomText>
                     <CustomText
                       className="text-base text-left pt-2"
@@ -361,7 +369,7 @@ export default function TaxDoc() {
                       {t("taxDoc.annualIncome")}
                     </CustomText>
                     <CustomText className="text-base text-right">
-                      {anualSales.toLocaleString()}
+                      {formatNumber(anualSales)}
                     </CustomText>
                   </View>
                 </View>
@@ -433,7 +441,7 @@ export default function TaxDoc() {
                 >
                   <CustomText>{t("taxDoc.yearIncome")}</CustomText>
                   <CustomText className="pt-2">
-                    {anualSales.toLocaleString()}
+                    {formatNumber(anualSales)}
                   </CustomText>
                 </View>
                 {/* Reduct */}
@@ -441,16 +449,18 @@ export default function TaxDoc() {
                   <CustomText>{t("taxDoc.reduction")}</CustomText>
                   <CustomText className="pt-2">
                     {selectedTaxOption === "100"
-                      ? annualExpense.toLocaleString()
-                      : (anualSales * 0.6).toLocaleString()}
+                      ? formatNumber(annualExpense)
+                      : formatNumber(anualSales * 0.6)}
                   </CustomText>
                 </View>
                 {/* TextInput Exemption */}
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.exemption")}</CustomText>
                   <TextInput
-                    value={exemption.toString()}
-                    onChangeText={(value) => setExemption(Number(value) || 0)}
+                    value={formatNumber(exemption)}
+                    onChangeText={(value) => {
+                      setExemption(parseNumberInput(value));
+                    }}
                     placeholder="0"
                     placeholderTextColor="#a5a5a5"
                     keyboardType="numeric"
@@ -467,13 +477,13 @@ export default function TaxDoc() {
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
                   <CustomText className="pt-2">
-                    {(
+                    {formatNumber(
                       Number(anualSales) -
-                      ((selectedTaxOption === "100"
-                        ? Number(annualExpense)
-                        : Number(anualSales) * 0.6) +
-                        Number(exemption))
-                    ).toLocaleString()}
+                        ((selectedTaxOption === "100"
+                          ? Number(annualExpense)
+                          : Number(anualSales) * 0.6) +
+                          Number(exemption)),
+                    )}
                   </CustomText>
                 </View>
               </View>
@@ -497,7 +507,7 @@ export default function TaxDoc() {
                     // use anualSales (yearly income) for Individual taxable income calculation
                     const taxableIncome =
                       Number(anualSales) - (deduction + Number(exemption));
-                    return calculateTax(taxableIncome).toLocaleString();
+                    return formatNumber(calculateTax(taxableIncome));
                   })()}
                 </Text>
               </View>
@@ -598,22 +608,24 @@ export default function TaxDoc() {
                 >
                   <CustomText>{t("taxDoc.yearIncome")}</CustomText>
                   <CustomText className="pt-2">
-                    {yearlySum.toLocaleString()}
+                    {formatNumber(yearlySum)}
                   </CustomText>
                 </View>
                 {/* Reduct */}
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.reduction")}</CustomText>
                   <CustomText className="pt-2">
-                    {reductSum.toLocaleString()}
+                    {formatNumber(reductSum)}
                   </CustomText>
                 </View>
                 {/* TextInput Exemption */}
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.exemption")}</CustomText>
                   <TextInput
-                    value={exemption.toString()}
-                    onChangeText={(value) => setExemption(Number(value) || 0)}
+                    value={formatNumber(exemption)}
+                    onChangeText={(value) => {
+                      setExemption(parseNumberInput(value));
+                    }}
                     placeholder="0"
                     placeholderTextColor="#a5a5a5"
                     keyboardType="numeric"
@@ -630,7 +642,7 @@ export default function TaxDoc() {
                 <View className="flex-col w-1/4 items-center">
                   <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
                   <CustomText className="pt-2">
-                    {(yearlySum - (reductSum + exemption)).toLocaleString()}
+                    {formatNumber(yearlySum - (reductSum + exemption))}
                   </CustomText>
                 </View>
               </View>
@@ -647,7 +659,7 @@ export default function TaxDoc() {
                 >
                   {(() => {
                     const taxableIncome = yearlySum - (reductSum + exemption);
-                    return calculateTax(taxableIncome).toLocaleString();
+                    return formatNumber(calculateTax(taxableIncome));
                   })()}
                 </Text>
               </View>
@@ -750,9 +762,9 @@ export default function TaxDoc() {
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
-                    value={salary.toString()}
+                    value={formatNumber(salary)}
                     onChangeText={(value) => {
-                      const num = Number(value) || 0;
+                      const num = parseNumberInput(value);
                       setSalary(num);
                       setYearIncome(num * 12);
                     }}
@@ -769,7 +781,7 @@ export default function TaxDoc() {
                   />
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{yearIncome.toLocaleString()}</CustomText>
+                  <CustomText>{formatNumber(yearIncome)}</CustomText>
                 </View>
                 <View
                   style={{
@@ -779,7 +791,7 @@ export default function TaxDoc() {
                   }}
                 >
                   <CustomText style={{ textAlign: "center" }}>
-                    {reductSalary.toLocaleString()}
+                    {formatNumber(Number(reductSalary))}
                   </CustomText>
                 </View>
               </View>
@@ -796,9 +808,9 @@ export default function TaxDoc() {
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
-                    value={wage.toString()}
+                    value={formatNumber(wage)}
                     onChangeText={(value) => {
-                      const num = Number(value) || 0;
+                      const num = parseNumberInput(value);
                       setWage(num);
                       setAllYearWage(num * 12);
                     }}
@@ -815,7 +827,7 @@ export default function TaxDoc() {
                   />
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{allYearWage.toLocaleString()}</CustomText>
+                  <CustomText>{formatNumber(allYearWage)}</CustomText>
                 </View>
                 <View style={{ flex: 1 }} />
               </View>
@@ -860,9 +872,9 @@ export default function TaxDoc() {
                   </View>
                   <View style={{ flex: 1, alignItems: "center" }}>
                     <TextInput
-                      value={car.value.toString()}
+                      value={formatNumber(car.value)}
                       onChangeText={(value) => {
-                        let num = Number(value) || 0;
+                        let num = parseNumberInput(value);
                         if (num > 36000) {
                           alert(
                             t("taxDoc.carRentalMaxAlert") ||
@@ -889,12 +901,12 @@ export default function TaxDoc() {
                   </View>
                   <View style={{ flex: 1, alignItems: "center" }}>
                     <CustomText>
-                      {Number(car.yearly).toLocaleString()}
+                      {formatNumber(Number(car.yearly))}
                     </CustomText>
                   </View>
                   <View style={{ flex: 1, alignItems: "center" }}>
                     <CustomText>
-                      {Number(car.reduct).toLocaleString()}
+                      {formatNumber(Number(car.reduct))}
                     </CustomText>
                   </View>
                 </View>
@@ -912,9 +924,9 @@ export default function TaxDoc() {
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
-                    value={officeRental.toString()}
+                    value={formatNumber(officeRental)}
                     onChangeText={(value) => {
-                      const num = Number(value) || 0;
+                      const num = parseNumberInput(value);
                       setOfficeRental(num);
                       setAllYearOfficeRental(num * 12);
                     }}
@@ -932,11 +944,11 @@ export default function TaxDoc() {
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <CustomText>
-                    {allYearOfficeRental.toLocaleString()}
+                    {formatNumber(allYearOfficeRental)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{reductOfficeRental.toLocaleString()}</CustomText>
+                  <CustomText>{formatNumber(Number(reductOfficeRental))}</CustomText>
                 </View>
               </View>
               {/* Sum row */}
@@ -957,17 +969,17 @@ export default function TaxDoc() {
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <CustomText style={{ fontWeight: "bold" }}>
-                    {monthlySum.toLocaleString()}
+                    {formatNumber(monthlySum)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <CustomText style={{ fontWeight: "bold" }}>
-                    {yearlySum.toLocaleString()}
+                    {formatNumber(yearlySum)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <CustomText style={{ fontWeight: "bold" }}>
-                    {reductSum.toLocaleString()}
+                    {formatNumber(reductSum)}
                   </CustomText>
                 </View>
               </View>

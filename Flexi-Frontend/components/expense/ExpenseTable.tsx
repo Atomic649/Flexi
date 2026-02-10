@@ -50,6 +50,11 @@ const ExpenseTable = ({
 }: ExpenseTableProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [expenseList, setExpenseList] = useState(expenses);
@@ -181,7 +186,7 @@ const ExpenseTable = ({
             }}
           >
             <Text className={cellClass} numberOfLines={1}>
-              {item.amount}
+              {formatNumber(Number(item.amount) || 0)}
             </Text>
 
             <View className="flex-row">
