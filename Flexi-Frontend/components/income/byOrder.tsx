@@ -101,6 +101,11 @@ const formatDate = (dateString: string) => {
 const ByOrder = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
   const [refreshing, setRefreshing] = useState(false);
   const [bills, setBills] = useState<Bill[]>([]);
 
@@ -442,8 +447,8 @@ const ByOrder = () => {
                           }}
                         >
                           {bill.total <= 0
-                            ? bill.totalQuotation.toLocaleString()
-                            : `${bill.total.toLocaleString()}`}
+                            ? formatNumber(bill.totalQuotation || 0)
+                            : formatNumber(bill.total || 0)}
                         </CustomText>
                         <View
                           className={`flex items-center justify-center`}

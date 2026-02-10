@@ -38,6 +38,12 @@ export default function BillCard({
 }: any) {
   const { t } = useTranslation();
 
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
+
   // Optimistic override for immediate UI feedback; falls back to prop
   const [overrideDocumentType, setOverrideDocumentType] = useState<string | null>(null);
 
@@ -296,8 +302,8 @@ export default function BillCard({
               numberOfLines={1}
             >
               {effectiveDocumentType === "Receipt"
-                ? `+${(total || 0).toLocaleString()}`
-                : (totalQuotation || 0).toLocaleString()}
+                ? `+${formatNumber(total || 0)}`
+                : formatNumber(totalQuotation || 0)}
             </Text>
 
             {/* DocumentType Status Box */}

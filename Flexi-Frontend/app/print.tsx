@@ -730,40 +730,70 @@ export default function Print() {
 
   // Function to print HTML Income Report content for web/desktop
   const printIncomeReportHTMLContent = () => {
-    // Generate HTML content using the template component
-    const htmlContent = generateMonthlyReportHTML({
-      selectedMonth,
-      businessDetails,
-      businessName,
-      bills,
-      t,
-      formatCurrencyForPDF,
-      formatDate,
-      formatMonthYear,
-    });
-
-    // Create a new window for printing
+    // Open window immediately to avoid popup blockers on web
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
+      printWindow.document.write(
+        "<html><body><h3>Generating Report...</h3></body></html>",
+      );
+    }
 
-      // Wait for content to load, then print
-      printWindow.onload = () => {
-        printWindow.print();
+    try {
+      // Generate HTML content using the template component
+      const htmlContent = generateMonthlyReportHTML({
+        selectedMonth,
+        businessDetails,
+        businessName,
+        bills,
+        t,
+        formatCurrencyForPDF,
+        formatDate,
+        formatMonthYear,
+      });
+
+      // Update the existing window
+      if (printWindow) {
+        // Clear previous "Loading..." content
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+
+        // Wait for content to load, then print
+        printWindow.onload = () => {
+          printWindow.print();
+          printWindow.close();
+        };
+      } else {
+        // Fallback: create a blob and open it
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `income_report_${format(selectedMonth, "yyyy-MM")}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      // Close the window if we opened it but encountered an error
+      if (printWindow) {
         printWindow.close();
-      };
-    } else {
-      // Fallback: create a blob and open it
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `income_report_${format(selectedMonth, "yyyy-MM")}.html`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      }
+
+      console.error("❌ Error generating income report for web:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: `${t("print.pdfGenerationError")}: ${(error as Error).message}`,
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
     }
   };
 

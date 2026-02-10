@@ -1169,14 +1169,14 @@ export default function CreateExpense({
                 flex:
                   Platform.OS === "web"
                     ? hasAttachment
-                      ? 0.8
+                      ? 0.9
                       : 0.75
                     : hasAttachment
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
                 width: isMobile() ? "auto" : "60%",
-                backgroundColor: theme === "dark" ? "#2D2D2D" : "#ffffff",
+                backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 60 : 0,
               }}

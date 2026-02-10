@@ -640,17 +640,17 @@ export default function ExpenseDetail({
               style={{
                 flex:
                   Platform.OS === "web"
-                    ? image
-                      ? 0.8
+                    ? hasAttachment
+                      ? 0.9
                       : 0.75
-                    : image
+                    : hasAttachment
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() ? "100%" : "100%",
+                width: isMobile() ? "auto" : "60%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
-                padding: Platform.OS === "web" ? "20%" : 0,
+                padding: Platform.OS === "web" ? 60 : 0,
               }}
               onPress={() => {}}
             >
