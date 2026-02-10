@@ -112,7 +112,7 @@ export default function TabLayout() {
           ...Platform.select({
             ios: {
               height: 60,
-              paddingBottom: 0,
+              paddingBottom: 15,
               safeAreaInsets: { bottom: 35 },
             },
             android: {

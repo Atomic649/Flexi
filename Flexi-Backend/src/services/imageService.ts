@@ -13,8 +13,14 @@ const deleteFromS3 = async (key: string) => {
 
 // Helper ดึง key จาก full URL
 const extractS3Key = (url: string): string => {
-  const parsed = new URL(url);
-  return parsed.pathname.substring(1); // ตัด '/' ด้านหน้า
+  if (!url || typeof url !== "string") return "";
+  try {
+    const parsed = new URL(url);
+    return parsed.pathname.replace(/^\/+/, ""); // ตัด '/' ด้านหน้า
+  } catch {
+    // If it's already a key/path (not a full URL), just normalize leading slashes
+    return url.replace(/^\/+/, "");
+  }
 };
 
 // Helper สำหรับอัพโหลดไฟล์ไป S3

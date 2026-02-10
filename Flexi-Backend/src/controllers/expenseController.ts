@@ -1267,6 +1267,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
     ) => {
       if (!fileUrl) return;
       const fileKey = extractS3Key(fileUrl);
+      if (!fileKey) return;
       try {
         await deleteFromS3(fileKey);
         console.log(`✅ Old ${type} deleted from S3:`, fileKey);

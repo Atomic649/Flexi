@@ -343,10 +343,18 @@ export default function CreateExpense({
     }
   };
 
-  const appendAttachmentToFormData = (formData: FormData) => {
+  const appendAttachmentToFormData = async (formData: FormData) => {
     if (!attachment) return;
 
     const fileField = attachment.preview === "pdf" ? "pdf" : "image";
+
+    if (Platform.OS === "web") {
+      const response = await fetch(attachment.uri);
+      const blob = await response.blob();
+      formData.append(fileField, blob, attachment.name);
+      return;
+    }
+
     formData.append(fileField, {
       uri: attachment.uri,
       name: attachment.name,
@@ -424,7 +432,7 @@ export default function CreateExpense({
       formData.append("branch", branch);
       formData.append("taxType", taxType);
 
-      appendAttachmentToFormData(formData);
+      await appendAttachmentToFormData(formData);
 
       formData.append("group", group || "");
 
@@ -548,7 +556,7 @@ export default function CreateExpense({
 
               // Build minimal form data with image only (and memberId)
               const fd = new FormData();
-              appendAttachmentToFormData(fd);
+              await appendAttachmentToFormData(fd);
               if (memberId) fd.append("memberId", memberId);
 
               if (createdExpenseId) {
@@ -731,7 +739,7 @@ export default function CreateExpense({
       formData.append("date", Array.isArray(date) ? date[0] : date);
       formData.append("branch", branch || "");
       formData.append("taxType", taxType || "");
-      appendAttachmentToFormData(formData);
+      await appendAttachmentToFormData(formData);
 
       if (createdExpenseId !== null) {
         const data = await CallAPIExpense.updateExpenseAPI(
@@ -789,7 +797,7 @@ export default function CreateExpense({
         : "0";
       formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
-      appendAttachmentToFormData(formData);
+      await appendAttachmentToFormData(formData);
       formData.append("group", group || "");
       formData.append("vat", vatIncluded ? "true" : "false");
       formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");
@@ -879,7 +887,7 @@ export default function CreateExpense({
         : "0";
       formData.append("amount", normalizedAmount);
       formData.append("desc", desc);
-      appendAttachmentToFormData(formData);
+      await appendAttachmentToFormData(formData);
       formData.append("group", group || "");
       formData.append("vat", vatIncluded ? "true" : "false");
       formData.append("vatAmount", vatAmount ? vatAmount.toString() : "0");

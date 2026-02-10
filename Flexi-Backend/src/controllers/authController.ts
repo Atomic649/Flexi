@@ -338,20 +338,28 @@ const register = async (req: Request, res: Response) => {
 
 // Login function by prisma
 
+
 const login = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
+
+  // Trim email from req.body (avoid login failures due to leading/trailing spaces)
+  const normalizedEmail =
+    typeof userInput?.email === "string" ? userInput.email.trim() : userInput?.email;
+
   const schema = Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().trim().email().required(),
     password: passwordSchema.required(),
   });
-  const { error } = schema.validate(userInput);
+
+  const { error } = schema.validate({ ...userInput, email: normalizedEmail });
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
+
   try {
     const user = await Prisma.user.findUnique({
       where: {
-        email: userInput.email,
+        email: normalizedEmail,
       },
     });
     if (!user) {

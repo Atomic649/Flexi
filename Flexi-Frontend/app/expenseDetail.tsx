@@ -136,7 +136,7 @@ export default function ExpenseDetail({
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
-  const hasAttachment = Boolean(attachment);
+  const hasAttachment = Boolean(attachment) || Boolean(image) || Boolean(pdfUrl);
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(false);
@@ -408,10 +408,18 @@ export default function ExpenseDetail({
     onClose();
   };
 
-  const appendAttachmentToFormData = (formData: FormData) => {
+  const appendAttachmentToFormData = async (formData: FormData) => {
     if (!attachment) return;
 
     const fileField = attachment.preview === "pdf" ? "pdf" : "image";
+
+    if (Platform.OS === "web") {
+      const response = await fetch(attachment.uri);
+      const blob = await response.blob();
+      formData.append(fileField, blob, attachment.name);
+      return;
+    }
+
     formData.append(fileField, {
       uri: attachment.uri,
       name: attachment.name,
@@ -456,7 +464,7 @@ export default function ExpenseDetail({
       formData.append("sAddress", sAddress);
       formData.append("taxType", taxType);
       formData.append("branch", branch);
-      appendAttachmentToFormData(formData);
+      await appendAttachmentToFormData(formData);
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
       handleCloseAfterChanges(); // Close modal after successful update
 

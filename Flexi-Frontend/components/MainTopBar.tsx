@@ -68,7 +68,7 @@ const CachedAvatar = ({ uri, fallback }: { uri: string | null; fallback: any }) 
     <Image
       source={source}
       className="w-full h-full"
-      resizeMode="contain"
+      resizeMode="cover"
     />
   );
 };
@@ -120,7 +120,9 @@ const MainTopBar = {
     headerLeft: () => (
       <View
         className="flex-row items-center justify-between gap-4 ml-6"
-        style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0 }}
+        style={{ paddingLeft: Platform.OS === "web" ? "10%" : 0,
+          paddingHorizontal :6
+         }}
       >
         <TouchableOpacity onPress={() => router.push("/profile")} className="">
           <View className="w-9 h-9 rounded-full overflow-hidden justify-center items-center">
@@ -135,8 +137,8 @@ const MainTopBar = {
           {isLoading ? (
             <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
           ) : (
-            <CustomText className="text-base font-bold pt-2" numberOfLines={1}
-            style={{ fontSize: getResponsiveStyles().fontSize }}>
+            <CustomText className="text-base font-bold pt-1 px-2" numberOfLines={1}
+            style={{ fontSize: getResponsiveStyles().fontSize, marginHorizontal: 2 }}>
               {businessName || ""}
             </CustomText>
           )}
@@ -147,7 +149,7 @@ const MainTopBar = {
     headerRight: () => (
       <View
         className="flex-row items-center"
-        style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 }}
+        style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 , padding:6}}
       >
         {/* print report */}
         <TouchableOpacity
