@@ -272,6 +272,9 @@ const createBill = async (req: Request, res: Response) => {
     if (!billInput.payment) {
       billInput.payment = "NotSpecified" as Payment;
     }
+    if (typeof billInput.updateCustomer === "undefined") {
+      billInput.updateCustomer = true;
+    }
     // Validate the request body
     const { error } = schema.validate(billInput);
     if (error) {
@@ -884,6 +887,57 @@ const updateBill = async (req: Request, res: Response) => {
 
     try {
       const result = await prisma.$transaction(async (tx) => {
+        // Handle Customer Logic (Upsert based on phone within business)
+        let customerIdFromDb: number | null = null;
+        if (billInput.cPhone && billInput.cPhone.trim() !== "") {
+          const phone = billInput.cPhone.trim();
+          const customerData = {
+            businessAcc: billInput.businessAcc,
+            phone: phone,
+            firstName: billInput.cName,
+            lastName: billInput.cLastName,
+            gender: billInput.cGender,
+            address: billInput.cAddress,
+            province: billInput.cProvince,
+            postId: billInput.cPostId,
+            taxId: billInput.cTaxId,
+          };
+
+          if (billInput.updateCustomer) {
+            const customer = await tx.customer.upsert({
+              where: {
+                businessAcc_phone: {
+                  businessAcc: billInput.businessAcc,
+                  phone: phone,
+                },
+              },
+              create: customerData,
+              update: {
+                firstName: billInput.cName,
+                lastName: billInput.cLastName,
+                gender: billInput.cGender,
+                address: billInput.cAddress,
+                province: billInput.cProvince,
+                postId: billInput.cPostId,
+                taxId: billInput.cTaxId,
+              },
+            });
+            customerIdFromDb = customer.id;
+          } else {
+            const customer = await tx.customer.upsert({
+              where: {
+                businessAcc_phone: {
+                  businessAcc: billInput.businessAcc,
+                  phone: phone,
+                },
+              },
+              create: customerData,
+              update: {},
+            });
+            customerIdFromDb = customer.id;
+          }
+        }
+
         // Capture current product quantities for inventory adjustments
         const existingProductItems = await tx.productItem.findMany({
           where: { billId: Number(id) },
@@ -962,6 +1016,29 @@ const updateBill = async (req: Request, res: Response) => {
           WHTAmount: billInput.WHTAmount ?? 0,
           validContactUntil: validContactUntil,
         };
+
+        if (customerIdFromDb !== null) {
+          updateData.customerId = customerIdFromDb;
+        }
+
+        const customerIdToUpdate =
+          customerIdFromDb ?? (existingBill?.customerId ?? null);
+
+        if (customerIdToUpdate !== null) {
+          await tx.customer.update({
+            where: { id: customerIdToUpdate },
+            data: {
+              firstName: billInput.cName,
+              lastName: billInput.cLastName,
+              gender: billInput.cGender,
+              address: billInput.cAddress,
+              province: billInput.cProvince,
+              postId: billInput.cPostId,
+              taxId: billInput.cTaxId,
+              phone: billInput.cPhone,
+            },
+          });
+        }
 
         // Generate ID if missing for the new DocumentType
         if (docType === "Receipt") {
