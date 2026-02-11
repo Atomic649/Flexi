@@ -265,7 +265,36 @@ model BusinessAcc {
   platform         Platform[]
   product          Product[]
   documentCounters DocumentCounter[]
+  customers        Customer[]
 
+  @@schema("flexidb")
+}
+
+model Customer {
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Identify customer within each business by phone
+  phone       String
+  firstName   String?
+  lastName    String?
+  gender      Gender?
+  email       String?
+  address     String?
+  province    String?
+  postId      String?
+  taxId       String?
+
+  deleted     Boolean?    @default(false)
+
+  // Relation
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  bills       Bill[]
+
+  @@unique([businessAcc, phone])
+  @@index([businessAcc])
   @@schema("flexidb")
 }
 
@@ -332,6 +361,9 @@ model Bill {
   businessId   BusinessAcc @relation(fields: [businessAcc], references: [id])
   platformId   Int?
   platformInfo Platform?   @relation(fields: [platformId], references: [id])
+
+  customerId   Int?
+  customer     Customer?   @relation(fields: [customerId], references: [id])
 
   @@schema("flexidb")
 }

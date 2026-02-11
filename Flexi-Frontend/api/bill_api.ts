@@ -53,6 +53,7 @@ class CallAPIBill {
         cPostId: string;
         cTaxId: string;
         cProvince: string;
+        updateCustomer?: boolean;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
         businessAcc: number;

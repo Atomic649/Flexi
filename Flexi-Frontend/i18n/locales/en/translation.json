@@ -1320,7 +1320,20 @@
       "deleteError": "Error deleting document",
       "repeatSuccessMessage": "Document will be repeated every",
       "receiptLockedTitle": "Receipt finalized",
-      "receiptLockedMessage": "Receipts that are already saved cannot move back to previous steps."
+      "receiptLockedMessage": "Receipts that are already saved cannot move back to previous steps.",
+      "customerFoundTitle": "Customer Found",
+      "customerFoundMessage": "We found this customer in your contact book. Do you want to use the saved data or exit?",
+      "useSavedData": "Use Saved Data",
+      "exit": "Exit",
+      "customerConflictTitle": "Customer Data Conflict",
+      "customerConflictMessage": "You already have this customer in your contact. Do you want to keep the old data or replace with new data?",
+      "oldData": "Old Data",
+      "newData": "New Data",
+      "nameLabel": "Name",
+      "phoneLabel": "Phone",
+      "addressLabel": "Address",
+      "keepOldData": "Keep Old Data",
+      "replaceWithNewData": "Replace with New Data"
     },
     "validation": {
       "incomplete": "Incomplete Data",

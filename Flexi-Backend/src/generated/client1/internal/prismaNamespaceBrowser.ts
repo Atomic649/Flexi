@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Member: 'Member',
   BusinessAcc: 'BusinessAcc',
+  Customer: 'Customer',
   DocumentCounter: 'DocumentCounter',
   Bill: 'Bill',
   ProductItem: 'ProductItem',
@@ -140,6 +141,26 @@ export const BusinessAccScalarFieldEnum = {
 export type BusinessAccScalarFieldEnum = (typeof BusinessAccScalarFieldEnum)[keyof typeof BusinessAccScalarFieldEnum]
 
 
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  phone: 'phone',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  gender: 'gender',
+  email: 'email',
+  address: 'address',
+  province: 'province',
+  postId: 'postId',
+  taxId: 'taxId',
+  deleted: 'deleted',
+  businessAcc: 'businessAcc'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
 export const DocumentCounterScalarFieldEnum = {
   id: 'id',
   businessId: 'businessId',
@@ -195,7 +216,8 @@ export const BillScalarFieldEnum = {
   platform: 'platform',
   memberId: 'memberId',
   businessAcc: 'businessAcc',
-  platformId: 'platformId'
+  platformId: 'platformId',
+  customerId: 'customerId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]

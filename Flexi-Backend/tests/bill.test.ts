@@ -49,6 +49,8 @@ prismaMock.bill = {
 };
 prismaMock.member = { findUnique: jest.fn() };
 prismaMock.productItem = { deleteMany: jest.fn(), findMany: jest.fn() };
+prismaMock.customer = { upsert: jest.fn(), findUnique: jest.fn() };
+prismaMock.businessAcc = { findUnique: jest.fn() };
 prismaMock.product = {
   updateMany: jest.fn(),
   update: jest.fn(),
@@ -62,6 +64,7 @@ prismaMock.$transaction = jest.fn(async (cb: any) =>
     platform: prismaMock.platform,
     documentCounter: prismaMock.documentCounter,
     productItem: prismaMock.productItem,
+    customer: prismaMock.customer,
   })
 );
 
@@ -126,7 +129,6 @@ const validBillPayload = () => ({
   note: "",
   paymentTermCondition: "",
   remark: "",
-  priceValid: "",
   WHTAmount: 0,
   
 });
@@ -138,6 +140,8 @@ describe("billController", () => {
     prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
     prismaMock.documentCounter.updateMany.mockResolvedValue({ count: 1 });
     prismaMock.platform.findUnique.mockResolvedValue({ id: 10, name: "Shop" });
+    prismaMock.customer.upsert.mockResolvedValue({ id: 100 });
+    prismaMock.businessAcc.findUnique.mockResolvedValue({ vat: false });
   });
 
   describe("createBill", () => {
@@ -177,6 +181,61 @@ describe("billController", () => {
       const call = prismaMock.bill.create.mock.calls[0][0];
       expect(call.data.platform).toBe("Lazada");
       expect(Number.isNaN(call.data.platformId)).toBe(true);
+    });
+
+    test("upserts customer without update when updateCustomer is false", async () => {
+      prismaMock.customer.upsert.mockResolvedValue({ id: 101 });
+      prismaMock.bill.create.mockResolvedValue({ id: 3, billId: "INV2025/3" });
+
+      const payload = { ...validBillPayload(), updateCustomer: false };
+      const res = await request(app).post("/bill").send(payload);
+
+      expect(res.status).toBe(200);
+      expect(prismaMock.customer.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          update: {}, // Should be empty
+          create: expect.objectContaining({
+            phone: payload.cPhone,
+            firstName: payload.cName,
+          }),
+        })
+      );
+      // Verify bill is linked to customer
+      expect(prismaMock.bill.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            customerId: 101,
+          }),
+        })
+      );
+    });
+
+    test("upserts customer with update when updateCustomer is true", async () => {
+      prismaMock.customer.upsert.mockResolvedValue({ id: 102 });
+      prismaMock.bill.create.mockResolvedValue({ id: 4, billId: "INV2025/4" });
+
+      const payload = { ...validBillPayload(), updateCustomer: true };
+      const res = await request(app).post("/bill").send(payload);
+
+      expect(res.status).toBe(200);
+      expect(prismaMock.customer.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          update: expect.objectContaining({
+            firstName: payload.cName, // Should update
+          }),
+          create: expect.objectContaining({
+            phone: payload.cPhone,
+          }),
+        })
+      );
+      // Verify bill is linked to customer
+      expect(prismaMock.bill.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            customerId: 102,
+          }),
+        })
+      );
     });
   });
 

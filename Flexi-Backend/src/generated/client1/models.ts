@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/Member'
 export type * from './models/BusinessAcc'
+export type * from './models/Customer'
 export type * from './models/DocumentCounter'
 export type * from './models/Bill'
 export type * from './models/ProductItem'

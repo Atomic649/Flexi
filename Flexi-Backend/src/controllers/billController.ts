@@ -197,6 +197,7 @@ interface billInput {
   withholdingTax?: boolean;
   withholdingPercent?: number;
   WHTAmount?: number;
+  updateCustomer?: boolean; // Flag to update customer details
 }
 
 // Validate the request body
@@ -213,6 +214,7 @@ const schema = Joi.object({
   cAddress: Joi.string().required(),
   cProvince: Joi.string().required(),
   cPostId: Joi.string().required(),
+  updateCustomer: Joi.boolean().optional(),
   cTaxId: Joi.string().allow("").optional(),
   payment: Joi.string()
     .valid("COD", "Transfer", "CreditCard", "Cash", "NotSpecified")
@@ -306,6 +308,59 @@ const createBill = async (req: Request, res: Response) => {
     // find platform from platform id
     try {
       const result = await prisma.$transaction(async (tx) => {
+        // Handle Customer Logic
+        let customerIdFromDb: number | null = null;
+        if (billInput.cPhone && billInput.cPhone.trim() !== "") {
+          const phone = billInput.cPhone.trim();
+          const customerData = {
+            businessAcc: billInput.businessAcc,
+            phone: phone,
+            firstName: billInput.cName,
+            lastName: billInput.cLastName,
+            gender: billInput.cGender,
+            address: billInput.cAddress,
+            province: billInput.cProvince,
+            postId: billInput.cPostId,
+            taxId: billInput.cTaxId,
+          };
+
+          if (billInput.updateCustomer) {
+            // Upsert (Create or Update)
+            const customer = await tx.customer.upsert({
+              where: {
+                businessAcc_phone: {
+                  businessAcc: billInput.businessAcc,
+                  phone: phone,
+                },
+              },
+              create: customerData,
+              update: {
+                firstName: billInput.cName,
+                lastName: billInput.cLastName,
+                gender: billInput.cGender,
+                address: billInput.cAddress,
+                province: billInput.cProvince,
+                postId: billInput.cPostId,
+                taxId: billInput.cTaxId,
+              },
+            });
+            customerIdFromDb = customer.id;
+          } else {
+            // Create if new, otherwise do nothing to existing
+            const customer = await tx.customer.upsert({
+              where: {
+                businessAcc_phone: {
+                  businessAcc: billInput.businessAcc,
+                  phone: phone,
+                },
+              },
+              create: customerData,
+              update: {}, // Keep old data
+            });
+            customerIdFromDb = customer.id;
+          }
+        }
+
         // Calculate beforeDiscount (total before any discounts)
         const beforeDiscount = billInput.productItems.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
@@ -405,6 +460,7 @@ const createBill = async (req: Request, res: Response) => {
 
               const billData: any = {
                 ...idFields,
+                customerId: customerIdFromDb,
                 cName: billInput.cName,
                 cLastName: billInput.cLastName,
                 cPhone: billInput.cPhone,
@@ -489,6 +545,7 @@ const createBill = async (req: Request, res: Response) => {
 
           const singleBillData: any = {
             ...idFields,
+            customerId: customerIdFromDb,
             cName: billInput.cName,
             cLastName: billInput.cLastName,
             cPhone: billInput.cPhone,

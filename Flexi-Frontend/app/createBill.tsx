@@ -22,6 +22,7 @@ import DateTimePicker from "@/components/DateTimePicker";
 import CallAPIProduct from "@/api/product_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
+import CallAPICustomer from "@/api/customer_api";
 import CallAPIPlatform from "@/api/platform_api";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -64,6 +65,71 @@ export default function CreateBill() {
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const { vat } = useBusiness();
 
+  const checkCustomerConflict = async (): Promise<boolean> => {
+    if (!cPhone || cPhone.length < 3) return false; // Basic check
+
+    setIsCheckingCustomer(true);
+    try {
+      const businessAccId = await getBusinessId();
+      if (businessAccId) {
+        const res = await CallAPICustomer.checkCustomer(
+          Number(businessAccId),
+          cPhone,
+        );
+        if (res.exists && res.customer) {
+          setExistingCustomer(res.customer);
+          if (!cName) {
+            const foundFullName = `${res.customer.firstName || ""} ${res.customer.lastName || ""}`.trim();
+
+            setAlertConfig({
+              visible: true,
+              title: t("bill.alerts.customerFoundTitle", "Customer Found"),
+              message: `${foundFullName},\n${t(
+                "bill.alerts.customerFoundMessage",
+                `We found ${foundFullName} in your contact book. Do you want to use the saved data or exit?`,
+              )}`,
+              buttons: [
+                {
+                  text: t("bill.alerts.useSavedData", "Use Data"),
+                  onPress: () => {
+                    setCName(res.customer.firstName || "");
+                    setCLastName(res.customer.lastName || "");
+                    if (res.customer.gender) setCGender(res.customer.gender);
+                    else setCGender("NotSpecified");
+                    setCAddress(res.customer.address || "");
+                    setCProvince(res.customer.province || "");
+                    setCPostId(res.customer.postId || "");
+                    setTaxId(res.customer.taxId || "");
+                    setUpdateCustomer(false);
+                    setAlertConfig((prev) => ({ ...prev, visible: false }));
+                  },
+                },
+                {
+                  text: t("common.exit", "Exit"),
+                  onPress: () =>
+                    setAlertConfig((prev) => ({ ...prev, visible: false })),
+                },
+              ],
+            });
+          } else {
+            setConflictModalVisible(true);
+          }
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      console.error(e);
+      return false;
+    } finally {
+      setIsCheckingCustomer(false);
+    }
+  };
+
+  const handleCheckCustomer = async () => {
+    await checkCustomerConflict();
+  };
+
   // Note: Avoid reacting to memberId via effect to fetch defaults; handled during credentials fetch
 
   // Handler to save remark to AsyncStorage
@@ -104,6 +170,12 @@ export default function CreateBill() {
   const [cName, setCName] = useState("");
   const [cLastName, setCLastName] = useState("");
   const [cPhone, setCPhone] = useState("");
+  
+  // Customer Check States
+  const [conflictModalVisible, setConflictModalVisible] = useState(false);
+  const [existingCustomer, setExistingCustomer] = useState<any>(null);
+  const [updateCustomer, setUpdateCustomer] = useState(false);
+  const [isCheckingCustomer, setIsCheckingCustomer] = useState(false);
   const [cGender, setCGender] = useState("");
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
@@ -812,6 +884,14 @@ export default function CreateBill() {
     }
 
     try {
+      // Ensure conflict modal appears before creating bill
+      if (!updateCustomer) {
+        const hasConflict = await checkCustomerConflict();
+        if (hasConflict) {
+          return;
+        }
+      }
+
       // Call API to create bill
       const data = await CallAPIBill.createBillAPI({
         purchaseAt,
@@ -822,6 +902,7 @@ export default function CreateBill() {
         cAddress,
         cPostId,
         cProvince,
+        updateCustomer,
         cTaxId: String(cTaxId),
         payment: payment as
           | "COD"
@@ -1331,6 +1412,7 @@ export default function CreateBill() {
                   title={t("bill.customerPhone")}
                   value={cPhone}
                   handleChangeText={setCPhone}
+                  onEndEditing={handleCheckCustomer}
                   placeholder="0812345678"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
@@ -2010,6 +2092,139 @@ export default function CreateBill() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Customer Conflict Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={conflictModalVisible}
+        onRequestClose={() => setConflictModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50 p-4">
+          <View
+            className={`w-full max-w-lg p-6 rounded-2xl ${
+              theme === "dark" ? "bg-zinc-900" : "bg-white"
+            }`}
+          >
+            <CustomText className="text-xl font-bold mb-4 text-center">
+              {t("bill.alerts.customerConflictTitle", "Customer Conflict")}
+            </CustomText>
+            <CustomText className="mb-4 text-center text-base">
+              {t(
+                "bill.alerts.customerConflictMessage",
+                "You already have this customer in your contact. Do you want to keep the old data or replace with new data?",
+              )}
+            </CustomText>
+
+            <View className="flex-row justify-between mb-6">
+              <View
+                className={`w-[48%] p-3 rounded-xl ${
+                  theme === "dark" ? "bg-zinc-800" : "bg-gray-100"
+                }`}
+              >
+                <CustomText className="font-bold mb-2 text-lg text-emerald-500">
+                  {t("bill.alerts.oldData", "Old Data")}
+                </CustomText>
+                <CustomText className="mb-1">
+                  <Ionicons
+                    name="person-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {existingCustomer?.firstName} {existingCustomer?.lastName}
+                </CustomText>
+                <CustomText className="mb-1">
+                  <Ionicons
+                    name="call-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {existingCustomer?.phone}
+                </CustomText>
+                <CustomText>
+                  <Ionicons
+                    name="location-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {existingCustomer?.address}
+                </CustomText>
+              </View>
+
+              <View
+                className={`w-[48%] p-3 rounded-xl ${
+                  theme === "dark" ? "bg-zinc-800" : "bg-gray-100"
+                }`}
+              >
+                <CustomText className="font-bold mb-2 text-lg text-blue-500">
+                  {t("bill.alerts.newData", "New Data")}
+                </CustomText>
+                <CustomText className="mb-1">
+                  <Ionicons
+                    name="person-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {cName} {cLastName}
+                </CustomText>
+                <CustomText className="mb-1">
+                  <Ionicons
+                    name="call-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {cPhone}
+                </CustomText>
+                <CustomText>
+                  <Ionicons
+                    name="location-outline"
+                    size={14}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    style={{ margin: 6 }}
+                  />
+                  {cAddress}
+                </CustomText>
+              </View>
+            </View>
+
+            <View className="flex-col space-y-3">
+              <GrayButton
+                title={t("bill.alerts.keepOldData", "Keep Old Data")}
+                handlePress={() => {
+                  if (existingCustomer) {
+                    setCName(existingCustomer.firstName || "");
+                    setCLastName(existingCustomer.lastName || "");
+                    if (existingCustomer.gender)
+                      setCGender(existingCustomer.gender);
+                    else setCGender("NotSpecified");
+                    setCAddress(existingCustomer.address || "");
+                    setCProvince(existingCustomer.province || "");
+                    setCPostId(existingCustomer.postId || "");
+                    setTaxId(existingCustomer.taxId || "");
+                    setUpdateCustomer(false);
+                  }
+                  setConflictModalVisible(false);
+                }}
+                containerStyles="w-full"
+              />
+              <CustomButton
+                title={t("bill.alerts.replaceWithNewData", "Replace with New Data")}
+                handlePress={() => {
+                  setUpdateCustomer(true);
+                  setConflictModalVisible(false);
+                }}
+                containerStyles="w-full"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <CustomAlert
         visible={alertConfig.visible}
         title={alertConfig.title}

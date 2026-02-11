@@ -68,6 +68,30 @@ Table BusinessAcc {
   platform Platform [not null]
   product Product [not null]
   documentCounters DocumentCounter [not null]
+  customers Customer [not null]
+}
+
+Table Customer {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  phone String [not null]
+  firstName String
+  lastName String
+  gender Gender
+  email String
+  address String
+  province String
+  postId String
+  taxId String
+  deleted Boolean [default: false]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  bills Bill [not null]
+
+  indexes {
+    (businessAcc, phone) [unique]
+  }
 }
 
 Table DocumentCounter {
@@ -132,6 +156,8 @@ Table Bill {
   businessId BusinessAcc [not null]
   platformId Int
   platformInfo Platform
+  customerId Int
+  customer Customer
 }
 
 Table ProductItem {
@@ -424,6 +450,8 @@ Ref: Member.businessId > BusinessAcc.id
 
 Ref: BusinessAcc.userId > User.id
 
+Ref: Customer.businessAcc > BusinessAcc.id
+
 Ref: DocumentCounter.businessId > BusinessAcc.id
 
 Ref: Bill.memberId > Member.uniqueId
@@ -431,6 +459,8 @@ Ref: Bill.memberId > Member.uniqueId
 Ref: Bill.businessAcc > BusinessAcc.id
 
 Ref: Bill.platformId > Platform.id
+
+Ref: Bill.customerId > Customer.id
 
 Ref: ProductItem.billId > Bill.id
 

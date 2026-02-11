@@ -121,6 +121,8 @@ import chatAIRoutes from "./src/routes/chatAIRoute";
 import adsEventRoutes from "./src/routes/adsEventRoute";
 // Facebook Ads Routes
 import facebookRoutes from "./src/routes/facebookRoute";
+// Customer Routes
+import customerRoutes from "./src/routes/customerRoute";
 
 // --------------USE ROUTES-----------------
 
@@ -174,6 +176,9 @@ app.use("/ads-tracking", adsEventRoutes);;
 
 // Facebook Ads Routes
 app.use("/facebook", facebookRoutes);
+
+// Customer Routes
+app.use("/customer", customerRoutes);
 
 
 // start server with out SSL

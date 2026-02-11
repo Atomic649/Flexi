@@ -42,6 +42,7 @@ export type BillAvgAggregateOutputType = {
   WHTAmount: runtime.Decimal | null
   businessAcc: number | null
   platformId: number | null
+  customerId: number | null
 }
 
 export type BillSumAggregateOutputType = {
@@ -60,6 +61,7 @@ export type BillSumAggregateOutputType = {
   WHTAmount: runtime.Decimal | null
   businessAcc: number | null
   platformId: number | null
+  customerId: number | null
 }
 
 export type BillMinAggregateOutputType = {
@@ -108,6 +110,7 @@ export type BillMinAggregateOutputType = {
   memberId: string | null
   businessAcc: number | null
   platformId: number | null
+  customerId: number | null
 }
 
 export type BillMaxAggregateOutputType = {
@@ -156,6 +159,7 @@ export type BillMaxAggregateOutputType = {
   memberId: string | null
   businessAcc: number | null
   platformId: number | null
+  customerId: number | null
 }
 
 export type BillCountAggregateOutputType = {
@@ -204,6 +208,7 @@ export type BillCountAggregateOutputType = {
   memberId: number
   businessAcc: number
   platformId: number
+  customerId: number
   _all: number
 }
 
@@ -224,6 +229,7 @@ export type BillAvgAggregateInputType = {
   WHTAmount?: true
   businessAcc?: true
   platformId?: true
+  customerId?: true
 }
 
 export type BillSumAggregateInputType = {
@@ -242,6 +248,7 @@ export type BillSumAggregateInputType = {
   WHTAmount?: true
   businessAcc?: true
   platformId?: true
+  customerId?: true
 }
 
 export type BillMinAggregateInputType = {
@@ -290,6 +297,7 @@ export type BillMinAggregateInputType = {
   memberId?: true
   businessAcc?: true
   platformId?: true
+  customerId?: true
 }
 
 export type BillMaxAggregateInputType = {
@@ -338,6 +346,7 @@ export type BillMaxAggregateInputType = {
   memberId?: true
   businessAcc?: true
   platformId?: true
+  customerId?: true
 }
 
 export type BillCountAggregateInputType = {
@@ -386,6 +395,7 @@ export type BillCountAggregateInputType = {
   memberId?: true
   businessAcc?: true
   platformId?: true
+  customerId?: true
   _all?: true
 }
 
@@ -521,6 +531,7 @@ export type BillGroupByOutputType = {
   memberId: string
   businessAcc: number
   platformId: number | null
+  customerId: number | null
   _count: BillCountAggregateOutputType | null
   _avg: BillAvgAggregateOutputType | null
   _sum: BillSumAggregateOutputType | null
@@ -592,10 +603,12 @@ export type BillWhereInput = {
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
+  customerId?: Prisma.IntNullableFilter<"Bill"> | number | null
   product?: Prisma.ProductItemListRelationFilter
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   platformInfo?: Prisma.XOR<Prisma.PlatformNullableScalarRelationFilter, Prisma.PlatformWhereInput> | null
+  customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
 }
 
 export type BillOrderByWithRelationInput = {
@@ -644,10 +657,12 @@ export type BillOrderByWithRelationInput = {
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrderInput | Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   product?: Prisma.ProductItemOrderByRelationAggregateInput
   member?: Prisma.MemberOrderByWithRelationInput
   businessId?: Prisma.BusinessAccOrderByWithRelationInput
   platformInfo?: Prisma.PlatformOrderByWithRelationInput
+  customer?: Prisma.CustomerOrderByWithRelationInput
 }
 
 export type BillWhereUniqueInput = Prisma.AtLeast<{
@@ -699,10 +714,12 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
+  customerId?: Prisma.IntNullableFilter<"Bill"> | number | null
   product?: Prisma.ProductItemListRelationFilter
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
   platformInfo?: Prisma.XOR<Prisma.PlatformNullableScalarRelationFilter, Prisma.PlatformWhereInput> | null
+  customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
 }, "id">
 
 export type BillOrderByWithAggregationInput = {
@@ -751,6 +768,7 @@ export type BillOrderByWithAggregationInput = {
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrderInput | Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.BillCountOrderByAggregateInput
   _avg?: Prisma.BillAvgOrderByAggregateInput
   _max?: Prisma.BillMaxOrderByAggregateInput
@@ -807,6 +825,7 @@ export type BillScalarWhereWithAggregatesInput = {
   memberId?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   businessAcc?: Prisma.IntWithAggregatesFilter<"Bill"> | number
   platformId?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  customerId?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
 }
 
 export type BillCreateInput = {
@@ -855,6 +874,7 @@ export type BillCreateInput = {
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateInput = {
@@ -903,6 +923,7 @@ export type BillUncheckedCreateInput = {
   memberId: string
   businessAcc: number
   platformId?: number | null
+  customerId?: number | null
   product?: Prisma.ProductItemUncheckedCreateNestedManyWithoutBillInput
 }
 
@@ -952,6 +973,7 @@ export type BillUpdateInput = {
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateInput = {
@@ -1000,6 +1022,7 @@ export type BillUncheckedUpdateInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   product?: Prisma.ProductItemUncheckedUpdateManyWithoutBillNestedInput
 }
 
@@ -1049,6 +1072,7 @@ export type BillCreateManyInput = {
   memberId: string
   businessAcc: number
   platformId?: number | null
+  customerId?: number | null
 }
 
 export type BillUpdateManyMutationInput = {
@@ -1141,6 +1165,7 @@ export type BillUncheckedUpdateManyInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BillListRelationFilter = {
@@ -1199,6 +1224,7 @@ export type BillCountOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
 }
 
 export type BillAvgOrderByAggregateInput = {
@@ -1217,6 +1243,7 @@ export type BillAvgOrderByAggregateInput = {
   WHTAmount?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
 }
 
 export type BillMaxOrderByAggregateInput = {
@@ -1265,6 +1292,7 @@ export type BillMaxOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
 }
 
 export type BillMinOrderByAggregateInput = {
@@ -1313,6 +1341,7 @@ export type BillMinOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
 }
 
 export type BillSumOrderByAggregateInput = {
@@ -1331,6 +1360,7 @@ export type BillSumOrderByAggregateInput = {
   WHTAmount?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
 }
 
 export type BillNullableScalarRelationFilter = {
@@ -1422,8 +1452,46 @@ export type BillUncheckedUpdateManyWithoutBusinessIdNestedInput = {
   deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
 }
 
-export type NullableEnumGenderFieldUpdateOperationsInput = {
-  set?: $Enums.Gender | null
+export type BillCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput> | Prisma.BillCreateWithoutCustomerInput[] | Prisma.BillUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutCustomerInput | Prisma.BillCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.BillCreateManyCustomerInputEnvelope
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+}
+
+export type BillUncheckedCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput> | Prisma.BillCreateWithoutCustomerInput[] | Prisma.BillUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutCustomerInput | Prisma.BillCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.BillCreateManyCustomerInputEnvelope
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+}
+
+export type BillUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput> | Prisma.BillCreateWithoutCustomerInput[] | Prisma.BillUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutCustomerInput | Prisma.BillCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.BillUpsertWithWhereUniqueWithoutCustomerInput | Prisma.BillUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.BillCreateManyCustomerInputEnvelope
+  set?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  disconnect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  delete?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  update?: Prisma.BillUpdateWithWhereUniqueWithoutCustomerInput | Prisma.BillUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.BillUpdateManyWithWhereWithoutCustomerInput | Prisma.BillUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
+}
+
+export type BillUncheckedUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput> | Prisma.BillCreateWithoutCustomerInput[] | Prisma.BillUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutCustomerInput | Prisma.BillCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.BillUpsertWithWhereUniqueWithoutCustomerInput | Prisma.BillUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.BillCreateManyCustomerInputEnvelope
+  set?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  disconnect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  delete?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  update?: Prisma.BillUpdateWithWhereUniqueWithoutCustomerInput | Prisma.BillUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.BillUpdateManyWithWhereWithoutCustomerInput | Prisma.BillUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
 }
 
 export type NullableEnumPaymentFieldUpdateOperationsInput = {
@@ -1557,6 +1625,7 @@ export type BillCreateWithoutMemberInput = {
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutMemberInput = {
@@ -1604,6 +1673,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   businessAcc: number
   platformId?: number | null
+  customerId?: number | null
   product?: Prisma.ProductItemUncheckedCreateNestedManyWithoutBillInput
 }
 
@@ -1682,6 +1752,7 @@ export type BillScalarWhereInput = {
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
+  customerId?: Prisma.IntNullableFilter<"Bill"> | number | null
 }
 
 export type BillCreateWithoutBusinessIdInput = {
@@ -1729,6 +1800,7 @@ export type BillCreateWithoutBusinessIdInput = {
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutBusinessIdInput = {
@@ -1776,6 +1848,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   platform: $Enums.SocialMedia
   memberId: string
   platformId?: number | null
+  customerId?: number | null
   product?: Prisma.ProductItemUncheckedCreateNestedManyWithoutBillInput
 }
 
@@ -1803,6 +1876,129 @@ export type BillUpdateWithWhereUniqueWithoutBusinessIdInput = {
 export type BillUpdateManyWithWhereWithoutBusinessIdInput = {
   where: Prisma.BillScalarWhereInput
   data: Prisma.XOR<Prisma.BillUpdateManyMutationInput, Prisma.BillUncheckedUpdateManyWithoutBusinessIdInput>
+}
+
+export type BillCreateWithoutCustomerInput = {
+  billId?: string | null
+  quotationId?: string | null
+  invoiceId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  cName: string
+  cLastName?: string | null
+  cPhone?: string | null
+  cGender?: $Enums.Gender | null
+  cAddress?: string | null
+  cProvince?: string | null
+  cPostId?: string | null
+  cTaxId?: string | null
+  payment?: $Enums.Payment | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Date | string
+  cashStatus?: boolean | null
+  image?: string | null
+  deleted?: boolean | null
+  repeat?: boolean | null
+  repeatMonths?: number | null
+  note?: string | null
+  taxType?: $Enums.taxType | null
+  DocumentType?: $Enums.DocumentType | null
+  discount?: number | null
+  billLevelDiscount?: number | null
+  priceValid?: Date | string | null
+  validContactUntil?: Date | string | null
+  rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: string | null
+  remark?: string | null
+  platform: $Enums.SocialMedia
+  product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
+  member: Prisma.MemberCreateNestedOneWithoutBillInput
+  businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
+  platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
+}
+
+export type BillUncheckedCreateWithoutCustomerInput = {
+  id?: number
+  billId?: string | null
+  quotationId?: string | null
+  invoiceId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  cName: string
+  cLastName?: string | null
+  cPhone?: string | null
+  cGender?: $Enums.Gender | null
+  cAddress?: string | null
+  cProvince?: string | null
+  cPostId?: string | null
+  cTaxId?: string | null
+  payment?: $Enums.Payment | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Date | string
+  cashStatus?: boolean | null
+  image?: string | null
+  deleted?: boolean | null
+  repeat?: boolean | null
+  repeatMonths?: number | null
+  note?: string | null
+  taxType?: $Enums.taxType | null
+  DocumentType?: $Enums.DocumentType | null
+  discount?: number | null
+  billLevelDiscount?: number | null
+  priceValid?: Date | string | null
+  validContactUntil?: Date | string | null
+  rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: string | null
+  remark?: string | null
+  platform: $Enums.SocialMedia
+  memberId: string
+  businessAcc: number
+  platformId?: number | null
+  product?: Prisma.ProductItemUncheckedCreateNestedManyWithoutBillInput
+}
+
+export type BillCreateOrConnectWithoutCustomerInput = {
+  where: Prisma.BillWhereUniqueInput
+  create: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput>
+}
+
+export type BillCreateManyCustomerInputEnvelope = {
+  data: Prisma.BillCreateManyCustomerInput | Prisma.BillCreateManyCustomerInput[]
+  skipDuplicates?: boolean
+}
+
+export type BillUpsertWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.BillWhereUniqueInput
+  update: Prisma.XOR<Prisma.BillUpdateWithoutCustomerInput, Prisma.BillUncheckedUpdateWithoutCustomerInput>
+  create: Prisma.XOR<Prisma.BillCreateWithoutCustomerInput, Prisma.BillUncheckedCreateWithoutCustomerInput>
+}
+
+export type BillUpdateWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.BillWhereUniqueInput
+  data: Prisma.XOR<Prisma.BillUpdateWithoutCustomerInput, Prisma.BillUncheckedUpdateWithoutCustomerInput>
+}
+
+export type BillUpdateManyWithWhereWithoutCustomerInput = {
+  where: Prisma.BillScalarWhereInput
+  data: Prisma.XOR<Prisma.BillUpdateManyMutationInput, Prisma.BillUncheckedUpdateManyWithoutCustomerInput>
 }
 
 export type BillCreateWithoutProductInput = {
@@ -1850,6 +2046,7 @@ export type BillCreateWithoutProductInput = {
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutProductInput = {
@@ -1898,6 +2095,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   memberId: string
   businessAcc: number
   platformId?: number | null
+  customerId?: number | null
 }
 
 export type BillCreateOrConnectWithoutProductInput = {
@@ -1961,6 +2159,7 @@ export type BillUpdateWithoutProductInput = {
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutProductInput = {
@@ -2009,6 +2208,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BillCreateWithoutPlatformInfoInput = {
@@ -2056,6 +2256,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutPlatformInfoInput = {
@@ -2103,6 +2304,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   platform: $Enums.SocialMedia
   memberId: string
   businessAcc: number
+  customerId?: number | null
   product?: Prisma.ProductItemUncheckedCreateNestedManyWithoutBillInput
 }
 
@@ -2177,6 +2379,7 @@ export type BillCreateManyMemberInput = {
   platform: $Enums.SocialMedia
   businessAcc: number
   platformId?: number | null
+  customerId?: number | null
 }
 
 export type BillUpdateWithoutMemberInput = {
@@ -2224,6 +2427,7 @@ export type BillUpdateWithoutMemberInput = {
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutMemberInput = {
@@ -2271,6 +2475,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   product?: Prisma.ProductItemUncheckedUpdateManyWithoutBillNestedInput
 }
 
@@ -2319,6 +2524,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BillCreateManyBusinessIdInput = {
@@ -2366,6 +2572,7 @@ export type BillCreateManyBusinessIdInput = {
   platform: $Enums.SocialMedia
   memberId: string
   platformId?: number | null
+  customerId?: number | null
 }
 
 export type BillUpdateWithoutBusinessIdInput = {
@@ -2413,6 +2620,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutBusinessIdInput = {
@@ -2460,6 +2668,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   product?: Prisma.ProductItemUncheckedUpdateManyWithoutBillNestedInput
 }
 
@@ -2508,6 +2717,200 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type BillCreateManyCustomerInput = {
+  id?: number
+  billId?: string | null
+  quotationId?: string | null
+  invoiceId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  cName: string
+  cLastName?: string | null
+  cPhone?: string | null
+  cGender?: $Enums.Gender | null
+  cAddress?: string | null
+  cProvince?: string | null
+  cPostId?: string | null
+  cTaxId?: string | null
+  payment?: $Enums.Payment | null
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: number | null
+  beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Date | string
+  cashStatus?: boolean | null
+  image?: string | null
+  deleted?: boolean | null
+  repeat?: boolean | null
+  repeatMonths?: number | null
+  note?: string | null
+  taxType?: $Enums.taxType | null
+  DocumentType?: $Enums.DocumentType | null
+  discount?: number | null
+  billLevelDiscount?: number | null
+  priceValid?: Date | string | null
+  validContactUntil?: Date | string | null
+  rentalStockReleased?: boolean
+  withHoldingTax?: boolean | null
+  WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: string | null
+  remark?: string | null
+  platform: $Enums.SocialMedia
+  memberId: string
+  businessAcc: number
+  platformId?: number | null
+}
+
+export type BillUpdateWithoutCustomerInput = {
+  billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quotationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cName?: Prisma.StringFieldUpdateOperationsInput | string
+  cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeat?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
+  member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
+  businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
+  platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
+}
+
+export type BillUncheckedUpdateWithoutCustomerInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quotationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cName?: Prisma.StringFieldUpdateOperationsInput | string
+  cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeat?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  product?: Prisma.ProductItemUncheckedUpdateManyWithoutBillNestedInput
+}
+
+export type BillUncheckedUpdateManyWithoutCustomerInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quotationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cName?: Prisma.StringFieldUpdateOperationsInput | string
+  cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+  cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
+  total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeat?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BillCreateManyPlatformInfoInput = {
@@ -2555,6 +2958,7 @@ export type BillCreateManyPlatformInfoInput = {
   platform: $Enums.SocialMedia
   memberId: string
   businessAcc: number
+  customerId?: number | null
 }
 
 export type BillUpdateWithoutPlatformInfoInput = {
@@ -2602,6 +3006,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutPlatformInfoInput = {
@@ -2649,6 +3054,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   product?: Prisma.ProductItemUncheckedUpdateManyWithoutBillNestedInput
 }
 
@@ -2697,6 +3103,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -2776,10 +3183,12 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
+  customerId?: boolean
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
   _count?: boolean | Prisma.BillCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
@@ -2829,9 +3238,11 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
+  customerId?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
 export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2880,9 +3291,11 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
+  customerId?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
 export type BillSelectScalar = {
@@ -2931,25 +3344,29 @@ export type BillSelectScalar = {
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
+  customerId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
   _count?: boolean | Prisma.BillCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BillIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
 }
 export type BillIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   platformInfo?: boolean | Prisma.Bill$platformInfoArgs<ExtArgs>
+  customer?: boolean | Prisma.Bill$customerArgs<ExtArgs>
 }
 
 export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2959,6 +3376,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     member: Prisma.$MemberPayload<ExtArgs>
     businessId: Prisma.$BusinessAccPayload<ExtArgs>
     platformInfo: Prisma.$PlatformPayload<ExtArgs> | null
+    customer: Prisma.$CustomerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -3006,6 +3424,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     memberId: string
     businessAcc: number
     platformId: number | null
+    customerId: number | null
   }, ExtArgs["result"]["bill"]>
   composites: {}
 }
@@ -3404,6 +3823,7 @@ export interface Prisma__BillClient<T, Null = never, ExtArgs extends runtime.Typ
   member<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   businessId<T extends Prisma.BusinessAccDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAccDefaultArgs<ExtArgs>>): Prisma.Prisma__BusinessAccClient<runtime.Types.Result.GetResult<Prisma.$BusinessAccPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   platformInfo<T extends Prisma.Bill$platformInfoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bill$platformInfoArgs<ExtArgs>>): Prisma.Prisma__PlatformClient<runtime.Types.Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  customer<T extends Prisma.Bill$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bill$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3478,6 +3898,7 @@ export interface BillFieldRefs {
   readonly memberId: Prisma.FieldRef<"Bill", 'String'>
   readonly businessAcc: Prisma.FieldRef<"Bill", 'Int'>
   readonly platformId: Prisma.FieldRef<"Bill", 'Int'>
+  readonly customerId: Prisma.FieldRef<"Bill", 'Int'>
 }
     
 
@@ -3914,6 +4335,25 @@ export type Bill$platformInfoArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.PlatformInclude<ExtArgs> | null
   where?: Prisma.PlatformWhereInput
+}
+
+/**
+ * Bill.customer
+ */
+export type Bill$customerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Customer
+   */
+  select?: Prisma.CustomerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Customer
+   */
+  omit?: Prisma.CustomerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CustomerInclude<ExtArgs> | null
+  where?: Prisma.CustomerWhereInput
 }
 
 /**

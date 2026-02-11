@@ -33,6 +33,11 @@ export type Member = Prisma.MemberModel
  */
 export type BusinessAcc = Prisma.BusinessAccModel
 /**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel
+/**
  * Model DocumentCounter
  * 
  */
