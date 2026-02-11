@@ -49,7 +49,7 @@ prismaMock.bill = {
 };
 prismaMock.member = { findUnique: jest.fn() };
 prismaMock.productItem = { deleteMany: jest.fn(), findMany: jest.fn() };
-prismaMock.customer = { upsert: jest.fn(), findUnique: jest.fn() };
+prismaMock.customer = { upsert: jest.fn(), findUnique: jest.fn(), update: jest.fn() };
 prismaMock.businessAcc = { findUnique: jest.fn() };
 prismaMock.product = {
   updateMany: jest.fn(),
@@ -330,6 +330,7 @@ describe("billController", () => {
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 6,
         purchaseAt: new Date("2025-11-10T00:00:00Z"),
+        customerId: 200,
       });
       prismaMock.platform.findUnique.mockResolvedValue({
         id: 10,
@@ -343,11 +344,20 @@ describe("billController", () => {
         id: 6,
         updatedAt: new Date().toISOString(),
       });
+      prismaMock.customer.update.mockResolvedValue({ id: 100 });
 
       const res = await request(app).put("/bill/6").send(baseUpdate());
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("ok");
       expect(prismaMock.bill.update).toHaveBeenCalled();
+      expect(prismaMock.customer.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 100 },
+          data: expect.objectContaining({
+            firstName: "John",
+          }),
+        })
+      );
     });
   });
 
