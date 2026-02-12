@@ -27,7 +27,7 @@ Flexi-Backend/dist/
 Flexi-Frontend/dist/
 
 /Flexi-Frontend/.expo
-
+/Flexi-Frontend/eas.json
 Flexi-Backend/tmp/
 Flexi-Frontend/tmp/
 *.swp
