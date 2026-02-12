@@ -412,6 +412,7 @@ export default function Dashboard() {
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.1,
               shadowRadius: 2,
+              zIndex: 2000,
             }}
           >
             {/* Header and Time Period Selection */}
@@ -436,9 +437,11 @@ export default function Dashboard() {
                       : theme === "dark"
                       ? "#27272a"
                       : "#f4f4f5",
-                  paddingVertical: 9,
+                  paddingVertical: isMobile() ? 10 : 14,
                   paddingHorizontal: 16,
-                  borderRadius: 12,
+                  borderRadius: 16,
+                  minHeight: isMobile() ? 44 : 54,
+                  justifyContent: 'center',
                   flex: 3, // 30%
                   marginRight: 8,
                   alignItems: "center",
@@ -449,6 +452,9 @@ export default function Dashboard() {
                   style={{
                     color: theme === "dark" ? "#c9c9c9" : "#48453e",
                     fontSize: getResponsiveStyles().bodyFontSize,
+                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
+                    textAlignVertical: 'center',
+                    paddingTop: 2
                   }}
                 >
                   {t("dashboard.today")}
@@ -467,9 +473,11 @@ export default function Dashboard() {
                       : theme === "dark"
                       ? "#27272a"
                       : "#f4f4f5",
-                  paddingVertical: 9,
+                  paddingVertical: isMobile() ? 10 : 14,
                   paddingHorizontal: 16,
-                  borderRadius: 12,
+                  borderRadius: 16,
+                  minHeight: isMobile() ? 44 : 54,
+                  justifyContent: 'center',
                   flex: 3, // 30%
                   marginRight: 8,
                   alignItems: "center",
@@ -480,6 +488,9 @@ export default function Dashboard() {
                   style={{
                     color: theme === "dark" ? "#c9c9c9" : "#48453e",
                     fontSize: getResponsiveStyles().bodyFontSize,
+                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
+                    textAlignVertical: 'center',
+                    paddingTop: 2
                   }}
                 >
                   {t("dashboard.thisMonth")}
@@ -502,15 +513,20 @@ export default function Dashboard() {
                       : theme === "dark"
                       ? "#27272a"
                       : "#f4f4f5",
-                  paddingVertical: 8,
+                  paddingVertical: isMobile() ? 10 : 14,
                   paddingHorizontal: 16,
-                  borderRadius: 12,
+                  borderRadius: 16,
+                  minHeight: isMobile() ? 44 : 54,
                   flex: 4, // 40%
                 }}
               >
                 <CustomText
                   style={{
                     fontSize: getResponsiveStyles().bodyFontSize,
+                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
+                    textAlignVertical: 'center',
+                    paddingTop: 2,
+                    paddingRight: 4,
                   }}
                   numberOfLines={2}
                 >
@@ -530,6 +546,7 @@ export default function Dashboard() {
                 flexDirection: "row",
                 flexWrap: "wrap",
                 marginBottom: 1,
+                zIndex: 10,
               }}
             >
               {/* Product Filter */}
@@ -539,6 +556,7 @@ export default function Dashboard() {
                   minWidth: 150,
                   marginRight: 8,
                   marginBottom: 0,
+                  zIndex: 2000,
                 }}
               >
                 <Dropdown3
@@ -554,6 +572,7 @@ export default function Dashboard() {
                   bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
                   bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
                   textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
+                  otherStyles={{}}
                 />
               </View>
 
@@ -562,6 +581,7 @@ export default function Dashboard() {
                 style={{
                   flex: 1,
                   minWidth: 150,
+                  zIndex: 2000,
                 }}
               >
                 <Dropdown3
@@ -577,6 +597,7 @@ export default function Dashboard() {
                   bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
                   bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
                   textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
+                  otherStyles={{}}
                 />
               </View>
             </View>
@@ -589,6 +610,7 @@ export default function Dashboard() {
                 justifyContent: "center",
                 alignItems: "center",
                 paddingVertical: 64,
+                zIndex: 1,
               }}
             >
               <ActivityIndicator
@@ -599,7 +621,7 @@ export default function Dashboard() {
           ) : (
             <>
               {/* Summary Statistics */}
-              <View style={{ marginBottom: 24 }}>
+              <View style={{ marginBottom: 24, zIndex: 1 }}>
                 <View
                   style={{
                     flexDirection: isDesktop() ? "column" : "column",

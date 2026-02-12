@@ -819,7 +819,8 @@
         "legal": "Legal",
         "fuel": "Fuel",
         "maintenance": "Repair & Maintenance",
-        "operation": "Operation"
+        "operation": "Operation",
+        "title": "Expense Category"
       },
       "attachBill": "Attach Bill"
     },

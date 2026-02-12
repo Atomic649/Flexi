@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { View, TouchableOpacity, ScrollView, Platform, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from '../CustomText';
-import { getResponsiveStyles } from "@/utils/responsive";
+import { getResponsiveStyles, isMobile } from "@/utils/responsive";
 import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
 import i18n from "../../i18n";
 import { t } from "i18next";
@@ -73,7 +73,7 @@ const Dropdown = ({
             
             <View style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}>
                 <TouchableOpacity
-                    className="w-full h-12 px-4 rounded-xl flex flex-row items-center justify-between z-50"
+                    className="w-full px-4 rounded-xl flex flex-row items-center justify-between z-50"
                     onPress={handlePress}
                     activeOpacity={0.8}
                     style={{
@@ -81,7 +81,9 @@ const Dropdown = ({
                         borderRadius: 16,
                         opacity: disabled ? 0.7 : 1,
                         borderWidth: 2,
-                        borderColor: 'transparent'
+                        borderColor: 'transparent',
+                        paddingVertical: isMobile() ? 10 : 14,
+                        minHeight: isMobile() ? 44 : 54,
                     }}
                 >
                     <CustomText 
@@ -90,14 +92,16 @@ const Dropdown = ({
                         weight="bold"
                         style={{ 
                             color: textcolor, 
-                            fontSize: getResponsiveStyles().bodyFontSize 
+                            fontSize: getResponsiveStyles().bodyFontSize,
+                            lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
+                            textAlignVertical: 'center' 
                         }}
                     >
                         {selectedLabel}
                     </CustomText>
                     <Ionicons 
                         name={isOpen ? "chevron-up" : "chevron-down"} 
-                        size={18} 
+                        size={isMobile() ? 18 : 22} 
                         color={disabled ? "#9CA3AF" : textcolor || "#6B7280"} 
                     />
                 </TouchableOpacity>
@@ -106,7 +110,7 @@ const Dropdown = ({
                     <View 
                         style={{ 
                             position: 'absolute',
-                            top: 50, // Height (48) + gap
+                            top: isMobile() ? 48 : 58, // Adjusted based on height + gap
                             left: 0,
                             right: 0,
                             maxHeight: 240,
@@ -187,7 +191,9 @@ const Dropdown = ({
                                                 className={`text-sm ${isSelected ? "font-bold" : "font-pmedium"}`}
                                                 style={{
                                                     color: textcolor,
-                                                    fontSize: getResponsiveStyles().bodyFontSize // respect Dropdown3 font size
+                                                    fontSize: getResponsiveStyles().bodyFontSize, // respect Dropdown3 font size
+                                                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
+                                                    textAlignVertical: 'center'
                                                 }}
                                             >
                                                 {item.label}

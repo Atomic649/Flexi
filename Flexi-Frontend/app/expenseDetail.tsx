@@ -8,6 +8,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
+import DropdownFloat from "@/components/dropdown/DropdownFloat";
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system/legacy";
@@ -1135,110 +1136,110 @@ export default function ExpenseDetail({
                     />
                   </>
                 )}
-                <View className="flex-row justify-evenly items-center">
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    className="flex-row m-1 "
-                  >
-                    {[
+                <View className="w-full">
+                  <DropdownFloat
+                    title={t("expense.detail.group.title")}
+                    placeholder={t("expense.detail.group.title")}
+                    options={[
                       {
-                        key: "Employee",
+                        value: "Employee",
                         label: t("expense.detail.group.employee"),
                       },
                       {
-                        key: "Freelancer",
+                        value: "Freelancer",
                         label: t("expense.detail.group.freelancer"),
                       },
                       {
-                        key: "Office",
+                        value: "Office",
                         label: t("expense.detail.group.office"),
                       },
                       {
-                        key: "OfficeRental",
+                        value: "OfficeRental",
                         label: t("expense.detail.group.officeRental"),
                       },
                       {
-                        key: "CarRental",
+                        value: "CarRental",
                         label: t("expense.detail.group.carRental"),
                       },
                       {
-                        key: "Commission",
+                        value: "Commission",
                         label: t("expense.detail.group.commission"),
                       },
                       {
-                        key: "Advertising",
+                        value: "Advertising",
                         label: t("expense.detail.group.advertising"),
                       },
                       {
-                        key: "Marketing",
+                        value: "Marketing",
                         label: t("expense.detail.group.marketing"),
                       },
                       {
-                        key: "Copyright",
+                        value: "Copyright",
                         label: t("expense.detail.group.copyright"),
                       },
                       {
-                        key: "Dividend",
+                        value: "Dividend",
                         label: t("expense.detail.group.dividend"),
                       },
                       {
-                        key: "Interest",
+                        value: "Interest",
                         label: t("expense.detail.group.interest"),
                       },
                       {
-                        key: "Influencer",
+                        value: "Influencer",
                         label: t("expense.detail.group.influencer"),
                       },
                       {
-                        key: "Accounting",
+                        value: "Accounting",
                         label: t("expense.detail.group.accounting"),
                       },
-                      { key: "Legal", label: t("expense.detail.group.legal") },
                       {
-                        key: "Taxation",
+                        value: "Legal",
+                        label: t("expense.detail.group.legal"),
+                      },
+                      {
+                        value: "Taxation",
                         label: t("expense.detail.group.taxation"),
                       },
                       {
-                        key: "Transport",
+                        value: "Transport",
                         label: t("expense.detail.group.transport"),
                       },
                       {
-                        key: "Product",
+                        value: "Product",
                         label: t("expense.detail.group.product"),
                       },
                       {
-                        key: "Packing",
+                        value: "Packing",
                         label: t("expense.detail.group.packing"),
                       },
                       {
-                        key: "Fuel",
+                        value: "Fuel",
                         label: t("expense.detail.group.fuel"),
                       },
                       {
-                        key: "Maintenance",
+                        value: "Maintenance",
                         label: t("expense.detail.group.maintenance"),
                       },
                       {
-                        key: "Utilities",
+                        value: "Utilities",
                         label: t("expense.detail.group.utility"),
                       },
                       {
-                        key: "Operation",
+                        value: "Operation",
                         label: t("expense.detail.group.operation"),
                       },
-                      { key: "Others", label: t("expense.detail.group.other") },
-                    ].map(({ key, label }) => (
-                      <TouchableOpacity
-                        key={key}
-                        onPress={() => handleGroupChange(key)}
-                        className={groupButtonClass(key)}
-                        activeOpacity={0.8} // Prevent fade effect on press
-                      >
-                        <CustomText>{label}</CustomText>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+                      {
+                        value: "Others",
+                        label: t("expense.detail.group.other"),
+                      },
+                    ]}
+                    selectedValue={group}
+                    onValueChange={handleGroupChange}
+                    borderColor={theme === "dark" ? "#555" : "#CCC"}
+                    textcolor={theme === "dark" ? "#FFF" : "#000"}
+                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                  />
                 </View>
 
                 {error ? (
