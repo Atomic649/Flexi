@@ -116,9 +116,9 @@ export default function TabLayout() {
               safeAreaInsets: { bottom: 35 },
             },
             android: {
-              height: 110,
+              height: 60,
               paddingBottom: 0,
-              safeAreaInsets: { bottom: 35 },
+              safeAreaInsets: { bottom: 0 },
             },
             web: { safeAreaInsets: { top: 0 } },
           }),
