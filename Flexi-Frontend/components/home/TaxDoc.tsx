@@ -481,13 +481,12 @@ export default function TaxDoc() {
               }}
             >
               <View
-                className="px-4 flex-row gap-2 items-start"
+                className="px-4 flex-row gap-2 items-start justify-center"
                 style={{ marginHorizontal: isMobile() ? "0%" : "20%" }}
               >
                 {/* Yearly Income */}
                 <View
-                  className="
-              flex-col w-1/4 items-center"
+                  className="flex-col items-center"
                 >
                   <CustomText style={{ fontSize: styles.smallFontSize }}>
                     {t("taxDoc.yearIncome")}
@@ -501,7 +500,7 @@ export default function TaxDoc() {
                 </View>
                 <CustomText>-</CustomText>
                 {/* Reduct */}
-                <View className="flex-col w-1/4 items-center">
+                <View className="flex-col items-center">
                   <CustomText style={{ fontSize: styles.smallFontSize }}>
                     {t("taxDoc.reduction")}
                   </CustomText>
@@ -516,7 +515,7 @@ export default function TaxDoc() {
                 </View>
                 <CustomText>+</CustomText>
                 {/* TextInput Exemption */}
-                <View className="flex-col w-1/4 items-center">
+                <View className="flex-col items-center">
                   <CustomText style={{ fontSize: styles.smallFontSize }}>
                     {t("taxDoc.exemption")}
                   </CustomText>
@@ -540,7 +539,7 @@ export default function TaxDoc() {
                 </View>
                 <CustomText>=</CustomText>
                 {/* Taxable Income */}
-                <View className="flex-col w-1/4 items-center">
+                <View className="flex-col items-center">
                   <CustomText style={{ fontSize: styles.smallFontSize }}>
                     {t("taxDoc.taxableIncome")}
                   </CustomText>
