@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity, Image, Text, Platform, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { CustomText } from "@/components/CustomText";
@@ -8,19 +7,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CallAPIUser from "@/api/auth_api";
 import { Ionicons } from "@expo/vector-icons";
 import { getResponsiveStyles } from "@/utils/responsive";
-import * as FileSystem from "expo-file-system/legacy";
-
-// Cache directory for avatars
-const CACHE_DIR = FileSystem.cacheDirectory ? FileSystem.cacheDirectory + "avatars/" : null;
-
-// Ensure directory exists
-const ensureDirExists = async () => {
-  if (!CACHE_DIR) return;
-  const dirInfo = await FileSystem.getInfoAsync(CACHE_DIR);
-  if (!dirInfo.exists) {
-    await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
-  }
-};
 
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
