@@ -1493,11 +1493,11 @@ export default function CreateBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.enterProvince")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}                    
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles={fieldStyles}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles={fieldStyles}
                 />
               </View>
               <View className="w-1/2 pr-2">

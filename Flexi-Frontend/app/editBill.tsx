@@ -1651,11 +1651,11 @@ export default function EditBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.selectProvince")}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  bgChoiceColor={theme === "dark" ? "#18181b" : "#ffffff"}
-                  otherStyles="mt-2 mb-2"
+                 placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                     otherStyles="mt-2 mb-2"
                   disabled={!isEditMode}
                 />
               </View>

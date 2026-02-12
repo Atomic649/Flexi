@@ -115,6 +115,7 @@ const Dropdown = ({
                 shadowRadius: 3.84,
             }}
            >
+            {options && options.length >= 4 && (
             <View style={{ padding: 10 }}>
                 <View
                   style={{
@@ -148,6 +149,7 @@ const Dropdown = ({
                   )}
                 </View>
             </View>
+            )}
 
             <ScrollView
               nestedScrollEnabled
