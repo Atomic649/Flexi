@@ -72,7 +72,13 @@ export async function streamChat(
     const isWeb = typeof window !== "undefined" && typeof (window as any).EventSource !== "undefined";
     if (!isWeb) {
       // WebSocket path for RN native
-      const url = new URL(`${API_URL.replace(/\/$/, "")}/ai/chat/ws`);
+      let wsUrl = `${API_URL.replace(/\/$/, "")}/ai/chat/ws`;
+      // Ensure protocol is ws/wss
+      if (wsUrl.startsWith("http")) {
+        wsUrl = wsUrl.replace(/^http/, "ws");
+      }
+      
+      const url = new URL(wsUrl);
       if (payload.prompt) url.searchParams.set("prompt", payload.prompt);
       if (payload.sessionId) url.searchParams.set("sessionId", payload.sessionId);
       if (payload.system) url.searchParams.set("system", payload.system);
