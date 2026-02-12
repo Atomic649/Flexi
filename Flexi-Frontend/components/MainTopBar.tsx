@@ -149,7 +149,7 @@ const MainTopBar = {
     headerRight: () => (
       <View
         className="flex-row items-center"
-        style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 , padding:6}}
+        style={{ paddingRight: Platform.OS === "web" ? "0.5%" : 0 , padding:6, overflow: 'visible' }}
       >
         {/* print report */}
         <TouchableOpacity
@@ -232,7 +232,7 @@ const MainTopBar = {
             <View
               style={{
                 position: "absolute",
-                top: -6,
+                top: -3,
                 right: -13,
                 height: 18,
                 width: 18,
@@ -248,7 +248,7 @@ const MainTopBar = {
             <View
               style={{
                 position: "absolute",
-                top: -6,
+                top: -3,
                 right: -13,
                 height: 18,
                 width: 18,

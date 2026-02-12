@@ -119,9 +119,10 @@ export default function TabLayout() {
           zIndex: Platform.OS === "web" ? 5 : undefined,
           ...Platform.select({
             ios: {
-              height: 60,
-              paddingBottom: 15,
-              safeAreaInsets: { bottom: 35 },
+              height: 80,
+              paddingBottom: 35,
+              marginBottom: 0,
+              safeAreaInsets: { bottom: 0 },
             },
             android: {
               height: 60,

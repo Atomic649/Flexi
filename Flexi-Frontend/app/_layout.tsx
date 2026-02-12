@@ -19,7 +19,6 @@ import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { getResponsiveStyles } from "@/utils/responsive";
 
 // i18n  initialized for web
@@ -117,7 +116,7 @@ function RootLayoutNav() {
   }, [theme]);
 
   return (
-    <SafeAreaView
+    <View
       className={`h-screen ${theme === "dark" ? "bg-zinc-900" : "bg-white"}`} // color of last bottom bar
     >
       <StatusBar
@@ -412,7 +411,7 @@ function RootLayoutNav() {
           }}
         />
       </Stack>
-    </SafeAreaView>
+    </View>
   );
 }
 

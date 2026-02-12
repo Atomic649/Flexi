@@ -227,7 +227,8 @@ const Daily = () => {
                 </CustomText>
               </View>
             )}
-
+            
+            {marketingPreference !== "organic" && (
             <View className="flex flex-col items-center w-1/6">
               <CustomText
                 style={{ fontSize: getResponsiveStyles().smallFontSize }}
@@ -236,6 +237,7 @@ const Daily = () => {
                 + / -
               </CustomText>
             </View>
+            )}
             {marketingPreference !== "organic" && (
               <View className="flex flex-col items-center w-1/6">
                 <CustomText

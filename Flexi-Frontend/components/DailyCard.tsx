@@ -73,8 +73,8 @@ export default function DailyCard({
 
           <View className="flex flex-col items-center w-1/6">
             <Text
-              className="font-normal text-zinc-500 items-end justify-end"
-              style={{ fontSize: smallFontSize }}
+              className={`font-normal items-end justify-end ${marketingPreference === 'organic' ? 'text-teal-500' : 'text-zinc-500'}`}              
+              style={{ fontSize: smallFontSize, fontWeight: marketingPreference === 'organic' ? 'bold' : 'normal' }}
               numberOfLines={3}
             >
               {sale}
@@ -94,6 +94,7 @@ export default function DailyCard({
             </View>
           )}
 
+          {marketingPreference !== "organic" && (
           <View className="flex flex-col items-center w-1/6">
             <Text
               className={`font-bold justify-end ${isPositiveProfit(profit) ? 'text-teal-500' : 'text-[#FF006E]'}`}
@@ -103,6 +104,7 @@ export default function DailyCard({
               {profit}
             </Text>
           </View>
+          )}
 
           {/* Only show ads cost if marketingPreference is not "organic" */}
           {marketingPreference !== "organic" && (
