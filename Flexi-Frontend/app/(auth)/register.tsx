@@ -91,8 +91,18 @@ export default function Register() {
   const handleUsernameChange = (text: string) => {
     // Remove whitespace and any leading '@' characters
     let cleaned = text.replace(/\s/g, "").replace(/^@+/, "");
+    // Remove non-English characters and only allow [a-zA-Z0-9_.]
+    cleaned = cleaned.replace(/[^a-zA-Z0-9_.]/g, "");
     // Always ensure a single '@' prefix remains
     setUsername("@" + cleaned);
+  };
+
+  const handleEmailChange = (text: string) => {
+    // Remove whitespace
+    let cleaned = text.replace(/\s/g, "");
+    // Remove non-English characters and only allow valid email characters
+    cleaned = cleaned.replace(/[^a-zA-Z0-9@._\-+]/g, "");
+    setEmail(cleaned);
   };
 
   // Handle register
@@ -311,23 +321,6 @@ export default function Register() {
     );
   };
   const scrollViewRef = useRef<ScrollView>(null);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
-      setKeyboardHeight(e.endCoordinates?.height ?? 0);
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
-    });
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardHeight(0);
-    });
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   const scrollToEndWithDelay = (delay = 200) => {
     setTimeout(() => {
@@ -338,14 +331,14 @@ export default function Register() {
   return (
     <SafeAreaView className={`h-full ${useBackgroundColorClass()}`}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
         style={{ flex: 1 }}
       >
         <ScrollView
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 24 + keyboardHeight }}
+          contentContainerStyle={{ paddingBottom: 100 }}
         >
           <View
             className="w-full flex justify-center h-full px-4 py-10"
@@ -391,6 +384,7 @@ export default function Register() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 textContentType="username"
+                keyboardType="ascii-capable"
               />
 
               <FormField
@@ -406,10 +400,10 @@ export default function Register() {
                 title={t("auth.register.emailPlaceholder")}
                 placeholder={t("auth.register.emailPlaceholder")}
                 value={email}
-                handleChangeText={setEmail}
+                handleChangeText={handleEmailChange}
                 otherStyles="mt-7"
                 keyboardType="email-address"
-                onFocus={() => scrollToEndWithDelay(250)}
+                autoCapitalize="none"
               />
 
               <FormField
@@ -420,7 +414,6 @@ export default function Register() {
                 handleChangeText={setPassword}
                 otherStyles="mt-7"
                 secure
-                onFocus={() => scrollToEndWithDelay(250)}
               />
 
               <FormField
@@ -432,7 +425,6 @@ export default function Register() {
                 handleChangeText={setConfirmPassword}
                 otherStyles="mt-4"
                 secure
-                onFocus={() => scrollToEndWithDelay(250)}
               />
 
               <RNView className="mt-5">
