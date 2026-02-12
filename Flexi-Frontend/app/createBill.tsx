@@ -1422,6 +1422,7 @@ export default function CreateBill() {
                   value={cPhone}
                   handleChangeText={setCPhone}
                   onEndEditing={handleCheckCustomer}
+                  onBlur={handleCheckCustomer}
                   placeholder="0812345678"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   placeholderTextColor={
