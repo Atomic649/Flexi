@@ -173,18 +173,18 @@ export default function DailyDetail() {
               // Calculate expenses from detailed data if available, otherwise use selectedItem.expenses (which will be 0)
               const calculatedExpenses = reportDetails
                 ? reportDetails.expenses.reduce(
-                    (sum, expense) => sum + expense.amount,
+                    (sum, expense) => sum + Number(expense.amount),
                     0
                   )
                 : selectedItem.expenses || 0;
 
               // Recalculate profit using detailed data
               const calculatedAds = reportDetails
-                ? reportDetails.ads.reduce((sum, ad) => sum + ad.adsCost, 0)
+                ? reportDetails.ads.reduce((sum, ad) => sum + Number(ad.adsCost), 0)
                 : selectedItem.adsCost;
 
               const calculatedSales = reportDetails
-                ? reportDetails.bills.reduce((sum, bill) => sum + bill.total, 0)
+                ? reportDetails.bills.reduce((sum, bill) => sum + Number(bill.total), 0)
                 : selectedItem.sale;
 
               const recalculatedProfit = calculatedSales - calculatedExpenses;

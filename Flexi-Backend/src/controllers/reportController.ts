@@ -1,7 +1,4 @@
 import { Request, Response } from "express";
-import { PrismaClient as PrismaClient1 } from "../generated/client1/client";
-
-
 //Create  instance of PrismaClient
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 
@@ -355,10 +352,16 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
 const ReportDetailsEachDate = async (req: Request, res: Response) => {
   const { memberId, date } = req.params;
   try {
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId,
-        DocumentType:"Receipt",
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Receipt",
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
@@ -443,10 +446,16 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
 const ReportDetailsEachMonth = async (req: Request, res: Response) => {
   const { memberId, month } = req.params;
   try {
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+
     const bills = await prisma.bill.findMany({
       where: {
-        memberId: memberId,
-        DocumentType:"Receipt",
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Receipt",
         purchaseAt: {
           gte: new Date(`${month}-01T00:00:00.000Z`),
           lt: new Date(`${month}-31T23:59:59.999Z`),

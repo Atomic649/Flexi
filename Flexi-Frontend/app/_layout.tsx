@@ -4,7 +4,7 @@ import "@/i18n";
 import React, { useEffect, useState } from "react";
 import { router, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import { StatusBar, Platform } from "react-native";
+import { StatusBar, Platform, View } from "react-native";
 import { ThemeProvider, useTheme } from "@/providers/ThemeProvider";
 import * as NavigationBar from "expo-navigation-bar";
 import { AuthProvider } from "@/providers/AuthProvider";

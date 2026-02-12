@@ -17,7 +17,7 @@ import CallAPIBusiness from "@/api/business_api";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "../../i18n"; // Update the path to where your i18n config actually exists
 import { TextStyle } from "react-native";
-import { isMobile, isTablet } from "@/utils/responsive";
+import { isMobile, isTablet, getResponsiveStyles } from "@/utils/responsive";
 import TaxBracketStairs3D from "../TaxBracketStairs3D";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIExpense from "@/api/expense_api";
@@ -61,7 +61,7 @@ function calculateTax(taxableIncome: number): number {
   const bracket = taxBrackets.find(
     (b) =>
       taxableIncome > b.min && // รายได้ต้องมากกว่าจุดเริ่มต้นของขั้น (เพราะ min คือจุดเริ่มต้นของช่วงนั้นๆ)
-      (b.max === undefined || taxableIncome <= b.max) // และน้อยกว่าหรือเท่ากับจุดสิ้นสุดของขั้นนั้นๆ
+      (b.max === undefined || taxableIncome <= b.max), // และน้อยกว่าหรือเท่ากับจุดสิ้นสุดของขั้นนั้นๆ
   );
 
   // ถ้าไม่เจอ bracket (เช่น taxableIncome เป็น 0 หรือติดลบ)
@@ -82,6 +82,7 @@ function calculateTax(taxableIncome: number): number {
 export default function TaxDoc() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = getResponsiveStyles();
 
   const formatNumber = (value: number) =>
     new Intl.NumberFormat("en-US", {
@@ -123,9 +124,8 @@ export default function TaxDoc() {
       try {
         const memberId = await getMemberId();
         if (memberId !== null) {
-          const response = await CallAPIExpense.getThisYearExpensesAPI(
-            memberId
-          );
+          const response =
+            await CallAPIExpense.getThisYearExpensesAPI(memberId);
           console.log("Annual Expense Response:", response);
           setAnnualExpense(Number(response?.anualExpenseM) || 0);
         }
@@ -140,7 +140,7 @@ export default function TaxDoc() {
   const scoreExpense = percentageExpense * 100; // Convert to percentage
   const scoreExpensePercentage = scoreExpense.toFixed(2) + "%"; // Convert to millions
   const [selectedTaxOption, setSelectedTaxOption] = useState<"60" | "100">(
-    "60"
+    "60",
   );
 
   // Handle form field values
@@ -219,6 +219,11 @@ export default function TaxDoc() {
   const keyboardVerticalOffset =
     Platform.select({ ios: 160, android: 0, default: 0 }) ?? 0;
 
+  const dynamicTextInputStyle = {
+    ...commonTextInputStyle,
+    height: styles.fontSize * 2.5,
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -229,10 +234,10 @@ export default function TaxDoc() {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           style={{
-            width: isMobile() ? "100%" : "60%",
+            width: isMobile() || isTablet() ? "100%" : "50%",
             alignSelf: "center", // Center the content on larger screens
             padding: 10,
-            maxWidth: 500,
+            //maxWidth: 500,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
         >
@@ -247,27 +252,46 @@ export default function TaxDoc() {
             >
               <View className="pt-4 px-4">
                 <View className="mb-4">
-                  <CustomText className="text-lg mb-1 " weight="bold">
+                  <CustomText
+                    style={{ fontSize: styles.bodyFontSize  }}
+                    className="mb-1 "
+                    weight="bold"
+                  >
                     {t("taxDoc.vatTitle")}
                   </CustomText>
-                  <CustomText className="text-sm text-gray-600 pt-1">
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="text-gray-600 pt-1"
+                  >
                     {t("taxDoc.vatDesc")}
                   </CustomText>
                 </View>
                 <View className="mb-4 flex flex-row justify-around ">
                   <View className="flex-col">
-                    <CustomText className="text-base text-left pt-1">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-left pt-1"
+                    >
                       {t("taxDoc.annualSales")}
                     </CustomText>
-                    <CustomText className="text-base text-left">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-left"
+                    >
                       {formatNumber(anualSales)}
                     </CustomText>
                   </View>
                   <View className="flex-col">
-                    <CustomText className="text-base text-right pt-1">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-right pt-1"
+                    >
                       {t("taxDoc.vatFullScore")}
                     </CustomText>
-                    <CustomText className="text-base text-right">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-right"
+                    >
                       {formatNumber(1800000)}
                     </CustomText>
                   </View>
@@ -312,42 +336,59 @@ export default function TaxDoc() {
               }}
             >
               <View className="pt-4 px-4">
-                <CustomText className="text-lg mb-2 " weight="bold">
+                <CustomText
+                  style={{ fontSize: styles.bodyFontSize }}
+                  className="mb-2 "
+                  weight="bold"
+                >
                   {t("taxDoc.annualTaxTitle")}
                 </CustomText>
                 <View className="flex-row gap-2 items-center">
                   <Ionicons
                     name="checkmark-circle"
-                    size={24}
+                    size={styles.headerFontSize}
                     color={theme === "dark" ? "#06fbc6" : "#0be4c0"}
                   />
-                  <CustomText className="text-lg font-bold">
+                  <CustomText
+                    style={{ fontSize: styles.bodyFontSize }}
+                    className="font-bold"
+                  >
                     {t(businessData?.taxType)}
                   </CustomText>
                 </View>
-                <CustomText className="text-sm text-gray-600 mt-1">
+                <CustomText
+                  style={{ fontSize: styles.smallFontSize }}
+                  className="text-gray-600 mt-1"
+                >
                   {t("taxDoc.annualTaxDesc")}
                 </CustomText>
                 <View className="mb-4 flex flex-row justify-around mt-2 ">
                   <View className="flex-col">
-                    <CustomText className="text-base text-left pt-1">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-left pt-1"
+                    >
                       {t("taxDoc.annualExpense")}
                     </CustomText>
 
-                    <CustomText className="text-base text-left">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-left"
+                    >
                       {formatNumber(annualExpense)}
                     </CustomText>
                     <CustomText
-                      className="text-base text-left pt-2"
-                      weight="bold"
                       style={{
+                        fontSize: styles.bodyFontSize,
                         color:
                           parseFloat(scoreExpensePercentage) > 60
                             ? "#ff2d31"
                             : theme === "dark"
-                            ? "#b4b3b3"
-                            : "#2a2a2a",
+                              ? "#b4b3b3"
+                              : "#2a2a2a",
                       }}
+                      className="text-left pt-2"
+                      weight="bold"
                     >
                       {scoreExpensePercentage}
                     </CustomText>
@@ -355,20 +396,27 @@ export default function TaxDoc() {
                     {parseFloat(scoreExpensePercentage) > 60 &&
                       anualSales > 150000 && (
                         <CustomText
-                          className="text-sm text-left"
                           style={{
+                            fontSize: styles.smallFontSize,
                             color: "#ff2d31",
                           }}
+                          className="text-left"
                         >
                           {t("taxDoc.taxDocAlert")}
                         </CustomText>
                       )}
                   </View>
                   <View className="flex-col">
-                    <CustomText className="text-base text-right pt-1">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-right pt-1"
+                    >
                       {t("taxDoc.annualIncome")}
                     </CustomText>
-                    <CustomText className="text-base text-right">
+                    <CustomText
+                      style={{ fontSize: styles.bodyFontSize }}
+                      className="text-right"
+                    >
                       {formatNumber(anualSales)}
                     </CustomText>
                   </View>
@@ -430,32 +478,48 @@ export default function TaxDoc() {
               style={{
                 backgroundColor: theme === "dark" ? "#222222" : "#f3f2f2dd",
                 borderRadius: 10,
-                //marginBottom: 10,
               }}
             >
-              <View className="px-4 flex-row gap-2 items-start">
+              <View
+                className="px-4 flex-row gap-2 items-start"
+                style={{ marginHorizontal: isMobile() ? "0%" : "20%" }}
+              >
                 {/* Yearly Income */}
                 <View
                   className="
               flex-col w-1/4 items-center"
                 >
-                  <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-                  <CustomText className="pt-2">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.yearIncome")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {formatNumber(anualSales)}
                   </CustomText>
                 </View>
+                <CustomText>-</CustomText>
                 {/* Reduct */}
                 <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.reduction")}</CustomText>
-                  <CustomText className="pt-2">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.reduction")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {selectedTaxOption === "100"
                       ? formatNumber(annualExpense)
                       : formatNumber(anualSales * 0.6)}
                   </CustomText>
                 </View>
+                <CustomText>+</CustomText>
                 {/* TextInput Exemption */}
                 <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.exemption")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.exemption")}
+                  </CustomText>
                   <TextInput
                     value={formatNumber(exemption)}
                     onChangeText={(value) => {
@@ -465,7 +529,8 @@ export default function TaxDoc() {
                     placeholderTextColor="#a5a5a5"
                     keyboardType="numeric"
                     style={{
-                      ...commonTextInputStyle,
+                      ...dynamicTextInputStyle,
+                      fontSize: styles.smallFontSize,
                       width: isMobile() ? 80 : 120,
                       minWidth: 60,
                       maxWidth: 160,
@@ -473,10 +538,16 @@ export default function TaxDoc() {
                     }}
                   />
                 </View>
+                <CustomText>=</CustomText>
                 {/* Taxable Income */}
                 <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
-                  <CustomText className="pt-2">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.taxableIncome")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {formatNumber(
                       Number(anualSales) -
                         ((selectedTaxOption === "100"
@@ -489,11 +560,13 @@ export default function TaxDoc() {
               </View>
               {/* Tax Calculation */}
               <View className="p-4 flex-row gap-2 items-center justify-center">
-                <CustomText>{t("taxDoc.individualTax")}</CustomText>
+                <CustomText style={{ fontSize: styles.bodyFontSize }}>
+                  {t("taxDoc.individualTax")}
+                </CustomText>
                 <Text
                   style={{
                     color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
-                    fontSize: 28,
+                    fontSize: styles.headerFontSize,
                     fontWeight: "900",
                     marginLeft: 10,
                   }}
@@ -538,54 +611,73 @@ export default function TaxDoc() {
                 marginVertical: 10,
               }}
             >
-              <CustomText className="text-base text-left " weight="bold">
-                {t("taxDoc.chooseSubmitTax")}
-              </CustomText>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => {
-                  setSelectedTaxOption("60");
-                }}
-                className="px-4 items-center justify-center"
-                style={{
-                  paddingVertical: 8,
-                  paddingHorizontal: 12,
-                  backgroundColor:
-                    selectedTaxOption === "60"
-                      ? theme === "dark"
-                        ? "#06fbc6"
-                        : "#9cffef"
-                      : theme === "dark"
-                      ? "#333333"
-                      : "#dcdada",
-                  borderRadius: 8,
-                }}
+              <View
+                style={{ marginHorizontal: isMobile() ? "0%" : "20%" }}
+                className="flex-row gap-4 items-center"
               >
-                <CustomText weight="medium">{t("taxDoc.60%")}</CustomText>
-              </TouchableOpacity>
+                <CustomText
+                  style={{ fontSize: styles.bodyFontSize }}
+                  className="text-left "
+                  weight="bold"
+                >
+                  {t("taxDoc.chooseSubmitTax")}
+                </CustomText>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                    setSelectedTaxOption("60");
+                  }}
+                  className="px-4 items-center justify-center"
+                  style={{
+                    paddingVertical: styles.padding / 2,
+                    paddingHorizontal: styles.padding,
+                    backgroundColor:
+                      selectedTaxOption === "60"
+                        ? theme === "dark"
+                          ? "#06fbc6"
+                          : "#9cffef"
+                        : theme === "dark"
+                          ? "#333333"
+                          : "#dcdada",
+                    borderRadius: 8,
+                  }}
+                >
+                  <CustomText
+                    style={{ fontSize: styles.bodyFontSize }}
+                    weight="medium"
+                  >
+                    {t("taxDoc.60%")}
+                  </CustomText>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => {
-                  setSelectedTaxOption("100");
-                }}
-                className="px-4 items-center justify-center"
-                style={{
-                  paddingVertical: 8,
-                  paddingHorizontal: 12,
-                  backgroundColor:
-                    selectedTaxOption === "100"
-                      ? theme === "dark"
-                        ? "#06fbc6"
-                        : "#9cffef"
-                      : theme === "dark"
-                      ? "#333333"
-                      : "#dcdada",
-                  borderRadius: 8,
-                }}
-              >
-                <CustomText weight="medium">{t("taxDoc.100%")}</CustomText>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                    setSelectedTaxOption("100");
+                  }}
+                  className="px-4 items-center justify-center"
+                  style={{
+                    paddingVertical: styles.padding / 2,
+                    paddingHorizontal: styles.padding,
+                    backgroundColor:
+                      selectedTaxOption === "100"
+                        ? theme === "dark"
+                          ? "#06fbc6"
+                          : "#9cffef"
+                        : theme === "dark"
+                          ? "#333333"
+                          : "#dcdada",
+                    borderRadius: 8,
+                  }}
+                >
+                  <CustomText
+                    style={{ fontSize: styles.bodyFontSize }}
+                    weight="medium"
+                  >
+                    {t("taxDoc.100%")}
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           {/*-------------------------- TaxType Juristic ---------------------------------------------*/}
@@ -600,27 +692,39 @@ export default function TaxDoc() {
                 marginBottom: 10,
               }}
             >
-              <View className="px-4 flex-row gap-2 items-start">
+              <View className=" flex-row items-start justify-center px-4 gap-2 ">
                 {/* Yearly Income */}
                 <View
-                  className="
-              flex-col w-1/4 items-center"
-                >
-                  <CustomText>{t("taxDoc.yearIncome")}</CustomText>
-                  <CustomText className="pt-2">
+                  className="flex-col  items-center">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.yearIncome")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {formatNumber(yearlySum)}
                   </CustomText>
                 </View>
+                <CustomText>-</CustomText>
                 {/* Reduct */}
-                <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.reduction")}</CustomText>
-                  <CustomText className="pt-2">
+                <View className="flex-col items-center">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.reduction")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {formatNumber(reductSum)}
                   </CustomText>
                 </View>
+                <CustomText>+</CustomText>
                 {/* TextInput Exemption */}
-                <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.exemption")}</CustomText>
+                <View className="flex-col  items-center">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.exemption")}
+                  </CustomText>
                   <TextInput
                     value={formatNumber(exemption)}
                     onChangeText={(value) => {
@@ -631,6 +735,7 @@ export default function TaxDoc() {
                     keyboardType="numeric"
                     style={{
                       ...commonTextInputStyle,
+                      fontSize: styles.smallFontSize,
                       width: isMobile() ? 80 : 120,
                       minWidth: 60,
                       maxWidth: 160,
@@ -638,21 +743,31 @@ export default function TaxDoc() {
                     }}
                   />
                 </View>
+                <CustomText>=</CustomText>
                 {/* Taxable Income */}
-                <View className="flex-col w-1/4 items-center">
-                  <CustomText>{t("taxDoc.taxableIncome")}</CustomText>
-                  <CustomText className="pt-2">
+                <View className="flex-col items-center">
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.taxableIncome")}
+                  </CustomText>
+                  <CustomText
+                    style={{ fontSize: styles.smallFontSize }}
+                    className="pt-2"
+                  >
                     {formatNumber(yearlySum - (reductSum + exemption))}
                   </CustomText>
                 </View>
               </View>
               {/* Tax Calculation */}
               <View className="p-4 flex-row gap-2 items-center justify-center">
-                <CustomText>{t("taxDoc.individualTax")}</CustomText>
+                <CustomText style={{ fontSize: styles.bodyFontSize }}
+                weight="bold"
+               >
+                  {t("taxDoc.individualTax")}
+                </CustomText>
                 <Text
                   style={{
                     color: theme === "dark" ? "#ff4d4f" : "#ff4d4f",
-                    fontSize: 28,
+                    fontSize: styles.headerFontSize,
                     fontWeight: "900",
                     marginLeft: 10,
                   }}
@@ -693,7 +808,10 @@ export default function TaxDoc() {
                     style={{ marginRight: 4 }}
                   />
                 </Ionicons>
-                <CustomText className="text-lg font-bold">
+                <CustomText
+                  style={{ fontSize: styles.bodyFontSize }}
+                  weight="bold"
+                >
                   {t("taxDoc.tipTitle")}
                 </CustomText>
               </View>
@@ -717,12 +835,15 @@ export default function TaxDoc() {
                     carRentals.length >= 5
                       ? "#ccc"
                       : theme === "dark"
-                      ? "#06fbc6"
-                      : "#0be4c0"
+                        ? "#06fbc6"
+                        : "#0be4c0"
                   }
                   style={{ marginRight: 4 }}
                 />
-                <CustomText className="text-base text-left">
+                <CustomText
+                  style={{ fontSize: styles.bodyFontSize }}
+                  className="text-left"
+                >
                   {t("taxDoc.addMoreCar")}
                 </CustomText>
               </TouchableOpacity>
@@ -737,16 +858,24 @@ export default function TaxDoc() {
                 }}
               >
                 <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-                  <CustomText> </CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {" "}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{t("taxDoc.monthly")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.monthly")}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{t("taxDoc.yearly")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.yearly")}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{t("taxDoc.reduct")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.reduct")}
+                  </CustomText>
                 </View>
               </View>
               {/* Salary row (merged deduction with wage) */}
@@ -758,7 +887,9 @@ export default function TaxDoc() {
                 }}
               >
                 <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-                  <CustomText>{t("taxDoc.salary")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.salary")}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
@@ -773,6 +904,7 @@ export default function TaxDoc() {
                     keyboardType="numeric"
                     style={{
                       ...commonTextInputStyle,
+                      fontSize: styles.smallFontSize,
                       width: isMobile() ? 80 : 120,
                       minWidth: 60,
                       maxWidth: 160,
@@ -781,7 +913,9 @@ export default function TaxDoc() {
                   />
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{formatNumber(yearIncome)}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {formatNumber(yearIncome)}
+                  </CustomText>
                 </View>
                 <View
                   style={{
@@ -790,7 +924,12 @@ export default function TaxDoc() {
                     justifyContent: "center",
                   }}
                 >
-                  <CustomText style={{ textAlign: "center" }}>
+                  <CustomText
+                    style={{
+                      fontSize: styles.smallFontSize,
+                      textAlign: "center",
+                    }}
+                  >
                     {formatNumber(Number(reductSalary))}
                   </CustomText>
                 </View>
@@ -804,7 +943,9 @@ export default function TaxDoc() {
                 }}
               >
                 <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-                  <CustomText>{t("taxDoc.wage")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.wage")}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
@@ -819,6 +960,7 @@ export default function TaxDoc() {
                     keyboardType="numeric"
                     style={{
                       ...commonTextInputStyle,
+                      fontSize: styles.smallFontSize,
                       width: isMobile() ? 80 : 120,
                       minWidth: 60,
                       maxWidth: 160,
@@ -827,7 +969,9 @@ export default function TaxDoc() {
                   />
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{formatNumber(allYearWage)}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {formatNumber(allYearWage)}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1 }} />
               </View>
@@ -848,15 +992,17 @@ export default function TaxDoc() {
                       alignItems: "center",
                     }}
                   >
-                    <CustomText>{t("taxDoc.carRental")}</CustomText>
-                    <CustomText>
+                    <CustomText style={{ fontSize: styles.smallFontSize }}>
+                      {t("taxDoc.carRental")}
+                    </CustomText>
+                    <CustomText style={{ fontSize: styles.smallFontSize }}>
                       {carRentals.length > 1 ? ` #${idx + 1}` : ""}
                     </CustomText>
                     {carRentals.length > 1 && (
                       <TouchableOpacity
                         onPress={() => {
                           const updated = carRentals.filter(
-                            (_, i) => i !== idx
+                            (_, i) => i !== idx,
                           );
                           setCarRentals(updated);
                         }}
@@ -878,7 +1024,7 @@ export default function TaxDoc() {
                         if (num > 36000) {
                           alert(
                             t("taxDoc.carRentalMaxAlert") ||
-                              "Car rental value cannot exceed 36,000"
+                              "Car rental value cannot exceed 36,000",
                           );
                           num = 36000;
                         }
@@ -892,6 +1038,7 @@ export default function TaxDoc() {
                       keyboardType="numeric"
                       style={{
                         ...commonTextInputStyle,
+                        fontSize: styles.smallFontSize,
                         width: isMobile() ? 80 : 120,
                         minWidth: 60,
                         maxWidth: 160,
@@ -900,12 +1047,12 @@ export default function TaxDoc() {
                     />
                   </View>
                   <View style={{ flex: 1, alignItems: "center" }}>
-                    <CustomText>
+                    <CustomText style={{ fontSize: styles.smallFontSize }}>
                       {formatNumber(Number(car.yearly))}
                     </CustomText>
                   </View>
                   <View style={{ flex: 1, alignItems: "center" }}>
-                    <CustomText>
+                    <CustomText style={{ fontSize: styles.smallFontSize }}>
                       {formatNumber(Number(car.reduct))}
                     </CustomText>
                   </View>
@@ -920,7 +1067,9 @@ export default function TaxDoc() {
                 }}
               >
                 <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-                  <CustomText>{t("taxDoc.officeRental")}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {t("taxDoc.officeRental")}
+                  </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
                   <TextInput
@@ -935,6 +1084,7 @@ export default function TaxDoc() {
                     keyboardType="numeric"
                     style={{
                       ...commonTextInputStyle,
+                      fontSize: styles.smallFontSize,
                       width: isMobile() ? 80 : 120,
                       minWidth: 60,
                       maxWidth: 160,
@@ -943,12 +1093,14 @@ export default function TaxDoc() {
                   />
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
                     {formatNumber(allYearOfficeRental)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText>{formatNumber(Number(reductOfficeRental))}</CustomText>
+                  <CustomText style={{ fontSize: styles.smallFontSize }}>
+                    {formatNumber(Number(reductOfficeRental))}
+                  </CustomText>
                 </View>
               </View>
               {/* Sum row */}
@@ -963,22 +1115,42 @@ export default function TaxDoc() {
                 }}
               >
                 <View style={{ flex: isMobile() ? 1.5 : 1 }}>
-                  <CustomText style={{ fontWeight: "bold" }}>
+                  <CustomText
+                    style={{
+                      fontSize: styles.smallFontSize,
+                      fontWeight: "bold",
+                    }}
+                  >
                     {t("")}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText style={{ fontWeight: "bold" }}>
+                  <CustomText
+                    style={{
+                      fontSize: styles.smallFontSize,
+                      fontWeight: "bold",
+                    }}
+                  >
                     {formatNumber(monthlySum)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText style={{ fontWeight: "bold" }}>
+                  <CustomText
+                    style={{
+                      fontSize: styles.smallFontSize,
+                      fontWeight: "bold",
+                    }}
+                  >
                     {formatNumber(yearlySum)}
                   </CustomText>
                 </View>
                 <View style={{ flex: 1, alignItems: "center" }}>
-                  <CustomText style={{ fontWeight: "bold" }}>
+                  <CustomText
+                    style={{
+                      fontSize: styles.smallFontSize,
+                      fontWeight: "bold",
+                    }}
+                  >
                     {formatNumber(reductSum)}
                   </CustomText>
                 </View>
