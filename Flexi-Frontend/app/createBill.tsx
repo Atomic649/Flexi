@@ -35,6 +35,7 @@ import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
+import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -47,6 +48,12 @@ const formatDate = (dateString: string) => {
 export default function CreateBill() {
   const [memberId, setMemberId] = useState<string | null>(null);
   const { t } = useTranslation();
+  const provinceOptions = useMemo(() => {
+    return THAI_PROVINCES_KEYS.map((prov) => ({
+      label: t(`provinces.${prov}`),
+      value: prov,
+    }));
+  }, [t]);
   const { theme } = useTheme();
   const searchParams = useLocalSearchParams<{
     duplicateId?: string | string[];
@@ -1478,16 +1485,15 @@ export default function CreateBill() {
             />
             <View className="flex flex-row justify-between">
               <View className="w-1/2 pr-2">
-                <FormFieldClear
+                <DropdownClear
                   title={t("bill.customerProvince")}
-                  value={cProvince}
-                  handleChangeText={setCProvince}
+                  options={provinceOptions}
+                  selectedValue={cProvince}
+                  onValueChange={setCProvince}
                   placeholder={t("bill.enterProvince")}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={
-                    theme === "dark" ? "#606060" : "#b1b1b1"
-                  }
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles={fieldStyles}
                 />
               </View>

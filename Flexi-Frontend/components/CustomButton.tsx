@@ -28,7 +28,7 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`bg-[#04ecc1] rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
+      className={`bg-[#04ecc1] rounded-xl min-h-[50px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
@@ -37,14 +37,16 @@ const CustomButton = ({
         {title}
       </CustomText>
 
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color="#fff"
-          size="small"
-          className="ml-2"
-        />
-      )}
+      {/* Changed conditional rendering to check only isLoading prop */}
+      {/* ActivityIndicator handles its own visibility via animating prop */}
+      {/* This ensures space is reserved or at least the component is mounted */}
+      <ActivityIndicator
+        animating={isLoading}
+        color="#fff" // ensure contrast against button background
+        size="small"
+        className="ml-2"
+        style={{ display: isLoading ? 'flex' : 'none' }} //Explicitly hide when not loading to avoid layout shifts
+      />
     </TouchableOpacity>
   );
 };
@@ -69,14 +71,13 @@ const SecondaryButton = ({
         {title}
       </CustomText>
 
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color="#fff"
-          size="small"
-          className="ml-2"
-        />
-      )}
+      <ActivityIndicator
+        animating={isLoading}
+        color="#13b594" // adjusted color for visibility on secondary button
+        size="small"
+        className="ml-2"
+        style={{ display: isLoading ? 'flex' : 'none' }}
+      />
     </TouchableOpacity>
   );
 };
@@ -96,7 +97,7 @@ const GrayButton = ({
         theme === "dark"
           ? "bg-[#333333] border-[#d1d5db]"
           : "bg-[#f3f4f6] border-[#d1d5db]"
-      } rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
+      } rounded-xl min-h-[50px] flex flex-row justify-center items-center ${containerStyles} ${
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
@@ -108,14 +109,13 @@ const GrayButton = ({
         {title}
       </CustomText>
 
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color="#fff"
-          size="small"
-          className="ml-2"
-        />
-      )}
+      <ActivityIndicator
+        animating={isLoading}
+        color={theme === "dark" ? "#dadada" : "#666"}
+        size="small"
+        className="ml-2"
+        style={{ display: isLoading ? 'flex' : 'none' }}
+      />
     </TouchableOpacity>
   );
 };
@@ -151,14 +151,13 @@ const DarkGrayButton = ({
         {title}
       </CustomText>
 
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color="#fff"
-          size="small"
-          className="ml-2"
-        />
-      )}
+      <ActivityIndicator
+        animating={isLoading}
+        color={theme === "dark" ? "#666" : "#fbfafa"}
+        size="small"
+        className="ml-2"
+        style={{ display: isLoading ? 'flex' : 'none' }}
+      />
     </TouchableOpacity>
   );
 };
@@ -182,14 +181,13 @@ const MiniCustomButton = ({
         {title}
       </CustomText>
 
-      {isLoading && (
-        <ActivityIndicator
-          animating={isLoading}
-          color="#fff"
-          size="small"
-          className="ml-2"
-        />
-      )}
+      <ActivityIndicator
+        animating={isLoading}
+        color="#fff"
+        size="small"
+        className="ml-2"
+        style={{ display: isLoading ? 'flex' : 'none' }}
+      />
     </TouchableOpacity>
   );
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import { CustomText } from "../CustomText"; // Make sure to import CustomText
 import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
 import { useTheme } from "@/providers/ThemeProvider";
@@ -24,7 +24,7 @@ const FormField = ({
   const { theme } = useTheme();
 
   return (
-    <View className={`space-y-2 mt-4 ${otherStyles}`} style={{ position: 'relative' }}>
+    <View className={`mt-4 ${otherStyles}`} style={{ position: 'relative' }}>
       {/* Floating label over the border */}
       {value ? (
         
@@ -65,7 +65,7 @@ const FormField = ({
         )}
     
       <View
-        className="w-full  px-4 rounded-2xl border-2 border-transparent flex-row items-start pt-2"
+        className="w-full px-4 rounded-xl border-2 border-transparent flex-row items-center"
         style={{
           backgroundColor: "transparent",
           borderColor: borderColor? borderColor : "transparent",
@@ -75,7 +75,7 @@ const FormField = ({
         }}
       >
         <TextInput
-          className="flex-1 font-psemibold text-lg item-center pt-1"
+          className={`flex-1 font-psemibold text-lg item-center h-full ${boxheight ? 'mt-4' : ''}`}
           style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
             color: theme === "dark" ? "#b4b3b3" : "#2a2a2a" }}          
           value={value}
@@ -91,12 +91,13 @@ const FormField = ({
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
             disabled={!editable}
+            style={{ marginLeft: 8 }}
           >
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
-              className="w-6 h-6"
-              resizeMode="contain"
-              style={{ opacity: editable ? 1 : 0.5 }}
+            <Ionicons
+                name={!showPassword ? "eye" : "eye-off"}
+                size={24}
+                color={theme === "dark" ? "#b4b3b3" : "#2a2a2a"}
+                style={{ opacity: editable ? 1 : 0.5 }}
             />
           </TouchableOpacity>
         )}

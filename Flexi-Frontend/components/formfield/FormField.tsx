@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity, Image } from "react-native";
-import { icons } from "../../constants";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import { CustomText } from "../CustomText";
+import { Ionicons } from "@expo/vector-icons";
 import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
 
 interface FormFieldProps {
@@ -33,19 +33,19 @@ const FormField = ({
   return (
     <View className={`space-y-2 ${otherStyles ?? ""}`}>
       <View className="flex-row items-center flex-wrap">
-        <CustomText className="text-base text-zinc-500 font-pmedium mb-4">
+        <CustomText className="text-base text-zinc-500 font-pmedium mb-1 pl-1">
           {title}
         </CustomText>
         {subTitle && (
-          <CustomText className="text-sm text-zinc-400 font-pmedium mb-4 ml-2">
+          <CustomText className="text-sm text-zinc-400 font-pmedium mb-1 ml-2">
             {subTitle}
           </CustomText>
         )}
       </View>
-      <View className="w-full h-16 px-4 bg-[#423f39] rounded-2xl border-2 border-[#423f39] flex-row items-start pt-3">
+      <View className="w-full h-16 px-4 bg-[#423f39] rounded-xl border-2 border-[#423f39] flex-row items-center">
         <TextInput
           key={isSecureField ? (showPassword ? "password-visible" : "password-hidden") : "plain"}
-          className="flex-1 text-white font-psemibold text-lg "
+          className="flex-1 text-white font-psemibold text-lg h-full"
           style={{
             fontFamily:
               i18n.language === "th"
@@ -62,11 +62,11 @@ const FormField = ({
 
         {isSecureField && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}
-          style={{ justifyContent: "center", alignItems: "center", paddingTop: 4 }}>
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
-              style={{ width: 24, height: 24, justifyContent: "center", alignItems: "center" , tintColor: "#989795" }}
-              resizeMode="contain"
+          style={{ justifyContent: "center", alignItems: "center", marginLeft: 8 }}>
+            <Ionicons 
+                name={!showPassword ? "eye" : "eye-off"} 
+                size={24} 
+                color="#989795" 
             />
           </TouchableOpacity>
         )}

@@ -316,21 +316,15 @@ export default function Print() {
     return "RE";
   };
 
-  // Compute a default print step from available context types
-  // const getDefaultPrintStep = (): "QA" | "IV" | "RE" => {
-  //   const available = getAvailablePrintSteps();
-  //   return available.length > 0 ? available[0] : "QA";
-  // };
-
-  // Handle date range selection for the calendar
+   // Handle date range selection for the calendar
   const handleDatesChange = (dates: string[]) => {
     setDateRange(dates);
-    // setCalendarVisible(false);
+  };
 
-    // If dates were selected, search with those dates
-    if (dates && dates.length > 0) {
-      searchByDateRange(dates);
-      console.log("Selected Dates:", dates);
+  const handleCloseCalendar = () => {
+    setCalendarVisible(false);
+    if (dateRange && dateRange.length > 0) {
+      searchByDateRange(dateRange);
     }
   };
 
@@ -1649,7 +1643,7 @@ export default function Print() {
         visible={calendarVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setCalendarVisible(false)}
+        onRequestClose={handleCloseCalendar}
       >
         <TouchableOpacity
           style={{
@@ -1659,7 +1653,7 @@ export default function Print() {
             backgroundColor: "rgba(0,0,0,0.5)",
           }}
           activeOpacity={1}
-          onPress={() => setCalendarVisible(false)}
+          onPress={handleCloseCalendar}
         >
           <View
             style={{
@@ -2541,6 +2535,10 @@ export default function Print() {
                           label: t("print.customerPhone"),
                           value: SEARCH_TYPES.CUSTOMER_PHONE,
                         },
+                        {
+                          label: t("print.dateRange"),
+                          value: SEARCH_TYPES.DATE_RANGE,
+                        },
                         ...(isDocumentTypeAvailable("Receipt")
                           ? [
                               {
@@ -2564,11 +2562,7 @@ export default function Print() {
                                 value: SEARCH_TYPES.INVOICE_ID,
                               },
                             ]
-                          : []),
-                        {
-                          label: t("print.dateRange"),
-                          value: SEARCH_TYPES.DATE_RANGE,
-                        },
+                          : [])
                       ]}
                       placeholder={t("print.selectSearchType")}
                       selectedValue={t(`print.${searchType}`)}
@@ -2630,7 +2624,7 @@ export default function Print() {
                     <CustomButton
                       title={t("print.search")}
                       handlePress={handleSearch}
-                      containerStyles={isMobile() ? "" : "mt-6"}
+                      containerStyles={isMobile() ? "" : "mt-6 "}
                       textStyles="!text-white"
                     />
                   </View>

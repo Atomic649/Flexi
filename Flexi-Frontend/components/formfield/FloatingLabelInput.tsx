@@ -64,7 +64,7 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         </CustomText>
       )}
       <TextInput
-        className={`h-14 px-4 rounded-2xl border-2  ${
+        className={`h-14 px-4 rounded-xl border-2  ${
           theme === "dark"
             ? "bg-transparent"
             : "bg-white"

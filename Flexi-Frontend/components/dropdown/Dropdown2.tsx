@@ -1,6 +1,10 @@
-import { useState } from "react";
-import { View, TouchableOpacity, ScrollView, Platform } from "react-native";
-import { CustomText } from '../CustomText'; // Make sure to import CustomText
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { View, TouchableOpacity, ScrollView, Platform, TextInput } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { CustomText } from '../CustomText';
+import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
+import i18n from "../../i18n";
+import { t } from "i18next";
 
 const Dropdown = ({
     title,
@@ -16,66 +20,182 @@ const Dropdown = ({
     ...props
 }: any) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchText, setSearchText] = useState("");
     const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
+    
+    // Find selected label for display
+    const selectedLabel = options?.find((o: any) => o.label === selectedValue || o.value === selectedValue)?.label || selectedValue || placeholder;
+    
+    const filteredOptions = useMemo(() => {
+        if (!searchText) return options;
+        if (!Array.isArray(options)) return [];
+        
+        return options.filter((option: any) => 
+          option.label.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }, [options, searchText]);
+    
+    const closeSelf = useCallback(() => {
+        setIsOpen(false);
+        setSearchText("");
+    }, []);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => clearDropdown(closeSelf);
+    }, [closeSelf]);
 
     const handlePress = () => {
         if (!disabled) {
-            setIsOpen(!isOpen);
+            if (isOpen) {
+                closeSelf();
+                clearDropdown(closeSelf);
+            } else {
+                openDropdown(closeSelf);
+                setIsOpen(true);
+            }
         }
     };
 
     return (
-        <View className={`space-y-2 ${otherStyles}`}>
-            <CustomText className="text-base text-zinc-500 font-pmedium mb-3">{title}</CustomText>
+        <View className={`space-y-2 ${otherStyles} relative z-50`}>
+            <CustomText className="text-base text-zinc-500 font-pmedium mb-1 pl-1 ">{title}</CustomText>
+
+            <View className="relative z-50">
             <TouchableOpacity
-                className="w-full h-14 px-4 rounded-2xl border-2 border-transparent flex flex-row items-center justify-between"
+                className="w-full h-14 px-4 rounded-xl flex flex-row items-center justify-between z-50"
                 onPress={handlePress}
-                 activeOpacity={1}
+                activeOpacity={0.8}
                 style={{
                     backgroundColor: bgColor,
-                    opacity: disabled ? 0.8 : 1
+                    opacity: disabled ? 0.7 : 1
                 }}
             >
-                <CustomText className="text-[#b1b1b1] font-psemibold text-base"
-                    style={{ color: textcolor }}>
-                    {selectedValue || placeholder}
+                <CustomText 
+                    className="font-psemibold text-base flex-1 mr-2"
+                    numberOfLines={1}
+                    style={{ color: textcolor }}
+                >
+                    {selectedLabel}
                 </CustomText>
-                <CustomText className="text-zinc-300 font-psemibold text-base" style={{ opacity: disabled ? 0.5 : 1 }}>
-                    {isOpen ? "▲" : "▼"}
-                </CustomText>
+                <Ionicons 
+                    name={isOpen ? "chevron-up" : "chevron-down"} 
+                    size={20} 
+                    color={disabled ? "#9CA3AF" : textcolor || "#6B7280"} 
+                />
             </TouchableOpacity>
 
             {isOpen && !disabled && (
-                <View style={{ maxHeight: 240, borderRadius: 16, overflow: 'hidden' }}>
+                <View 
+                    style={{ 
+                        position: 'absolute',
+                        top: 60, // Height of button + gap
+                        left: 0,
+                        right: 0,
+                        maxHeight: 250,
+                        backgroundColor: bgChoiceColor,
+                        borderRadius: 12,
+                        zIndex: 1000,
+                        elevation: 5,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                    }}
+                >
+                    <View style={{ padding: 10 }}>
+                        <View
+                            style={{
+                                backgroundColor: "rgba(0,0,0,0.1)",
+                                borderRadius: 8,
+                                paddingHorizontal: 12,
+                                paddingVertical: 8,
+                                flexDirection: "row",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Ionicons name="search" size={18} color={textcolor || "#6B7280"} />
+                            <TextInput
+                                value={searchText}
+                                onChangeText={setSearchText}
+                                placeholder={t("common.search")}
+                                placeholderTextColor={textcolor ? textcolor : "#9CA3AF"}
+                                style={{
+                                    flex: 1,
+                                    marginLeft: 8,
+                                    color: textcolor || "#000",
+                                    fontSize: 14,
+                                    padding: 0,
+                                    fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
+                                }}
+                            />
+                            {searchText.length > 0 && (
+                                <TouchableOpacity onPress={() => setSearchText("")}>
+                                    <Ionicons name="close-circle" size={18} color={textcolor || "#6B7280"} />
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    </View>
+
                     <ScrollView
                         nestedScrollEnabled
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator
                         persistentScrollbar
-                        style={webScrollStyle}
+                        style={{
+                            ...webScrollStyle,
+                            maxHeight: 200,
+                            borderRadius: 12,
+                        }}
+                        contentContainerStyle={{ paddingBottom: 4 }}
                         {...props}
                     >
-                        {options?.map((item: any) => (
-                            <TouchableOpacity
-                                key={item.value}
-                                className="w-full h-16 px-4 border-1 border-transparent flex flex-row items-center"
-                                onPress={() => {
-                                    onValueChange(item.value);
-                                    setIsOpen(false);
+                        {Array.isArray(filteredOptions) && filteredOptions.length > 0 ? (
+                            filteredOptions.map((item: any, index: number) => {
+                                const isSelected = item.label === selectedValue || item.value === selectedValue;
+                                return (
+                                    <TouchableOpacity
+                                        key={item.value || index}
+                                        className="w-full py-3 px-4 flex flex-row items-center justify-between"
+                                        onPress={() => {
+                                            onValueChange(item.value);
+                                            closeSelf();
+                                            clearDropdown(closeSelf);
+                                        }}
+                                        activeOpacity={0.7}
+                                    >
+                                        <CustomText
+                                            className={`text-base ${isSelected ? "font-bold" : "font-pmedium"}`}
+                                            style={{ color: textcolor }}
+                                        >
+                                            {item.label}
+                                        </CustomText>
+                                        {isSelected && (
+                                            <Ionicons name="checkmark" size={18} color={textcolor} />
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            })
+                        ) : (
+                             <View
+                                pointerEvents="none"
+                                style={{
+                                    paddingVertical: 12,
+                                    alignItems: 'center',
                                 }}
-                                style={{ backgroundColor: bgChoiceColor }}
-                            >
+                             >
                                 <CustomText
-                                    className="font-psemibold text-base"
-                                    style={{ color: textcolor }}
+                                    className="font-pmedium text-sm text-center"
+                                    style={{ color: textcolor || "#9CA3AF" }}
                                 >
-                                    {item.label}
+                                     {t("common.noOptions")}
                                 </CustomText>
-                            </TouchableOpacity>
-                        ))}
+                             </View>
+                        )}
                     </ScrollView>
                 </View>
             )}
+            </View>
         </View>
     );
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import { CustomText } from "../CustomText"; // Make sure to import CustomText
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
@@ -25,11 +25,13 @@ const FormField = ({
   return (
     <View className={`space-y-2 ${otherStyles}`}>
       <View className="flex-row items-center">
-        <CustomText className="text-base text-zinc-500 font-pmedium mb-3">
-          {title}
-        </CustomText>
+        {title && (
+            <CustomText className="text-base text-zinc-500 font-pmedium mb-1 pl-1">
+            {title}
+            </CustomText>
+        )}
         {subtitle && (
-          <CustomText className="text-sm text-zinc-400 font-pregular mb-2 ml-2"
+          <CustomText className="text-sm text-zinc-400 font-pregular mb-1 ml-2"
           onPress={() => {
             if (handlePress) {
               handlePress();
@@ -53,7 +55,7 @@ const FormField = ({
         )}        
       </View>
       <View
-        className="w-full  px-4 rounded-2xl border-2 border-transparent flex-row items-start pt-3"
+        className="w-full px-4 rounded-xl border-2 border-transparent flex-row items-center"
         style={{
           backgroundColor: bgColor,
           height: boxheight ? boxheight : 50,
@@ -61,7 +63,7 @@ const FormField = ({
         }}
       >
         <TextInput
-          className="flex-1 font-psemibold text-base"
+          className="flex-1 font-psemibold text-base h-full"
           style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",color: textcolor }}          
           value={value}
           placeholder={placeholder}
@@ -76,12 +78,13 @@ const FormField = ({
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
             disabled={!editable}
+            style={{ marginLeft: 8 }}
           >
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
-              className="w-6 h-6"
-              resizeMode="contain"
-              style={{ opacity: editable ? 1 : 0.5 }}
+            <Ionicons
+                name={!showPassword ? "eye" : "eye-off"}
+                size={24}
+                color={textcolor || "#989795"}
+                style={{ opacity: editable ? 1 : 0.5 }}
             />
           </TouchableOpacity>
         )}
