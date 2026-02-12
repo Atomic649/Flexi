@@ -128,7 +128,29 @@ class CallAPIPrint {
       }
     }
   }
+  // Search Bills By Phone
+  async searchBillsByPhoneAPI(memberId: string, customerPhone: string): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/print/search-by-phone`, {
+        params: {
+          memberId,
+          customerPhone
+        }
+      });
 
+      console.log("🚀 Search Bills By Phone API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Search Bills By Phone API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
   // Generate Invoice PDF
   async generateInvoicePDFAPI(billId: number): Promise<any> {
     try {

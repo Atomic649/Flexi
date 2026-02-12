@@ -227,6 +227,54 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
   }
 };
 
+// Search bills by customer phone
+export const searchBillsByPhone = async (req: Request, res: Response) => {
+  try {
+    const { memberId, customerPhone } = req.query;
+
+    console.log("Search Bills By Phone API - memberId:", memberId, "customerPhone:", customerPhone);
+
+    if (!memberId || !customerPhone) {
+      return res.status(400).json({
+        error: "Member ID and customer phone are required",
+      });
+    }
+    // Find business ID by member ID from member table
+    const businessId = await prisma.member.findUnique({
+      where : { uniqueId: String(memberId) },
+      select:{ businessId: true },
+    });
+
+    // Search by customer name or last name with case-insensitive search
+    const bills = await prisma.bill.findMany({
+      where: {
+        businessAcc : businessId?.businessId ?? 0,
+
+        cPhone: {
+          contains: customerPhone as string,
+          mode: "insensitive", // Just in case, though usually phone is numeric
+        },
+      },
+      orderBy: {
+        purchaseAt: "desc",
+      },
+      include: {
+        product: true, // ensure line items are available for invoice modal
+      },
+      take : 20, // Limit results
+    });
+
+    console.log("🚀 Search Bills By Phone API:", bills);
+
+    return res.status(200).json(bills);
+  } catch (error) {
+    console.error("Error searching bills by phone:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to search bills by phone" });
+  }
+};
+
 // Generate PDF invoice
 export const generateInvoicePDF = async (req: Request, res: Response) => {
   try {

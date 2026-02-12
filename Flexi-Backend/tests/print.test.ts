@@ -20,6 +20,7 @@ import {
 	searchBillsByCustomer,
 	generateInvoicePDF,
 	searchBillById,
+	searchBillsByPhone,
 } from '../src/controllers/printController';
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/print/monthly', (req, res) => getMonthlyReport(req, res));
 app.get('/print/bills-range', (req, res) => getBillsByDateRange(req, res));
 app.get('/print/expenses-range', (req, res) => getExpenseByDateRange(req, res));
 app.get('/print/search-customer', (req, res) => searchBillsByCustomer(req, res));
+app.get('/print/search-by-phone', (req, res) => searchBillsByPhone(req, res));
 app.get('/print/invoice/:billId', (req, res) => generateInvoicePDF(req, res));
 app.get('/print/search-by-id', (req, res) => searchBillById(req, res));
 
@@ -50,6 +52,7 @@ describe('printController', () => {
 					id: 1,
 					purchaseAt: new Date('2025-11-10T10:00:00Z'),
 					cashStatus: true,
+					total: 190,
 					product: [
 						{ unitPrice: 100, quantity: 2, unitDiscount: 5 }, // sales 200, discount 10
 					],
@@ -58,6 +61,7 @@ describe('printController', () => {
 					id: 2,
 					purchaseAt: new Date('2025-11-20T10:00:00Z'),
 					cashStatus: false,
+					total: 50,
 					product: [
 						{ unitPrice: 50, quantity: 1, unitDiscount: 0 }, // sales 50, discount 0
 					],
@@ -136,6 +140,27 @@ describe('printController', () => {
 			const res = await request(app)
 				.get('/print/search-customer')
 				.query({ memberId: 'MID-1', customerName: 'john' });
+			expect(res.status).toBe(200);
+			expect(res.body.length).toBe(1);
+		});
+	});
+
+	describe('searchBillsByPhone', () => {
+		test('requires memberId and customerPhone', async () => {
+			let res = await request(app).get('/print/search-by-phone');
+			expect(res.status).toBe(400);
+			res = await request(app).get('/print/search-by-phone').query({ memberId: 'MID-1' });
+			expect(res.status).toBe(400);
+		});
+
+		test('returns matched bills', async () => {
+			prismaMock.member.findUnique.mockResolvedValue({ businessId: 1 });
+			prismaMock.bill.findMany.mockResolvedValue([
+				{ id: 1, cPhone: '0812345678', cName: 'John' },
+			]);
+			const res = await request(app)
+				.get('/print/search-by-phone')
+				.query({ memberId: 'MID-1', customerPhone: '0812345678' });
 			expect(res.status).toBe(200);
 			expect(res.body.length).toBe(1);
 		});

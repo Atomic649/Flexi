@@ -36,6 +36,7 @@ import { useLocalSearchParams } from "expo-router";
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
   CUSTOMER_NAME: "customerName",
+  CUSTOMER_PHONE: "customerPhone",
   BILL_ID: "billId",
   QUOTATION_ID: "quotationId",
   INVOICE_ID: "invoiceId",
@@ -477,6 +478,58 @@ export default function Print() {
     }
   };
 
+  // Search bills by customer phone
+  const searchByCustomerPhone = async () => {
+    if (!memberId || !searchQuery) return;
+
+    setIsLoading(true);
+    setBills([]);
+
+    try {
+      const response = await CallAPIPrint.searchBillsByPhoneAPI(
+        memberId,
+        searchQuery,
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      setBills(response);
+
+      if (response.length === 0) {
+        setAlertConfig({
+          visible: true,
+          title: t("print.noResults"),
+          message: t("print.noResultsMessage"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.error("Error searching by customer phone:", error);
+      setAlertConfig({
+        visible: true,
+        title: t("print.error"),
+        message: t("print.searchError"),
+        buttons: [
+          {
+            text: t("common.ok"),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
+          },
+        ],
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Search bills by bill ID
   const searchByBillId = async () => {
     if (!memberId || !searchQuery) return;
@@ -598,6 +651,9 @@ export default function Print() {
     switch (searchType) {
       case SEARCH_TYPES.CUSTOMER_NAME:
         searchByCustomerName();
+        break;
+      case SEARCH_TYPES.CUSTOMER_PHONE:
+        searchByCustomerPhone();
         break;
       case SEARCH_TYPES.BILL_ID:
       case SEARCH_TYPES.QUOTATION_ID:
@@ -1492,6 +1548,18 @@ export default function Print() {
   // Helper to get display ID based on document type
   const getDisplayId = (invoice: any) => {
     if (!invoice) return "";
+
+    // If searching by specific ID type, return that ID if available
+    if (searchType === SEARCH_TYPES.INVOICE_ID && invoice.invoiceId) {
+      return invoice.invoiceId;
+    }
+    if (searchType === SEARCH_TYPES.QUOTATION_ID && invoice.quotationId) {
+      return invoice.quotationId;
+    }
+    if (searchType === SEARCH_TYPES.BILL_ID && invoice.billId) {
+      return invoice.billId;
+    }
+
     const docType = Array.isArray(invoice?.DocumentType)
       ? invoice.DocumentType[0]
       : invoice?.DocumentType;
@@ -2469,6 +2537,10 @@ export default function Print() {
                           label: t("print.customerName"),
                           value: SEARCH_TYPES.CUSTOMER_NAME,
                         },
+                        {
+                          label: t("print.customerPhone"),
+                          value: SEARCH_TYPES.CUSTOMER_PHONE,
+                        },
                         ...(isDocumentTypeAvailable("Receipt")
                           ? [
                               {
@@ -2515,29 +2587,37 @@ export default function Print() {
                         title={
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("print.enterCustomerName")
-                            : searchType === SEARCH_TYPES.QUOTATION_ID
-                              ? t("print.enterQuotationId")
-                              : searchType === SEARCH_TYPES.INVOICE_ID
-                                ? t("print.enterInvoiceId")
-                                : t("print.enterBillId")
+                            : searchType === SEARCH_TYPES.CUSTOMER_PHONE
+                              ? t("print.enterCustomerPhone")
+                              : searchType === SEARCH_TYPES.QUOTATION_ID
+                                ? t("print.enterQuotationId")
+                                : searchType === SEARCH_TYPES.INVOICE_ID
+                                  ? t("print.enterInvoiceId")
+                                  : t("print.enterBillId")
                         }
                         value={searchQuery}
                         handleChangeText={setSearchQuery}
                         placeholder={
                           searchType === SEARCH_TYPES.CUSTOMER_NAME
                             ? t("bill.enterName")
-                            : searchType === SEARCH_TYPES.QUOTATION_ID
-                              ? "QT2025/123 or 2025/123 or 123"
-                              : searchType === SEARCH_TYPES.INVOICE_ID
-                                ? "INV2025/123 or 2025/123 or 123"
-                                : "REC2025/123 or 2025/123 or 123"
+                            : searchType === SEARCH_TYPES.CUSTOMER_PHONE
+                              ? "0812345678"
+                              : searchType === SEARCH_TYPES.QUOTATION_ID
+                                ? "QT2025/123 or 2025/123 or 123"
+                                : searchType === SEARCH_TYPES.INVOICE_ID
+                                  ? "INV2025/123 or 2025/123 or 123"
+                                  : "REC2025/123 or 2025/123 or 123"
                         }
                         bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
                         placeholderTextColor={
                           theme === "dark" ? "#606060" : "#b1b1b1"
                         }
                         textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                        keyboardType={"default"}
+                        keyboardType={
+                          searchType === SEARCH_TYPES.CUSTOMER_PHONE
+                            ? "phone-pad"
+                            : "default"
+                        }
                       />
                     </View>
                   )}
