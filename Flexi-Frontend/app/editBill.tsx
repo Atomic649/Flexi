@@ -39,6 +39,7 @@ import * as ExpoPrint from "expo-print";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
+import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -1641,18 +1642,21 @@ export default function EditBill() {
 
             <View className="flex flex-row justify-between">
               <View className="w-1/2 pr-2">
-                <FormFieldClear
+                 <DropdownClear
                   title={t("bill.customerProvince")}
-                  value={cProvince}
-                  handleChangeText={setCProvince}
-                  placeholder={t("bill.enterProvince")}
+                  options={THAI_PROVINCES_KEYS.map((key) => ({
+                    label: t(`provinces.${key}`),
+                    value: t(`provinces.${key}`),
+                  }))}
+                  selectedValue={cProvince}
+                  onValueChange={setCProvince}
+                  placeholder={t("bill.selectProvince")}
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  placeholderTextColor={
-                    theme === "dark" ? "#606060" : "#b1b1b1"
-                  }
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                  otherStyles={fieldStyles}
-                  editable={isEditMode}
+                  bgChoiceColor={theme === "dark" ? "#18181b" : "#ffffff"}
+                  otherStyles="mt-2 mb-2"
+                  disabled={!isEditMode}
                 />
               </View>
               <View className="w-1/2 pr-2">

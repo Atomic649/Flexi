@@ -86,7 +86,8 @@ export default function CreateBill() {
         if (res.exists && res.customer) {
           setExistingCustomer(res.customer);
           if (!cName) {
-            const foundFullName = `${res.customer.firstName || ""} ${res.customer.lastName || ""}`.trim();
+            const foundFullName =
+              `${res.customer.firstName || ""} ${res.customer.lastName || ""}`.trim();
 
             setAlertConfig({
               visible: true,
@@ -177,7 +178,7 @@ export default function CreateBill() {
   const [cName, setCName] = useState("");
   const [cLastName, setCLastName] = useState("");
   const [cPhone, setCPhone] = useState("");
-  
+
   // Customer Check States
   const [conflictModalVisible, setConflictModalVisible] = useState(false);
   const [existingCustomer, setExistingCustomer] = useState<any>(null);
@@ -227,7 +228,7 @@ export default function CreateBill() {
   const [remark, setRemark] = useState("");
   const [withholdingTax, setWithholdingTax] = useState(false);
   const [withholdingPercent, setWithholdingPercent] = useState("3");
-  
+
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
     null,
@@ -254,7 +255,7 @@ export default function CreateBill() {
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
 
-  // Discount from price before VAT 
+  // Discount from price before VAT
   const withholdingTaxAmount = useMemo(() => {
     if (!withholdingTax) return 0;
     const subtotal = productItems.reduce((sum, item) => {
@@ -282,7 +283,6 @@ export default function CreateBill() {
     const amt = Number(raw.toFixed(2));
     return amt;
   }, [withholdingTax, withholdingPercent, productItems]);
-
 
   const duplicatePrefillCacheRef = useRef<{ id: number; data: any } | null>(
     null,
@@ -542,7 +542,9 @@ export default function CreateBill() {
       setPaymentTermCondition(billData.paymentTermCondition ?? "");
       setRemark(billData.remark ?? "");
       setWithholdingTax(Boolean(billData.WHTAmount && billData.WHTAmount > 0));
-      setWithholdingPercent(billData.WHTPercent ? billData.WHTPercent.toString() : "3");
+      setWithholdingPercent(
+        billData.WHTPercent ? billData.WHTPercent.toString() : "3",
+      );
 
       const isJuristicCustomer =
         billData.TaxType === "Juristic" ||
@@ -929,7 +931,7 @@ export default function CreateBill() {
           quantity: Number(item.quantity),
         })),
         note,
-        paymentTermCondition:paymentTermCondition,
+        paymentTermCondition: paymentTermCondition,
         remark: remark || undefined,
         withholdingTax: withholdingTax,
         withholdingPercent: withholdingTax
@@ -1491,9 +1493,10 @@ export default function CreateBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.enterProvince")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}                    
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                   bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles={fieldStyles}
                 />
               </View>
@@ -2219,7 +2222,10 @@ export default function CreateBill() {
                 containerStyles="w-full"
               />
               <CustomButton
-                title={t("bill.alerts.replaceWithNewData", "Replace with New Data")}
+                title={t(
+                  "bill.alerts.replaceWithNewData",
+                  "Replace with New Data",
+                )}
                 handlePress={() => {
                   setUpdateCustomer(true);
                   setConflictModalVisible(false);

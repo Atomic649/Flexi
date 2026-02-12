@@ -5,6 +5,7 @@ import { CustomText } from '../CustomText';
 import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
 import i18n from "../../i18n";
 import { t } from "i18next";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const Dropdown = ({
   title,
@@ -21,6 +22,7 @@ const Dropdown = ({
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const { theme } = useTheme();
   const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
   
   // Find selected label for display
@@ -58,14 +60,17 @@ const Dropdown = ({
   };
 
   return (
-    <View className={`space-y-2 ${otherStyles} relative z-50`}>
+    <View
+      className={`space-y-2 ${otherStyles} relative`}
+      style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}
+    >
       {title && (
         <CustomText className="text-base text-zinc-500 font-pmedium mb-1 pl-1">
           {title}
         </CustomText>
       )}
       
-      <View className="relative z-50">
+      <View style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}>
         <TouchableOpacity
           className="w-full h-16 px-4 rounded-xl flex flex-row items-center justify-between z-50"
           onPress={handlePress}
@@ -100,7 +105,7 @@ const Dropdown = ({
                 left: 0,
                 right: 0,
                 maxHeight: 260,
-                backgroundColor: bgChoiceColor || "#57534e", // stone-600 default
+                backgroundColor: bgChoiceColor || (theme === "dark" ? "#18181b" : "#ffffff"), // stone-600 default replaced with theme
                 borderRadius: 12,
                 zIndex: 1000,
                 elevation: 5,

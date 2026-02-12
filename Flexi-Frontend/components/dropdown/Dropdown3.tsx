@@ -6,6 +6,7 @@ import { getResponsiveStyles } from "@/utils/responsive";
 import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
 import i18n from "../../i18n";
 import { t } from "i18next";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const Dropdown = ({
     title,
@@ -22,6 +23,7 @@ const Dropdown = ({
 }: any) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const { theme } = useTheme();
     const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
     
     // Find selected label for display
@@ -59,14 +61,17 @@ const Dropdown = ({
     };
 
     return (
-        <View className={`${otherStyles} relative z-50`}>
+        <View
+            className={`${otherStyles} relative`}
+            style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}
+        >
             {title && (
                  <CustomText className="text-base text-zinc-500 font-pmedium mb-1 pl-1">
                     {title}
                 </CustomText>
             )}
             
-            <View className="relative z-50">
+            <View style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}>
                 <TouchableOpacity
                     className="w-full h-12 px-4 rounded-xl flex flex-row items-center justify-between z-50"
                     onPress={handlePress}
@@ -105,7 +110,7 @@ const Dropdown = ({
                             left: 0,
                             right: 0,
                             maxHeight: 240,
-                            backgroundColor: bgChoiceColor,
+                            backgroundColor: bgChoiceColor || (theme === "dark" ? "#18181b" : "#ffffff"),
                             borderRadius: 12,
                             zIndex: 1000,
                             elevation: 5,
