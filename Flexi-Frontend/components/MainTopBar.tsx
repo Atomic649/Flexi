@@ -22,57 +22,6 @@ const ensureDirExists = async () => {
   }
 };
 
-// Cached Avatar Component
-const CachedAvatar = ({ uri, fallback }: { uri: string | null; fallback: any }) => {
-  const [source, setSource] = useState<any>(fallback);
-
-  useEffect(() => {
-    if (!uri) {
-      setSource(fallback);
-      return;
-    }
-
-    const cacheImage = async () => {
-      if (!CACHE_DIR) {
-        setSource({ uri });
-        return;
-      }
-
-      try {
-        await ensureDirExists();
-        // Create a safe filename from the URI
-        const filename = uri.replace(/[^a-zA-Z0-9]/g, "_");
-        const fileUri = CACHE_DIR + filename;
-
-        const fileInfo = await FileSystem.getInfoAsync(fileUri);
-
-        if (fileInfo.exists) {
-       //   console.log("Using cached avatar:", fileUri);
-          setSource({ uri: fileUri });
-        } else {
-          // Download if not cached
-          const downloadRes = await FileSystem.downloadAsync(uri, fileUri);
-          setSource({ uri: downloadRes.uri });
-        }
-      } catch (error) {
-        console.error("Error caching avatar:", error);
-        // Fallback to online URI if caching fails
-        setSource({ uri });
-      }
-    };
-
-    cacheImage();
-  }, [uri, fallback]);
-
-  return (
-    <Image
-      source={source}
-      className="w-full h-full"
-      resizeMode="cover"
-    />
-  );
-};
-
 // ฟังก์ชันสลับภาษา
 const toggleLanguage = () => {
   const newLang = i18n.language === "th" ? "en" : "th";
@@ -129,7 +78,11 @@ const MainTopBar = {
             {isLoading ? (
               <ActivityIndicator size="small" color={theme === "dark" ? "#ffffff" : "#18181b"} />
             ) : (
-              <CachedAvatar uri={businessAvatar} fallback={images.empty} />
+                <Image
+                source={businessAvatar ? { uri: businessAvatar } : images.empty}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
             )}
           </View>
         </TouchableOpacity>
