@@ -2469,18 +2469,30 @@ export default function Print() {
                           label: t("print.customerName"),
                           value: SEARCH_TYPES.CUSTOMER_NAME,
                         },
-                        {
-                          label: t("print.billId"),
-                          value: SEARCH_TYPES.BILL_ID,
-                        },
-                        {
-                          label: t("print.quotationId"),
-                          value: SEARCH_TYPES.QUOTATION_ID,
-                        },
-                        {
-                          label: t("print.invoiceId"),
-                          value: SEARCH_TYPES.INVOICE_ID,
-                        },
+                        ...(isDocumentTypeAvailable("Receipt")
+                          ? [
+                              {
+                                label: t("print.billId"),
+                                value: SEARCH_TYPES.BILL_ID,
+                              },
+                            ]
+                          : []),
+                        ...(isDocumentTypeAvailable("Quotation")
+                          ? [
+                              {
+                                label: t("print.quotationId"),
+                                value: SEARCH_TYPES.QUOTATION_ID,
+                              },
+                            ]
+                          : []),
+                        ...(isDocumentTypeAvailable("Invoice")
+                          ? [
+                              {
+                                label: t("print.invoiceId"),
+                                value: SEARCH_TYPES.INVOICE_ID,
+                              },
+                            ]
+                          : []),
                         {
                           label: t("print.dateRange"),
                           value: SEARCH_TYPES.DATE_RANGE,
