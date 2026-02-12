@@ -1,17 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  View,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  TextInput,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { View, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { CustomText } from "../CustomText"; // Make sure to import CustomText
 import { useTheme } from "@/providers/ThemeProvider";
-import i18n from "../../i18n"; // Import i18n instance
 import { t } from "i18next";
-import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
 
 const Dropdown = ({
   title,
@@ -28,60 +19,22 @@ const Dropdown = ({
   ...props
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
   const { theme } = useTheme();
-  const webScrollStyle =
-    Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
-
-  // Find selected label for display (fallback to selectedValue if check fails)
-  const selectedLabel = Array.isArray(options)
-    ? options.find(
-        (o: any) => o.label === selectedValue || o.value === selectedValue,
-      )?.label ||
-      selectedValue ||
-      placeholder
-    : selectedValue || placeholder;
-
-  const filteredOptions = useMemo(() => {
-    if (!searchText) return options;
-    if (!Array.isArray(options)) return [];
-
-    return options.filter((option: any) =>
-      option.label.toLowerCase().includes(searchText.toLowerCase()),
-    );
-  }, [options, searchText]);
-
-  const closeSelf = useCallback(() => {
-    setIsOpen(false);
-    setSearchText(""); // Clear search when closing
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      clearDropdown(closeSelf);
-    };
-  }, [closeSelf]);
+  const webScrollStyle = Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
 
   const handlePress = () => {
     if (!disabled) {
-      if (isOpen) {
-        closeSelf();
-        clearDropdown(closeSelf);
-      } else {
-        openDropdown(closeSelf);
-        setIsOpen(true);
-      }
+      setIsOpen(!isOpen);
     }
   };
 
   return (
     <View
-      className={`mt-4 ${otherStyles} relative`}
-      style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}
+      className={`space-y- mt-4 ${otherStyles}`}
+      style={{ position: "relative" }}
     >
       {/* Floating label over the border */}
-      {selectedValue && title ? (
+      {selectedValue ? (
         <CustomText
           className="text-base text-zinc-500 font-pmedium"
           style={{
@@ -90,7 +43,7 @@ const Dropdown = ({
             left: 24,
             backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
             paddingHorizontal: 4,
-            zIndex: 51, // Higher than button
+            zIndex: 2,
             fontSize: 14,
             color: theme === "dark" ? "#606060" : "#b1b1b1",
           }}
@@ -98,9 +51,8 @@ const Dropdown = ({
           {title}
         </CustomText>
       ) : null}
-
       <TouchableOpacity
-        className="w-full px-4 rounded-xl flex flex-row items-center justify-between  DropdownClear"
+        className="w-full px-4 rounded-2xl border-2 border-transparent flex flex-row items-center justify-between"
         onPress={handlePress}
         activeOpacity={1}
         style={{
@@ -112,8 +64,7 @@ const Dropdown = ({
         }}
       >
         <CustomText
-          className="font-psemibold text-lg flex-1 mr-2"
-          numberOfLines={1}
+          className="font-psemibold text-lg  pt-1"
           style={{
             color: selectedValue
               ? theme === "dark"
@@ -122,148 +73,82 @@ const Dropdown = ({
               : placeholderColor,
           }}
         >
-          {selectedLabel}
+          {selectedValue || placeholder}
         </CustomText>
-        <Ionicons
-          name={isOpen ? "chevron-up" : "chevron-down"}
-          size={20}
-          color={
-            disabled ? "#9CA3AF" : theme === "dark" ? "#b1b1b1" : "#606060"
-          }
-        />
+        <CustomText
+          className="text-zinc-300 font-psemibold text-lg"
+          style={{ opacity: disabled ? 0.5 : 0.7 }}
+        >
+          {isOpen ? "▲" : "▼"}
+        </CustomText>
       </TouchableOpacity>
 
       {isOpen && !disabled && (
-        <View
-          style={{
-            position: "absolute",
-            top: 52, // Height (50) + gap (2)
-            left: 0,
-            right: 0,
-            maxHeight: 260,
-            backgroundColor:
-              bgChoiceColor || (theme === "dark" ? "#18181b" : "#ffffff"),
-            borderRadius: 12,
-            borderWidth: borderColor ? 0.5 : 0,
-            borderColor: borderColor || "transparent",
-            zIndex: 2000,
-            elevation: 5,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-          }}
-        >
-          {options && options.length >= 4 && (
-          <View style={{ padding: 10 }}>
-            <View
-              style={{
-                backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
+        Array.isArray(options) && options.length > 0 ? (
+          <View style={{ maxHeight: 260, borderRadius: 16, overflow: "hidden" }}>
+            <ScrollView
+              nestedScrollEnabled
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator
+              persistentScrollbar
+              style={[
+                {
+                  borderColor: borderColor ? borderColor : "transparent",
+                  borderWidth: borderColor ? 0.0 : 0,
+                },
+                webScrollStyle,
+              ]}
+              contentContainerStyle={{ paddingVertical: 2 }}
+              {...props}
             >
-              <Ionicons
-                name="search"
-                size={18}
-                color={theme === "dark" ? "#b1b1b1" : "#606060"}
-              />
-              <TextInput
-                value={searchText}
-                onChangeText={setSearchText}
-                placeholder={t("common.search")}
-                placeholderTextColor={theme === "dark" ? "#71717a" : "#a1a1aa"}
-                style={{
-                  flex: 1,
-                  marginLeft: 8,
-                  color: theme === "dark" ? "#e4e4e7" : "#18181b",
-                  fontSize: 14,
-                  padding: 0,
-                  fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
-                }}
-              />
-              {searchText.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchText("")}>
-                  <Ionicons
-                    name="close-circle"
-                    size={18}
-                    color={theme === "dark" ? "#71717a" : "#a1a1aa"}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-          )}
-
-          <ScrollView
-            nestedScrollEnabled
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator
-            persistentScrollbar
-            style={{
-              ...webScrollStyle,
-              maxHeight: 200, // Reduced max height to accommodate search bar
-              borderRadius: 12,
-            }}
-            contentContainerStyle={{ paddingBottom: 4 }}
-            {...props}
-          >
-            {Array.isArray(filteredOptions) && filteredOptions.length > 0 ? (
-              filteredOptions.map((item: any, index: number) => {
-                const isSelected =
-                  item.label === selectedValue || item.value === selectedValue;
-                const itemTextColor = theme === "dark" ? "#e4e4e7" : "#18181b"; // zinc-200 : zinc-900
-
-                return (
-                  <TouchableOpacity
-                    key={item.value || index}
-                    className="w-full py-3 px-4 flex flex-row items-center justify-between"
-                    onPress={() => {
-                      onValueChange(item.value);
-                      closeSelf();
-                      clearDropdown(closeSelf);
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <CustomText
-                      className={`text-base ${isSelected ? "font-bold" : "font-pmedium"}`}
-                      style={{ color: itemTextColor }}
-                    >
-                      {item.label}
-                    </CustomText>
-                    {isSelected && (
-                      <Ionicons
-                        name="checkmark"
-                        size={18}
-                        color={itemTextColor}
-                      />
-                    )}
-                  </TouchableOpacity>
-                );
-              })
-            ) : (
-              <View
-                pointerEvents="none"
-                style={{
-                  paddingVertical: 12,
-                  alignItems: "center",
-                }}
-              >
-                <CustomText
-                  className="font-pmedium text-sm text-center"
-                  style={{ color: theme === "dark" ? "#a1a1aa" : "#71717a" }}
+              {options.map((item: any) => (
+                <TouchableOpacity
+                  key={item.value}
+                  className="w-full  px-4 flex-row items-center"
+                  onPress={() => {
+                    onValueChange(item.value);
+                    setIsOpen(false);
+                  }}
+                  style={{
+                    backgroundColor: "#87878716",
+                    borderColor: borderColor ? borderColor : "transparent",
+                    borderWidth: 0.8,
+                    borderRadius: 12,
+                    opacity: disabled ? 0.7 : 0.9,
+                    marginBottom: 0.05,
+                    alignItems: 'center',
+                    height: 50,
+                  }}
                 >
-                  {Array.isArray(options) && options.length > 0
-                    ? t("common.noOptions")
-                    : t("common.noOptions")}
-                </CustomText>
-              </View>
-            )}
-          </ScrollView>
-        </View>
+                  <CustomText
+                    className="font-psemibold text-lg text-center"
+                    style={{ color: textcolor }}
+                  >
+                    {item.label}
+                  </CustomText>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        ) : (
+          <View
+            pointerEvents="none"
+            style={{
+              borderRadius: 16,
+              borderColor: borderColor ? borderColor : "transparent",
+              borderWidth: borderColor ? 0.5 : 0,
+              paddingVertical: 12,
+              alignItems: 'center',
+            }}
+          >
+            <CustomText
+              className="font-psemibold text-base"
+              style={{ color: textcolor ?? '#8c8c8c' }}
+            >
+              {t('common.noOptions')}
+            </CustomText>
+          </View>
+        )
       )}
     </View>
   );

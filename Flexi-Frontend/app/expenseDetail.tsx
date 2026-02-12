@@ -639,7 +639,7 @@ export default function ExpenseDetail({
               padding: 20,
             }}
             style={{
-              width: Platform.OS === "web" ? "50%" : "100%",
+              width: Platform.OS === "web" ? "100%" : "100%",
               alignSelf: "center",
             }}
             keyboardShouldPersistTaps="handled"
@@ -656,7 +656,7 @@ export default function ExpenseDetail({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() || isTablet() ? "auto" : "60%",
+                width: isMobile() || isTablet() ? "auto" : "100%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 60 : 0,
@@ -1136,7 +1136,6 @@ export default function ExpenseDetail({
                     />
                   </>
                 )}
-                <View className="w-full">
                   <DropdownFloat
                     title={t("expense.detail.group.title")}
                     placeholder={t("expense.detail.group.title")}
@@ -1240,7 +1239,6 @@ export default function ExpenseDetail({
                     textcolor={theme === "dark" ? "#FFF" : "#000"}
                     bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                   />
-                </View>
 
                 {error ? (
                   <CustomText

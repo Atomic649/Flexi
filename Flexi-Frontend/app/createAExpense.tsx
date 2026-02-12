@@ -1120,6 +1120,7 @@ export default function CreateExpense({
         style={{
           flex: 1,
           justifyContent: "center",
+          width: "100%",
           alignItems: "center",
           backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
@@ -1166,7 +1167,7 @@ export default function CreateExpense({
               padding: 20,
             }}
             style={{
-              width: Platform.OS === "web" ? "50%" : "100%",
+              width: Platform.OS === "web" ? "100%" : "100%",
               alignSelf: "center",
             }}
             keyboardShouldPersistTaps="handled"
@@ -1184,7 +1185,7 @@ export default function CreateExpense({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() || isTablet() ? "auto" : "60%",
+                width: isMobile() || isTablet() ? "auto" : "100%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 60 : 0,
@@ -2080,7 +2081,6 @@ export default function CreateExpense({
                     />
                   </>
                 )}
-                <View className="w-full">
                   <DropdownFloat
                     title={t("expense.detail.group.title")}
                     placeholder={t("expense.detail.group.title")}
@@ -2184,7 +2184,6 @@ export default function CreateExpense({
                     textcolor={theme === "dark" ? "#FFF" : "#000"}
                     bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                   />
-                </View>
 
                 {error ? (
                   <View className="items-center">
