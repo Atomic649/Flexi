@@ -256,8 +256,8 @@ const register = async (req: Request, res: Response) => {
     email: Joi.string().email().required(),
     username: usernameSchema.required(),
     password: passwordSchema.required(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
+    firstName: Joi.string().required().max(100),
+    lastName: Joi.string().required().max(100),
     phone: Joi.string().required().min(10).max(10),
   });
   const { error } = schema.validate(userInput);

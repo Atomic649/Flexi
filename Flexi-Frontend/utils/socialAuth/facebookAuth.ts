@@ -1,6 +1,5 @@
 import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CONFIGURATION_ID, FB_APP_SECRET } from "../config";
 import { getAxiosWithAuth } from "../axiosInstance";
 import { getMemberId } from "../utility";
 import * as WebBrowser from 'expo-web-browser';
@@ -16,7 +15,7 @@ const FB_APP_ID = "1393521459147449";
 
 const REDIRECT_URI = AuthSession.makeRedirectUri();
 // Log it to verify what you need to paste into the Meta Dashboard
-console.log('Target Redirect URI:', REDIRECT_URI);
+//console.log('Target Redirect URI:', REDIRECT_URI);
 
 const discovery = {
   authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth",
@@ -36,9 +35,7 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
       clientId: FB_APP_ID,
       redirectUri: REDIRECT_URI,
       responseType: AuthSession.ResponseType.Token,
-      extraParams: {
-        config_id: CONFIGURATION_ID,
-      },
+      extraParams: {},
     });
 
     const result = await request.promptAsync(discovery,

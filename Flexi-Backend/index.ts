@@ -21,6 +21,9 @@ dotenv.config(envPath ? { path: envPath } : undefined);
 // Create a new express application instance
 const app = express();
 
+// Trust the first proxy (NGINX)
+app.set("trust proxy", 1);
+
 // Express middleware
 app.use(express.json());
 

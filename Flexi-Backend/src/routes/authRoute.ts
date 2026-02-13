@@ -15,11 +15,12 @@ import {
   verifyEmail,
   resendVerificationEmail,
 } from "../controllers/authController";
+import { rateLimiter } from "../middleware/rateLimitAndCache";
 
 // Create express router
 const router = express.Router();
-// Register
-router.post("/register", register);
+// Register - Rate limit to 5 attempts per hour per IP to prevent spam bots
+router.post("/register", rateLimiter({ windowMs: 60 * 60 * 1000, max: 5 }), register);
 
 // Login
 router.post("/login", login);
