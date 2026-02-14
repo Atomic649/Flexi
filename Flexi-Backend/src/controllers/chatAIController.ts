@@ -623,19 +623,20 @@ NEVER say "I can't access your data" - ALWAYS use the getSalesAnalytics tool fir
 // Get all chat sessions for a specific member
 export async function getChatSessions(req: Request, res: Response) {
   try {
-    // Get memberId from route parameter or resolve from token
-    let memberId: string | undefined = req.params.memberId;
+    // Resolve member uniqueId from token first (source of truth)
+    let memberId: string | undefined;
+    const userPayload: any = (req as any).user;
+    const userNumericId = userPayload?.id;
+    if (userNumericId) {
+      const member = await prisma.member.findFirst({
+        where: { userId: Number(userNumericId) },
+      });
+      memberId = member?.uniqueId;
+    }
 
+    // Fallback for legacy clients that pass memberId in params
     if (!memberId) {
-      // Fallback: resolve member uniqueId from token
-      const userPayload: any = (req as any).user;
-      const userNumericId = userPayload?.id;
-      if (userNumericId) {
-        const member = await prisma.member.findFirst({
-          where: { userId: Number(userNumericId) },
-        });
-        memberId = member?.uniqueId;
-      }
+      memberId = req.params.memberId;
     }
 
     if (!memberId)
@@ -647,7 +648,7 @@ export async function getChatSessions(req: Request, res: Response) {
     const sessions = await prisma.chatSession.findMany({
       where: {
         userId: memberId,
-        deleted: false, // Only show non-deleted sessions
+        OR: [{ deleted: false }, { deleted: null }], // Include legacy rows with null deleted
       },
       orderBy: { updatedAt: "desc" },
       take: 50, // Limit to 50 most recent sessions

@@ -47,6 +47,41 @@ type ConversationFromServer = {
   messages: Message[];
 };
 
+const normalizeSessions = (payload: any): ChatSession[] => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.sessions)) return payload.sessions;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
+const normalizeMessages = (payload: any): ChatMessageFromServer[] => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.messages)) return payload.messages;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
+const parseStoredMessage = (value: any): { role: Role; content: string } => {
+  let messageObj = value;
+
+  if (typeof messageObj === "string") {
+    try {
+      messageObj = JSON.parse(messageObj);
+    } catch {
+      messageObj = { role: "assistant", content: value };
+    }
+  }
+
+  const rawRole = messageObj?.role;
+  const role: Role = rawRole === "user" ? "user" : "assistant";
+  const content =
+    (typeof messageObj?.content === "string" && messageObj.content) ||
+    (typeof messageObj?.text === "string" && messageObj.text) ||
+    "";
+
+  return { role, content };
+};
+
 export default function ChatAI() {
   const { theme } = useTheme();
   const [conversations, setConversations] = useState<ConversationFromServer[]>(
@@ -98,8 +133,9 @@ export default function ChatAI() {
         return;
       }
 
-      // Fetch sessions for this member
-      const sessions = await CallAI.getChatSessions(memberId);
+      // Fetch sessions for authenticated user (token-based), avoids stale memberId mismatches
+      const sessionsResponse = await CallAI.getChatSessions();
+      const sessions = normalizeSessions(sessionsResponse);
 
       if (sessions.length === 0) {
         // No sessions, create a new one
@@ -109,14 +145,21 @@ export default function ChatAI() {
         const conversationsWithMessages = await Promise.all(
           sessions.map(async (session) => {
             try {
-              const serverMessages = await CallAI.getChatMessages(session.id);
+              const serverMessagesResponse = await CallAI.getChatMessages(
+                session.id
+              );
+              const serverMessages = normalizeMessages(serverMessagesResponse);
               const messages: Message[] = serverMessages
-                .map((msg) => ({
-                  id: msg.id,
-                  role: msg.message.role,
-                  content: msg.message.content,
-                  createdAt: new Date(msg.createdAt).getTime(),
-                }))
+                .map((msg: any) => {
+                  const parsed = parseStoredMessage(msg?.message ?? msg);
+                  return {
+                    id: String(msg?.id ?? `${Date.now()}-${Math.random()}`),
+                    role: parsed.role,
+                    content: parsed.content,
+                    createdAt: new Date(msg?.createdAt ?? Date.now()).getTime(),
+                  };
+                })
+                .filter((msg) => msg.content.trim().length > 0)
                 .reverse(); // Reverse to show newest messages first (for inverted FlatList)
               return { session, messages };
             } catch (error) {

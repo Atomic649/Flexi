@@ -17,7 +17,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import DailyCard from "../DailyCard";
 import { CustomText } from "../CustomText";
-import i18n from "@/i18n";
 import { isDesktop } from "@/utils/responsive";
 import { useMarketing } from "@/providers/MarketingProvider";
 import { getResponsiveStyles } from "@/utils/responsive";
