@@ -27,7 +27,7 @@ import {
   LineChart,
   ShieldCheck,
 } from "@/components/ui/lucide-react";
-import { isMobileApp, isMobileWeb } from "@/utils/responsive";
+import { isMobileApp, isMobileWeb,isTablet } from "@/utils/responsive";
 import { getResponsiveStyles } from "@/utils/responsive";
 import CallAPIUser from "@/api/auth_api";
 
@@ -37,7 +37,7 @@ export default function Landing() {
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [registeredUsers, setRegisteredUsers] = useState(0);
   const windowWidth = Dimensions.get("window").width;
-  const isDesktop = !isMobileApp();
+  const isDesktop = !isMobileApp() && !isTablet();
 
   // Business features based on terms.tsx
   const features = [

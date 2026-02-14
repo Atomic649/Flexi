@@ -6,6 +6,7 @@ import {
   Keyboard,
   TouchableOpacity,
   View as RNView,
+  TextInput,
 } from "react-native";
 import { View } from "@/components/Themed";
 import FormField from "@/components/formfield/FormField";
@@ -23,10 +24,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
+  const HONEYPOT_BEHAVIOR: "fake-success" | "reject" = "fake-success";
+
   const { t } = useTranslation();
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [username, setUsername] = useState("@");
+  const [website, setWebsite] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -108,6 +112,43 @@ export default function Register() {
   // Handle register
   const handleRegister = async () => {
     setError("");
+
+    // Honeypot trap: real users never fill this hidden field
+    if (website.trim().length > 0) {
+      if (HONEYPOT_BEHAVIOR === "fake-success") {
+        setAlertConfig({
+          visible: true,
+          title: t("auth.register.successTitle", "Success"),
+          message: t(
+            "auth.register.successMessage",
+            "Registered successfully. Please verify your email.",
+          ),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                router.replace("/login");
+              },
+            },
+          ],
+        });
+      } else {
+        setAlertConfig({
+          visible: true,
+          title: t("auth.register.validation.incomplete"),
+          message: t("auth.register.validation.invalidData"),
+          buttons: [
+            {
+              text: t("common.ok"),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+          ],
+        });
+      }
+      return;
+    }
 
     // Check if all fields are filled
     if (!firstName || !lastName || !email || !password || !phone) {
@@ -344,7 +385,7 @@ export default function Register() {
             className="w-full flex justify-center h-full px-4 py-10"
             style={{
               minHeight: Dimensions.get("window").height,
-              alignItems: Platform.OS === "web" ? "center" : "stretch",
+              alignItems: Platform.OS === "web" ? "center" : "center",
             }}
           >
             <View
@@ -365,6 +406,7 @@ export default function Register() {
                 value={firstName}
                 handleChangeText={setfirstName}
                 otherStyles="mt-7"
+                maxLength={40} 
               />
 
               <FormField
@@ -373,6 +415,7 @@ export default function Register() {
                 value={lastName}
                 handleChangeText={setlastName}
                 otherStyles="mt-7"
+                maxLength={40}
               />
 
               <FormField
@@ -385,6 +428,7 @@ export default function Register() {
                 autoCorrect={false}
                 textContentType="username"
                 keyboardType="ascii-capable"
+                maxLength={15}
               />
 
               <FormField
@@ -394,6 +438,7 @@ export default function Register() {
                 handleChangeText={setPhone}
                 otherStyles="mt-7"
                 keyboardType="phone-pad"
+                maxLength={10}
               />
 
               <FormField
@@ -426,6 +471,30 @@ export default function Register() {
                 otherStyles="mt-4"
                 secure
               />
+
+              <RNView
+                style={{
+                  position: "absolute",
+                  left: -10000,
+                  top: -10000,
+                  width: 1,
+                  height: 1,
+                  opacity: 0,
+                }}
+                pointerEvents="none"
+                accessible={false}
+                importantForAccessibility="no-hide-descendants"
+              >
+                <TextInput
+                  value={website}
+                  onChangeText={setWebsite}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="none"
+                  autoComplete="off"
+                  accessibilityLabel="Website"
+                />
+              </RNView>
 
               <RNView className="mt-5">
                 <Checkbox

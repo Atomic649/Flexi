@@ -216,15 +216,19 @@ export default function Register() {
                 title={t("auth.businessRegister.taxId")}
                 placeholder={t("0000000000000")}
                 value={taxId}
-                handleChangeText={settaxId}
+                handleChangeText={(text) => {
+                  const filtered = text.replace(/[^0-9]/g, "").slice(0, 13);
+                  settaxId(filtered);
+                }}
                 otherStyles="mt-7"
                 keyboardType="number-pad"
-                 onFocus={() => {
+                maxLength={13}
+                onFocus={() => {
                 setTimeout(() => {
                   scrollViewRef.current?.scrollToEnd({ animated: true });
                 }, 200);
-              }}
-              />
+                }}
+                />
 
               <Dropdown
                 title={t("auth.businessRegister.businessType")}

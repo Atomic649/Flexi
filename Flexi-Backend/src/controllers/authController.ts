@@ -17,6 +17,7 @@ interface UserInput {
   phone: string;
   bio?: string;
   username?: string;
+  website?: string;
 }
 
 const Prisma = flexiDBPrismaClient;
@@ -252,6 +253,19 @@ function mapRegisterError(err: unknown): {
 
 const register = async (req: Request, res: Response) => {
   const userInput: UserInput = req.body;
+
+  // Honeypot trap: bots often fill hidden fields when posting directly to API.
+  // Return fake success and do not create account.
+  const honeypotWebsite =
+    typeof req.body?.website === "string" ? req.body.website.trim() : "";
+  if (honeypotWebsite.length > 0) {
+    return res.status(200).json({
+      status: "ok",
+      message: "Registered successfully",
+      emailVerificationRequired: true,
+    });
+  }
+
   const schema = Joi.object({
     email: Joi.string().email().required(),
     username: usernameSchema.required(),
@@ -259,6 +273,7 @@ const register = async (req: Request, res: Response) => {
     firstName: Joi.string().required().max(100),
     lastName: Joi.string().required().max(100),
     phone: Joi.string().required().min(10).max(10),
+    website: Joi.string().allow("").optional(),
   });
   const { error } = schema.validate(userInput);
   if (error) {
