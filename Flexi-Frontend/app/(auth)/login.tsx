@@ -288,9 +288,10 @@ export default function Login() {
                 title={t("auth.login.emailPlaceholder")}
                 placeholder={t("auth.login.emailPlaceholder")}
                 value={form.email}
-                handleChangeText={(e: any) => setForm({ ...form, email: e })}
+                handleChangeText={(e: any) => setForm({ ...form, email: e.toLowerCase() })}
                 otherStyles="mt-7 dark:text-white"
                 keyboardType="email-address"
+                autoCapitalize="none"
                 onFocus={() => {
                   setTimeout(() => {
                     scrollViewRef.current?.scrollToEnd({ animated: true });

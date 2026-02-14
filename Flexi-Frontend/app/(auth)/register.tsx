@@ -107,7 +107,7 @@ export default function Register() {
     let cleaned = text.replace(/\s/g, "");
     // Remove non-English characters and only allow valid email characters
     cleaned = cleaned.replace(/[^a-zA-Z0-9@._\-+]/g, "");
-    setEmail(cleaned);
+    setEmail(cleaned.toLowerCase());
   };
 
   const getRegisterErrorMessage = (apiError: any) => {

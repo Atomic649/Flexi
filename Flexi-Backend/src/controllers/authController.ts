@@ -293,7 +293,7 @@ const register = async (req: Request, res: Response) => {
     // check if user already exists
     const existingUser = await Prisma.user.findUnique({
       where: {
-        email: userInput.email,
+        email: userInput.email.toLowerCase(),
       },
     });
     if (existingUser) {
@@ -313,7 +313,7 @@ const register = async (req: Request, res: Response) => {
 
     const user = await Prisma.user.create({
       data: {
-        email: userInput.email,
+        email: userInput.email.toLowerCase(),
         password: hashedPassword,
         firstName: userInput.firstName,
         lastName: userInput.lastName,
@@ -385,7 +385,7 @@ const login = async (req: Request, res: Response) => {
   try {
     const user = await Prisma.user.findUnique({
       where: {
-        email: normalizedEmail,
+        email: normalizedEmail.toLowerCase(),
       },
     });
     if (!user) {
