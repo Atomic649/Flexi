@@ -1791,8 +1791,10 @@ export default function CreateBill() {
 
               {withholdingTax && (
                 <>
+                <View className="flex flex-row justify-between">
+                <View className="w-1/2 ">
                   <FormFieldClear
-                    title={t("bill.withHoldingTaxPercent")}
+                    title={t("bill.withHoldingTaxPercent")}                    
                     value={withholdingPercent}
                     handleChangeText={(value: string) => {
                       const numeric = value.replace(/[^0-9.]/g, "");
@@ -1808,8 +1810,10 @@ export default function CreateBill() {
                     keyboardType="numeric"
                     maxLength={6}
                   />
+                </View>
 
                   <View
+                  className="w-1/2 items-start justify-start"
                     style={{
                       flexDirection: "row",
                       justifyContent: "flex-end",
@@ -1833,6 +1837,7 @@ export default function CreateBill() {
                         maximumFractionDigits: 2,
                       })}
                     </CustomText>
+                  </View>
                   </View>
                 </>
               )}

@@ -105,34 +105,34 @@ export default function EditBill() {
   const [withholdingTax, setWithholdingTax] = useState(false);
   const [withholdingPercent, setWithholdingPercent] = useState("");
 
-   const withholdingTaxAmount = useMemo(() => {
-      if (!withholdingTax) return 0;
-      const subtotal = productItems.reduce((sum, item) => {
-        const qty = Number(item.quantity) || 0;
-        const price = Number(item.price) || 0;
-        return sum + qty * price;
-      }, 0);
-  
-      const subTotalWitoutVat =
-        subtotal / (1 + (vat ? DEFAULT_VAT_PERCENT : 0) / 100);
-  
-      const unitDisc = productItems.reduce((sum, item) => {
-        const qty = Number(item.quantity) || 0;
-        const unitDisc = Number(item.unitDiscount) || 0;
-        return sum + qty * unitDisc;
-      }, 0);
-      let taxableBase = subtotal - unitDisc;
-      if (vat) {
-        taxableBase = subTotalWitoutVat - unitDisc;
-      }
-  
-      const pct = Number(withholdingPercent) || 0;
-      const raw = taxableBase * (pct / 100);
-      // keep two decimal places
-      const amt = Number(raw.toFixed(2));
-      return amt;
-    }, [withholdingTax, withholdingPercent, productItems]);
-  
+  const withholdingTaxAmount = useMemo(() => {
+    if (!withholdingTax) return 0;
+    const subtotal = productItems.reduce((sum, item) => {
+      const qty = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      return sum + qty * price;
+    }, 0);
+
+    const subTotalWitoutVat =
+      subtotal / (1 + (vat ? DEFAULT_VAT_PERCENT : 0) / 100);
+
+    const unitDisc = productItems.reduce((sum, item) => {
+      const qty = Number(item.quantity) || 0;
+      const unitDisc = Number(item.unitDiscount) || 0;
+      return sum + qty * unitDisc;
+    }, 0);
+    let taxableBase = subtotal - unitDisc;
+    if (vat) {
+      taxableBase = subTotalWitoutVat - unitDisc;
+    }
+
+    const pct = Number(withholdingPercent) || 0;
+    const raw = taxableBase * (pct / 100);
+    // keep two decimal places
+    const amt = Number(raw.toFixed(2));
+    return amt;
+  }, [withholdingTax, withholdingPercent, productItems]);
+
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [selectedDates, setSelectedDates] = useState<string[]>([
@@ -1092,7 +1092,7 @@ export default function EditBill() {
         image,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         note: note,
-        paymentTermCondition:paymentTermCondition,           
+        paymentTermCondition: paymentTermCondition,
         remark: remark || undefined,
         productItems: productItems.map((item) => ({
           product: item.product,
@@ -1642,7 +1642,7 @@ export default function EditBill() {
 
             <View className="flex flex-row justify-between">
               <View className="w-1/2 pr-2">
-                 <DropdownClear
+                <DropdownClear
                   title={t("bill.customerProvince")}
                   options={THAI_PROVINCES_KEYS.map((key) => ({
                     label: t(`provinces.${key}`),
@@ -1651,11 +1651,11 @@ export default function EditBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.selectProvince")}
-                 placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                     otherStyles="mt-2 mb-2"
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-2 mb-2"
                   disabled={!isEditMode}
                 />
               </View>
@@ -1956,46 +1956,53 @@ export default function EditBill() {
 
               {withholdingTax && (
                 <>
-                  <FormFieldClear
-                    title={t("bill.withHoldingTaxPercent")}
-                    value={withholdingPercent}
-                    handleChangeText={(value: string) => {
-                      const numeric = value.replace(/[^0-9.]/g, "");
-                      setWithholdingPercent(numeric);
-                    }}
-                    placeholder={t("bill.enterWithHoldingTax")}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles={fieldStyles}
-                    keyboardType="numeric"
-                    maxLength={6}
-                    editable={isEditMode}
-                  />
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      marginTop: 6,
-                    }}
-                  >
-                    <CustomText
-                      className="text-sm pt-1"
-                      style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                  <View className="flex flex-row justify-between">
+                    <View className="w-1/2 ">
+                      <FormFieldClear
+                        title={t("bill.withHoldingTaxPercent")}
+                        value={withholdingPercent}
+                        handleChangeText={(value: string) => {
+                          const numeric = value.replace(/[^0-9.]/g, "");
+                          setWithholdingPercent(numeric);
+                        }}
+                        placeholder={t("bill.enterWithHoldingTax")}
+                        borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                        placeholderTextColor={
+                          theme === "dark" ? "#606060" : "#b1b1b1"
+                        }
+                        textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                        otherStyles={fieldStyles}
+                        keyboardType="numeric"
+                        maxLength={6}
+                        editable={isEditMode}
+                      />
+                    </View>
+                    <View
+                      className="w-1/2 items-start justify-start"
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                        marginTop: 6,
+                      }}
                     >
-                      {t("bill.withHoldingTaxAmount")}:
-                    </CustomText>
-                    <CustomText
-                      className="text-sm ml-2"
-                      weight="bold"
-                      style={{ color: theme === "dark" ? "#fff" : "#222" }}
-                    >
-                      {withholdingTaxAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    </CustomText>
+                      <CustomText
+                        className="text-sm pt-1"
+                        style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                      >
+                        {t("bill.withHoldingTaxAmount")}:
+                      </CustomText>
+                      <CustomText
+                        className="text-sm ml-2"
+                        weight="bold"
+                        style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                      >
+                        {withholdingTaxAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </CustomText>
+                    </View>
                   </View>
                 </>
               )}
