@@ -5,6 +5,7 @@ import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 import Joi from "joi";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { promises as dnsPromises } from "dns";
 
 // Ensure this file is also converted to TypeScript
 // Define types for the user inputs
@@ -303,6 +304,37 @@ const register = async (req: Request, res: Response) => {
         reason: "USER_EXISTS",
       });
     }
+
+    // Verify email domain exists (MX records)
+    try {
+      const domain = userInput.email.split("@")[1];
+      if (!domain) throw new Error("Invalid email format");
+
+      const mxRecords = await dnsPromises.resolveMx(domain);
+      if (!mxRecords || mxRecords.length === 0) {
+        return res.status(400).json({
+          status: "error",
+          message: "Invalid email domain. Please use a valid email address.",
+          reason: "INVALID_EMAIL_DOMAIN",
+          details: {
+             field: "email",
+             message: "Domain has no valid mail servers",
+          }
+        });
+      }
+    } catch (dnsError) {
+      console.error("DNS MX lookup failed:", dnsError);
+       return res.status(400).json({
+          status: "error",
+          message: "Could not verify email domain. Please check your email address.",
+          reason: "INVALID_EMAIL_DOMAIN",
+          details: {
+             field: "email",
+             message: "Domain lookup failed",
+          }
+        });
+    }
+
     // Hash password
     const salt = await bcrypt.genSalt(BCRYPT_ROUNDS);
     const hashedPassword = await bcrypt.hash(userInput.password, salt);
@@ -337,6 +369,26 @@ const register = async (req: Request, res: Response) => {
       });
     } catch (mailError) {
       console.error("Failed to send verification email:", mailError);
+      
+      // If email fails to send, delete the created user to prevent "ghost" accounts
+      try {
+        await Prisma.user.delete({
+           where: { id: user.id }
+        });
+        console.log(`Deleted user ${user.email} due to email delivery failure.`);
+      } catch (deleteError) {
+        console.error("Failed to delete user after email error:", deleteError);
+      }
+
+      return res.status(400).json({
+         status: "error",
+         message: "This email address could not be reached. Please try another email.",
+         reason: "EMAIL_SEND_FAILED",
+          details: {
+             field: "email",
+             message: "Delivery failed",
+          }
+      });
     }
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);
@@ -598,92 +650,150 @@ const permanentlyDelete = async (req: Request, res: Response) => {
   const { password } = req.body;
 
   // Validate input
-  if (!password) {
+  if (typeof password !== "string" || !password.trim()) {
     return res.status(400).json({ message: "Password is required" });
   }
 
   try {
-    // Find business account by memberId
-    const businessAcc = await Prisma.member.findUnique({
+    // Find member and linked user (for password verification)
+    const member = await Prisma.member.findUnique({
       where: {
         uniqueId: memberId,
       },
       select: {
+        uniqueId: true,
         businessId: true,
+        user: {
+          select: {
+            password: true,
+          },
+        },
       },
     });
-    if (!businessAcc) {
+
+    if (!member || !member.businessId) {
       return res.status(404).json({ message: "Business account not found" });
     }
 
-    // Delete all related data in BusinessAcc
-
-    //Bill
-    await Prisma.bill.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
-    });
-
-    //Expense
-    await Prisma.expense.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
-    });
-
-    //adsCost
-    await Prisma.adsCost.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
-    });
-
-    //Platform
-    await Prisma.platform.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
-    });
-
-    //Product
-    // First, get all products for this businessAcc
-    const products = await Prisma.product.findMany({
-      where: { businessAcc: businessAcc.businessId },
-    });
-    // For each product, delete all ProductItem records with that productId
-    for (const product of products) {
-      await Prisma.productItem.deleteMany({
-        where: { product: product.name },
-      });
+    // Verify password from the authenticated member's user record
+    const validPassword = await bcrypt.compare(password, member.user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: "Invalid password" });
     }
-    // Now delete the products
-    await Prisma.product.deleteMany({
-      where: {
-        businessAcc: businessAcc.businessId,
-      },
+
+    const businessId = member.businessId;
+
+    // Get all members in this business for dependent cleanups
+    const businessMembers = await Prisma.member.findMany({
+      where: { businessId },
+      select: { uniqueId: true },
+    });
+    const memberIds = businessMembers.map((record) => record.uniqueId);
+
+    await Prisma.$transaction(async (tx) => {
+      // Chat and token cleanup for all members
+      if (memberIds.length > 0) {
+        await tx.chatMessage.deleteMany({
+          where: {
+            session: {
+              userId: { in: memberIds },
+            },
+          },
+        });
+
+        await tx.chatSession.deleteMany({
+          where: {
+            userId: { in: memberIds },
+          },
+        });
+
+        await tx.platformToken.deleteMany({
+          where: {
+            memberId: { in: memberIds },
+          },
+        });
+      }
+
+      // ProductItems must be deleted before Bills/Products
+      await tx.productItem.deleteMany({
+        where: {
+          OR: [
+            {
+              bill: {
+                businessAcc: businessId,
+              },
+            },
+            {
+              productList: {
+                businessAcc: businessId,
+              },
+            },
+          ],
+        },
+      });
+
+      await tx.bill.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      await tx.expense.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      await tx.adsCost.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      await tx.platform.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      await tx.product.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      await tx.documentCounter.deleteMany({
+        where: {
+          businessId,
+        },
+      });
+
+      await tx.customer.deleteMany({
+        where: {
+          businessAcc: businessId,
+        },
+      });
+
+      // Remove all members under this business before deleting the business account
+      await tx.member.deleteMany({
+        where: {
+          businessId,
+        },
+      });
+
+      await tx.businessAcc.delete({
+        where: {
+          id: businessId,
+        },
+      });
     });
 
-    //BusinessAcc
-    await Prisma.businessAcc.delete({
-      where: {
-        id: businessAcc.businessId,
-      },
-    });
-
-    // Member
-    await Prisma.member.delete({
-      where: {
-        uniqueId: memberId,
-      },
-    });
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "Business account and all related data deleted successfully",
     });
   } catch (e) {
     console.error(e);
-    res
+    return res
       .status(500)
       .json({ message: "failed to permanently delete business account" });
   }
