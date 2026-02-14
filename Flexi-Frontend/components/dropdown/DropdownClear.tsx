@@ -109,6 +109,7 @@ const Dropdown = ({
         shadowRadius: 3.84,
       }}
     >
+      {options && options.length >= 4 && (
       <View style={{ padding: 10 }}>
         <View
           style={{
@@ -136,6 +137,8 @@ const Dropdown = ({
               color: theme === "dark" ? "#e4e4e7" : "#18181b",
               fontSize: 14,
               padding: 0,
+              fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular"
+
             }}
           />
           {searchText.length > 0 && (
@@ -149,6 +152,7 @@ const Dropdown = ({
           )}
         </View>
       </View>
+      )}
 
       <ScrollView
         nestedScrollEnabled
