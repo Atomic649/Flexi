@@ -75,36 +75,41 @@ type ReportDetails = {
 
 export default function MonthlyDetail() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
-  
+
   // Theme classes - must be called at component level
   const backgroundColorClass = useBackgroundColorClass();
   const textColorClass = useTextColorClass();
-  
-  const [reportDetails, setReportDetails] = useState<ReportDetails | null>(null);
+
+  const [reportDetails, setReportDetails] = useState<ReportDetails | null>(
+    null,
+  );
   const [loadingDetails, setLoadingDetails] = useState(true);
-  const [selectedItem, setSelectedItem] = useState<MonthlyCardProps | null>(null);
+  const [selectedItem, setSelectedItem] = useState<MonthlyCardProps | null>(
+    null,
+  );
   const [showAllBills, setShowAllBills] = useState(false);
   const [showAllExpenses, setShowAllExpenses] = useState(false);
   const [showAllAds, setShowAllAds] = useState(false);
 
   const formatCurrency = (amount: number) => {
-    const formattedNumber = new Intl.NumberFormat('th-TH', {
+    const formattedNumber = new Intl.NumberFormat("th-TH", {
       minimumFractionDigits: 0,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(amount);
     return `${formattedNumber} ฿`;
   };
 
   const formatDate = (month: string) => {
-    const date = new Date(month + '-01');
-    const thaiMonthName = date.toLocaleString('th-TH', { 
-      month: 'long' 
+    const date = new Date(month + "-01");
+    const locale = i18n.resolvedLanguage === "th" ? "th-TH" : "en-US";
+    const monthName = date.toLocaleString(locale, {
+      month: "long",
     });
     const year = date.getFullYear();
-    return `${thaiMonthName} ${year}`;
+    return `${monthName} ${year}`;
   };
 
   useEffect(() => {
@@ -112,14 +117,19 @@ export default function MonthlyDetail() {
       try {
         setLoadingDetails(true);
         const memberId = await getMemberId();
-        
+
         if (memberId && params.month) {
-          const details = await CallAPIReport.getDetailsEachMonthAPI(memberId, params.month as string);
+          const details = await CallAPIReport.getDetailsEachMonthAPI(
+            memberId,
+            params.month as string,
+          );
           setReportDetails(details);
-          
+
           // Parse the selected item from params
           if (params.selectedItem) {
-            const item = JSON.parse(params.selectedItem as string) as MonthlyCardProps;
+            const item = JSON.parse(
+              params.selectedItem as string,
+            ) as MonthlyCardProps;
             setSelectedItem(item);
           }
         }
@@ -138,14 +148,15 @@ export default function MonthlyDetail() {
     router.push(`/print?billId=${encodeURIComponent(String(billId))}`);
   };
 
-  
   return (
-    <View className={`flex-1 ${backgroundColorClass}`}
-    style={{
-              width: isDesktop() ? "80%" : "100%",
-              maxWidth: 900,
-              alignSelf: "center",
-            }}>
+    <View
+      className={`flex-1 ${backgroundColorClass}`}
+      style={{
+        width: isDesktop() ? "80%" : "100%",
+        maxWidth: 900,
+        alignSelf: "center",
+      }}
+    >
       {/* Header */}
       <View
         className={`flex-row items-center justify-center p-4 border-b ${
@@ -171,179 +182,230 @@ export default function MonthlyDetail() {
       ) : (
         <ScrollView className="flex-1 p-4">
           {/* Summary Section */}
-          {selectedItem && (() => {
-            // Calculate expenses from detailed data if available, otherwise use selectedItem.expenses (which will be 0)
-            const calculatedExpenses = reportDetails 
-              ? reportDetails.expenses.reduce((sum, expense) => sum + parseFloat(expense.amount.toString()), 0)
-              : selectedItem.expenses || 0;
-            
-            // Recalculate profit using detailed data
-            const calculatedAds = reportDetails 
-              ? reportDetails.ads.reduce((sum, ad) => sum + parseFloat(ad.adsCost.toString()), 0)
-              : selectedItem.adsCost;
-            
-            const calculatedSales = reportDetails 
-              ? reportDetails.bills.reduce((sum, bill) => sum + parseFloat(bill.total.toString()), 0)
-              : selectedItem.sale;
-              
-            const recalculatedProfit = calculatedSales - calculatedExpenses;
+          {selectedItem &&
+            (() => {
+              // Calculate expenses from detailed data if available, otherwise use selectedItem.expenses (which will be 0)
+              const calculatedExpenses = reportDetails
+                ? reportDetails.expenses.reduce(
+                    (sum, expense) =>
+                      sum + parseFloat(expense.amount.toString()),
+                    0,
+                  )
+                : selectedItem.expenses || 0;
 
-            return (
-              <View
-                className={`rounded-lg p-4 mb-4 ${
-                  theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"
-                }`}
-              >
-                <CustomText
-                  className={`text-lg font-semibold mb-3 ${textColorClass}`}
-                  weight="bold"
+              // Recalculate profit using detailed data
+              const calculatedAds = reportDetails
+                ? reportDetails.ads.reduce(
+                    (sum, ad) => sum + parseFloat(ad.adsCost.toString()),
+                    0,
+                  )
+                : selectedItem.adsCost;
+
+              const calculatedSales = reportDetails
+                ? reportDetails.bills.reduce(
+                    (sum, bill) => sum + parseFloat(bill.total.toString()),
+                    0,
+                  )
+                : selectedItem.sale;
+
+              const recalculatedProfit = calculatedSales - calculatedExpenses;
+
+              return (
+                <View
+                  className={`rounded-lg p-4 mb-4 ${
+                    theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"
+                  }`}
                 >
-                  {`${t("monthly.summary")}`}
-                </CustomText>
-                <View className="space-y-2">
-                  <View className="flex-row justify-between">
-                    <CustomText className={textColorClass}>{`${t(
-                      "monthly.sale"
-                    )} :`}</CustomText>
-                    <Text className={`font-semibold ${textColorClass}`}>
-                      {formatCurrency(calculatedSales)}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <CustomText className={textColorClass}>{`${t(
-                      "monthly.expenses"
-                    )} :`}</CustomText>
-                    <Text className={`font-semibold text-[#ef4444]`}>
-                      {`-${formatCurrency(calculatedExpenses)}`}
-                    </Text>
-                  </View>
-                  <View className="flex-row pl-5 justify-between">
-                    <CustomText className={textColorClass}>{`${t(
-                      "monthly.adsCost"
-                    )} :`}</CustomText>
-                    <Text className={`font-semibold `}
-                    style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}>
-                      {`${formatCurrency(calculatedAds)}`}
-                    </Text>
-                  </View>
-                  <View
-                    className={`flex-row justify-between border-t pt-2 ${
-                      theme === "dark" ? "border-zinc-600" : "border-zinc-300"
-                    }`}
+                  <CustomText
+                    className={`text-lg font-semibold mb-3 ${textColorClass}`}
+                    weight="bold"
                   >
-                    <CustomText
-                      className={`font-bold ${textColorClass}`}
-                    >{`${t("monthly.profit")} :`}</CustomText>
-                    <Text
-                      className={`font-bold `}
-                      style={{
-                        color:
-                          recalculatedProfit >= 0 ? "#10b981" : "#ef4444",
-                      }}
+                    {`${t("monthly.summary")}`}
+                  </CustomText>
+                  <View className="space-y-2">
+                    <View className="flex-row justify-between">
+                      <CustomText className={textColorClass}>{`${t(
+                        "monthly.sale",
+                      )} :`}</CustomText>
+                      <Text className={`font-semibold ${textColorClass}`}>
+                        {formatCurrency(calculatedSales)}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between">
+                      <CustomText className={textColorClass}>{`${t(
+                        "monthly.expenses",
+                      )} :`}</CustomText>
+                      <Text className={`font-semibold text-[#ef4444]`}>
+                        {`-${formatCurrency(calculatedExpenses)}`}
+                      </Text>
+                    </View>
+                    <View className="flex-row pl-5 justify-between">
+                      <CustomText className={textColorClass}>{`${t(
+                        "monthly.adsCost",
+                      )} :`}</CustomText>
+                      <Text
+                        className={`font-semibold `}
+                        style={{
+                          color: theme === "dark" ? "#d4d4d8" : "#27272a",
+                        }}
+                      >
+                        {`${formatCurrency(calculatedAds)}`}
+                      </Text>
+                    </View>
+                    <View
+                      className={`flex-row justify-between border-t pt-2 ${
+                        theme === "dark" ? "border-zinc-600" : "border-zinc-300"
+                      }`}
                     >
-                      {formatCurrency(recalculatedProfit)}
-                    </Text>
+                      <CustomText
+                        className={`font-bold ${textColorClass}`}
+                      >{`${t("monthly.profit")} :`}</CustomText>
+                      <Text
+                        className={`font-bold `}
+                        style={{
+                          color:
+                            recalculatedProfit >= 0 ? "#10b981" : "#ef4444",
+                        }}
+                      >
+                        {formatCurrency(recalculatedProfit)}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            );
-          })()}
+              );
+            })()}
 
           {/* Bills Section */}
           {reportDetails && (
             <>
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
-                <CustomText className={`text-lg font-semibold mb-2 ${textColorClass}`} weight="bold">
+              <View
+                className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}
+              >
+                <CustomText
+                  className={`text-lg font-semibold mb-2 ${textColorClass}`}
+                  weight="bold"
+                >
                   {`${t("monthly.bills")} (${reportDetails.bills.length})`}
                 </CustomText>
                 {reportDetails.bills.length > 0 ? (
                   <React.Fragment>
-                    {(showAllBills ? reportDetails.bills : reportDetails.bills.slice(0, 5)).map((bill) => (
-                      <View key={bill.billId} className={`border-b pb-4 mb-1 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}>
-                      {/* Bill Info */}
-                      <View className="flex-row justify-between items-center mb-2">
-                        <Text className={`text-sm ${textColorClass} opacity-70`}>
-                          {new Date(bill.purchaseAt).toLocaleDateString("th-TH")}{" "}
-                          {new Date(bill.purchaseAt).toLocaleTimeString("th-TH", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          })}
-                        </Text>
-                      </View>
+                    {(showAllBills
+                      ? reportDetails.bills
+                      : reportDetails.bills.slice(0, 5)
+                    ).map((bill) => (
+                      <View
+                        key={bill.billId}
+                        className={`border-b pb-4 mb-1 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}
+                      >
+                        {/* Bill Info */}
+                        <View className="flex-row justify-between items-center mb-2">
+                          <Text
+                            className={`text-sm ${textColorClass} opacity-70`}
+                          >
+                            {new Date(bill.purchaseAt).toLocaleDateString(
+                              "th-TH",
+                            )}{" "}
+                            {new Date(bill.purchaseAt).toLocaleTimeString(
+                              "th-TH",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              },
+                            )}
+                          </Text>
+                        </View>
 
-                      {/* Bill Header */}
-                      <View className="flex-row justify-between items-center mb-1">
-                        <TouchableOpacity
-                          onPress={() => handlePressBillId(String(bill.billId))}
-                          activeOpacity={0.7}
-                        >
-                          <CustomText
-                            className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
+                        {/* Bill Header */}
+                        <View className="flex-row justify-between items-center mb-1">
+                          <TouchableOpacity
+                            onPress={() =>
+                              handlePressBillId(String(bill.billId))
+                            }
+                            activeOpacity={0.7}
+                          >
+                            <CustomText
+                              className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
+                              style={{
+                                backgroundColor:
+                                  theme === "dark" ? "#1f2937" : "#dededd",
+                              }}
+                            >
+                              {`#${String(bill.billId)}`}
+                            </CustomText>
+                          </TouchableOpacity>
+                          <Text
+                            className={`font-bold text-base ${textColorClass}`}
                             style={{
-                              backgroundColor: theme === "dark" ? "#1f2937" : "#dededd",
+                              color: theme === "dark" ? "#d4d4d8" : "#27272a",
                             }}
                           >
-                            {`#${String(bill.billId)}`}
-                          </CustomText>
-                        </TouchableOpacity>
-                        <Text
-                          className={`font-bold text-base ${textColorClass}`}
-                          style={{
-                            color: theme === "dark" ? "#d4d4d8" : "#27272a",
-                          }}
-                        >
-                          {formatCurrency(parseFloat(bill.total.toString()) )}
-                        </Text>
-                      </View>
+                            {formatCurrency(parseFloat(bill.total.toString()))}
+                          </Text>
+                        </View>
 
-                      {/* Products List */}
-                      {bill.product && bill.product.length > 0 && (
-                        <View className={`rounded-md `}>
-                          {bill.product.map((product, index) => {
-                            const itemTotal = (product.quantity * product.unitPrice) - product.unitDiscount;
-                            return (
-                              <View key={index} className="mb-1 last:mb-0">
-                                <View className="flex-row justify-between items-start">
-                                  <View className="flex-1 mr-2 ">
-                                    <CustomText
-                                      className={`text-sm font-medium ${textColorClass}`}
+                        {/* Products List */}
+                        {bill.product && bill.product.length > 0 && (
+                          <View className={`rounded-md `}>
+                            {bill.product.map((product, index) => {
+                              const itemTotal =
+                                product.quantity * product.unitPrice -
+                                product.unitDiscount;
+                              return (
+                                <View key={index} className="mb-1 last:mb-0">
+                                  <View className="flex-row justify-between items-start">
+                                    <View className="flex-1 mr-2 ">
+                                      <CustomText
+                                        className={`text-sm font-medium ${textColorClass}`}
+                                        style={{
+                                          color:
+                                            theme === "dark"
+                                              ? "#d4d4d8"
+                                              : "#656565",
+                                        }}
+                                      >
+                                        {product.product}
+                                      </CustomText>
+                                      <View className="flex-row items-center ">
+                                        <Text
+                                          className={`text-xs opacity-60`}
+                                          style={{
+                                            color:
+                                              theme === "dark"
+                                                ? "#a1a1aa"
+                                                : "#7c7c7c",
+                                          }}
+                                        >
+                                          {`${product.quantity} ${product.unit} × ${formatCurrency(product.unitPrice)}`}
+                                        </Text>
+                                        {product.unitDiscount > 0 && (
+                                          <Text
+                                            className="text-xs font-bold ml-2"
+                                            style={{ color: "#e33201a2" }}
+                                          >
+                                            {`-${formatCurrency(product.unitDiscount)}`}
+                                          </Text>
+                                        )}
+                                      </View>
+                                    </View>
+                                    <Text
+                                      className={`text-sm font-semibold ${textColorClass}`}
                                       style={{
-                                        color: theme === "dark" ? "#d4d4d8" : "#656565",
+                                        color:
+                                          theme === "dark"
+                                            ? "#d4d4d8"
+                                            : "#656565",
                                       }}
                                     >
-                                      {product.product}
-                                    </CustomText>
-                                    <View className="flex-row items-center ">
-                                      <Text className={`text-xs opacity-60`}
-                                      style ={{ color: theme === "dark" ? "#a1a1aa" : "#7c7c7c" }}>
-                                        {`${product.quantity} ${product.unit} × ${formatCurrency(product.unitPrice)}`}
-                                      </Text>
-                                      {product.unitDiscount > 0 && (
-                                        <Text
-                                          className="text-xs font-bold ml-2"
-                                          style={{ color: "#e33201a2" }}
-                                        >
-                                          {`-${formatCurrency(product.unitDiscount)}`}
-                                        </Text>
-                                      )}
-                                    </View>
+                                      {formatCurrency(itemTotal)}
+                                    </Text>
                                   </View>
-                                  <Text
-                                    className={`text-sm font-semibold ${textColorClass}`}
-                                    style={{
-                                      color: theme === "dark" ? "#d4d4d8" : "#656565",
-                                    }}
-                                  >
-                                    {formatCurrency(itemTotal)}
-                                  </Text>
                                 </View>
-                              </View>
-                            );
-                          })}                              
-                        </View>
-                      )}
+                              );
+                            })}
+                          </View>
+                        )}
                       </View>
                     ))}
                     {reportDetails.bills.length > 5 && (
@@ -351,51 +413,79 @@ export default function MonthlyDetail() {
                         onPress={() => setShowAllBills(!showAllBills)}
                         className="mt-3 p-3 rounded-lg"
                         activeOpacity={0.7}
-                        style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
                       >
-                        <CustomText className={`text-center ${textColorClass} font-medium`}>
-                          {showAllBills ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.bills.length - 5})`}
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllBills
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.bills.length - 5})`}
                         </CustomText>
                       </TouchableOpacity>
                     )}
                   </React.Fragment>
                 ) : (
-                  <CustomText className={`text-center ${textColorClass} opacity-70`}>
+                  <CustomText
+                    className={`text-center ${textColorClass} opacity-70`}
+                  >
                     {t("common.notfound")}
                   </CustomText>
                 )}
               </View>
 
               {/* Expenses Section */}
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
-                <CustomText className={`text-lg font-semibold mb-3 ${textColorClass}`} weight="bold">
+              <View
+                className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}
+              >
+                <CustomText
+                  className={`text-lg font-semibold mb-3 ${textColorClass}`}
+                  weight="bold"
+                >
                   {`${t("monthly.expenses")} (${reportDetails.expenses.length})`}
                 </CustomText>
                 {reportDetails.expenses.length > 0 ? (
                   <React.Fragment>
-                    {(showAllExpenses ? reportDetails.expenses : reportDetails.expenses.slice(0, 5)).map((expense) => (
-                      <View key={expense.id} className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}>
-                      <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(expense.date).toLocaleDateString("th-TH")}{" "}
-                        {new Date(expense.date).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })}
-                      </Text>
-                      <View className="flex-row justify-between items-center">
-                        <CustomText className={`font-medium ${textColorClass}`}>
-                          {expense.sName}
-                        </CustomText>
-                        <Text className={`font-bold text-base text-[#ef4444]`}>
-                          {`${formatCurrency(parseFloat(expense.amount.toString()))}`}
+                    {(showAllExpenses
+                      ? reportDetails.expenses
+                      : reportDetails.expenses.slice(0, 5)
+                    ).map((expense) => (
+                      <View
+                        key={expense.id}
+                        className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}
+                      >
+                        <Text
+                          className={`text-sm ${textColorClass} opacity-70`}
+                        >
+                          {new Date(expense.date).toLocaleDateString("th-TH")}{" "}
+                          {new Date(expense.date).toLocaleTimeString("th-TH", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
                         </Text>
-                      </View>
-                      {(expense.desc || expense.note) && (
-                        <CustomText className={`text-sm ${textColorClass} opacity-70`}>
-                          {expense.desc || expense.note}
-                        </CustomText>
-                      )}
+                        <View className="flex-row justify-between items-center">
+                          <CustomText
+                            className={`font-medium ${textColorClass}`}
+                          >
+                            {expense.sName}
+                          </CustomText>
+                          <Text
+                            className={`font-bold text-base text-[#ef4444]`}
+                          >
+                            {`${formatCurrency(parseFloat(expense.amount.toString()))}`}
+                          </Text>
+                        </View>
+                        {(expense.desc || expense.note) && (
+                          <CustomText
+                            className={`text-sm ${textColorClass} opacity-70`}
+                          >
+                            {expense.desc || expense.note}
+                          </CustomText>
+                        )}
                       </View>
                     ))}
                     {reportDetails.expenses.length > 5 && (
@@ -403,55 +493,88 @@ export default function MonthlyDetail() {
                         onPress={() => setShowAllExpenses(!showAllExpenses)}
                         className="mt-3 p-3 rounded-lg"
                         activeOpacity={0.7}
-                        style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
                       >
-                        <CustomText className={`text-center ${textColorClass} font-medium`}>
-                          {showAllExpenses ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.expenses.length - 5})`}
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllExpenses
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.expenses.length - 5})`}
                         </CustomText>
                       </TouchableOpacity>
                     )}
                   </React.Fragment>
                 ) : (
-                  <CustomText className={`text-center ${textColorClass} opacity-70`}>
+                  <CustomText
+                    className={`text-center ${textColorClass} opacity-70`}
+                  >
                     {t("common.notfound")}
                   </CustomText>
                 )}
               </View>
 
               {/* Ads Cost Section */}
-              <View className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}>
-                <CustomText className={`text-lg font-semibold mb-3 ${textColorClass}`} weight="bold">
+              <View
+                className={`rounded-lg p-4 mb-4 ${theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"}`}
+              >
+                <CustomText
+                  className={`text-lg font-semibold mb-3 ${textColorClass}`}
+                  weight="bold"
+                >
                   {`${t("monthly.adsCost")} (${reportDetails.ads?.length || 0})`}
                 </CustomText>
                 {reportDetails.ads && reportDetails.ads.length > 0 ? (
                   <React.Fragment>
-                    {(showAllAds ? reportDetails.ads : reportDetails.ads.slice(0, 5)).map((ad) => (
-                      <View key={ad.id} className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}>
-                      <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(ad.date).toLocaleDateString("th-TH")}{" "}
-                        {new Date(ad.date).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })}
-                      </Text>
-                      <View className="flex-row justify-between items-center mb-2">
-                        <View className="flex-1">
-                          <CustomText className={`font-medium ${textColorClass}`}>
-                            {ad.platform.platform}
-                          </CustomText>
-                          <CustomText className={`text-sm ${textColorClass} opacity-70`}>
-                            {ad.platform.accName}
-                          </CustomText>
-                          {(ad.platform.accId || ad.platform.campaignId) && (
-                            <CustomText className={`text-xs ${textColorClass} opacity-60 mt-1`}>
-                              {ad.platform.accId ? `${ad.platform.accId}` : ""} </CustomText>
-                          )}
-                        </View>
-                        <Text className={`font-bold text-base text-[#ef4444]`}>
-                          {formatCurrency(parseFloat(ad.adsCost.toString()))}
+                    {(showAllAds
+                      ? reportDetails.ads
+                      : reportDetails.ads.slice(0, 5)
+                    ).map((ad) => (
+                      <View
+                        key={ad.id}
+                        className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}
+                      >
+                        <Text
+                          className={`text-sm ${textColorClass} opacity-70`}
+                        >
+                          {new Date(ad.date).toLocaleDateString("th-TH")}{" "}
+                          {new Date(ad.date).toLocaleTimeString("th-TH", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
                         </Text>
-                      </View>
+                        <View className="flex-row justify-between items-center mb-2">
+                          <View className="flex-1">
+                            <CustomText
+                              className={`font-medium ${textColorClass}`}
+                            >
+                              {ad.platform.platform}
+                            </CustomText>
+                            <CustomText
+                              className={`text-sm ${textColorClass} opacity-70`}
+                            >
+                              {ad.platform.accName}
+                            </CustomText>
+                            {(ad.platform.accId || ad.platform.campaignId) && (
+                              <CustomText
+                                className={`text-xs ${textColorClass} opacity-60 mt-1`}
+                              >
+                                {ad.platform.accId
+                                  ? `${ad.platform.accId}`
+                                  : ""}{" "}
+                              </CustomText>
+                            )}
+                          </View>
+                          <Text
+                            className={`font-bold text-base text-[#ef4444]`}
+                          >
+                            {formatCurrency(parseFloat(ad.adsCost.toString()))}
+                          </Text>
+                        </View>
                       </View>
                     ))}
                     {reportDetails.ads && reportDetails.ads.length > 5 && (
@@ -459,16 +582,25 @@ export default function MonthlyDetail() {
                         onPress={() => setShowAllAds(!showAllAds)}
                         className="mt-3 p-3 rounded-lg"
                         activeOpacity={0.7}
-                        style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
                       >
-                        <CustomText className={`text-center ${textColorClass} font-medium`}>
-                          {showAllAds ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.ads.length - 5})`}
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllAds
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.ads.length - 5})`}
                         </CustomText>
                       </TouchableOpacity>
                     )}
                   </React.Fragment>
                 ) : (
-                  <CustomText className={`text-center ${textColorClass} opacity-70`}>
+                  <CustomText
+                    className={`text-center ${textColorClass} opacity-70`}
+                  >
                     {t("common.notfound")}
                   </CustomText>
                 )}

@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   FlatList,
   RefreshControl,
-  Platform,
-  Dimensions,
 } from "react-native";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -28,13 +25,18 @@ import { useRouter } from "expo-router";
 
 // Function to format numbers for display, handling the large values properly
 const formatNumberDisplay = (num: number) => {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`;
-  } else if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`;
-  } else {
-    return num.toString();
+  const absolute = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (absolute >= 1000000) {
+    return `${sign}${(absolute / 1000000).toFixed(1)}M`;
   }
+
+  if (absolute >= 1000) {
+    return `${sign}${(absolute / 1000).toFixed(1)}K`;
+  }
+
+  return num.toString();
 };
 
 type MonthlyCardProps = {
