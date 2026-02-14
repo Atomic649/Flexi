@@ -31,9 +31,9 @@ export const rateLimiter = (options: RateLimitOptions = {}) => {
     }
 
     if (existing.count >= max) {
-      const retryAfter = Math.max(0, existing.resetAt - now) / 1000;
+      const retryAfter = Math.max(0, existing.resetAt - now) / 1000; 
       res.setHeader("Retry-After", retryAfter.toFixed(0));
-      return res.status(429).json({ message: "Too many requests, please slow down." });
+      return res.status(429).json({ message: "overRateLimit"});
     }
 
     existing.count += 1;

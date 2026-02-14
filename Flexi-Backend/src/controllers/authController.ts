@@ -268,7 +268,7 @@ const register = async (req: Request, res: Response) => {
 
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    username: usernameSchema.required(),
+    username: usernameSchema.required().min(4).max(30),
     password: passwordSchema.required(),
     firstName: Joi.string().required().max(100),
     lastName: Joi.string().required().max(100),
@@ -277,7 +277,17 @@ const register = async (req: Request, res: Response) => {
   });
   const { error } = schema.validate(userInput);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    const detail = error.details[0];
+    return res.status(400).json({
+      message: "Validation failed",
+      reason: "VALIDATION_ERROR",
+      details: {
+        field: detail?.context?.key,
+        path: Array.isArray(detail?.path) ? detail.path[0] : undefined,
+        type: detail?.type,
+        message: detail?.message,
+      },
+    });
   }
   try {
     // check if user already exists
@@ -290,6 +300,7 @@ const register = async (req: Request, res: Response) => {
       return res.status(400).json({
         status: "error",
         message: "User already exists",
+        reason: "USER_EXISTS",
       });
     }
     // Hash password

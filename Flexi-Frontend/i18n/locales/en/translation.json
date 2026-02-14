@@ -36,7 +36,8 @@
     "details": "Details",
     "noDataAvailable": "No data available",
     "continue": "Continue",
-    "search": "Search"
+    "search": "Search",
+    "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later."
 
   },
   "months": {
@@ -67,7 +68,7 @@
   "auth": {
     "login": {
       "title": "Login",
-      "passwordSubTitle": "Password must be at least 6 characters long, including uppercase, lowercase, number, and special character.",
+      "passwordSubTitle": "Password must be at least 8 characters long, including uppercase, lowercase, number, and special character.",
       "emailPlaceholder": "Email",
       "passwordPlaceholder": "Password",
       "button": "Login",
@@ -113,6 +114,7 @@
         "readRequired": "Reading Required",
         "readPrivacyFirst": "You have to read before accepting."
       },
+      "passwordMismatch": "Passwords do not match",
       "readNow": "Read Now",
       "agree": "I agree to the",
       "terms": "Terms of Service",
@@ -127,7 +129,20 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "phoneTitle": "Phone Number",
-      "phonePlaceholder": "Enter phone number"
+      "phonePlaceholder": "Enter phone number",
+      "backendErrors": {
+        "default": "Unable to register. Please try again.",
+        "userExists": "User already exists.",
+        "validation": {
+          "default": "Please enter valid data.",
+          "email": "Please enter a valid email address.",
+          "username": "Username must start with @ ,use only English letters and numbers, and be between 3 and 30 characters long.",
+          "password": "Password must include uppercase, lowercase, number, and special character, and be at least 8 characters long.",
+          "firstName": "First name is invalid.",
+          "lastName": "Last name is invalid.",
+          "phone": "Phone number must be 10 digits."
+        }
+      }
     },
     "businessRegister": {
       "title": "Business Registration",
@@ -303,7 +318,7 @@
       "validation": {
         "allFields": "Please fill in all password fields",
         "passwordsDoNotMatch": "New passwords don't match",
-        "passwordTooShort": "Password must be at least 6 characters long"
+        "passwordTooShort": "Password must be at least 8 characters long"
       },
       "success": {
         "title": "Success",

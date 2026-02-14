@@ -95,8 +95,8 @@ export default function Register() {
   const handleUsernameChange = (text: string) => {
     // Remove whitespace and any leading '@' characters
     let cleaned = text.replace(/\s/g, "").replace(/^@+/, "");
-    // Remove non-English characters and only allow [a-zA-Z0-9_.]
-    cleaned = cleaned.replace(/[^a-zA-Z0-9_.]/g, "");
+    // Remove non-English characters and only allow [a-zA-Z0-9]
+    cleaned = cleaned.replace(/[^a-zA-Z0-9]/g, "");
     // Always ensure a single '@' prefix remains
     setUsername("@" + cleaned);
   };
@@ -107,6 +107,76 @@ export default function Register() {
     // Remove non-English characters and only allow valid email characters
     cleaned = cleaned.replace(/[^a-zA-Z0-9@._\-+]/g, "");
     setEmail(cleaned);
+  };
+
+  const getRegisterErrorMessage = (apiError: any) => {
+    const reason = apiError?.reason;
+    const field = apiError?.details?.field;
+    const pathField = apiError?.details?.path;
+    const detailType = apiError?.details?.type;
+    const detailMessage = apiError?.details?.message;
+    const backendMessage = apiError?.message;
+    const translateOrNull = (key: string) => {
+      const translated = t(key);
+      return translated !== key ? translated : null;
+    };
+
+    const inferValidationField = () => {
+      if (typeof field === "string" && field.length > 0) return field;
+      if (typeof pathField === "string" && pathField.length > 0) return pathField;
+
+      const typeText = typeof detailType === "string" ? detailType : "";
+      const combinedMessage = `${detailMessage ?? ""} ${backendMessage ?? ""}`.toLowerCase();
+
+      if (typeText.includes("string.email") || combinedMessage.includes("email")) {
+        return "email";
+      }
+      if (combinedMessage.includes("phone")) {
+        return "phone";
+      }
+      if (combinedMessage.includes("first") || combinedMessage.includes("firstname")) {
+        return "firstName";
+      }
+      if (combinedMessage.includes("last") || combinedMessage.includes("lastname")) {
+        return "lastName";
+      }
+      if (combinedMessage.includes("username")) {
+        return "username";
+      }
+      if (typeText.includes("string.pattern.base") && !/^@[A-Za-z0-9]{2,29}$/.test(username)) {
+        return "username";
+      }
+      if (combinedMessage.includes("password")) {
+        return "password";
+      }
+
+      return null;
+    };
+
+    if (reason === "VALIDATION_ERROR") {
+      const normalizedField = inferValidationField();
+      if (normalizedField) {
+        const fieldKey = `auth.register.backendErrors.validation.${normalizedField}`;
+        const translatedFieldMessage = translateOrNull(fieldKey);
+        if (translatedFieldMessage) {
+          return translatedFieldMessage;
+        }
+      }
+      return t("auth.register.backendErrors.validation.default");
+    }
+
+    if (reason === "USER_EXISTS" || reason === "UNIQUE_CONSTRAINT") {
+      return t("auth.register.backendErrors.userExists");
+    }
+
+    if (typeof reason === "string" && reason.length > 0) {
+      const reasonMessage = translateOrNull(`auth.register.backendErrors.${reason}`);
+      if (reasonMessage) {
+        return reasonMessage;
+      }
+    }
+
+    return t("auth.register.backendErrors.default");
   };
 
   // Handle register
@@ -167,13 +237,19 @@ export default function Register() {
       return;
     }
 
+    // Validate username format: must start with @, use only English letters/numbers, length 3-30
+    if (!/^@[A-Za-z0-9]{2,29}$/.test(username)) {
+      setError(t("auth.register.backendErrors.validation.username"));
+      return;
+    }
+
     // Confirm password must match
     if (password !== confirmPassword) {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
         message:
-          t("auth.register.validation.passwordMismatch") ||
+          t("auth.register.passwordMismatch") ||
           "Passwords do not match",
         buttons: [
           {
@@ -234,7 +310,7 @@ export default function Register() {
         params: { userId: data.user.id, uniqueId: data2.uniqueId },
       });
     } catch (error: any) {
-      setError(error.message);
+      setError(getRegisterErrorMessage(error));
     }
   };
 
@@ -517,7 +593,7 @@ export default function Register() {
               </RNView>
 
               {error ? (
-                <CustomText className=" mt-4"
+                <CustomText className=" mt-4 items-center justify-center text-center"
                 style={{ color: "#ff2d31" }}>{error}
                 </CustomText>
               ) : null}
