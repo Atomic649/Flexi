@@ -306,8 +306,8 @@ export default function BusinessInfo() {
                   value: "Cafe",
                 },
                 {
-                  label: t("auth.businessRegister.businessTypeOption.Hotel"),
-                  value: "Hotel",
+                  label: t("auth.businessRegister.businessTypeOption.Rental"),
+                  value: "Rental",
                 },
                 {
                   label: t("auth.businessRegister.businessTypeOption.Tutor"),
