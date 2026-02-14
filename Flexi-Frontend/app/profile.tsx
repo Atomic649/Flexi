@@ -85,15 +85,30 @@ export default function Profile() {
       document.body.removeChild(input);
     } else {
       // Native platform logic
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
+      const currentPermission =
+        await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      const hasPhotoAccess =
+        currentPermission.granted ||
+        currentPermission.accessPrivileges === "limited";
+
+      const requestedPermission = hasPhotoAccess
+        ? currentPermission
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      const canUsePicker =
+        requestedPermission.granted ||
+        requestedPermission.accessPrivileges === "limited";
+
+      if (!canUsePicker) {
         alert(t("profile.avatar.permission"));
         return;
       }
 
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+        selectionLimit: 1,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,

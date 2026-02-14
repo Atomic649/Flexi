@@ -35,6 +35,7 @@ export default function CreateProduct() {
   const [price, setprice] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const [unit, setUnit] = useState("");
   const [productType, setProductType] = useState("");
@@ -106,8 +107,22 @@ export default function CreateProduct() {
       document.body.removeChild(input);
     } else {
       // Native platform logic
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
+      const currentPermission =
+        await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      const hasPhotoAccess =
+        currentPermission.granted ||
+        currentPermission.accessPrivileges === "limited";
+
+      const requestedPermission = hasPhotoAccess
+        ? currentPermission
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      const canUsePicker =
+        requestedPermission.granted ||
+        requestedPermission.accessPrivileges === "limited";
+
+      if (!canUsePicker) {
         setAlertConfig({
           visible: true,
           title: t("product.avatar.permission"),
@@ -124,6 +139,8 @@ export default function CreateProduct() {
 
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+        selectionLimit: 1,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
@@ -152,6 +169,7 @@ export default function CreateProduct() {
   });
 
   const handleCreateProduct = async () => {
+    if (isCreating) return;
     setError("");
 
     const normalizedProductType = (productType || "").toLowerCase();
@@ -179,6 +197,7 @@ export default function CreateProduct() {
     }
 
     try {
+      setIsCreating(true);
       const formData = new FormData();
 
       if (image) {
@@ -245,6 +264,8 @@ export default function CreateProduct() {
       });
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -388,6 +409,7 @@ export default function CreateProduct() {
             handlePress={handleCreateProduct}
             containerStyles="mt-5"
             textStyles="!text-white"
+            isLoading={isCreating}
           />
         </View>
       </ScrollView>

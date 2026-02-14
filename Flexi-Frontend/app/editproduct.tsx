@@ -1,7 +1,7 @@
 import { ScrollView, TouchableOpacity, Image, Platform } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import {CustomButton} from "@/components/CustomButton";
+import { CustomButton } from "@/components/CustomButton";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -30,12 +30,17 @@ export default function EditProduct() {
   const [price, setprice] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState("");
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const [unit, setUnit] = useState("");
   const [productType, setProductType] = useState("");
 
-  const [units, setUnits] = useState<Array<{ label: string; value: string }>>([]);
-  const [productTypes, setProductTypes] = useState<Array<{ label: string; value: string }>>([]);
+  const [units, setUnits] = useState<Array<{ label: string; value: string }>>(
+    [],
+  );
+  const [productTypes, setProductTypes] = useState<
+    Array<{ label: string; value: string }>
+  >([]);
 
   const fieldStyles = "mt-2 mb-2";
   const isFieldEmpty = (value: string | null | undefined) =>
@@ -99,8 +104,22 @@ export default function EditProduct() {
       document.body.removeChild(input);
     } else {
       // Native platform logic
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
+      const currentPermission =
+        await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      const hasPhotoAccess =
+        currentPermission.granted ||
+        currentPermission.accessPrivileges === "limited";
+
+      const requestedPermission = hasPhotoAccess
+        ? currentPermission
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      const canUsePicker =
+        requestedPermission.granted ||
+        requestedPermission.accessPrivileges === "limited";
+
+      if (!canUsePicker) {
         setAlertConfig({
           visible: true,
           title: t("product.avatar.permission"),
@@ -108,7 +127,8 @@ export default function EditProduct() {
           buttons: [
             {
               text: t("common.ok"),
-              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+              onPress: () =>
+                setAlertConfig((prev) => ({ ...prev, visible: false })),
             },
           ],
         });
@@ -117,6 +137,8 @@ export default function EditProduct() {
 
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+        selectionLimit: 1,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
@@ -208,7 +230,7 @@ export default function EditProduct() {
         { label: t("product.units.pack"), value: "Pack" },
         { label: t("product.units.set"), value: "Set" },
         { label: t("product.units.dozen"), value: "Dozen" },
-        { label: t("product.units.notSpecified"), value: "NotSpecified" }
+        { label: t("product.units.notSpecified"), value: "NotSpecified" },
       ]);
 
       setProductTypes([
@@ -223,13 +245,14 @@ export default function EditProduct() {
 
   // Handle update
   const handleUpdateProduct = async () => {
+    if (isUpdating) return;
     setError("");
 
     const normalizedProductType = (productType || "").toLowerCase();
     const requiresStock = normalizedProductType === "product";
 
     const missingBaseFields = [name, description, price].some((value) =>
-      isFieldEmpty(value)
+      isFieldEmpty(value),
     );
     const missingStock = requiresStock && isFieldEmpty(stock);
 
@@ -241,7 +264,8 @@ export default function EditProduct() {
         buttons: [
           {
             text: t("common.ok"),
-            onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            onPress: () =>
+              setAlertConfig((prev) => ({ ...prev, visible: false })),
           },
         ],
       });
@@ -249,6 +273,7 @@ export default function EditProduct() {
     }
 
     try {
+      setIsUpdating(true);
       const formData = new FormData();
 
       if (image) {
@@ -257,7 +282,7 @@ export default function EditProduct() {
           const response = await fetch(image);
           const blob = await response.blob();
           formData.append("image", blob);
-        } else { 
+        } else {
           // For native platforms
           formData.append("image", {
             uri: image,
@@ -272,26 +297,26 @@ export default function EditProduct() {
       const trimmedBarcode = barcode.trim();
       const trimmedStock = stock.trim();
       const trimmedPrice = price.trim();
-  const trimmedUnit = unit ? unit.trim() : "";
+      const trimmedUnit = unit ? unit.trim() : "";
       const resolvedProductType =
         normalizedProductType === "service"
           ? "Service"
           : normalizedProductType === "product"
-          ? "Product"
-          : normalizedProductType === "rental"
-          ? "Rental"
-          : productType;
+            ? "Product"
+            : normalizedProductType === "rental"
+              ? "Rental"
+              : productType;
 
-      formData.append('name', trimmedName);
-      formData.append('description', trimmedDescription);
-      formData.append('barcode', trimmedBarcode);
-      formData.append('stock', trimmedStock.length > 0 ? trimmedStock : "0");
-      formData.append('price', trimmedPrice.length > 0 ? trimmedPrice : "0");
+      formData.append("name", trimmedName);
+      formData.append("description", trimmedDescription);
+      formData.append("barcode", trimmedBarcode);
+      formData.append("stock", trimmedStock.length > 0 ? trimmedStock : "0");
+      formData.append("price", trimmedPrice.length > 0 ? trimmedPrice : "0");
       if (trimmedUnit) {
-        formData.append('unit', trimmedUnit);
+        formData.append("unit", trimmedUnit);
       }
       if (resolvedProductType) {
-        formData.append('productType', resolvedProductType);
+        formData.append("productType", resolvedProductType);
       }
 
       const data = await CallAPIProduct.updateProductAPI(Number(id), formData);
@@ -314,6 +339,8 @@ export default function EditProduct() {
       });
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -325,23 +352,9 @@ export default function EditProduct() {
             Platform.OS === "web" ? "max-w-4xl mx-auto" : ""
           }`}
         >
-          <View className="flex-row items-center justify-between">
-            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.8}>
-              <Ionicons
-                name="arrow-back"
-                size={22}
-                color={theme === "dark" ? "#d6d6dc" : "#606060"}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={confirmDeleteProduct} activeOpacity={0.8}>
-              <Ionicons name="trash-outline" size={22} color="#999999" />
-            </TouchableOpacity>
-          </View>
-
           {image && (
             <Image
-              source={{ uri: image|| '' }}
+              source={{ uri: image || "" }}
               style={{
                 width: Platform.OS === "web" ? 500 : 350,
                 height: Platform.OS === "web" ? 500 : 350,
@@ -439,7 +452,9 @@ export default function EditProduct() {
                 />
               </View>
             )}
-            <View className={productType === "Service" ? "w-full" : "w-1/2 pl-2"}>
+            <View
+              className={productType === "Service" ? "w-full" : "w-1/2 pl-2"}
+            >
               <FormField2
                 title={t("product.price")}
                 subtitle={vat ? t("product.priceSubtitle") : undefined}
@@ -463,14 +478,26 @@ export default function EditProduct() {
             </CustomText>
           </TouchableOpacity>
 
-          {error ? <CustomText className="text-red-500 mt-4">{error}</CustomText> : null}
+          {error ? (
+            <CustomText className="text-red-500 mt-4">{error}</CustomText>
+          ) : null}
+          <View className="flex-row items-center justify-between"></View>
 
           <CustomButton
             title={t("product.updatebutton")}
             handlePress={handleUpdateProduct}
-            containerStyles="mt-5 "
+            containerStyles="mt-4 mb-8 "
             textStyles="!text-white"
+            isLoading={isUpdating}
           />
+          <View className="flex-row justify-center mt-4 mb-8">
+            <TouchableOpacity
+              onPress={confirmDeleteProduct}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="trash-outline" size={22} color="#999999" />
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 
