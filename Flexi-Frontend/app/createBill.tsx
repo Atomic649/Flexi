@@ -69,8 +69,35 @@ export default function CreateBill() {
   const [platformOptions, setPlatformOptions] = useState<any[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
+  const [isCreatingBill, setIsCreatingBill] = useState(false);
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const { vat } = useBusiness();
+
+  const normalizeText = (value?: string | null) =>
+    (value || "")
+      .toString()
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+
+  const normalizeDigits = (value?: string | null) =>
+    (value || "")
+      .toString()
+      .replace(/\D+/g, "");
+
+  const isSameCustomerData = (customer: any) => {
+    return (
+      normalizeText(customer?.firstName) === normalizeText(cName) &&
+      normalizeText(customer?.lastName) === normalizeText(cLastName) &&
+      normalizeDigits(customer?.phone) === normalizeDigits(cPhone) &&
+      normalizeText(customer?.gender || "NotSpecified") ===
+        normalizeText(cGender || "NotSpecified") &&
+      normalizeText(customer?.address) === normalizeText(cAddress) &&
+      normalizeText(customer?.province) === normalizeText(cProvince) &&
+      normalizeDigits(customer?.postId) === normalizeDigits(cPostId) &&
+      normalizeDigits(customer?.taxId) === normalizeDigits(cTaxId)
+    );
+  };
 
   const checkCustomerConflict = async (): Promise<boolean> => {
     if (!cPhone || cPhone.length < 3) return false; // Basic check
@@ -120,6 +147,10 @@ export default function CreateBill() {
               ],
             });
           } else {
+            if (isSameCustomerData(res.customer)) {
+              setUpdateCustomer(false);
+              return false;
+            }
             setConflictModalVisible(true);
           }
           return true;
@@ -782,6 +813,7 @@ export default function CreateBill() {
   };
 
   const handleCreateBill = async () => {
+    if (isCreatingBill) return;
     setError("");
 
     // Check if all required fields are filled and create array of missing fields
@@ -893,6 +925,7 @@ export default function CreateBill() {
     }
 
     try {
+      setIsCreatingBill(true);
       // Ensure conflict modal appears before creating bill
       if (!updateCustomer) {
         const hasConflict = await checkCustomerConflict();
@@ -968,6 +1001,8 @@ export default function CreateBill() {
       });
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setIsCreatingBill(false);
     }
   };
 
@@ -2103,6 +2138,7 @@ export default function CreateBill() {
               handlePress={handleCreateBill}
               containerStyles="mt-5"
               textStyles="!text-white"
+              isLoading={isCreatingBill}
             />
           </View>
         </ScrollView>

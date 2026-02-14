@@ -491,9 +491,9 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
                     textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mb-2"
                     multiline={true}
-                    numberOfLines={5}
+                    numberOfLines={15}
                     maxLength={500}
-                    boxheight={isTextInputFocused ? 110 : undefined}
+                    boxheight={isTextInputFocused ? 150 : undefined}
                     onFocus={() => setIsTextInputFocused(true)}
                     onBlur={() => setIsTextInputFocused(false)}
                   />

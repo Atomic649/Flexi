@@ -1291,6 +1291,8 @@
       "female": "Female",
       "notSpecified": "Not Specified"
     },
+    "confirm": "Confirm",
+    "paid": "Paid",
     "withHoldingTax": "Withholding Tax",
     "enterWithHoldingTax": "Enter Withholding Tax (%)",
     "withHoldingTaxPercent": "WHT %",

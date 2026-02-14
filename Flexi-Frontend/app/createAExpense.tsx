@@ -136,7 +136,7 @@ export default function CreateExpense({
   const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
   const [sAddress, setSAddress] = useState<string>("");
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
-    "Individual"
+    "Individual",
   );
   const [branch, setBranch] = useState<string>("headOffice");
   const [isProcessingOCR, setIsProcessingOCR] = useState(false);
@@ -145,6 +145,7 @@ export default function CreateExpense({
   const [showOCRResult, setShowOCRResult] = useState(false);
   const [showOCRSelection, setShowOCRSelection] = useState(false);
   const [createdExpenseId, setCreatedExpenseId] = useState<number | null>(null);
+  const [isSubmittingExpense, setIsSubmittingExpense] = useState(false);
   const [showSelection, setShowSelection] = useState<boolean>(false);
   const [selectedOCRData, setSelectedOCRData] = useState<{
     selectedName?: string;
@@ -179,7 +180,7 @@ export default function CreateExpense({
         : withHoldingTax;
     const nextWHTPercent =
       Number(
-        overrides?.WHTpercent !== undefined ? overrides.WHTpercent : WHTpercent
+        overrides?.WHTpercent !== undefined ? overrides.WHTpercent : WHTpercent,
       ) || 0;
 
     // Only compute when either VAT or WHT is enabled
@@ -187,7 +188,7 @@ export default function CreateExpense({
       const res = reverseCalculateFromFinal(
         finalAmt,
         nextVatIncluded ? DEFAULT_VAT_PERCENT : 0,
-        nextWithHolding ? nextWHTPercent : 0
+        nextWithHolding ? nextWHTPercent : 0,
       );
       // Keep vatAmount in sync only when VAT is enabled, otherwise zero it
       setVatAmount(nextVatIncluded ? res.vat : 0);
@@ -388,7 +389,7 @@ export default function CreateExpense({
           const year = parts[2];
           const iso = `${year}-${month.padStart(2, "0")}-${day.padStart(
             2,
-            "0"
+            "0",
           )}`;
           setSelectedDates([iso]);
           setDate([iso]);
@@ -404,7 +405,7 @@ export default function CreateExpense({
       const formData = new FormData();
       formData.append(
         "amount",
-        selectedOCRData.selectedAmount?.toString() || amount
+        selectedOCRData.selectedAmount?.toString() || amount,
       );
       formData.append("desc", desc);
       formData.append("note", note);
@@ -415,7 +416,7 @@ export default function CreateExpense({
         if (parts.length === 3) {
           dateToSubmit = `${parts[2]}-${parts[1].padStart(
             2,
-            "0"
+            "0",
           )}-${parts[0].padStart(2, "0")}`;
         } else {
           dateToSubmit = selectedOCRData.selectedDate;
@@ -428,7 +429,7 @@ export default function CreateExpense({
       formData.append("sAddress", selectedOCRData.selectedAddress || sAddress);
       formData.append(
         "taxInvoiceNo",
-        selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo
+        selectedOCRData.selectedTaxInvoiceId || taxInvoiceNo,
       );
       formData.append("branch", branch);
       formData.append("taxType", taxType);
@@ -455,9 +456,8 @@ export default function CreateExpense({
       if (createdExpenseId)
         formData.append("expenseId", createdExpenseId.toString());
 
-      const updateResult = await CallAPIExpense.createAExpenseWithOCRAPI(
-        formData
-      );
+      const updateResult =
+        await CallAPIExpense.createAExpenseWithOCRAPI(formData);
       if (updateResult.error) throw new Error(updateResult.error);
 
       if (updateResult.taxType) setTaxType(updateResult.taxType);
@@ -564,7 +564,7 @@ export default function CreateExpense({
                 // Update existing draft with image-only
                 const res = await CallAPIExpense.updateExpenseAPI(
                   createdExpenseId,
-                  fd
+                  fd,
                 );
                 if (res.error) throw new Error(res.error);
               } else {
@@ -702,12 +702,18 @@ export default function CreateExpense({
 
   //handleCreateOrUpdate
   const handleCreateOrUpdate = async () => {
+    if (isSubmittingExpense) return;
+    setIsSubmittingExpense(true);
     // If we've already created an expense (createdExpenseId) update it,
     // otherwise create a new one. Relying on `selectedOCRData` was incorrect.
-    if (createdExpenseId) {
-      await handleUpdateExpense();
-    } else {
-      await handleCreateExpense();
+    try {
+      if (createdExpenseId) {
+        await handleUpdateExpense();
+      } else {
+        await handleCreateExpense();
+      }
+    } finally {
+      setIsSubmittingExpense(false);
     }
   };
 
@@ -745,7 +751,7 @@ export default function CreateExpense({
       if (createdExpenseId !== null) {
         const data = await CallAPIExpense.updateExpenseAPI(
           createdExpenseId,
-          formData
+          formData,
         );
         if (data.error) throw new Error(data.error);
 
@@ -786,7 +792,7 @@ export default function CreateExpense({
       const memberId = await getMemberId();
       const formattedDate = format(
         new Date(date[0]),
-        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx",
       );
 
       const formData = new FormData();
@@ -872,7 +878,7 @@ export default function CreateExpense({
       const memberId = await getMemberId();
       const formattedDate = format(
         new Date(date[0]),
-        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx",
       );
 
       // Start OCR progress simulation if image is present
@@ -914,13 +920,13 @@ export default function CreateExpense({
       console.log("📥 Full backend response received:", data);
       console.log(
         "🔍 Checking for OCR alert:",
-        data.ocrAlert ? "Found" : "Not found"
+        data.ocrAlert ? "Found" : "Not found",
       );
 
       // Update frontend state with backend-processed data
       if (data.taxType && data.taxType !== taxType) {
         console.log(
-          `🔄 Backend auto-detected taxType: "${data.taxType}" (was: "${taxType}")`
+          `🔄 Backend auto-detected taxType: "${data.taxType}" (was: "${taxType}")`,
         );
         setTaxType(data.taxType);
       }
@@ -933,7 +939,7 @@ export default function CreateExpense({
 
       if (data.vatAmount !== undefined && data.vatAmount !== vatAmount) {
         console.log(
-          `🔄 Backend set VAT Amount: ${data.vatAmount} (was: ${vatAmount})`
+          `🔄 Backend set VAT Amount: ${data.vatAmount} (was: ${vatAmount})`,
         );
         setVatAmount(Number(data.vatAmount));
       }
@@ -957,7 +963,7 @@ export default function CreateExpense({
         // Show OCR result in the progress indicator
         setTimeout(() => {
           console.log(
-            "⏰ About to show OCR result, setting showOCRResult to true"
+            "⏰ About to show OCR result, setting showOCRResult to true",
           );
           setShowOCRResult(true);
         }, 500);
@@ -999,7 +1005,7 @@ export default function CreateExpense({
           await CallAPIExpense.deleteExpenseAPI(createdExpenseId, memberId);
           console.log(
             "🗑️ Auto-deleted expense 0 Amount with ID:",
-            createdExpenseId
+            createdExpenseId,
           );
           setCreatedExpenseId(null); // Clear stored ID after deletion
         } else {
@@ -1019,8 +1025,8 @@ export default function CreateExpense({
           ? "bg-zinc-800 border-secondary"
           : "bg-zinc-200 border-secondary"
         : theme === "dark"
-        ? "bg-zinc-800 border-transparent"
-        : "bg-zinc-200 border-transparent"
+          ? "bg-zinc-800 border-transparent"
+          : "bg-zinc-200 border-transparent"
     }`;
 
   const handleDateTimeChange = (next: Date) => {
@@ -1075,15 +1081,15 @@ export default function CreateExpense({
                     ? "#2f2f2f"
                     : "#dbfefa"
                   : theme === "dark"
-                  ? "#2f2f2f"
-                  : "#f3f4f6",
+                    ? "#2f2f2f"
+                    : "#f3f4f6",
                 borderRadius: 10,
                 borderWidth: isSelected ? 2 : 1,
                 borderColor: isSelected
                   ? "#3bf6da"
                   : theme === "dark"
-                  ? "transparent"
-                  : "#d1d5db",
+                    ? "transparent"
+                    : "#d1d5db",
               }}
             >
               <CustomText
@@ -1094,8 +1100,8 @@ export default function CreateExpense({
                       ? "#ccc"
                       : "#636363"
                     : theme === "dark"
-                    ? "#ccc"
-                    : "#666",
+                      ? "#ccc"
+                      : "#666",
                 }}
               >
                 {`${isSelected ? "✓ " : "○ "}${
@@ -1164,7 +1170,7 @@ export default function CreateExpense({
               flexGrow: 1,
               justifyContent: "center",
               alignItems: "center",
-              padding: 20,
+              padding: isMobile() ? (hasAttachment ? 0 : 20) : 20,
             }}
             style={{
               width: Platform.OS === "web" ? "100%" : "100%",
@@ -1182,8 +1188,8 @@ export default function CreateExpense({
                       ? 0.9
                       : 0.75
                     : hasAttachment
-                    ? 0.2
-                    : 0.1,
+                      ? 0.2
+                      : 0.1,
                 justifyContent: "center",
                 width: isMobile() || isTablet() ? "auto" : "100%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
@@ -1305,7 +1311,7 @@ export default function CreateExpense({
                               color: theme === "dark" ? "#ccc" : "#666",
                             }}
                           >{`${ocrProgress}% ${t(
-                            "common.complete"
+                            "common.complete",
                           )}`}</CustomText>
                           <CustomText
                             style={{
@@ -1325,7 +1331,7 @@ export default function CreateExpense({
                         <>
                           {console.log(
                             "📱 Rendering OCR Results View - showOCRResult:",
-                            showOCRResult
+                            showOCRResult,
                           )}
                           {console.log("📋 OCR Alert in results:", ocrAlert)}
                           {/* Replace title emoji/text with status image */}
@@ -1339,12 +1345,13 @@ export default function CreateExpense({
                                   ? require("@/constants/images").default
                                       .listcheck
                                   : ocrAlert?.type === "warning"
-                                  ? require("@/constants/images").default
-                                      .warning
-                                  : ocrAlert?.type === "fail"
-                                  ? require("@/constants/images").default
-                                      .falseSign
-                                  : require("@/constants/images").default.bug
+                                    ? require("@/constants/images").default
+                                        .warning
+                                    : ocrAlert?.type === "fail"
+                                      ? require("@/constants/images").default
+                                          .falseSign
+                                      : require("@/constants/images").default
+                                          .bug
                               }
                               style={{
                                 width: 100,
@@ -1367,10 +1374,10 @@ export default function CreateExpense({
                               {ocrAlert?.type === "success"
                                 ? `${t("ocr.alert.pass")}`
                                 : ocrAlert?.type === "warning"
-                                ? `${t("ocr.alert.warning")}`
-                                : ocrAlert?.type === "fail"
-                                ? `${t("ocr.alert.fail")}`
-                                : `${t("ocr.alert.error")}`}
+                                  ? `${t("ocr.alert.warning")}`
+                                  : ocrAlert?.type === "fail"
+                                    ? `${t("ocr.alert.fail")}`
+                                    : `${t("ocr.alert.error")}`}
                             </CustomText>
                           )}
 
@@ -1396,7 +1403,7 @@ export default function CreateExpense({
                                       key: string;
                                       values?: Record<string, string>;
                                     },
-                                    index: number
+                                    index: number,
                                   ) => (
                                     <CustomText
                                       key={index}
@@ -1412,7 +1419,7 @@ export default function CreateExpense({
                                     >
                                       {`• ${t(req.key, req.values)}`}
                                     </CustomText>
-                                  )
+                                  ),
                                 )}
                               </>
                             )}
@@ -1455,7 +1462,7 @@ export default function CreateExpense({
                                 title={t("ocr.selectAll")}
                                 handlePress={() => {
                                   console.log(
-                                    "🔄 Selecting all available OCR data"
+                                    "🔄 Selecting all available OCR data",
                                   );
 
                                   setSelectedOCRData((prev) => ({
@@ -1491,7 +1498,7 @@ export default function CreateExpense({
                                   setShowSelection(true);
 
                                   console.log(
-                                    "✅ All available OCR data selected"
+                                    "✅ All available OCR data selected",
                                   );
                                 }}
                                 containerStyles="px-6 mt-2"
@@ -1713,36 +1720,64 @@ export default function CreateExpense({
                     onPress={() => setCalendarVisible(true)}
                   />
                 </View>
-                <TextInput
-                  style={{
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
-                    textAlign: "center",
-                    fontSize: 16,
-                    color: theme === "dark" ? "#818181" : "#68655f",
-                  }}
-                  value={desc}
-                  onChangeText={setDesc}
-                  placeholder={t("expense.detail.description")}
-                  placeholderTextColor={
-                    theme === "dark" ? "#6d6c67" : "#adaaa6"
-                  }
-                />
+                <View style={{ position: "relative" }}>
+                  <TextInput
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      textAlign: "center",
+                      fontSize: 16,
+                      color: theme === "dark" ? "#818181" : "#68655f",
+                    }}
+                    value={desc}
+                    onChangeText={setDesc}
+                    placeholder={t("expense.detail.description")}
+                    placeholderTextColor={
+                      theme === "dark" ? "#6d6c67" : "#adaaa6"
+                    }
+                  />
 
-                <TextInput
-                  className={`text-center text-2xl font-bold py-3 ${
-                    theme === "dark" ? "text-secondary-100" : "text-secondary"
-                  }`}
-                  value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                  onChangeText={handleAmountChange}
-                  placeholder="0.00"
-                  placeholderTextColor={
-                    theme === "dark" ? "#6d6c67" : "#adaaa6"
-                  }
-                  keyboardType="numeric"
-                />
+                  {isMobile() && hasAttachment && (
+                    <TouchableOpacity
+                      onPress={onClose}
+                      activeOpacity={0.8}
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: 22,
+                        zIndex: 20,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:
+                          theme === "dark" ? "#27272a" : "#f3f4f6",
+                      }}
+                    >
+                      <Ionicons
+                        name="close"
+                        size={18}
+                        color={theme === "dark" ? "#f4f4f5" : "#111827"}
+                      />
+                    </TouchableOpacity>
+                  )}
+
+                  <TextInput
+                    className={`text-center text-2xl font-bold py-3 ${
+                      theme === "dark" ? "text-secondary-100" : "text-secondary"
+                    }`}
+                    value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    onChangeText={handleAmountChange}
+                    placeholder="0.00"
+                    placeholderTextColor={
+                      theme === "dark" ? "#6d6c67" : "#adaaa6"
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
 
                 {((vat && vatIncluded) ||
                   (DocumentType &&
@@ -1796,8 +1831,8 @@ export default function CreateExpense({
                               reverseCalculateFromFinal(
                                 Number(amount) || 0,
                                 DEFAULT_VAT_PERCENT,
-                                withHoldingTax ? Number(WHTpercent) : 0
-                              ).base
+                                withHoldingTax ? Number(WHTpercent) : 0,
+                              ).base,
                             )}
                           </CustomText>
                           <CustomText style={{ textAlign: "left" }}>
@@ -1805,8 +1840,8 @@ export default function CreateExpense({
                               reverseCalculateFromFinal(
                                 Number(amount) || 0,
                                 DEFAULT_VAT_PERCENT,
-                                withHoldingTax ? Number(WHTpercent) : 0
-                              ).vat
+                                withHoldingTax ? Number(WHTpercent) : 0,
+                              ).vat,
                             )}
                           </CustomText>
                         </>
@@ -1858,8 +1893,8 @@ export default function CreateExpense({
                                 ? "#666666"
                                 : "#999999"
                               : theme === "dark"
-                              ? "#b4b3b3"
-                              : "#2a2a2a",
+                                ? "#b4b3b3"
+                                : "#2a2a2a",
                         }}
                       >
                         {t("expense.detail.vatIncluded")}
@@ -1894,8 +1929,8 @@ export default function CreateExpense({
                                   ? "#666666"
                                   : "#999999"
                                 : theme === "dark"
-                                ? "#b4b3b3"
-                                : "#2a2a2a",
+                                  ? "#b4b3b3"
+                                  : "#2a2a2a",
                           }}
                         >
                           {t("expense.detail.withHoldingTax")}
@@ -2081,109 +2116,109 @@ export default function CreateExpense({
                     />
                   </>
                 )}
-                  <DropdownFloat
-                    title={t("expense.detail.group.title")}
-                    placeholder={t("expense.detail.group.title")}
-                    options={[
-                      {
-                        value: "Employee",
-                        label: t("expense.detail.group.employee"),
-                      },
-                      {
-                        value: "Freelancer",
-                        label: t("expense.detail.group.freelancer"),
-                      },
-                      {
-                        value: "Office",
-                        label: t("expense.detail.group.office"),
-                      },
-                      {
-                        value: "OfficeRental",
-                        label: t("expense.detail.group.officeRental"),
-                      },
-                      {
-                        value: "CarRental",
-                        label: t("expense.detail.group.carRental"),
-                      },
-                      {
-                        value: "Commission",
-                        label: t("expense.detail.group.commission"),
-                      },
-                      {
-                        value: "Advertising",
-                        label: t("expense.detail.group.advertising"),
-                      },
-                      {
-                        value: "Marketing",
-                        label: t("expense.detail.group.marketing"),
-                      },
-                      {
-                        value: "Copyright",
-                        label: t("expense.detail.group.copyright"),
-                      },
-                      {
-                        value: "Dividend",
-                        label: t("expense.detail.group.dividend"),
-                      },
-                      {
-                        value: "Interest",
-                        label: t("expense.detail.group.interest"),
-                      },
-                      {
-                        value: "Influencer",
-                        label: t("expense.detail.group.influencer"),
-                      },
-                      {
-                        value: "Accounting",
-                        label: t("expense.detail.group.accounting"),
-                      },
-                      {
-                        value: "Legal",
-                        label: t("expense.detail.group.legal"),
-                      },
-                      {
-                        value: "Taxation",
-                        label: t("expense.detail.group.taxation"),
-                      },
-                      {
-                        value: "Transport",
-                        label: t("expense.detail.group.transport"),
-                      },
-                      {
-                        value: "Product",
-                        label: t("expense.detail.group.product"),
-                      },
-                      {
-                        value: "Packing",
-                        label: t("expense.detail.group.packing"),
-                      },
-                      {
-                        value: "Fuel",
-                        label: t("expense.detail.group.fuel"),
-                      },
-                      {
-                        value: "Maintenance",
-                        label: t("expense.detail.group.maintenance"),
-                      },
-                      {
-                        value: "Utilities",
-                        label: t("expense.detail.group.utility"),
-                      },
-                      {
-                        value: "Operation",
-                        label: t("expense.detail.group.operation"),
-                      },
-                      {
-                        value: "Others",
-                        label: t("expense.detail.group.other"),
-                      },
-                    ]}
-                    selectedValue={group}
-                    onValueChange={handleGroupChange}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
-                  />
+                <DropdownFloat
+                  title={t("expense.detail.group.title")}
+                  placeholder={t("expense.detail.group.title")}
+                  options={[
+                    {
+                      value: "Employee",
+                      label: t("expense.detail.group.employee"),
+                    },
+                    {
+                      value: "Freelancer",
+                      label: t("expense.detail.group.freelancer"),
+                    },
+                    {
+                      value: "Office",
+                      label: t("expense.detail.group.office"),
+                    },
+                    {
+                      value: "OfficeRental",
+                      label: t("expense.detail.group.officeRental"),
+                    },
+                    {
+                      value: "CarRental",
+                      label: t("expense.detail.group.carRental"),
+                    },
+                    {
+                      value: "Commission",
+                      label: t("expense.detail.group.commission"),
+                    },
+                    {
+                      value: "Advertising",
+                      label: t("expense.detail.group.advertising"),
+                    },
+                    {
+                      value: "Marketing",
+                      label: t("expense.detail.group.marketing"),
+                    },
+                    {
+                      value: "Copyright",
+                      label: t("expense.detail.group.copyright"),
+                    },
+                    {
+                      value: "Dividend",
+                      label: t("expense.detail.group.dividend"),
+                    },
+                    {
+                      value: "Interest",
+                      label: t("expense.detail.group.interest"),
+                    },
+                    {
+                      value: "Influencer",
+                      label: t("expense.detail.group.influencer"),
+                    },
+                    {
+                      value: "Accounting",
+                      label: t("expense.detail.group.accounting"),
+                    },
+                    {
+                      value: "Legal",
+                      label: t("expense.detail.group.legal"),
+                    },
+                    {
+                      value: "Taxation",
+                      label: t("expense.detail.group.taxation"),
+                    },
+                    {
+                      value: "Transport",
+                      label: t("expense.detail.group.transport"),
+                    },
+                    {
+                      value: "Product",
+                      label: t("expense.detail.group.product"),
+                    },
+                    {
+                      value: "Packing",
+                      label: t("expense.detail.group.packing"),
+                    },
+                    {
+                      value: "Fuel",
+                      label: t("expense.detail.group.fuel"),
+                    },
+                    {
+                      value: "Maintenance",
+                      label: t("expense.detail.group.maintenance"),
+                    },
+                    {
+                      value: "Utilities",
+                      label: t("expense.detail.group.utility"),
+                    },
+                    {
+                      value: "Operation",
+                      label: t("expense.detail.group.operation"),
+                    },
+                    {
+                      value: "Others",
+                      label: t("expense.detail.group.other"),
+                    },
+                  ]}
+                  selectedValue={group}
+                  onValueChange={handleGroupChange}
+                  borderColor={theme === "dark" ? "#555" : "#CCC"}
+                  textcolor={theme === "dark" ? "#FFF" : "#000"}
+                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                />
 
                 {error ? (
                   <View className="items-center">
@@ -2225,6 +2260,7 @@ export default function CreateExpense({
                     handlePress={() => handleCreateOrUpdate()}
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
+                    isLoading={isSubmittingExpense}
                   />
                 </View>
               </View>

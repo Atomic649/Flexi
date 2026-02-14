@@ -69,6 +69,7 @@ export default function EditBill() {
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdatingBill, setIsUpdatingBill] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
   // Customer information
@@ -993,6 +994,7 @@ export default function EditBill() {
   };
 
   const handleUpdateBill = async () => {
+    if (isUpdatingBill) return;
     setError("");
     // Check if all required fields are filled and create array of missing fields
     const missingFields = [];
@@ -1068,6 +1070,7 @@ export default function EditBill() {
       return;
     }
     try {
+      setIsUpdatingBill(true);
       // Call API to update bill
       const data = await CallAPIBill.updateBillAPI({
         id: Number(id),
@@ -1128,6 +1131,8 @@ export default function EditBill() {
       });
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setIsUpdatingBill(false);
     }
   };
 
@@ -2248,6 +2253,7 @@ export default function EditBill() {
                   handlePress={handleUpdateBill}
                   containerStyles="mt-5 w-2/3"
                   textStyles="!text-white"
+                  isLoading={isUpdatingBill}
                 />
               )}
             </View>
