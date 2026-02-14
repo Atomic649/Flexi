@@ -40,6 +40,7 @@ export default function Register() {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [termsVisited, setTermsVisited] = useState(false);
   const [privacyVisited, setPrivacyVisited] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load visited status from AsyncStorage on mount
   useEffect(() => {
@@ -282,6 +283,8 @@ export default function Register() {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       // Call the register API
       const data = await CallAPIUser.registerAPI({
@@ -305,12 +308,14 @@ export default function Register() {
       if (data2.error) throw new Error(data2.error);
 
       // go to business register with params
+      setIsSubmitting(false);
       router.replace({
         pathname: "/business_register",
         params: { userId: data.user.id, uniqueId: data2.uniqueId },
       });
     } catch (error: any) {
       setError(getRegisterErrorMessage(error));
+      setIsSubmitting(false);
     }
   };
 
@@ -603,6 +608,7 @@ export default function Register() {
                 handlePress={handleRegister}
                 containerStyles="mt-7"
                 textStyles="!text-white"
+                isLoading={isSubmitting}
               />
 
               <View className="flex justify-center items-center pt-5 flex-row gap-2">

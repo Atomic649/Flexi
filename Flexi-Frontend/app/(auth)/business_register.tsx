@@ -34,6 +34,7 @@ export default function Register() {
   const [isVatRegistered, setIsVatRegistered] = useState(false);
   const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[]>(["Receipt"]);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getBusinessRegisterErrorMessage = (apiError: any) => {
     const reason = apiError?.reason;
@@ -135,6 +136,8 @@ export default function Register() {
       return;
     }
     
+    setIsSubmitting(true);
+
     try {
       // Call the register API
       const data = await CallAPIBusiness.RegisterAPI({
@@ -163,6 +166,7 @@ export default function Register() {
             text: t("auth.businessRegister.alerts.continue", "Continue"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
+              setIsSubmitting(false);
               router.replace("/login");
             },
           },
@@ -171,6 +175,7 @@ export default function Register() {
       // Navigation now occurs only after user confirms the alert
     } catch (error: any) {
       setError(getBusinessRegisterErrorMessage(error));
+      setIsSubmitting(false);
     }
   };
 
@@ -410,6 +415,7 @@ export default function Register() {
               ) : null}
 
               <CustomButton
+                isLoading={isSubmitting}
                 title={t("auth.register.button")}
                 handlePress={handleRegister}
                 containerStyles="mt-7"
