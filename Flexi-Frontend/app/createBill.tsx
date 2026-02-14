@@ -994,7 +994,7 @@ export default function CreateBill() {
             text: t("common.ok"),
             onPress: () => {
               setAlertConfig((prev) => ({ ...prev, visible: false }));
-              router.back();
+              router.replace("/(tabs)/income");
             },
           },
         ],

@@ -10,11 +10,20 @@ import Monthly from "../../components/income/monthly";
 import { useTranslation } from "react-i18next";
 import { CustomText } from "@/components/CustomText";
 import { getResponsiveStyles } from "@/utils/responsive";
+import { useFocusEffect } from "expo-router";
 
 const Income = () => {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const [index, setIndex] = useState(0);
+  const [refreshSignal, setRefreshSignal] = useState(0);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setRefreshSignal((prev) => prev + 1);
+    }, [])
+  );
+
   const routes = useMemo(
     () => [
       { key: "byOrder", title: t("income.title.byOrder") },
@@ -24,11 +33,18 @@ const Income = () => {
     [i18n.resolvedLanguage]
   );
 
-  const renderScene = SceneMap({
-    byOrder: ByOrder,
-    daily: Daily,
-    monthly: Monthly,
-  });
+  const renderScene = ({ route }: { route: { key: string } }) => {
+    switch (route.key) {
+      case "byOrder":
+        return <ByOrder refreshSignal={refreshSignal} />;
+      case "daily":
+        return <Daily refreshSignal={refreshSignal} />;
+      case "monthly":
+        return <Monthly refreshSignal={refreshSignal} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <View className={`h-full ${useBackgroundColorClass()}`}

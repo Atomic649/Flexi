@@ -56,6 +56,10 @@ type Bill = {
   }>;
 };
 
+type ByOrderProps = {
+  refreshSignal?: number;
+};
+
 // Group bills by date with future date handling
 const groupByDate = (items: Bill[]): { [key: string]: Bill[] } => {
   const currentDate = new Date();
@@ -98,7 +102,7 @@ const formatDate = (dateString: string) => {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
-const ByOrder = () => {
+const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const formatNumber = (value: number) =>
@@ -109,29 +113,8 @@ const ByOrder = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [bills, setBills] = useState<Bill[]>([]);
 
-  // Call API to get bills
-  useEffect(() => {
-    const fetchBills = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIBill.getBillsAPI(memberId);
-          setBills(response);
-        } else {
-          console.error("Member ID is null");
-        }
-      } catch (error) {
-        console.error("Error fetching bills:", error);
-      }
-    };
-
-    fetchBills();
-  }, []);
-
-  // Refresh bills
-  const onRefresh = async () => {
+  const fetchBills = useCallback(async () => {
     try {
-      setRefreshing(true);
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIBill.getBillsAPI(memberId);
@@ -141,6 +124,25 @@ const ByOrder = () => {
       }
     } catch (error) {
       console.error("Error fetching bills:", error);
+    }
+  }, []);
+
+  // Call API to get bills
+  useEffect(() => {
+    fetchBills();
+  }, [fetchBills]);
+
+  useEffect(() => {
+    fetchBills();
+  }, [refreshSignal, fetchBills]);
+
+  // Refresh bills
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await fetchBills();
+    } catch {
+      // fetchBills handles errors
     }
     setRefreshing(false);
   };

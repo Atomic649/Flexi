@@ -44,7 +44,11 @@ type DailyCardProps = {
   expenses: number;
 };
 
-const Daily = () => {
+type DailyProps = {
+  refreshSignal?: number;
+};
+
+const Daily = ({ refreshSignal = 0 }: DailyProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { marketingPreference } = useMarketing();
@@ -56,6 +60,31 @@ const Daily = () => {
 
   const [refreshing, setRefreshing] = useState(false);
   const [dailyReport, setDailyReport] = useState<DailyCardProps[]>([]);
+
+  const fetchReport = async () => {
+    try {
+      const memberId = await getMemberId();
+      if (memberId) {
+        const response = await CallAPIReport.getDailyReportsAPI(memberId);
+        // Generate dates and merge with backend data
+        const generatedDates = generateDates(30); // Show last 30 days
+        const mergedData = mergeDataWithDates(response || [], generatedDates);
+        setDailyReport(mergedData);
+      } else {
+        console.log("Member ID is null");
+        // Even without member ID, show dates with zero values
+        const generatedDates = generateDates(30);
+        const emptyData = mergeDataWithDates([], generatedDates);
+        setDailyReport(emptyData);
+      }
+    } catch (error) {
+      console.error("Error fetching reports", error);
+      // On error, still show dates with zero values
+      const generatedDates = generateDates(30);
+      const emptyData = mergeDataWithDates([], generatedDates);
+      setDailyReport(emptyData);
+    }
+  };
 
   // Generate dates starting from today going backwards
   const generateDates = (days: number = 30) => {
@@ -94,57 +123,20 @@ const Daily = () => {
 
   // Call API to get daily data
   useEffect(() => {
-    const fetchReport = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIReport.getDailyReportsAPI(memberId);
-          // Generate dates and merge with backend data
-          const generatedDates = generateDates(30); // Show last 30 days
-          const mergedData = mergeDataWithDates(response || [], generatedDates);
-          setDailyReport(mergedData);
-        } else {
-          console.log("Member ID is null");
-          // Even without member ID, show dates with zero values
-          const generatedDates = generateDates(30);
-          const emptyData = mergeDataWithDates([], generatedDates);
-          setDailyReport(emptyData);
-        }
-      } catch (error) {
-        console.error("Error fetching reports", error);
-        // On error, still show dates with zero values
-        const generatedDates = generateDates(30);
-        const emptyData = mergeDataWithDates([], generatedDates);
-        setDailyReport(emptyData);
-      }
-    };
     fetchReport();
   }, [marketingPreference]); // Add marketingPreference to dependency array
+
+  useEffect(() => {
+    fetchReport();
+  }, [refreshSignal]);
 
   // Refetch data when refreshing
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      const memberId = await getMemberId();
-      if (memberId) {
-        const response = await CallAPIReport.getDailyReportsAPI(memberId);
-        // Generate dates and merge with backend data
-        const generatedDates = generateDates(30); // Show last 30 days
-        const mergedData = mergeDataWithDates(response || [], generatedDates);
-        setDailyReport(mergedData);
-      } else {
-        console.error("Member ID is null");
-        // Even without member ID, show dates with zero values
-        const generatedDates = generateDates(30);
-        const emptyData = mergeDataWithDates([], generatedDates);
-        setDailyReport(emptyData);
-      }
-    } catch (error) {
-      console.error("Error fetching reports", error);
-      // On error, still show dates with zero values
-      const generatedDates = generateDates(30);
-      const emptyData = mergeDataWithDates([], generatedDates);
-      setDailyReport(emptyData);
+      await fetchReport();
+    } catch {
+      // fetchReport handles errors
     }
     setRefreshing(false);
   };

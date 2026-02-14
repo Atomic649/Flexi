@@ -50,7 +50,11 @@ type MonthlyCardProps = {
   ROI: number;
 };
 
-const monthly = () => {
+type MonthlyProps = {
+  refreshSignal?: number;
+};
+
+const monthly = ({ refreshSignal = 0 }: MonthlyProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -59,6 +63,31 @@ const monthly = () => {
   const responsiveStyles = getResponsiveStyles(); // Get responsive styles based on screen size
   const deviceType = getDeviceType();
   const { marketingPreference } = useMarketing();
+
+  const fetchReport = async () => {
+    try {
+      const memberId = await getMemberId();
+      if (memberId) {
+        const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
+        // Generate months starting from oldest in database and merge with backend data
+        const generatedMonths = generateMonths(response || []);
+        const mergedData = mergeDataWithMonths(response || [], generatedMonths);
+        setMonthlyReport(mergedData);
+      } else {
+        console.log("Member ID is null");
+        // Even without member ID, show months with zero values (fallback to 12 months)
+        const generatedMonths = generateMonths([]);
+        const emptyData = mergeDataWithMonths([], generatedMonths);
+        setMonthlyReport(emptyData);
+      }
+    } catch (error) {
+      console.error("Error fetching reports", error);
+      // On error, still show months with zero values (fallback to 12 months)
+      const generatedMonths = generateMonths([]);
+      const emptyData = mergeDataWithMonths([], generatedMonths);
+      setMonthlyReport(emptyData);
+    }
+  };
 
   // Generate months starting from oldest month in database or fallback to 12 months ago
   const generateMonths = (
@@ -128,60 +157,20 @@ const monthly = () => {
 
   // Call API to get monthly data
   useEffect(() => {
-    const fetchReport = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
-          // Generate months starting from oldest in database and merge with backend data
-          const generatedMonths = generateMonths(response || []);
-          const mergedData = mergeDataWithMonths(
-            response || [],
-            generatedMonths
-          );
-          setMonthlyReport(mergedData);
-        } else {
-          console.log("Member ID is null");
-          // Even without member ID, show months with zero values (fallback to 12 months)
-          const generatedMonths = generateMonths([]);
-          const emptyData = mergeDataWithMonths([], generatedMonths);
-          setMonthlyReport(emptyData);
-        }
-      } catch (error) {
-        console.error("Error fetching reports", error);
-        // On error, still show months with zero values (fallback to 12 months)
-        const generatedMonths = generateMonths([]);
-        const emptyData = mergeDataWithMonths([], generatedMonths);
-        setMonthlyReport(emptyData);
-      }
-    };
     fetchReport();
   }, [marketingPreference]); // Add marketingPreference to dependency array
+
+  useEffect(() => {
+    fetchReport();
+  }, [refreshSignal]);
 
   // Refetch data when refreshing
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      const memberId = await getMemberId();
-      if (memberId) {
-        const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
-        // Generate months starting from oldest in database and merge with backend data
-        const generatedMonths = generateMonths(response || []);
-        const mergedData = mergeDataWithMonths(response || [], generatedMonths);
-        setMonthlyReport(mergedData);
-      } else {
-        console.error("Member ID is null");
-        // Even without member ID, show months with zero values (fallback to 12 months)
-        const generatedMonths = generateMonths([]);
-        const emptyData = mergeDataWithMonths([], generatedMonths);
-        setMonthlyReport(emptyData);
-      }
-    } catch (error) {
-      console.error("Error fetching reports", error);
-      // On error, still show months with zero values (fallback to 12 months)
-      const generatedMonths = generateMonths([]);
-      const emptyData = mergeDataWithMonths([], generatedMonths);
-      setMonthlyReport(emptyData);
+      await fetchReport();
+    } catch {
+      // fetchReport handles errors
     }
     setRefreshing(false);
   };
