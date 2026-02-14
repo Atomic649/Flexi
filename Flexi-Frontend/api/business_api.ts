@@ -9,8 +9,10 @@ class CallAPIBusiness {
   async RegisterAPI(data: {
     businessName: string;
     taxId: string;
+    businessPhone: string;
     businessType: string;
     taxType: string;
+    vat?: boolean;
     userId: number;
     memberId: any;
     DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];

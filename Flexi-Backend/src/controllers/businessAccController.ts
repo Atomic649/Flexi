@@ -47,7 +47,7 @@ const businessUsernameSchema = Joi.string()
 // validate the request body
 const schema = Joi.object({
   businessName: Joi.string().required(),
-  businessUserName: businessUsernameSchema.optional().allow(""),
+  businessUserName: businessUsernameSchema.optional().allow("").min(4).max(30),
   taxId: Joi.string().min(13).max(13).required(),
   businessType: Joi.string().required(),
   taxType: Joi.string().valid("Juristic", "Individual").required(),
@@ -55,7 +55,7 @@ const schema = Joi.object({
   memberId: Joi.string(),
   businessAddress: Joi.string(),
   businessAvatar: Joi.string(),
-  businessPhone: Joi.string(),
+  businessPhone: Joi.string().pattern(/^\d{10}$/),
   buisnessWebsite: Joi.string(),
   vat: Joi.boolean().optional().default(false),
   DocumentType: Joi.array()
@@ -127,10 +127,38 @@ function mapBusinessAccCreateError(err: unknown): {
 const createBusinessAcc = async (req: Request, res: Response) => {
   const businessAccInput: businessAccInput = req.body;
 
+  const normalizedBusinessPhone =
+    typeof businessAccInput.businessPhone === "string"
+      ? businessAccInput.businessPhone.trim()
+      : "";
+
+  if (!/^\d{10}$/.test(normalizedBusinessPhone)) {
+    return res.status(400).json({
+      message: "Validation failed",
+      reason: "VALIDATION_ERROR",
+      details: {
+        field: "businessPhone",
+        path: "businessPhone",
+        type: "string.pattern.base",
+        message: "Business phone must be exactly 10 digits",
+      },
+    });
+  }
+
   // Validate the request body
   const { error } = schema.validate(businessAccInput);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    const detail = error.details[0];
+    return res.status(400).json({
+      message: "Validation failed",
+      reason: "VALIDATION_ERROR",
+      details: {
+        field: detail?.context?.key,
+        path: Array.isArray(detail?.path) ? detail.path[0] : undefined,
+        type: detail?.type,
+        message: detail?.message,
+      },
+    });
   }
   try {
     // check if business account already exists
@@ -144,6 +172,7 @@ const createBusinessAcc = async (req: Request, res: Response) => {
       return res.status(400).json({
         status: "error",
         message: "business account already exists",
+        reason: "BUSINESS_EXISTS",
       });
     }
 
@@ -165,6 +194,11 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         return res.status(400).json({
           status: "error",
           message: `Invalid DocumentType(s): ${invalidTypes.join(", ")}. Valid options are: ${validDocumentTypes.join(", ")}`,
+          reason: "INVALID_DOCUMENT_TYPE",
+          details: {
+            invalidTypes,
+            validDocumentTypes,
+          },
         });
       }
     }
@@ -180,7 +214,8 @@ const createBusinessAcc = async (req: Request, res: Response) => {
         // BusinessAcc.memberId is now a String[] (list of member uniqueIds)
         memberId: [businessAccInput.memberId],
         businessWebsite: businessAccInput.businessWebsite,
-        businessPhone: businessAccInput.businessPhone,
+        businessPhone: normalizedBusinessPhone,
+        vat: businessAccInput.vat ?? false,
         DocumentType: businessAccInput.DocumentType || ["Receipt"],
       },
     });

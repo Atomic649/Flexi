@@ -3,7 +3,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,  
-  Text,
   Switch,
   TouchableOpacity,
 } from "react-native";
@@ -36,6 +35,68 @@ export default function Register() {
   const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[]>(["Receipt"]);
   const [error, setError] = useState("");
 
+  const getBusinessRegisterErrorMessage = (apiError: any) => {
+    const reason = apiError?.reason;
+    const field = apiError?.details?.field;
+    const pathField = apiError?.details?.path;
+    const detailType = apiError?.details?.type;
+    const detailMessage = apiError?.details?.message;
+    const backendMessage = apiError?.message;
+
+    const translateOrNull = (key: string) => {
+      const translated = t(key);
+      return translated !== key ? translated : null;
+    };
+
+    const inferValidationField = () => {
+      if (typeof field === "string" && field.length > 0) return field;
+      if (typeof pathField === "string" && pathField.length > 0) return pathField;
+
+      const typeText = typeof detailType === "string" ? detailType : "";
+      const combinedMessage = `${detailMessage ?? ""} ${backendMessage ?? ""}`.toLowerCase();
+
+      if (combinedMessage.includes("businessname")) return "businessName";
+      if (combinedMessage.includes("taxid") || combinedMessage.includes("tax id")) return "taxId";
+      if (combinedMessage.includes("businessphone") || combinedMessage.includes("phone")) return "businessPhone";
+      if (combinedMessage.includes("businesstype")) return "businessType";
+      if (combinedMessage.includes("taxtype")) return "taxType";
+      if (combinedMessage.includes("memberid")) return "memberId";
+      if (combinedMessage.includes("userid")) return "userId";
+      if (combinedMessage.includes("documenttype") || typeText.includes("array")) return "DocumentType";
+
+      return null;
+    };
+
+    if (reason === "VALIDATION_ERROR") {
+      const normalizedField = inferValidationField();
+      if (normalizedField) {
+        const fieldKey = `auth.businessRegister.backendErrors.validation.${normalizedField}`;
+        const translatedFieldMessage = translateOrNull(fieldKey);
+        if (translatedFieldMessage) {
+          return translatedFieldMessage;
+        }
+      }
+      return t("auth.businessRegister.backendErrors.validation.default");
+    }
+
+    if (reason === "BUSINESS_EXISTS" || reason === "UNIQUE_CONSTRAINT") {
+      return t("auth.businessRegister.backendErrors.businessExists");
+    }
+
+    if (reason === "INVALID_DOCUMENT_TYPE") {
+      return t("auth.businessRegister.backendErrors.invalidDocumentType");
+    }
+
+    if (typeof reason === "string" && reason.length > 0) {
+      const reasonMessage = translateOrNull(`auth.businessRegister.backendErrors.${reason}`);
+      if (reasonMessage) {
+        return reasonMessage;
+      }
+    }
+
+    return t("auth.businessRegister.backendErrors.default");
+  };
+
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -58,7 +119,7 @@ export default function Register() {
     setError("");
 
     // Check if all fields are filled
-    if (!businessName || !taxType || !taxId || !businessType) {
+    if (!businessName || !taxType || !taxId || !businessType || !businessPhone) {
       setAlertConfig({
         visible: true,
         title: t("auth.businessRegister.validation.incomplete"),
@@ -73,17 +134,16 @@ export default function Register() {
       });
       return;
     }
-
-    console.log("userId", userId);
-    console.log("uniqueId", uniqueId);
-
+    
     try {
       // Call the register API
       const data = await CallAPIBusiness.RegisterAPI({
         businessName,
         taxId,
+        businessPhone,
         businessType,
         taxType,
+        vat: isVatRegistered,
         userId: Number(userId),
         memberId: uniqueId,
         DocumentType: documentTypes,
@@ -110,7 +170,7 @@ export default function Register() {
       });
       // Navigation now occurs only after user confirms the alert
     } catch (error: any) {
-      setError(error.message);
+      setError(getBusinessRegisterErrorMessage(error));
     }
   };
 
@@ -142,7 +202,7 @@ export default function Register() {
             className="w-full flex justify-center h-full px-4"
             style={{
               minHeight: Dimensions.get("window").height,
-              alignItems: Platform.OS === "web" ? "center" : "stretch",
+              alignItems: Platform.OS === "web" ? "center" : "center",
             }}
           >
             <View
@@ -167,10 +227,13 @@ export default function Register() {
                 title={t("auth.businessRegister.businessPhone")}
                 placeholder={t("auth.businessRegister.businessPhone")}
                 value={businessPhone}
-                handleChangeText={setBusinessPhone}
+                  handleChangeText={(text) => {
+                    const filtered = text.replace(/[^0-9]/g, "").slice(0, 10);
+                    setBusinessPhone(filtered);
+                  }}
                 otherStyles="mt-7"
                 keyboardType="phone-pad"
-              />
+                                            />
 
               <Dropdown
                 title={t("auth.businessRegister.taxType")}
@@ -222,7 +285,6 @@ export default function Register() {
                 }}
                 otherStyles="mt-7"
                 keyboardType="number-pad"
-                maxLength={13}
                 onFocus={() => {
                 setTimeout(() => {
                   scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -342,7 +404,9 @@ export default function Register() {
               </View>
 
               {error ? (
-                <Text className="text-red-500 mt-4">{error}</Text>
+                <CustomText className="mt-4 items-center justify-center text-center "
+                style={{color: "#ff2d31"}}>{error}
+              </CustomText>
               ) : null}
 
               <CustomButton
@@ -353,7 +417,7 @@ export default function Register() {
               />
             </View>
           </View>
-        </ScrollView>
+        </ScrollView> 
       </KeyboardAvoidingView>
 
       <CustomAlert

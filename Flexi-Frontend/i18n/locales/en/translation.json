@@ -151,6 +151,7 @@
       "validation": {
         "incomplete": "Incomplete data",
         "invalidData": "Please enter valid data",
+        "invalidPhone": "Business phone number must be exactly 10 digits",
         "selectDocumentType": "Please select at least one document type"
       },
       "alerts": {
@@ -192,6 +193,22 @@
         "Receipt": "Receipt/Tax Invoice",
         "Quotation": "Quotation",
         "WithholdingTax": "Withholding Tax Document"
+      },
+      "backendErrors": {
+        "default": "Unable to register business. Please try again.",
+        "businessExists": "Business account already exists.",
+        "invalidDocumentType": "Selected document type is invalid.",
+        "validation": {
+          "default": "Please enter valid business information.",
+          "businessName": "Please enter a valid business name.",
+          "businessPhone": "Business phone number must be exactly 10 digits.",
+          "taxId": "Tax ID must be 13 digits.",
+          "businessType": "Please select a valid business type.",
+          "taxType": "Please select a valid tax type.",
+          "userId": "Invalid user information.",
+          "memberId": "Invalid member information.",
+          "DocumentType": "Please select at least one valid document type."
+        }
       }
     }
   },
