@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
@@ -13,13 +13,16 @@ import { getResponsiveStyles } from "@/utils/responsive";
 
 const Income = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "byOrder", title: t("income.title.byOrder") },
-    { key: "daily", title: t("income.title.Daily") },
-    { key: "monthly", title: t("income.title.Monthly") },
-  ]);
+  const routes = useMemo(
+    () => [
+      { key: "byOrder", title: t("income.title.byOrder") },
+      { key: "daily", title: t("income.title.Daily") },
+      { key: "monthly", title: t("income.title.Monthly") },
+    ],
+    [i18n.resolvedLanguage]
+  );
 
   const renderScene = SceneMap({
     byOrder: ByOrder,

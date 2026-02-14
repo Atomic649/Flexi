@@ -13,14 +13,14 @@ import { getResponsiveStyles } from "@/utils/responsive";
 
 const Home = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [index, setIndex] = useState(0);
   const routes = useMemo(
     () => [
       { key: "Dashboard", title: t("home.Dashboard") },
       { key: "TaxDoc", title: t("home.TaxDoc") },
     ],
-    [t]
+    [i18n.resolvedLanguage]
   );
 
   const renderScene = ({ route }: { route: { key: string } }) => {

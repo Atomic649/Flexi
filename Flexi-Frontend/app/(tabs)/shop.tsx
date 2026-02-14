@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, TabBar } from "react-native-tab-view";
@@ -16,16 +16,19 @@ import { getResponsiveStyles } from "@/utils/responsive";
 
 const shop = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "office", title: t("shop.tap.office") },
-    { key: "coach", title: t("shop.tap.coach") },
-    { key: "bank", title: t("shop.tap.bank") },
-    { key: "agency", title: t("shop.tap.agency") },
-    // { key: "account", title: t("shop.tap.account") },
-    { key: "orm", title: t("shop.tap.orm") },
-  ]);
+  const routes = useMemo(
+    () => [
+      { key: "office", title: t("shop.tap.office") },
+      { key: "coach", title: t("shop.tap.coach") },
+      { key: "bank", title: t("shop.tap.bank") },
+      { key: "agency", title: t("shop.tap.agency") },
+      // { key: "account", title: t("shop.tap.account") },
+      { key: "orm", title: t("shop.tap.orm") },
+    ],
+    [i18n.resolvedLanguage]
+  );
 
   const renderScene = ({ route }: { route: { key: string } }) => {
     switch (route.key) {

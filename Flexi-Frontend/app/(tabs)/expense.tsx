@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { TouchableOpacity, View, Platform } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
@@ -12,13 +12,16 @@ import { useFocusEffect } from "expo-router";
 import { getResponsiveStyles } from "@/utils/responsive";
 const Expense = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [index, setIndex] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [routes] = useState([
-    { key: "list", title: t("expense.title.expenseList") },
-    { key: "detectExpense", title: t("expense.title.updateExpense") },
-  ]);
+  const routes = useMemo(
+    () => [
+      { key: "list", title: t("expense.title.expenseList") },
+      { key: "detectExpense", title: t("expense.title.updateExpense") },
+    ],
+    [i18n.resolvedLanguage]
+  );
   // Refresh expense list when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {   
