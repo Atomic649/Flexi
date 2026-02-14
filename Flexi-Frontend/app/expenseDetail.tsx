@@ -36,6 +36,7 @@ import {
 import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
 import { isMobile, isTablet } from "@/utils/responsive";
+import { API_URL, IMAGE_URL } from "@/utils/config";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) using the original UTC time
 const formatDate = (dateString: string) => {
@@ -96,6 +97,51 @@ const extractFileName = (uri?: string) => {
     const fallbackSegments = uri.split("/");
     return fallbackSegments[fallbackSegments.length - 1] || uri;
   }
+};
+
+const stripTrailingSlash = (value?: string) => (value || "").replace(/\/+$/, "");
+const stripLeadingSlash = (value?: string) => (value || "").replace(/^\/+/, "");
+const isAbsoluteHttpUrl = (value: string) => /^https?:\/\//i.test(value);
+const isDeviceLocalUri = (value: string) => /^(file|content|blob):/i.test(value);
+
+const normalizeAttachmentUri = (
+  rawUri: string | undefined,
+  type: AttachmentPreviewType
+) => {
+  if (!rawUri) return "";
+  const trimmed = rawUri.trim();
+  if (!trimmed) return "";
+
+  if (isDeviceLocalUri(trimmed)) return trimmed;
+
+  if (isAbsoluteHttpUrl(trimmed)) {
+    const canUpgradeToHttps =
+      Platform.OS === "android" &&
+      !__DEV__ &&
+      trimmed.startsWith("http://") &&
+      !/http:\/\/(localhost|127\.0\.0\.1|10\.|192\.168\.)/i.test(trimmed);
+
+    const normalized = canUpgradeToHttps
+      ? trimmed.replace(/^http:\/\//i, "https://")
+      : trimmed;
+
+    return encodeURI(normalized);
+  }
+
+  const normalizedPath = stripLeadingSlash(trimmed);
+  if (normalizedPath.startsWith("uploads/")) {
+    return `${stripTrailingSlash(API_URL)}/${encodeURI(normalizedPath)}`;
+  }
+
+  if (trimmed.startsWith("/")) {
+    return `${stripTrailingSlash(API_URL)}${encodeURI(trimmed)}`;
+  }
+
+  if (type === "image") {
+    return `${stripTrailingSlash(IMAGE_URL)}/${encodeURI(normalizedPath)}`;
+  }
+
+  return `${stripTrailingSlash(API_URL)}/uploads/pdf/${encodeURI(normalizedPath)}`;
 };
 
 export default function ExpenseDetail({
@@ -236,10 +282,20 @@ export default function ExpenseDetail({
     };
   }, [amount, vatIncluded, withHoldingTax, WHTpercent]);
 
-  const imagePreviewUri = isImageAttachment ? attachment?.uri : image;
-  const pdfPreviewUri = isPdfAttachment ? attachment?.uri : pdfUrl;
+  const imagePreviewUriRaw = isImageAttachment ? attachment?.uri : image;
+  const pdfPreviewUriRaw = isPdfAttachment ? attachment?.uri : pdfUrl;
+  const imagePreviewUri = normalizeAttachmentUri(imagePreviewUriRaw, "image");
+  const pdfPreviewUri = normalizeAttachmentUri(pdfPreviewUriRaw, "pdf");
   const hasImagePreview = Boolean(imagePreviewUri);
   const hasPdfPreview = Boolean(pdfPreviewUri);
+  const pdfWebViewUri =
+    Platform.OS === "android" &&
+    hasPdfPreview &&
+    /^https?:\/\//i.test(pdfPreviewUri)
+      ? `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(
+          pdfPreviewUri
+        )}`
+      : pdfPreviewUri;
 
   const handleDateTimeChange = (next: Date) => {
     setDate(format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
@@ -636,7 +692,7 @@ export default function ExpenseDetail({
               flexGrow: 1,
               justifyContent: "center",
               alignItems: "center",
-              padding: 20,
+              padding: isMobile() ? (hasAttachment ? 0 : 20) : 20,
             }}
             style={{
               width: Platform.OS === "web" ? "100%" : "100%",
@@ -697,8 +753,11 @@ export default function ExpenseDetail({
                       {Platform.OS !== "web" ? (
                         <WebView
                           originWhitelist={["*"]}
-                          source={{ uri: pdfPreviewUri }}
+                          source={{ uri: pdfWebViewUri }}
                           style={{ flex: 1 }}
+                          mixedContentMode="always"
+                          allowingReadAccessToURL="*"
+                          allowFileAccess
                         />
                       ) : (
                         <View className="flex-1 justify-center items-center bg-white">
@@ -737,35 +796,64 @@ export default function ExpenseDetail({
                   />
                 </View>
 
-                <TextInput
-                  style={{
-                    fontFamily:
-                      i18n.language === "th"
-                        ? "IBMPlexSansThai-Medium"
-                        : "Poppins-Regular",
-                    textAlign: "center",
-                    fontSize: 16,
-                    color: theme === "dark" ? "#818181" : "#68655f",
-                  }}
-                  value={desc}
-                  onChangeText={setDesc}
-                  placeholder={t("expense.detail.description")}
-                  placeholderTextColor={
-                    theme === "dark" ? "#6d6c67" : "#adaaa6"
-                  }
-                />
-                <TextInput
-                  className={`text-center text-2xl font-bold py-3 ${
-                    theme === "dark" ? "text-secondary-100" : "text-secondary"
-                  }`}
-                  value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                  onChangeText={(val) => setAmount(val.replace(/,/g, ""))}
-                  placeholder="0.00"
-                  placeholderTextColor={
-                    theme === "dark" ? "#6d6c67" : "#adaaa6"
-                  }
-                  keyboardType="numeric"
-                />
+                <View style={{ position: "relative" }}>
+                  <TextInput
+                    style={{
+                      fontFamily:
+                        i18n.language === "th"
+                          ? "IBMPlexSansThai-Medium"
+                          : "Poppins-Regular",
+                      textAlign: "center",
+                      fontSize: 16,
+                      color: theme === "dark" ? "#818181" : "#68655f",
+                    }}
+                    value={desc}
+                    onChangeText={setDesc}
+                    placeholder={t("expense.detail.description")}
+                    placeholderTextColor={
+                      theme === "dark" ? "#6d6c67" : "#adaaa6"
+                    }
+                  />
+
+                  {isMobile() && hasAttachment && (
+                    <TouchableOpacity
+                      onPress={onClose}
+                      activeOpacity={0.8}
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: 22,
+                        zIndex: 20,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:
+                          theme === "dark" ? "#27272a" : "#f3f4f6",
+                      }}
+                    >
+                      <Ionicons
+                        name="close"
+                        size={18}
+                        color={theme === "dark" ? "#f4f4f5" : "#111827"}
+                      />
+                    </TouchableOpacity>
+                  )}
+
+                  <TextInput
+                    className={`text-center text-2xl font-bold py-3 ${
+                      theme === "dark" ? "text-secondary-100" : "text-secondary"
+                    }`}
+                    value={amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    onChangeText={(val) => setAmount(val.replace(/,/g, ""))}
+                    placeholder="0.00"
+                    placeholderTextColor={
+                      theme === "dark" ? "#6d6c67" : "#adaaa6"
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
 
                 {((vat && vatIncluded) ||
                   (DocumentType &&
