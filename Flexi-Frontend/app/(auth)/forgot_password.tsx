@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
@@ -51,47 +51,55 @@ export default function ForgotPassword() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
-      <View style={styles.header}>
-       
-        <Text style={styles.headerTitle}>{t('forgotPassword.title')}</Text>
-      </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} keyboardShouldPersistTaps="handled">
+          <View style={styles.header}>
+          
+            <Text style={styles.headerTitle}>{t('forgotPassword.title')}</Text>
+          </View>
 
-      <View style={styles.content}>
-        <Text style={styles.subtitle}>
-          {t('forgotPassword.subtitle')}
-        </Text>
+          <View style={styles.content}>
+            <Text style={styles.subtitle}>
+              {t('forgotPassword.subtitle')}
+            </Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>{t('forgotPassword.emailLabel')}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={t('forgotPassword.emailPlaceholder')}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>{t('forgotPassword.emailLabel')}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={t('forgotPassword.emailPlaceholder')}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
 
-        <TouchableOpacity 
-          style={[styles.button, !email.trim() && styles.buttonDisabled]} 
-          onPress={handleForgotPassword}
-          disabled={isLoading || !email.trim()}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>{t("forgotPassword.sendButton")}</Text>
-          )}
-        </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.button, !email.trim() && styles.buttonDisabled]} 
+              onPress={handleForgotPassword}
+              disabled={isLoading || !email.trim()}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>{t("forgotPassword.sendButton")}</Text>
+              )}
+            </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.linkButton} 
-          onPress={() => router.push('/login')}
-        >
-          <Text style={styles.linkText}>{t('forgotPassword.backToLogin')}</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity 
+              style={styles.linkButton} 
+              onPress={() => router.push('/login')}
+            >
+              <Text style={styles.linkText}>{t('forgotPassword.backToLogin')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

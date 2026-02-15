@@ -20,6 +20,8 @@ export default function ResetPassword() {
   const rawToken = Array.isArray(token) ? token[0] : token;
   // Some email clients can wrap long URLs and introduce whitespace/newlines.
   const normalizedToken = typeof rawToken === 'string' ? rawToken.replace(/\s+/g, '') : rawToken;
+  
+  console.log("ResetPassword Screen - Token:", normalizedToken);
 
   const getErrorMessage = (err: unknown) => {
     if (!err) return t("common.networkError");
@@ -42,48 +44,67 @@ export default function ResetPassword() {
       Alert.alert(
         t('resetPassword.invalidLink'),
         t('resetPassword.invalidLinkMessage'),
-        [{ text: 'OK', onPress: () => router.push('/forgot_password') }]
+        [{ text: t('common.ok'), onPress: () => router.push('/forgot_password') }]
       );
     }
   }, [normalizedToken, t, router]);
 
   const handleResetPassword = async () => {
+    console.log("handleResetPassword called");
+
     // Validate inputs
+    if (!normalizedToken) {
+      console.log("Validation failed: No token");
+      Alert.alert(t('resetPassword.error'), t('resetPassword.invalidLink'));
+      return;
+    }
+
     if (!newPassword.trim()) {
+      console.log("Validation failed: Empty password");
       Alert.alert(t('resetPassword.error'), t('resetPassword.passwordRequired'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
+      console.log("Validation failed: Mismatch");
       Alert.alert(t('resetPassword.error'), t('resetPassword.passwordsDoNotMatch'));
       return;
     }
 
     if (newPassword.length < 8 || !isStrongPassword(newPassword)) {
+      console.log("Validation failed: Weak password");
       Alert.alert(t('resetPassword.error'), t('resetPassword.passwordLength'));
       return;
     }
 
     try {
+      console.log("Calling resetPasswordAPI...");
       setIsLoading(true);
       await CallAPIUser.resetPasswordAPI({ 
         token: (normalizedToken as string), 
         newPassword 
       });
+      console.log("API call successful");
       
       setIsLoading(false);
       
       // Show success message and navigate to login
-      Alert.alert(
-        t('resetPassword.success'), 
-        t('resetPassword.successMessage'), 
-        [{ text: t('resetPassword.login'), onPress: () => router.push('/login') }]
-      );
+      if (Platform.OS === 'web') {
+        alert(t('resetPassword.successMessage'));
+        router.replace('/login');
+      } else {
+        Alert.alert(
+          t('resetPassword.success'), 
+          t('resetPassword.successMessage'), 
+          [{ text: t('resetPassword.login'), onPress: () => router.replace('/login') }]
+        );
+      }
     } catch (error) {
+      console.log("API call failed:", error);
       setIsLoading(false);
       Alert.alert(
         t('resetPassword.error'), 
-        getErrorMessage(error) || 'Failed to reset password. The link may have expired.'
+        getErrorMessage(error) || t('resetPassword.invalidLinkMessage')
       );
     }
   };
@@ -114,6 +135,7 @@ export default function ResetPassword() {
                 secureTextEntry={!showPassword}
                 value={newPassword}
                 onChangeText={setNewPassword}
+                autoCapitalize="none"
               />
               <TouchableOpacity 
                 style={styles.eyeIcon}
@@ -136,6 +158,7 @@ export default function ResetPassword() {
               secureTextEntry={!showPassword}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
+              autoCapitalize="none"
             />
           </View>
 
