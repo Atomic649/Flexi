@@ -142,10 +142,10 @@ export default function ResetPassword() {
           <TouchableOpacity 
             style={[
               styles.button, 
-              (!newPassword.trim() || !confirmPassword.trim()) && styles.buttonDisabled
+              isLoading && styles.buttonDisabled
             ]} 
             onPress={handleResetPassword}
-            disabled={isLoading || !newPassword.trim() || !confirmPassword.trim()}
+            disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
