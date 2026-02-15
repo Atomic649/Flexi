@@ -389,6 +389,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
           businessType: businessAccInput.businessType,
           taxType: businessAccInput.taxType,
           userId: businessAccInput.userId,
+          vat: businessAccInput.vat,
           memberId: [memberId.uniqueId],
           businessAddress: businessAccInput.businessAddress,
           businessAvatar: businessAccInput.businessAvatar,

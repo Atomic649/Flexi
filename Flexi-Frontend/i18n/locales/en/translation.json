@@ -77,7 +77,9 @@
       "ForgotPasswordButton": "Forgot Password",
       "validation": {
         "incomplete": "Incomplete data",
-        "invalidData": "Please enter valid data"
+        "invalidData": "Please enter valid data",
+        "email": "Please enter a valid email address.",
+        "password": "Password is required."
       },
       "alerts": {
         "error": "Login failed",
@@ -92,6 +94,9 @@
         "sentTitle": "Verification email sent",
         "sentMessage": "If your email is registered, you will receive a verification link within a few minutes.",
         "resendFailed": "Failed to resend email. Please try again."
+      },
+      "backendErrors": {
+        "invalidCredentials": "Invalid email or password."
       }
     },
     "update": {
@@ -137,10 +142,20 @@
           "default": "Please enter valid data.",
           "email": "Please enter a valid email address.",
           "username": "Username must start with @ ,use only English letters and numbers, and be between 3 and 30 characters long.",
+          "usernamePattern": "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
           "password": "Password must include uppercase, lowercase, number, and special character, and be at least 8 characters long.",
+          "passwordMin": "Password must be at least 8 characters.",
+          "passwordMax": "Password must be less than 128 characters.",
+          "passwordPattern": "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
           "firstName": "First name is invalid.",
           "lastName": "Last name is invalid.",
-          "phone": "Phone number must be 10 digits."
+          "phone": "Phone number must be 10 digits.",
+          "usernameMin": "Username must be at least 4 characters.",
+          "usernameMax": "Username must include less than 30 characters.",
+          "userExists": "User already exists",
+          "invalidEmailDomain": "Invalid email domain",
+          "emailSendFailed": "Failed to send verification email",
+          "undefined": "Please enter valid data."
         }
       }
     },
@@ -797,7 +812,8 @@
       "successTitle": "Success",
       "successMessage": "View in the Expense List",
       "enterPassword": "Re-enter password for security",
-      "password": "Enter PDF Password"
+      "password": "Enter PDF Password",
+      "failedPdf": "Invalid PDF file or unable to upload"
     },
     "create": {
       "error": "Please fill in all required fields",

@@ -1,4 +1,11 @@
-import { Dimensions, ScrollView, Switch, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
+import {
+  Dimensions,
+  ScrollView,
+  Switch,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import { CustomButton } from "@/components/CustomButton";
@@ -15,7 +22,6 @@ import FormField2 from "@/components/formfield/FormField2";
 import { Ionicons } from "@expo/vector-icons";
 import { isDesktop } from "@/utils/responsive";
 
-
 export default function BusinessInfo() {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -26,8 +32,14 @@ export default function BusinessInfo() {
   const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
-  type DocumentTypeOption = "Invoice" | "Receipt" | "Quotation" | "WithholdingTax";
-  const [documentTypes, setDocumentTypes] = useState<DocumentTypeOption[]>(["Receipt"]);
+  type DocumentTypeOption =
+    | "Invoice"
+    | "Receipt"
+    | "Quotation"
+    | "WithholdingTax";
+  const [documentTypes, setDocumentTypes] = useState<DocumentTypeOption[]>([
+    "Receipt",
+  ]);
   const [error, setError] = useState("");
 
   // Ensure business username always begins with a single '@' and cannot be removed
@@ -60,9 +72,9 @@ export default function BusinessInfo() {
   const handleDocumentTypeToggle = (type: DocumentTypeOption) => {
     // Don't allow unchecking Receipt as it's required
     if (type === "Receipt") return;
-    setDocumentTypes(prev => {
+    setDocumentTypes((prev) => {
       if (prev.includes(type)) {
-        return prev.filter(t => t !== type);
+        return prev.filter((t) => t !== type);
       } else {
         return [...prev, type];
       }
@@ -80,8 +92,10 @@ export default function BusinessInfo() {
       const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
       console.log("data", data);
 
-  setbusinessName(data.businessName || "");
-  setBusinessUserName(normalizeBusinessUserName(data.businessUserName || ""));
+      setbusinessName(data.businessName || "");
+      setBusinessUserName(
+        normalizeBusinessUserName(data.businessUserName || ""),
+      );
       settaxType(data.taxType || "");
       settaxId(data.taxId || "");
       setbusinessType(data.businessType || "");
@@ -106,7 +120,13 @@ export default function BusinessInfo() {
     setError("");
 
     // Check if all fields are filled
-    if (!businessName || !taxType || !taxId || !businessType || !businessAddress) {
+    if (
+      !businessName ||
+      !taxType ||
+      !taxId ||
+      !businessType ||
+      !businessAddress
+    ) {
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
@@ -218,7 +238,9 @@ export default function BusinessInfo() {
               title={t("auth.register.username") || "Business Username"}
               placeholder={t("auth.register.username") || "Business Username"}
               value={businessUserName}
-              handleChangeText={(text: string) => setBusinessUserName(normalizeBusinessUserName(text))}
+              handleChangeText={(text: string) =>
+                setBusinessUserName(normalizeBusinessUserName(text))
+              }
               otherStyles="mt-7"
               autoCapitalize="none"
               autoCorrect={false}
@@ -242,7 +264,9 @@ export default function BusinessInfo() {
               ]}
               placeholder={t("auth.businessRegister.taxType")}
               onValueChange={settaxType}
-              selectedValue={t(`auth.businessRegister.taxTypeOption.${taxType}`)} // Pre-fill with existing data
+              selectedValue={t(
+                `auth.businessRegister.taxTypeOption.${taxType}`,
+              )} // Pre-fill with existing data
               otherStyles="mt-7"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
@@ -264,8 +288,17 @@ export default function BusinessInfo() {
               <Switch
                 value={isVatRegistered}
                 onValueChange={setIsVatRegistered}
-                trackColor={{ false: theme === "dark" ? "#606060" : "#b1b1b1", true: "#04ecc1" }}
-                thumbColor={isVatRegistered ? "#009688" : theme === "dark" ? "#222" : "#fff"}
+                trackColor={{
+                  false: theme === "dark" ? "#606060" : "#b1b1b1",
+                  true: "#04ecc1",
+                }}
+                thumbColor={
+                  isVatRegistered
+                    ? "#009688"
+                    : theme === "dark"
+                      ? "#222"
+                      : "#fff"
+                }
               />
             </View>
 
@@ -273,20 +306,24 @@ export default function BusinessInfo() {
               title={t("auth.businessRegister.taxId")}
               placeholder={t("0000000000000")}
               value={taxId} // Pre-fill with existing data
-              handleChangeText={settaxId}
+              handleChangeText={(text: string) => {
+                const filtered = text.replace(/[^0-9]/g, "").slice(0, 13);
+                settaxId(filtered);
+              }}
               otherStyles="mt-7"
               keyboardType="number-pad"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-            
             />
 
             <Dropdown2
               title={t("auth.businessRegister.businessType")}
               options={[
                 {
-                  label: t("auth.businessRegister.businessTypeOption.OnlineSale"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.OnlineSale",
+                  ),
                   value: "OnlineSale",
                 },
                 {
@@ -294,7 +331,9 @@ export default function BusinessInfo() {
                   value: "Massage",
                 },
                 {
-                  label: t("auth.businessRegister.businessTypeOption.Restaurant"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.Restaurant",
+                  ),
                   value: "Restaurant",
                 },
                 {
@@ -314,7 +353,9 @@ export default function BusinessInfo() {
                   value: "Tutor",
                 },
                 {
-                  label: t("auth.businessRegister.businessTypeOption.Influencer"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.Influencer",
+                  ),
                   value: "Influencer",
                 },
                 {
@@ -323,7 +364,9 @@ export default function BusinessInfo() {
                 },
               ]}
               placeholder={t("auth.businessRegister.chooseBusinessType")}
-              selectedValue={t(`auth.businessRegister.businessTypeOption.${businessType}`)} // Pre-fill with existing data
+              selectedValue={t(
+                `auth.businessRegister.businessTypeOption.${businessType}`,
+              )} // Pre-fill with existing data
               onValueChange={setbusinessType}
               otherStyles="mt-7"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -340,7 +383,10 @@ export default function BusinessInfo() {
               title={t("auth.businessRegister.businessPhone")}
               placeholder={t("auth.businessRegister.businessPhone")}
               value={businessPhone}
-              handleChangeText={setBusinessPhone}
+              handleChangeText={(text: string) => {
+                const filtered = text.replace(/[^0-9]/g, "").slice(0, 10);
+                setBusinessPhone(filtered);
+              }}
               otherStyles="mt-7"
               keyboardType="phone-pad"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -375,11 +421,20 @@ export default function BusinessInfo() {
 
             {/* Document Types Selection */}
             <View style={{ marginTop: 28 }}>
-              <CustomText className={`text-base font-medium mb-3 ${useTextColorClass()}`}>
+              <CustomText
+                className={`text-base font-medium mb-3 ${useTextColorClass()}`}
+              >
                 {t("auth.businessRegister.documentTypes")}
               </CustomText>
-              
-              {(["Quotation","Invoice", "Receipt", "WithholdingTax" ] as DocumentTypeOption[]).map((type) => (
+
+              {(
+                [
+                  "Quotation",
+                  "Invoice",
+                  "Receipt",
+                  "WithholdingTax",
+                ] as DocumentTypeOption[]
+              ).map((type) => (
                 <TouchableOpacity
                   key={type}
                   style={{
@@ -399,11 +454,13 @@ export default function BusinessInfo() {
                       height: 24,
                       borderRadius: 4,
                       borderWidth: 2,
-                      borderColor: documentTypes.includes(type) 
-                        ? "#04ecc1" 
-                        : theme === "dark" ? "#666" : "#ccc",
-                      backgroundColor: documentTypes.includes(type) 
-                        ? "#04ecc1" 
+                      borderColor: documentTypes.includes(type)
+                        ? "#04ecc1"
+                        : theme === "dark"
+                          ? "#666"
+                          : "#ccc",
+                      backgroundColor: documentTypes.includes(type)
+                        ? "#04ecc1"
                         : "transparent",
                       alignItems: "center",
                       justifyContent: "center",
@@ -411,11 +468,7 @@ export default function BusinessInfo() {
                     }}
                   >
                     {documentTypes.includes(type) && (
-                      <Ionicons 
-                        name="checkmark" 
-                        size={16} 
-                        color="#fff" 
-                      />
+                      <Ionicons name="checkmark" size={16} color="#fff" />
                     )}
                   </View>
                   <CustomText className={useTextColorClass()}>

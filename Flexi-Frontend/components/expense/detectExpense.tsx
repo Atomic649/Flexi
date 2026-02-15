@@ -72,16 +72,26 @@ export default function DetectExpense() {
       return;
     } else {
       try {
+        let finalUri = uri;
+        if (Platform.OS === "ios") {
+          const destPath = `${FileSystem.documentDirectory}preview.pdf`;
+          await FileSystem.copyAsync({
+            from: uri,
+            to: destPath,
+          });
+          finalUri = destPath;
+        }
+
         if (Platform.OS !== "web") {
-          const fileInfo = await FileSystem.getInfoAsync(uri);
+          const fileInfo = await FileSystem.getInfoAsync(finalUri);
           console.log("🔥fileInfo", fileInfo);
         } else {
           console.warn("File system operations are not supported on web.");
         }
 
-        setPdfUri(uri);
+        setPdfUri(finalUri);
         setModalVisible(true);
-        console.log("🔥pdfUriChoose", pdfUri);
+        console.log("🔥pdfUriChoose", finalUri);
       } catch (error) {
         console.error("🚨pickAndProcessPdf", error);
         // Clear inline error and show a CustomAlert instead
@@ -383,6 +393,7 @@ export default function DetectExpense() {
                   className="flex-1 w-full h-full"
                   originWhitelist={["*"]}
                   source={{ uri: pdfUri }}
+                  allowingReadAccessToURL={pdfUri}
                 />
               ) : (
                 <View className="flex-1 justify-center items-center">

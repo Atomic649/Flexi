@@ -122,11 +122,11 @@ export default function Login() {
                 } catch (e: any) {
                   const errorMessage =
                     e?.message ||
-                    t("auth.login.emailVerification.resendFailed");
+                    "auth.login.emailVerification.resendFailed";
                   setAlertConfig({
                     visible: true,
                     title: t("common.error"),
-                    message: errorMessage,
+                    message: t(errorMessage),
                     buttons: [
                       {
                         text: t("common.ok"),
@@ -170,7 +170,7 @@ export default function Login() {
       // Handle login error properly
       console.error("Login error:", error);
 
-      let errorMessage = t("auth.login.alerts.genericError");
+      let errorMessage = "auth.login.alerts.genericError";
 
       // Extract meaningful error message
       if (error && typeof error === "object") {
@@ -191,7 +191,7 @@ export default function Login() {
         setAlertConfig({
           visible: true,
           title: t("auth.login.alerts.error"),
-          message: errorMessage,
+          message: t(errorMessage),
           buttons: [
             {
               text: t("auth.login.alerts.partnerOption", "Partner"),
@@ -229,7 +229,7 @@ export default function Login() {
         setAlertConfig({
           visible: true,
           title: t("auth.login.alerts.error"),
-          message: errorMessage,
+          message: t(errorMessage),
           buttons: [
             {
               text: t("common.ok"),

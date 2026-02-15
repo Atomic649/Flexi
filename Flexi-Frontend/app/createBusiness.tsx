@@ -2,6 +2,7 @@ import {
   ScrollView,
   Dimensions, // Import Dimensions for responsive width
   TouchableOpacity,
+  Switch,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
@@ -27,6 +28,7 @@ export default function CreateBusiness() {
   const { triggerFetch } = useBusiness();
   const [businessName, setbusinessName] = useState("");
   const [taxType, settaxType] = useState("");
+  const [isVatRegistered, setIsVatRegistered] = useState(false);
   const [taxId, settaxId] = useState("");
   const [businessType, setbusinessType] = useState("");
   type DocumentTypeOption =
@@ -38,6 +40,7 @@ export default function CreateBusiness() {
     "Receipt",
   ]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Add alert config state
   const [alertConfig, setAlertConfig] = useState<{
@@ -59,9 +62,11 @@ export default function CreateBusiness() {
   // Handle register
   const handleRegister = async () => {
     setError("");
+    setLoading(true);
 
     // Check if all fields are filled
     if (!businessName || !taxType || !taxId || !businessType) {
+      setLoading(false);
       setAlertConfig({
         visible: true,
         title: t("auth.register.validation.incomplete"),
@@ -82,6 +87,7 @@ export default function CreateBusiness() {
       const userId = await getUserId();
       if (userId === null) {
         setError(t("auth.register.validation.invalidUserId"));
+        setLoading(false);
         return;
       }
 
@@ -91,6 +97,7 @@ export default function CreateBusiness() {
         businessType,
         taxType,
         userId,
+        vat: isVatRegistered,
         DocumentType: documentTypes.filter(
           (t) => t === "Invoice" || t === "Receipt" || t === "Quotation"
         ),
@@ -100,6 +107,7 @@ export default function CreateBusiness() {
 
       // Trigger business data refresh
       triggerFetch();
+      setLoading(false);
 
       setAlertConfig({
         visible: true,
@@ -120,6 +128,7 @@ export default function CreateBusiness() {
       });
     } catch (error: any) {
       setError(error.message);
+      setLoading(false);
     }
   };
 
@@ -189,11 +198,45 @@ export default function CreateBusiness() {
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
           />
 
+          {/* VAT Toggle */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 28,
+              marginBottom: 8,
+            }}
+          >
+            <CustomText style={{ marginRight: 12 }}>
+              {isVatRegistered
+                ? t("auth.businessRegister.vatRegistered")
+                : t("auth.businessRegister.noVatRegistered")}
+            </CustomText>
+            <Switch
+              value={isVatRegistered}
+              onValueChange={setIsVatRegistered}
+              trackColor={{
+                false: theme === "dark" ? "#606060" : "#b1b1b1",
+                true: "#04ecc1",
+              }}
+              thumbColor={
+                isVatRegistered
+                  ? "#009688"
+                  : theme === "dark"
+                  ? "#222"
+                  : "#fff"
+              }
+            />
+          </View>
+
           <FormField2
             title={t("auth.businessRegister.taxId")}
             placeholder={t("0000000000000")}
             value={taxId}
-            handleChangeText={settaxId}
+            handleChangeText={(text: string) => {
+                  const filtered = text.replace(/[^0-9]/g, "").slice(0, 13);
+                  settaxId(filtered);
+                }}
             otherStyles="mt-7"
             keyboardType="number-pad"
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -320,6 +363,7 @@ export default function CreateBusiness() {
             handlePress={handleRegister}
             containerStyles="mt-7"
             textStyles="!text-white"
+            isLoading={loading}
           />
         </View>
       </ScrollView>

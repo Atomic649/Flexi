@@ -82,45 +82,45 @@ describe('Register password policy & username/email validation', () => {
   test('rejects too short password', async () => {
     const res = await request(app).post('/register').send(basePayload({ password: 'Ab1@' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/at least 8 characters/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordMin");
   });
 
   test('rejects missing uppercase', async () => {
     const res = await request(app).post('/register').send(basePayload({ password: 'secure123@' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/uppercase/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordPattern");
   });
 
   test('rejects missing lowercase', async () => {
     const res = await request(app).post('/register').send(basePayload({ password: 'SECURE123@' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/lowercase/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordPattern");
   });
 
   test('rejects missing digit', async () => {
     const res = await request(app).post('/register').send(basePayload({ password: 'Secure@@@' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/number/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordPattern");
   });
 
   test('rejects missing special character', async () => {
     const res = await request(app).post('/register').send(basePayload({ password: 'Secure1234' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/special character/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordPattern");
   });
 
   test('rejects existing email user', async () => {
     prismaMock.user.findUnique.mockImplementation(() => Promise.resolve({ id: 99, email: 'taken@example.com' }));
     const res = await request(app).post('/register').send(basePayload({ email: 'taken@example.com' }));
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/User already exists/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.userExists");
   });
 
   test('rejects invalid username format (missing @)', async () => {
     const payload = basePayload({ username: 'plainuser', password: 'StrongPass9@' });
     const res = await request(app).post('/register').send(payload);
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/must start with @/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.usernamePattern");
   });
 });
 
@@ -156,19 +156,20 @@ describe('Login email & password policy', () => {
   test('rejects invalid email format', async () => {
     const res = await request(app).post('/login').send({ email: 'bad-email', password: 'StrongPass9@' });
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/email/i);
+    expect(res.body.message).toBe("auth.login.validation.email");
   });
 
   test('rejects wrong password', async () => {
     const res = await request(app).post('/login').send({ email: 'login@example.com', password: 'WrongPass9@' });
     expect(res.status).toBe(401);
-    expect(res.body.message).toMatch(/does not match/i);
+    expect(res.body.message).toBe("auth.login.backendErrors.invalidCredentials");
   });
 
   test('rejects missing uppercase via password policy on login', async () => {
+    // Note: Login no longer enforces complexity, but will fail auth if password doesn't match
     const res = await request(app).post('/login').send({ email: 'login@example.com', password: 'weakpass9@' });
-    expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/uppercase/i);
+    expect(res.status).toBe(401);
+    expect(res.body.message).toBe("auth.login.backendErrors.invalidCredentials");
   });
 });
 
@@ -203,7 +204,7 @@ describe('Change password flow (email & username unaffected)', () => {
   test('rejects weak new password (missing digit)', async () => {
     const res = await request(app).post('/change-password').send({ id: 77, currentPassword: 'CurrentPass1!', newPassword: 'NoDigit@@@' });
     expect(res.status).toBe(400);
-    expect(res.body.message).toMatch(/number/i);
+    expect(res.body.message).toBe("auth.register.backendErrors.validation.passwordPattern");
   });
 });
 

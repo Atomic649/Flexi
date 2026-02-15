@@ -117,6 +117,16 @@ export default function Register() {
     const detailType = apiError?.details?.type;
     const detailMessage = apiError?.details?.message;
     const backendMessage = apiError?.message;
+    
+    // Check if the backend message is a specific translation key
+    if (backendMessage && backendMessage.startsWith("auth.register.backendErrors.")) {
+      const translated = t(backendMessage);
+      // If it translates to something different (i.e., key exists), use it directly
+      if (translated !== backendMessage) {
+        return translated;
+      }
+    }
+
     const translateOrNull = (key: string) => {
       const translated = t(key);
       return translated !== key ? translated : null;

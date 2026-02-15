@@ -35,10 +35,10 @@ const passwordSchema = Joi.string()
   .max(128)
   .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])(?!.*\s).+$/)
   .messages({
-    "string.min": "Password must be at least 8 characters.",
-    "string.max": "Password must be less than 128 characters.",
+    "string.min": "auth.register.backendErrors.validation.passwordMin",
+    "string.max": "auth.register.backendErrors.validation.passwordMax",
     "string.pattern.base":
-      "Password must include uppercase, lowercase, number, and special character, and contain no spaces.",
+      "auth.register.backendErrors.validation.passwordPattern",
   });
 
 // Username must start with '@' and include only English letters and numbers (no spaces or special characters)
@@ -47,7 +47,7 @@ const usernameSchema = Joi.string()
   .pattern(/^@[A-Za-z0-9]+$/)
   .messages({
     "string.pattern.base":
-      "Username must start with @ and contain only English letters and numbers (no spaces or special characters).",
+      "auth.register.backendErrors.validation.usernamePattern",
   });
 
 // Centralized bcrypt cost factor (env override; default 12 for stronger security)
@@ -268,19 +268,37 @@ const register = async (req: Request, res: Response) => {
   }
 
   const schema = Joi.object({
-    email: Joi.string().email().required(),
-    username: usernameSchema.required().min(4).max(30),
-    password: passwordSchema.required(),
-    firstName: Joi.string().required().max(100),
-    lastName: Joi.string().required().max(100),
-    phone: Joi.string().required().min(10).max(10),
+    email: Joi.string().email().required().messages({
+      "string.email": "auth.register.backendErrors.validation.email",
+      "any.required": "auth.register.backendErrors.validation.email",
+    }),
+    username: usernameSchema.required().min(4).max(30).messages({
+      "string.min": "auth.register.backendErrors.validation.usernameMin",
+      "string.max": "auth.register.backendErrors.validation.usernameMax",
+      "any.required": "auth.register.backendErrors.validation.username",
+    }),
+    password: passwordSchema.required().messages({
+        "any.required": "auth.register.backendErrors.validation.password",
+    }),
+    firstName: Joi.string().required().max(100).messages({
+      "any.required": "auth.register.backendErrors.validation.firstName",
+      "string.max": "auth.register.backendErrors.validation.firstName",
+    }),
+    lastName: Joi.string().required().max(100).messages({
+      "any.required": "auth.register.backendErrors.validation.lastName",
+      "string.max": "auth.register.backendErrors.validation.lastName",
+    }),
+    phone: Joi.string().required().length(10).messages({
+      "string.length": "auth.register.backendErrors.validation.phone",
+      "any.required": "auth.register.backendErrors.validation.phone",
+    }),
     website: Joi.string().allow("").optional(),
   });
   const { error } = schema.validate(userInput);
   if (error) {
     const detail = error.details[0];
     return res.status(400).json({
-      message: "Validation failed",
+      message: detail.message,
       reason: "VALIDATION_ERROR",
       details: {
         field: detail?.context?.key,
@@ -300,7 +318,7 @@ const register = async (req: Request, res: Response) => {
     if (existingUser) {
       return res.status(400).json({
         status: "error",
-        message: "User already exists",
+        message: "auth.register.backendErrors.validation.userExists",
         reason: "USER_EXISTS",
       });
     }
@@ -314,25 +332,27 @@ const register = async (req: Request, res: Response) => {
       if (!mxRecords || mxRecords.length === 0) {
         return res.status(400).json({
           status: "error",
-          message: "Invalid email domain. Please use a valid email address.",
+          message:
+            "auth.register.backendErrors.validation.invalidEmailDomain",
           reason: "INVALID_EMAIL_DOMAIN",
           details: {
-             field: "email",
+            field: "email",
              message: "Domain has no valid mail servers",
-          }
+          },
         });
       }
     } catch (dnsError) {
       console.error("DNS MX lookup failed:", dnsError);
-       return res.status(400).json({
-          status: "error",
-          message: "Could not verify email domain. Please check your email address.",
-          reason: "INVALID_EMAIL_DOMAIN",
-          details: {
-             field: "email",
-             message: "Domain lookup failed",
-          }
-        });
+      return res.status(400).json({
+        status: "error",
+        message:
+          "auth.register.backendErrors.validation.invalidEmailDomain",
+        reason: "INVALID_EMAIL_DOMAIN",
+        details: {
+          field: "email",
+          message: "Domain lookup failed",
+        },
+      });
     }
 
     // Hash password
@@ -425,8 +445,13 @@ const login = async (req: Request, res: Response) => {
     typeof userInput?.email === "string" ? userInput.email.trim() : userInput?.email;
 
   const schema = Joi.object({
-    email: Joi.string().trim().email().required(),
-    password: passwordSchema.required(),
+    email: Joi.string().trim().email().required().messages({
+      "string.email": "auth.login.validation.email",
+      "any.required": "auth.login.validation.email",
+    }),
+    password: Joi.string().required().messages({
+      "any.required": "auth.login.validation.password",
+    }),
   });
 
   const { error } = schema.validate({ ...userInput, email: normalizedEmail });
@@ -441,13 +466,13 @@ const login = async (req: Request, res: Response) => {
       },
     });
     if (!user) {
-      return res.status(401).json({ message: "invalid credentials" });
+      return res.status(401).json({ message: "auth.login.backendErrors.invalidCredentials" });
     }
     const valid = await bcrypt.compare(userInput.password, user.password);
     if (!valid) {
       return res
         .status(401)
-        .json({ message: "Email and password does not match" });
+        .json({ message: "auth.login.backendErrors.invalidCredentials" });
     }
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, "secret", tokenConfig);

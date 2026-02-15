@@ -114,7 +114,13 @@ describe("businessAccController", () => {
         .post("/businessacc/register")
         .send(baseCreatePayload({ businessUserName: "plain" }));
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/must start with @/i);
+      
+      // Handle structured validation error
+      if (res.body.message === "Validation failed" && res.body.reason === "VALIDATION_ERROR") {
+        expect(res.body.details.message).toMatch(/must start with @/i);
+      } else {
+        expect(res.body.message).toMatch(/must start with @/i);
+      }
     });
 
     test("rejects invalid DocumentType value", async () => {
@@ -127,8 +133,14 @@ describe("businessAccController", () => {
           })
         );
       expect(res.status).toBe(400);
-      // Joi schema triggers first for create; accept either our custom or Joi's "must be one of" message
-      expect(res.body.message).toMatch(/Invalid DocumentType|must be one of/i);
+      
+      // Check for structured validation error first
+      if (res.body.message === "Validation failed" && res.body.reason === "VALIDATION_ERROR") {
+        expect(res.body.details.message).toMatch(/must be one of/i);
+      } else {
+        // Fallback for direct error messages
+        expect(res.body.message).toMatch(/Invalid DocumentType|must be one of/i);
+      }
     });
   });
 
