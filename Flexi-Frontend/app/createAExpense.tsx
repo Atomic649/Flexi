@@ -16,7 +16,7 @@ import {
   CustomButton,
   MiniCustomButton,
 } from "@/components/CustomButton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -642,6 +642,60 @@ export default function CreateExpense({
     buttons: [],
   });
 
+  const isClosingRef = useRef(false);
+
+  const checkHasData = () =>
+    note.trim() !== "" ||
+    (amount !== "" && Number(amount) > 0) ||
+    attachment !== null ||
+    sName.trim() !== "" ||
+    sTaxId.trim() !== "" ||
+    taxInvoiceNo.trim() !== "" ||
+    sAddress.trim() !== "" ||
+    group !== undefined ||
+    desc.trim() !== "";
+
+  const handleAttemptClose = () => {
+    if (isClosingRef.current) return;
+    if (!checkHasData()) {
+      handleClose();
+      return;
+    }
+    setAlertConfig({
+      visible: true,
+      title: t("expense.detail.unsavedChanges"),
+      message: t("expense.detail.unsavedChangesMessage"),
+      buttons: [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+          onPress: () =>
+            setAlertConfig((prev) => ({ ...prev, visible: false })),
+        },
+        {
+          text: t("expense.detail.discardAndExit"),
+          style: "destructive",
+          onPress: () => {
+            isClosingRef.current = true;
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            setTimeout(() => {
+              handleCloseWithoutAlert();
+              isClosingRef.current = false;
+            }, 50);
+          },
+        },
+        {
+          text: t("expense.detail.saveAndExit"),
+          style: "default",
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            handleCreateOrUpdate();
+          },
+        },
+      ],
+    });
+  };
+
   const clearForm = () => {
     setNote("");
     setAmount("");
@@ -1143,7 +1197,7 @@ export default function CreateExpense({
       visible={visible}
       transparent={true}
       animationType="slide"
-      onRequestClose={handleClose}
+      onRequestClose={handleAttemptClose}
     >
       <TouchableOpacity
         style={{
@@ -1155,6 +1209,7 @@ export default function CreateExpense({
         }}
         activeOpacity={1}
         onPressOut={() => {
+          if (alertConfig.visible) return;
           // Allow closing by tapping the backdrop when amount is empty or <= 0.
           // Require a note only when amount > 0.
           if (Number(amount) > 0 && (!note || note.trim() === "")) {
@@ -1270,8 +1325,7 @@ export default function CreateExpense({
                     >
                       <Ionicons name="remove" size={16} color="#fff" />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={handlePreviewAttachment}
+                    <View
                       style={{
                         width: "100%",
                         height: Platform.OS === "web" ? 420 : 360,
@@ -1284,26 +1338,44 @@ export default function CreateExpense({
                       }}
                     >
                       {Platform.OS !== "web" ? (
-                        <WebView
-                          originWhitelist={["*"]}
-                          source={{ uri: attachment.uri }}
-                          style={{ flex: 1 }}
-                        />
-                      ) : (
-                        <View className="flex-1 justify-center items-center bg-white">
-                          <iframe
-                            src={attachment.uri}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              border: "none",
-                              backgroundColor: "white",
-                            }}
-                            title="PDF Preview"
+                        <>
+                          <WebView
+                            originWhitelist={["*"]}
+                            source={{ uri: attachment.uri }}
+                            style={{ flex: 1 }}
                           />
-                        </View>
+                          <TouchableOpacity
+                            onPress={handlePreviewAttachment}
+                            activeOpacity={1}
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                            }}
+                          />
+                        </>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={handlePreviewAttachment}
+                          style={{ flex: 1 }}
+                        >
+                          <View className="flex-1 justify-center items-center bg-white">
+                            <iframe
+                              src={attachment.uri}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                border: "none",
+                                backgroundColor: "white",
+                              }}
+                              title="PDF Preview"
+                            />
+                          </View>
+                        </TouchableOpacity>
                       )}
-                    </TouchableOpacity>
+                    </View>
                   </View>
                 )}
 
@@ -1798,31 +1870,6 @@ export default function CreateExpense({
                     }
                   />
 
-                  {isMobile() && hasAttachment && (
-                    <TouchableOpacity
-                      onPress={onClose}
-                      activeOpacity={0.8}
-                      style={{
-                        position: "absolute",
-                        right: 0,
-                        top: 22,
-                        zIndex: 20,
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor:
-                          theme === "dark" ? "#27272a" : "#f3f4f6",
-                      }}
-                    >
-                      <Ionicons
-                        name="close"
-                        size={18}
-                        color={theme === "dark" ? "#f4f4f5" : "#111827"}
-                      />
-                    </TouchableOpacity>
-                  )}
 
                   <TextInput
                     className={`text-center text-2xl font-bold py-3 ${
@@ -2325,7 +2372,7 @@ export default function CreateExpense({
                   />
                   <GrayButton
                     title="✕"
-                    handlePress={onClose}
+                    handlePress={handleAttemptClose}
                     containerStyles="px-6 mt-2"
                   />
                 </View>
