@@ -19,7 +19,7 @@ const prisma = flexiDBPrismaClient;
 // Interface for request body from client
 interface Product {
   name: string;
-  description: string;
+  description?: string;
   barcode?: string | null;
   image: string;
   stock: number;
@@ -34,7 +34,7 @@ interface Product {
 // Validation schema for request body
 const productSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string().allow("").optional(),
   barcode: Joi.string().allow("").optional(), // Allow empty string for barcode
   image: Joi.string().allow("").optional(), // Allow empty string for image
   stock: Joi.number().allow(null).required(), // Allow null for stock

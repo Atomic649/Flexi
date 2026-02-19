@@ -12,8 +12,8 @@ import DropdownFloat from "@/components/dropdown/DropdownFloat";
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system/legacy";
-import { SecondaryButton } from "@/components/CustomButton";
-import React, { useEffect, useMemo, useState } from "react";
+import { SecondaryButton, GrayButton } from "@/components/CustomButton";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -165,6 +165,25 @@ export default function ExpenseDetail({
   const [imageModalVisible, setImageModalVisible] = useState<boolean>(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const isClosingRef = useRef(false);
+  const savedRef = useRef({
+    date: expense.date,
+    note: expense.note,
+    desc: expense.desc,
+    amount: expense.amount,
+    image: expense.image,
+    pdf: expense.pdf || "",
+    group: expense.group,
+    vat: expense.vat,
+    withHoldingTax: expense.withHoldingTax || false,
+    WHTpercent: expense.WHTpercent || 0,
+    sTaxId: expense.sTaxId || "",
+    sName: expense.sName || "",
+    taxInvoiceNo: expense.taxInvoiceNo || "",
+    sAddress: expense.sAddress || "",
+    taxType: (expense.taxType as "Individual" | "Juristic") || "Individual",
+    branch: expense.branch || "",
+  });
   // Use the visible prop directly instead of mirroring to local state
   const { vat, DocumentType } = useBusiness();
   const [vatIncluded, setVatIncluded] = useState(expense.vat);
@@ -173,9 +192,9 @@ export default function ExpenseDetail({
   );
   const [WHTpercent, setWHTpercent] = useState(expense.WHTpercent || 0);
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
-    "Individual"
+    (expense.taxType as "Individual" | "Juristic") || "Individual"
   );
-  const [branch, setBranch] = useState<string>("headOffice");
+  const [branch, setBranch] = useState<string>(expense.branch || "");
   const [sTaxId, setSTaxId] = useState(expense.sTaxId || "");
   const [sName, setSName] = useState(expense.sName || "");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
@@ -212,6 +231,24 @@ export default function ExpenseDetail({
         setSAddress(fetchedExpense.sAddress || "");
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
+        savedRef.current = {
+          date: fetchedExpense.date,
+          note: fetchedExpense.note,
+          desc: fetchedExpense.desc,
+          amount: fetchedExpense.amount,
+          image: fetchedExpense.image,
+          pdf: fetchedExpense.pdf || "",
+          group: fetchedExpense.group,
+          vat: fetchedExpense.vat,
+          withHoldingTax: fetchedExpense.withHoldingTax || false,
+          WHTpercent: fetchedExpense.WHTpercent || 0,
+          sTaxId: fetchedExpense.sTaxId || "",
+          sName: fetchedExpense.sName || "",
+          taxInvoiceNo: fetchedExpense.taxInvoiceNo || "",
+          sAddress: fetchedExpense.sAddress || "",
+          taxType: (fetchedExpense.taxType as "Individual" | "Juristic") || "Individual",
+          branch: fetchedExpense.branch || "",
+        };
       } catch (error) {
         console.error("Error fetching expense:", error);
       }
@@ -223,24 +260,25 @@ export default function ExpenseDetail({
   // Track changes to expense data
   useEffect(() => {
     const checkChanges = () => {
+      const s = savedRef.current;
       if (
-        date !== expense.date ||
-        note !== expense.note ||
-        desc !== expense.desc ||
-        amount !== expense.amount ||
-        group !== expense.group ||
-        image !== expense.image ||
-        pdfUrl !== (expense.pdf || "") ||
-        vatIncluded !== expense.vat ||
-        withHoldingTax !== (expense.withHoldingTax || false) ||
-        WHTpercent !== (expense.WHTpercent || 0) ||
-        sTaxId !== (expense.sTaxId || "") ||
-        sName !== (expense.sName || "") ||
-        taxInvoiceNo !== (expense.taxInvoiceNo || "") ||
-        branch !== (expense.branch || "") ||
-        taxType !== (expense.taxType || "Individual") ||
-        sAddress !== (expense.sAddress || "") ||
-        hasAttachment
+        date !== s.date ||
+        note !== s.note ||
+        desc !== s.desc ||
+        amount !== s.amount ||
+        group !== s.group ||
+        image !== s.image ||
+        pdfUrl !== s.pdf ||
+        vatIncluded !== s.vat ||
+        withHoldingTax !== s.withHoldingTax ||
+        WHTpercent !== s.WHTpercent ||
+        sTaxId !== s.sTaxId ||
+        sName !== s.sName ||
+        taxInvoiceNo !== s.taxInvoiceNo ||
+        branch !== s.branch ||
+        taxType !== s.taxType ||
+        sAddress !== s.sAddress ||
+        Boolean(attachment)
       ) {
         setHasChanges(true);
       } else {
@@ -266,7 +304,7 @@ export default function ExpenseDetail({
     sAddress,
     taxType,
     branch,
-    hasAttachment,
+    attachment,
   ]);
 
   // Compute VAT base/amount and WHT amount from inputs to avoid derived state/effects
@@ -392,6 +430,31 @@ export default function ExpenseDetail({
   const handleOpenAttachmentPicker = () => setAttachmentPickerVisible(true);
   const closeAttachmentPicker = () => setAttachmentPickerVisible(false);
 
+  const handleRemoveAttachment = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("expense.detail.removeAttachment"),
+      message: t("expense.detail.removeAttachmentConfirm"),
+      buttons: [
+        {
+          text: t("common.cancel"),
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          style: "cancel",
+        },
+        {
+          text: t("common.confirm"),
+          onPress: () => {
+            setAttachment(null);
+            setImage("");
+            setPdfUrl("");
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+          },
+          style: "destructive",
+        },
+      ],
+    });
+  };
+
   const handlePreviewPdf = async (uri?: string) => {
     if (!uri) return;
     try {
@@ -465,6 +528,44 @@ export default function ExpenseDetail({
     onClose();
   };
 
+  const handleAttemptClose = () => {
+    if (isClosingRef.current) return;
+    if (!hasChanges) {
+      isClosingRef.current = true;
+      onClose();
+      return;
+    }
+    setAlertConfig({
+      visible: true,
+      title: t("expense.detail.unsavedChanges"),
+      message: t("expense.detail.unsavedChangesMessage"),
+      buttons: [
+        {
+          text: t("common.cancel"),
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          style: "cancel",
+        },
+        {
+          text: t("expense.detail.discardAndExit"),
+          onPress: () => {
+            if (isClosingRef.current) return;
+            isClosingRef.current = true;
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            setTimeout(() => onClose(), 50);
+          },
+          style: "destructive",
+        },
+        {
+          text: t("expense.detail.saveAndExit"),
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            handleUpdateExpense();
+          },
+        },
+      ],
+    });
+  };
+
   const appendAttachmentToFormData = async (formData: FormData) => {
     if (!attachment) return;
 
@@ -492,8 +593,8 @@ export default function ExpenseDetail({
     if (!date || !note || !amount) {
       setAlertConfig({
         visible: true,
-        title: t("expense.updated"),
-        message: t("expense.updated.message"),
+        title: t("expense.updated.error"),
+        message: t("expense.updated.required"),
         buttons: [
           {
             text: t("common.ok"),
@@ -523,6 +624,12 @@ export default function ExpenseDetail({
       formData.append("branch", branch);
       await appendAttachmentToFormData(formData);
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
+      savedRef.current = {
+        date, note, desc, amount, image, pdf: pdfUrl, group,
+        vat: vatIncluded, withHoldingTax, WHTpercent,
+        sTaxId, sName, taxInvoiceNo, sAddress, taxType, branch,
+      };
+      setHasChanges(false);
       handleCloseAfterChanges(); // Close modal after successful update
 
       if (data.error) throw new Error(data.error);
@@ -670,7 +777,7 @@ export default function ExpenseDetail({
       visible={visible}
       transparent={true}
       animationType="none"
-      onRequestClose={() => onClose()}
+      onRequestClose={handleAttemptClose}
     >
       <TouchableOpacity
         style={{
@@ -680,7 +787,7 @@ export default function ExpenseDetail({
           backgroundColor: theme === "dark" ? "#000000aa" : "#bfbfbfaa",
         }}
         activeOpacity={1}
-        onPressOut={onClose}
+        onPressOut={() => { if (!alertConfig.visible) handleAttemptClose(); }}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -728,15 +835,51 @@ export default function ExpenseDetail({
                   activeOpacity={hasImagePreview ? 0.8 : 1}
                 >
                   {hasImagePreview && imagePreviewUri && (
-                    <Image
-                      source={{ uri: imagePreviewUri }}
-                      style={{ width: 300, height: 300 }}
-                      className="mt-4 mb-6 self-center rounded-md"
-                    />
+                    <View style={{ position: "relative", alignSelf: "center" }}>
+                      <Image
+                        source={{ uri: imagePreviewUri }}
+                        style={{ width: 300, height: 300 }}
+                        className="mt-4 mb-6 self-center rounded-md"
+                      />
+                      <TouchableOpacity
+                        onPress={handleRemoveAttachment}
+                        style={{
+                          position: "absolute",
+                          top: 35,
+                          right: 20,
+                          backgroundColor: "#ef4444",
+                          borderRadius: 12,
+                          width: 24,
+                          height: 24,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          zIndex: 10,
+                        }}
+                      >
+                        <Ionicons name="remove" size={16} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </TouchableOpacity>
                 {hasPdfPreview && pdfPreviewUri && (
-                  <View className="mb-6 w-full self-center">
+                  <View className="mb-6 w-full self-center" style={{ position: "relative" }}>
+                    <TouchableOpacity
+                      onPress={handleRemoveAttachment}
+                      style={{
+                        position: "absolute",
+                        top: 24,
+                        right: 14,
+                        backgroundColor: "#ef4444",
+                        borderRadius: 12,
+                        width: 24,
+                        height: 24,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 10,
+                      }}
+                    >
+                      <Ionicons name="remove" size={16} color="#fff" />
+                    </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handlePreviewPdf(pdfPreviewUri)}
                       style={{
@@ -815,31 +958,6 @@ export default function ExpenseDetail({
                     }
                   />
 
-                  {isMobile() && hasAttachment && (
-                    <TouchableOpacity
-                      onPress={onClose}
-                      activeOpacity={0.8}
-                      style={{
-                        position: "absolute",
-                        right: 0,
-                        top: 22,
-                        zIndex: 20,
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor:
-                          theme === "dark" ? "#27272a" : "#f3f4f6",
-                      }}
-                    >
-                      <Ionicons
-                        name="close"
-                        size={18}
-                        color={theme === "dark" ? "#f4f4f5" : "#111827"}
-                      />
-                    </TouchableOpacity>
-                  )}
 
                   <TextInput
                     className={`text-center text-2xl font-bold py-3 ${
@@ -1206,8 +1324,10 @@ export default function ExpenseDetail({
                       <FloatingLabelInput
                         label={t("expense.detail.sTaxId")}
                         value={sTaxId}
-                        onChangeText={setSTaxId}
+                        onChangeText={(text) => setSTaxId(text.replace(/\D/g, ""))}
                         containerStyle={{ flex: 1, marginVertical: 0 }}
+                        keyboardType="numeric"
+                        maxLength={13}
                       />
 
                       <FloatingLabelInput
@@ -1374,6 +1494,11 @@ export default function ExpenseDetail({
                     handlePress={handleUpdateExpense}
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
+                  />
+                  <GrayButton
+                    title="✕"
+                    handlePress={handleAttemptClose}
+                    containerStyles="px-6 mt-2"
                   />
                 </View>
 

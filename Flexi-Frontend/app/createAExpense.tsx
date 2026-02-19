@@ -332,6 +332,29 @@ export default function CreateExpense({
     setAttachmentPickerVisible(false);
   };
 
+  const handleRemoveAttachment = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("expense.detail.removeAttachment"),
+      message: t("expense.detail.removeAttachmentConfirm"),
+      buttons: [
+        {
+          text: t("common.cancel"),
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          style: "cancel",
+        },
+        {
+          text: t("common.confirm"),
+          onPress: () => {
+            setAttachment(null);
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+          },
+          style: "destructive",
+        },
+      ],
+    });
+  };
+
   const handlePreviewAttachment = async () => {
     if (!attachment) return;
     if (attachment.preview === "image") {
@@ -1201,16 +1224,52 @@ export default function CreateExpense({
               <View className=" flex-1 justify-center h-full py-6 px-4 rounded-lg">
                 {isImageAttachment && (
                   <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                    <Image
-                      source={{ uri: attachment?.uri }}
-                      style={{ width: 300, height: 300 }}
-                      className="mt-4 mb-6 self-center rounded-md"
-                    />
+                    <View style={{ position: "relative", alignSelf: "center" }}>
+                      <Image
+                        source={{ uri: attachment?.uri }}
+                        style={{ width: 300, height: 300 }}
+                        className="mt-4 mb-6 self-center rounded-md"
+                      />
+                      <TouchableOpacity
+                        onPress={handleRemoveAttachment}
+                        style={{
+                          position: "absolute",
+                          top: 35,
+                          right:20,
+                          backgroundColor: "#ef4444",
+                          borderRadius: 12,
+                          width: 24,
+                          height: 24,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          zIndex: 10,
+                        }}
+                      >
+                        <Ionicons name="remove" size={16} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
                   </TouchableOpacity>
                 )}
 
                 {attachment?.preview === "pdf" && attachment.uri && (
-                  <View className="mt-4 mb-6 self-center w-full">
+                  <View className="mt-4 mb-6 self-center w-full" style={{ position: "relative" }}>
+                    <TouchableOpacity
+                      onPress={handleRemoveAttachment}
+                      style={{
+                        position: "absolute",
+                        top: 24,
+                        right: 14,
+                        backgroundColor: "#ef4444",
+                        borderRadius: 12,
+                        width: 24,
+                        height: 24,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 10,
+                      }}
+                    >
+                      <Ionicons name="remove" size={16} color="#fff" />
+                    </TouchableOpacity>
                     <TouchableOpacity
                       onPress={handlePreviewAttachment}
                       style={{
@@ -2099,8 +2158,10 @@ export default function CreateExpense({
                       <FloatingLabelInput
                         label={t("expense.detail.sTaxId")}
                         value={sTaxId}
-                        onChangeText={setSTaxId}
+                        onChangeText={(text) => setSTaxId(text.replace(/\D/g, ""))}
                         containerStyle={{ flex: 1, marginVertical: 0 }}
+                        keyboardType="numeric"
+                        maxLength={13}
                       />
                       <FloatingLabelInput
                         label={t("expense.detail.taxInvoiceNo")}
@@ -2261,6 +2322,11 @@ export default function CreateExpense({
                     containerStyles="px-12 mt-2"
                     textStyles="!text-white"
                     isLoading={isSubmittingExpense}
+                  />
+                  <GrayButton
+                    title="✕"
+                    handlePress={onClose}
+                    containerStyles="px-6 mt-2"
                   />
                 </View>
               </View>

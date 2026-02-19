@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "บันทึก",
+    "exit": "ออก",
     "cancel": "ยกเลิก",
     "confirm": "ยืนยัน",
     "loading": "กำลังโหลด...",
@@ -277,7 +278,8 @@
       "pack": "แพ็ค",
       "set": "ชุด",
       "dozen": "โหล",
-      "notSpecified": ""
+      "notSpecified": "",
+      "notspecified": ""
     },
     "productTypes": {
       "service": "บริการ",
@@ -798,6 +800,12 @@
       "save": "บันทึก",
       "pdf": "SCB เท่านั้น"
     },
+    "updated": {
+      "success": "อัปเดตรายจ่ายสำเร็จ",
+      "successMessage": "กรุณากด ตกลง เพื่อดำเนินการต่อ",
+      "error": "อัปเดตรายจ่ายไม่สำเร็จ",
+      "required": "กรุณากรอกอย่างน้อยวันที่ บันทึกค่าใช้จ่ายทางบัญชี และจำนวนเงิน"
+    },
     "forecastAdsCost": "คาดการณ์ค่าโฆษณา",
     "table": {
       "date": "วันที่",
@@ -825,6 +833,12 @@
     "detail": {
       "description": "รายละเอียด(ไม่บังคับ)",
       "chooseAttachmentType": "เลือกประเภทไฟล์แนบ",
+      "removeAttachment": "ลบไฟล์แนบ",
+      "removeAttachmentConfirm": "คุณต้องการลบไฟล์แนบนี้ใช่หรือไม่?",
+      "unsavedChanges": "มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
+      "unsavedChangesMessage": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก ต้องการบันทึกก่อนออกหรือไม่?",
+      "saveAndExit": "บันทึก",
+      "discardAndExit": "ยกเลิกการเปลี่ยนแปลง",
       "pickPdf": "ไฟล์ PDF",
       "pickImage": "รูปภาพ",
       "amount": "จำนวนเงิน",

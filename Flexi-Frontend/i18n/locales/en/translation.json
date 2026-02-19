@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Save",
+    "exit": "Exit",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "loading": "Loading...",
@@ -276,7 +277,8 @@
       "pack": "Pack",
       "set": "Set",
       "dozen": "Dozen",
-      "notSpecified": ""
+      "notSpecified": "",
+      "notspecified": ""
     },
     "productTypes": {
       "service": "Service",
@@ -797,6 +799,12 @@
       "save": "Save",
       "pdf": "SCB ONLY"
     },
+    "updated": {
+      "success": "Expense updated successfully",
+      "successMessage": "Please press OK to proceed",
+      "error": "Failed to update expense",
+      "required": "Please fill at least the date, account note, and amount fields"
+    },
     "forecastAdsCost": "Forecast Ads Cost",
     "table": {
       "date": "Date",
@@ -825,6 +833,12 @@
     "detail": {
       "description": "Description (optional)",
       "chooseAttachmentType": "Choose Attachment Type",
+      "removeAttachment": "Remove Attachment",
+      "removeAttachmentConfirm": "Are you sure you want to remove this attachment?",
+      "unsavedChanges": "Unsaved Changes",
+      "unsavedChangesMessage": "You have unsaved changes. Do you want to save before leaving?",
+      "saveAndExit": "Save",
+      "discardAndExit": "Discard",
       "pickPdf": "Pick PDF",
       "pickImage": "Pick Image",
       "amount": "Amount",
