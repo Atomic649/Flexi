@@ -965,6 +965,8 @@
     "vision": "Small Team, Big Impact \n 0 Marketing Budget \n Possible 0 Funding",
     "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future",
     "userCounter": "Registered Users",
+    "copiedClipboard": "Copied to clipboard",
+    "copyClipboardError": "Unable to copy to clipboard",
     "phase1": {
       "title": "Phase 1: Scalable Foundation",
       "description": "Core platform development, building basic functionality, hero function for automatic bank statement parsing for business expense management, tested with 5 businesses"

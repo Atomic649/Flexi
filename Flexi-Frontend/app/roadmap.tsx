@@ -214,22 +214,18 @@ export default function RoadMap() {
               }
 
               if (Platform.OS === "android") {
-                ToastAndroid.show("Copied to clipboard", ToastAndroid.SHORT);
+                ToastAndroid.show(t("roadmap.copiedClipboard"), ToastAndroid.SHORT);
               } else {
                 showAlert(
-                  "Done",
-                  t("roadmap.copiedClipboard", {
-                    defaultValue: "Copied to clipboard",
-                  })
+                  t("common.success"),
+                  t("roadmap.copiedClipboard")
                 );
               }
             } catch (err) {
               console.error("Copy failed:", err);
               showAlert(
                 t("common.error"),
-                t("roadmap.copyClipboardError", {
-                  defaultValue: "Unable to copy to clipboard",
-                })
+                t("roadmap.copyClipboardError")
               );
             }
           }}

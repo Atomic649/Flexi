@@ -5,7 +5,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import CallAPIUser from '@/api/auth_api';
-import { useTranslation } from 'react-i18next';
 
 
 export default function ResetPassword() {
@@ -15,7 +14,6 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { token } = useLocalSearchParams();
-  const { t } = useTranslation();
 
   const rawToken = Array.isArray(token) ? token[0] : token;
   // Some email clients can wrap long URLs and introduce whitespace/newlines.
@@ -24,7 +22,7 @@ export default function ResetPassword() {
   console.log("ResetPassword Screen - Token:", normalizedToken);
 
   const getErrorMessage = (err: unknown) => {
-    if (!err) return t("common.networkError");
+    if (!err) return "เครือข่ายมีปัญหา (Network Error)";
     if (typeof err === "string") return err;
     if (err instanceof Error) return err.message;
     if (typeof err === "object") {
@@ -32,7 +30,7 @@ export default function ResetPassword() {
       if (typeof anyErr.message === "string") return anyErr.message;
       if (anyErr.error && typeof anyErr.error.message === "string") return anyErr.error.message;
     }
-    return t("common.networkError");
+    return "เครือข่ายมีปัญหา (Network Error)";
   };
 
   // Must match backend password policy (authController passwordSchema)
@@ -42,12 +40,12 @@ export default function ResetPassword() {
   useEffect(() => {
     if (!normalizedToken) {
       Alert.alert(
-        t('resetPassword.invalidLink'),
-        t('resetPassword.invalidLinkMessage'),
-        [{ text: t('common.ok'), onPress: () => router.push('/forgot_password') }]
+        "ลิงก์ไม่ถูกต้อง (Invalid Link)",
+        "ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้อง กรุณาขอลิงก์ใหม่ (The password reset link appears to be invalid. Please request a new link.)",
+        [{ text: "ตกลง (OK)", onPress: () => router.push('/forgot_password') }]
       );
     }
-  }, [normalizedToken, t, router]);
+  }, [normalizedToken, router]);
 
   const handleResetPassword = async () => {
     console.log("handleResetPassword called");
@@ -55,25 +53,25 @@ export default function ResetPassword() {
     // Validate inputs
     if (!normalizedToken) {
       console.log("Validation failed: No token");
-      Alert.alert(t('resetPassword.error'), t('resetPassword.invalidLink'));
+      Alert.alert("ข้อผิดพลาด (Error)", "ลิงก์ไม่ถูกต้อง (Invalid Link)");
       return;
     }
 
     if (!newPassword.trim()) {
       console.log("Validation failed: Empty password");
-      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordRequired'));
+      Alert.alert("ข้อผิดพลาด (Error)", "กรุณากรอกรหัสผ่านใหม่ (Please enter a new password)");
       return;
     }
 
     if (newPassword !== confirmPassword) {
       console.log("Validation failed: Mismatch");
-      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordsDoNotMatch'));
+      Alert.alert("ข้อผิดพลาด (Error)", "รหัสผ่านไม่ตรงกัน (Passwords do not match)");
       return;
     }
 
     if (newPassword.length < 8 || !isStrongPassword(newPassword)) {
       console.log("Validation failed: Weak password");
-      Alert.alert(t('resetPassword.error'), t('resetPassword.passwordLength'));
+      Alert.alert("ข้อผิดพลาด (Error)", "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก ตัวเลข และอักขระพิเศษ (Password must be at least 8 characters and include uppercase, lowercase, number, and special character)");
       return;
     }
 
@@ -90,21 +88,21 @@ export default function ResetPassword() {
       
       // Show success message and navigate to login
       if (Platform.OS === 'web') {
-        alert(t('resetPassword.successMessage'));
+        alert("รีเซ็ตรหัสผ่านเรียบร้อยแล้ว (Your password has been reset successfully)");
         router.replace('/login');
       } else {
         Alert.alert(
-          t('resetPassword.success'), 
-          t('resetPassword.successMessage'), 
-          [{ text: t('resetPassword.login'), onPress: () => router.replace('/login') }]
+          "สำเร็จ (Success)", 
+          "รีเซ็ตรหัสผ่านเรียบร้อยแล้ว (Your password has been reset successfully)", 
+          [{ text: "เข้าสู่ระบบ (Login)", onPress: () => router.replace('/login') }]
         );
       }
     } catch (error) {
       console.log("API call failed:", error);
       setIsLoading(false);
       Alert.alert(
-        t('resetPassword.error'), 
-        getErrorMessage(error) || t('resetPassword.invalidLinkMessage')
+        "ข้อผิดพลาด (Error)", 
+        getErrorMessage(error) || "ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้อง กรุณาขอลิงก์ใหม่ (The password reset link appears to be invalid. Please request a new link.)"
       );
     }
   };
@@ -123,15 +121,15 @@ export default function ResetPassword() {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.subtitle}>
-            {t('resetPassword.subtitle')}
+            กรอกรหัสผ่านใหม่ของคุณด้านล่าง (Enter your new password below)
           </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>{t('resetPassword.newPasswordLabel')}</Text>
+            <Text style={styles.label}>รหัสผ่านใหม่ (New Password)</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder={t('resetPassword.newPasswordPlaceholder')}
+                placeholder="กรอกรหัสผ่านใหม่ (Enter new password)"
                 secureTextEntry={!showPassword}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -151,10 +149,10 @@ export default function ResetPassword() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>{t('resetPassword.confirmPasswordLabel')}</Text>
+            <Text style={styles.label}>ยืนยันรหัสผ่าน (Confirm Password)</Text>
             <TextInput
               style={styles.input}
-              placeholder={t('resetPassword.confirmPasswordPlaceholder')}
+              placeholder="ยืนยันรหัสผ่านใหม่ (Confirm new password)"
               secureTextEntry={!showPassword}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -173,7 +171,7 @@ export default function ResetPassword() {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>{t('resetPassword.resetButton')}</Text>
+              <Text style={styles.buttonText}>รีเซ็ตรหัสผ่าน (Reset Password)</Text>
             )}
           </TouchableOpacity>
 
@@ -181,7 +179,7 @@ export default function ResetPassword() {
             style={styles.linkButton} 
             onPress={() => router.push('/login')}
           >
-            <Text style={styles.linkText}>{t('resetPassword.backToLogin')}</Text>
+            <Text style={styles.linkText}>กลับไปยังหน้าเข้าสู่ระบบ (Back to Login)</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>

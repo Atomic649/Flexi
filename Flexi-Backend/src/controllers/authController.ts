@@ -1057,13 +1057,28 @@ const forgotPassword = async (req: Request, res: Response) => {
           ? process.env.EMAIL_USER
           : "dev@example.com",
       to: user.email,
-      subject: "Password Reset Request",
+      subject: "รีเซ็ตรหัสผ่าน (Password Reset Request)",
       html: `
-        <h1>Password Reset</h1>
-        <p>You requested a password reset. Please click the link below to reset your password:</p>
-        <a href="${resetUrl}">Reset Password</a>
-        <p>This link is valid for 1 hour.</p>
-        <p>If you did not request a password reset, please ignore this email.</p>
+      <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111;">
+        <h1 style="margin: 0 0 12px;">รีเซ็ตรหัสผ่าน (Password Reset)</h1>
+        
+        <p style="margin: 0 0 12px;">คุณได้ทำการขอรีเซ็ตรหัสผ่าน กรุณาคลิกปุ่มด้านล่างเพื่อตั้งรหัสผ่านใหม่:</p>
+        <p style="margin: 0 0 12px;">ลิงก์นี้มีอายุการใช้งาน 1 ชั่วโมง</p>
+        <p style="margin: 0 0 16px;">หากคุณไม่ได้ดำเนินการนี้ โปรดเพิกเฉยต่ออีเมลฉบับนี้</p>
+
+        <p style="margin: 0 0 16px;">
+          <a
+            href="${resetUrl}"
+            style="display: inline-block; padding: 10px 16px; background: #24d6af; color: #fff; text-decoration: none; border-radius: 6px;"
+          >รีเซ็ตรหัสผ่าน (Reset Password)</a>
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+
+        <p style="margin: 0 0 12px;">You requested a password reset. Please click the button above to reset your password.</p>
+        <p style="margin: 0 0 12px;">This link is valid for 1 hour.</p>
+        <p style="margin: 0;">If you did not request a password reset, please ignore this email.</p>
+      </div>
       `,
     };
 
