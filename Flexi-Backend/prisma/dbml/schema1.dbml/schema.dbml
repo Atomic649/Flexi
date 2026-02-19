@@ -58,6 +58,8 @@ Table BusinessAcc {
   businessType BusinessType [not null, default: 'OnlineSale']
   taxType taxType [not null, default: 'Individual']
   userId Int [not null]
+  logo String
+  businessColor String
   memberId String[] [not null]
   DocumentType DocumentType[] [not null]
   user User [not null]

@@ -24,6 +24,9 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
     formatMonthYear,
   } = data;
 
+  const brandColor = businessDetails?.businessColor || "#5e5e5e";
+  const logoUrl = businessDetails?.logo || null;
+
   // Only include bills with DocumentType === 'Receipt'
   const receiptBills = bills.filter((bill) => {
     if (Array.isArray(bill.DocumentType)) {
@@ -83,12 +86,13 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
         <meta charset="UTF-8">
         <title>${isVatRegistered ? t("print.salesTaxVatSummary") : t("print.salesTaxSummary")} - ${formatMonthYear(selectedMonth, t)}</title>
         <style>
+          :root { --brand-color: ${brandColor}; }
           @media print {
             body { margin: 0; }
             .no-print { display: none; }
             .page-break { page-break-before: always; }
           }
-          body { 
+          body {
             font-family: Arial, sans-serif; 
             margin: 20px; 
             padding: 0; 
@@ -115,7 +119,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             font-size: 16px; 
             margin-bottom: 10px; 
             color: #333;
-            border-bottom: 2px solid #5e5e5e;
+            border-bottom: 2px solid var(--brand-color);
             padding-bottom: 5px;
           }
           p { 
@@ -135,7 +139,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
             border: 1px solid #ddd; 
           }
           th { 
-            background-color: #5e5e5e; 
+            background-color: var(--brand-color);
             color: white;
             font-weight: bold;
           }
@@ -199,6 +203,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
       </head>
       <body>
         <div class="container">
+          ${logoUrl ? `<div style="text-align:center; margin-bottom:10px;"><img src="${logoUrl}" alt="logo" style="width:80px;height:80px;object-fit:contain;border-radius:8px;" /></div>` : ""}
           <h1>${isVatRegistered ? t("print.salesTaxVatSummary") : t("print.salesTaxSummary")}</h1>
           <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 

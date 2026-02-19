@@ -255,6 +255,8 @@ model BusinessAcc {
   businessType     BusinessType      @default(OnlineSale)
   taxType          taxType           @default(Individual)
   userId           Int
+  logo             String?
+  businessColor    String?           // Optional field for business color theme
   memberId         String[]          @default([]) // Track all member uniqueIds associated with this business
   DocumentType     DocumentType[]    @default([Receipt])
   user             User              @relation(fields: [userId], references: [id])
@@ -432,6 +434,7 @@ model Expense {
   branch         String?
   taxType        taxType?       @default(Individual)
   status         ExpenseStatus?
+  
   // Relation
   businessAcc    Int
   businessId     BusinessAcc    @relation(fields: [businessAcc], references: [id])

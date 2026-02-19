@@ -112,7 +112,7 @@ class CallAPIBusiness {
     }
   }
 
-  // Update Business Details  
+  // Update Business Details
   async UpdateBusinessDetailsAPI(
     memberId: string,
     data: {
@@ -125,6 +125,7 @@ class CallAPIBusiness {
       taxType: string;
       vat: boolean;
       DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
+      businessColor?: string;
     }
   ): Promise<any> {
     try {
@@ -145,6 +146,26 @@ class CallAPIBusiness {
     }
   }
 
+  // Update Business Logo by memberId
+  async UpdateBusinessLogoAPI(memberId: string, formData: FormData): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.put(
+        `/businessacc/logo/${memberId}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      console.log("📝Update Business Logo API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Update Business Logo API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
 
   // get business account choice
   async getBusinessAccountChoiceAPI(userId: number): Promise<any> {

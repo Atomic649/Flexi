@@ -1543,6 +1543,8 @@ export const BusinessAccScalarFieldEnum = {
   businessType: 'businessType',
   taxType: 'taxType',
   userId: 'userId',
+  logo: 'logo',
+  businessColor: 'businessColor',
   memberId: 'memberId',
   DocumentType: 'DocumentType'
 } as const

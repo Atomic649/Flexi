@@ -203,6 +203,9 @@
         "Influencer": "Influencer",
         "Other": "Other"        
       },
+      "logo": "Business Logo",
+      "tapToChangeLogo": "Tap to change logo",
+      "brandColor": "Brand Color (PDF Theme)",
       "documentTypes": "Document Types",
       "documentType": {
         "Invoice": "Invoice",
@@ -977,7 +980,7 @@
     "cfoRole": "CFO Role & Financial Management",
     "integrations": "Integrations:",
     "vision": "Small Team, Big Impact \n 0 Marketing Budget \n Possible 0 Funding",
-    "mission": "We are here to help small business growth \n with our free tools and services \n No subscription fee in future",
+    "mission": "We are here to help small business growth \n with our free tools and services ",
     "userCounter": "Registered Users",
     "copiedClipboard": "Copied to clipboard",
     "copyClipboardError": "Unable to copy to clipboard",

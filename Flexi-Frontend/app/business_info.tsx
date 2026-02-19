@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
@@ -21,11 +22,29 @@ import Dropdown2 from "@/components/dropdown/Dropdown2";
 import FormField2 from "@/components/formfield/FormField2";
 import { Ionicons } from "@expo/vector-icons";
 import { isDesktop } from "@/utils/responsive";
+import * as ImagePicker from "expo-image-picker";
+import { useBusiness } from "@/providers/BusinessProvider";
+
+const PRESET_COLORS = [
+  "#5e5e5e",
+  "#1e40af",
+  "#15803d",
+  "#b91c1c",
+  "#7e22ce",
+  "#c2410c",
+  "#0369a1",
+  "#0f766e",
+  "#be123c",
+  "#92400e",
+  "#374151",
+  "#000000",
+];
 
 export default function BusinessInfo() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { triggerFetch } = useBusiness();
   const [businessName, setbusinessName] = useState("");
   const [businessUserName, setBusinessUserName] = useState("@");
   const [taxType, settaxType] = useState("");
@@ -41,6 +60,12 @@ export default function BusinessInfo() {
     "Receipt",
   ]);
   const [error, setError] = useState("");
+
+  // Logo and color state
+  const [logoUri, setLogoUri] = useState<string | null>(null);
+  const [logoChanged, setLogoChanged] = useState(false);
+  const [businessColor, setBusinessColor] = useState<string>("#5e5e5e");
+  const [businessId, setBusinessId] = useState<number | null>(null);
 
   // Ensure business username always begins with a single '@' and cannot be removed
   const normalizeBusinessUserName = (value: string) => {
@@ -70,7 +95,6 @@ export default function BusinessInfo() {
 
   // Handle document type selection
   const handleDocumentTypeToggle = (type: DocumentTypeOption) => {
-    // Don't allow unchecking Receipt as it's required
     if (type === "Receipt") return;
     setDocumentTypes((prev) => {
       if (prev.includes(type)) {
@@ -90,7 +114,6 @@ export default function BusinessInfo() {
         return;
       }
       const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
-      console.log("data", data);
 
       setbusinessName(data.businessName || "");
       setBusinessUserName(
@@ -100,9 +123,12 @@ export default function BusinessInfo() {
       settaxId(data.taxId || "");
       setbusinessType(data.businessType || "");
       setBusinessPhone(data.businessPhone || "");
-      setIsVatRegistered(!!data.vat); // handle exited data
+      setIsVatRegistered(!!data.vat);
       setBusinessAddress(data.businessAddress || "");
-      setDocumentTypes(data.DocumentType || ["Receipt"]); // Set document types from API response
+      setDocumentTypes(data.DocumentType || ["Receipt"]);
+      setLogoUri(data.logo || null);
+      setBusinessColor(data.businessColor || "#5e5e5e");
+      setBusinessId(data.id || null);
 
       if (data.error) throw new Error(data.error);
     } catch (error: any) {
@@ -110,16 +136,28 @@ export default function BusinessInfo() {
     }
   };
 
-  // Call handleExit on component mount to pre-fill the form
   useEffect(() => {
     handleExit();
   }, []);
 
-  // Handle register new business
+  // Pick logo image
+  const handlePickLogo = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets?.length) {
+      setLogoUri(result.assets[0].uri);
+      setLogoChanged(true);
+    }
+  };
+
+  // Handle save
   const handleRegister = async () => {
     setError("");
 
-    // Check if all fields are filled
     if (
       !businessName ||
       !taxType ||
@@ -143,7 +181,6 @@ export default function BusinessInfo() {
     }
 
     try {
-      // Call the register API
       const userId = await getUserId();
       if (userId === null) {
         setError(t("auth.register.validation.invalidUserId"));
@@ -156,7 +193,8 @@ export default function BusinessInfo() {
         return;
       }
 
-      // Use memberId directly for the update API call
+      // Update main details (including businessColor)
+      console.log("🎨 Sending businessColor:", businessColor);
       const data = await CallAPIBusiness.UpdateBusinessDetailsAPI(memberId, {
         businessName,
         businessUserName,
@@ -165,11 +203,32 @@ export default function BusinessInfo() {
         taxType,
         businessPhone,
         businessAddress,
-        vat: isVatRegistered, // update data logic
-        DocumentType: documentTypes, // Include document types in update
+        vat: isVatRegistered,
+        DocumentType: documentTypes,
+        businessColor,
       });
 
       if (data.error) throw new Error(data.error);
+
+      // Upload logo if changed
+      if (logoChanged && logoUri) {
+        const formData = new FormData();
+        if (Platform.OS === "web") {
+          const response = await fetch(logoUri);
+          const blob = await response.blob();
+          formData.append("image", blob, "logo.jpg");
+        } else {
+          formData.append("image", {
+            uri: logoUri,
+            name: "logo.jpg",
+            type: "image/jpeg",
+          } as unknown as Blob);
+        }
+        await CallAPIBusiness.UpdateBusinessLogoAPI(memberId, formData);
+      }
+
+      // Refresh BusinessProvider
+      triggerFetch();
 
       setAlertConfig({
         visible: true,
@@ -185,8 +244,6 @@ export default function BusinessInfo() {
           },
         ],
       });
-
-      // No need to navigate away again
     } catch (error: any) {
       console.error("Update business details error:", error);
       setError(error.message || "Failed to update business details");
@@ -198,10 +255,7 @@ export default function BusinessInfo() {
   return (
     <View
       className={`h-full ${useBackgroundColorClass()}`}
-      style={{
-        width: "100%",
-        alignSelf: "center",
-      }}
+      style={{ width: "100%", alignSelf: "center" }}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -219,14 +273,125 @@ export default function BusinessInfo() {
         >
           <View
             className="flex-1 justify-center px-4 py-10"
-            style={{
-              width: "100%", // Ensure the inner container takes full width
-            }}
+            style={{ width: "100%" }}
           >
+            {/* Logo Picker */}
+            <View style={{ marginBottom: 24, alignItems: "center" }}>
+              <CustomText
+                className={`text-base font-medium mb-3 ${useTextColorClass()}`}
+              >
+                {t("auth.businessRegister.logo") || "Business Logo"}
+              </CustomText>
+              <TouchableOpacity onPress={handlePickLogo} style={{ alignItems: "center" }}>
+                {logoUri ? (
+                  <Image
+                    source={{ uri: logoUri }}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 12,
+                      borderWidth: 2,
+                      borderColor: businessColor || "#5e5e5e",
+                    }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 12,
+                      borderWidth: 2,
+                      borderStyle: "dashed",
+                      borderColor: theme === "dark" ? "#666" : "#ccc",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: theme === "dark" ? "#2D2D2D" : "#f5f5f5",
+                    }}
+                  >
+                    <Ionicons
+                      name="image-outline"
+                      size={36}
+                      color={theme === "dark" ? "#666" : "#ccc"}
+                    />
+                  </View>
+                )}
+                <CustomText
+                  className={`mt-2 text-sm ${useTextColorClass()}`}
+                  style={{ opacity: 0.6 }}
+                >
+                  {t("auth.businessRegister.tapToChangeLogo") || "Tap to change logo"}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
+            {/* Business Color Picker */}
+            <View style={{ marginBottom: 24 }}>
+              <CustomText
+                className={`text-base font-medium mb-3 ${useTextColorClass()}`}
+              >
+                {t("auth.businessRegister.brandColor") || "Brand Color (PDF Theme)"}
+              </CustomText>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 10,
+                }}
+              >
+                {PRESET_COLORS.map((color) => (
+                  <TouchableOpacity
+                    key={color}
+                    onPress={() => setBusinessColor(color)}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 18,
+                      backgroundColor: color,
+                      borderWidth: businessColor === color ? 3 : 1,
+                      borderColor:
+                        businessColor === color
+                          ? theme === "dark"
+                            ? "#fff"
+                            : "#111"
+                          : "transparent",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {businessColor === color && (
+                      <Ionicons name="checkmark" size={16} color="#fff" />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <View
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    backgroundColor: businessColor,
+                    borderWidth: 1,
+                    borderColor: theme === "dark" ? "#555" : "#ccc",
+                  }}
+                />
+                <CustomText className={useTextColorClass()} style={{ fontSize: 12 }}>
+                  {businessColor}
+                </CustomText>
+              </View>
+            </View>
+
             <FormField2
               title={t("auth.businessRegister.businessName")}
               placeholder={t("auth.businessRegister.businessName")}
-              value={businessName} // Pre-fill with existing data
+              value={businessName}
               handleChangeText={setbusinessName}
               otherStyles="mt-0"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -266,7 +431,7 @@ export default function BusinessInfo() {
               onValueChange={settaxType}
               selectedValue={t(
                 `auth.businessRegister.taxTypeOption.${taxType}`,
-              )} // Pre-fill with existing data
+              )}
               otherStyles="mt-7"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
               bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
@@ -305,7 +470,7 @@ export default function BusinessInfo() {
             <FormField2
               title={t("auth.businessRegister.taxId")}
               placeholder={t("0000000000000")}
-              value={taxId} // Pre-fill with existing data
+              value={taxId}
               handleChangeText={(text: string) => {
                 const filtered = text.replace(/[^0-9]/g, "").slice(0, 13);
                 settaxId(filtered);
@@ -321,9 +486,7 @@ export default function BusinessInfo() {
               title={t("auth.businessRegister.businessType")}
               options={[
                 {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.OnlineSale",
-                  ),
+                  label: t("auth.businessRegister.businessTypeOption.OnlineSale"),
                   value: "OnlineSale",
                 },
                 {
@@ -331,9 +494,7 @@ export default function BusinessInfo() {
                   value: "Massage",
                 },
                 {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.Restaurant",
-                  ),
+                  label: t("auth.businessRegister.businessTypeOption.Restaurant"),
                   value: "Restaurant",
                 },
                 {
@@ -353,9 +514,7 @@ export default function BusinessInfo() {
                   value: "Tutor",
                 },
                 {
-                  label: t(
-                    "auth.businessRegister.businessTypeOption.Influencer",
-                  ),
+                  label: t("auth.businessRegister.businessTypeOption.Influencer"),
                   value: "Influencer",
                 },
                 {
@@ -366,7 +525,7 @@ export default function BusinessInfo() {
               placeholder={t("auth.businessRegister.chooseBusinessType")}
               selectedValue={t(
                 `auth.businessRegister.businessTypeOption.${businessType}`,
-              )} // Pre-fill with existing data
+              )}
               onValueChange={setbusinessType}
               otherStyles="mt-7"
               bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
@@ -485,8 +644,8 @@ export default function BusinessInfo() {
             <CustomButton
               title={
                 businessName || taxType || taxId || businessType
-                  ? t("auth.update.button") // Show "Update" if data exists
-                  : t("auth.register.button") // Show "Register" if no data exists
+                  ? t("auth.update.button")
+                  : t("auth.register.button")
               }
               handlePress={handleRegister}
               containerStyles="mt-7"

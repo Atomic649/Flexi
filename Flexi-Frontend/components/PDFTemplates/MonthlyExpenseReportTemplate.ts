@@ -31,6 +31,9 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
     formatMonthYear,
   } = data;
 
+  const brandColor = businessDetails?.businessColor || "#dc2626";
+  const logoUrl = businessDetails?.logo || null;
+
   // Use all expenses (including drafts) for expense reporting
   const actualExpenses = expenses;
 
@@ -76,11 +79,12 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
         <meta charset="UTF-8">
         <title>${t("print.monthlyExpenseReport")} - ${formatMonthYear(selectedMonth, t)}</title>
         <style>
+          :root { --brand-color: ${brandColor}; }
           @media print {
             body { margin: 0; }
             .no-print { display: none; }
           }
-          body { 
+          body {
             font-family: Arial, sans-serif; 
             margin: 20px; 
             padding: 0; 
@@ -107,7 +111,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
             font-size: 16px; 
             margin-bottom: 10px; 
             color: #333;
-            border-bottom: 2px solid #dc2626;
+            border-bottom: 2px solid var(--brand-color);
             padding-bottom: 5px;
           }
           p { 
@@ -128,7 +132,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
           }
           th { 
             background-color: #fef2f2; 
-            color: #dc2626;
+            color: var(--brand-color);
             font-weight: bold;
           }
           tr:nth-child(even) { 
@@ -157,7 +161,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
           .summary-card .value {
             font-size: 16px;
             font-weight: bold;
-            color: #dc2626;
+            color: var(--brand-color);
           }
           .company-info {
             background-color: #f8f9fa;
@@ -199,7 +203,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
           }
           .category-table th {
             background-color: #fef2f2;
-            color: #dc2626;
+            color: var(--brand-color);
           }
           .page-break {
             page-break-before: always;
@@ -223,6 +227,7 @@ export const generateExpenseReportHTML = (data: MonthlyExpenseReportData): strin
       </head>
       <body>
         <div class="container">
+          ${logoUrl ? `<div style="text-align:center; margin-bottom:10px;"><img src="${logoUrl}" alt="logo" style="width:80px;height:80px;object-fit:contain;border-radius:8px;" /></div>` : ""}
           <h1>${t("print.monthlyExpenseReport")}</h1>
           <h2>${t("print.monthlyReport")} ${formatMonthYear(selectedMonth, t)}</h2>
 

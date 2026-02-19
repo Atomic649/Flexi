@@ -32,6 +32,8 @@ interface businessAccInput {
   businessWebsite?: string;
   businessPhone?: string;
   vat?: boolean;
+  logo?: string;
+  businessColor?: string;
   DocumentType?: ("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[];
 }
 
@@ -624,6 +626,8 @@ const getBusinessDetail = async (req: Request, res: Response) => {
         vat: true,
         businessPhone: true,
         DocumentType: true,
+        logo: true,
+        businessColor: true,
       },
     });
     res.json({
@@ -651,6 +655,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     vat,
     businessAddress,
     DocumentType,
+    businessColor,
   } = req.body;
 
   console.log("Update Business Details", {
@@ -665,6 +670,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     vat,
     businessAddress,
     DocumentType,
+    businessColor,
   });
 
   try {
@@ -709,6 +715,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         businessAddress,
         vat,
         DocumentType: DocumentType || ["Receipt"],
+        businessColor,
       },
     });
 
@@ -727,6 +734,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
         vat: updated.vat,
         businessAddress: updated.businessAddress,
         DocumentType: updated.DocumentType,
+        businessColor: updated.businessColor,
       },
     });
   } catch (e) {
@@ -863,6 +871,8 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
         businessType: true,
         DocumentType: true,
         vat: true,
+        logo: true,
+        businessColor: true,
       },
     });
     res.json({
@@ -873,6 +883,55 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
     res.status(500).json({ message: "failed to get business account" });
   }
 };
+// Upload Business Logo by memberId - Put
+const uploadLogoForBusiness = multer(multerConfig.multerConfigImage.config).single(
+  multerConfig.multerConfigImage.keyUpload
+);
+
+const updateBusinessLogo = async (req: Request, res: Response) => {
+  uploadLogoForBusiness(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    const { memberId } = req.params;
+    try {
+      const member = await prisma.member.findUnique({
+        where: { uniqueId: memberId },
+        select: { businessId: true },
+      });
+      if (!member?.businessId) {
+        return res.status(404).json({ message: "Business account not found" });
+      }
+
+      const existing = await prisma.businessAcc.findUnique({
+        where: { id: member.businessId },
+        select: { logo: true },
+      });
+
+      if (req.file && existing?.logo) {
+        const oldKey = extractS3Key(existing.logo);
+        try {
+          await deleteFromS3(oldKey);
+        } catch (e) {
+          console.error("Failed to delete old logo from S3:", e);
+        }
+      }
+
+      const logoUrl = req.file ? ((req.file as any)?.location ?? "") : existing?.logo ?? "";
+
+      const updated = await prisma.businessAcc.update({
+        where: { id: member.businessId },
+        data: { logo: logoUrl },
+      });
+
+      return res.json({ status: "ok", logo: updated.logo });
+    } catch (e) {
+      console.error("Failed to update business logo:", e);
+      return res.status(500).json({ message: "Failed to update business logo" });
+    }
+  });
+};
+
 // Export the functions
 export {
   createBusinessAcc,
@@ -885,4 +944,5 @@ export {
   searchBusinessAcc,
   updateBusinessAvatar,
   getBusinessAvatar,
+  updateBusinessLogo,
 };

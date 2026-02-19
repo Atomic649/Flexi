@@ -9,8 +9,8 @@ import {
   getBusinessDetail,
   AddMoreBusinessAcc,
   updateBusinessAvatar,
-  getBusinessAvatar, 
-  
+  getBusinessAvatar,
+  updateBusinessLogo,
 } from "../controllers/businessAccController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -46,5 +46,8 @@ router.get("/search/:keyword", authenticateToken, searchBusinessAcc);
 
  // get business Avatar by memberId
  router.get("/avatar/:memberId", getBusinessAvatar);
+
+ // Update Business Logo by memberId
+ router.put("/logo/:memberId", authenticateToken, updateBusinessLogo);
 
 export default router;
