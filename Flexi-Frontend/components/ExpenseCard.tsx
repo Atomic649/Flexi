@@ -15,6 +15,7 @@ import { t } from "i18next";
 import CallAPIExpense from "@/api/expense_api";
 import { getMemberId } from "@/utils/utility";
 import CustomAlert from "@/components/CustomAlert";
+import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
@@ -50,6 +51,9 @@ export default function ExpenseCard({
   onDelete,
   bgExpenseDetail,
   titleColor,
+  DocumentType,
+  debtAmount,
+  onPaid,
 }: any) {
   const [detailVisible, setDetailVisible] = useState(false);
   const router = useRouter();
@@ -59,6 +63,37 @@ export default function ExpenseCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [infoAlert, setInfoAlert] = useState<{ title: string; message: string } | null>(null);
   const [resultAlert, setResultAlert] = useState<{ title: string; message: string } | null>(null);
+  const isDebt = DocumentType === "Invoice";
+
+  const handleMarkAsPaid = async () => {
+    try {
+      const fetchedExpense = await CallAPIExpense.getExpenseByIdAPI(Number(id));
+      const formData = new FormData();
+      formData.append("date", fetchedExpense.date);
+      formData.append("note", fetchedExpense.note || "");
+      formData.append("desc", fetchedExpense.desc || "");
+      formData.append("amount", String(fetchedExpense.debtAmount ?? 0));
+      formData.append("group", fetchedExpense.group || "");
+      formData.append("vat", fetchedExpense.vat ? "true" : "false");
+      formData.append("vatAmount", String(fetchedExpense.vatAmount ?? 0));
+      formData.append("withHoldingTax", fetchedExpense.withHoldingTax ? "true" : "false");
+      formData.append("WHTpercent", String(fetchedExpense.WHTpercent ?? 0));
+      formData.append("WHTAmount", String(fetchedExpense.WHTAmount ?? 0));
+      formData.append("sTaxId", fetchedExpense.sTaxId || "");
+      formData.append("sName", fetchedExpense.sName || "");
+      formData.append("taxInvoiceNo", fetchedExpense.taxInvoiceNo || "");
+      formData.append("sAddress", fetchedExpense.sAddress || "");
+      formData.append("taxType", fetchedExpense.taxType || "Individual");
+      formData.append("branch", fetchedExpense.branch || "");
+      formData.append("DocumentType", "Receipt");
+      formData.append("debtAmount", "0");
+      await CallAPIExpense.updateExpenseAPI(Number(id), formData);
+      onPaid?.();
+    } catch (err) {
+      console.error("Failed to mark as paid", err);
+      setResultAlert({ title: "Error", message: String((err as any)?.message || err) });
+    }
+  };
 
   const getExpenseTextColor = (type: string) => {
     switch (type) {
@@ -118,107 +153,116 @@ export default function ExpenseCard({
     duplicateExpense();
   };
 
+  const leftActions: SwipeAction[] = [];
+  if (isDebt && type === "expense") {
+    leftActions.push({
+      id: "paid",
+      icon: "checkmark-circle",
+      text: t("expense.create.paid"),
+      backgroundColor: "#3bf6da",
+      textColor: "#000",
+      onPress: handleMarkAsPaid,
+    });
+  }
+
+  const cardContent = (
+    <TouchableOpacity
+      onPress={() => {
+        if (type === "expense") {
+          router.push({
+            pathname: "/expenseDetailScreen",
+            params: { id, date, expenses, note, desc, image, type },
+          });
+        } else if (type === "ads") {
+          router.push({
+            pathname: "/editAdsCost",
+            params: { id, date, expenses },
+          });
+        }
+      }}
+      onLongPress={handleLongPress}
+      delayLongPress={500}
+    >
+      <View
+        className={`flex flex-col pt-3 pb-4 px-4 pe-16 my-1 rounded-se-md`}
+        style={{ backgroundColor: getCardColor(type) }}
+      >
+        <View className="flex flex-row gap-3 items-center">
+          <View className="flex justify-center items-center flex-row flex-1">
+            <View className="flex justify-center flex-1 ml-3 ">
+              <Text
+                className="text-sm text-zinc-500 font-normal"
+                numberOfLines={1}
+              >
+                {formatDate(date)}
+              </Text>
+              <CustomText
+                className="text-sm font-normal pt-2"
+                style={{ color: DescColor }}
+                numberOfLines={1}
+              >
+                {type === "ads" ? note : sName || desc}
+              </CustomText>
+              <CustomText
+                className="text-base font-psemibold pt-1"
+                weight="semibold"
+                style={{ color: NoteColor }}
+                numberOfLines={1}
+              >
+                {type === "ads" ? t("expense.forecastAdsCost") : note}
+              </CustomText>
+            </View>
+          </View>
+          <View className="flex-colum items-end">
+            <Text
+              className="text-xl font-bold justify-end"
+              style={{ color: getExpenseTextColor(type) }}
+              numberOfLines={1}
+            >
+              -{formatNumber(expenses)}
+            </Text>
+            {type === "expense" && (
+              <Ionicons
+                className="text-end mt-2 justify-end"
+                name="document-text-outline"
+                size={16}
+                color={
+                  !image
+                    ? theme === "dark"
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(103, 103, 103, 0.3)"
+                    : theme === "dark"
+                    ? "white"
+                    : "#676767"
+                }
+              />
+            )}
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <>
       <View
-        className="flex"
         style={{
           width: Platform.OS === "web" ? "100%" : "100%",
           maxWidth: 500,
           minWidth: 350,
+          alignSelf: "center",
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            if (type === "expense") {
-              router.push({
-                pathname: "/expenseDetailScreen",
-                params: {
-                  id,
-                  date,
-                  expenses,
-                  note,
-                  desc,
-                  image,
-                  type,
-                },
-              });
-            } else if (type === "ads") {
-              router.push({
-                pathname: "/editAdsCost",
-                params: {
-                  id,
-                  date,
-                  expenses                 
-                },
-              });
-            } else {
-              // setDetailVisible(true);
-            }
-          }}
-          onLongPress={handleLongPress}
-          delayLongPress={500}
+        <SwipeableRow
+          leftActions={leftActions}
+          disabled={!isDebt || type !== "expense"}
+          threshold={80}
+          actionWidth={80}
+          actionHeight="92%"
+          actionBorderRadius={0}
         >
-          <View
-            className={`flex flex-col pt-3 pb-4 px-4 pe-16 my-1 rounded-se-md`}
-            style={{
-              backgroundColor: getCardColor(type),
-            }}
-          >
-            <View className="flex flex-row gap-3 items-center">
-              <View className="flex justify-center items-center flex-row flex-1">
-                <View className="flex justify-center flex-1 ml-3 ">
-                  <Text
-                    className="text-sm text-zinc-500 font-normal"
-                    numberOfLines={1}
-                  >
-                    {formatDate(date)}
-                  </Text>
-                  <CustomText
-                    className="text-sm font-normal pt-2"
-                    style={{ color: DescColor }}
-                    numberOfLines={1}
-                  >
-                    {type === "ads" ? note : sName || desc}
-                  </CustomText>
-                  <CustomText
-                    className="text-base font-psemibold pt-1"
-                    weight="semibold"
-                    style={{ color: NoteColor }}
-                    numberOfLines={1}
-                  >
-                    {type === "ads" ? t("expense.forecastAdsCost") : note}
-                  </CustomText>
-                </View>
-              </View>
-              <View className="flex-colum items-end">
-                <Text
-                  className="text-xl font-bold justify-end"
-                  style={{ color: getExpenseTextColor(type) }}
-                  numberOfLines={1}
-                >
-                  -{formatNumber(expenses)}
-                </Text>
-                {type === "expense" && (
-                  <Ionicons
-                    className="text-end mt-2 justify-end"
-                    name="document-text-outline"
-                    size={16}
-                    color={
-                      !image
-                        ? theme === "dark"
-                          ? "rgba(255, 255, 255, 0.3)"
-                          : "rgba(103, 103, 103, 0.3)"
-                        : theme === "dark"
-                        ? "white"
-                        : "#676767"
-                    }
-                  />
-                )}
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+          {cardContent}
+        </SwipeableRow>
       </View>
 
       {/* ExpenseDetail Modal for ads */}

@@ -34,6 +34,7 @@ type Expense = {
   date: string;
   expenses: number;
   debtAmount?: number;
+  DocumentType?: string;
   type: string;
   note: string;
   sName: string;
@@ -376,6 +377,9 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 note={expense.note}
                 desc={expense.desc}
                 image={expense.image}
+                DocumentType={expense.DocumentType}
+                debtAmount={expense.debtAmount}
+                onPaid={fetchExpenses}
                 Opacity={theme === "dark" ? 0.4 : 0.2}
                 AdsCardColor={theme === "dark" ? "#1d1d1d" : "#f4f4f4f4"}
                 ExCardColor={theme === "dark" ? "#151515" : "#f3f3f3ff"}

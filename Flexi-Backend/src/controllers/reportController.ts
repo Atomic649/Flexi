@@ -350,6 +350,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
             date: expense.date,
             expenses: expense.amount,
             debtAmount: expense.debtAmount,
+            DocumentType: expense.DocumentType,
             type: "expense",
             sName: expense.sName || "",
             note: expense.note || "",
