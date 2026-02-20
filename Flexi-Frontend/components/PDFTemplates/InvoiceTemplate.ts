@@ -128,7 +128,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             min-width: 200px;
           }
           .invoice-number {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--brand-color);
             margin: 0 0 5px 0;
@@ -320,9 +320,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           .note-section {
             background-color: #f5f7f8;
             padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            border-left: 3px solid #5e5e5e;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--brand-color);
           }
           .note-section h3 {
             color: #374151;
@@ -356,7 +356,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .thank-you {
             font-style: italic;
-            color: var(--brand-color);
+            color: #374151;
             font-size: 12px;
             font-weight: 500;
           }
@@ -365,7 +365,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             color: #9ca3af;
             text-align: right;
           }
-          
+
           /* Signature Section */
           .signature-section {
             margin: 20px 0;
@@ -398,19 +398,19 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             letter-spacing: 0.3px;
           }
           .signature-line {
-            border-bottom: 1px solid var(--brand-color);
+            border-bottom: 1px solid #9ca3af;
             height: 50px;
             margin-bottom: 6px;
             position: relative;
           }
           .signature-name {
             font-size: 9px;
-            color: var(--brand-color);
+            color: #374151;
             margin-bottom: 3px;
           }
           .signature-date {
             font-size: 8px;
-            color: var(--brand-color);
+            color: #6b7280;
           }
           .business-stamp {
             border: 2px dashed #9ca3af;

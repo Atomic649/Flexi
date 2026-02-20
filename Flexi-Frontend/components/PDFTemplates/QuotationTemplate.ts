@@ -351,7 +351,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .thank-you {
             font-style: italic;
-            color: var(--brand-color);
+            color: #374151;
             font-size: 12px;
             font-weight: 500;
           }
@@ -360,7 +360,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             color: #9ca3af;
             text-align: right;
           }
-          
+
           /* Signature Section */
           .signature-section {
             margin: 20px 0;
@@ -393,19 +393,19 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             letter-spacing: 0.3px;
           }
           .signature-line {
-            border-bottom: 1px solid var(--brand-color);
+            border-bottom: 1px solid #9ca3af;
             height: 50px;
             margin-bottom: 6px;
             position: relative;
           }
           .signature-name {
             font-size: 9px;
-            color: var(--brand-color);
+            color: #374151;
             margin-bottom: 3px;
           }
           .signature-date {
             font-size: 8px;
-            color: var(--brand-color);
+            color: #6b7280;
           }
           .business-stamp {
             border: 2px dashed #9ca3af;

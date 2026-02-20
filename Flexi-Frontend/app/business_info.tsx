@@ -25,19 +25,223 @@ import { isDesktop } from "@/utils/responsive";
 import * as ImagePicker from "expo-image-picker";
 import { useBusiness } from "@/providers/BusinessProvider";
 
-const PRESET_COLORS = [
-  "#5e5e5e",
-  "#1e40af",
-  "#15803d",
-  "#b91c1c",
-  "#7e22ce",
-  "#c2410c",
-  "#0369a1",
-  "#0f766e",
-  "#be123c",
-  "#92400e",
-  "#374151",
-  "#000000",
+const COLOR_FAMILIES = [
+  {
+    name: "Gray",
+    main: "#5e5e5e",
+    shades: [
+      "#b0b0b0",
+      "#8a8a8a",
+      "#72705f",
+      "#5b5b4a",
+      "#5e5e5e",
+      "#4a4a4a",
+      "#383838",
+      "#2a2a2a",
+      "#1a1a1a",
+      "#101010",
+      "#080808",
+      "#000000",
+    ],
+  },
+  {
+    name: "Slate",
+    main: "#475569",
+    shades: [
+      "#94a3b8",
+      "#64748b",
+      "#475569",
+      "#374151",
+      "#334155",
+      "#1f2937",
+      "#1e293b",
+      "#111827",
+      "#0f172a",
+      "#0b1120",
+      "#07090f",
+      "#020617",
+    ],
+  },
+  {
+    name: "Blue",
+    main: "#2563eb",
+    shades: [
+      "#60a5fa",
+      "#3b82f6",
+      "#2563eb",
+      "#1d4ed8",
+      "#1e40af",
+      "#1e3a8a",
+      "#1e306e",
+      "#172554",
+      "#0e1f4d",
+      "#0a1640",
+      "#070e2c",
+      "#040820",
+    ],
+  },
+  {
+    name: "Indigo",
+    main: "#4f46e5",
+    shades: [
+      "#a5b4fc",
+      "#818cf8",
+      "#6366f1",
+      "#4f46e5",
+      "#4338ca",
+      "#3730a3",
+      "#312e81",
+      "#272580",
+      "#1e1b4b",
+      "#12104a",
+      "#0d0b35",
+      "#080620",
+    ],
+  },
+  {
+    name: "Green",
+    main: "#16a34a",
+    shades: [
+      "#4ade80",
+      "#22c55e",
+      "#16a34a",
+      "#15803d",
+      "#166534",
+      "#14532d",
+      "#0f3d20",
+      "#052e16",
+      "#032b14",
+      "#021d0d",
+      "#011508",
+      "#010d05",
+    ],
+  },
+  {
+    name: "Teal",
+    main: "#0891b2",
+    shades: [
+      "#22d3ee",
+      "#0891b2",
+      "#0e7490",
+      "#164e63",
+      "#0c3547",
+      "#07252e",
+      "#00f9f0",
+      "#01cba3",
+      "#27938f",
+      "#245a58",
+      "#15403f",
+      "#0e2928",
+    ],
+  },
+  {
+    name: "Red",
+    main: "#dc2626",
+    shades: [
+      "#f87171",
+      "#ef4444",
+      "#dc2626",
+      "#b91c1c",
+      "#991b1b",
+      "#7f1d1d",
+      "#6b1414",
+      "#571010",
+      "#450a0a",
+      "#3b0000",
+      "#2a0000",
+      "#1a0000",
+    ],
+  },
+  {
+    name: "Rose",
+    main: "#be123c",
+    shades: [
+      "#fe6eaa",
+      "#fd4d96",
+      "#ee2b7c",
+      "#d7055d",
+      "#fe046c",
+      "#860f40",
+      "#fb7185",
+      "#f43f5e",
+      "#e11d48",      
+      "#9f1239",     
+      "#6e0f2e",
+      "#3b0013",
+     ],
+  },
+  {
+    name: "Purple",
+    main: "#9333ea",
+    shades: [
+      "#d8b4fe",
+      "#c084fc",
+      "#a855f7",
+      "#9333ea",
+      "#7c3aed",
+      "#6d28d9",
+      "#5b21b6",
+      "#4c1d95",
+      "#3b1374",
+      "#2e1065",
+      "#1e0a45",
+      "#110630",
+    ],
+  },
+  {
+    name: "Orange",
+    main: "#ea580c",
+    shades: [
+      "#fb923c",
+      "#f97316",
+      "#ea580c",
+      "#c2410c",
+      "#9a3412",
+      "#7c2d12",
+      "#6c2409",
+      "#5a1e06",
+      "#431407",
+      "#3a1003",
+      "#280b02",
+      "#180601",
+    ],
+  },
+  {
+    name: "Yellow",
+    main: "#eab308",
+    shades: [
+      "#fde047",
+      "#facc15",
+      "#eab308",
+      "#ca8a04",
+      "#a16207",
+      "#854d0e",
+      "#713f12",
+      "#5a3010",
+      "#3f2008",
+      "#2a1505",
+      "#1a0d03",
+      "#0f0801",
+    ],
+  },
+  {
+    name: "Brown",
+    main: "#a0522d",
+    shades: [
+      "#d4a27a",
+      "#c08052",
+      "#a0522d",
+      "#8b4513",
+      "#7a3b11",
+      "#6b3010",
+      "#5c2a0e",
+      "#4a200a",
+      "#381808",
+      "#281005",
+      "#1a0a03",
+      "#100602",
+    ],
+  },
 ];
 
 export default function BusinessInfo() {
@@ -66,6 +270,7 @@ export default function BusinessInfo() {
   const [logoChanged, setLogoChanged] = useState(false);
   const [businessColor, setBusinessColor] = useState<string>("#5e5e5e");
   const [businessId, setBusinessId] = useState<number | null>(null);
+  const [selectedFamily, setSelectedFamily] = useState<number | null>(null);
 
   // Ensure business username always begins with a single '@' and cannot be removed
   const normalizeBusinessUserName = (value: string) => {
@@ -127,7 +332,7 @@ export default function BusinessInfo() {
       setBusinessAddress(data.businessAddress || "");
       setDocumentTypes(data.DocumentType || ["Receipt"]);
       setLogoUri(data.logo || null);
-      setBusinessColor(data.businessColor || "#5e5e5e");
+      setBusinessColor(data.businessColor || "#5e5e5e"); // default gray
       setBusinessId(data.id || null);
 
       if (data.error) throw new Error(data.error);
@@ -282,7 +487,10 @@ export default function BusinessInfo() {
               >
                 {t("auth.businessRegister.logo") || "Business Logo"}
               </CustomText>
-              <TouchableOpacity onPress={handlePickLogo} style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={handlePickLogo}
+                style={{ alignItems: "center" }}
+              >
                 {logoUri ? (
                   <Image
                     source={{ uri: logoUri }}
@@ -316,10 +524,11 @@ export default function BusinessInfo() {
                   </View>
                 )}
                 <CustomText
-                  className={`mt-2 text-sm ${useTextColorClass()}`}
+                  className={`mt-2 text-sm pt-1 ${useTextColorClass()}`}
                   style={{ opacity: 0.6 }}
                 >
-                  {t("auth.businessRegister.tapToChangeLogo") || "Tap to change logo"}
+                  {t("auth.businessRegister.tapToChangeLogo") ||
+                    "Tap to change logo"}
                 </CustomText>
               </TouchableOpacity>
             </View>
@@ -329,41 +538,120 @@ export default function BusinessInfo() {
               <CustomText
                 className={`text-base font-medium mb-3 ${useTextColorClass()}`}
               >
-                {t("auth.businessRegister.brandColor") || "Brand Color (PDF Theme)"}
+                {t("auth.businessRegister.brandColor") ||
+                  "Brand Color (PDF Theme)"}
               </CustomText>
+
+              {/* 8 main color family circles */}
               <View
                 style={{
                   flexDirection: "row",
                   flexWrap: "wrap",
-                  gap: 10,
+                  gap: 12,
+                  marginBottom: 8,
                 }}
               >
-                {PRESET_COLORS.map((color) => (
-                  <TouchableOpacity
-                    key={color}
-                    onPress={() => setBusinessColor(color)}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 18,
-                      backgroundColor: color,
-                      borderWidth: businessColor === color ? 3 : 1,
-                      borderColor:
-                        businessColor === color
-                          ? theme === "dark"
-                            ? "#fff"
-                            : "#111"
-                          : "transparent",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {businessColor === color && (
-                      <Ionicons name="checkmark" size={16} color="#fff" />
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {COLOR_FAMILIES.map((family, index) => {
+                  const isFamilyActive = family.shades.includes(businessColor);
+                  const isOpen = selectedFamily === index;
+                  return (
+                    <TouchableOpacity
+                      key={family.name}
+                      onPress={() => setSelectedFamily(isOpen ? null : index)}
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 22,
+                        backgroundColor: family.main,
+                        borderWidth: isOpen || isFamilyActive ? 3 : 1.5,
+                        borderColor:
+                          isOpen || isFamilyActive
+                            ? theme === "dark"
+                              ? "#fff"
+                              : "#111"
+                            : "rgba(0,0,0,0.15)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {isFamilyActive && !isOpen && (
+                        <Ionicons name="checkmark" size={18} color="#fff" />
+                      )}
+                      {isOpen && (
+                        <Ionicons name="chevron-up" size={14} color="#fff" />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
+
+              {/* Sub-shade picker panel */}
+              {selectedFamily !== null && (
+                <View
+                  style={{
+                    marginTop: 4,
+                    padding: 12,
+                    borderRadius: 12,
+                    backgroundColor: theme === "dark" ? "#2D2D2D" : "#f0f0f0",
+                    borderWidth: 1,
+                    borderColor: theme === "dark" ? "#444" : "#ddd",
+                  }}
+                >
+                  <CustomText
+                    className={useTextColorClass()}
+                    style={{ fontSize: 11, opacity: 0.6, marginBottom: 8 }}
+                  >
+                    {COLOR_FAMILIES[selectedFamily].name}
+                  </CustomText>
+                  {[0, 1].map((rowIdx) => (
+                    <View
+                      key={rowIdx}
+                      style={{
+                        flexDirection: "row",
+                        gap: 6,
+                        marginBottom: rowIdx === 0 ? 6 : 0,
+                      }}
+                    >
+                      {COLOR_FAMILIES[selectedFamily].shades
+                        .slice(rowIdx * 6, rowIdx * 6 + 6)
+                        .map((shade) => (
+                          <TouchableOpacity
+                            key={shade}
+                            onPress={() => {
+                              setBusinessColor(shade);
+                              setSelectedFamily(null);
+                            }}
+                            style={{
+                              flex: 1,
+                              height: 36,
+                              borderRadius: 6,
+                              backgroundColor: shade,
+                              borderWidth: businessColor === shade ? 3 : 1,
+                              borderColor:
+                                businessColor === shade
+                                  ? theme === "dark"
+                                    ? "#fff"
+                                    : "#111"
+                                  : "rgba(0,0,0,0.1)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {businessColor === shade && (
+                              <Ionicons
+                                name="checkmark"
+                                size={12}
+                                color="#fff"
+                              />
+                            )}
+                          </TouchableOpacity>
+                        ))}
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {/* Current color preview */}
               <View
                 style={{
                   marginTop: 10,
@@ -382,7 +670,10 @@ export default function BusinessInfo() {
                     borderColor: theme === "dark" ? "#555" : "#ccc",
                   }}
                 />
-                <CustomText className={useTextColorClass()} style={{ fontSize: 12 }}>
+                <CustomText
+                  className={useTextColorClass()}
+                  style={{ fontSize: 12 }}
+                >
                   {businessColor}
                 </CustomText>
               </View>
@@ -486,7 +777,9 @@ export default function BusinessInfo() {
               title={t("auth.businessRegister.businessType")}
               options={[
                 {
-                  label: t("auth.businessRegister.businessTypeOption.OnlineSale"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.OnlineSale",
+                  ),
                   value: "OnlineSale",
                 },
                 {
@@ -494,7 +787,9 @@ export default function BusinessInfo() {
                   value: "Massage",
                 },
                 {
-                  label: t("auth.businessRegister.businessTypeOption.Restaurant"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.Restaurant",
+                  ),
                   value: "Restaurant",
                 },
                 {
@@ -514,7 +809,9 @@ export default function BusinessInfo() {
                   value: "Tutor",
                 },
                 {
-                  label: t("auth.businessRegister.businessTypeOption.Influencer"),
+                  label: t(
+                    "auth.businessRegister.businessTypeOption.Influencer",
+                  ),
                   value: "Influencer",
                 },
                 {
