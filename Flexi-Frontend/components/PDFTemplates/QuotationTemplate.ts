@@ -587,7 +587,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                    return `
                      <tr>
                       <td class="text-center">${index + 1}</td>
-                      <td class="font-medium">${item.product}</td>
+                      <td class="font-medium">${item.productList?.name ?? item.product ?? "-"}</td>
                       <td class="text-center">${item.quantity}</td>
                       <td class="text-center">${item.unit !== "NotSpecified" ? t(`product.unit.${item.unit}`) : "-"}</td>
                       <td class="text-right">${formatNumber(unitPriceDisplayed)}</td>

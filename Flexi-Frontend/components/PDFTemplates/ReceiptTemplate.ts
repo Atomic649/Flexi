@@ -679,7 +679,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                       return `
                   <tr>
                     <td class="text-center font-medium">${idx + 1}</td>
-                    <td class="font-medium">${item.product || "-"}</td>
+                    <td class="font-medium">${item.productList?.name ?? item.product ?? "-"}</td>
                     <td class="text-center">${item.quantity}</td>
                     <td class="text-center">
                       ${item.unit ? t(`product.unit.${item.unit}`) : "-"}

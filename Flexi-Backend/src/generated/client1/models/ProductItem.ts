@@ -28,6 +28,7 @@ export type AggregateProductItem = {
 
 export type ProductItemAvgAggregateOutputType = {
   id: number | null
+  product: number | null
   quantity: number | null
   unitPrice: number | null
   unitDiscount: number | null
@@ -36,6 +37,7 @@ export type ProductItemAvgAggregateOutputType = {
 
 export type ProductItemSumAggregateOutputType = {
   id: number | null
+  product: number | null
   quantity: number | null
   unitPrice: number | null
   unitDiscount: number | null
@@ -44,7 +46,7 @@ export type ProductItemSumAggregateOutputType = {
 
 export type ProductItemMinAggregateOutputType = {
   id: number | null
-  product: string | null
+  product: number | null
   quantity: number | null
   unitPrice: number | null
   unitDiscount: number | null
@@ -54,7 +56,7 @@ export type ProductItemMinAggregateOutputType = {
 
 export type ProductItemMaxAggregateOutputType = {
   id: number | null
-  product: string | null
+  product: number | null
   quantity: number | null
   unitPrice: number | null
   unitDiscount: number | null
@@ -76,6 +78,7 @@ export type ProductItemCountAggregateOutputType = {
 
 export type ProductItemAvgAggregateInputType = {
   id?: true
+  product?: true
   quantity?: true
   unitPrice?: true
   unitDiscount?: true
@@ -84,6 +87,7 @@ export type ProductItemAvgAggregateInputType = {
 
 export type ProductItemSumAggregateInputType = {
   id?: true
+  product?: true
   quantity?: true
   unitPrice?: true
   unitDiscount?: true
@@ -209,7 +213,7 @@ export type ProductItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type ProductItemGroupByOutputType = {
   id: number
-  product: string
+  product: number
   quantity: number
   unitPrice: number
   unitDiscount: number | null
@@ -242,7 +246,7 @@ export type ProductItemWhereInput = {
   OR?: Prisma.ProductItemWhereInput[]
   NOT?: Prisma.ProductItemWhereInput | Prisma.ProductItemWhereInput[]
   id?: Prisma.IntFilter<"ProductItem"> | number
-  product?: Prisma.StringFilter<"ProductItem"> | string
+  product?: Prisma.IntFilter<"ProductItem"> | number
   quantity?: Prisma.IntFilter<"ProductItem"> | number
   unitPrice?: Prisma.IntFilter<"ProductItem"> | number
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
@@ -269,7 +273,7 @@ export type ProductItemWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProductItemWhereInput | Prisma.ProductItemWhereInput[]
   OR?: Prisma.ProductItemWhereInput[]
   NOT?: Prisma.ProductItemWhereInput | Prisma.ProductItemWhereInput[]
-  product?: Prisma.StringFilter<"ProductItem"> | string
+  product?: Prisma.IntFilter<"ProductItem"> | number
   quantity?: Prisma.IntFilter<"ProductItem"> | number
   unitPrice?: Prisma.IntFilter<"ProductItem"> | number
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
@@ -299,7 +303,7 @@ export type ProductItemScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProductItemScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProductItemScalarWhereWithAggregatesInput | Prisma.ProductItemScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"ProductItem"> | number
-  product?: Prisma.StringWithAggregatesFilter<"ProductItem"> | string
+  product?: Prisma.IntWithAggregatesFilter<"ProductItem"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"ProductItem"> | number
   unitPrice?: Prisma.IntWithAggregatesFilter<"ProductItem"> | number
   unitDiscount?: Prisma.IntNullableWithAggregatesFilter<"ProductItem"> | number | null
@@ -318,7 +322,7 @@ export type ProductItemCreateInput = {
 
 export type ProductItemUncheckedCreateInput = {
   id?: number
-  product: string
+  product: number
   quantity: number
   unitPrice: number
   unitDiscount?: number | null
@@ -337,7 +341,7 @@ export type ProductItemUpdateInput = {
 
 export type ProductItemUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -347,7 +351,7 @@ export type ProductItemUncheckedUpdateInput = {
 
 export type ProductItemCreateManyInput = {
   id?: number
-  product: string
+  product: number
   quantity: number
   unitPrice: number
   unitDiscount?: number | null
@@ -364,7 +368,7 @@ export type ProductItemUpdateManyMutationInput = {
 
 export type ProductItemUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -394,6 +398,7 @@ export type ProductItemCountOrderByAggregateInput = {
 
 export type ProductItemAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  product?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   unitDiscount?: Prisma.SortOrder
@@ -422,6 +427,7 @@ export type ProductItemMinOrderByAggregateInput = {
 
 export type ProductItemSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  product?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   unitDiscount?: Prisma.SortOrder
@@ -526,7 +532,7 @@ export type ProductItemCreateWithoutBillInput = {
 
 export type ProductItemUncheckedCreateWithoutBillInput = {
   id?: number
-  product: string
+  product: number
   quantity: number
   unitPrice: number
   unitDiscount?: number | null
@@ -564,7 +570,7 @@ export type ProductItemScalarWhereInput = {
   OR?: Prisma.ProductItemScalarWhereInput[]
   NOT?: Prisma.ProductItemScalarWhereInput | Prisma.ProductItemScalarWhereInput[]
   id?: Prisma.IntFilter<"ProductItem"> | number
-  product?: Prisma.StringFilter<"ProductItem"> | string
+  product?: Prisma.IntFilter<"ProductItem"> | number
   quantity?: Prisma.IntFilter<"ProductItem"> | number
   unitPrice?: Prisma.IntFilter<"ProductItem"> | number
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
@@ -617,7 +623,7 @@ export type ProductItemUpdateManyWithWhereWithoutProductListInput = {
 
 export type ProductItemCreateManyBillInput = {
   id?: number
-  product: string
+  product: number
   quantity: number
   unitPrice: number
   unitDiscount?: number | null
@@ -634,7 +640,7 @@ export type ProductItemUpdateWithoutBillInput = {
 
 export type ProductItemUncheckedUpdateWithoutBillInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -643,7 +649,7 @@ export type ProductItemUncheckedUpdateWithoutBillInput = {
 
 export type ProductItemUncheckedUpdateManyWithoutBillInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -755,7 +761,7 @@ export type $ProductItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    product: string
+    product: number
     quantity: number
     unitPrice: number
     unitDiscount: number | null
@@ -1187,7 +1193,7 @@ export interface Prisma__ProductItemClient<T, Null = never, ExtArgs extends runt
  */
 export interface ProductItemFieldRefs {
   readonly id: Prisma.FieldRef<"ProductItem", 'Int'>
-  readonly product: Prisma.FieldRef<"ProductItem", 'String'>
+  readonly product: Prisma.FieldRef<"ProductItem", 'Int'>
   readonly quantity: Prisma.FieldRef<"ProductItem", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"ProductItem", 'Int'>
   readonly unitDiscount: Prisma.FieldRef<"ProductItem", 'Int'>

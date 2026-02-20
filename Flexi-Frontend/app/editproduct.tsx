@@ -251,7 +251,7 @@ export default function EditProduct() {
     const normalizedProductType = (productType || "").toLowerCase();
     const requiresStock = normalizedProductType === "product";
 
-    const missingBaseFields = [name, description, price].some((value) =>
+    const missingBaseFields = [name, price].some((value) =>
       isFieldEmpty(value),
     );
     const missingStock = requiresStock && isFieldEmpty(stock);

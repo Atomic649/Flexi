@@ -589,7 +589,7 @@ export default function CreateBill() {
       ) {
         setProductItems(
           billData.product.map((item: any) => ({
-            product: item.product ?? "",
+            product: item.product != null ? item.product.toString() : "",
             price:
               item.unitPrice !== undefined && item.unitPrice !== null
                 ? item.unitPrice.toString()
@@ -743,7 +743,9 @@ export default function CreateBill() {
       updated[index] = { ...updated[index], [field]: value };
       // If product is changed, auto-fill price and unit
       if (field === "product") {
-        const selectedProduct = productChoice.find((p) => p.name === value);
+        const selectedProduct = productChoice.find(
+          (p) => p.id?.toString() === value,
+        );
         updated[index].price =
           selectedProduct && selectedProduct.price
             ? selectedProduct.price.toString()
@@ -754,7 +756,7 @@ export default function CreateBill() {
             : "";
 
         // Auto-fill customer fields if product is Tiktok Affiliate
-        if (value === "Tiktok Affiliate") {
+        if (selectedProduct?.name === "Tiktok Affiliate") {
           setCName("บริษัท ติ๊กต๊อก (ไทยแลนด์) จำกัด");
           setCLastName("");
           setCPhone("0000000000");
@@ -772,7 +774,7 @@ export default function CreateBill() {
           setSelectedPlatform("Tiktok");
         }
         // Auto-fill customer fields if product is Shopee Affiliate
-        if (value === "Shopee Affiliate") {
+        if (selectedProduct?.name === "Shopee Affiliate") {
           setCName("บริษัท ช้อปปี้ (ประเทศไทย) จำกัด");
           setCLastName("");
           setCPhone("0000000000");
@@ -957,7 +959,7 @@ export default function CreateBill() {
         platform: selectedPlatform,
         image,
         productItems: productItems.map((item) => ({
-          product: item.product,
+          product: Number(item.product),
           unit: item.unit || undefined,
           unitPrice: Number(item.price),
           unitDiscount: Number(item.unitDiscount) || 0,
@@ -1579,7 +1581,7 @@ export default function CreateBill() {
                     title={t(`bill.productName`) + ` ${idx + 1}`}
                     options={productChoice.map((product) => ({
                       label: product.name,
-                      value: product.name,
+                      value: product.id?.toString() ?? "",
                     }))}
                     placeholder={t("bill.selectProduct")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}

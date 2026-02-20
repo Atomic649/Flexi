@@ -254,7 +254,7 @@ export default function BillCard({
                       numberOfLines={1}
                       style={{ color: "#7e7d7a" }}
                     >
-                      {item.product}
+                      {item.productList?.name ?? item.product}
                     </CustomText>
 
                     {item.unit !== "NotSpecified" ? (

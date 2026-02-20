@@ -288,7 +288,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                           ${productItems
                             .map(
                               (item: any, idx: any) =>
-                                `<li>${item.product || "-"} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ""}` : ""} </li>`,
+                                `<li>${item.productList?.name ?? item.product ?? "-"} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ""}` : ""} </li>`,
                             )
                             .join("")}
                         </ul>
@@ -358,7 +358,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                           ${productItems
                             .map(
                               (item: any, idx: any) =>
-                                `<li>${item.product || "-"} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ""}` : ""} </li>`,
+                                `<li>${item.productList?.name ?? item.product ?? "-"} ${item.unit !== "NotSpecified" ? `${item.quantity} ${item.unit ? t(`product.unit.${item.unit}`) : ""}` : ""} </li>`,
                             )
                             .join("")}
                         </ul>

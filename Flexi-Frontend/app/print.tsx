@@ -1844,7 +1844,7 @@ export default function Print() {
                         className="flex-row justify-between items-center py-2"
                       >
                         <CustomText style={{ width: "38%" }}>
-                          {item.product}
+                          {item.productList?.name ?? item.product}
                         </CustomText>
                         <CustomText
                           style={{ width: "22%", textAlign: "center" }}

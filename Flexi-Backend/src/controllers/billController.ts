@@ -114,7 +114,7 @@ const restoreRentalStockForBusiness = async (businessAccId: number) => {
     expiredBills.map((bill) =>
       prisma.$transaction(async (tx) => {
         const products = Array.isArray((bill as any).product)
-          ? ((bill as any).product as { product: string | null }[])
+          ? ((bill as any).product as { product: number | null }[])
           : [];
 
         for (const item of products) {
@@ -124,8 +124,7 @@ const restoreRentalStockForBusiness = async (businessAccId: number) => {
 
           await tx.product.updateMany({
             where: {
-              businessAcc: businessAccId,
-              name: item.product,
+              id: item.product,
               stock: {
                 lte: 0,
               },
@@ -151,7 +150,7 @@ const restoreRentalStockForBusiness = async (businessAccId: number) => {
 
 // Interface for request body from client
 interface ProductItemInput {
-  product: string;
+  product: number;
   quantity: number;
   unitPrice: number;
   unitDiscount?: number;
@@ -232,7 +231,7 @@ const schema = Joi.object({
   productItems: Joi.array()
     .items(
       Joi.object({
-        product: Joi.string().required(),
+        product: Joi.number().required(),
         quantity: Joi.number().min(1).required(),
         unitPrice: Joi.number().min(0).required(),
         unitDiscount: Joi.number().min(0).optional(),
@@ -611,37 +610,13 @@ const createBill = async (req: Request, res: Response) => {
           });
 
           if (docType === "Receipt") {
-            //find product id by businessAcc and product name
-            const product = await tx.product.findFirst({
-              where: {
-                businessAcc: billInput.businessAcc,
-                name: billInput.productItems[0].product,
-              },
-              select: {
-                id: true,
-              },
-            });
-
-            console.log("🚀 Product to reduce stock:", product);
-
-            // Reduce stock - update product stock using prisma.update only if product was found
-            if (product && product.id) {
+            // Reduce stock for all product items using product ID directly
+            for (const item of billInput.productItems) {
               const reductStock = await tx.product.update({
-                where: {
-                  id: product.id,
-                },
-                data: {
-                  stock: { decrement: billInput.productItems[0].quantity },
-                },
+                where: { id: Number(item.product) },
+                data: { stock: { decrement: item.quantity } },
               });
               console.log("🚀 Stock reduced:", reductStock);
-            } else {
-              console.warn(
-                "🚨 Product not found for stock reduction:",
-                billInput.productItems[0].product,
-                "businessAcc:",
-                billInput.businessAcc,
-              );
             }
           } else {
             console.log(
@@ -716,6 +691,11 @@ const getBills = async (req: Request, res: Response) => {
         product: {
           select: {
             product: true,
+            productList: {
+              select: {
+                name: true,
+              },
+            },
             quantity: true,
             unitPrice: true,
             unitDiscount: true,
@@ -749,7 +729,15 @@ const getBillById = async (req: Request, res: Response) => {
         id: Number(id),
       },
       include: {
-        product: true, // Include product items
+        product: {
+          include: {
+            productList: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        }, // Include product items with product name
       },
     });
     console.log("🚀 Get Bill by ID:", bill);
@@ -1091,63 +1079,47 @@ const updateBill = async (req: Request, res: Response) => {
 
         if (docType === "Receipt") {
           const aggregateQuantities = (
-            items: { product: string; quantity: number }[],
+            items: { product: number; quantity: number }[],
           ) => {
-            return items.reduce<Record<string, number>>((acc, item) => {
+            return items.reduce<Record<number, number>>((acc, item) => {
+              const id = Number(item.product);
               const quantity = Number(item.quantity) || 0;
-              acc[item.product] = (acc[item.product] || 0) + quantity;
+              acc[id] = (acc[id] || 0) + quantity;
               return acc;
             }, {});
           };
 
           const previousQuantities = aggregateQuantities(existingProductItems);
-          const newQuantities = aggregateQuantities(billInput.productItems);
-          const affectedProducts = new Set([
-            ...Object.keys(previousQuantities),
-            ...Object.keys(newQuantities),
+          const newQuantities = aggregateQuantities(
+            billInput.productItems.map((i) => ({
+              product: Number(i.product),
+              quantity: i.quantity,
+            })),
+          );
+          const affectedProductIds = new Set([
+            ...Object.keys(previousQuantities).map(Number),
+            ...Object.keys(newQuantities).map(Number),
           ]);
 
-          for (const productName of affectedProducts) {
-            const previousQty = previousQuantities[productName] || 0;
-            const newQty = newQuantities[productName] || 0;
+          for (const productId of affectedProductIds) {
+            const previousQty = previousQuantities[productId] || 0;
+            const newQty = newQuantities[productId] || 0;
             const delta = newQty - previousQty;
 
             if (delta === 0) {
               continue; // No adjustment needed
             }
 
-            const productRecord = await tx.product.findFirst({
-              where: {
-                businessAcc: billInput.businessAcc,
-                name: productName,
-              },
-              select: {
-                id: true,
-              },
-            });
-
-            if (!productRecord?.id) {
-              console.warn(" Product not found for stock adjustment:", {
-                businessAcc: billInput.businessAcc,
-                productName,
-              });
-              continue;
-            }
-
             const stockUpdate =
               delta > 0 ? { decrement: delta } : { increment: Math.abs(delta) };
 
             const updatedProduct = await tx.product.update({
-              where: {
-                id: productRecord.id,
-              },
-              data: {
-                stock: stockUpdate,
-              },
+              where: { id: productId },
+              data: { stock: stockUpdate },
             });
 
             console.log(" Stock adjusted for product:", {
-              productName,
+              productId,
               previousQty,
               newQty,
               delta,
@@ -1386,79 +1358,13 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         // Changing TO Receipt: Decrease stock
         for (const item of currentBill.product) {
           if (!item.product) continue;
-
-          const productRecord = await tx.product.findFirst({
-            where: {
-              businessAcc: currentBill.businessAcc,
-              name: item.product,
-            },
-            select: { id: true },
+          await tx.product.update({
+            where: { id: item.product },
+            data: { stock: { decrement: item.quantity } },
           });
-
-          if (productRecord) {
-            await tx.product.update({
-              where: { id: productRecord.id },
-              data: { stock: { decrement: item.quantity } },
-            });
-            console.log(
-              `Stock decreased for product ${item.product} by ${item.quantity}`,
-            );
-          }
-        }
-      } else if (
-        DocumentType !== "Receipt" &&
-        currentBill.DocumentType === "Receipt"
-      ) {
-        // Changing FROM Receipt: Increase stock (Replatform)
-        for (const item of currentBill.product) {
-          if (!item.product) continue;
-
-          const productRecord = await tx.product.findFirst({
-            where: {
-              businessAcc: currentBill.businessAcc,
-              name: item.product,
-            },
-            select: { id: true },
-          });
-
-          if (productRecord) {
-            await tx.product.update({
-              where: { id: productRecord.id },
-              data: { stock: { increment: item.quantity } },
-            });
-            console.log(
-              `Stock restored for product ${item.product} by ${item.quantity}`,
-            );
-          }
-        }
-      }
-
-      // Update stock based on DocumentType change
-      if (
-        DocumentType === "Receipt" &&
-        currentBill.DocumentType !== "Receipt"
-      ) {
-        // Changing TO Receipt: Decrease stock
-        for (const item of currentBill.product) {
-          if (!item.product) continue;
-
-          const productRecord = await tx.product.findFirst({
-            where: {
-              businessAcc: currentBill.businessAcc,
-              name: item.product,
-            },
-            select: { id: true },
-          });
-
-          if (productRecord) {
-            await tx.product.update({
-              where: { id: productRecord.id },
-              data: { stock: { decrement: item.quantity } },
-            });
-            console.log(
-              `Stock decreased for product ${item.product} by ${item.quantity}`,
-            );
-          }
+          console.log(
+            `Stock decreased for product ${item.product} by ${item.quantity}`,
+          );
         }
       } else if (
         DocumentType !== "Receipt" &&
@@ -1467,24 +1373,13 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         // Changing FROM Receipt: Increase stock (Restore)
         for (const item of currentBill.product) {
           if (!item.product) continue;
-
-          const productRecord = await tx.product.findFirst({
-            where: {
-              businessAcc: currentBill.businessAcc,
-              name: item.product,
-            },
-            select: { id: true },
+          await tx.product.update({
+            where: { id: item.product },
+            data: { stock: { increment: item.quantity } },
           });
-
-          if (productRecord) {
-            await tx.product.update({
-              where: { id: productRecord.id },
-              data: { stock: { increment: item.quantity } },
-            });
-            console.log(
-              `Stock restored for product ${item.product} by ${item.quantity}`,
-            );
-          }
+          console.log(
+            `Stock restored for product ${item.product} by ${item.quantity}`,
+          );
         }
       }
 
@@ -1551,35 +1446,13 @@ const deleteBill = async (req: Request, res: Response) => {
         });
 
         for (const item of productItems) {
-          const productRecord = await tx.product.findFirst({
-            where: {
-              businessAcc: bill.businessAcc,
-              name: item.product,
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          if (!productRecord?.id) {
-            console.warn("🚀 Product not found for stock restoration:", {
-              businessAcc: bill.businessAcc,
-              productName: item.product,
-            });
-            continue;
-          }
-
           await tx.product.update({
-            where: {
-              id: productRecord.id,
-            },
-            data: {
-              stock: { increment: item.quantity },
-            },
+            where: { id: item.product },
+            data: { stock: { increment: item.quantity } },
           });
 
           console.log("🚀 Stock restored for product:", {
-            productName: item.product,
+            productId: item.product,
             restoredQuantity: item.quantity,
           });
         }

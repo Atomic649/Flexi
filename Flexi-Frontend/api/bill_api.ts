@@ -60,7 +60,7 @@ class CallAPIBill {
         platform: string;
         image?: string;
         productItems: Array<{
-            product: string;
+            product: number;
             unitPrice: number;
             quantity: number;
             unitDiscount?: number;
@@ -76,7 +76,7 @@ class CallAPIBill {
         remark?: string; // Optional remark
         taxType?: "Juristic" | "Individual"; // Optional tax type
         withholdingTax?: boolean; // Optional withholding tax
-        withholdingPercent?: number; // Optional withholding 
+        withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
     }): Promise<any> {
         try {
@@ -114,7 +114,7 @@ class CallAPIBill {
         platform: string;
         image?: string;
         productItems: Array<{
-            product: string;
+            product: number;
             unitPrice: number;
             quantity: number;
             unitDiscount?: number;
@@ -130,7 +130,7 @@ class CallAPIBill {
         remark?: string; // Optional remark
         taxType?: "Juristic" | "Individual"; // Optional tax type
         withholdingTax?: boolean; // Optional withholding tax
-        withholdingPercent?: number; // Optional withholding 
+        withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
     }): Promise<any> {
         try {

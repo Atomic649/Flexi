@@ -372,7 +372,7 @@ model Bill {
 
 model ProductItem {
   id           Int    @id @default(autoincrement())
-  product      String
+  product      Int
   quantity     Int
   unitPrice    Int
   unitDiscount Int?   @default(0)
@@ -381,7 +381,7 @@ model ProductItem {
 
   // Relation
   bill        Bill?   @relation(fields: [billId], references: [id])
-  productList Product @relation(fields: [product], references: [name])
+  productList Product @relation(fields: [product], references: [id])
 
   @@schema("flexidb")
 }
@@ -396,12 +396,12 @@ model AdsCost {
   // Relation
   memberId    String
   platformId  Int
-  product     String
+  product     Int
   member      Member      @relation(fields: [memberId], references: [uniqueId])
   platform    Platform    @relation(fields: [platformId], references: [id])
   businessAcc Int
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
-  productList Product     @relation(fields: [product], references: [name])
+  productList Product     @relation(fields: [product], references: [id])
 
   @@schema("flexidb")
 }
@@ -467,7 +467,7 @@ model Platform {
 
 model Product {
   id          Int          @id @default(autoincrement())
-  name        String       @unique
+  name        String       
   unit        Unit?
   productType ProductType? @default(Product)
   description String?

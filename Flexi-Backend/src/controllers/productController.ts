@@ -325,6 +325,7 @@ const getProductChoiceWithPrice = async (req: Request, res: Response) => {
         deleted: false,
       },
       select: {
+        id: true,
         name: true,
         price: true,
         unit: true,

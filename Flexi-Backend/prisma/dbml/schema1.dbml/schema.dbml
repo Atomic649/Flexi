@@ -164,7 +164,7 @@ Table Bill {
 
 Table ProductItem {
   id Int [pk, increment]
-  product String [not null]
+  product Int [not null]
   quantity Int [not null]
   unitPrice Int [not null]
   unitDiscount Int [default: 0]
@@ -182,7 +182,7 @@ Table AdsCost {
   adsCost Decimal [not null]
   memberId String [not null]
   platformId Int [not null]
-  product String [not null]
+  product Int [not null]
   member Member [not null]
   platform Platform [not null]
   businessAcc Int [not null]
@@ -245,7 +245,7 @@ Table Platform {
 
 Table Product {
   id Int [pk, increment]
-  name String [unique, not null]
+  name String [not null]
   unit Unit
   productType ProductType [default: 'Product']
   description String
@@ -466,7 +466,7 @@ Ref: Bill.customerId > Customer.id
 
 Ref: ProductItem.billId > Bill.id
 
-Ref: ProductItem.product > Product.name
+Ref: ProductItem.product > Product.id
 
 Ref: AdsCost.memberId > Member.uniqueId
 
@@ -474,7 +474,7 @@ Ref: AdsCost.platformId > Platform.id
 
 Ref: AdsCost.businessAcc > BusinessAcc.id
 
-Ref: AdsCost.product > Product.name
+Ref: AdsCost.product > Product.id
 
 Ref: Expense.businessAcc > BusinessAcc.id
 

@@ -30,6 +30,7 @@ export type AdsCostAvgAggregateOutputType = {
   id: number | null
   adsCost: runtime.Decimal | null
   platformId: number | null
+  product: number | null
   businessAcc: number | null
 }
 
@@ -37,6 +38,7 @@ export type AdsCostSumAggregateOutputType = {
   id: number | null
   adsCost: runtime.Decimal | null
   platformId: number | null
+  product: number | null
   businessAcc: number | null
 }
 
@@ -48,7 +50,7 @@ export type AdsCostMinAggregateOutputType = {
   adsCost: runtime.Decimal | null
   memberId: string | null
   platformId: number | null
-  product: string | null
+  product: number | null
   businessAcc: number | null
 }
 
@@ -60,7 +62,7 @@ export type AdsCostMaxAggregateOutputType = {
   adsCost: runtime.Decimal | null
   memberId: string | null
   platformId: number | null
-  product: string | null
+  product: number | null
   businessAcc: number | null
 }
 
@@ -82,6 +84,7 @@ export type AdsCostAvgAggregateInputType = {
   id?: true
   adsCost?: true
   platformId?: true
+  product?: true
   businessAcc?: true
 }
 
@@ -89,6 +92,7 @@ export type AdsCostSumAggregateInputType = {
   id?: true
   adsCost?: true
   platformId?: true
+  product?: true
   businessAcc?: true
 }
 
@@ -223,7 +227,7 @@ export type AdsCostGroupByOutputType = {
   adsCost: runtime.Decimal
   memberId: string
   platformId: number
-  product: string
+  product: number
   businessAcc: number
   _count: AdsCostCountAggregateOutputType | null
   _avg: AdsCostAvgAggregateOutputType | null
@@ -258,7 +262,7 @@ export type AdsCostWhereInput = {
   adsCost?: Prisma.DecimalFilter<"AdsCost"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFilter<"AdsCost"> | string
   platformId?: Prisma.IntFilter<"AdsCost"> | number
-  product?: Prisma.StringFilter<"AdsCost"> | string
+  product?: Prisma.IntFilter<"AdsCost"> | number
   businessAcc?: Prisma.IntFilter<"AdsCost"> | number
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   platform?: Prisma.XOR<Prisma.PlatformScalarRelationFilter, Prisma.PlatformWhereInput>
@@ -293,7 +297,7 @@ export type AdsCostWhereUniqueInput = Prisma.AtLeast<{
   adsCost?: Prisma.DecimalFilter<"AdsCost"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFilter<"AdsCost"> | string
   platformId?: Prisma.IntFilter<"AdsCost"> | number
-  product?: Prisma.StringFilter<"AdsCost"> | string
+  product?: Prisma.IntFilter<"AdsCost"> | number
   businessAcc?: Prisma.IntFilter<"AdsCost"> | number
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   platform?: Prisma.XOR<Prisma.PlatformScalarRelationFilter, Prisma.PlatformWhereInput>
@@ -329,7 +333,7 @@ export type AdsCostScalarWhereWithAggregatesInput = {
   adsCost?: Prisma.DecimalWithAggregatesFilter<"AdsCost"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringWithAggregatesFilter<"AdsCost"> | string
   platformId?: Prisma.IntWithAggregatesFilter<"AdsCost"> | number
-  product?: Prisma.StringWithAggregatesFilter<"AdsCost"> | string
+  product?: Prisma.IntWithAggregatesFilter<"AdsCost"> | number
   businessAcc?: Prisma.IntWithAggregatesFilter<"AdsCost"> | number
 }
 
@@ -352,7 +356,7 @@ export type AdsCostUncheckedCreateInput = {
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
   platformId: number
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -375,7 +379,7 @@ export type AdsCostUncheckedUpdateInput = {
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -387,7 +391,7 @@ export type AdsCostCreateManyInput = {
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
   platformId: number
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -406,7 +410,7 @@ export type AdsCostUncheckedUpdateManyInput = {
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -436,6 +440,7 @@ export type AdsCostAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   adsCost?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  product?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
 }
 
@@ -467,6 +472,7 @@ export type AdsCostSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   adsCost?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
+  product?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
 }
 
@@ -663,7 +669,7 @@ export type AdsCostUncheckedCreateWithoutMemberInput = {
   updatedAt?: Date | string
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   platformId: number
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -704,7 +710,7 @@ export type AdsCostScalarWhereInput = {
   adsCost?: Prisma.DecimalFilter<"AdsCost"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFilter<"AdsCost"> | string
   platformId?: Prisma.IntFilter<"AdsCost"> | number
-  product?: Prisma.StringFilter<"AdsCost"> | string
+  product?: Prisma.IntFilter<"AdsCost"> | number
   businessAcc?: Prisma.IntFilter<"AdsCost"> | number
 }
 
@@ -726,7 +732,7 @@ export type AdsCostUncheckedCreateWithoutBusinessIdInput = {
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
   platformId: number
-  product: string
+  product: number
 }
 
 export type AdsCostCreateOrConnectWithoutBusinessIdInput = {
@@ -772,7 +778,7 @@ export type AdsCostUncheckedCreateWithoutPlatformInput = {
   updatedAt?: Date | string
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -856,7 +862,7 @@ export type AdsCostCreateManyMemberInput = {
   updatedAt?: Date | string
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   platformId: number
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -877,7 +883,7 @@ export type AdsCostUncheckedUpdateWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -888,7 +894,7 @@ export type AdsCostUncheckedUpdateManyWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -900,7 +906,7 @@ export type AdsCostCreateManyBusinessIdInput = {
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
   platformId: number
-  product: string
+  product: number
 }
 
 export type AdsCostUpdateWithoutBusinessIdInput = {
@@ -921,7 +927,7 @@ export type AdsCostUncheckedUpdateWithoutBusinessIdInput = {
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type AdsCostUncheckedUpdateManyWithoutBusinessIdInput = {
@@ -932,7 +938,7 @@ export type AdsCostUncheckedUpdateManyWithoutBusinessIdInput = {
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.IntFieldUpdateOperationsInput | number
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type AdsCostCreateManyPlatformInput = {
@@ -942,7 +948,7 @@ export type AdsCostCreateManyPlatformInput = {
   updatedAt?: Date | string
   adsCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId: string
-  product: string
+  product: number
   businessAcc: number
 }
 
@@ -963,7 +969,7 @@ export type AdsCostUncheckedUpdateWithoutPlatformInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -974,7 +980,7 @@ export type AdsCostUncheckedUpdateManyWithoutPlatformInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   adsCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
-  product?: Prisma.StringFieldUpdateOperationsInput | string
+  product?: Prisma.IntFieldUpdateOperationsInput | number
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -1119,7 +1125,7 @@ export type $AdsCostPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     adsCost: runtime.Decimal
     memberId: string
     platformId: number
-    product: string
+    product: number
     businessAcc: number
   }, ExtArgs["result"]["adsCost"]>
   composites: {}
@@ -1555,7 +1561,7 @@ export interface AdsCostFieldRefs {
   readonly adsCost: Prisma.FieldRef<"AdsCost", 'Decimal'>
   readonly memberId: Prisma.FieldRef<"AdsCost", 'String'>
   readonly platformId: Prisma.FieldRef<"AdsCost", 'Int'>
-  readonly product: Prisma.FieldRef<"AdsCost", 'String'>
+  readonly product: Prisma.FieldRef<"AdsCost", 'Int'>
   readonly businessAcc: Prisma.FieldRef<"AdsCost", 'Int'>
 }
     

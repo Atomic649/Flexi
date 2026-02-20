@@ -357,10 +357,10 @@ export type ProductOrderByWithRelationInput = {
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  name?: string
   AND?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   OR?: Prisma.ProductWhereInput[]
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
+  name?: Prisma.StringFilter<"Product"> | string
   unit?: Prisma.EnumUnitNullableFilter<"Product"> | $Enums.Unit | null
   productType?: Prisma.EnumProductTypeNullableFilter<"Product"> | $Enums.ProductType | null
   description?: Prisma.StringNullableFilter<"Product"> | string | null
@@ -380,7 +380,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   platform?: Prisma.PlatformListRelationFilter
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
-}, "id" | "name">
+}, "id">
 
 export type ProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

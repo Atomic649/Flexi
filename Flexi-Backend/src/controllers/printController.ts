@@ -46,7 +46,13 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
         purchaseAt: "desc",
       },
       include: {
-        product: true
+        product: {
+          include: {
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
     });
 
@@ -109,7 +115,13 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
         purchaseAt: "desc",
       },
       include: {
-        product: true // Ensure product items are included for multi-product support
+        product: {
+          include: {
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       }
     });
 
@@ -212,7 +224,13 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
         purchaseAt: "desc",
       },
       include: {
-        product: true, // ensure line items are available for invoice modal
+        product: {
+          include: {
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
     });
 
@@ -259,7 +277,13 @@ export const searchBillsByPhone = async (req: Request, res: Response) => {
         purchaseAt: "desc",
       },
       include: {
-        product: true, // ensure line items are available for invoice modal
+        product: {
+          include: {
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
       take : 20, // Limit results
     });
@@ -331,7 +355,13 @@ export const searchBillById = async (req: Request, res: Response) => {
         ],
       },
       include: {
-        product: true, // Include products if needed
+        product: {
+          include: {
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
     });
 

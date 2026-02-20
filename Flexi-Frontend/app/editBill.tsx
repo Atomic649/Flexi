@@ -786,7 +786,7 @@ export default function EditBill() {
         ) {
           setProductItems(
             billData.product.map((item: any) => ({
-              product: item.product,
+              product: item.product != null ? item.product.toString() : "",
               price: item.unitPrice.toString(),
               quantity: item.quantity.toString(),
               unit: item.unit || "",
@@ -943,7 +943,7 @@ export default function EditBill() {
       // If product is changed, auto-fill price and unit
       if (field === "product") {
         const selectedProduct = productChoice.find(
-          (p: any) => p.name === value,
+          (p: any) => p.id?.toString() === value,
         );
         updated[index].price =
           selectedProduct && selectedProduct.price
@@ -954,7 +954,7 @@ export default function EditBill() {
             ? selectedProduct.unit.toString()
             : "";
         // Auto-fill customer fields if product is Tiktok Affiliate
-        if (value === "Tiktok Affiliate") {
+        if (selectedProduct?.name === "Tiktok Affiliate") {
           setCName("ติ๊กต๊อก (ไทยแลนด์) จำกัด");
           setCLastName("");
           setCPhone("0000000000");
@@ -1098,7 +1098,7 @@ export default function EditBill() {
         paymentTermCondition: paymentTermCondition,
         remark: remark || undefined,
         productItems: productItems.map((item) => ({
-          product: item.product,
+          product: Number(item.product),
           unit: item.unit,
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
@@ -1707,7 +1707,7 @@ export default function EditBill() {
                     title={t(`bill.productName`) + ` ${idx + 1}`}
                     options={productChoice.map((product) => ({
                       label: product.name,
-                      value: product.name,
+                      value: product.id?.toString() ?? "",
                     }))}
                     placeholder={t("bill.selectProduct")}
                     placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}

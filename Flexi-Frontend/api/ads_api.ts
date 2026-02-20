@@ -30,7 +30,7 @@ class CallAPIAds {
       adsCost: number;
       platformId: number;
       businessAcc: number;   
-      product: string;
+      product: number;
     }
   ): Promise<any> {
     try {

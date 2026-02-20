@@ -38,7 +38,7 @@ export default function createAdsCost() {
   const { t } = useTranslation();
   const [memberId, setMemberId] = useState<string | null>(null);
   const [adsCost, setAdsCost] = useState("");
-  const [product, setProduct] = useState("");
+  const [product, setProduct] = useState<number | null>(null);
   const [platformId, setPlatformId] = useState<number | null>(null);
   const [businessAcc, setBusinessAcc] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -93,7 +93,7 @@ export default function createAdsCost() {
       try {
         const memberId = await getMemberId();
         if (memberId) {
-          const response = await CallAPIProduct.getProductChoiceAPI(memberId);
+          const response = await CallAPIProduct.getProductChoiceIdAPI(memberId);
           setProductChoice(response || []);
           console.log("Product choice fetched:", response);
         }
@@ -193,6 +193,10 @@ export default function createAdsCost() {
       ""
     : "";
 
+  const selectedProductLabel = product
+    ? productChoice.find((p) => p.id === product)?.name || ""
+    : "";
+
   return (
     <SafeAreaView
       className={`flex-1 ${useBackgroundColorClass()}`}
@@ -252,13 +256,13 @@ export default function createAdsCost() {
 
           <Dropdown2
             title={t("bill.productName")}
-            options={productChoice.map((product) => ({
-              label: product.name,
-              value: product.name,
+            options={productChoice.map((p) => ({
+              label: p.name,
+              value: p.id.toString(),
             }))}
             placeholder={t("bill.selectProduct")}
-            selectedValue={product || t("bill.selectProduct")}
-            onValueChange={setProduct}
+            selectedValue={selectedProductLabel || t("bill.selectProduct")}
+            onValueChange={(value: string) => setProduct(parseInt(value))}
             bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
             bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
