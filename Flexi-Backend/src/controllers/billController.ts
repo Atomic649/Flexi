@@ -1472,6 +1472,11 @@ const deleteBill = async (req: Request, res: Response) => {
         }
       }
 
+      // delete associated product items first
+      await tx.productItem.deleteMany({
+        where: { billId: Number(id) },
+      });
+
       // delete the bill
       await tx.bill.delete({
         where: {
