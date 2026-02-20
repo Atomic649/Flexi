@@ -35,6 +35,10 @@ jest.mock("../src/middleware/multer_config", () => ({
       config: {},
       keyUpload: "avatar",
     },
+    multerConfigImage: {
+      config: {},
+      keyUpload: "image",
+    },
   },
 }));
 

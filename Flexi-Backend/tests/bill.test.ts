@@ -117,13 +117,13 @@ const validBillPayload = () => ({
   discount: 10,
   productItems: [
     {
-      product: "A",
+      product: 1,
       quantity: 2,
       unitPrice: 100,
       unitDiscount: 5,
       unit: "Unit",
     },
-    { product: "B", quantity: 1, unitPrice: 50, unit: "Unit" },
+    { product: 2, quantity: 1, unitPrice: 50, unit: "Unit" },
   ],
   DocumentType: ["Receipt"],
   note: "",
@@ -337,9 +337,10 @@ describe("billController", () => {
         name: "Shop",
       });
       prismaMock.productItem.findMany.mockResolvedValue([
-        { product: "A", quantity: 1 },
+        { product: 1, quantity: 1 },
       ]);
       prismaMock.productItem.deleteMany.mockResolvedValue({ count: 2 });
+      prismaMock.product.update.mockResolvedValue({ id: 1, stock: 10 });
       prismaMock.bill.update.mockResolvedValue({
         id: 6,
         updatedAt: new Date().toISOString(),

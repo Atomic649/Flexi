@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx jest:*)",
+      "Bash(npm test:*)",
+      "Bash(export PATH=\"$PATH:/usr/local/bin:/opt/homebrew/bin\")"
+    ]
+  }
+}
