@@ -537,7 +537,7 @@ const buildAdsCostRowsFromSpend = (daily: CampaignSpendWithMeta[], targetDate: D
 			memberId: row.memberId as string,
 			platformId: row.platformId as number,
 			businessAcc: row.businessAcc as number,
-			product: row.productName as string,
+			product: row.productId as number,
 		})) as Prisma.AdsCostCreateManyInput[];
 };
 
@@ -662,7 +662,7 @@ const ingestFacebookSpendRangeToAdsCosts = async (options?: { since?: string; un
 				memberId: row.memberId as string,
 				platformId: row.platformId as number,
 				businessAcc: row.businessAcc as number,
-				product: row.product as string,
+				product: row.product as number,
 			},
 		});
 		updated += 1;

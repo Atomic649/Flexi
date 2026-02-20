@@ -19,7 +19,7 @@ interface adsCostInput {
   platformId: number;
   businessAcc: number;
   platform?: JSON;
-  product: string;
+  product: number;
    // Add the 'product' property
 }
 
@@ -44,6 +44,7 @@ const createManyAdsCosts = async (req: Request, res: Response) => {
         item.adsCost = Number(item.adsCost);
         item.platformId = Number(item.platformId);
         item.businessAcc = Number(item.businessAcc);
+        item.product = Number(item.product);
         item.date = new Date(item.date);
       });
       //console.log("Request Body:", adsCostInput);
@@ -95,7 +96,7 @@ const createAdsCost = async (req: Request, res: Response) => {
             memberId: adsCostInput.memberId,
             businessAcc: adsCostInput.businessAcc,
             platformId: adsCostInput.platformId,
-            product: adsCostInput.product, // Add the 'product' property
+            product: Number(adsCostInput.product), // Add the 'product' property
             
           },
         });
@@ -146,7 +147,7 @@ const getAdsCostsByDate = async (req: Request, res: Response) => {
   const { product } = req.query;
 
   const productFilter: Prisma.AdsCostWhereInput = product
-    ? { product: { equals: String(product) } }
+    ? { product: { equals: Number(product) } }
     : {};
 
   try {

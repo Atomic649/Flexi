@@ -74,7 +74,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       ...(productName
         ? {
             product: {
-              some: { product: productName as string },
+              some: { productList: { name: productName as string } },
             },
           }
         : {}),
@@ -132,7 +132,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         date: dateFilter,
-        ...(productName ? { product: productName as string } : {}),
+        ...(productName ? { productList: { name: productName as string } } : {}),
         ...(platform ? { platform: { is: { platform: platform as any } } } : {})
       },
       _sum: {
@@ -246,7 +246,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         ...(productName
           ? {
               product: {
-                some: { product: productName as string },
+                some: { productList: { name: productName as string } },
               },
             }
           : {}),
@@ -290,7 +290,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         businessAcc : businessId?.businessId ?? 0,
 
         date: dateFilter,
-        ...(productName ? { product: productName as string } : {}),
+        ...(productName ? { productList: { name: productName as string } } : {}),
         ...adsPlatformFilter
       },
       select: {
