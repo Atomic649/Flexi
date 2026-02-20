@@ -80,6 +80,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           * {
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
            html, body {
             height: 100%;
