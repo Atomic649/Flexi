@@ -21,7 +21,8 @@ type DailyCardProps = {
 };
 
 type ProductDetail = {
-  product: string;
+  product: number;
+  productList?: { name: string };
   quantity: number;
   unitPrice: number;
   unitDiscount: number;
@@ -339,7 +340,7 @@ export default function DailyDetail() {
                                             : "#656565",
                                       }}
                                     >
-                                      {product.product}
+                                      {product.productList?.name ?? product.product}
                                     </CustomText>
                                     <View className="flex-row items-center ">
                                       <Text className={`text-xs opacity-60`}

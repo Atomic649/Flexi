@@ -445,7 +445,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
         ...(productName
           ? {
               product: {
-                some: { product: productName as string },
+                some: { productList: { name: productName as string } },
               },
             }
           : {}),
@@ -454,6 +454,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
         product: {
           select: {
             product: true,
+            productList: { select: { name: true } },
             quantity: true,
             unitPrice: true,
             unitDiscount: true,
@@ -461,11 +462,11 @@ export const getTopProducts = async (req: Request, res: Response) => {
           }
         }
       }
-    }); 
+    });
 
     // Flatten all product items with discount consideration
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
-      product: item.product,
+      productName: item.productList?.name ?? String(item.product),
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
       unitDiscount: Number(item.unitDiscount || 0),
@@ -474,9 +475,9 @@ export const getTopProducts = async (req: Request, res: Response) => {
     // Aggregate by product name (account for unit discounts)
     const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
     allProductItems.forEach(item => {
-      if (!productMetrics[item.product]) {
-        productMetrics[item.product] = {
-          name: item.product,
+      if (!productMetrics[item.productName]) {
+        productMetrics[item.productName] = {
+          name: item.productName,
           revenue: 0,
           sales: 0,
           orders: 0,
@@ -488,13 +489,13 @@ export const getTopProducts = async (req: Request, res: Response) => {
       const grossRevenue = item.unitPrice * item.quantity;
       const discountAmount = item.unitDiscount * item.quantity;
       const netRevenue = grossRevenue - discountAmount;
-      
-      productMetrics[item.product].revenue += netRevenue;
-      productMetrics[item.product].sales += item.quantity;
-      productMetrics[item.product].orders += 1;
-      productMetrics[item.product].totalDiscount += discountAmount;
-      if (!productMetrics[item.product].unit && item.unit) {
-        productMetrics[item.product].unit = item.unit;
+
+      productMetrics[item.productName].revenue += netRevenue;
+      productMetrics[item.productName].sales += item.quantity;
+      productMetrics[item.productName].orders += 1;
+      productMetrics[item.productName].totalDiscount += discountAmount;
+      if (!productMetrics[item.productName].unit && item.unit) {
+        productMetrics[item.productName].unit = item.unit;
       }
     });
 
@@ -580,19 +581,27 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
       },
       select: {
         platform: true,
-        product: true
+        product: {
+          select: {
+            product: true,
+            productList: { select: { name: true } },
+            quantity: true,
+            unitPrice: true,
+            unitDiscount: true,
+          }
+        }
       }
     });
 
     // Flatten all product items with platform and discount info
     const allProductItems = platformBills.flatMap(bill => bill.product.map(item => ({
       platform: bill.platform,
-      product: item.product,
+      productName: item.productList?.name ?? String(item.product),
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
       unitDiscount: Number(item.unitDiscount || 0)
     })));    // Optionally filter by productName
-    const filteredItems = productName ? allProductItems.filter(item => item.product === productName) : allProductItems;
+    const filteredItems = productName ? allProductItems.filter(item => item.productName === productName) : allProductItems;
 
     // Aggregate by platform (account for unit discounts)
     const platformMetrics: Record<string, { platform: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
@@ -830,6 +839,7 @@ export const getTopStores = async (req: Request, res: Response) => {
         product: {
           select: {
             product: true,
+            productList: { select: { name: true } },
             quantity: true,
             unitPrice: true,
             unitDiscount: true,
@@ -867,7 +877,7 @@ export const getTopStores = async (req: Request, res: Response) => {
     const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
       platformId: bill.platformId ?? null,
       platformLabel: bill.platform ?? null,
-      product: item.product,
+      productName: item.productList?.name ?? String(item.product),
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
       unitDiscount: Number(item.unitDiscount || 0),
@@ -875,7 +885,7 @@ export const getTopStores = async (req: Request, res: Response) => {
     })));
 
     const filteredItems = productName
-      ? allProductItems.filter(item => item.product === productName)
+      ? allProductItems.filter(item => item.productName === productName)
       : allProductItems;
 
     // Aggregate by platform (prefer platformId when present, otherwise platform string)

@@ -19,12 +19,20 @@ const dailyReport = async (req: Request, res: Response) => {
         DocumentType: "Receipt",
       },
        select: {
-        purchaseAt: true,        
+        purchaseAt: true,
         total: true,
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
-        product: true,
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
      });
 
@@ -140,7 +148,15 @@ const monthlyReport = async (req: Request, res: Response) => {
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
-        product: true,
+        product: {
+          select: {
+            product: true,
+            quantity: true,
+            productList: {
+              select: { name: true },
+            },
+          },
+        },
       },
       });
 
@@ -381,6 +397,9 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
             unitPrice: true,
             unitDiscount: true,
             unit: true,
+            productList: {
+              select: { name: true },
+            },
           },
         },
       },
@@ -475,6 +494,9 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
             unitPrice: true,
             unitDiscount: true,
             unit: true,
+            productList: {
+              select: { name: true },
+            },
           },
         },
       },
