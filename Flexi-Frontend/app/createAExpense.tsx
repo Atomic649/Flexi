@@ -160,6 +160,7 @@ export default function CreateExpense({
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(false);
+  const [isDebt, setIsDebt] = useState(false);
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {

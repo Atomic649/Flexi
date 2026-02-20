@@ -413,6 +413,7 @@ model Expense {
   id             Int            @id @default(autoincrement())
   expNo          String?
   amount         Decimal
+  debtAmount     Decimal?       @default(0)
   group          ExpenseGroup?
   image          String?
   pdf            String?
@@ -434,6 +435,7 @@ model Expense {
   branch         String?
   taxType        taxType?       @default(Individual)
   status         ExpenseStatus?
+  DocumentType   DocumentType?  @default(Receipt)
   
   // Relation
   businessAcc    Int

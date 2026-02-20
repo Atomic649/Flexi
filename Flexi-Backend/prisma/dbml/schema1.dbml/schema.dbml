@@ -197,6 +197,7 @@ Table Expense {
   id Int [pk, increment]
   expNo String
   amount Decimal [not null]
+  debtAmount Decimal [default: 0]
   group ExpenseGroup
   image String
   pdf String
@@ -218,6 +219,7 @@ Table Expense {
   branch String
   taxType taxType [default: 'Individual']
   status ExpenseStatus
+  DocumentType DocumentType [default: 'Receipt']
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
