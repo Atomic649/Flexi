@@ -20,6 +20,7 @@ interface Expense {
   note: string;
   desc: string;
   amount: string;
+  debtAmount: number;
   image: string;
   pdf: string;
   group: string;
@@ -35,6 +36,7 @@ interface Expense {
   sAddress?: string;
   branch?: string;
   taxType?: "Individual" | "Juristic";
+  DocumentType?: "Invoice" | "Receipt";
 }
 
 interface ExpenseTableProps {
@@ -186,7 +188,7 @@ const ExpenseTable = ({
             }}
           >
             <Text className={cellClass} numberOfLines={1}>
-              {formatNumber(Number(item.amount) || 0)}
+              {formatNumber(Number(item.DocumentType === "Invoice" ? item.debtAmount : item.amount) || 0)}
             </Text>
 
             <View className="flex-row">

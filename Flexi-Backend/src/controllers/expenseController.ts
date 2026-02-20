@@ -5,6 +5,7 @@ import path from "path";
 import { Request, Response } from "express";
 import {
   Bank,
+  DocumentType,
   ExpenseGroup,
   ExpenseStatus,
   taxType,
@@ -169,6 +170,8 @@ interface Expense {
   taxType?: taxType;
   expNo?: string;
   status?: ExpenseStatus;
+  DocumentType?: DocumentType;
+  debtAmount?: number;
 }
 
 // Validate the request body
@@ -224,6 +227,8 @@ const schema = Joi.object({
   ocrDataApplied: Joi.string().optional().allow(""), // Flag to indicate OCR data resubmission
   expenseId: Joi.number().optional(), // ID of existing expense to update
   status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
+  DocumentType: Joi.string().valid("Invoice", "Receipt").optional(),
+  debtAmount: Joi.number().optional(),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -313,6 +318,8 @@ const createExpense = async (req: Request, res: Response) => {
       date: isoDateString as unknown as Date,
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+      DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
+      debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
     };
 
     console.log("Input", expenseInput);
@@ -387,6 +394,8 @@ const createExpense = async (req: Request, res: Response) => {
           branch: expenseInput.branch ?? "",
           taxType: expenseInput.taxType ?? taxType.Individual,
           expNo: expenseInput.expNo ?? "",
+          DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
+          debtAmount: expenseInput.debtAmount ?? 0,
         },
       });
       res.json(expense);
@@ -445,6 +454,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       group: req.body.group || "Others", // Default group to "Others" if empty
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+      DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
+      debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
     };
 
     // Initialize OCR alert variable
@@ -938,6 +949,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           ocrDataApplied: Joi.string().optional().allow(""),
           expenseId: Joi.number().optional(),
           status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
+          DocumentType: Joi.string().valid("Invoice", "Receipt", "Quotation", "DebitNote", "CreditNote", "WithholdingTax").optional(),
+          debtAmount: Joi.number().optional(),
         })
       : // When no image, use original strict validation
         schema;
@@ -1057,6 +1070,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             branch: expenseInput.branch ?? "",
             taxType: expenseInput.taxType ?? taxType.Individual,
             status: ocrAlert?.type === "success" ? "Pass" : "Warning",
+            DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
+            debtAmount: expenseInput.debtAmount ?? 0,
           },
         });
         console.log("✅ Successfully updated expense with OCR data");
@@ -1088,6 +1103,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             taxType: expenseInput.taxType ?? taxType.Individual,
             expNo: expenseInput.expNo ?? "",
             status: ocrAlert?.type === "success" ? "Pass" : "Warning",
+            DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
+            debtAmount: expenseInput.debtAmount ?? 0,
           },
         });
       }
@@ -1225,6 +1242,8 @@ const getExpenseById = async (req: Request, res: Response) => {
         branch: true,
         taxType: true,
         expNo: true,
+        DocumentType: true,
+        debtAmount: true,
       },
     });
     res.json(expense);
@@ -1367,6 +1386,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
       memberId,
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
+      DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
+      debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
     };
     const { id } = req.params;
 
@@ -1411,6 +1432,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
           sAddress: expenseInput.sAddress ?? "",
           branch: expenseInput.branch ?? "",
           taxType: expenseInput.taxType ?? taxType.Individual,
+          DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
+          debtAmount: expenseInput.debtAmount ?? 0,
         },
       });
       res.json(expense);

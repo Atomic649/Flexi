@@ -326,6 +326,8 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
         sName:true,
         desc: true,
         image: true,
+        DocumentType: true,
+        debtAmount: true,
       },
       take: 100, // Limit to 100 records
     });
@@ -347,6 +349,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
             id: expense.id,
             date: expense.date,
             expenses: expense.amount,
+            debtAmount: expense.debtAmount,
             type: "expense",
             sName: expense.sName || "",
             note: expense.note || "",

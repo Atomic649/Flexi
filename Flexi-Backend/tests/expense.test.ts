@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { jest, describe, test, expect, beforeEach, beforeAll } from '@jest/globals';
 import { uploadToS3, deleteFromS3 } from '../src/services/imageService';
 
 // Mock multer memory config and multer behavior
@@ -125,6 +125,10 @@ const prismaMock: any = {
 
 jest.mock('../src/generated/client1/client', () => {
 	const taxType = { Individual: 'Individual', Juristic: 'Juristic' };
+	const DocumentType = {
+		Invoice: 'Invoice',
+		Receipt: 'Receipt'		
+	};
 	const Bank = {};
 	const ExpenseGroup = {};
 	const ExpenseStatus = {};
@@ -132,6 +136,7 @@ jest.mock('../src/generated/client1/client', () => {
 		__esModule: true,
 		PrismaClient: jest.fn().mockImplementation(() => prismaMock),
 		taxType,
+		DocumentType,
 		Bank,
 		ExpenseGroup,
 		ExpenseStatus,
@@ -172,6 +177,16 @@ const baseExpensePayload = () => ({
 	group: 'Others',
 	memberId: 'MID-1',
 });
+
+// Fix Bun/Express mime.charsets.lookup incompatibility:
+// Patch the send module's mime object to add missing charsets property
+// before Express caches the reference in its module scope.
+{
+	const sendModule = require('send') as any;
+	if (sendModule?.mime && !sendModule.mime.charsets) {
+		sendModule.mime.charsets = { lookup: () => 'UTF-8' };
+	}
+}
 
 describe('expenseController', () => {
 	beforeEach(() => {
@@ -217,6 +232,30 @@ describe('expenseController', () => {
 				'application/pdf',
 				'pdf'
 			);
+		});
+
+		test('creates expense as debt (Invoice) with debtAmount when isDebt=true', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10 });
+			prismaMock.expense.create.mockResolvedValue({ id: 5, amount: 500, DocumentType: 'Invoice', debtAmount: 500 });
+			const res = await request(app)
+				.post('/expense')
+				.send({ ...baseExpensePayload(), DocumentType: 'Invoice', debtAmount: 500 });
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.DocumentType).toBe('Invoice');
+			expect(payload?.debtAmount).toBe(500);
+		});
+
+		test('defaults DocumentType to Receipt when not provided', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10 });
+			prismaMock.expense.create.mockResolvedValue({ id: 6, amount: 100, DocumentType: 'Receipt' });
+			const res = await request(app)
+				.post('/expense')
+				.send(baseExpensePayload());
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.DocumentType).toBe('Receipt');
+			expect(payload?.debtAmount).toBe(0);
 		});
 	});
 
@@ -275,6 +314,18 @@ describe('expenseController', () => {
 			const updatePayload = prismaMock.expense.update.mock.calls.at(-1)?.[0]?.data;
 			expect(updatePayload?.pdf).toBe('https://s3.example.com/bucket/new-key.png');
 			expect(deleteFromS3).toHaveBeenCalled();
+		});
+
+		test('updates expense as debt (Invoice) with debtAmount', async () => {
+			prismaMock.expense.findUnique.mockResolvedValue({ id: 11, image: null, pdf: null, group: 'Others' });
+			prismaMock.expense.update.mockResolvedValue({ id: 11, amount: 200, DocumentType: 'Invoice', debtAmount: 200 });
+			const res = await request(app)
+				.put('/expense/11')
+				.send({ memberId: 'MID-1', amount: 200, group: 'Others', DocumentType: 'Invoice', debtAmount: 200 });
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.update.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.DocumentType).toBe('Invoice');
+			expect(payload?.debtAmount).toBe(200);
 		});
 	});
 
@@ -345,6 +396,19 @@ describe('expenseController', () => {
 				.send({ memberId: 'MID-1', ocrDataApplied: 'true', expenseId: '15', group: 'Others' });
 			expect(res.status).toBe(200);
 			expect(res.body.id).toBe(15);
+		});
+
+		test('creates OCR expense as debt (Invoice) with debtAmount', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10, businessName: 'บริษัท ทดสอบ', taxId: '1234567890123' });
+			prismaMock.expense.create.mockResolvedValue({ id: 16, amount: 150, DocumentType: 'Invoice', debtAmount: 150 });
+			const res = await request(app)
+				.post('/expense/ocr')
+				.set('x-mock-file', '1')
+				.send({ memberId: 'MID-1', group: 'Others', amount: 150, DocumentType: 'Invoice', debtAmount: 150 });
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.DocumentType).toBe('Invoice');
+			expect(payload?.debtAmount).toBe(150);
 		});
 	});
 

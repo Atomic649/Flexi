@@ -33,6 +33,7 @@ type Expense = {
   id: number;
   date: string;
   expenses: number;
+  debtAmount?: number;
   type: string;
   note: string;
   sName: string;
@@ -317,7 +318,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                         width: "8.33%", textAlign: "center", fontSize: getResponsiveStyles().smallFontSize
                       } as TextStyle}
                     >
-                      -{formatNumber(expense.expenses || 0)}
+                      -{formatNumber(Number(expense.debtAmount) || Number(expense.expenses) || 0)}
                     </CustomText>
                     <View
                       className="flex flex-row w-24"
@@ -370,7 +371,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 id={expense.id}
                 date={expense.date}
                 type={expense.type}
-                expenses={expense.expenses}
+                expenses={Number(expense.debtAmount) || expense.expenses}
                 sName={expense.sName}
                 note={expense.note}
                 desc={expense.desc}

@@ -831,7 +831,9 @@
       "message": "Date, Account Note, and Amount are required",
       "success": "Expense saved successfully",
       "successMessage": "Please press OK to proceed",
-      "ok": "OK"
+      "ok": "OK",
+      "debt": "Debt",
+      "paid": "Paid"
     },
     "detail": {
       "description": "Description (optional)",

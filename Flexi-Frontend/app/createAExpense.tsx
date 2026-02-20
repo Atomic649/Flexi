@@ -719,6 +719,7 @@ export default function CreateExpense({
     setOCRProgress(0);
     setOCRAlert(null);
     setShowOCRResult(false);
+    setIsDebt(false);
   };
 
   const handleClose = () => {
@@ -807,7 +808,7 @@ export default function CreateExpense({
       const normalizedAmount = amount
         ? amount.toString().replace(/,/g, "")
         : "0";
-      formData.append("amount", normalizedAmount);
+      formData.append("amount", isDebt ? "0" : normalizedAmount);
       if (desc) formData.append("desc", desc);
       // Always include group/branch/taxType to match create behavior
       formData.append("group", group || "");
@@ -824,6 +825,13 @@ export default function CreateExpense({
       formData.append("date", Array.isArray(date) ? date[0] : date);
       formData.append("branch", branch || "");
       formData.append("taxType", taxType || "");
+      if (isDebt) {
+        formData.append("DocumentType", "Invoice");
+        formData.append("debtAmount", normalizedAmount);
+      } else {
+        formData.append("DocumentType", "Receipt");
+        formData.append("debtAmount", "0");
+      }
       await appendAttachmentToFormData(formData);
 
       if (createdExpenseId !== null) {
@@ -880,7 +888,7 @@ export default function CreateExpense({
       const normalizedAmount = amount
         ? amount.toString().replace(/,/g, "")
         : "0";
-      formData.append("amount", normalizedAmount);
+      formData.append("amount", isDebt ? "0" : normalizedAmount);
       formData.append("desc", desc);
       await appendAttachmentToFormData(formData);
       formData.append("group", group || "");
@@ -895,6 +903,13 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      if (isDebt) {
+        formData.append("DocumentType", "Invoice");
+        formData.append("debtAmount", normalizedAmount);
+      } else {
+        formData.append("DocumentType", "Receipt");
+        formData.append("debtAmount", "0");
+      }
       if (memberId) {
         formData.append("memberId", memberId);
       } else {
@@ -970,7 +985,7 @@ export default function CreateExpense({
       const normalizedAmount = amount
         ? amount.toString().replace(/,/g, "")
         : "0";
-      formData.append("amount", normalizedAmount);
+      formData.append("amount", isDebt ? "0" : normalizedAmount);
       formData.append("desc", desc);
       await appendAttachmentToFormData(formData);
       formData.append("group", group || "");
@@ -985,6 +1000,13 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      if (isDebt) {
+        formData.append("DocumentType", "Invoice");
+        formData.append("debtAmount", normalizedAmount);
+      } else {
+        formData.append("DocumentType", "Receipt");
+        formData.append("debtAmount", "0");
+      }
       if (memberId) {
         formData.append("memberId", memberId);
       } else {
@@ -1832,6 +1854,38 @@ export default function CreateExpense({
                   </View>
                 )}
                 {/* -----------------------End OCR Progress Indicator------------------------------ */}
+                {/* Debt / Paid toggle - top right */}
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", paddingHorizontal: 8, marginBottom: 4 }}>
+                  <TouchableOpacity
+                    onPress={() => setIsDebt(false)}
+                    activeOpacity={0.7}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 4,
+                      borderRadius: 20,
+                      backgroundColor: !isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
+                      marginRight: 6,
+                    }}
+                  >
+                    <CustomText style={{ fontSize: 13, color: !isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
+                      {t("expense.create.paid")}
+                    </CustomText>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setIsDebt(true)}
+                    activeOpacity={0.7}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 4,
+                      borderRadius: 20,
+                      backgroundColor: isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
+                    }}
+                  >
+                    <CustomText style={{ fontSize: 13, color: isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
+                      {t("expense.create.debt")}
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
                 <View className="flex-row items-center justify-center bg-transparent  rounded-full p-2 ml-2">
                   <CustomText
                     className={`text-base mx-2 ${

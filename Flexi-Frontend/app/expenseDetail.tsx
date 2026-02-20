@@ -75,6 +75,8 @@ interface ExpenseDetailProps {
     sAddress?: string;
     branch?: string;
     taxType?: "Individual" | "Juristic";
+    DocumentType?: string;
+    debtAmount?: number;
   };
 }
 
@@ -157,7 +159,11 @@ export default function ExpenseDetail({
   const [date, setDate] = useState(expense.date);
   const [note, setNote] = useState(expense.note);
   const [desc, setDesc] = useState(expense.desc);
-  const [amount, setAmount] = useState(expense.amount);
+  const initialIsDebt = expense.DocumentType === "Invoice";
+  const [isDebt, setIsDebt] = useState(initialIsDebt);
+  const [amount, setAmount] = useState(
+    initialIsDebt ? String(expense.debtAmount ?? expense.amount) : expense.amount
+  );
   const [image, setImage] = useState(expense.image);
   const [pdfUrl, setPdfUrl] = useState(expense.pdf || "");
   const [group, setGroup] = useState(expense.group);
@@ -170,7 +176,7 @@ export default function ExpenseDetail({
     date: expense.date,
     note: expense.note,
     desc: expense.desc,
-    amount: expense.amount,
+    amount: initialIsDebt ? String(expense.debtAmount ?? expense.amount) : expense.amount,
     image: expense.image,
     pdf: expense.pdf || "",
     group: expense.group,
@@ -183,6 +189,7 @@ export default function ExpenseDetail({
     sAddress: expense.sAddress || "",
     taxType: (expense.taxType as "Individual" | "Juristic") || "Individual",
     branch: expense.branch || "",
+    isDebt: initialIsDebt,
   });
   // Use the visible prop directly instead of mirroring to local state
   const { vat, DocumentType } = useBusiness();
@@ -215,10 +222,15 @@ export default function ExpenseDetail({
           expense.id
         );
         console.log("Fetched expense:", fetchedExpense);
+        const fetchedIsDebt = fetchedExpense.DocumentType === "Invoice";
+        const fetchedDisplayAmount = fetchedIsDebt
+          ? String(fetchedExpense.debtAmount ?? fetchedExpense.amount)
+          : fetchedExpense.amount;
         setDate(fetchedExpense.date);
         setNote(fetchedExpense.note);
         setDesc(fetchedExpense.desc);
-        setAmount(fetchedExpense.amount);
+        setIsDebt(fetchedIsDebt);
+        setAmount(fetchedDisplayAmount);
         setImage(fetchedExpense.image);
         setPdfUrl(fetchedExpense.pdf || "");
         setGroup(fetchedExpense.group);
@@ -235,7 +247,7 @@ export default function ExpenseDetail({
           date: fetchedExpense.date,
           note: fetchedExpense.note,
           desc: fetchedExpense.desc,
-          amount: fetchedExpense.amount,
+          amount: fetchedDisplayAmount,
           image: fetchedExpense.image,
           pdf: fetchedExpense.pdf || "",
           group: fetchedExpense.group,
@@ -248,6 +260,7 @@ export default function ExpenseDetail({
           sAddress: fetchedExpense.sAddress || "",
           taxType: (fetchedExpense.taxType as "Individual" | "Juristic") || "Individual",
           branch: fetchedExpense.branch || "",
+          isDebt: fetchedIsDebt,
         };
       } catch (error) {
         console.error("Error fetching expense:", error);
@@ -278,6 +291,7 @@ export default function ExpenseDetail({
         branch !== s.branch ||
         taxType !== s.taxType ||
         sAddress !== s.sAddress ||
+        isDebt !== s.isDebt ||
         Boolean(attachment)
       ) {
         setHasChanges(true);
@@ -304,6 +318,7 @@ export default function ExpenseDetail({
     sAddress,
     taxType,
     branch,
+    isDebt,
     attachment,
   ]);
 
@@ -606,11 +621,12 @@ export default function ExpenseDetail({
       return;
     }
     try {
+      const normalizedAmount = amount ? amount.toString().replace(/,/g, "") : "0";
       const formData = new FormData();
       formData.append("date", date);
       formData.append("note", note);
       formData.append("desc", desc);
-      formData.append("amount", amount);
+      formData.append("amount", isDebt ? "0" : normalizedAmount);
       formData.append("group", group);
       formData.append("vat", vatIncluded ? "true" : "false");
       // Only send withHoldingTax and WHTpercent, let backend calculate WHTAmount
@@ -622,12 +638,19 @@ export default function ExpenseDetail({
       formData.append("sAddress", sAddress);
       formData.append("taxType", taxType);
       formData.append("branch", branch);
+      if (isDebt) {
+        formData.append("DocumentType", "Invoice");
+        formData.append("debtAmount", normalizedAmount);
+      } else {
+        formData.append("DocumentType", "Receipt");
+        formData.append("debtAmount", "0");
+      }
       await appendAttachmentToFormData(formData);
       const data = await CallAPIExpense.updateExpenseAPI(expense.id, formData);
       savedRef.current = {
         date, note, desc, amount, image, pdf: pdfUrl, group,
         vat: vatIncluded, withHoldingTax, WHTpercent,
-        sTaxId, sName, taxInvoiceNo, sAddress, taxType, branch,
+        sTaxId, sName, taxInvoiceNo, sAddress, taxType, branch, isDebt,
       };
       setHasChanges(false);
       handleCloseAfterChanges(); // Close modal after successful update
@@ -919,6 +942,39 @@ export default function ExpenseDetail({
                     </TouchableOpacity>
                   </View>
                 )}
+                {/* Debt / Paid toggle - top right */}
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", paddingHorizontal: 8, marginBottom: 4 }}>
+                  <TouchableOpacity
+                    onPress={() => setIsDebt(false)}
+                    activeOpacity={0.7}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 4,
+                      borderRadius: 20,
+                      backgroundColor: !isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
+                      marginRight: 6,
+                    }}
+                  >
+                    <CustomText style={{ fontSize: 13, color: !isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
+                      {t("expense.create.paid")}
+                    </CustomText>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setIsDebt(true)}
+                    activeOpacity={0.7}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 4,
+                      borderRadius: 20,
+                      backgroundColor: isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
+                    }}
+                  >
+                    <CustomText style={{ fontSize: 13, color: isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
+                      {t("expense.create.debt")}
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
+
                 <View
                   style={{
                     flexDirection: "row",

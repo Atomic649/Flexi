@@ -5,7 +5,9 @@
       "Bash(npm test:*)",
       "Bash(export PATH=\"$PATH:/usr/local/bin:/opt/homebrew/bin\")",
       "Bash(export PATH=\"$PATH:/usr/local/bin\")",
-      "Bash(./node_modules/.bin/tsc:*)"
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(/bin/zsh -i -c \"bun test tests/expense.test.ts 2>&1\")",
+      "Bash(node -e:*)"
     ]
   }
 }
