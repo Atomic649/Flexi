@@ -85,21 +85,6 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
   const [expense, setExpense] = useState<Expense[]>([]);
   const router = useRouter();
 
-  // Table header text style
-  const headerTextStyle: TextStyle = {
-    fontWeight: "900" as "900", // or any other acceptable value
-    fontSize: 13,
-    color: isMobile()
-      ? theme === "dark"
-        ? "#27272a"
-        : "#4b5563"
-      : theme === "dark"
-      ? "#b4b4b5"
-      : "#4b5563",
-    fontFamily:
-      i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
-  };
-
   
   // Fetch expenses function
   const fetchExpenses = async () => {

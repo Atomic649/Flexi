@@ -264,6 +264,8 @@ export const ExpenseScalarFieldEnum = {
   group: 'group',
   image: 'image',
   pdf: 'pdf',
+  invoiceImage: 'invoiceImage',
+  invoicePdf: 'invoicePdf',
   note: 'note',
   desc: 'desc',
   deleted: 'deleted',
@@ -283,6 +285,7 @@ export const ExpenseScalarFieldEnum = {
   taxType: 'taxType',
   status: 'status',
   DocumentType: 'DocumentType',
+  dueDate: 'dueDate',
   businessAcc: 'businessAcc',
   memberId: 'memberId'
 } as const

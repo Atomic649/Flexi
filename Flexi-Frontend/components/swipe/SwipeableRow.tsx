@@ -5,7 +5,9 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  AnimatedStyle,
 } from "react-native-reanimated";
+import { ViewStyle } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "../CustomText";
 
@@ -87,6 +89,15 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
     };
   });
 
+  // Action visibility — only show when the card has actually moved
+  const leftActionsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: translateX.value > 0 ? 1 : 0,
+  }));
+
+  const rightActionsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: translateX.value < 0 ? 1 : 0,
+  }));
+
   // Function to close actions
   const closeActions = useCallback(() => {
     translateX.value = withSpring(0);
@@ -101,22 +112,29 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
   }, [closeActions, threshold, translateX]);
 
   // Render action buttons
-  const renderActions = (actions: SwipeAction[], side: "left" | "right") => {
+  const renderActions = (
+    actions: SwipeAction[],
+    side: "left" | "right",
+    animatedStyle: AnimatedStyle<ViewStyle>
+  ) => {
     if (actions.length === 0) return null;
 
     return (
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          [side]: 0,
-          width: actions.length * actionWidth,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 0,
-        }}
+      <Animated.View
+        style={[
+          {
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            [side]: 0,
+            width: actions.length * actionWidth,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 0,
+          },
+          animatedStyle,
+        ]}
       >
         {actions.map((action, index) => (
           <TouchableOpacity
@@ -157,7 +175,7 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
             )}
           </TouchableOpacity>
         ))}
-      </View>
+      </Animated.View>
     );
   };
 
@@ -169,10 +187,10 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
       }}
     >
       {/* Left Actions */}
-      {renderActions(leftActions, "left")}
+      {renderActions(leftActions, "left", leftActionsAnimatedStyle)}
 
       {/* Right Actions */}
-      {renderActions(rightActions, "right")}
+      {renderActions(rightActions, "right", rightActionsAnimatedStyle)}
 
       {/* Main Content */}
       <GestureDetector gesture={panGesture}>

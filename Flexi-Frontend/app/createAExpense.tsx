@@ -161,6 +161,8 @@ export default function CreateExpense({
   const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(false);
   const [isDebt, setIsDebt] = useState(false);
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [dueDatePickerVisible, setDueDatePickerVisible] = useState(false);
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -372,7 +374,9 @@ export default function CreateExpense({
   const appendAttachmentToFormData = async (formData: FormData) => {
     if (!attachment) return;
 
-    const fileField = attachment.preview === "pdf" ? "pdf" : "image";
+    const fileField = isDebt
+      ? attachment.preview === "pdf" ? "invoicePdf" : "invoiceImage"
+      : attachment.preview === "pdf" ? "pdf" : "image";
 
     if (Platform.OS === "web") {
       const response = await fetch(attachment.uri);
@@ -828,6 +832,7 @@ export default function CreateExpense({
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
+        if (dueDate) formData.append("dueDate", dueDate.toISOString());
       } else {
         formData.append("DocumentType", "Receipt");
         formData.append("debtAmount", "0");
@@ -906,6 +911,7 @@ export default function CreateExpense({
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
+        if (dueDate) formData.append("dueDate", dueDate.toISOString());
       } else {
         formData.append("DocumentType", "Receipt");
         formData.append("debtAmount", "0");
@@ -1003,6 +1009,7 @@ export default function CreateExpense({
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
+        if (dueDate) formData.append("dueDate", dueDate.toISOString());
       } else {
         formData.append("DocumentType", "Receipt");
         formData.append("debtAmount", "0");
@@ -1314,7 +1321,7 @@ export default function CreateExpense({
                           position: "absolute",
                           top: 35,
                           right:20,
-                          backgroundColor: "#ef4444",
+                          backgroundColor: "#ef444475",
                           borderRadius: 12,
                           width: 24,
                           height: 24,
@@ -1337,7 +1344,7 @@ export default function CreateExpense({
                         position: "absolute",
                         top: 24,
                         right: 14,
-                        backgroundColor: "#ef4444",
+                        backgroundColor: "#ef444475",
                         borderRadius: 12,
                         width: 24,
                         height: 24,
@@ -1854,78 +1861,73 @@ export default function CreateExpense({
                   </View>
                 )}
                 {/* -----------------------End OCR Progress Indicator------------------------------ */}
-                {/* Debt / Paid toggle - top right */}
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", paddingHorizontal: 8, marginBottom: 4 }}>
-                  <TouchableOpacity
-                    onPress={() => setIsDebt(false)}
-                    activeOpacity={0.7}
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 4,
-                      borderRadius: 20,
-                      backgroundColor: !isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
-                      marginRight: 6,
-                    }}
-                  >
-                    <CustomText style={{ fontSize: 13, color: !isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
-                      {t("expense.create.paid")}
-                    </CustomText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setIsDebt(true)}
-                    activeOpacity={0.7}
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 4,
-                      borderRadius: 20,
-                      backgroundColor: isDebt ? "#3bf6da" : (theme === "dark" ? "#333" : "#e5e5e5"),
-                    }}
-                  >
-                    <CustomText style={{ fontSize: 13, color: isDebt ? "#000" : (theme === "dark" ? "#aaa" : "#666") }}>
-                      {t("expense.create.debt")}
-                    </CustomText>
-                  </TouchableOpacity>
+                {/* Debt / Paid toggle */}
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme === "dark" ? "#444" : "#ddd", borderRadius: 8, overflow: "hidden" }}>
+                    <TouchableOpacity
+                      onPress={() => setIsDebt(false)}
+                      activeOpacity={0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: !isDebt ? "#3bf6da" : "transparent" }}
+                    >
+                      <CustomText style={{ fontSize: 11, color: !isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
+                        {t("expense.create.paid")}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <View style={{ width: 1, alignSelf: "stretch", backgroundColor: theme === "dark" ? "#444" : "#ddd" }} />
+                    <TouchableOpacity
+                      onPress={() => setIsDebt(true)}
+                      activeOpacity={0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: isDebt ? "#FF9C01" : "transparent" }}
+                    >
+                      <CustomText style={{ fontSize: 11, color: isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
+                        {t("expense.create.debt")}
+                      </CustomText>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View className="flex-row items-center justify-center bg-transparent  rounded-full p-2 ml-2">
-                  <CustomText
-                    className={`text-base mx-2 ${
-                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                    }`}
-                  >
-                    {`${
-                      SelectedDates.length > 0
-                        ? formatDate(SelectedDates[0])
-                        : t("dashboard.selectDate")
-                    }`}
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 8, marginBottom: 4 }}>
+                  <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#aaa" : "#666", marginRight: 8 }}>
+                    {t("expense.create.date")}
                   </CustomText>
-                  {/* icon Calendar */}
-                  <Ionicons
-                    name="calendar"
-                    size={24}
-                    color={theme === "dark" ? "#ffffff" : "#444541"}
+                  <TouchableOpacity
                     onPress={() => setCalendarVisible(true)}
-                  />
+                    style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: theme === "dark" ? "#333" : "#f0f0f0" }}
+                  >
+                    <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#ccc" : "#444", marginRight: 4 }}>
+                      {SelectedDates.length > 0 ? formatDate(SelectedDates[0]) : t("dashboard.selectDate")}
+                    </CustomText>
+                    <Ionicons name="calendar-outline" size={16} color={theme === "dark" ? "#ccc" : "#444"} />
+                  </TouchableOpacity>
                 </View>
+                {isDebt && (
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 8, marginBottom: 4 }}>
+                    <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#aaa" : "#666", marginRight: 8 }}>
+                      {t("expense.create.dueDate")}
+                    </CustomText>
+                    <TouchableOpacity
+                      onPress={() => setDueDatePickerVisible(true)}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        paddingHorizontal: 10,
+                        paddingVertical: 4,
+                        borderRadius: 12,
+                        backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+                      }}
+                    >
+                      <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#ccc" : "#444", marginRight: 4 }}>
+                        {dueDate ? `${String(dueDate.getUTCDate()).padStart(2,"0")}/${String(dueDate.getUTCMonth()+1).padStart(2,"0")}/${dueDate.getUTCFullYear()}` : t("expense.create.selectDueDate")}
+                      </CustomText>
+                      <Ionicons name="calendar-outline" size={16} color={theme === "dark" ? "#ccc" : "#444"} />
+                    </TouchableOpacity>
+                    {dueDate && (
+                      <TouchableOpacity onPress={() => setDueDate(null)} style={{ marginLeft: 6 }}>
+                        <Ionicons name="close-circle-outline" size={18} color={theme === "dark" ? "#aaa" : "#888"} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
                 <View style={{ position: "relative" }}>
-                  <TextInput
-                    style={{
-                      fontFamily:
-                        i18n.language === "th"
-                          ? "IBMPlexSansThai-Medium"
-                          : "Poppins-Regular",
-                      textAlign: "center",
-                      fontSize: 16,
-                      color: theme === "dark" ? "#818181" : "#68655f",
-                    }}
-                    value={desc}
-                    onChangeText={setDesc}
-                    placeholder={t("expense.detail.description")}
-                    placeholderTextColor={
-                      theme === "dark" ? "#6d6c67" : "#adaaa6"
-                    }
-                  />
-
-
                   <TextInput
                     className={`text-center text-2xl font-bold py-3 ${
                       theme === "dark" ? "text-secondary-100" : "text-secondary"
@@ -2144,6 +2146,11 @@ export default function CreateExpense({
                   value={note}
                   onChangeText={setNote}
                   required={ocrProgress === 100}
+                />
+                <FloatingLabelInput
+                  label={t("expense.detail.description")}
+                  value={desc}
+                  onChangeText={setDesc}
                 />
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
@@ -2471,6 +2478,16 @@ export default function CreateExpense({
           onChange={handleDateTimeChange}
           onClose={() => setCalendarVisible(false)}
           maxDate={new Date()}
+        />
+
+        <DateTimePicker
+          visible={dueDatePickerVisible}
+          value={dueDate ?? new Date()}
+          onChange={(next: Date) => {
+            setDueDate(next);
+            setDueDatePickerVisible(false);
+          }}
+          onClose={() => setDueDatePickerVisible(false)}
         />
 
         <CustomAlert

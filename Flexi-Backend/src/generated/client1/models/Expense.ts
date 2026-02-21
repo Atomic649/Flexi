@@ -57,6 +57,8 @@ export type ExpenseMinAggregateOutputType = {
   group: $Enums.ExpenseGroup | null
   image: string | null
   pdf: string | null
+  invoiceImage: string | null
+  invoicePdf: string | null
   note: string | null
   desc: string | null
   deleted: boolean | null
@@ -76,6 +78,7 @@ export type ExpenseMinAggregateOutputType = {
   taxType: $Enums.taxType | null
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
+  dueDate: Date | null
   businessAcc: number | null
   memberId: string | null
 }
@@ -91,6 +94,8 @@ export type ExpenseMaxAggregateOutputType = {
   group: $Enums.ExpenseGroup | null
   image: string | null
   pdf: string | null
+  invoiceImage: string | null
+  invoicePdf: string | null
   note: string | null
   desc: string | null
   deleted: boolean | null
@@ -110,6 +115,7 @@ export type ExpenseMaxAggregateOutputType = {
   taxType: $Enums.taxType | null
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
+  dueDate: Date | null
   businessAcc: number | null
   memberId: string | null
 }
@@ -125,6 +131,8 @@ export type ExpenseCountAggregateOutputType = {
   group: number
   image: number
   pdf: number
+  invoiceImage: number
+  invoicePdf: number
   note: number
   desc: number
   deleted: number
@@ -144,6 +152,7 @@ export type ExpenseCountAggregateOutputType = {
   taxType: number
   status: number
   DocumentType: number
+  dueDate: number
   businessAcc: number
   memberId: number
   _all: number
@@ -181,6 +190,8 @@ export type ExpenseMinAggregateInputType = {
   group?: true
   image?: true
   pdf?: true
+  invoiceImage?: true
+  invoicePdf?: true
   note?: true
   desc?: true
   deleted?: true
@@ -200,6 +211,7 @@ export type ExpenseMinAggregateInputType = {
   taxType?: true
   status?: true
   DocumentType?: true
+  dueDate?: true
   businessAcc?: true
   memberId?: true
 }
@@ -215,6 +227,8 @@ export type ExpenseMaxAggregateInputType = {
   group?: true
   image?: true
   pdf?: true
+  invoiceImage?: true
+  invoicePdf?: true
   note?: true
   desc?: true
   deleted?: true
@@ -234,6 +248,7 @@ export type ExpenseMaxAggregateInputType = {
   taxType?: true
   status?: true
   DocumentType?: true
+  dueDate?: true
   businessAcc?: true
   memberId?: true
 }
@@ -249,6 +264,8 @@ export type ExpenseCountAggregateInputType = {
   group?: true
   image?: true
   pdf?: true
+  invoiceImage?: true
+  invoicePdf?: true
   note?: true
   desc?: true
   deleted?: true
@@ -268,6 +285,7 @@ export type ExpenseCountAggregateInputType = {
   taxType?: true
   status?: true
   DocumentType?: true
+  dueDate?: true
   businessAcc?: true
   memberId?: true
   _all?: true
@@ -370,6 +388,8 @@ export type ExpenseGroupByOutputType = {
   group: $Enums.ExpenseGroup | null
   image: string | null
   pdf: string | null
+  invoiceImage: string | null
+  invoicePdf: string | null
   note: string | null
   desc: string | null
   deleted: boolean | null
@@ -389,6 +409,7 @@ export type ExpenseGroupByOutputType = {
   taxType: $Enums.taxType | null
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
+  dueDate: Date | null
   businessAcc: number
   memberId: string
   _count: ExpenseCountAggregateOutputType | null
@@ -427,6 +448,8 @@ export type ExpenseWhereInput = {
   group?: Prisma.EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
   image?: Prisma.StringNullableFilter<"Expense"> | string | null
   pdf?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoiceImage?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoicePdf?: Prisma.StringNullableFilter<"Expense"> | string | null
   note?: Prisma.StringNullableFilter<"Expense"> | string | null
   desc?: Prisma.StringNullableFilter<"Expense"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
@@ -446,6 +469,7 @@ export type ExpenseWhereInput = {
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
+  dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
@@ -463,6 +487,8 @@ export type ExpenseOrderByWithRelationInput = {
   group?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   pdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoicePdf?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   desc?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -482,6 +508,7 @@ export type ExpenseOrderByWithRelationInput = {
   taxType?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessId?: Prisma.BusinessAccOrderByWithRelationInput
@@ -502,6 +529,8 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
   image?: Prisma.StringNullableFilter<"Expense"> | string | null
   pdf?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoiceImage?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoicePdf?: Prisma.StringNullableFilter<"Expense"> | string | null
   note?: Prisma.StringNullableFilter<"Expense"> | string | null
   desc?: Prisma.StringNullableFilter<"Expense"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
@@ -521,6 +550,7 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
+  dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
@@ -538,6 +568,8 @@ export type ExpenseOrderByWithAggregationInput = {
   group?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   pdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoicePdf?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   desc?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -557,6 +589,7 @@ export type ExpenseOrderByWithAggregationInput = {
   taxType?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   _count?: Prisma.ExpenseCountOrderByAggregateInput
@@ -580,6 +613,8 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   group?: Prisma.EnumExpenseGroupNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseGroup | null
   image?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   pdf?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  invoiceImage?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  invoicePdf?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   desc?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   deleted?: Prisma.BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
@@ -599,6 +634,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   taxType?: Prisma.EnumtaxTypeNullableWithAggregatesFilter<"Expense"> | $Enums.taxType | null
   status?: Prisma.EnumExpenseStatusNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableWithAggregatesFilter<"Expense"> | $Enums.DocumentType | null
+  dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Expense"> | Date | string | null
   businessAcc?: Prisma.IntWithAggregatesFilter<"Expense"> | number
   memberId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
 }
@@ -613,6 +649,8 @@ export type ExpenseCreateInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -632,6 +670,7 @@ export type ExpenseCreateInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
 }
@@ -647,6 +686,8 @@ export type ExpenseUncheckedCreateInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -666,6 +707,7 @@ export type ExpenseUncheckedCreateInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessAcc: number
   memberId: string
 }
@@ -680,6 +722,8 @@ export type ExpenseUpdateInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -699,6 +743,7 @@ export type ExpenseUpdateInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
 }
@@ -714,6 +759,8 @@ export type ExpenseUncheckedUpdateInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -733,6 +780,7 @@ export type ExpenseUncheckedUpdateInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -748,6 +796,8 @@ export type ExpenseCreateManyInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -767,6 +817,7 @@ export type ExpenseCreateManyInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessAcc: number
   memberId: string
 }
@@ -781,6 +832,8 @@ export type ExpenseUpdateManyMutationInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -800,6 +853,7 @@ export type ExpenseUpdateManyMutationInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseUncheckedUpdateManyInput = {
@@ -813,6 +867,8 @@ export type ExpenseUncheckedUpdateManyInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -832,6 +888,7 @@ export type ExpenseUncheckedUpdateManyInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -857,6 +914,8 @@ export type ExpenseCountOrderByAggregateInput = {
   group?: Prisma.SortOrder
   image?: Prisma.SortOrder
   pdf?: Prisma.SortOrder
+  invoiceImage?: Prisma.SortOrder
+  invoicePdf?: Prisma.SortOrder
   note?: Prisma.SortOrder
   desc?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -876,6 +935,7 @@ export type ExpenseCountOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
 }
@@ -901,6 +961,8 @@ export type ExpenseMaxOrderByAggregateInput = {
   group?: Prisma.SortOrder
   image?: Prisma.SortOrder
   pdf?: Prisma.SortOrder
+  invoiceImage?: Prisma.SortOrder
+  invoicePdf?: Prisma.SortOrder
   note?: Prisma.SortOrder
   desc?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -920,6 +982,7 @@ export type ExpenseMaxOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
 }
@@ -935,6 +998,8 @@ export type ExpenseMinOrderByAggregateInput = {
   group?: Prisma.SortOrder
   image?: Prisma.SortOrder
   pdf?: Prisma.SortOrder
+  invoiceImage?: Prisma.SortOrder
+  invoicePdf?: Prisma.SortOrder
   note?: Prisma.SortOrder
   desc?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -954,6 +1019,7 @@ export type ExpenseMinOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
 }
@@ -1074,6 +1140,8 @@ export type ExpenseCreateWithoutMemberInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1093,6 +1161,7 @@ export type ExpenseCreateWithoutMemberInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
 }
 
@@ -1107,6 +1176,8 @@ export type ExpenseUncheckedCreateWithoutMemberInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1126,6 +1197,7 @@ export type ExpenseUncheckedCreateWithoutMemberInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessAcc: number
 }
 
@@ -1169,6 +1241,8 @@ export type ExpenseScalarWhereInput = {
   group?: Prisma.EnumExpenseGroupNullableFilter<"Expense"> | $Enums.ExpenseGroup | null
   image?: Prisma.StringNullableFilter<"Expense"> | string | null
   pdf?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoiceImage?: Prisma.StringNullableFilter<"Expense"> | string | null
+  invoicePdf?: Prisma.StringNullableFilter<"Expense"> | string | null
   note?: Prisma.StringNullableFilter<"Expense"> | string | null
   desc?: Prisma.StringNullableFilter<"Expense"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
@@ -1188,6 +1262,7 @@ export type ExpenseScalarWhereInput = {
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Expense"> | $Enums.taxType | null
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
+  dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
 }
@@ -1202,6 +1277,8 @@ export type ExpenseCreateWithoutBusinessIdInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1221,6 +1298,7 @@ export type ExpenseCreateWithoutBusinessIdInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
 }
 
@@ -1235,6 +1313,8 @@ export type ExpenseUncheckedCreateWithoutBusinessIdInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1254,6 +1334,7 @@ export type ExpenseUncheckedCreateWithoutBusinessIdInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   memberId: string
 }
 
@@ -1294,6 +1375,8 @@ export type ExpenseCreateManyMemberInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1313,6 +1396,7 @@ export type ExpenseCreateManyMemberInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   businessAcc: number
 }
 
@@ -1326,6 +1410,8 @@ export type ExpenseUpdateWithoutMemberInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1345,6 +1431,7 @@ export type ExpenseUpdateWithoutMemberInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
 }
 
@@ -1359,6 +1446,8 @@ export type ExpenseUncheckedUpdateWithoutMemberInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1378,6 +1467,7 @@ export type ExpenseUncheckedUpdateWithoutMemberInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -1392,6 +1482,8 @@ export type ExpenseUncheckedUpdateManyWithoutMemberInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1411,6 +1503,7 @@ export type ExpenseUncheckedUpdateManyWithoutMemberInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -1425,6 +1518,8 @@ export type ExpenseCreateManyBusinessIdInput = {
   group?: $Enums.ExpenseGroup | null
   image?: string | null
   pdf?: string | null
+  invoiceImage?: string | null
+  invoicePdf?: string | null
   note?: string | null
   desc?: string | null
   deleted?: boolean | null
@@ -1444,6 +1539,7 @@ export type ExpenseCreateManyBusinessIdInput = {
   taxType?: $Enums.taxType | null
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
+  dueDate?: Date | string | null
   memberId: string
 }
 
@@ -1457,6 +1553,8 @@ export type ExpenseUpdateWithoutBusinessIdInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1476,6 +1574,7 @@ export type ExpenseUpdateWithoutBusinessIdInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
 }
 
@@ -1490,6 +1589,8 @@ export type ExpenseUncheckedUpdateWithoutBusinessIdInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1509,6 +1610,7 @@ export type ExpenseUncheckedUpdateWithoutBusinessIdInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -1523,6 +1625,8 @@ export type ExpenseUncheckedUpdateManyWithoutBusinessIdInput = {
   group?: Prisma.NullableEnumExpenseGroupFieldUpdateOperationsInput | $Enums.ExpenseGroup | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoicePdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   desc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1542,6 +1646,7 @@ export type ExpenseUncheckedUpdateManyWithoutBusinessIdInput = {
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -1558,6 +1663,8 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   group?: boolean
   image?: boolean
   pdf?: boolean
+  invoiceImage?: boolean
+  invoicePdf?: boolean
   note?: boolean
   desc?: boolean
   deleted?: boolean
@@ -1577,6 +1684,7 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   taxType?: boolean
   status?: boolean
   DocumentType?: boolean
+  dueDate?: boolean
   businessAcc?: boolean
   memberId?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -1594,6 +1702,8 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   group?: boolean
   image?: boolean
   pdf?: boolean
+  invoiceImage?: boolean
+  invoicePdf?: boolean
   note?: boolean
   desc?: boolean
   deleted?: boolean
@@ -1613,6 +1723,7 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   taxType?: boolean
   status?: boolean
   DocumentType?: boolean
+  dueDate?: boolean
   businessAcc?: boolean
   memberId?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -1630,6 +1741,8 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   group?: boolean
   image?: boolean
   pdf?: boolean
+  invoiceImage?: boolean
+  invoicePdf?: boolean
   note?: boolean
   desc?: boolean
   deleted?: boolean
@@ -1649,6 +1762,7 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   taxType?: boolean
   status?: boolean
   DocumentType?: boolean
+  dueDate?: boolean
   businessAcc?: boolean
   memberId?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -1666,6 +1780,8 @@ export type ExpenseSelectScalar = {
   group?: boolean
   image?: boolean
   pdf?: boolean
+  invoiceImage?: boolean
+  invoicePdf?: boolean
   note?: boolean
   desc?: boolean
   deleted?: boolean
@@ -1685,11 +1801,12 @@ export type ExpenseSelectScalar = {
   taxType?: boolean
   status?: boolean
   DocumentType?: boolean
+  dueDate?: boolean
   businessAcc?: boolean
   memberId?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "expNo" | "amount" | "debtAmount" | "group" | "image" | "pdf" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "DocumentType" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "expNo" | "amount" | "debtAmount" | "group" | "image" | "pdf" | "invoiceImage" | "invoicePdf" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "DocumentType" | "dueDate" | "businessAcc" | "memberId", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -1720,6 +1837,8 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     group: $Enums.ExpenseGroup | null
     image: string | null
     pdf: string | null
+    invoiceImage: string | null
+    invoicePdf: string | null
     note: string | null
     desc: string | null
     deleted: boolean | null
@@ -1739,6 +1858,7 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     taxType: $Enums.taxType | null
     status: $Enums.ExpenseStatus | null
     DocumentType: $Enums.DocumentType | null
+    dueDate: Date | null
     businessAcc: number
     memberId: string
   }, ExtArgs["result"]["expense"]>
@@ -2176,6 +2296,8 @@ export interface ExpenseFieldRefs {
   readonly group: Prisma.FieldRef<"Expense", 'ExpenseGroup'>
   readonly image: Prisma.FieldRef<"Expense", 'String'>
   readonly pdf: Prisma.FieldRef<"Expense", 'String'>
+  readonly invoiceImage: Prisma.FieldRef<"Expense", 'String'>
+  readonly invoicePdf: Prisma.FieldRef<"Expense", 'String'>
   readonly note: Prisma.FieldRef<"Expense", 'String'>
   readonly desc: Prisma.FieldRef<"Expense", 'String'>
   readonly deleted: Prisma.FieldRef<"Expense", 'Boolean'>
@@ -2195,6 +2317,7 @@ export interface ExpenseFieldRefs {
   readonly taxType: Prisma.FieldRef<"Expense", 'taxType'>
   readonly status: Prisma.FieldRef<"Expense", 'ExpenseStatus'>
   readonly DocumentType: Prisma.FieldRef<"Expense", 'DocumentType'>
+  readonly dueDate: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly businessAcc: Prisma.FieldRef<"Expense", 'Int'>
   readonly memberId: Prisma.FieldRef<"Expense", 'String'>
 }

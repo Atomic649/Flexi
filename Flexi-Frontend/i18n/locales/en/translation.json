@@ -835,7 +835,10 @@
       "successMessage": "Please press OK to proceed",
       "ok": "OK",
       "debt": "Debt",
-      "paid": "Paid"
+      "paid": "Paid",
+      "date": "Date",
+      "dueDate": "Due Date",
+      "selectDueDate": "Select due date"
     },
     "detail": {
       "description": "Description (optional)",

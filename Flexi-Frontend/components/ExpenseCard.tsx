@@ -19,12 +19,11 @@ import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   if (Number.isNaN(parsedDate.getTime())) return "";
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const year = parsedDate.getFullYear();
-  const hours = String(parsedDate.getHours()).padStart(2, "0");
-  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
-
+  const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+  const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+  const year = parsedDate.getUTCFullYear();
+  const hours = String(parsedDate.getUTCHours()).padStart(2, "0");
+  const minutes = String(parsedDate.getUTCMinutes()).padStart(2, "0");
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
@@ -181,11 +180,29 @@ export default function ExpenseCard({
       }}
       onLongPress={handleLongPress}
       delayLongPress={500}
+      activeOpacity={0.8}
     >
       <View
         className={`flex flex-col pt-3 pb-4 px-4 pe-16 my-1 rounded-se-md`}
-        style={{ backgroundColor: getCardColor(type) }}
+        style={{ backgroundColor: getCardColor(isDebt ? "ads" : type), position: "relative" }}
       >
+        {isDebt && (
+          <View
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 4,
+              backgroundColor: "rgba(255,42,0,0.15)",
+              borderRadius: 4,
+              paddingHorizontal: 5,
+              paddingVertical: 1,
+            }}
+          >
+            <Text style={{ fontSize: 9, fontWeight: "700", color: "#ff2a00", letterSpacing: 0.5 }}>
+              INV
+            </Text>
+          </View>
+        )}
         <View className="flex flex-row gap-3 items-center">
           <View className="flex justify-center items-center flex-row flex-1">
             <View className="flex justify-center flex-1 ml-3 ">
@@ -215,7 +232,7 @@ export default function ExpenseCard({
           <View className="flex-colum items-end">
             <Text
               className="text-xl font-bold justify-end"
-              style={{ color: getExpenseTextColor(type) }}
+              style={{ color: getExpenseTextColor(isDebt ? "ads" : type) }}
               numberOfLines={1}
             >
               -{formatNumber(expenses)}

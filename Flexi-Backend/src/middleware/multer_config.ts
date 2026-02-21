@@ -46,8 +46,8 @@ const attachmentFileFilter = (
   file: Express.Multer.File,
   callback: FileFilterCallback
 ) => {
-  const isImage = file.fieldname === "image" && file.mimetype.startsWith("image/")
-  const isPdf = file.fieldname === "pdf" && file.mimetype === "application/pdf"
+  const isImage = (file.fieldname === "image" || file.fieldname === "invoiceImage") && file.mimetype.startsWith("image/")
+  const isPdf = (file.fieldname === "pdf" || file.fieldname === "invoicePdf") && file.mimetype === "application/pdf"
 
   if (isImage || isPdf) {
     callback(null, true)

@@ -30,6 +30,8 @@ const attachmentUploadConfig =
 const upload = multer(attachmentUploadConfig.config).fields([
   { name: attachmentUploadConfig.imageKeyUpload, maxCount: 1 },
   { name: attachmentUploadConfig.pdfKeyUpload, maxCount: 1 },
+  { name: "invoiceImage", maxCount: 1 },
+  { name: "invoicePdf", maxCount: 1 },
 ]);
 
 type MulterFiles =
@@ -153,6 +155,8 @@ interface Expense {
   group: ExpenseGroup;
   image: string;
   pdf?: string;
+  invoiceImage?: string;
+  invoicePdf?: string;
   memberId: string;
   businessAcc: number;
   note: string;
@@ -172,6 +176,7 @@ interface Expense {
   status?: ExpenseStatus;
   DocumentType?: DocumentType;
   debtAmount?: number;
+  dueDate?: Date;
 }
 
 // Validate the request body
@@ -209,6 +214,8 @@ const schema = Joi.object({
   desc: Joi.string().allow(""),
   image: Joi.string().allow(""),
   pdf: Joi.string().allow(""),
+  invoiceImage: Joi.string().optional().allow(""),
+  invoicePdf: Joi.string().optional().allow(""),
   memberId: Joi.string().required(),
   businessAcc: Joi.number(),
   note: Joi.string(),
@@ -229,6 +236,7 @@ const schema = Joi.object({
   status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
   DocumentType: Joi.string().valid("Invoice", "Receipt").optional(),
   debtAmount: Joi.number().optional(),
+  dueDate: Joi.date().optional(),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -238,33 +246,16 @@ const createExpense = async (req: Request, res: Response) => {
       return res.status(400).json({ message: err.message });
     }
     const multerReq = req as MulterReadyRequest;
-    const imageFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.imageKeyUpload
-    );
-    const pdfFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.pdfKeyUpload
-    );
+    const imageFile = getUploadedFile(multerReq, attachmentUploadConfig.imageKeyUpload);
+    const pdfFile = getUploadedFile(multerReq, attachmentUploadConfig.pdfKeyUpload);
+    const invoiceImageFile = getUploadedFile(multerReq, "invoiceImage");
+    const invoicePdfFile = getUploadedFile(multerReq, "invoicePdf");
     multerReq.file = imageFile;
-
-    console.log(
-      "Uploaded image:",
-      imageFile ? `${imageFile.originalname} (${imageFile.mimetype})` : "none"
-    );
-    console.log(
-      "Uploaded pdf:",
-      pdfFile ? `${pdfFile.originalname} (${pdfFile.mimetype})` : "none"
-    );
 
     let imageUrl = req.body.image ?? "";
     if (imageFile?.buffer) {
       try {
-        imageUrl = await uploadToS3(
-          imageFile.buffer,
-          imageFile.mimetype,
-          imageFile.fieldname
-        );
+        imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype, imageFile.fieldname);
       } catch (uploadError) {
         console.error("Failed to upload image", uploadError);
         return res.status(500).json({ message: "Failed to upload image" });
@@ -274,14 +265,30 @@ const createExpense = async (req: Request, res: Response) => {
     let pdfUrl = req.body.pdf ?? "";
     if (pdfFile?.buffer) {
       try {
-        pdfUrl = await uploadToS3(
-          pdfFile.buffer,
-          pdfFile.mimetype,
-          pdfFile.fieldname
-        );
+        pdfUrl = await uploadToS3(pdfFile.buffer, pdfFile.mimetype, pdfFile.fieldname);
       } catch (uploadError) {
         console.error("Failed to upload PDF", uploadError);
         return res.status(500).json({ message: "Failed to upload PDF" });
+      }
+    }
+
+    let invoiceImageUrl = req.body.invoiceImage ?? "";
+    if (invoiceImageFile?.buffer) {
+      try {
+        invoiceImageUrl = await uploadToS3(invoiceImageFile.buffer, invoiceImageFile.mimetype, invoiceImageFile.fieldname);
+      } catch (uploadError) {
+        console.error("Failed to upload invoiceImage", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice image" });
+      }
+    }
+
+    let invoicePdfUrl = req.body.invoicePdf ?? "";
+    if (invoicePdfFile?.buffer) {
+      try {
+        invoicePdfUrl = await uploadToS3(invoicePdfFile.buffer, invoicePdfFile.mimetype, invoicePdfFile.fieldname);
+      } catch (uploadError) {
+        console.error("Failed to upload invoicePdf", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice PDF" });
       }
     }
 
@@ -313,6 +320,8 @@ const createExpense = async (req: Request, res: Response) => {
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
+      invoiceImage: invoiceImageUrl,
+      invoicePdf: invoicePdfUrl,
       desc: req.body.desc ?? "",
       group: req.body.group || "Others", // Default to "Others" if group is empty
       date: isoDateString as unknown as Date,
@@ -320,6 +329,7 @@ const createExpense = async (req: Request, res: Response) => {
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
       DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
       debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
+      dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
     };
 
     console.log("Input", expenseInput);
@@ -377,6 +387,8 @@ const createExpense = async (req: Request, res: Response) => {
           group: expenseInput.group,
           image: expenseInput.image,
           pdf: expenseInput.pdf,
+          invoiceImage: expenseInput.invoiceImage ?? "",
+          invoicePdf: expenseInput.invoicePdf ?? "",
           memberId: expenseInput.memberId,
           businessAcc: businessAcc.id,
           note: expenseInput.note,
@@ -396,6 +408,7 @@ const createExpense = async (req: Request, res: Response) => {
           expNo: expenseInput.expNo ?? "",
           DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
           debtAmount: expenseInput.debtAmount ?? 0,
+          dueDate: expenseInput.dueDate ?? null,
         },
       });
       res.json(expense);
@@ -414,20 +427,33 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       return res.status(400).json({ message: err.message });
     }
     const multerReq = req as MulterReadyRequest;
-    const imageFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.imageKeyUpload
-    );
-    const pdfFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.pdfKeyUpload
-    );
+    const imageFile = getUploadedFile(multerReq, attachmentUploadConfig.imageKeyUpload);
+    const pdfFile = getUploadedFile(multerReq, attachmentUploadConfig.pdfKeyUpload);
+    const invoiceImageFile = getUploadedFile(multerReq, "invoiceImage");
+    const invoicePdfFile = getUploadedFile(multerReq, "invoicePdf");
     multerReq.file = imageFile;
 
-    // Debugging: Log the uploaded file details
-    // console.log("Uploaded file:", imageFile ? "File received" : "No file");
     let imageUrl = req.body.image ?? "";
     let pdfUrl = req.body.pdf ?? "";
+    let invoiceImageUrl = req.body.invoiceImage ?? "";
+    let invoicePdfUrl = req.body.invoicePdf ?? "";
+
+    if (invoiceImageFile?.buffer) {
+      try {
+        invoiceImageUrl = await uploadToS3(invoiceImageFile.buffer, invoiceImageFile.mimetype, invoiceImageFile.fieldname);
+      } catch (uploadError) {
+        console.error("Failed to upload invoiceImage", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice image" });
+      }
+    }
+    if (invoicePdfFile?.buffer) {
+      try {
+        invoicePdfUrl = await uploadToS3(invoicePdfFile.buffer, invoicePdfFile.mimetype, invoicePdfFile.fieldname);
+      } catch (uploadError) {
+        console.error("Failed to upload invoicePdf", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice PDF" });
+      }
+    }
 
       // Initialize expenseInput with form data, handling empty values properly
     // Normalize date input to avoid Invalid Date objects for non-ISO/Thai long-form strings
@@ -446,6 +472,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
+      invoiceImage: invoiceImageUrl,
+      invoicePdf: invoicePdfUrl,
       desc: req.body.desc ?? "",
       // Handle potentially empty required fields when image is present
       date: parsedDateOCR,
@@ -456,6 +484,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
       DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
       debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
+      dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
     };
 
     // Initialize OCR alert variable
@@ -1056,6 +1085,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             group: expenseInput.group,
             image: expenseInput.image,
             pdf: expenseInput.pdf,
+            invoiceImage: expenseInput.invoiceImage ?? "",
+            invoicePdf: expenseInput.invoicePdf ?? "",
             note: expenseInput.note,
             channel: expenseInput.channel,
             vat: expenseInput.vat,
@@ -1072,6 +1103,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             status: ocrAlert?.type === "success" ? "Pass" : "Warning",
             DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
             debtAmount: expenseInput.debtAmount ?? 0,
+            dueDate: expenseInput.dueDate ?? null,
           },
         });
         console.log("✅ Successfully updated expense with OCR data");
@@ -1085,6 +1117,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             group: expenseInput.group,
             image: expenseInput.image,
             pdf: expenseInput.pdf,
+            invoiceImage: expenseInput.invoiceImage ?? "",
+            invoicePdf: expenseInput.invoicePdf ?? "",
             memberId: expenseInput.memberId,
             businessAcc: businessAcc.id,
             note: expenseInput.note,
@@ -1105,6 +1139,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             status: ocrAlert?.type === "success" ? "Pass" : "Warning",
             DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
             debtAmount: expenseInput.debtAmount ?? 0,
+            dueDate: expenseInput.dueDate ?? null,
           },
         });
       }
@@ -1244,6 +1279,9 @@ const getExpenseById = async (req: Request, res: Response) => {
         expNo: true,
         DocumentType: true,
         debtAmount: true,
+        dueDate: true,
+        invoiceImage: true,
+        invoicePdf: true,
       },
     });
     res.json(expense);
@@ -1261,14 +1299,10 @@ const updateExpenseById = async (req: Request, res: Response) => {
     }
 
     const multerReq = req as MulterReadyRequest;
-    const imageFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.imageKeyUpload
-    );
-    const pdfFile = getUploadedFile(
-      multerReq,
-      attachmentUploadConfig.pdfKeyUpload
-    );
+    const imageFile = getUploadedFile(multerReq, attachmentUploadConfig.imageKeyUpload);
+    const pdfFile = getUploadedFile(multerReq, attachmentUploadConfig.pdfKeyUpload);
+    const invoiceImageFile = getUploadedFile(multerReq, "invoiceImage");
+    const invoicePdfFile = getUploadedFile(multerReq, "invoicePdf");
     multerReq.file = imageFile;
 
     // Fetch the existing product to get the current image URL
@@ -1292,16 +1326,9 @@ const updateExpenseById = async (req: Request, res: Response) => {
         console.log(`✅ Old ${type} deleted from S3:`, fileKey);
       } catch (e: any) {
         if (e.name === "AccessDenied") {
-          console.warn(
-            `⚠️ S3 Delete permission denied - continuing without deletion:`,
-            fileKey
-          );
+          console.warn(`⚠️ S3 Delete permission denied - continuing without deletion:`, fileKey);
         } else {
-          console.error(
-            `❌ Failed to delete old ${type} from S3:`,
-            fileKey,
-            e.message || e
-          );
+          console.error(`❌ Failed to delete old ${type} from S3:`, fileKey, e.message || e);
         }
       }
     };
@@ -1320,16 +1347,20 @@ const updateExpenseById = async (req: Request, res: Response) => {
       await deleteExistingFile(existingExpense.image, "image");
     }
 
+    if (invoiceImageFile) {
+      await deleteExistingFile(existingExpense.invoiceImage, "image");
+      await deleteExistingFile(existingExpense.invoicePdf, "pdf");
+    } else if (invoicePdfFile) {
+      await deleteExistingFile(existingExpense.invoicePdf, "pdf");
+      await deleteExistingFile(existingExpense.invoiceImage, "image");
+    }
+
     let imageUrl = req.body.image ?? existingExpense.image ?? "";
     let pdfUrl = req.body.pdf ?? existingExpense.pdf ?? "";
 
     if (imageFile?.buffer) {
       try {
-        imageUrl = await uploadToS3(
-          imageFile.buffer,
-          imageFile.mimetype,
-          imageFile.fieldname
-        );
+        imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype, imageFile.fieldname);
         pdfUrl = "";
       } catch (uploadError) {
         console.error("Failed to upload image", uploadError);
@@ -1339,15 +1370,34 @@ const updateExpenseById = async (req: Request, res: Response) => {
 
     if (pdfFile?.buffer) {
       try {
-        pdfUrl = await uploadToS3(
-          pdfFile.buffer,
-          pdfFile.mimetype,
-          pdfFile.fieldname
-        );
+        pdfUrl = await uploadToS3(pdfFile.buffer, pdfFile.mimetype, pdfFile.fieldname);
         imageUrl = "";
       } catch (uploadError) {
         console.error("Failed to upload PDF", uploadError);
         return res.status(500).json({ message: "Failed to upload PDF" });
+      }
+    }
+
+    let invoiceImageUrl = req.body.invoiceImage ?? existingExpense.invoiceImage ?? "";
+    let invoicePdfUrl = req.body.invoicePdf ?? existingExpense.invoicePdf ?? "";
+
+    if (invoiceImageFile?.buffer) {
+      try {
+        invoiceImageUrl = await uploadToS3(invoiceImageFile.buffer, invoiceImageFile.mimetype, invoiceImageFile.fieldname);
+        invoicePdfUrl = "";
+      } catch (uploadError) {
+        console.error("Failed to upload invoiceImage", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice image" });
+      }
+    }
+
+    if (invoicePdfFile?.buffer) {
+      try {
+        invoicePdfUrl = await uploadToS3(invoicePdfFile.buffer, invoicePdfFile.mimetype, invoicePdfFile.fieldname);
+        invoiceImageUrl = "";
+      } catch (uploadError) {
+        console.error("Failed to upload invoicePdf", uploadError);
+        return res.status(500).json({ message: "Failed to upload invoice PDF" });
       }
     }
 
@@ -1382,12 +1432,15 @@ const updateExpenseById = async (req: Request, res: Response) => {
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
+      invoiceImage: invoiceImageUrl,
+      invoicePdf: invoicePdfUrl,
       group: normalizedGroup,
       memberId,
       taxType:
         req.body.taxType === "Juristic" ? taxType.Juristic : taxType.Individual,
       DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
       debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
+      dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
     };
     const { id } = req.params;
 
@@ -1420,6 +1473,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
           note: expenseInput.note,
           image: expenseInput.image,
           pdf: expenseInput.pdf,
+          invoiceImage: expenseInput.invoiceImage ?? "",
+          invoicePdf: expenseInput.invoicePdf ?? "",
           memberId: expenseInput.memberId,
           vat: expenseInput.vat,
           vatAmount: expenseInput.vatAmount,
@@ -1434,6 +1489,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           taxType: expenseInput.taxType ?? taxType.Individual,
           DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
           debtAmount: expenseInput.debtAmount ?? 0,
+          dueDate: expenseInput.dueDate ?? null,
         },
       });
       res.json(expense);

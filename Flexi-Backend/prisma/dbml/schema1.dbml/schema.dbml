@@ -201,6 +201,8 @@ Table Expense {
   group ExpenseGroup
   image String
   pdf String
+  invoiceImage String
+  invoicePdf String
   note String
   desc String
   deleted Boolean [default: false]
@@ -220,6 +222,7 @@ Table Expense {
   taxType taxType [default: 'Individual']
   status ExpenseStatus
   DocumentType DocumentType [default: 'Receipt']
+  dueDate DateTime
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
