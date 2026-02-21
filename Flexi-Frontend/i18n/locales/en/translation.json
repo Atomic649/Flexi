@@ -894,7 +894,9 @@
         "operation": "Operation",
         "title": "Expense Category"
       },
-      "attachBill": "Attach Bill"
+      "attachBill": "Attach Bill",
+      "attachRec": "Attach REC",
+      "attachInv": "Attach INV"
     },
     "feature1": {
       "title": "Intelligent PDF Detection",

@@ -2407,7 +2407,7 @@ export default function CreateExpense({
                       color="#999999"
                     />
                     <CustomText className="text-center mt-1">
-                      {t("expense.detail.attachBill")}
+                      {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
                     </CustomText>
                   </TouchableOpacity>
 
@@ -2502,7 +2502,7 @@ export default function CreateExpense({
 
         <CustomAlert
           visible={attachmentPickerVisible}
-          title={t("expense.detail.attachBill") || "Attach Bill"}
+          title={isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
           message={
             t("expense.detail.chooseAttachmentType") ||
             "Choose how you want to attach the bill"
