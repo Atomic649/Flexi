@@ -32,6 +32,7 @@ import {
 type Expense = {
   id: number;
   date: string;
+  dueDate?: string;
   expenses: number;
   debtAmount?: number;
   DocumentType?: string;
@@ -274,11 +275,27 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                       alignItems: "flex-start",
                     }}
                   >
-                    <CustomText                     
-                      style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
-                    >
-                      {formatDate(expense.date)}
-                    </CustomText>
+                    <View style={{ width: "16.66%" }}>
+                      {expense.DocumentType === "Invoice" && expense.dueDate ? (
+                        <>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginBottom: 1 }}>
+                            <View style={{ backgroundColor: "#ff2a00", borderRadius: 3, paddingHorizontal: 3, paddingVertical: 1 }}>
+                              <CustomText style={{ fontSize: 8, fontWeight: "700", color: "#fff" }}>INV</CustomText>
+                            </View>
+                            <CustomText style={{ fontSize: getResponsiveStyles().smallFontSize, color: "#ff2a00" }}>
+                              {formatDate(expense.dueDate)}
+                            </CustomText>
+                          </View>
+                          <CustomText style={{ fontSize: (getResponsiveStyles().smallFontSize ?? 12) - 1, color: theme === "dark" ? "#666" : "#aaa" }}>
+                            {formatDate(expense.date)}
+                          </CustomText>
+                        </>
+                      ) : (
+                        <CustomText style={{ fontSize: getResponsiveStyles().smallFontSize }}>
+                          {formatDate(expense.date)}
+                        </CustomText>
+                      )}
+                    </View>
                     <CustomText
                       
                       style={{ width: "16.66%", fontSize: getResponsiveStyles().smallFontSize }}
@@ -364,6 +381,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 image={expense.image}
                 DocumentType={expense.DocumentType}
                 debtAmount={expense.debtAmount}
+                dueDate={expense.dueDate}
                 onPaid={fetchExpenses}
                 Opacity={theme === "dark" ? 0.4 : 0.2}
                 AdsCardColor={theme === "dark" ? "#1d1d1d" : "#f4f4f4f4"}

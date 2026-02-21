@@ -51,6 +51,7 @@ export default function ExpenseCard({
   titleColor,
   DocumentType,
   debtAmount,
+  dueDate,
   onPaid,
 }: any) {
   const [detailVisible, setDetailVisible] = useState(false);
@@ -206,12 +207,17 @@ export default function ExpenseCard({
         <View className="flex flex-row gap-3 items-center">
           <View className="flex justify-center items-center flex-row flex-1">
             <View className="flex justify-center flex-1 ml-3 ">
-              <Text
-                className="text-sm text-zinc-500 font-normal"
-                numberOfLines={1}
-              >
-                {formatDate(date)}
-              </Text>
+              {isDebt ? (
+                dueDate ? (
+                  <Text style={{ fontSize: 12, color: "#ff2a00", fontWeight: "600" }} numberOfLines={1}>
+                    DUE: {formatDate(dueDate)}
+                  </Text>
+                ) : null
+              ) : (
+                <Text className="text-sm text-zinc-500 font-normal" numberOfLines={1}>
+                  {formatDate(date)}
+                </Text>
+              )}
               <CustomText
                 className="text-sm font-normal pt-2"
                 style={{ color: DescColor }}
