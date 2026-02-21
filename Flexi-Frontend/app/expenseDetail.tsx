@@ -420,8 +420,6 @@ export default function ExpenseDetail({
         const asset = result.assets[0];
         const inferredName =
           asset.fileName || asset.uri.split("/").pop() || "attachment.jpg";
-        setImage(asset.uri);
-        setPdfUrl("");
         setAttachment({
           uri: asset.uri,
           name: inferredName,
@@ -458,8 +456,6 @@ export default function ExpenseDetail({
           type: asset.mimeType || "application/pdf",
           preview: "pdf",
         });
-        setPdfUrl(asset.uri);
-        setImage("");
         setHasChanges(true);
       }
     } catch (error) {
@@ -923,7 +919,14 @@ export default function ExpenseDetail({
                       ) : receiptPdfUri ? (
                         <TouchableOpacity onPress={() => handlePreviewPdf(receiptPdfUri)} style={{ flex: 1 }}>
                           {Platform.OS !== "web" ? (
-                            <WebView originWhitelist={["*"]} source={{ uri: receiptPdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            isDeviceLocalUri(receiptPdfUri) ? (
+                              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 6 }}>
+                                <Ionicons name="document-text" size={36} color="#04ecc1" />
+                                <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#777" : "#999" }}>Tap to open</CustomText>
+                              </View>
+                            ) : (
+                              <WebView originWhitelist={["*"]} source={{ uri: receiptPdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            )
                           ) : (
                             <iframe src={receiptPdfUri} style={{ width: "100%", height: "100%", border: "none" }} title="Receipt PDF" />
                           )}
@@ -945,7 +948,14 @@ export default function ExpenseDetail({
                       ) : invoicePdfUri2 ? (
                         <TouchableOpacity onPress={() => handlePreviewPdf(invoicePdfUri2)} style={{ flex: 1 }}>
                           {Platform.OS !== "web" ? (
-                            <WebView originWhitelist={["*"]} source={{ uri: invoicePdfWebViewUri2 }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            isDeviceLocalUri(invoicePdfUri2) ? (
+                              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 6 }}>
+                                <Ionicons name="document-text" size={36} color="#04ecc1" />
+                                <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#777" : "#999" }}>Tap to open</CustomText>
+                              </View>
+                            ) : (
+                              <WebView originWhitelist={["*"]} source={{ uri: invoicePdfWebViewUri2 }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            )
                           ) : (
                             <iframe src={invoicePdfUri2} style={{ width: "100%", height: "100%", border: "none" }} title="Invoice PDF" />
                           )}
@@ -979,7 +989,19 @@ export default function ExpenseDetail({
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => handlePreviewPdf(pdfPreviewUri)} style={{ width: "100%", height: Platform.OS === "web" ? 420 : 360, borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb", backgroundColor: theme === "dark" ? "#18181b" : "#f9fafb" }}>
                           {Platform.OS !== "web" ? (
-                            <WebView originWhitelist={["*"]} source={{ uri: pdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            isDeviceLocalUri(pdfPreviewUri) ? (
+                              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
+                                <Ionicons name="document-text" size={52} color="#04ecc1" />
+                                <CustomText style={{ color: theme === "dark" ? "#ccc" : "#444", textAlign: "center", paddingHorizontal: 16 }} numberOfLines={2}>
+                                  {extractFileName(pdfPreviewUri)}
+                                </CustomText>
+                                <CustomText style={{ fontSize: 12, color: theme === "dark" ? "#777" : "#999" }}>
+                                  Tap to open
+                                </CustomText>
+                              </View>
+                            ) : (
+                              <WebView originWhitelist={["*"]} source={{ uri: pdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                            )
                           ) : (
                             <View className="flex-1 justify-center items-center bg-white">
                               <iframe src={pdfPreviewUri} style={{ width: "100%", height: "100%", border: "none", backgroundColor: "white" }} title="PDF Preview" />
