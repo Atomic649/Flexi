@@ -359,10 +359,23 @@ export default function ExpenseDetail({
     Platform.OS === "android" &&
     hasPdfPreview &&
     /^https?:\/\//i.test(pdfPreviewUri)
-      ? `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(
-          pdfPreviewUri
-        )}`
+      ? `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(pdfPreviewUri)}`
       : pdfPreviewUri;
+
+  // Two-panel support: independent URIs for receipt and invoice sides
+  const receiptImageUri = normalizeAttachmentUri((!isDebt && isImageAttachment) ? attachment?.uri : image, "image");
+  const receiptPdfUri = normalizeAttachmentUri((!isDebt && isPdfAttachment) ? attachment?.uri : pdfUrl, "pdf");
+  const invoiceImageUri = normalizeAttachmentUri((isDebt && isImageAttachment) ? attachment?.uri : invoiceImage, "image");
+  const invoicePdfUri2 = normalizeAttachmentUri((isDebt && isPdfAttachment) ? attachment?.uri : invoicePdfUrl, "pdf");
+  const hasReceiptPanel = Boolean(receiptImageUri) || Boolean(receiptPdfUri);
+  const hasInvoicePanel = Boolean(invoiceImageUri) || Boolean(invoicePdfUri2);
+  const hasBothPanels = hasReceiptPanel && hasInvoicePanel;
+  const receiptPdfWebViewUri = Platform.OS === "android" && Boolean(receiptPdfUri) && /^https?:\/\//i.test(receiptPdfUri)
+    ? `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(receiptPdfUri)}`
+    : receiptPdfUri;
+  const invoicePdfWebViewUri2 = Platform.OS === "android" && Boolean(invoicePdfUri2) && /^https?:\/\//i.test(invoicePdfUri2)
+    ? `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(invoicePdfUri2)}`
+    : invoicePdfUri2;
 
   const handleDateTimeChange = (next: Date) => {
     setDate(format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
@@ -476,6 +489,31 @@ export default function ExpenseDetail({
             setAttachment(null);
             setImage("");
             setPdfUrl("");
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+          },
+          style: "destructive",
+        },
+      ],
+    });
+  };
+
+  const handleRemoveInvoiceAttachment = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("expense.detail.removeAttachment"),
+      message: t("expense.detail.removeAttachmentConfirm"),
+      buttons: [
+        {
+          text: t("common.cancel"),
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+          style: "cancel",
+        },
+        {
+          text: t("common.confirm"),
+          onPress: () => {
+            if (isDebt) setAttachment(null);
+            setInvoiceImage("");
+            setInvoicePdfUrl("");
             setAlertConfig((prev) => ({ ...prev, visible: false }));
           },
           style: "destructive",
@@ -870,94 +908,87 @@ export default function ExpenseDetail({
                 className="flex-1 justify-center h-full py-6 px-4 rounded-lg"
                 style={{ backgroundColor: "transparent" }}
               >
-                <TouchableOpacity
-                  onPress={() => hasImagePreview && setImageModalVisible(true)}
-                  activeOpacity={hasImagePreview ? 0.8 : 1}
-                >
-                  {hasImagePreview && imagePreviewUri && (
-                    <View style={{ position: "relative", alignSelf: "center" }}>
-                      <Image
-                        source={{ uri: imagePreviewUri }}
-                        style={{ width: 300, height: 300 }}
-                        className="mt-4 mb-6 self-center rounded-md"
-                      />
-                      <TouchableOpacity
-                        onPress={handleRemoveAttachment}
-                        style={{
-                          position: "absolute",
-                          top: 35,
-                          right: 20,
-                          backgroundColor: "#ef444475",
-                          borderRadius: 12,
-                          width: 24,
-                          height: 24,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          zIndex: 10,
-                        }}
-                      >
-                        <Ionicons name="remove" size={16} color="#fff" />
+                {hasBothPanels ? (
+                  /* Two-panel 50/50 layout */
+                  <View style={{ flexDirection: "row", width: "100%", height: Platform.OS === "web" ? 300 : 280, marginBottom: 8 , paddingTop: 20 }}>
+                    {/* Receipt panel */}
+                    <View style={{ flex: 1, marginRight: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
+                      <CustomText style={{ position: "absolute", top: 4, left: 6, zIndex: 5, fontSize: 9, fontWeight: "700", color: theme === "dark" ? "#aaa" : "#666", backgroundColor: theme === "dark" ? "#18181bcc" : "#ffffffcc", paddingHorizontal: 4, borderRadius: 4 }}>
+                        REC
+                      </CustomText>
+                      {receiptImageUri ? (
+                        <TouchableOpacity onPress={() => setImageModalVisible(true)} style={{ flex: 1 }}>
+                          <Image source={{ uri: receiptImageUri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+                        </TouchableOpacity>
+                      ) : receiptPdfUri ? (
+                        <TouchableOpacity onPress={() => handlePreviewPdf(receiptPdfUri)} style={{ flex: 1 }}>
+                          {Platform.OS !== "web" ? (
+                            <WebView originWhitelist={["*"]} source={{ uri: receiptPdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                          ) : (
+                            <iframe src={receiptPdfUri} style={{ width: "100%", height: "100%", border: "none" }} title="Receipt PDF" />
+                          )}
+                        </TouchableOpacity>
+                      ) : null}
+                      <TouchableOpacity onPress={handleRemoveAttachment} style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#ef444475", borderRadius: 10, width: 20, height: 20, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
+                        <Ionicons name="remove" size={12} color="#fff" />
                       </TouchableOpacity>
                     </View>
-                  )}
-                </TouchableOpacity>
-                {hasPdfPreview && pdfPreviewUri && (
-                  <View className="mb-6 w-full self-center" style={{ position: "relative" }}>
+                    {/* Invoice panel */}
+                    <View style={{ flex: 1, marginLeft: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
+                      <CustomText style={{ position: "absolute", top: 4, left: 6, zIndex: 5, fontSize: 9, fontWeight: "700", color: "#ff2a00", backgroundColor: theme === "dark" ? "#18181bcc" : "#ffffffcc", paddingHorizontal: 4, borderRadius: 4 }}>
+                        INV
+                      </CustomText>
+                      {invoiceImageUri ? (
+                        <TouchableOpacity onPress={() => setImageModalVisible(true)} style={{ flex: 1 }}>
+                          <Image source={{ uri: invoiceImageUri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+                        </TouchableOpacity>
+                      ) : invoicePdfUri2 ? (
+                        <TouchableOpacity onPress={() => handlePreviewPdf(invoicePdfUri2)} style={{ flex: 1 }}>
+                          {Platform.OS !== "web" ? (
+                            <WebView originWhitelist={["*"]} source={{ uri: invoicePdfWebViewUri2 }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                          ) : (
+                            <iframe src={invoicePdfUri2} style={{ width: "100%", height: "100%", border: "none" }} title="Invoice PDF" />
+                          )}
+                        </TouchableOpacity>
+                      ) : null}
+                      <TouchableOpacity onPress={handleRemoveInvoiceAttachment} style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#ef444475", borderRadius: 10, width: 20, height: 20, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
+                        <Ionicons name="remove" size={12} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  /* Single-panel (existing behavior) */
+                  <>
                     <TouchableOpacity
-                      onPress={handleRemoveAttachment}
-                      style={{
-                        position: "absolute",
-                        top: 24,
-                        right: 14,
-                        backgroundColor: "#ef444475",
-                        borderRadius: 12,
-                        width: 24,
-                        height: 24,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: 10,
-                      }}
+                      onPress={() => hasImagePreview && setImageModalVisible(true)}
+                      activeOpacity={hasImagePreview ? 0.8 : 1}
                     >
-                      <Ionicons name="remove" size={16} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handlePreviewPdf(pdfPreviewUri)}
-                      style={{
-                        width: "100%",
-                        height: Platform.OS === "web" ? 420 : 360,
-                        borderRadius: 12,
-                        overflow: "hidden",
-                        borderWidth: 1,
-                        borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb",
-                        backgroundColor:
-                          theme === "dark" ? "#18181b" : "#f9fafb",
-                      }}
-                    >
-                      {Platform.OS !== "web" ? (
-                        <WebView
-                          originWhitelist={["*"]}
-                          source={{ uri: pdfWebViewUri }}
-                          style={{ flex: 1 }}
-                          mixedContentMode="always"
-                          allowingReadAccessToURL="*"
-                          allowFileAccess
-                        />
-                      ) : (
-                        <View className="flex-1 justify-center items-center bg-white">
-                          <iframe
-                            src={pdfPreviewUri}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              border: "none",
-                              backgroundColor: "white",
-                            }}
-                            title="PDF Preview"
-                          />
+                      {hasImagePreview && imagePreviewUri && (
+                        <View style={{ position: "relative", alignSelf: "center" }}>
+                          <Image source={{ uri: imagePreviewUri }} style={{ width: 300, height: 300 }} className="mt-4 mb-6 self-center rounded-md" />
+                          <TouchableOpacity onPress={handleRemoveAttachment} style={{ position: "absolute", top: 35, right: 20, backgroundColor: "#ef444475", borderRadius: 12, width: 24, height: 24, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
+                            <Ionicons name="remove" size={16} color="#fff" />
+                          </TouchableOpacity>
                         </View>
                       )}
                     </TouchableOpacity>
-                  </View>
+                    {hasPdfPreview && pdfPreviewUri && (
+                      <View className="mb-6 w-full self-center" style={{ position: "relative" }}>
+                        <TouchableOpacity onPress={handleRemoveAttachment} style={{ position: "absolute", top: 24, right: 14, backgroundColor: "#ef444475", borderRadius: 12, width: 24, height: 24, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
+                          <Ionicons name="remove" size={16} color="#fff" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handlePreviewPdf(pdfPreviewUri)} style={{ width: "100%", height: Platform.OS === "web" ? 420 : 360, borderRadius: 12, overflow: "hidden", borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb", backgroundColor: theme === "dark" ? "#18181b" : "#f9fafb" }}>
+                          {Platform.OS !== "web" ? (
+                            <WebView originWhitelist={["*"]} source={{ uri: pdfWebViewUri }} style={{ flex: 1 }} mixedContentMode="always" allowingReadAccessToURL="*" allowFileAccess />
+                          ) : (
+                            <View className="flex-1 justify-center items-center bg-white">
+                              <iframe src={pdfPreviewUri} style={{ width: "100%", height: "100%", border: "none", backgroundColor: "white" }} title="PDF Preview" />
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </>
                 )}
                 {/* Debt / Paid toggle */}
                 <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>
