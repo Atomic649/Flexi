@@ -9,6 +9,7 @@ import {
   getExpenseBreakdown,
   getAccountsPayableReceivable,
   getAPARDetail,
+  getIncomeExpenseDetail,
 } from "../controllers/dashboardController";
 
 const router = express.Router();
@@ -36,5 +37,8 @@ router.get("/accounts-payable-receivable", authenticateToken, getAccountsPayable
 
 // Accounts payable/receivable detail lists - GET /dashboard/accounts-payable-receivable-detail
 router.get("/accounts-payable-receivable-detail", authenticateToken, getAPARDetail);
+
+// Income / expense detail lists - GET /dashboard/income-expense-detail
+router.get("/income-expense-detail", authenticateToken, getIncomeExpenseDetail);
 
 export default router;

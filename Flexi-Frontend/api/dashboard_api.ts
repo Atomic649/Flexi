@@ -193,6 +193,26 @@ class CallAPIDashboard {
     }
   }
 
+  // Get Income / Expense Detail Lists
+  async getIncomeExpenseDetailAPI(filters: Partial<DashboardFilters>): Promise<{
+    bills: { id: number; name: string; date: string; amount: number; note: string | null; platform: string }[];
+    expenses: { id: number; name: string | null; date: string; amount: number; note: string | null; desc: string | null }[];
+  }> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/income-expense-detail?${queryString}`);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Income/Expense Detail API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
   // Get AP/AR Detail Lists
   async getAPARDetailAPI(filters: Partial<DashboardFilters>): Promise<{
     invoiceBills: { id: number; name: string; date: string; amount: number; dueDate: string | null; note: string | null; invoiceId: string | null }[];

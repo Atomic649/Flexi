@@ -844,6 +844,115 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
   }
 };
 
+// Get Income / Expense Detail Lists
+export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
+  try {
+    const { memberId, period, startDate, endDate, productName, platform } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    let dateFilter: any = {};
+    const now = new Date();
+
+    switch (period) {
+      case 'today': {
+        const s = new Date(now); s.setHours(0, 0, 0, 0);
+        const e = new Date(now); e.setHours(23, 59, 59, 999);
+        dateFilter = { gte: s, lte: e };
+        break;
+      }
+      case 'thisMonth': {
+        dateFilter = {
+          gte: new Date(now.getFullYear(), now.getMonth(), 1),
+          lte: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999),
+        };
+        break;
+      }
+      case 'custom': {
+        if (startDate && endDate) {
+          const s = new Date(startDate as string); s.setHours(0, 0, 0, 0);
+          const e = new Date(endDate as string); e.setHours(23, 59, 59, 999);
+          dateFilter = { gte: s, lte: e };
+        }
+        break;
+      }
+    }
+
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
+
+    const biz = businessId?.businessId ?? 0;
+
+    // Income: Receipt bills
+    const bills = await prisma.bill.findMany({
+      where: {
+        businessAcc: biz,
+        deleted: false,
+        DocumentType: "Receipt",
+        purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
+        ...(platform ? { platform: platform as any } : {}),
+        ...(productName ? { product: { some: { productList: { name: productName as string } } } } : {}),
+      },
+      select: {
+        id: true,
+        cName: true,
+        cLastName: true,
+        purchaseAt: true,
+        total: true,
+        note: true,
+        platform: true,
+      },
+      orderBy: { purchaseAt: 'desc' },
+    });
+
+    // Expense: saved expenses (excluding Invoice type, excluding zero amount)
+    const expenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: biz,
+        deleted: false,
+        save: true,
+        date: Object.keys(dateFilter).length ? dateFilter : undefined,
+        amount: { gt: 0 },
+      },
+      select: {
+        id: true,
+        sName: true,
+        date: true,
+        amount: true,
+        note: true,
+        desc: true,
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    res.json({
+      bills: bills.map((b) => ({
+        id: b.id,
+        name: [b.cName, b.cLastName].filter(Boolean).join(' '),
+        date: b.purchaseAt,
+        amount: Number(b.total || 0),
+        note: b.note ?? null,
+        platform: b.platform,
+      })),
+      expenses: expenses.map((e) => ({
+        id: e.id,
+        name: e.sName ?? null,
+        date: e.date,
+        amount: Number(e.amount || 0),
+        note: e.note ?? null,
+        desc: e.desc ?? null,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching income/expense detail:", error);
+    res.status(500).json({ error: "Failed to fetch income/expense detail" });
+  }
+};
+
 // Get Accounts Payable/Receivable Detail Lists
 export const getAPARDetail = async (req: Request, res: Response) => {
   try {

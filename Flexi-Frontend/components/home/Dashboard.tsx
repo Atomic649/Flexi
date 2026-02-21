@@ -186,6 +186,10 @@ export default function Dashboard() {
   const [apArModalType, setApArModalType] = useState<'receivable' | 'payable'>('receivable');
   const [apArDetail, setApArDetail] = useState<{ invoiceBills: any[]; invoiceExpenses: any[] } | null>(null);
   const [apArDetailLoading, setApArDetailLoading] = useState(false);
+  const [incExpModalVisible, setIncExpModalVisible] = useState(false);
+  const [incExpModalType, setIncExpModalType] = useState<'income' | 'expense'>('income');
+  const [incExpDetail, setIncExpDetail] = useState<{ bills: any[]; expenses: any[] } | null>(null);
+  const [incExpDetailLoading, setIncExpDetailLoading] = useState(false);
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
@@ -324,6 +328,29 @@ export default function Dashboard() {
     }
   };
 
+  const openIncExpModal = async (type: 'income' | 'expense') => {
+    setIncExpModalType(type);
+    setIncExpModalVisible(true);
+    setIncExpDetailLoading(true);
+    try {
+      const memberId = await getMemberId();
+      if (!memberId) return;
+      const filters: any = { memberId, period: selectedPeriod };
+      if (selectedPeriod === 'custom' && selectedDates.length >= 2) {
+        filters.startDate = selectedDates[0];
+        filters.endDate = selectedDates[selectedDates.length - 1];
+      }
+      if (selectedProduct) filters.productName = selectedProduct;
+      if (selectedPlatform) filters.platform = selectedPlatform;
+      const data = await CallDashboardAPI.getIncomeExpenseDetailAPI(filters);
+      setIncExpDetail(data);
+    } catch (err) {
+      console.error("Failed to fetch income/expense detail", err);
+    } finally {
+      setIncExpDetailLoading(false);
+    }
+  };
+
   const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
     //setCalendarVisible(false); // Optionally close calendar after selection
@@ -416,6 +443,106 @@ export default function Dashboard() {
             >
               <MultiDateCalendar onDatesChange={handleDatesChange} />
             </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Income / Expense Detail Modal */}
+      <Modal
+        visible={incExpModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIncExpModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}
+          activeOpacity={1}
+          onPress={() => setIncExpModalVisible(false)}
+        >
+          <View
+            onStartShouldSetResponder={() => true}
+            onTouchEnd={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+              maxHeight: "75%",
+              width: isMobile() ? "100%" : "50%",
+              alignSelf: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <CustomText weight="bold" style={{ fontSize: 16 }}>
+                {incExpModalType === 'income'
+                  ? t("dashboard.metrics.income")
+                  : t("dashboard.metrics.expense")}
+              </CustomText>
+              <TouchableOpacity onPress={() => setIncExpModalVisible(false)}>
+                <Ionicons name="close" size={22} color={theme === "dark" ? "#b4b3b3" : "#2a2a2a"} />
+              </TouchableOpacity>
+            </View>
+
+            {incExpDetailLoading ? (
+              <ActivityIndicator size="large" color={theme === "dark" ? "#00fad9" : "#09ddc1"} style={{ marginTop: 40 }} />
+            ) : (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {(incExpModalType === 'income'
+                  ? incExpDetail?.bills ?? []
+                  : incExpDetail?.expenses ?? []
+                ).length === 0 ? (
+                  <CustomText style={{ textAlign: "center", marginTop: 40, opacity: 0.5 }}>
+                    {t("common.noData") || "No data"}
+                  </CustomText>
+                ) : (
+                  (incExpModalType === 'income'
+                    ? incExpDetail?.bills ?? []
+                    : incExpDetail?.expenses ?? []
+                  ).map((item: any) => (
+                    <View
+                      key={item.id}
+                      style={{
+                        paddingVertical: 12,
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <View style={{ flex: 1, marginRight: 8 }}>
+                          <CustomText weight="semibold" style={{ fontSize: 14 }} numberOfLines={1}>
+                            {item.name || "-"}
+                          </CustomText>
+                          {(item.note || item.desc) ? (
+                            <CustomText style={{ fontSize: 12, opacity: 0.6 }} numberOfLines={1}>
+                              {item.note || item.desc}
+                            </CustomText>
+                          ) : null}
+                          {item.platform ? (
+                            <CustomText style={{ fontSize: 11, opacity: 0.45 }} numberOfLines={1}>
+                              {item.platform}
+                            </CustomText>
+                          ) : null}
+                          <CustomText style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>
+                            {item.date ? new Date(item.date).toLocaleDateString("th-TH") : ""}
+                          </CustomText>
+                        </View>
+                        <CustomText
+                          weight="bold"
+                          style={{
+                            fontSize: 15,
+                            color: incExpModalType === 'income'
+                              ? (theme === "dark" ? "#00fad9" : "#09ddc1")
+                              : "#FF006E",
+                          }}
+                        >
+                          {new Intl.NumberFormat("th-TH", { minimumFractionDigits: 2 }).format(item.amount)}
+                        </CustomText>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -780,12 +907,13 @@ export default function Dashboard() {
                     />
                   )}
                   <View className="flex-row">
-                    <MetricCard
-                      title={t("dashboard.metrics.income")}
-                      value={formatCurrency(metrics.income)}
-                      icon="stats-chart"
-                      flex={0.7} // 70% of the row
-                    />
+                    <TouchableOpacity style={{ flex: 0.7 }} onPress={() => openIncExpModal('income')} activeOpacity={0.8}>
+                      <MetricCard
+                        title={t("dashboard.metrics.income")}
+                        value={formatCurrency(metrics.income)}
+                        icon="stats-chart"
+                      />
+                    </TouchableOpacity>
                     <MetricCard
                       title={t("dashboard.metrics.orders")}
                       value={metrics.orders}
@@ -803,6 +931,7 @@ export default function Dashboard() {
                       icon="megaphone"
                     ></MetricCard>
                   ) : (
+                    <TouchableOpacity onPress={() => openIncExpModal('expense')} activeOpacity={0.8}>
                     <MetricCard
                       title={t("dashboard.metrics.expense")}
                       value={formatCurrency(metrics.expense)}
@@ -840,6 +969,7 @@ export default function Dashboard() {
                         </CustomText>
                       </View>
                     </MetricCard>
+                    </TouchableOpacity>
                   )}
                 </View>
                 <View className="flex-row">
