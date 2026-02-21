@@ -82,7 +82,7 @@ export default function EditBill() {
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setCTaxId] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
-  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | null>(
+  const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | 45 | null>(
     null,
   );
   const [validContactUntil, setValidContactUntil] = useState("");
@@ -831,6 +831,8 @@ export default function EditBill() {
             setPriceValidDays(15);
           } else if (diffDays === 30) {
             setPriceValidDays(30);
+          } else if (diffDays === 45) {
+            setPriceValidDays(45);
           }
         }
         // Set purchase date
@@ -986,7 +988,7 @@ export default function EditBill() {
     setProductItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handlePriceValidDaysChange = (days: 7 | 15 | 30) => {
+  const handlePriceValidDaysChange = (days: 7 | 15 | 30 | 45) => {
     setPriceValidDays(days);
     const validDate = new Date(purchaseAt);
     validDate.setDate(validDate.getDate() + days);
@@ -2049,11 +2051,11 @@ export default function EditBill() {
               businessType !== "Rental" &&
               selectedDocumentType !== "RE" && (
                 <View
-                  className="flex flex-row items-center mt-2 mb-2"
+                  className="flex flex-col mt-2 mb-2"
                   style={{ backgroundColor: "transparent", marginBottom: 8 }}
                 >
                   <CustomText
-                    className="mr-4"
+                    className="mb-2"
                     style={{
                       color: theme === "dark" ? "#b1b1b1" : "#606060",
                       fontSize: 16,
@@ -2063,6 +2065,7 @@ export default function EditBill() {
                     {t("bill.priceValid")}
                   </CustomText>
 
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
@@ -2085,7 +2088,7 @@ export default function EditBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      7 days
+                      7 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
 
@@ -2111,12 +2114,16 @@ export default function EditBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      15 days
+                      15 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={{ flexDirection: "row", alignItems: "center" }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
                     onPress={() => handlePriceValidDaysChange(30)}
                     activeOpacity={0.8}
                   >
@@ -2133,9 +2140,32 @@ export default function EditBill() {
                         color: theme === "dark" ? "#b1b1b1" : "#606060",
                       }}
                     >
-                      30 days
+                      30 {t("common.days")}
                     </CustomText>
                   </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                    onPress={() => handlePriceValidDaysChange(45)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name={
+                        priceValidDays === 45 ? "checkbox" : "square-outline"
+                      }
+                      size={22}
+                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    />
+                    <CustomText
+                      className="ml-2"
+                      style={{
+                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                      }}
+                    >
+                      45 {t("common.days")}
+                    </CustomText>
+                  </TouchableOpacity>
+                  </View>
                 </View>
               )}
 
