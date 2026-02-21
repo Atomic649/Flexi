@@ -844,6 +844,116 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
   }
 };
 
+// Get Accounts Payable/Receivable Detail Lists
+export const getAPARDetail = async (req: Request, res: Response) => {
+  try {
+    const { memberId, period, startDate, endDate } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    let dateFilter: any = {};
+    const now = new Date();
+
+    switch (period) {
+      case 'today': {
+        const todayStart = new Date();
+        todayStart.setUTCHours(0, 0, 0, 0);
+        const todayEnd = new Date();
+        todayEnd.setUTCHours(23, 59, 59, 999);
+        dateFilter = { gte: todayStart, lte: todayEnd };
+        break;
+      }
+      case 'thisMonth': {
+        const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+        const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+        dateFilter = { gte: monthStart, lte: monthEnd };
+        break;
+      }
+      case 'custom': {
+        if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          start.setUTCHours(0, 0, 0, 0);
+          end.setUTCHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
+        }
+        break;
+      }
+    }
+
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
+
+    // Invoice Bills: customers owe you (Accounts Receivable)
+    const invoiceBills = await prisma.bill.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Invoice",
+        purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
+      },
+      select: {
+        id: true,
+        cName: true,
+        cLastName: true,
+        purchaseAt: true,
+        totalQuotation: true,
+        priceValid: true,
+        note: true,
+        invoiceId: true,
+      },
+      orderBy: { purchaseAt: 'desc' },
+    });
+
+    // Invoice Expenses: you owe suppliers (Accounts Payable)
+    const invoiceExpenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Invoice",
+        date: Object.keys(dateFilter).length ? dateFilter : undefined,
+        save: true,
+      },
+      select: {
+        id: true,
+        sName: true,
+        date: true,
+        debtAmount: true,
+        dueDate: true,
+        note: true,
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    res.json({
+      invoiceBills: invoiceBills.map((b) => ({
+        id: b.id,
+        name: [b.cName, b.cLastName].filter(Boolean).join(' '),
+        date: b.purchaseAt,
+        amount: Number(b.totalQuotation || 0),
+        dueDate: b.priceValid ?? null,
+        note: b.note ?? null,
+        invoiceId: b.invoiceId ?? null,
+      })),
+      invoiceExpenses: invoiceExpenses.map((e) => ({
+        id: e.id,
+        name: e.sName ?? null,
+        date: e.date,
+        amount: Number(e.debtAmount || 0),
+        dueDate: e.dueDate ?? null,
+        note: e.note ?? null,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching AP/AR detail:", error);
+    res.status(500).json({ error: "Failed to fetch AP/AR detail" });
+  }
+};
+
 // Get Top Platforms (multi-product support)
 export const getTopStores = async (req: Request, res: Response) => {
   try {

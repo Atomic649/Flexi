@@ -182,6 +182,10 @@ export default function Dashboard() {
   });
   const [accountsPayable, setAccountsPayable] = useState(0);
   const [accountsReceivable, setAccountsReceivable] = useState(0);
+  const [apArModalVisible, setApArModalVisible] = useState(false);
+  const [apArModalType, setApArModalType] = useState<'receivable' | 'payable'>('receivable');
+  const [apArDetail, setApArDetail] = useState<{ invoiceBills: any[]; invoiceExpenses: any[] } | null>(null);
+  const [apArDetailLoading, setApArDetailLoading] = useState(false);
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
@@ -299,6 +303,27 @@ export default function Dashboard() {
     }
   };
 
+  const openApArModal = async (type: 'receivable' | 'payable') => {
+    setApArModalType(type);
+    setApArModalVisible(true);
+    setApArDetailLoading(true);
+    try {
+      const memberId = await getMemberId();
+      if (!memberId) return;
+      const filters: any = { memberId, period: selectedPeriod };
+      if (selectedPeriod === 'custom' && selectedDates.length >= 2) {
+        filters.startDate = selectedDates[0];
+        filters.endDate = selectedDates[selectedDates.length - 1];
+      }
+      const data = await CallDashboardAPI.getAPARDetailAPI(filters);
+      setApArDetail(data);
+    } catch (err) {
+      console.error("Failed to fetch AP/AR detail", err);
+    } finally {
+      setApArDetailLoading(false);
+    }
+  };
+
   const handleDatesChange = (dates: string[]) => {
     setSelectedDates(dates);
     //setCalendarVisible(false); // Optionally close calendar after selection
@@ -391,6 +416,99 @@ export default function Dashboard() {
             >
               <MultiDateCalendar onDatesChange={handleDatesChange} />
             </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* AP/AR Detail Modal */}
+      <Modal
+        visible={apArModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setApArModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}
+          activeOpacity={1}
+          onPress={() => setApArModalVisible(false)}
+        >
+          <View
+            onStartShouldSetResponder={() => true}
+            onTouchEnd={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+              maxHeight: "75%",
+              width: isMobile() ? "100%" : "50%",
+              alignSelf: "center",
+            }}
+          >
+            {/* Header */}
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <CustomText weight="bold" style={{ fontSize: 16 }}>
+                {apArModalType === 'receivable'
+                  ? t("dashboard.metrics.accountsReceivable")
+                  : t("dashboard.metrics.accountsPayable")}
+              </CustomText>
+              <TouchableOpacity onPress={() => setApArModalVisible(false)}>
+                <Ionicons name="close" size={22} color={theme === "dark" ? "#b4b3b3" : "#2a2a2a"} />
+              </TouchableOpacity>
+            </View>
+
+            {apArDetailLoading ? (
+              <ActivityIndicator size="large" color={theme === "dark" ? "#00fad9" : "#09ddc1"} style={{ marginTop: 40 }} />
+            ) : (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {(apArModalType === 'receivable'
+                  ? apArDetail?.invoiceBills ?? []
+                  : apArDetail?.invoiceExpenses ?? []
+                ).length === 0 ? (
+                  <CustomText style={{ textAlign: "center", marginTop: 40, opacity: 0.5 }}>
+                    {t("common.noData") || "No data"}
+                  </CustomText>
+                ) : (
+                  (apArModalType === 'receivable'
+                    ? apArDetail?.invoiceBills ?? []
+                    : apArDetail?.invoiceExpenses ?? []
+                  ).map((item: any) => (
+                    <View
+                      key={item.id}
+                      style={{
+                        paddingVertical: 12,
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme === "dark" ? "#27272a" : "#e5e7eb",
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <View style={{ flex: 1, marginRight: 8 }}>
+                          <CustomText weight="semibold" style={{ fontSize: 14 }} numberOfLines={1}>
+                            {item.name || "-"}
+                          </CustomText>
+                          {item.note ? (
+                            <CustomText style={{ fontSize: 12, opacity: 0.6 }} numberOfLines={1}>
+                              {item.note}
+                            </CustomText>
+                          ) : null}
+                          <CustomText style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>
+                            {item.date ? new Date(item.date).toLocaleDateString("th-TH") : ""}
+                          </CustomText>
+                          {item.dueDate ? (
+                            <CustomText style={{ fontSize: 11, color: "#ff2a00", marginTop: 1 }}>
+                              DUE: {new Date(item.dueDate).toLocaleDateString("th-TH")}
+                            </CustomText>
+                          ) : null}
+                        </View>
+                        <CustomText weight="bold" style={{ fontSize: 15, color: apArModalType === 'receivable' ? (theme === "dark" ? "#00fad9" : "#09ddc1") : "#FF006E" }}>
+                          {new Intl.NumberFormat("th-TH", { minimumFractionDigits: 2 }).format(item.amount)}
+                        </CustomText>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -725,18 +843,22 @@ export default function Dashboard() {
                   )}
                 </View>
                 <View className="flex-row">
-                  <MetricCard
-                    title={t("dashboard.metrics.accountsReceivable")}
-                    value={formatCurrency(accountsPayable)}
-                    icon="arrow-up-circle-outline"
-                    valueColor={theme === "dark" ? "#00fad9" : "#09ddc1"}
-                  />
-                  <MetricCard
-                    title={t("dashboard.metrics.accountsPayable")}
-                    value={formatCurrency(accountsReceivable)}
-                    icon="arrow-down-circle-outline"
-                    valueColor="#FF006E"
-                  />
+                  <TouchableOpacity style={{ flex: 1 }} onPress={() => openApArModal('receivable')} activeOpacity={0.8}>
+                    <MetricCard
+                      title={t("dashboard.metrics.accountsReceivable")}
+                      value={formatCurrency(accountsPayable)}
+                      icon="arrow-up-circle-outline"
+                      valueColor={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flex: 1 }} onPress={() => openApArModal('payable')} activeOpacity={0.8}>
+                    <MetricCard
+                      title={t("dashboard.metrics.accountsPayable")}
+                      value={formatCurrency(accountsReceivable)}
+                      icon="arrow-down-circle-outline"
+                      valueColor="#FF006E"
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
 

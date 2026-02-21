@@ -7,7 +7,8 @@ import {
   getTopStores,
   getRevenueByPlatform,
   getExpenseBreakdown,
-  getAccountsPayableReceivable
+  getAccountsPayableReceivable,
+  getAPARDetail,
 } from "../controllers/dashboardController";
 
 const router = express.Router();
@@ -32,5 +33,8 @@ router.get("/expense-breakdown", authenticateToken, getExpenseBreakdown);
 
 // Accounts payable/receivable endpoint - GET /dashboard/accounts-payable-receivable
 router.get("/accounts-payable-receivable", authenticateToken, getAccountsPayableReceivable);
+
+// Accounts payable/receivable detail lists - GET /dashboard/accounts-payable-receivable-detail
+router.get("/accounts-payable-receivable-detail", authenticateToken, getAPARDetail);
 
 export default router;
