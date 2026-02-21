@@ -932,6 +932,125 @@ const updateBusinessLogo = async (req: Request, res: Response) => {
   });
 };
 
+// Add Partner Member to Business Account
+const addPartnerMember = async (req: Request, res: Response) => {
+  const { businessId } = req.params;
+  const { memberId } = req.body;
+
+  if (!businessId || !memberId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Business ID/Username and Member ID are required",
+    });
+  }
+
+  try {
+    let business = null;
+
+    // 1. Try to find business by exact businessUserName (e.g., @flexi or flexi)
+    business = await prisma.businessAcc.findFirst({
+      where: { businessUserName: businessId },
+      select: { id: true, memberId: true },
+    });
+
+    // 2. If not found by username, try case-insensitive search on businessUserName
+    if (!business) {
+      business = await prisma.businessAcc.findFirst({
+        where: {
+          businessUserName: {
+            equals: businessId,
+            mode: "insensitive",
+          },
+        },
+        select: { id: true, memberId: true },
+      });
+    }
+
+    // 3. If still not found, try as numeric ID
+    if (!business && !isNaN(Number(businessId))) {
+      business = await prisma.businessAcc.findUnique({
+        where: { id: Number(businessId) },
+        select: { id: true, memberId: true },
+      });
+    }
+
+    // 4. If still not found, try searching by businessName (case-insensitive)
+    if (!business) {
+      business = await prisma.businessAcc.findFirst({
+        where: {
+          businessName: {
+            equals: businessId,
+            mode: "insensitive",
+          },
+        },
+        select: { id: true, memberId: true },
+      });
+    }
+
+    if (!business) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business account not found. Please check the business username, name, or ID.",
+      });
+    }
+
+    // Check if member already exists in the business
+    if (business.memberId.includes(memberId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Member is already connected to this business",
+      });
+    }
+
+    // Check if member exists
+    const member = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { id: true, businessId: true },
+    });
+
+    if (!member) {
+      return res.status(404).json({
+        status: "error",
+        message: "Member not found",
+      });
+    }
+
+    // Use transaction to ensure atomicity
+    const result = await prisma.$transaction(async (prisma) => {
+      // Add member to business memberId array
+      const updatedBusiness = await prisma.businessAcc.update({
+        where: { id: business!.id },
+        data: {
+          memberId: {
+            push: memberId,
+          },
+        },
+      });
+
+      // Update member's businessId
+      const updatedMember = await prisma.member.update({
+        where: { uniqueId: memberId },
+        data: { businessId: business!.id },
+      });
+
+      return { updatedBusiness, updatedMember };
+    });
+
+    return res.json({
+      status: "ok",
+      message: "Partner member added successfully",
+      businessId: result.updatedBusiness.id,
+      memberId: memberId,
+    });
+  } catch (e) {
+    console.error("Failed to add partner member:", e);
+    return res.status(500).json({
+      status: "error",
+      message: "Failed to add partner member",
+    });
+  }
+};
+
 // Export the functions
 export {
   createBusinessAcc,
@@ -945,4 +1064,5 @@ export {
   updateBusinessAvatar,
   getBusinessAvatar,
   updateBusinessLogo,
+  addPartnerMember,
 };

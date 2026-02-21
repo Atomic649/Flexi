@@ -10,7 +10,7 @@ import { View } from "@/components/Themed";
 import FormField from "@/components/formfield/FormField";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { CustomButton } from "@/components/CustomButton";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import Dropdown from "@/components/dropdown/Dropdown";
@@ -20,6 +20,9 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { CustomText } from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const STORAGE_KEY = "business_register_form_data";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -35,6 +38,49 @@ export default function Register() {
   const [documentTypes, setDocumentTypes] = useState<("Invoice" | "Receipt" | "Quotation" | "WithholdingTax")[]>(["Receipt"]);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load saved data on mount
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          setbusinessName(parsed.businessName || "");
+          settaxType(parsed.taxType || "");
+          settaxId(parsed.taxId || "");
+          setbusinessType(parsed.businessType || "");
+          setBusinessPhone(parsed.businessPhone || "");
+          setIsVatRegistered(parsed.isVatRegistered || false);
+          setDocumentTypes(parsed.documentTypes || ["Receipt"]);
+        }
+      } catch (err) {
+        console.error("Error loading saved data:", err);
+      }
+    };
+    loadSavedData();
+  }, []);
+
+  // Auto-save form data whenever it changes
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        const dataToSave = {
+          businessName,
+          taxType,
+          taxId,
+          businessType,
+          businessPhone,
+          isVatRegistered,
+          documentTypes,
+        };
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+      } catch (err) {
+        console.error("Error saving data:", err);
+      }
+    };
+    saveData();
+  }, [businessName, taxType, taxId, businessType, businessPhone, isVatRegistered, documentTypes]);
 
   const getBusinessRegisterErrorMessage = (apiError: any) => {
     const reason = apiError?.reason;
@@ -154,6 +200,9 @@ export default function Register() {
 
       if (data.error) throw new Error(data.error);
 
+      // Clear saved data on successful registration
+      await AsyncStorage.removeItem(STORAGE_KEY);
+
       setAlertConfig({
         visible: true,
         title: t("auth.businessRegister.alerts.success", "Business Registered"),
@@ -216,8 +265,41 @@ export default function Register() {
                 maxWidth: 600,
               }}
             >
-                <CustomText className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}>
+              {/* Step Indicator - Step 2 of 2 */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 16, marginBottom: 24, justifyContent: "center", paddingHorizontal: 50 }}>
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: "#04ecc1",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <Ionicons name="checkmark" size={18} color="#000" />
+                </View>
+                <View style={{
+                  flex: 1,
+                  height: 2,
+                  backgroundColor: "#04ecc1",
+                  marginHorizontal: 12,
+                }} />
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: "#04ecc1",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <CustomText style={{ color: "#000", fontWeight: "bold", fontSize: 14 }}>2</CustomText>
+                </View>
+              </View>
+
+                <CustomText className={`text-2xl font-bold justify-center ${useTextColorClass()}`}>
                 {t("auth.businessRegister.title")}
+                </CustomText>
+                <CustomText style={{ fontSize: 13, opacity: 0.7, marginTop: 8, textAlign: "center", lineHeight: 20 }} className={useTextColorClass()}>
+                {t("auth.businessRegister.detailedDescription")}
                 </CustomText>
 
               <FormField
@@ -421,6 +503,21 @@ export default function Register() {
                 containerStyles="mt-7"
                 textStyles="!text-white"
               />
+
+              <TouchableOpacity
+                onPress={() => router.push('/partner')}
+                style={{
+                  marginTop: 12,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                  backgroundColor: '#2D2D2D',
+                  alignItems: 'center',
+                }}
+              >
+                <CustomText style={{ color: '#04ecc1', fontWeight: '700', textAlign: 'center' }}>
+                  {t('auth.businessRegister.join', 'JOIN PARTNER')}
+                </CustomText>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView> 

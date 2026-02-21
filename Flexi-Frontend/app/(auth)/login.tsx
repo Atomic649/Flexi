@@ -191,10 +191,10 @@ export default function Login() {
         setAlertConfig({
           visible: true,
           title: t("auth.login.alerts.error"),
-          message: t(errorMessage),
+          message: t("auth.login.alerts.businessAccountNotFound"),
           buttons: [
             {
-              text: t("auth.login.alerts.partnerOption", "Partner"),
+              text: t("auth.login.alerts.partnerOption"),
               onPress: () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
                 // Navigate to a partner onboarding screen (placeholder). Adjust route if a dedicated screen exists.
@@ -203,10 +203,7 @@ export default function Login() {
               },
             },
             {
-              text: t(
-                "auth.login.alerts.registerBusinessOption",
-                "Register Business"
-              ),
+              text: t("auth.login.alerts.registerBusinessOption"),
               onPress: async () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
                 // If we have a stored userId, pass it forward; business_register expects userId & uniqueId (uniqueId optional here)

@@ -38,6 +38,8 @@
     "noDataAvailable": "No data available",
     "continue": "Continue",
     "search": "Search",
+    "saving": "Auto-saving...",
+    "back": "Back",
     "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later."
 
   },
@@ -86,7 +88,11 @@
         "error": "Login failed",
         "success": "Login successful",
         "successMessage": "Please press OK to proceed",
-        "ok": "OK"
+        "ok": "OK",
+        "genericError": "An error occurred. Please try again.",
+        "businessAccountNotFound": "Business account not found. Would you like to register a business or sign up as a partner?",
+        "partnerOption": "Partner",
+        "registerBusinessOption": "Register Business"
       },
       "emailVerification": {
         "title": "Please verify your email",
@@ -162,14 +168,31 @@
     },
     "businessRegister": {
       "title": "Business Registration",
+      "description": "Register your business",
+      "detailedDescription": "Take a few moments now to enter accurate business information. This data will be used across all your documents and help you submit taxes correctly. Getting it right from the start saves you time later.",
       "button": "Register",
-      "loginButton": "Login",
+      "join": "JOIN PARTNER",
+      "step1Description": "Tell us about your business",
+      "step2Description": "Optional: Complete tax details for full features",
       "validation": {
         "incomplete": "Incomplete data",
         "invalidData": "Please enter valid data",
         "invalidPhone": "Business phone number must be exactly 10 digits",
-        "selectDocumentType": "Please select at least one document type"
+        "selectDocumentType": "Please select at least one document type",
+        "businessNameRequired": "Business name is required",
+        "businessNameTooShort": "Business name too short",
+        "businessNameFake": "Please enter a real business name",
+        "businessPhoneRequired": "Business phone is required",
+        "businessPhoneInvalid": "Phone must be 7-10 digits",
+        "taxIdRequired": "Tax ID is required",
+        "taxIdInvalid": "Tax ID must be 10-13 digits",
+        "taxIdFake": "Please enter a valid tax ID",
+        "businessTypeRequired": "Business type is required",
+        "taxTypeRequired": "Tax type is required"
       },
+      "businessNameHint": "Min 2 characters, no placeholder names",
+      "businessPhoneHint": "7-10 digits required",
+      "taxIdHint": "10-13 digits (e.g., 1234567890123)",
       "alerts": {
         "success": "Registration successful",
         "successMessage": "Please press OK to proceed",
@@ -230,6 +253,26 @@
         }
       }
     }
+  },
+  "partner": {
+    "title": "Partner Onboarding",
+    "description": "You have logged in without a business account. Choose to join as a partner, or go back and register your own business.",
+    "joinPartner": "Join as Partner",
+    "registerBusiness": "Register Your Business",
+    "backHome": "Back to Home",
+    "enterBusinessId": "Enter Business ID",
+    "businessIdDescription": "Enter the business username, name, or ID",
+    "businessIdPlaceholder": "@business or Business Name",
+    "error": "Error",
+    "businessIdRequired": "Please enter a business username, name, or ID",
+    "memberIdMissing": "Member ID not found",
+    "connectionFailed": "Failed to connect to business account",
+    "success": "Success",
+    "connectedSuccessfully": "Successfully connected as partner!",
+    "cancel": "Cancel",
+    "connect": "Connect",
+    "ok": "OK",
+    "connectionError": "An error occurred while connecting. Please try again."
   },
   "product": {
     "Products": "Products",

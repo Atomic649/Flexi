@@ -367,6 +367,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* partner */}
+        <Stack.Screen
+          name="partner"
+          options={{
+            ...HideTopBar(),
+            title: t("partner.title"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* Monthly Detail */}
         <Stack.Screen
           name="MonthlyDetail"

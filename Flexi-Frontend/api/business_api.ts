@@ -202,6 +202,28 @@ class CallAPIBusiness {
       }
     }
   }
+
+  // Connect Partner to Business Account
+  async ConnectPartnerAPI(businessId: string, memberId: string): Promise<any> {
+    if (!(await checkNetwork())) {
+      return { message: "No Network Connection" };
+    }
+    try {
+      const response = await getAxios().post(
+        `/businessacc/${businessId}/add-partner-member`,
+        { memberId }
+      );
+      console.log("📝Connect Partner API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("🚨Connect Partner API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
 }
 
 export default new CallAPIBusiness();

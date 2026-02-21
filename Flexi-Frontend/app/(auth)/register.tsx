@@ -485,8 +485,38 @@ export default function Register() {
                 maxWidth: 600,
               }}
             >
+              {/* Step Indicator - Step 1 of 2 */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 16, marginBottom: 24, justifyContent: "center",paddingHorizontal: 50 }}>
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: "#04ecc1",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <CustomText style={{ color: "#000", fontWeight: "bold", fontSize: 14 }}>1</CustomText>
+                </View>
+                <View style={{
+                  flex: 1,
+                  height: 2,
+                  backgroundColor: "#e0e0e0",
+                  marginHorizontal: 12,
+                }} />
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: "#e0e0e0",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <CustomText style={{ color: "#999", fontWeight: "bold", fontSize: 14 }}>2</CustomText>
+                </View>
+              </View>
+
               <CustomText
-                className={`text-2xl font-bold mt-4 justify-center ${useTextColorClass()}`}
+                className={`text-2xl font-bold justify-center ${useTextColorClass()}`}
               >
                 {t("auth.register.title")}
               </CustomText>
