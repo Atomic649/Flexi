@@ -759,6 +759,91 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
   }
 };
 
+// Get Accounts Payable and Receivable
+export const getAccountsPayableReceivable = async (req: Request, res: Response) => {
+  try {
+    const { memberId, period, startDate, endDate } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    // Build date filter using UTC to match how dates are stored in the DB
+    let dateFilter: any = {};
+    const now = new Date();
+
+    switch (period) {
+      case 'today': {
+        const todayStart = new Date();
+        todayStart.setUTCHours(0, 0, 0, 0);
+        const todayEnd = new Date();
+        todayEnd.setUTCHours(23, 59, 59, 999);
+        dateFilter = { gte: todayStart, lte: todayEnd };
+        break;
+      }
+      case 'thisMonth': {
+        const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+        const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+        dateFilter = { gte: monthStart, lte: monthEnd };
+        break;
+      }
+      case 'custom': {
+        if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          start.setUTCHours(0, 0, 0, 0);
+          end.setUTCHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
+        }
+        break;
+      }
+    }
+
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
+
+    // Accounts Payable: Bills with DocumentType "Invoice" → sum totalQuotation (owed by your customers)
+    const invoiceBills = await prisma.bill.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Invoice",
+        purchaseAt: dateFilter,
+      },
+      select: { totalQuotation: true },
+    });
+
+    const accountsPayable = invoiceBills.reduce(
+      (sum, bill) => sum + Number(bill.totalQuotation || 0),
+      0
+    );
+
+    // Accounts Receivable: Expenses with DocumentType "Invoice" → sum debtAmount
+    const invoiceExpenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        deleted: false,
+        DocumentType: "Invoice",
+        date: dateFilter,
+        save: true,
+      },
+      select: { debtAmount: true },
+    });
+
+    const accountsReceivable = invoiceExpenses.reduce(
+      (sum, expense) => sum + Number(expense.debtAmount || 0),
+      0
+    );
+
+    res.json({ accountsPayable, accountsReceivable });
+  } catch (error) {
+    console.error("Error fetching accounts payable/receivable:", error);
+    res.status(500).json({ error: "Failed to fetch accounts payable/receivable" });
+  }
+};
+
 // Get Top Platforms (multi-product support)
 export const getTopStores = async (req: Request, res: Response) => {
   try {

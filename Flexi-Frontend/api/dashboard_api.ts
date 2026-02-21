@@ -173,6 +173,26 @@ class CallAPIDashboard {
     }
   }
 
+  // Get Accounts Payable and Receivable
+  async getAccountsPayableReceivableAPI(filters: Partial<DashboardFilters>): Promise<{ accountsPayable: number; accountsReceivable: number }> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/accounts-payable-receivable?${queryString}`);
+
+      console.log("🚀Accounts Payable/Receivable API:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Accounts Payable/Receivable API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
   // Get Expense Breakdown
   async getExpenseBreakdownAPI(filters: Partial<DashboardFilters>): Promise<ExpenseBreakdown[]> {
     try {

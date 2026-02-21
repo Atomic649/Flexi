@@ -677,7 +677,9 @@
       "profitloss": "กำไร/ขาดทุน",
       "forcastProfitloss": "คาดการณ์ กำไร/ขาดทุน จากโฆษณา",
       "orders": "คำสั่งซื้อ",
-      "adscost": "คาดการณ์ค่าโฆษณา"
+      "adscost": "คาดการณ์ค่าโฆษณา",
+      "accountsPayable": "เจ้าหนี้การค้า",
+      "accountsReceivable": "ลูกหนี้การค้า"
     }
   },
   "ads": {

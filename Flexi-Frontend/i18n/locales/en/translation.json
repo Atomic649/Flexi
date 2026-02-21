@@ -676,7 +676,9 @@
       "profitloss": "sProfit/Loss",
       "forcastProfitloss": "Forecast Profit/Loss from Advertising",
       "orders": "Order",
-      "adscost": "Ads Cost Forecast"
+      "adscost": "Ads Cost Forecast",
+      "accountsPayable": "Accounts Payable",
+      "accountsReceivable": "Accounts Receivable"
     }
   },
   "ads": {

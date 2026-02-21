@@ -13,7 +13,6 @@ import { CustomText } from "./CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
 import { t } from "i18next";
 import CallAPIExpense from "@/api/expense_api";
-import { getMemberId } from "@/utils/utility";
 import CustomAlert from "@/components/CustomAlert";
 import { SwipeableRow, SwipeAction } from "./swipe/SwipeableRow";
 

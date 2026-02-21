@@ -180,6 +180,8 @@ export default function Dashboard() {
     forcastProfitloss: 0,
     adsPercentage: 0,
   });
+  const [accountsPayable, setAccountsPayable] = useState(0);
+  const [accountsReceivable, setAccountsReceivable] = useState(0);
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
@@ -264,12 +266,13 @@ export default function Dashboard() {
    //   console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData, platformsData] =
+      const [metricsData, chartData, productsData, platformsData, apArData] =
         await Promise.all([
           CallDashboardAPI.getDashboardMetricsAPI(filters),
           CallDashboardAPI.getSalesChartDataAPI(filters),
           CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
           CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
+          CallDashboardAPI.getAccountsPayableReceivableAPI(filters),
         ]);
 
       // Update state with fetched data
@@ -283,6 +286,9 @@ export default function Dashboard() {
         forcastProfitloss: metricsData.forcastProfitloss || 0,
         adsPercentage: metricsData.adsPercentage || 0,
       });
+
+      setAccountsPayable(apArData?.accountsPayable || 0);
+      setAccountsReceivable(apArData?.accountsReceivable || 0);
 
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
@@ -717,6 +723,20 @@ export default function Dashboard() {
                       </View>
                     </MetricCard>
                   )}
+                </View>
+                <View className="flex-row">
+                  <MetricCard
+                    title={t("dashboard.metrics.accountsPayable")}
+                    value={formatCurrency(accountsPayable)}
+                    icon="arrow-down-circle-outline"
+                    valueColor="#FF006E"
+                  />
+                  <MetricCard
+                    title={t("dashboard.metrics.accountsReceivable")}
+                    value={formatCurrency(accountsReceivable)}
+                    icon="arrow-up-circle-outline"
+                    valueColor={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                  />
                 </View>
               </View>
 
