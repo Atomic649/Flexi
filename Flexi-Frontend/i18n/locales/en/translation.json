@@ -673,7 +673,7 @@
     "metrics": {
       "income": "Income",
       "expense": "Expense",
-      "profitloss": "sProfit/Loss",
+      "profitloss": "Profit/Loss",
       "forcastProfitloss": "Forecast Profit/Loss from Advertising",
       "orders": "Order",
       "adscost": "Ads Cost Forecast",
