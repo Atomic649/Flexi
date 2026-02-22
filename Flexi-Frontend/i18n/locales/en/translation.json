@@ -272,7 +272,10 @@
     "cancel": "Cancel",
     "connect": "Connect",
     "ok": "OK",
-    "connectionError": "An error occurred while connecting. Please try again."
+    "connectionError": "An error occurred while connecting. Please try again.",
+    "alreadyConnected": "This member is already connected to this business",
+    "businessNotFound": "Business not found. Please check the username, name, or ID",
+    "memberNotFound": "Member not found. Please try logging out and back in"
   },
   "product": {
     "Products": "Products",

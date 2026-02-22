@@ -295,9 +295,25 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
   const { memberId } = req.params;
 
   try {
+    // Resolve businessId from the requesting member, then fetch all business member IDs
+    const memberRecord = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+    const businessId = memberRecord?.businessId;
+
+    let memberIds: string[] = [memberId];
+    if (businessId) {
+      const allMembers = await prisma.member.findMany({
+        where: { businessId },
+        select: { uniqueId: true },
+      });
+      memberIds = allMembers.map((m) => m.uniqueId);
+    }
+
     const adsCost = await prisma.adsCost.findMany({
       where: {
-        memberId: memberId,
+        memberId: { in: memberIds },
       },
       select: {
         id: true,
@@ -315,7 +331,7 @@ const getListofAdsandExpenses = async (req: Request, res: Response) => {
 
     const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId,
+        memberId: { in: memberIds },
         save: true,
       },
       select: {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import CallAPIUser from '@/api/auth_api';
-import { saveToken,  removeToken, removeMemberId } from '@/utils/utility';
+import { saveToken,  removeToken, removeMemberId, removeBusinessId, removePaymentTermCondition, removeRemark } from '@/utils/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, usePathname } from 'expo-router';
 
@@ -107,6 +107,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setSession(null);
       await removeToken(); // Remove the token
+      await removeMemberId(); // Remove the memberId
+      await removeBusinessId(); // Remove the businessId      
       await AsyncStorage.setItem('isLoggedIn', 'false'); // Save logout status
       // Safe navigation after cleanup
       router.replace('/landing');

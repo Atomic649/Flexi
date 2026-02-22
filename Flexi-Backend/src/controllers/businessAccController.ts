@@ -609,10 +609,13 @@ const getBusinessDetail = async (req: Request, res: Response) => {
       businessId: true,
     },
   });
+  if (!business || !business.businessId) {
+    return res.status(404).json({ message: "Business account not found" });
+  }
   try {
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
-        id: business?.businessId,
+        id: business.businessId,
       },
       select: {
         id: true,
@@ -861,6 +864,9 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
         businessId: true,
       },
     });
+    if (!business || !business.businessId) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
     const businessAcc = await prisma.businessAcc.findMany({
       where: {
         id: business.businessId,
@@ -935,7 +941,7 @@ const updateBusinessLogo = async (req: Request, res: Response) => {
 // Add Partner Member to Business Account
 const addPartnerMember = async (req: Request, res: Response) => {
   const { businessId } = req.params;
-  const { memberId } = req.body;
+  const { memberId, role } = req.body;
 
   if (!businessId || !memberId) {
     return res.status(400).json({
@@ -943,6 +949,10 @@ const addPartnerMember = async (req: Request, res: Response) => {
       message: "Business ID/Username and Member ID are required",
     });
   }
+
+  const allowedRoles = ["owner", "marketing", "accountant", "sales", "partner"] as const;
+  type MemberRole = typeof allowedRoles[number];
+  const validRole: MemberRole = allowedRoles.includes(role) ? role : "partner";
 
   try {
     let business = null;
@@ -1005,7 +1015,7 @@ const addPartnerMember = async (req: Request, res: Response) => {
     // Check if member exists
     const member = await prisma.member.findUnique({
       where: { uniqueId: memberId },
-      select: { id: true, businessId: true },
+      select: { uniqueId: true, businessId: true },
     });
 
     if (!member) {
@@ -1027,10 +1037,10 @@ const addPartnerMember = async (req: Request, res: Response) => {
         },
       });
 
-      // Update member's businessId
+      // Update member's businessId and role
       const updatedMember = await prisma.member.update({
         where: { uniqueId: memberId },
-        data: { businessId: business!.id },
+        data: { businessId: business!.id, role: validRole },
       });
 
       return { updatedBusiness, updatedMember };

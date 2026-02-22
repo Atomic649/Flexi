@@ -187,6 +187,7 @@ export default function Login() {
         try {
           if (error?.token) saveToken(error.token);
           if (error?.user?.id) saveUserId(error.user.id);
+          if (error?.user?.memberId) saveMemberId(error.user.memberId);
         } catch {}
         setAlertConfig({
           visible: true,

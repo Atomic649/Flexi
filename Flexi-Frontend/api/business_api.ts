@@ -204,14 +204,14 @@ class CallAPIBusiness {
   }
 
   // Connect Partner to Business Account
-  async ConnectPartnerAPI(businessId: string, memberId: string): Promise<any> {
+  async ConnectPartnerAPI(businessId: string, memberId: string, role: string): Promise<any> {
     if (!(await checkNetwork())) {
       return { message: "No Network Connection" };
     }
     try {
       const response = await getAxios().post(
         `/businessacc/${businessId}/add-partner-member`,
-        { memberId }
+        { memberId, role }
       );
       console.log("📝Connect Partner API:", response.data);
       return response.data;

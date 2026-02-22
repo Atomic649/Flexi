@@ -483,8 +483,63 @@ const login = async (req: Request, res: Response) => {
       },
     });
     if (!businessAcc) {
-      return res.status(404).json({ message: "Business account not found" });
+      // Check if this user is a partner member of another business
+      let partnerMember = await Prisma.member.findFirst({
+        where: { userId: user.id },
+        select: { uniqueId: true, businessId: true },
+      });
+
+      // If the member is already linked to a business, do a normal login
+      if (partnerMember?.businessId) {
+        const partnerBusiness = await Prisma.businessAcc.findUnique({
+          where: { id: partnerMember.businessId },
+        });
+        if (partnerBusiness) {
+          return res.json({
+            status: "ok",
+            message: "login successful",
+            token,
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              avatar: user.avatar,
+              phone: user.phone,
+              bio: user.bio,
+              username: user.username,
+              memberId: partnerMember.uniqueId,
+              businessId: partnerBusiness.id,
+              emailVerifiedAt: (user as any).emailVerifiedAt ?? null,
+            },
+            emailVerificationRequired: !(user as any).emailVerifiedAt,
+          });
+        }
+      }
+
+      // No business linked — create a pending Member so the partner onboarding flow works
+      if (!partnerMember) {
+        partnerMember = await Prisma.member.create({
+          data: {
+            userId: user.id,
+            permission: "member",
+            role: "partner",
+          },
+          select: { uniqueId: true, businessId: true },
+        });
+      }
+      return res.status(404).json({
+        message: "Business account not found",
+        token,
+        user: { id: user.id, memberId: partnerMember.uniqueId },
+      });
     }
+
+    // Find the specific Member record for this user in their business
+    const ownerMember = await Prisma.member.findFirst({
+      where: { userId: user.id, businessId: businessAcc.id },
+      select: { uniqueId: true },
+    });
 
     res.json({
       status: "ok",
@@ -499,7 +554,7 @@ const login = async (req: Request, res: Response) => {
         phone: user.phone,
         bio: user.bio,
         username: user.username,
-        memberId: businessAcc.memberId,
+        memberId: ownerMember?.uniqueId ?? businessAcc.memberId[0],
         businessId: businessAcc.id,
         emailVerifiedAt: (user as any).emailVerifiedAt ?? null,
       },

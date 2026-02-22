@@ -51,8 +51,8 @@ export const getUserByID = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    // find businessName
-    const businessName = await prisma.businessAcc.findMany({
+    // find businessName - owner has BusinessAcc by userId; partner looks up via Member table
+    let businessData = await prisma.businessAcc.findMany({
       where: {
         userId: parseInt(id),
       },
@@ -62,8 +62,24 @@ export const getUserByID = async (req: Request, res: Response) => {
         taxId: true,
       },
     });
-    if (!businessName) {
-      return res.status(404).json({ message: "User not found" });
+
+    if (businessData.length === 0) {
+      // Partner: find business via Member.businessId
+      const member = await prisma.member.findFirst({
+        where: { userId: parseInt(id) },
+        select: { businessId: true },
+      });
+      if (member?.businessId) {
+        const business = await prisma.businessAcc.findUnique({
+          where: { id: member.businessId },
+          select: { businessName: true, businessAddress: true, taxId: true },
+        });
+        if (business) businessData = [business];
+      }
+    }
+
+    if (businessData.length === 0) {
+      return res.status(404).json({ message: "Business not found" });
     }
 
     res.status(200).json({
@@ -72,12 +88,12 @@ export const getUserByID = async (req: Request, res: Response) => {
       lastName: user.lastName,
       email: user.email,
       avatar: user.avatar,
-      role: role[0].role,
-      businessName: businessName[0].businessName,
+      role: role[0]?.role ?? "partner",
+      businessName: businessData[0].businessName,
       bio : user.bio,
       username : user.username,
-      businessAddress: businessName[0].businessAddress,
-      taxId: businessName[0].taxId,
+      businessAddress: businessData[0].businessAddress,
+      taxId: businessData[0].taxId,
       isEmailVerified: isEmailVerified,
 
     });
