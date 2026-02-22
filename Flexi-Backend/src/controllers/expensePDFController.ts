@@ -67,7 +67,7 @@ export const pdfExtract = async (
       return res.status(400).json({ message: err.message });
     }
     
-    // console.log("🎃req.body", req.body);
+    console.log("🎃req.body", req.body);
     const password = req.body.password;
     console.log("🎃 password:" ,password)
     const filePath = req.file?.path;
@@ -93,114 +93,95 @@ export const pdfExtract = async (
       let text = data.text;
       console.log("🔥text", text);
 
-      // pattern to match: datetime and X2/ENET only credit, excluding the second amount
-      const pattern =
-        /\b(\d{2}\/\d{2}\/\d{2})\s+(\d{2}:\d{2})\s+X[2]\/ENET\d{1,3}(?:,\d{3})*\.\d{2}\d{1,3}(?:,\d{3})*\.\d{2}\b/g;
-      const matches = text.match(pattern);
+      // Extract all transactions - handles both old format (separate lines) and new format (combined line)
+      const lines = text.split('\n').map((line: string) => line.trim()).filter((line: string) => line.length > 0);
 
-      // Extract DESC and note - updated to handle the specific format
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-      const descNoteMatches: {
-        transaction: string;
+      interface ParsedTransaction {
+        dateTime: string;
+        code: string;
+        amount: number;
         desc: string;
         note: string;
-      }[] = [];
-      
-      // Find lines that match the main pattern
+      }
+
+      const allTransactions: ParsedTransaction[] = [];
+
+      // New format: all fields on one line e.g. "16/02/2617:38X2ENET40.0062.31"
+      const newFormatLineRegex = /^(\d{2}\/\d{2}\/\d{2})(\d{2}:\d{2})(X[12])(ENET|TELL|ATS)(\d{1,3}(?:,\d{3})*\.\d{2})(\d{1,3}(?:,\d{3})*\.\d{2})$/;
+      // Old format: date on its own line, time on next, then X1/ENET or X2/ENET transaction
+      const oldFormatDateRegex = /^\d{2}\/\d{2}\/\d{2}$/;
+      const oldFormatTransRegex = /^(X[12])\/(ENET|TELL|ATS)(\d{1,3}(?:,\d{3})*\.\d{2})(\d{1,3}(?:,\d{3})*\.\d{2})$/;
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        console.log(`🔍 Checking line ${i}: "${line}"`);
-        
-        // Match the transaction pattern - simplified to match actual format
-        // Looking for: DD/MM/YY on one line, then HH:MM on next line, then X2/ENET... on third line
-        const dateMatch = line.match(/^\d{2}\/\d{2}\/\d{2}$/);
-        
-        if (dateMatch && i + 2 < lines.length) {
+
+        // New format: combined line with date+time+code+channel+amount+balance
+        const newMatch = line.match(newFormatLineRegex);
+        if (newMatch) {
+          const [_, date, time, codeType, channel, amount] = newMatch;
+          const [day, month, year] = date.split('/');
+          const dateTime = `20${year}-${month}-${day}T${time}:00.000Z`;
+          const code = `${codeType}/${channel}`;
+          const amountNum = parseFloat(amount.replace(/,/g, ''));
+          let desc = '';
+          let note = '';
+
+          // New format: "DESC :" label -> desc text -> "NOTE :" label -> note text
+          if (i + 1 < lines.length && lines[i + 1] === 'DESC :') {
+            if (i + 2 < lines.length && lines[i + 2] !== 'NOTE :') {
+              desc = lines[i + 2];
+            }
+            if (i + 3 < lines.length && lines[i + 3] === 'NOTE :' && i + 4 < lines.length) {
+              const potentialNote = lines[i + 4];
+              if (potentialNote !== '-') {
+                note = potentialNote;
+              }
+            }
+          }
+
+          allTransactions.push({ dateTime, code, amount: amountNum, desc, note });
+          continue;
+        }
+
+        // Old format: date on its own line, then time, then transaction
+        const oldDateMatch = line.match(oldFormatDateRegex);
+        if (oldDateMatch && i + 2 < lines.length) {
           const timeLine = lines[i + 1];
           const transactionLine = lines[i + 2];
-          
-          console.log(`🔍 Found date: "${line}"`);
-          console.log(`🔍 Time line: "${timeLine}"`);
-          console.log(`🔍 Transaction line: "${transactionLine}"`);
-          
-          // Check if next line is time format and third line has transaction
+
           const timeMatch = timeLine.match(/^\d{2}:\d{2}$/);
-          const transMatch = transactionLine.match(/^X[12]\/(?:ENET|ATS)/);
-          
+          const transMatch = transactionLine.match(oldFormatTransRegex);
+
           if (timeMatch && transMatch) {
-            const transaction = `${line} ${timeLine} ${transactionLine}`;
+            const [__, codeType, channel, amount] = transMatch;
+            const [day, month, year] = line.split('/');
+            const dateTime = `20${year}-${month}-${day}T${timeLine}:00.000Z`;
+            const code = `${codeType}/${channel}`;
+            const amountNum = parseFloat(amount.replace(/,/g, ''));
             let desc = '';
             let note = '';
-            
-            console.log(`🔍 Found transaction: "${transaction}"`);
-            
-            // Look for desc on the line after transaction (i+3)
+
+            // Old format: description follows transaction line directly (before DESC:/NOTE: labels)
             if (i + 3 < lines.length) {
               const descLine = lines[i + 3];
               if (descLine !== '-' && !descLine.startsWith('DESC :') && !descLine.startsWith('NOTE :')) {
                 desc = descLine;
-                console.log(`🔍 Found desc: "${desc}"`);
-                
-                // Look for note on the line after desc (i+4)
                 if (i + 4 < lines.length) {
                   const noteLine = lines[i + 4];
                   if (noteLine !== '-' && !noteLine.startsWith('DESC :') && !noteLine.startsWith('NOTE :')) {
                     note = noteLine;
-                    console.log(`🔍 Found note: "${note}"`);
                   }
                 }
               }
             }
-            
-            console.log(`🔍 Final result - transaction: "${transaction}", desc: "${desc}", note: "${note}"`);
-            descNoteMatches.push({ transaction, desc, note });
+
+            allTransactions.push({ dateTime, code, amount: amountNum, desc, note });
           }
         }
       }
-      console.log("🔥descNoteMatches", descNoteMatches);
 
-      // process matches to desired format
-      const formattedMatches = matches?.map((match) => {
-        const matchGroups = match.match(
-          /(\d{2}\/\d{2}\/\d{2})\s+(\d{2}:\d{2})\s+(X2\/ENET\d{1,3}(?:,\d{3})*\.\d{2}\d{1,3}(?:,\d{3})*\.\d{2})/
-        );
-        if (!matchGroups) {
-          throw new Error("Match groups not found");
-        }
-        const [_, date, time, transaction] = matchGroups;
-        const formattedTransaction = transaction.replace(
-          /(\d{1,3}(?:,\d{3})*\.\d{2})\d{1,3}(?:,\d{3})*\.\d{2}/,
-          "$1"
-        );
-
-        // combine date and time into the desired format
-        const [day, month, year] = date.split("/");
-        const formattedDateTime = `20${year}-${month}-${day}T${time}:00.000Z`;
-        return {
-          dateTime: formattedDateTime,
-          transaction: formattedTransaction,
-        };
-      });
-
-      console.log("🔥formattedMatches", formattedMatches);
-      // separate Code and Amount from formattedMatches
-      const codeAmount = formattedMatches?.map((match) => {
-        const [code, amount] = match.transaction.split(/(?<=X2\/ENET)\s*/);
-        const descMatch = descNoteMatches.find((descMatch) => {
-          const [descDate, descTime] = descMatch.transaction.split(/\s+/);
-          const formattedDescDateTime = `20${descDate.split("/")[2]}-${
-            descDate.split("/")[1]
-          }-${descDate.split("/")[0]}T${descTime}:00.000Z`;
-          return formattedDescDateTime === match.dateTime;
-        });
-        return {
-          dateTime: match.dateTime,
-          code: code.trim(),
-          amount: parseFloat(amount.replace(/,/g, "")),
-          desc: descMatch?.desc,
-          note: descMatch?.note,
-        };
-      });
+      // Filter only debit (X2) transactions
+      const codeAmount = allTransactions.filter(t => t.code.startsWith('X2'));
       console.log("🔥codeAmount", codeAmount);
 
       // generate expNo in format EXPYYYYMMDDXXXX
@@ -209,7 +190,7 @@ export const pdfExtract = async (
       const expNo = `EXP${datePart}${randomPart}`;
 
       // detect sName from desc for each transaction individually
-      const codeAmountWithSName = codeAmount?.map((item) => {
+      const codeAmountWithSName = codeAmount.map((item) => {
         let sName = null;
         
         if (item.desc) {
@@ -251,8 +232,8 @@ export const pdfExtract = async (
       select:{ businessId: true }
     });
 
-        if (!codeAmountWithSName) {
-          throw new Error("No codeAmountWithSName data found");
+        if (codeAmountWithSName.length === 0) {
+          throw new Error("No transactions found in PDF");
         }
 
         // check duplicate data before creating
