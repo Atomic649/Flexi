@@ -207,11 +207,14 @@ export default function Login() {
               text: t("auth.login.alerts.registerBusinessOption"),
               onPress: async () => {
                 setAlertConfig((prev) => ({ ...prev, visible: false }));
-                // If we have a stored userId, pass it forward; business_register expects userId & uniqueId (uniqueId optional here)
                 const storedUserId = await AsyncStorage.getItem("userId");
+                const storedMemberId = await AsyncStorage.getItem("memberId");
                 router.push({
                   pathname: "/business_register",
-                  params: storedUserId ? { userId: storedUserId } : {},
+                  params: {
+                    ...(storedUserId ? { userId: storedUserId } : {}),
+                    ...(storedMemberId ? { uniqueId: storedMemberId } : {}),
+                  },
                 });
               },
             },

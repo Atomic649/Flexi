@@ -354,7 +354,7 @@ const AddMoreBusinessAcc = async (req: Request, res: Response) => {
     }
 
     //List of DocumentType validation for AddMoreBusinessAcc
-    const validDocumentTypes = ["Invoice", "Receipt", "Quotation"];
+    const validDocumentTypes = ["Invoice", "Receipt", "Quotation", "WithholdingTax"];
     if (
       businessAccInput.DocumentType &&
       businessAccInput.DocumentType.length > 0
