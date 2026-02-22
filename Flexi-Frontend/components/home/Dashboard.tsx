@@ -931,7 +931,7 @@ export default function Dashboard() {
                       icon="megaphone"
                     ></MetricCard>
                   ) : (
-                    <TouchableOpacity onPress={() => openIncExpModal('expense')} activeOpacity={0.8}>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={() => openIncExpModal('expense')} activeOpacity={0.8}>
                     <MetricCard
                       title={t("dashboard.metrics.expense")}
                       value={formatCurrency(metrics.expense)}
