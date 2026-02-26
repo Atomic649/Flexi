@@ -52,23 +52,38 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
     }
 
     const accessToken = result.params.access_token;
-    console.log('Facebook Token 💙',accessToken)
-    const expiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
+    console.log('Facebook Token (short-lived) 💙', accessToken)
+
+    // Try to exchange short-lived token for a long-lived token via backend
+    let finalAccessToken = accessToken;
+    let finalExpiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
+    try {
+      const axios = await getAxiosWithAuth();
+      const resp = await axios.post("/facebook/exchange", { accessToken });
+      if (resp?.data?.accessToken) {
+        finalAccessToken = resp.data.accessToken;
+        finalExpiresAt = resp.data.expiresAt ? Number(resp.data.expiresAt) : finalExpiresAt;
+        console.log('Received long-lived Facebook token from backend', finalAccessToken, finalExpiresAt);
+      } else {
+        console.warn('Backend exchange did not return a long-lived token; using short-lived token');
+      }
+    } catch (err) {
+      console.warn('Facebook token exchange failed or not authenticated; using short-lived token', err);
+    }
 
     // Cache token for reuse
     await AsyncStorage.setItem(
       "@facebook_auth_token",
-      JSON.stringify({ accessToken, expiresAt }),
+      JSON.stringify({ accessToken: finalAccessToken, expiresAt: finalExpiresAt }),
     );
-    
-      console.log('Facebook Token 💙',accessToken,expiresAt)
+    console.log('Facebook Token stored 💙', finalAccessToken, finalExpiresAt)
 
     // Send token to backend to store in database (if user is logged in)
     try {
       const memberId = await getMemberId();
-      if (memberId) {
+        if (memberId) {
         const axios = await getAxiosWithAuth();
-        await axios.post("/facebook/token", { memberId, token: accessToken, expiresAt });
+        await axios.post("/facebook/token", { memberId, token: finalAccessToken, expiresAt: finalExpiresAt });
         console.log("Saved Facebook token to backend for member", memberId);
       } else {
         console.warn("No memberId found; skipping backend token save");
@@ -77,7 +92,7 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
       console.warn("Failed to save Facebook token to backend:", err);
     }
 
-    return { success: true, accessToken, expiresAt };
+    return { success: true, accessToken: finalAccessToken, expiresAt: finalExpiresAt };
   } catch (err: any) {
     return { success: false, error: err?.message || "Facebook login failed" };
   }
@@ -90,6 +105,16 @@ export const isFacebookAuthenticated = async (): Promise<boolean> => {
     const { expiresAt } = JSON.parse(tokenData);
     return Date.now() < expiresAt;
   } catch {
+    return false;
+  }
+};
+
+export const logoutFromFacebook = async (): Promise<boolean> => {
+  try {
+    await AsyncStorage.removeItem("@facebook_auth_token");
+    return true;
+  } catch (err) {
+    console.warn("Failed to remove facebook auth token:", err);
     return false;
   }
 };

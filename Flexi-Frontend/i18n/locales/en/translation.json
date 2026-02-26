@@ -486,7 +486,9 @@
       "line": "Line",
       "tiktok": "Tiktok",
       "shopee": "Shopee",
-      "youtube": "YouTube"
+      "youtube": "YouTube",
+      "connected": "Connected",
+      "disconnected": "Disconnected"
     },
     "businessSetting": {
       "product": "Product",
