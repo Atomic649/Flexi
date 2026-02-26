@@ -4,9 +4,12 @@ import { getAxiosWithAuth } from "../axiosInstance";
 import { getMemberId } from "../utility";
 import * as WebBrowser from 'expo-web-browser';
 
-
 // This is critical for returning to the app correctly
 WebBrowser.maybeCompleteAuthSession();
+
+// Facebook app settings
+const FB_APP_ID = "1393521459147449";
+const CONFIGURATION_ID = "1953026795255068"; // Must match the one set in Meta Dashboard
 
 
 // Redirect handling
@@ -14,22 +17,14 @@ WebBrowser.maybeCompleteAuthSession();
 
 const REDIRECT_URI = AuthSession.makeRedirectUri();
 // Log it to verify what you need to paste into the Meta Dashboard
-//console.log('Target Redirect URI:', REDIRECT_URI);
+console.log('Target Redirect URI:', REDIRECT_URI);
 
 const discovery = {
   authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth",
 };
 
-type FacebookProfile = {
-  id: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  picture?: { data: { url: string } };
-};
-
 type LoginResult =
-  | { success: true; accessToken: string; expiresAt: number; profile: FacebookProfile }
+  | { success: true; accessToken: string; expiresAt: number; }
   | { success: false; error: string };
 
 /**
@@ -38,16 +33,13 @@ type LoginResult =
 
 export const loginWithFacebook = async (): Promise<LoginResult> => {
   try {
-    const FB_APP_ID = process.env.EXPO_PUBLIC_FB_APP_ID;
-    if (!FB_APP_ID) {
-      return { success: false, error: "Facebook App ID not configured" };
-    }
     const request = new AuthSession.AuthRequest({
       clientId: FB_APP_ID,
       redirectUri: REDIRECT_URI,
       responseType: AuthSession.ResponseType.Token,
-      scopes: ['public_profile', 'email'],
-      extraParams: {},
+      extraParams: {
+        config_id: CONFIGURATION_ID,
+      },
     });
 
     const result = await request.promptAsync(discovery,
@@ -60,50 +52,23 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
     }
 
     const accessToken = result.params.access_token;
-    console.log('Facebook Token (short-lived) 💙', accessToken)
-
-    // Try to exchange short-lived token for a long-lived token via backend
-    let finalAccessToken = accessToken;
-    let finalExpiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
-    // try {
-    //   const axios = await getAxiosWithAuth();
-    //   const resp = await axios.post("/facebook/exchange", { accessToken });
-    //   if (resp?.data?.accessToken) {
-    //     finalAccessToken = resp.data.accessToken;
-    //     finalExpiresAt = resp.data.expiresAt ? Number(resp.data.expiresAt) : finalExpiresAt;
-    //     console.log('Received long-lived Facebook token from backend', finalAccessToken, finalExpiresAt);
-    //   } else {
-    //     console.warn('Backend exchange did not return a long-lived token; using short-lived token');
-    //   }
-    // } catch (err) {
-    //   console.warn('Facebook token exchange failed or not authenticated; using short-lived token', err);
-    // }
+    console.log('Facebook Token 💙',accessToken)
+    const expiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
 
     // Cache token for reuse
     await AsyncStorage.setItem(
       "@facebook_auth_token",
-      JSON.stringify({ accessToken: finalAccessToken, expiresAt: finalExpiresAt }),
+      JSON.stringify({ accessToken, expiresAt }),
     );
-    console.log('Facebook Token stored 💙', finalAccessToken, finalExpiresAt)
-
-    // Fetch user profile from Graph API
-    let profile: FacebookProfile = { id: '' };
-    try {
-      const graphRes = await fetch(
-        `https://graph.facebook.com/me?fields=id,first_name,last_name,email,picture.type(large)&access_token=${finalAccessToken}`
-      );
-      profile = await graphRes.json();
-      console.log('Facebook profile 💙', profile);
-    } catch (err) {
-      console.warn('Failed to fetch Facebook profile:', err);
-    }
+    
+      console.log('Facebook Token 💙',accessToken,expiresAt)
 
     // Send token to backend to store in database (if user is logged in)
     try {
       const memberId = await getMemberId();
       if (memberId) {
         const axios = await getAxiosWithAuth();
-        await axios.post("/facebook/token", { memberId, token: finalAccessToken, expiresAt: finalExpiresAt });
+        await axios.post("/facebook/token", { memberId, token: accessToken, expiresAt });
         console.log("Saved Facebook token to backend for member", memberId);
       } else {
         console.warn("No memberId found; skipping backend token save");
@@ -112,7 +77,7 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
       console.warn("Failed to save Facebook token to backend:", err);
     }
 
-    return { success: true, accessToken: finalAccessToken, expiresAt: finalExpiresAt, profile };
+    return { success: true, accessToken, expiresAt };
   } catch (err: any) {
     return { success: false, error: err?.message || "Facebook login failed" };
   }
@@ -125,16 +90,6 @@ export const isFacebookAuthenticated = async (): Promise<boolean> => {
     const { expiresAt } = JSON.parse(tokenData);
     return Date.now() < expiresAt;
   } catch {
-    return false;
-  }
-};
-
-export const logoutFromFacebook = async (): Promise<boolean> => {
-  try {
-    await AsyncStorage.removeItem("@facebook_auth_token");
-    return true;
-  } catch (err) {
-    console.warn("Failed to remove facebook auth token:", err);
     return false;
   }
 };

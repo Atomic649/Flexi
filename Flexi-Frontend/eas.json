@@ -10,7 +10,8 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.flexibusinesshub.com/",
         "EXPO_PUBLIC_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/images/",
-        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/"
+        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/",
+        "EXPO_PUBLIC_FB_APP_ID": "1393521459147449"
       }
     },
     "preview": {
@@ -18,7 +19,8 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.flexibusinesshub.com/",
         "EXPO_PUBLIC_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/images/",
-        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/"
+        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/",
+        "EXPO_PUBLIC_FB_APP_ID": "1393521459147449"
       }
     },
     "production": {
@@ -26,7 +28,8 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.flexibusinesshub.com/",
         "EXPO_PUBLIC_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/images/",
-        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/"
+        "EXPO_PUBLIC_MOCKUP_IMAGE_URL": "https://api.flexibusinesshub.com/uploads/mock/",
+        "EXPO_PUBLIC_FB_APP_ID": "1393521459147449"
       }
     }
   },
