@@ -7,8 +7,8 @@ import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 // Shared mock instance we'll inspect in tests
 const prismaMock: {
   user: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; findFirst: jest.Mock };
-  businessAcc: { findFirst: jest.Mock };
-  member?: any;
+  businessAcc: { findFirst: jest.Mock; findUnique: jest.Mock };
+  member: { findFirst: jest.Mock; findUnique: jest.Mock; create: jest.Mock };
 } = {
   user: {
     findUnique: jest.fn(),
@@ -16,7 +16,8 @@ const prismaMock: {
     update: jest.fn(),
     findFirst: jest.fn(),
   },
-  businessAcc: { findFirst: jest.fn() },
+  businessAcc: { findFirst: jest.fn(), findUnique: jest.fn() },
+  member: { findFirst: jest.fn(), findUnique: jest.fn(), create: jest.fn() },
 };
 
 // Mock Prisma client used inside authController (controller imports "../src/generated/client1")
@@ -144,6 +145,8 @@ describe('Login email & password policy', () => {
       return Promise.resolve(null);
     });
     prismaMock.businessAcc.findFirst.mockImplementation(() => Promise.resolve({ id: 55, memberId: 'MEM123' }));
+    // login calls member.findFirst to get ownerMember after finding businessAcc
+    prismaMock.member.findFirst.mockImplementation(() => Promise.resolve({ uniqueId: 'MEM123', businessId: 55 }));
   });
 
   test('successful login with valid email & password', async () => {

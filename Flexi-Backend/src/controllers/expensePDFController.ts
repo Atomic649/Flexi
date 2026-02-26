@@ -108,6 +108,7 @@ export const pdfExtract = async (
       // KBank PDFs contain the format identifier "KBPDF" and channel name "K PLUS"
       const bankType = text.includes('กรุงศรีอยุธยา') ? 'KRUNGSRI'
         : (text.includes('KBPDF') || text.includes('K PLUS')) ? 'KBANK'
+        : text.includes('ttbbank.com') ? 'TTB'
         : 'SCB';
       console.log("🏦 Detected bank:", bankType);
 
@@ -210,6 +211,68 @@ export const pdfExtract = async (
           codeAmount.push({ dateTime, code: `KRUNGSRI/${transType}`, amount, desc, note: '' });
         }
 
+      } else if (bankType === 'TTB') {
+        // ── TTB (TMBThanachart Bank) parser ───────────────────────────────────
+        // Format: "D ม.ค. YYHH:MM TYPE CHANNEL SIGNED_AMOUNT BALANCE DESC"
+        // Date uses Thai month abbreviations + 2-digit Buddhist Era short year (e.g. 69 = 2026 CE)
+        // Amount: signed — negative (-) = expense, positive (+) = income/deposit
+        // sara am encoding: match both U+0E33 and U+0E4D+U+0E32 forms
+        const ttbThaiMonthMap: Record<string, string> = {
+          'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03',
+          'เม.ย.': '04', 'พ.ค.': '05', 'มิ.ย.': '06',
+          'ก.ค.': '07', 'ส.ค.': '08', 'ก.ย.': '09',
+          'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12',
+        };
+        const isTTBExpense = (type: string): boolean =>
+          /^(?:โอนเงินออก|ถอนเงิน|ช(?:\u0E33|\u0E4D\u0E32)ระบิล|จ่ายบิล)/.test(type);
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+
+          // TTB date: "30 ม.ค. 69" immediately followed by "13:16" (no space)
+          const dateTimeMatch = line.match(/^(\d{1,2})\s+([\u0E00-\u0E7F.]+)\s+(\d{2})(\d{2}:\d{2})/);
+          if (!dateTimeMatch) continue;
+
+          const [, day, thaiMonth, shortYear, time] = dateTimeMatch;
+          const month = ttbThaiMonthMap[thaiMonth];
+          if (!month) continue;
+
+          // Buddhist Era short year → CE: e.g. 69 + 1957 = 2026 (2500 + 69 - 543)
+          const ceYear = parseInt(shortYear, 10) + 1957;
+          const dateTime = `${ceYear}-${month}-${day.padStart(2, '0')}T${time}:00.000Z`;
+
+          // Strip date+time; rest = "TYPE CHANNEL SIGNED_AMOUNT BALANCE DESC"
+          const afterTs = line.replace(/^\d{1,2}\s+[\u0E00-\u0E7F.]+\s+\d{2}\d{2}:\d{2}/, '');
+
+          // Signed amount is the first +/- number — identifies income vs expense
+          const signedAmountIdx = afterTs.search(/[+-]\d/);
+          if (signedAmountIdx === -1) continue;
+          const signedAmountMatch = afterTs.slice(signedAmountIdx).match(/^([+-]\d{1,3}(?:,\d{3})*\.\d{2})(.*)/);
+          if (!signedAmountMatch) continue;
+
+          const signedAmount = signedAmountMatch[1];
+          const afterAmount = signedAmountMatch[2];
+
+          if (signedAmount.startsWith('+')) continue; // Skip income/deposits
+
+          const amount = Math.abs(parseFloat(signedAmount.replace(/,/g, '')));
+
+          // Type = Thai chars at the start of the segment before the signed amount
+          const beforeAmount = afterTs.slice(0, signedAmountIdx);
+          const typeMatch = beforeAmount.match(/^([\u0E00-\u0E7F]+)/);
+          const transType = typeMatch ? typeMatch[1] : beforeAmount.trim();
+
+          if (!isTTBExpense(transType)) continue;
+
+          // Strip balance (unsigned number immediately after the signed amount) → desc
+          let desc = afterAmount
+            .replace(/^\d{1,3}(?:,\d{3})*\.\d{2}/, '') // Remove balance
+            .trim();
+          if (desc === '-') desc = '';
+
+          codeAmount.push({ dateTime, code: `TTB/${transType}`, amount, desc, note: '' });
+        }
+
       } else {
         // ── SCB parser (existing logic, unchanged) ────────────────────────────
         const allTransactions: ParsedTransaction[] = [];
@@ -303,7 +366,16 @@ export const pdfExtract = async (
       const codeAmountWithSName = codeAmount.map((item) => {
         let sName = null;
 
-        if (item.code.startsWith('KRUNGSRI/')) {
+        if (item.code.startsWith('TTB/')) {
+          // TTB desc format: "BANKCODE X#### NAME" e.g. "SCB X8901 นางสาว ธนัญญา ร"
+          // Strip leading bank code + account reference to get the payee name
+          if (item.desc) {
+            sName = item.desc
+              .replace(/^[A-Z]{2,6}\s+[Xx]\d{4}\s*/, '') // Remove "SCB X8901 "
+              .trim() || null;
+            console.log(`🔍 Extracted sName (TTB) for "${item.desc}": "${sName}"`);
+          }
+        } else if (item.code.startsWith('KRUNGSRI/')) {
           // Krungsri: desc is already the payee name (BANKCODE NAME or MERCHANT)
           // Skip card/ATM/cash descriptions that have no meaningful recipient
           if (item.desc && !/^จาก Card No\./i.test(item.desc) && !/^ถอนเงินสดผ่าน/.test(item.desc)) {

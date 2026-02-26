@@ -4,11 +4,10 @@ import { getAxiosWithAuth } from "../axiosInstance";
 import { getMemberId } from "../utility";
 import * as WebBrowser from 'expo-web-browser';
 
+
 // This is critical for returning to the app correctly
 WebBrowser.maybeCompleteAuthSession();
 
-// Facebook app settings
-const FB_APP_ID = "1393521459147449";
 
 // Redirect handling
 // const REDIRECT_URI = AuthSession.makeRedirectUri({ scheme: "flexi",path: "oauthredirect"});
@@ -21,8 +20,16 @@ const discovery = {
   authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth",
 };
 
+type FacebookProfile = {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  picture?: { data: { url: string } };
+};
+
 type LoginResult =
-  | { success: true; accessToken: string; expiresAt: number; }
+  | { success: true; accessToken: string; expiresAt: number; profile: FacebookProfile }
   | { success: false; error: string };
 
 /**
@@ -31,10 +38,15 @@ type LoginResult =
 
 export const loginWithFacebook = async (): Promise<LoginResult> => {
   try {
+    const FB_APP_ID = process.env.EXPO_PUBLIC_FB_APP_ID;
+    if (!FB_APP_ID) {
+      return { success: false, error: "Facebook App ID not configured" };
+    }
     const request = new AuthSession.AuthRequest({
       clientId: FB_APP_ID,
       redirectUri: REDIRECT_URI,
       responseType: AuthSession.ResponseType.Token,
+      scopes: ['public_profile', 'email'],
       extraParams: {},
     });
 
@@ -74,10 +86,22 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
     );
     console.log('Facebook Token stored 💙', finalAccessToken, finalExpiresAt)
 
+    // Fetch user profile from Graph API
+    let profile: FacebookProfile = { id: '' };
+    try {
+      const graphRes = await fetch(
+        `https://graph.facebook.com/me?fields=id,first_name,last_name,email,picture.type(large)&access_token=${finalAccessToken}`
+      );
+      profile = await graphRes.json();
+      console.log('Facebook profile 💙', profile);
+    } catch (err) {
+      console.warn('Failed to fetch Facebook profile:', err);
+    }
+
     // Send token to backend to store in database (if user is logged in)
     try {
       const memberId = await getMemberId();
-        if (memberId) {
+      if (memberId) {
         const axios = await getAxiosWithAuth();
         await axios.post("/facebook/token", { memberId, token: finalAccessToken, expiresAt: finalExpiresAt });
         console.log("Saved Facebook token to backend for member", memberId);
@@ -88,7 +112,7 @@ export const loginWithFacebook = async (): Promise<LoginResult> => {
       console.warn("Failed to save Facebook token to backend:", err);
     }
 
-    return { success: true, accessToken: finalAccessToken, expiresAt: finalExpiresAt };
+    return { success: true, accessToken: finalAccessToken, expiresAt: finalExpiresAt, profile };
   } catch (err: any) {
     return { success: false, error: err?.message || "Facebook login failed" };
   }
