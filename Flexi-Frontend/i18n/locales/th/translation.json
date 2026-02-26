@@ -849,7 +849,8 @@
     },
     "buttons": {
       "save": "บันทึก",
-      "pdf": "SCB เท่านั้น"
+      "pdf": "SCB/KBANK",
+      "detecting": "ตรวจจับข้อมูล"
     },
     "updated": {
       "success": "อัปเดตรายจ่ายสำเร็จ",

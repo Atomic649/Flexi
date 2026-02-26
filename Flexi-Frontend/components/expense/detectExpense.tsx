@@ -307,19 +307,35 @@ export default function DetectExpense() {
             alignSelf: "center",
           }}
           onPress={pickAndProcessPdf}
+          disabled={loading}
         >
-          <FontAwesome
-            name="file-pdf-o"
-            size={24}
-            color={theme === "dark" ? "primary" : "#3b3b3b"}
-          />
-          <CustomText
-            className="text-center text-xs font-bold pt-1"
-            weight="semibold"
-            style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
-          >
-            {t("expense.buttons.pdf")}
-          </CustomText>
+          {loading ? (
+            <>
+              <ActivityIndicator size="small" color="#3b3b3b" />
+              <CustomText
+                className="text-center text-xs font-bold pt-1"
+                weight="semibold"
+                style={{ color: "#3b3b3b" }}
+              >
+                {t("expense.buttons.detecting")}
+              </CustomText>
+            </>
+          ) : (
+            <>
+              <FontAwesome
+                name="file-pdf-o"
+                size={24}
+                color={theme === "dark" ? "primary" : "#3b3b3b"}
+              />
+              <CustomText
+                className="text-center text-xs font-bold pt-1"
+                weight="semibold"
+                style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
+              >
+                {t("expense.buttons.pdf")}
+              </CustomText>
+            </>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity

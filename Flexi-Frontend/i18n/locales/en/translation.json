@@ -848,7 +848,8 @@
     },
     "buttons": {
       "save": "Save",
-      "pdf": "SCB ONLY"
+      "pdf": "SCB/KBANK",
+      "detecting": "Detecting..."
     },
     "updated": {
       "success": "Expense updated successfully",
