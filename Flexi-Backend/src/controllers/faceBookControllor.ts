@@ -13,7 +13,7 @@ const graphApiUrl = `https://graph.facebook.com/${graphApiVersion}`;
 const findFacebookTokenByMemberId = async (memberId?: string) => {
 	if (!memberId) return null;
 	try {
-		const rec = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
+		const rec = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });		
 		return rec?.token ?? null;
 	} catch (err) {
 		console.error("Error fetching platform token for member", memberId, err);
@@ -712,54 +712,59 @@ export const facebookAdsCostCronJob = cron.schedule("9 0 * * *", async () => {
 	await ingestFacebookSpendYesterdayToAdsCosts();
 });
 
+// Far-future expiry date used for all stored tokens.
+// Actual token validity is enforced by Facebook's API, not by this field.
+const FAR_FUTURE_EXPIRES = () => new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000);
+
 /**
  * POST /facebook/token
- * Body: { memberId: string, token: string, expiresAt: string|number }
+ * Body: { memberId: string, token: string }
  * Stores or updates the Facebook access token for a member in PlatformToken table.
+ * Sets login=true and expiresAt=10 years from now.
  */
 export const saveFacebookToken = async (req: Request, res: Response) => {
 	try {
-		const { memberId, token, expiresAt } = req.body as { memberId?: string; token?: string; expiresAt?: string | number };
+		const { memberId, token } = req.body as { memberId?: string; token?: string };
 
-		if (!memberId || !token || !expiresAt) {
-			return res.status(400).json({ message: "memberId, token and expiresAt are required" });
+		if (!memberId || !token) {
+			return res.status(400).json({ message: "memberId and token are required" });
 		}
 
-		const expiresDate = typeof expiresAt === "number" ? new Date(Number(expiresAt)) : new Date(String(expiresAt));
-		if (isNaN(expiresDate.getTime())) {
-			return res.status(400).json({ message: "expiresAt must be a valid date or timestamp" });
-		}
+		const expiresDate = FAR_FUTURE_EXPIRES();
 
-		// Try to find existing token record for this member + platform
 		const existing = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
 
 		if (existing) {
-			const updated = await prisma.platformToken.update({ where: { id: existing.id }, data: { token, expiresAt: expiresDate } });
+			const updated = await prisma.platformToken.update({
+				where: { id: existing.id },
+				data: { token, expiresAt: expiresDate, login: true },
+			});
 			return res.status(200).json({ status: "updated", token: updated });
 		}
 
-		const created = await prisma.platformToken.create({ data: { memberId, platform: SocialMedia.Facebook, token, expiresAt: expiresDate } });
+		const created = await prisma.platformToken.create({
+			data: { memberId, platform: SocialMedia.Facebook, token, expiresAt: expiresDate, login: true },
+		});
 		return res.status(201).json({ status: "created", token: created });
 	} catch (err: any) {
-		// Handle unique constraint or other Prisma errors gracefully
-		const code = err?.code || err?.response?.status || 500;
 		console.error("Failed to save Facebook token", err?.message || err);
 		if (err?.code === "P2002") {
 			return res.status(409).json({ message: "Token already exists" });
 		}
-		return res.status(Number(code) || 500).json({ message: err?.message || "Failed to save token" });
+		return res.status(500).json({ message: err?.message || "Failed to save token" });
 	}
 };
 
 /**
  * POST /facebook/exchange
- * Body: { accessToken: string }
+ * Body: { accessToken: string, memberId?: string }
  * Exchanges a short-lived Facebook token for a long-lived token using the app secret.
- * Requires server env vars: FACEBOOK_APP_ID and FACEBOOK_APP_SECRET
+ * Requires server env vars: FACEBOOK_APP_ID and FACEBOOK_APP_SECRET.
+ * If memberId is provided, auto-saves the long-lived token with login=true.
  */
 export const exchangeFacebookToken = async (req: Request, res: Response) => {
 	try {
-		const { accessToken: shortLived } = req.body as { accessToken?: string };
+		const { accessToken: shortLived, memberId } = req.body as { accessToken?: string; memberId?: string };
 		if (!shortLived) return res.status(400).json({ message: "accessToken is required" });
 
 		const appId = process.env.FACEBOOK_APP_ID;
@@ -779,12 +784,35 @@ export const exchangeFacebookToken = async (req: Request, res: Response) => {
 
 		const r = await axios.get(url, { params });
 		const longToken = r.data?.access_token;
-		const expiresIn = Number(r.data?.expires_in || 0);
-		const expiresAt = Date.now() + expiresIn * 1000;
 
 		if (!longToken) return res.status(500).json({ message: "Failed to obtain long-lived token from Facebook", details: r.data });
 
-		return res.json({ accessToken: longToken, expiresAt });
+		// Always store with a far-future expiry — Facebook's API enforces real validity
+		const expiresDate = FAR_FUTURE_EXPIRES();
+		console.log("Exchanged Facebook token; storing with far-future expiry", expiresDate.toISOString());
+
+		let saved = false;
+		if (memberId) {
+			try {
+				const existing = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
+				if (existing) {
+					await prisma.platformToken.update({
+						where: { id: existing.id },
+						data: { token: longToken, expiresAt: expiresDate, login: true },
+					});
+				} else {
+					await prisma.platformToken.create({
+						data: { memberId, platform: SocialMedia.Facebook, token: longToken, expiresAt: expiresDate, login: true },
+					});
+				}
+				saved = true;
+				console.log("Saved long-lived Facebook token to DB for member", memberId);
+			} catch (dbErr: any) {
+				console.error("Failed to save Facebook token to DB during exchange", dbErr?.message || dbErr);
+			}
+		}
+
+		return res.json({ accessToken: longToken, expiresAt: expiresDate.getTime(), saved });
 	} catch (err: any) {
 		console.error("Failed to exchange facebook token", err?.message || err);
 		const status = err?.response?.status || 500;
@@ -793,4 +821,57 @@ export const exchangeFacebookToken = async (req: Request, res: Response) => {
 	}
 };
 
-export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, saveFacebookToken, exchangeFacebookToken };
+/**
+ * GET /facebook/status
+ * Returns whether the current member has an active Facebook login in the DB.
+ * Query param: memberId (optional, falls back to authenticated user)
+ */
+export const getFacebookStatus = async (req: Request, res: Response) => {
+	try {
+		const memberIdParam = (req.query.memberId as string) || (req.body?.memberId as string);
+		const memberId = memberIdParam || (await getMemberIdFromRequest(req));
+
+		if (!memberId) {
+			return res.status(400).json({ message: "memberId is required" });
+		}
+
+		const record = await prisma.platformToken.findFirst({
+			where: { memberId, platform: SocialMedia.Facebook },
+			select: { login: true, expiresAt: true },
+		});
+
+		return res.json({ linked: record?.login === true, login: record?.login ?? false });
+	} catch (err: any) {
+		console.error("Failed to get Facebook status", err?.message || err);
+		return res.status(500).json({ message: "Failed to get Facebook status" });
+	}
+};
+
+/**
+ * POST /facebook/logout
+ * Body: { memberId?: string }
+ * Sets login=false for the member's Facebook token in the DB.
+ */
+export const facebookLogout = async (req: Request, res: Response) => {
+	try {
+		const memberIdParam = (req.body?.memberId as string) || (req.query.memberId as string);
+		const memberId = memberIdParam || (await getMemberIdFromRequest(req));
+
+		if (!memberId) {
+			return res.status(400).json({ message: "memberId is required" });
+		}
+
+		const existing = await prisma.platformToken.findFirst({ where: { memberId, platform: SocialMedia.Facebook } });
+		if (!existing) {
+			return res.status(200).json({ status: "not_found" });
+		}
+
+		await prisma.platformToken.update({ where: { id: existing.id }, data: { login: false } });
+		return res.status(200).json({ status: "logged_out" });
+	} catch (err: any) {
+		console.error("Failed to logout Facebook", err?.message || err);
+		return res.status(500).json({ message: "Failed to logout Facebook" });
+	}
+};
+
+export default { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout };

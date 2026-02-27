@@ -530,6 +530,7 @@ model PlatformToken {
   token     String   @unique
   createdAt DateTime @default(now())
   expiresAt DateTime
+  login     Boolean  @default(false)
 
   @@schema("flexidb")
 }

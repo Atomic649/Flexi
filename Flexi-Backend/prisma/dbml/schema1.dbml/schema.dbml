@@ -300,6 +300,7 @@ Table PlatformToken {
   token String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   expiresAt DateTime [not null]
+  login Boolean [not null, default: false]
 }
 
 Enum Unit {

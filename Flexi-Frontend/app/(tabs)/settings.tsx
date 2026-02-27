@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   Pressable,
@@ -16,14 +16,14 @@ import { useTheme } from "@/providers/ThemeProvider";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
 import CallAPIUser from "@/api/auth_api";
-import { removeToken } from "@/utils/utility";
+import { removeToken, getMemberId } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
 import { useMarketing } from "@/providers/MarketingProvider";
 import {
   loginWithFacebook,
   logoutFromFacebook,
 } from "@/utils/socialAuth/facebookAuth";
-import { useFacebookAuth } from "@/providers/FacebookAuthProvider";
+import { getAxiosWithAuth } from "@/utils/axiosInstance";
 
 // Utility function to get switch colors
 const getSwitchPlatformColors = (theme: string, value: boolean) => ({
@@ -45,14 +45,35 @@ const toggleScaleStyle = { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] };
 
 export default function Setting() {
   const { marketingPreference, setMarketingPreference } = useMarketing();
-  const { isFacebookLinked, setFacebookAuth, clearFacebookAuth, loading: fbLoading } = useFacebookAuth();
-  const Facebook = isFacebookLinked;
-  const [Tiktok, setTiktok] = useState(false); // Default to false
-  const [Shopee, setShopee] = useState(false); // Default to false
-  const [Line, setLine] = useState(false); // Default to false
-  const { t, i18n } = useTranslation(); // กำหนดตัวแปรใช้งานภาษา
-  const { theme, toggleTheme } = useTheme(); // กำหนดตัวแปรใช้งานธีม
+  // Facebook toggle state is driven by the DB `login` field
+  const [Facebook, setFacebook] = useState(false);
+  const [fbLoading, setFbLoading] = useState(true);
+  const [Tiktok, setTiktok] = useState(false);
+  const [Shopee, setShopee] = useState(false);
+  const [Line, setLine] = useState(false);
+  const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const [isProcessingFacebook, setIsProcessingFacebook] = useState(false);
+
+  // Fetch Facebook login status from DB on mount
+  const fetchFacebookStatus = useCallback(async () => {
+    try {
+      setFbLoading(true);
+      const memberId = await getMemberId();
+      if (!memberId) { setFacebook(false); return; }
+      const axios = await getAxiosWithAuth();
+      const resp = await axios.get(`/facebook/status?memberId=${memberId}`);
+      setFacebook(resp.data?.login === true);
+    } catch {
+      setFacebook(false);
+    } finally {
+      setFbLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFacebookStatus();
+  }, [fetchFacebookStatus]);
 
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
@@ -289,94 +310,60 @@ export default function Setting() {
     console.log("Line toggle:", !Line);
   };
 
-  // Handle Facebook authentication
+  // Handle Facebook authentication — toggle state is synced from DB login field
   const handleFacebookToggle = async () => {
-    // Prevent multiple rapid clicks
     if (isProcessingFacebook) return;
 
     try {
       setIsProcessingFacebook(true);
-      //console.log('🔄 Facebook toggle pressed, current state:', isFacebookLinked);
 
-      if (isFacebookLinked) {
-        // Logging out from Facebook        
-        const success = await logoutFromFacebook();
-       // console.log('🔄 Facebook logout result:', success);
-        
-        if (success) {
-          await clearFacebookAuth();
-          setAlertConfig({
-            visible: true,
-            title: t("common.success"),
-            message: t("settings.socialMedia.disconnected", {
-              platform: "Facebook",
-            }),
-            buttons: [
-              {
-                text: t("common.ok"),
-                onPress: () =>
-                  setAlertConfig((prev) => ({ ...prev, visible: false })),
-              },
-            ],
-          });
+      if (Facebook) {
+        // Logout: call native SDK logout, then set login=false in DB
+        await logoutFromFacebook();
+        const memberId = await getMemberId();
+        if (memberId) {
+          const axios = await getAxiosWithAuth();
+          await axios.post("/facebook/logout", { memberId });
         }
+        setFacebook(false);
+        setAlertConfig({
+          visible: true,
+          title: t("common.success"),
+          message: t("settings.socialMedia.disconnected", { platform: "Facebook" }),
+          buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
+        });
       } else {
-        // Logging in with Facebook
+        // Login: run Facebook OAuth, backend saves token with login=true
         const result = await loginWithFacebook();
-       // console.log('🔄 Facebook login result:', JSON.stringify(result, null, 2));
 
         if (!result.success) {
           setAlertConfig({
             visible: true,
             title: t("common.error"),
-            message:
-              result.error ||
-              t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
-            buttons: [
-              {
-                text: t("common.ok"),
-                onPress: () =>
-                  setAlertConfig((prev) => ({ ...prev, visible: false })),
-              },
-            ],
+            message: result.error || t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
+            buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
           });
           return;
         }
 
-        await setFacebookAuth(result.accessToken, result.expiresAt);
+        // Confirm login=true from DB
+        setFacebook(true);
         setAlertConfig({
           visible: true,
           title: t("common.success"),
-          message: t("settings.socialMedia.connected", {
-            platform: "Facebook",
-          }),
-          buttons: [
-            {
-              text: t("common.ok"),
-              onPress: () =>
-                setAlertConfig((prev) => ({ ...prev, visible: false })),
-            },
-          ],
+          message: t("settings.socialMedia.connected", { platform: "Facebook" }),
+          buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
         });
       }
     } catch (error) {
-      console.error('🔄 Facebook auth error:', error);
+      console.error("Facebook auth error:", error);
       setAlertConfig({
         visible: true,
         title: t("common.error"),
-        message: t("settings.socialMedia.connectionFailed", {
-          platform: "Facebook",
-        }),
-        buttons: [
-          {
-            text: t("common.ok"),
-            onPress: () =>
-              setAlertConfig((prev) => ({ ...prev, visible: false })),
-          },
-        ],
+        message: t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
+        buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
       });
     } finally {
-     // console.log('🔄 Facebook authentication process completed');
       setIsProcessingFacebook(false);
     }
   };

@@ -1,120 +1,171 @@
+import { Platform, Alert } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+import * as Device from 'expo-device';
 import { getAxiosWithAuth } from "../axiosInstance";
 import { getMemberId } from "../utility";
-import * as WebBrowser from 'expo-web-browser';
 
-// This is critical for returning to the app correctly
-WebBrowser.maybeCompleteAuthSession();
+if (Platform.OS === 'web') {
+  WebBrowser.maybeCompleteAuthSession();
+}
 
-// Facebook app settings
 const FB_APP_ID = "1393521459147449";
-const CONFIGURATION_ID = "1953026795255068"; // Must match the one set in Meta Dashboard
-
-
-// Redirect handling
-// const REDIRECT_URI = AuthSession.makeRedirectUri({ scheme: "flexi",path: "oauthredirect"});
-
-const REDIRECT_URI = AuthSession.makeRedirectUri();
-// Log it to verify what you need to paste into the Meta Dashboard
-console.log('Target Redirect URI:', REDIRECT_URI);
-
-const discovery = {
-  authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth",
-};
-
-type LoginResult =
-  | { success: true; accessToken: string; expiresAt: number; }
-  | { success: false; error: string };
+const CONFIGURATION_ID = "1953026795255068";
+const SCOPES = ['public_profile', 'email', 'ads_read', 'ads_management'];
 
 /**
- * Minimal Facebook login flow that works on Expo Go (proxy) and standalone builds.
+ * Main Entry Point
  */
+export const loginWithFacebook = async (_memberId?: string) => {
+  const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-export const loginWithFacebook = async (): Promise<LoginResult> => {
+  // 1. MOBILE LOGIC (iOS / Android)
+  if (Platform.OS !== "web") {
+    if (isExpoGo) {
+      return await handleWebLogin(); 
+    }
+
+    try {
+      const { LoginManager, AccessToken, Settings } = require('react-native-fbsdk-next');
+
+      // iOS Tracking Permission (Required for modern iOS)
+      if (Platform.OS === 'ios' && Device.isDevice) {
+        try {
+          const { requestTrackingPermissionsAsync } = require('expo-tracking-transparency');
+          const { status } = await requestTrackingPermissionsAsync();
+          await Settings.setAdvertiserTrackingEnabled(status === 'granted');
+        } catch (e) {
+          console.warn("Tracking transparency check failed", e);
+        }
+      }
+      
+      await Settings.initializeSDK();
+
+      // SET CONFIGURATION ID FOR BUSINESS LOGIN
+      // This solves the 'configId' requirement on native builds
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
+        try {
+          // Some versions of the native SDK allow this method:
+          if (LoginManager.setConfigurationID) {
+            LoginManager.setConfigurationID(CONFIGURATION_ID);
+          }
+        } catch (e) {
+          console.warn("Could not set Native ConfigurationID manually, relying on App ID defaults.");
+        }
+      }
+
+      const result = await LoginManager.logInWithPermissions(SCOPES);
+
+      if (result.isCancelled) return { success: false, error: "Login cancelled" };
+
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) return { success: false, error: "Failed to get token" };
+
+      return await processLoginSuccess(data.accessToken.toString());
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  }
+
+  // 2. WEB LOGIC
+  return await handleWebLogin();
+};
+
+/**
+ * Browser-based Login (Web & Expo Go Fallback)
+ */
+const handleWebLogin = async () => {
   try {
+    const redirectUri = AuthSession.makeRedirectUri();
+    const discovery = { authorizationEndpoint: "https://www.facebook.com/v18.0/dialog/oauth" };
+    
     const request = new AuthSession.AuthRequest({
       clientId: FB_APP_ID,
-      redirectUri: REDIRECT_URI,
+      redirectUri,
       responseType: AuthSession.ResponseType.Token,
-      extraParams: {
-        config_id: CONFIGURATION_ID,
-      },
+      extraParams: { config_id: CONFIGURATION_ID },
+      scopes: SCOPES
     });
 
-    const result = await request.promptAsync(discovery,
-      {showInRecents : true}
-    );
-    console.log('result 💙',result)
+    const result = await request.promptAsync(discovery);
+    
+    
+    // Web returns access_token in the URL fragment (params)
+    if (result.type === "success" && result.params.access_token) {
 
-    if (result.type !== "success" || !result.params.access_token) {
-      return { success: false, error: "Meta login failed" };
+      console.log("access_token", result.params.access_token);
+    
+      return await processLoginSuccess(result.params.access_token);
+      
     }
 
-    const accessToken = result.params.access_token;
-    console.log('Facebook Token (short-lived) 💙', accessToken)
-
-    // Try to exchange short-lived token for a long-lived token via backend
-    let finalAccessToken = accessToken;
-    let finalExpiresAt = Date.now() + Number(result.params.expires_in || 0) * 1000;
-    try {
-      const axios = await getAxiosWithAuth();
-      const resp = await axios.post("/facebook/exchange", { accessToken });
-      if (resp?.data?.accessToken) {
-        finalAccessToken = resp.data.accessToken;
-        finalExpiresAt = resp.data.expiresAt ? Number(resp.data.expiresAt) : finalExpiresAt;
-        console.log('Received long-lived Facebook token from backend', finalAccessToken, finalExpiresAt);
-      } else {
-        console.warn('Backend exchange did not return a long-lived token; using short-lived token');
-      }
-    } catch (err) {
-      console.warn('Facebook token exchange failed or not authenticated; using short-lived token', err);
-    }
-
-    // Cache token for reuse
-    await AsyncStorage.setItem(
-      "@facebook_auth_token",
-      JSON.stringify({ accessToken: finalAccessToken, expiresAt: finalExpiresAt }),
-    );
-    console.log('Facebook Token stored 💙', finalAccessToken, finalExpiresAt)
-
-    // Send token to backend to store in database (if user is logged in)
-    try {
-      const memberId = await getMemberId();
-        if (memberId) {
-        const axios = await getAxiosWithAuth();
-        await axios.post("/facebook/token", { memberId, token: finalAccessToken, expiresAt: finalExpiresAt });
-        console.log("Saved Facebook token to backend for member", memberId);
-      } else {
-        console.warn("No memberId found; skipping backend token save");
-      }
-    } catch (err) {
-      console.warn("Failed to save Facebook token to backend:", err);
-    }
-
-    return { success: true, accessToken: finalAccessToken, expiresAt: finalExpiresAt };
+    console.log("Web login result", result);
+    return { success: false, error: "Web authentication failed" };
   } catch (err: any) {
-    return { success: false, error: err?.message || "Facebook login failed" };
+    return { success: false, error: err.message };
   }
 };
 
-export const isFacebookAuthenticated = async (): Promise<boolean> => {
+/**
+ * Backend Sync Logic
+ */
+const processLoginSuccess = async (token: string) => {
   try {
-    const tokenData = await AsyncStorage.getItem("@facebook_auth_token");
-    if (!tokenData) return false;
-    const { expiresAt } = JSON.parse(tokenData);
-    return Date.now() < expiresAt;
-  } catch {
-    return false;
+    const axios = await getAxiosWithAuth();
+    const memberId = await getMemberId();
+
+    // A. Exchange for Long-Lived Token (Backend handles Meta API call)
+    // Pass memberId so the backend auto-saves the token during exchange
+    let finalToken = token;
+    let finalExpiresAt: number = Date.now() + 60 * 24 * 60 * 60 * 1000; // default 60-day expiry
+    let savedDuringExchange = false;
+    try {
+      const exchangeResp = await axios.post("/facebook/exchange", { accessToken: token, memberId });
+      if (exchangeResp.data?.accessToken) {
+        finalToken = exchangeResp.data.accessToken;
+        if (exchangeResp.data?.expiresAt) finalExpiresAt = Number(exchangeResp.data.expiresAt);
+        savedDuringExchange = !!exchangeResp.data?.saved;
+
+        console.log("Token exchange successful, obtained long-lived token");
+        console.log("Original Token:", token);
+        console.log("Exchanged Token:", finalToken);
+      }
+    } catch (e) {
+      console.warn("Token exchange failed, using initial token");
+    }
+
+    // B. Save Locally
+    await AsyncStorage.setItem("@facebook_auth_token", JSON.stringify({
+      accessToken: finalToken,
+      timestamp: Date.now()
+    }));
+
+    // C. SEND TO BACKEND DATABASE (Sync if user is logged in and exchange didn't already save it)
+    if (memberId && !savedDuringExchange) {
+      await axios.post("/facebook/token", {
+        memberId,
+        token: finalToken,
+        expiresAt: finalExpiresAt,
+      });
+      console.log("Token synced to backend database");
+    }
+
+    return { success: true, accessToken: finalToken, expiresAt: finalExpiresAt };
+  } catch (err) {
+    return { success: true, accessToken: token, expiresAt: Date.now() + 60 * 24 * 60 * 60 * 1000 };
   }
 };
 
 export const logoutFromFacebook = async (): Promise<boolean> => {
-  try {
-    await AsyncStorage.removeItem("@facebook_auth_token");
-    return true;
-  } catch (err) {
-    console.warn("Failed to remove facebook auth token:", err);
-    return false;
+  const isNativeBuild = Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
+  if (Platform.OS !== 'web' && isNativeBuild) {
+    try {
+      const { LoginManager } = require('react-native-fbsdk-next');
+      LoginManager.logOut();
+    } catch (e) {}
   }
+  await AsyncStorage.removeItem("@facebook_auth_token");
+  return true;
 };

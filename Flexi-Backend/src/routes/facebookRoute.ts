@@ -1,6 +1,6 @@
 import express from "express";
 import authenticateToken from "../middleware/authMiddleware";
-import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken } from "../controllers/faceBookControllor";
+import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout } from "../controllers/faceBookControllor";
 
 const router = express.Router();
 
@@ -13,12 +13,17 @@ router.get("/campaigns", authenticateToken, getFacebookCampaigns);
 router.get("/adsets", authenticateToken, getFacebookAdSets);
 router.get("/ads", authenticateToken, getFacebookAds);
 
-// Save Facebook access token for a member
 // Exchange short-lived token for long-lived token (server-side)
 router.post("/exchange", authenticateToken, exchangeFacebookToken);
 
 // Save Facebook access token for a member
 router.post("/token", authenticateToken, saveFacebookToken);
+
+// Get login status from DB (true/false)
+router.get("/status", authenticateToken, getFacebookStatus);
+
+// Set login=false in DB (logout)
+router.post("/logout", authenticateToken, facebookLogout);
 
 // Schedule daily ads cost ingestion at 00:09
 facebookAdsCostCronJob.start();
