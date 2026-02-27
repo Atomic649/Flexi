@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "flexi",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "platforms": [
       "ios",
       "android",
@@ -129,7 +128,7 @@
         "react-native-fbsdk-next",
         {
           "appID": "1393521459147449",
-          "clientToken": "8c8559220d6ca656e5c09ba195a71545",         
+          "clientToken": "8c8559220d6ca656e5c09ba195a71545",
           "displayName": "Flexi Marketing API",
           "scheme": "fb1393521459147449",
           "advertiserIDCollectionEnabled": false,
@@ -137,7 +136,14 @@
           "isAutoInitEnabled": true
         }
       ],
-      "expo-tracking-transparency"
+      "expo-tracking-transparency",
+      [
+        "expo-build-properties",
+        {
+          "ios": { "newArchEnabled": false },
+          "android": { "newArchEnabled": false }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

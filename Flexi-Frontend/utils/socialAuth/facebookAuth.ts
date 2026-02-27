@@ -41,8 +41,6 @@ export const loginWithFacebook = async (_memberId?: string) => {
         }
       }
       
-      await Settings.initializeSDK();
-
       // SET CONFIGURATION ID FOR BUSINESS LOGIN
       // This solves the 'configId' requirement on native builds
       if (Platform.OS === 'ios' || Platform.OS === 'android') {

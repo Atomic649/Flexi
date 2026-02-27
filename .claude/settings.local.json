@@ -9,7 +9,8 @@
       "Bash(/bin/zsh -i -c \"bun test tests/expense.test.ts 2>&1\")",
       "Bash(node -e:*)",
       "Bash(grep:*)",
-      "WebFetch(domain:docs.expo.dev)"
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(npx expo install expo-build-properties)"
     ]
   }
 }
