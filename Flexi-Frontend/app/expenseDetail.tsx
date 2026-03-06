@@ -3,7 +3,6 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  Text,
   TextInput,
   Platform,
   KeyboardAvoidingView,

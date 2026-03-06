@@ -457,12 +457,13 @@ export default function Setting() {
                 />
               </View>
 
-              <Divider />
+              {/* <Divider /> */}
 
               {/* Tiktok */}
-              <Pressable
+              {/* <Pressable
                 className={`flex-row items-center justify-between p-4`}
                 onPress={handleTiktokToggle}
+                disabled={true} // Currently disabled as backend integration is pending
               >
                 <View className="flex-row items-center !bg-transparent">
                   <FontAwesome
@@ -481,12 +482,12 @@ export default function Setting() {
                   {...getSwitchPlatformColors(theme, Tiktok)} // Use utility function
                   style={toggleScaleStyle} // Use centralized style
                 />
-              </Pressable>
+              </Pressable> */}
 
-              <Divider />
+              {/* <Divider /> */}
 
               {/* Shopee */}
-              <Pressable
+              {/* <Pressable
                 className={`flex-row items-center justify-between p-4`}
                 onPress={handleShopeeToggle}
               >
@@ -509,10 +510,10 @@ export default function Setting() {
                 />
               </Pressable>
 
-              <Divider />
+              <Divider /> */}
 
               {/* Line */}
-              <Pressable
+              {/* <Pressable
                 className={`flex-row items-center justify-between p-4`}
                 onPress={handleLineToggle}
               >
@@ -533,7 +534,7 @@ export default function Setting() {
                   {...getSwitchPlatformColors(theme, Line)} // Use utility function
                   style={toggleScaleStyle} // Use centralized style
                 />
-              </Pressable>
+              </Pressable> */}
             </View>
           </Section>
 

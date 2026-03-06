@@ -4,12 +4,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { CustomText } from "../CustomText"; // Make sure to import CustomText
+import { CustomText } from "../CustomText";
+import { CustomTextInput } from "../CustomTextInput";
 import { useTheme } from "@/providers/ThemeProvider";
-import i18n from "../../i18n"; // Import i18n instance
 import { t } from "i18next";
 import { openDropdown, clearDropdown } from "@/utils/dropdownManager";
 
@@ -171,7 +170,7 @@ const Dropdown = ({
                 size={18}
                 color={theme === "dark" ? "#b1b1b1" : "#606060"}
               />
-              <TextInput
+              <CustomTextInput
                 value={searchText}
                 onChangeText={setSearchText}
                 placeholder={t("common.search")}
@@ -182,7 +181,6 @@ const Dropdown = ({
                   color: theme === "dark" ? "#e4e4e7" : "#18181b",
                   fontSize: 14,
                   padding: 0,
-                  fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
                 }}
               />
               {searchText.length > 0 && (

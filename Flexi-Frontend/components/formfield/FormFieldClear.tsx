@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
-import { CustomText } from "../CustomText"; // Make sure to import CustomText
-import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
+import { View, TouchableOpacity } from "react-native";
+import { CustomText } from "../CustomText";
+import { CustomTextInput } from "../CustomTextInput";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -74,10 +74,9 @@ const FormField = ({
           opacity: editable ? 0.9 : 0.7,
         }}
       >
-        <TextInput
+        <CustomTextInput
           className={`flex-1 font-psemibold text-lg item-center h-full ${boxheight ? 'mt-4' : ''}`}
-          style={{ fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Medium" : "Poppins-Regular",
-            color: theme === "dark" ? "#b4b3b3" : "#2a2a2a" }}          
+          style={{ color: theme === "dark" ? "#b4b3b3" : "#2a2a2a" }}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}

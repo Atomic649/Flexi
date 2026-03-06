@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { CustomText } from "../CustomText";
+import { CustomTextInput } from "../CustomTextInput";
 import { Ionicons } from "@expo/vector-icons";
-import i18n from "../../i18n"; // Adjust the path if your i18n config is elsewhere
 
 interface FormFieldProps {
   title: string;
@@ -43,15 +43,9 @@ const FormField = ({
         )}
       </View>
       <View className="w-full h-16 px-4 bg-[#423f39] rounded-xl border-2 border-[#423f39] flex-row items-center">
-        <TextInput
+        <CustomTextInput
           key={isSecureField ? (showPassword ? "password-visible" : "password-hidden") : "plain"}
           className="flex-1 text-white font-psemibold text-lg h-full"
-          style={{
-            fontFamily:
-              i18n.language === "th"
-                ? "IBMPlexSansThai-Medium"
-                : "Poppins-Regular",
-          }}
           value={value}
           placeholder={placeholder}
           placeholderTextColor="#989795"
