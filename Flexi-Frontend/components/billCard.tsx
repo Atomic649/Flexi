@@ -36,7 +36,7 @@ export default function BillCard({
   onPress, // Add onPress prop to handle navigation from parent
   onDuplicate,
 }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const formatNumber = (value: number) =>
     new Intl.NumberFormat("en-US", {
@@ -268,10 +268,10 @@ export default function BillCard({
                           {item.quantity}
                         </CustomText>
                         <CustomText
-                          className="font-bold text-sm text-zinc-400 pt-1"
+                          className="font-bold text-sm text-zinc-400"
                           weight="regular"
                           numberOfLines={1}
-                          style={{ color: "#7e7d7a" }}
+                          style={{ color: "#7e7d7a", paddingTop: i18n.language === "th" ? 7 : 2 }}
                         >
                           {t(`product.unit.${item.unit}`)}
                         </CustomText>

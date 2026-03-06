@@ -2,7 +2,6 @@ import {
   ScrollView,
   Dimensions, // Import Dimensions for responsive width
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { useRouter } from "expo-router";
@@ -132,6 +131,36 @@ export default function CreateBusiness() {
     }
   };
 
+  // Show legal warning before enabling VAT
+  const handleVatSelect = (value: boolean) => {
+    if (!value) { setIsVatRegistered(false); return; }
+    setAlertConfig({
+      visible: true,
+      title: t("auth.businessRegister.vatAlert.title"),
+      message:
+        t("auth.businessRegister.vatAlert.declaration") + "\n\n" +
+        t("auth.businessRegister.vatAlert.legalHeader") + "\n" +
+        "• " + t("auth.businessRegister.vatAlert.penalty1") + "\n" +
+        "• " + t("auth.businessRegister.vatAlert.penalty2") + "\n\n" +
+        t("auth.businessRegister.vatAlert.fraudDisclaimer"),
+      buttons: [
+        {
+          text: t("auth.businessRegister.vatAlert.cancelButton"),
+          style: "cancel",
+          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+        },
+        {
+          text: t("auth.businessRegister.vatAlert.confirmButton"),
+          style: "default",
+          onPress: () => {
+            setIsVatRegistered(true);
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+          },
+        },
+      ],
+    });
+  };
+
   // Handle document type selection
   const handleDocumentTypeToggle = (type: DocumentTypeOption) => {
     // Don't allow unchecking Receipt as it's required
@@ -198,35 +227,29 @@ export default function CreateBusiness() {
             textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
           />
 
-          {/* VAT Toggle */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 28,
-              marginBottom: 8,
-            }}
-          >
-            <CustomText style={{ marginRight: 12 }}>
-              {isVatRegistered
-                ? t("auth.businessRegister.vatRegistered")
-                : t("auth.businessRegister.noVatRegistered")}
+          {/* VAT Selector */}
+          <View style={{ marginTop: 28, marginBottom: 8 }}>
+            <CustomText style={{ marginBottom: 8, fontSize: 14, fontWeight: "600", color: theme === "dark" ? "#b1b1b1" : "#606060", alignSelf: "flex-start" }}>
+              {t("auth.businessRegister.vatSectionLabel")}
             </CustomText>
-            <Switch
-              value={isVatRegistered}
-              onValueChange={setIsVatRegistered}
-              trackColor={{
-                false: theme === "dark" ? "#606060" : "#b1b1b1",
-                true: "#04ecc1",
-              }}
-              thumbColor={
-                isVatRegistered
-                  ? "#009688"
-                  : theme === "dark"
-                  ? "#222"
-                  : "#fff"
-              }
-            />
+            <View style={{ flexDirection: "row", borderRadius: 10, overflow: "hidden", borderWidth: 1, borderColor: theme === "dark" ? "#444" : "#d1d1d1" }}>
+              <TouchableOpacity
+                onPress={() => handleVatSelect(false)}
+                style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", backgroundColor: !isVatRegistered ? (theme === "dark" ? "#444" : "#e0e0e0") : "transparent" }}
+              >
+                <CustomText style={{ fontSize: 13, fontWeight: !isVatRegistered ? "600" : "400", color: !isVatRegistered ? (theme === "dark" ? "#fff" : "#333") : (theme === "dark" ? "#555" : "#aaa") }}>
+                  {t("auth.businessRegister.noVatRegistered")}
+                </CustomText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleVatSelect(true)}
+                style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", backgroundColor: isVatRegistered ? "#04ecc1" : "transparent" }}
+              >
+                <CustomText style={{ fontSize: 13, fontWeight: isVatRegistered ? "600" : "400", color: isVatRegistered ? "#004d40" : (theme === "dark" ? "#555" : "#aaa") }}>
+                  {t("auth.businessRegister.vatRegistered")}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <FormField2

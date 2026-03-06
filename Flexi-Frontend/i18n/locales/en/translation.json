@@ -213,8 +213,19 @@
       },
       "chooseBusinessType": "Select Business Type",
       "businessPhone": " Business Phone Number",
-      "vatRegistered": " Vat Registered",
-      "noVatRegistered": " No Vat Registered",
+      "vatSectionLabel": "Value Added Tax (VAT)",
+      "vatRegistered": "VAT Registered",
+      "noVatRegistered": "Not VAT Registered",
+      "vatAlert": {
+        "title": "⚠️ Confirm VAT Registration",
+        "declaration": "I hereby confirm that my business is properly registered for Value Added Tax (VAT) with the Revenue Department and is fully entitled to issue tax invoices.",
+        "legalHeader": "⚖️ Legal Provisions and Penalties",
+        "penalty1": "Issuing tax invoices without entitlement: imprisonment from 3 months to 7 years and a fine from THB 2,000 to THB 200,000 per count (Sections 86/13 and 90/4, Revenue Code)",
+        "penalty2": "Criminal fraud: fraudulently charging customers 7% VAT carries imprisonment up to 3 years or a fine up to THB 60,000 (Section 341, Criminal Code)",
+        "fraudDisclaimer": "If I create documents to deceive others or engage in any unlawful conduct, Flexi has no involvement in such wrongdoing under any circumstances. I agree to bear full legal responsibility, both civil and criminal, solely.",
+        "confirmButton": "Confirm — I am VAT Registered",
+        "cancelButton": "Cancel"
+      },
       "businessTypeOption": {
         "": "Select Business Type",
         "OnlineSale": "Online Sale",
