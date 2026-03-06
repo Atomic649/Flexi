@@ -1,6 +1,6 @@
 import express from "express";
 import authenticateToken from "../middleware/authMiddleware";
-import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout } from "../controllers/faceBookControllor";
+import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout, facebookAuthInit, facebookAuthCallback } from "../controllers/faceBookControllor";
 
 const router = express.Router();
 
@@ -12,6 +12,10 @@ router.get("/ad-accounts", authenticateToken, getFacebookAdAccounts);
 router.get("/campaigns", authenticateToken, getFacebookCampaigns);
 router.get("/adsets", authenticateToken, getFacebookAdSets);
 router.get("/ads", authenticateToken, getFacebookAds);
+
+// Mobile OAuth flow — PUBLIC (no auth, Facebook redirects here)
+router.get("/auth", facebookAuthInit);
+router.get("/callback", facebookAuthCallback);
 
 // Exchange short-lived token for long-lived token (server-side)
 router.post("/exchange", authenticateToken, exchangeFacebookToken);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   ScrollView,
   Pressable,
@@ -20,7 +20,7 @@ import { removeToken, getMemberId } from "@/utils/utility";
 import { useTextColorClass, useBackgroundColorClass } from "@/utils/themeUtils";
 import { useMarketing } from "@/providers/MarketingProvider";
 import {
-  loginWithFacebook,
+  useFacebookLogin,
   logoutFromFacebook,
 } from "@/utils/socialAuth/facebookAuth";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
@@ -54,6 +54,9 @@ export default function Setting() {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const [isProcessingFacebook, setIsProcessingFacebook] = useState(false);
+  const loginWithFacebook = useFacebookLogin();
+  // Pre-fetched memberId so the browser can open synchronously on user gesture
+  const memberIdRef = useRef<string>("");
 
   // Fetch Facebook login status from DB on mount
   const fetchFacebookStatus = useCallback(async () => {
@@ -61,6 +64,7 @@ export default function Setting() {
       setFbLoading(true);
       const memberId = await getMemberId();
       if (!memberId) { setFacebook(false); return; }
+      memberIdRef.current = memberId;
       const axios = await getAxiosWithAuth();
       const resp = await axios.get(`/facebook/status?memberId=${memberId}`);
       setFacebook(resp.data?.login === true);
@@ -334,7 +338,8 @@ export default function Setting() {
         });
       } else {
         // Login: run Facebook OAuth, backend saves token with login=true
-        const result = await loginWithFacebook();
+        // Pass pre-fetched memberId so the browser opens without async delay (avoids Safari popup block)
+        const result = await loginWithFacebook(memberIdRef.current);
 
         if (!result.success) {
           setAlertConfig({

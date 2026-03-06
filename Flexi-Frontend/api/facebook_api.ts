@@ -44,32 +44,34 @@ export type FacebookAd = {
 };
 
 class FacebookApi {
-  async getAdAccounts() {
+  async getAdAccounts(memberId?: string | null) {
     const axios = await getAxiosWithAuth();
-    const res = await axios.get("/facebook/ad-accounts");
+    const res = await axios.get("/facebook/ad-accounts", {
+      params: memberId ? { memberId } : undefined,
+    });
     return (res.data?.accounts ?? []) as FacebookAdAccount[];
   }
 
-  async getCampaigns(adAccountId: string) {
+  async getCampaigns(adAccountId: string, memberId?: string | null) {
     const axios = await getAxiosWithAuth();
     const res = await axios.get("/facebook/campaigns", {
-      params: { adAccountId },
+      params: { adAccountId, ...(memberId ? { memberId } : {}) },
     });
     return (res.data?.campaigns ?? []) as FacebookCampaign[];
   }
 
-  async getAdSets(campaignId: string) {
+  async getAdSets(campaignId: string, memberId?: string | null) {
     const axios = await getAxiosWithAuth();
     const res = await axios.get("/facebook/adsets", {
-      params: { campaignId },
+      params: { campaignId, ...(memberId ? { memberId } : {}) },
     });
     return (res.data?.adSets ?? []) as FacebookAdSet[];
   }
 
-  async getAds(adSetId: string) {
+  async getAds(adSetId: string, memberId?: string | null) {
     const axios = await getAxiosWithAuth();
     const res = await axios.get("/facebook/ads", {
-      params: { adSetId },
+      params: { adSetId, ...(memberId ? { memberId } : {}) },
     });
     return (res.data?.ads ?? []) as FacebookAd[];
   }

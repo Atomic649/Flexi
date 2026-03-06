@@ -57,12 +57,18 @@ const FacebookSetting = () => {
   const [error, setError] = useState<string | null>(null);
   const [adSetError, setAdSetError] = useState<string | null>(null);
   const [adError, setAdError] = useState<string | null>(null);
+  const [memberId, setMemberId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getMemberId().then((id) => setMemberId(id));
+  }, []);
 
   const loadAccounts = useCallback(async () => {
     try {
       setError(null);
       setLoadingAccounts(true);
-      const data = await FacebookApi.getAdAccounts();
+      const id = memberId || (await getMemberId());
+      const data = await FacebookApi.getAdAccounts(id);
       setAccounts(data);
       if (data.length > 0) {
         setSelectedAccount(data[0].id);
@@ -72,7 +78,7 @@ const FacebookSetting = () => {
     } finally {
       setLoadingAccounts(false);
     }
-  }, [t]);
+  }, [t, memberId]);
 
   const loadLinkedPlatforms = useCallback(async () => {
     try {
@@ -95,7 +101,8 @@ const FacebookSetting = () => {
       setAdSets([]);
       setSelectedAdSet(null);
       setAds([]);
-      const data = await FacebookApi.getCampaigns(adAccountId);
+      const id = memberId || (await getMemberId());
+      const data = await FacebookApi.getCampaigns(adAccountId, id);
       setCampaigns(data);
       if (data.length > 0) {
         setSelectedCampaign(data[0].id);
@@ -106,14 +113,15 @@ const FacebookSetting = () => {
     } finally {
       setLoadingCampaigns(false);
     }
-  }, [t]);
+  }, [t, memberId]);
 
   const loadAdSets = useCallback(async (campaignId: string | null) => {
     if (!campaignId) return;
     try {
       setAdSetError(null);
       setLoadingAdSets(true);
-      const data = await FacebookApi.getAdSets(campaignId);
+      const id = memberId || (await getMemberId());
+      const data = await FacebookApi.getAdSets(campaignId, id);
       setAdSets(data);
       setSelectedAdSet(data.length > 0 ? data[0].id : null);
       setAds([]);
@@ -125,14 +133,15 @@ const FacebookSetting = () => {
     } finally {
       setLoadingAdSets(false);
     }
-  }, [t]);
+  }, [t, memberId]);
 
   const loadAds = useCallback(async (adSetId: string | null) => {
     if (!adSetId) return;
     try {
       setAdError(null);
       setLoadingAds(true);
-      const data = await FacebookApi.getAds(adSetId);
+      const id = memberId || (await getMemberId());
+      const data = await FacebookApi.getAds(adSetId, id);
       setAds(data);
     } catch (e: any) {
       setAdError(e?.message || t("facebook.errors.loadAds"));
@@ -140,7 +149,7 @@ const FacebookSetting = () => {
     } finally {
       setLoadingAds(false);
     }
-  }, [t]);
+  }, [t, memberId]);
 
   useEffect(() => {
     loadAccounts();
