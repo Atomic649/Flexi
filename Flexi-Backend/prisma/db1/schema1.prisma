@@ -313,6 +313,7 @@ model DocumentCounter {
 
 model Bill {
   id                   Int           @id @default(autoincrement())
+  flexiId              String        @unique
   billId               String?
   quotationId          String?
   invoiceId            String?

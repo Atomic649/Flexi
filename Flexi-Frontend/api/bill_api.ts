@@ -206,5 +206,20 @@ class CallAPIBill {
             }
         }
     }
+
+    // Lookup Bill by flexiId (no auth — B2B expense auto-fill)
+    async lookupBillByFlexiIdAPI(flexiId: string): Promise<any> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.get(`/bill/lookup/${encodeURIComponent(flexiId.trim())}`);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error(t("common.networkError"));
+            }
+        }
+    }
 }
 export default new CallAPIBill();

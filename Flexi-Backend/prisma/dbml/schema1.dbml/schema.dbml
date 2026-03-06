@@ -110,6 +110,7 @@ Table DocumentCounter {
 
 Table Bill {
   id Int [pk, increment]
+  flexiId String [unique, not null]
   billId String
   quotationId String
   invoiceId String

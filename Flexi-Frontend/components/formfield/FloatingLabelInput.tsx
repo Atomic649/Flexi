@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { View, TextInputProps } from "react-native";
+import { TextInput, View, TextInputProps } from "react-native";
 import { CustomText } from "@/components/CustomText";
-import { CustomTextInput } from "@/components/CustomTextInput";
 import { useTheme } from "@/providers/ThemeProvider";
+import i18n from "@/i18n";
 
 interface FloatingLabelInputProps extends TextInputProps {
   label: string;
@@ -63,7 +63,7 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
           {label}
         </CustomText>
       )}
-      <CustomTextInput
+      <TextInput
         className={`h-14 px-4 rounded-xl border-2  ${
           theme === "dark"
             ? "bg-transparent"
@@ -71,11 +71,16 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         }`}
         style={[
           {
-            borderColor: hasError
-              ? "#FF9C01"
-              : isFocused
-              ? "#FF9C01"
-              : theme === "dark" ? "#2c2c2cff" : "#c0beb550",
+            fontFamily:
+              i18n.language === "th"
+                ? "IBMPlexSansThai-Medium"
+                : "Poppins-Regular",
+            color: theme === "dark" ? "#ffffff" : "#000000",
+            borderColor: hasError 
+              ? "#FF9C01" // border for required but empty fields
+              : isFocused 
+              ? "#FF9C01" 
+              : theme === "dark" ? "#2c2c2cff" : "#c0beb550",           
             cursorColor: "#FF9C01",
           },
           inputStyle,

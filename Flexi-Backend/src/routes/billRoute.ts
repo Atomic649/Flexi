@@ -9,11 +9,15 @@ import {
   getthisYearSales,
   updateCashStatusById,
   updateDocumentTypeById,
+  lookupBillByFlexiId,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
 
 // Create express router
 const router = express.Router();
+
+// Lookup bill by flexiId (no auth — used for B2B expense auto-fill)
+router.get("/lookup/:flexiId", lookupBillByFlexiId);
 
 //creating a New Bill*
 router.post("/", authenticateToken, createBill);

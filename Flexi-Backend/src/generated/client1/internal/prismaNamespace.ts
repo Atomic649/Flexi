@@ -1584,6 +1584,7 @@ export type DocumentCounterScalarFieldEnum = (typeof DocumentCounterScalarFieldE
 
 export const BillScalarFieldEnum = {
   id: 'id',
+  flexiId: 'flexiId',
   billId: 'billId',
   quotationId: 'quotationId',
   invoiceId: 'invoiceId',

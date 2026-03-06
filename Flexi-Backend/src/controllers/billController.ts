@@ -9,6 +9,7 @@ import Joi from "joi";
 import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
+import { randomBytes } from "node:crypto";
 
 const upload = multer(multerConfig.multerConfigImage.config).single(
   multerConfig.multerConfigImage.keyUpload,
@@ -16,6 +17,21 @@ const upload = multer(multerConfig.multerConfigImage.config).single(
 
 // Create  instance of PrismaClient
 const prisma = flexiDBPrismaClient;
+
+function generateFlexiId(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let result = "FX";
+  
+  // Create an array of 12 random bytes
+  const bytes = randomBytes(12);
+
+  for (let i = 0; i < 12; i++) {
+    // Use modulo to map the random byte to your alphabet
+    result += chars[bytes[i] % chars.length];
+  }
+  
+  return result;
+}
 
 const generateDocumentId = async (
   tx: any,
@@ -463,6 +479,7 @@ const createBill = async (req: Request, res: Response) => {
               const billData: any = {
                 ...idFields,
                 customerId: customerIdFromDb,
+                flexiId: generateFlexiId(),
                 cName: billInput.cName,
                 cLastName: billInput.cLastName,
                 cPhone: billInput.cPhone,
@@ -548,6 +565,7 @@ const createBill = async (req: Request, res: Response) => {
           const singleBillData: any = {
             ...idFields,
             customerId: customerIdFromDb,
+            flexiId: generateFlexiId(),
             cName: billInput.cName,
             cLastName: billInput.cLastName,
             cPhone: billInput.cPhone,
@@ -1638,6 +1656,76 @@ const getthisYearSales = async (req: Request, res: Response) => {
   }
 };
 
+// Lookup a Bill by flexiId (public — no auth) for B2B expense auto-fill
+const lookupBillByFlexiId = async (req: Request, res: Response) => {
+  const { flexiId } = req.params;
+  if (!flexiId) {
+    return res.status(400).json({ message: "flexiId is required" });
+  }
+  try {
+    const bill = await prisma.bill.findUnique({
+      where: { flexiId },
+      select: {
+        flexiId: true,
+        billId: true,
+        invoiceId: true,
+        quotationId: true,
+        DocumentType: true,
+        total: true,
+        totalAfterTax: true,
+        totalTax: true,
+        vatPercent: true,
+        withHoldingTax: true,
+        WHTpercent: true,
+        WHTAmount: true,
+        taxType: true,
+        purchaseAt: true,
+        deleted: true,
+        businessId: {
+          select: {
+            businessName: true,
+            taxId: true,
+            taxType: true,
+            vat: true,
+            businessAddress: true,
+            businessPhone: true,
+          },
+        },
+      },
+    });
+
+    if (!bill || bill.deleted) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
+    return res.json({
+      flexiId: bill.flexiId,
+      documentType: bill.DocumentType,
+      taxInvoiceNo: bill.invoiceId || bill.billId || bill.quotationId || null,
+      total: bill.total,
+      totalAfterTax: bill.totalAfterTax,
+      vatAmount: bill.totalTax,
+      vatPercent: bill.vatPercent,
+      withHoldingTax: bill.withHoldingTax,
+      WHTpercent: bill.WHTpercent,
+      WHTAmount: bill.WHTAmount,
+      taxType: bill.taxType,
+      purchaseAt: bill.purchaseAt,
+      supplier: {
+        name: bill.businessId.businessName,
+        taxId: bill.businessId.taxId,
+        taxType: bill.businessId.taxType,
+        vat: bill.businessId.vat,
+        address: bill.businessId.businessAddress,
+        phone: bill.businessId.businessPhone,
+      },
+    });
+  } catch (e) {
+    console.error("lookupBillByFlexiId error:", e);
+    return res.status(500).json({ message: "Failed to lookup bill" });
+  }
+};
+
 export {
   createBill,
   getBills,
@@ -1648,4 +1736,5 @@ export {
   updateCashStatusById,
   updateDocumentTypeById,
   getthisYearSales,
+  lookupBillByFlexiId,
 };

@@ -7,6 +7,7 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { View } from "@/components/Themed";
 import {
@@ -28,6 +29,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
+import CallAPIBill from "@/api/bill_api";
 import { getMemberId } from "@/utils/utility";
 import { format } from "date-fns";
 import i18n from "@/i18n";
@@ -163,6 +165,9 @@ export default function CreateExpense({
   const [isDebt, setIsDebt] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [dueDatePickerVisible, setDueDatePickerVisible] = useState(false);
+  const [flexiIdInput, setFlexiIdInput] = useState("");
+  const [flexiIdLoading, setFlexiIdLoading] = useState(false);
+  const [flexiIdError, setFlexiIdError] = useState("");
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -201,6 +206,41 @@ export default function CreateExpense({
       // Neither VAT nor WHT selected
       setVatAmount(0);
       setWHTAmount(0);
+    }
+  };
+
+  const handleFlexiIdLookup = async () => {
+    const id = flexiIdInput.trim();
+    if (!id) return;
+    setFlexiIdLoading(true);
+    setFlexiIdError("");
+    try {
+      const data = await CallAPIBill.lookupBillByFlexiIdAPI(id);
+      // Auto-fill supplier fields
+      if (data.supplier?.name) setSName(data.supplier.name);
+      if (data.supplier?.taxId) setSTaxId(data.supplier.taxId);
+      if (data.supplier?.address) setSAddress(data.supplier.address);
+      if (data.supplier?.taxType) setTaxType(data.supplier.taxType);
+      if (data.taxInvoiceNo) setTaxInvoiceNo(data.taxInvoiceNo);
+      // Auto-fill amount from totalAfterTax or total
+      const amt = data.totalAfterTax ?? data.total;
+      if (amt != null) setAmount(String(amt));
+      // Auto-fill VAT
+      if (data.vatAmount && Number(data.vatAmount) > 0) {
+        setVatIncluded(true);
+        setVatAmount(Number(data.vatAmount));
+      }
+      // Auto-fill WHT
+      if (data.withHoldingTax) {
+        setWithHoldingTax(true);
+        setWHTpercent(Number(data.WHTpercent ?? 0));
+        setWHTAmount(Number(data.WHTAmount ?? 0));
+      }
+      setShowAllFormField(true);
+    } catch {
+      setFlexiIdError(t("expense.flexiIdNotFound", "ไม่พบเอกสาร FlexiID นี้"));
+    } finally {
+      setFlexiIdLoading(false);
     }
   };
 
@@ -2152,6 +2192,55 @@ export default function CreateExpense({
                   value={desc}
                   onChangeText={setDesc}
                 />
+                {/* FlexiID Lookup — auto-fill from another Flexi business's bill */}
+                <View style={{ marginTop: 8, marginBottom: 4 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <TextInput
+                      value={flexiIdInput}
+                      onChangeText={(v) => { setFlexiIdInput(v); setFlexiIdError(""); }}
+                      placeholder={t("expense.flexiIdPlaceholder", "FlexiID จากใบเสร็จ")}
+                      placeholderTextColor={theme === "dark" ? "#555" : "#aaa"}
+                      style={{
+                        flex: 1,
+                        height: 44,
+                        borderWidth: 1,
+                        borderColor: flexiIdError ? "#ef4444" : (theme === "dark" ? "#444" : "#d1d1d1"),
+                        borderRadius: 10,
+                        paddingHorizontal: 14,
+                        fontSize: 13,
+                        color: theme === "dark" ? "#e0e0e0" : "#333",
+                        backgroundColor: theme === "dark" ? "#2D2D2D" : "#f5f5f5",
+                        letterSpacing: 1,
+                      }}
+                      autoCapitalize="characters"
+                      returnKeyType="search"
+                      onSubmitEditing={handleFlexiIdLookup}
+                    />
+                    <TouchableOpacity
+                      onPress={handleFlexiIdLookup}
+                      disabled={flexiIdLoading || !flexiIdInput.trim()}
+                      style={{
+                        height: 44,
+                        paddingHorizontal: 14,
+                        borderRadius: 10,
+                        backgroundColor: flexiIdInput.trim() ? "#04ecc1" : (theme === "dark" ? "#333" : "#e0e0e0"),
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {flexiIdLoading
+                        ? <ActivityIndicator size="small" color="#004d40" />
+                        : <Ionicons name="search" size={18} color={flexiIdInput.trim() ? "#004d40" : (theme === "dark" ? "#555" : "#aaa")} />
+                      }
+                    </TouchableOpacity>
+                  </View>
+                  {flexiIdError ? (
+                    <CustomText style={{ color: "#ef4444", fontSize: 12, marginTop: 4, marginLeft: 4 }}>
+                      {flexiIdError}
+                    </CustomText>
+                  ) : null}
+                </View>
+
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
                   value={sName}
