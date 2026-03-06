@@ -145,10 +145,10 @@ const processLoginSuccess = async (token: string) => {
       console.warn("Token exchange failed, using initial token");
     }
 
-    await AsyncStorage.setItem(
-      "@facebook_auth_token",
-      JSON.stringify({ accessToken: finalToken, timestamp: Date.now() })
-    );
+    // await AsyncStorage.setItem(
+    //   "@facebook_auth_token",
+    //   JSON.stringify({ accessToken: finalToken, timestamp: Date.now() })
+    // );
 
     if (memberId && !savedDuringExchange) {
       await axios.post("/facebook/token", {

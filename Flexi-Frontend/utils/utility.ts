@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import * as Network from 'expo-network';
 
 
@@ -10,40 +11,48 @@ export const checkNetwork = async (): Promise<boolean> => {
     const networkState = await Network.getNetworkStateAsync();
     return networkState.isConnected ?? false;
   } catch (error) {
-    console.error('Error checking network status:', error);
+    console.error('Error checking network status:', error instanceof Error ? error.message : 'Unknown error');
     return false;
   }
 };
 
-// Function to save the token to AsyncStorage
+// Function to save the token — stored in SecureStore (encrypted)
 export const saveToken = async (token: string) => {
   try {
-    await AsyncStorage.setItem('token', token);
-    // console.log('💾 Token saved:', token);
+    await SecureStore.setItemAsync('token', token);
   } catch (error) {
-    console.error('Error saving token:', error);
+    console.error('Error saving token:', error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
-// Function to get the token from AsyncStorage
+// Function to get the token — reads from SecureStore, migrates from AsyncStorage if needed
 export const getToken = async (): Promise<string | null> => {
   try {
-    const token = await AsyncStorage.getItem('token');
-    // console.log('✅ Token Get :', token);
-    return token;
+    const secureToken = await SecureStore.getItemAsync('token');
+    if (secureToken) return secureToken;
+
+    // Migration: token was previously stored in AsyncStorage — move it to SecureStore
+    const legacyToken = await AsyncStorage.getItem('token');
+    if (legacyToken) {
+      await SecureStore.setItemAsync('token', legacyToken);
+      await AsyncStorage.removeItem('token');
+      return legacyToken;
+    }
+
+    return null;
   } catch (error) {
-    console.error('Error getting token:', error);
+    console.error('Error getting token:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
-}
+};
 
-// Function to remove the token from AsyncStorage
+// Function to remove the token from SecureStore (and legacy AsyncStorage)
 export const removeToken = async () => {
   try {
-    await AsyncStorage.removeItem('token');
-    // console.log('🗑️ Token removed');
+    await SecureStore.deleteItemAsync('token');
+    await AsyncStorage.removeItem('token'); // clean up legacy location
   } catch (error) {
-    console.error('Error removing token:', error);
+    console.error('Error removing token:', error instanceof Error ? error.message : 'Unknown error');
   }
 };
 
@@ -53,7 +62,7 @@ export const saveUserId = async (userId: number) => {
     await AsyncStorage.setItem('userId', userId.toString());
     // console.log('💾 userId saved:', userId);
   } catch (error) {
-    console.error('Error saving userId:', error);
+    console.error('Error saving userId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -61,10 +70,10 @@ export const saveUserId = async (userId: number) => {
 export const getUserId = async (): Promise<number | null> => {
   try {
     const userId = await AsyncStorage.getItem('userId');
-    console.log('✅ userId Get :', userId);
+    // console.log('✅ userId Get :', userId);
     return userId ? parseInt(userId) : null;
   } catch (error) {
-    console.error('Error getting userId:', error);
+    console.error('Error getting userId:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -77,7 +86,7 @@ export const saveMemberId = async (memberId: string) => {
     await AsyncStorage.setItem('memberId', value);
     // console.log('💾 memberId saved:', memberId);
   } catch (error) {
-    console.error('Error saving memberId:', error);
+    console.error('Error saving memberId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -85,10 +94,10 @@ export const saveMemberId = async (memberId: string) => {
 export const getMemberId = async (): Promise<string | null> => {
   try {
     const memberId = await AsyncStorage.getItem('memberId');
-    console.log('✅ memberId Get :', memberId);
+    // console.log('✅ memberId Get :', memberId);
     return memberId;
   } catch (error) {
-    console.error('Error getting memberId:', error);
+    console.error('Error getting memberId:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -99,7 +108,7 @@ export const removeMemberId = async () => {
     await AsyncStorage.removeItem('memberId');
     // console.log('🗑️ memberId removed');
   } catch (error) {
-    console.error('Error removing memberId:', error);
+    console.error('Error removing memberId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -111,7 +120,7 @@ export const replaceMemberId = async (memberId: string) => {
     await AsyncStorage.setItem('memberId', value);       
     // console.log('🔄 memberId replaced:', memberId);
   } catch (error) {
-    console.error('Error replacing memberId:', error);
+    console.error('Error replacing memberId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -119,9 +128,8 @@ export const replaceMemberId = async (memberId: string) => {
 export const saveBusinessId = async (businessId: number) => {
   try {
     await AsyncStorage.setItem('businessId', businessId.toString());
-    console.log('💾 businessId saved:', businessId);
   } catch (error) {
-    console.error('Error saving businessId:', error);
+    console.error('Error saving businessId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -132,7 +140,7 @@ export const getBusinessId = async (): Promise<number | null> => {
     // console.log('✅ businessId Get :', businessId);
     return businessId ? parseInt(businessId) : null;
   } catch (error) {
-    console.error('Error getting businessId:', error);
+    console.error('Error getting businessId:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -141,9 +149,8 @@ export const getBusinessId = async (): Promise<number | null> => {
 export const removeBusinessId = async () => {
   try {
     await AsyncStorage.removeItem('businessId');
-    console.log('🗑️ businessId removed');
   } catch (error) {
-    console.error('Error removing businessId:', error);
+    console.error('Error removing businessId:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -153,7 +160,7 @@ export const savePaymentTermCondition = async (paymentTermCondition: string, mem
     await AsyncStorage.setItem(`paymentTermCondition_${memberId}`, paymentTermCondition);
     // console.log(`💾 paymentTermCondition saved for member ${memberId}:`, paymentTermCondition);
   } catch (error) {
-    console.error('Error saving paymentTermCondition:', error);
+    console.error('Error saving paymentTermCondition:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -164,7 +171,7 @@ export const getPaymentTermCondition = async (memberId: string): Promise<string 
     // console.log(`✅ paymentTermCondition Get for member ${memberId}:`, paymentTermCondition);
     return paymentTermCondition;
   } catch (error) {
-    console.error('Error getting paymentTermCondition:', error);
+    console.error('Error getting paymentTermCondition:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -175,7 +182,7 @@ export const removePaymentTermCondition = async (memberId: string) => {
     await AsyncStorage.removeItem(`paymentTermCondition_${memberId}`);
     // console.log(`🗑️ paymentTermCondition removed for member ${memberId}`);
   } catch (error) {
-    console.error('Error removing paymentTermCondition:', error);
+    console.error('Error removing paymentTermCondition:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -185,7 +192,7 @@ export const saveRemark = async (remark: string, memberId: string) => {
     await AsyncStorage.setItem(`remark_${memberId}`, remark);
     // console.log(`💾 remark saved for member ${memberId}:`, remark);
   } catch (error) {
-    console.error('Error saving remark:', error);
+    console.error('Error saving remark:', error instanceof Error ? error.message : 'Unknown error');
   }
 }
 
@@ -196,7 +203,7 @@ export const getRemark = async (memberId: string): Promise<string | null> => {
     // console.log(`✅ remark Get for member ${memberId}:`, remark);
     return remark;
   } catch (error) {
-    console.error('Error getting remark:', error);
+    console.error('Error getting remark:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -207,6 +214,6 @@ export const removeRemark = async (memberId: string) => {
     await AsyncStorage.removeItem(`remark_${memberId}`);
     // console.log(`🗑️ remark removed for member ${memberId}`);
   } catch (error) {
-    console.error('Error removing remark:', error);
+    console.error('Error removing remark:', error instanceof Error ? error.message : 'Unknown error');
   }
 }

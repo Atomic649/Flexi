@@ -19,7 +19,6 @@ export default function ResetPassword() {
   // Some email clients can wrap long URLs and introduce whitespace/newlines.
   const normalizedToken = typeof rawToken === 'string' ? rawToken.replace(/\s+/g, '') : rawToken;
   
-  console.log("ResetPassword Screen - Token:", normalizedToken);
 
   const getErrorMessage = (err: unknown) => {
     if (!err) return "เครือข่ายมีปัญหา (Network Error)";
@@ -48,41 +47,33 @@ export default function ResetPassword() {
   }, [normalizedToken, router]);
 
   const handleResetPassword = async () => {
-    console.log("handleResetPassword called");
-
     // Validate inputs
     if (!normalizedToken) {
-      console.log("Validation failed: No token");
       Alert.alert("ข้อผิดพลาด (Error)", "ลิงก์ไม่ถูกต้อง (Invalid Link)");
       return;
     }
 
     if (!newPassword.trim()) {
-      console.log("Validation failed: Empty password");
       Alert.alert("ข้อผิดพลาด (Error)", "กรุณากรอกรหัสผ่านใหม่ (Please enter a new password)");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      console.log("Validation failed: Mismatch");
       Alert.alert("ข้อผิดพลาด (Error)", "รหัสผ่านไม่ตรงกัน (Passwords do not match)");
       return;
     }
 
     if (newPassword.length < 8 || !isStrongPassword(newPassword)) {
-      console.log("Validation failed: Weak password");
       Alert.alert("ข้อผิดพลาด (Error)", "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก ตัวเลข และอักขระพิเศษ (Password must be at least 8 characters and include uppercase, lowercase, number, and special character)");
       return;
     }
 
     try {
-      console.log("Calling resetPasswordAPI...");
       setIsLoading(true);
-      await CallAPIUser.resetPasswordAPI({ 
-        token: (normalizedToken as string), 
-        newPassword 
+      await CallAPIUser.resetPasswordAPI({
+        token: (normalizedToken as string),
+        newPassword
       });
-      console.log("API call successful");
       
       setIsLoading(false);
       
@@ -98,7 +89,7 @@ export default function ResetPassword() {
         );
       }
     } catch (error) {
-      console.log("API call failed:", error);
+      console.error("Reset password failed:", error instanceof Error ? error.message : "Unknown error");
       setIsLoading(false);
       Alert.alert(
         "ข้อผิดพลาด (Error)", 

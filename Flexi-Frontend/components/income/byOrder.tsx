@@ -118,7 +118,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIBill.getBillsAPI(memberId);
-        setBills(response);
+        setBills(Array.isArray(response) ? response : []);
       } else {
         console.error("Member ID is null");
       }
@@ -162,7 +162,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
       const memberId = await getMemberId();
       if (memberId) {
         const response = await CallAPIBill.getBillsAPI(memberId);
-        setBills(response);
+        setBills(Array.isArray(response) ? response : []);
       }
 
       console.log(`Bill ${billId} document type updated to ${newDocumentType}`);

@@ -70,8 +70,9 @@ const monthly = ({ refreshSignal = 0 }: MonthlyProps) => {
       if (memberId) {
         const response = await CallAPIReport.getMonthlyReportsAPI(memberId);
         // Generate months starting from oldest in database and merge with backend data
-        const generatedMonths = generateMonths(response || []);
-        const mergedData = mergeDataWithMonths(response || [], generatedMonths);
+        const safeResponse = Array.isArray(response) ? response : [];
+        const generatedMonths = generateMonths(safeResponse);
+        const mergedData = mergeDataWithMonths(safeResponse, generatedMonths);
         setMonthlyReport(mergedData);
       } else {
         console.log("Member ID is null");

@@ -134,14 +134,19 @@
           "autoLogAppEventsEnabled": false,
           "isAutoInitEnabled": true
         }
-      ],    
+      ],
       [
         "expo-build-properties",
         {
-          "ios": { "newArchEnabled": false },
-          "android": { "newArchEnabled": false }
+          "ios": {
+            "newArchEnabled": false
+          },
+          "android": {
+            "newArchEnabled": false
+          }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

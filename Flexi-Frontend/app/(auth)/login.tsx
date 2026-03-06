@@ -168,7 +168,7 @@ export default function Login() {
       });
     } catch (error: any) {
       // Handle login error properly
-      console.error("Login error:", error);
+      console.error("Login error:", error instanceof Error ? error.message : "Unknown error");
 
       let errorMessage = "auth.login.alerts.genericError";
 

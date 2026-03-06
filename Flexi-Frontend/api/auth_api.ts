@@ -18,13 +18,11 @@ class CallAPIUser {
       return { message: "No Network Connection" };
     }
     try {
-      const response = await getAxios().post("/auth/register", data);
-
-      console.log("📝registerAPI:", response.data);
-
+      const payload = { ...data, email: data.email.trim() };
+      const response = await getAxios().post("/auth/register", payload);
       return response.data;
     } catch (error) {
-      console.error("🚨Register API Error:", error);
+      console.error("Register API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -39,13 +37,11 @@ class CallAPIUser {
       return { message: "No Network Connection" };
     }
     try {
-      const response = await getAxios().post("/auth/login", data);
-
-      console.log("🚀loginAPI:", response.data);
-
+      const payload = { ...data, email: data.email.trim() };
+      const response = await getAxios().post("/auth/login", payload);
       return response.data;
     } catch (error) {
-      console.error("🚨Login API Error:", error);
+      console.error("Login API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -60,11 +56,11 @@ class CallAPIUser {
       return { message: "No Network Connection" };
     }
     try {
-      const response = await getAxios().post("/auth/resend-verification", data);
-      console.log("📧resendVerificationEmailAPI:", response.data);
+      const payload = { email: data.email.trim() };
+      const response = await getAxios().post("/auth/resend-verification", payload);
       return response.data;
     } catch (error) {
-      console.error("🚨Resend Verification Email API Error:", error);
+      console.error("Resend Verification Email API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -86,10 +82,9 @@ class CallAPIUser {
       }
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/auth/session/`);
-     // console.log("🚀sessionAPI :", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨Get Session API Error:", error);
+      console.error("Get Session API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         // A missing/invalid auth token is a normal state (logged out).
         if (error.response.status === 401) {
@@ -121,7 +116,7 @@ class CallAPIUser {
       );
       return response.data;
     } catch (error) {
-      console.error("🚨Update User API Error:", error);
+      console.error("Update User API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -134,11 +129,9 @@ class CallAPIUser {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/user/profile/${id}`);
-
-      console.log("🚀UserAPI:", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨 Get User API Error:", error);
+      console.error("Get User API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -152,10 +145,9 @@ class CallAPIUser {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/user/users`);
-      console.log("🚀RegisteredUsersAPI:", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨 Get Registered Users API Error:", error);
+      console.error("Get Registered Users API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -177,10 +169,9 @@ class CallAPIUser {
           data: { password: data.password },
         }
       );
-      console.log("🚀deleteUserAPI:", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨Delete User API Error:", error);
+      console.error("Delete User API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -204,20 +195,19 @@ class CallAPIUser {
       if (!session || !session.session || !session.session.id) {
         throw new Error("User session not found");
       }
-      
+
       // Add user ID to request data instead of in URL
       const requestData = {
         ...data,
         id: session.session.id
       };
-      
+
       // Use POST method to match backend route
       const response = await axiosInstance.post(`/auth/change-password`, requestData);
-      console.log("🚀changePasswordAPI:", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨Change Password API Error:", error)
-      
+      console.error("Change Password API Error:", error instanceof Error ? error.message : "Unknown error");
+
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -234,10 +224,9 @@ class CallAPIUser {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get("/auth/logout");
-      console.log("🚀logoutAPI:", "signout");
       return response.data;
     } catch (error) {
-      console.error("🚨Logout API Error:", error);
+      console.error("Logout API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -258,11 +247,11 @@ class CallAPIUser {
       return { error: { message: "No Network Connection" } };
     }
     try {
-      const response = await getAxios().post("/auth/facebook-login", data);
-      console.log("🚀facebookLoginAPI:", response.data);
+      const payload = { ...data, email: data.email.trim() };
+      const response = await getAxios().post("/auth/facebook-login", payload);
       return response.data;
     } catch (error) {
-      console.error("🚨Facebook Login API Error:", error);
+      console.error("Facebook Login API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         return { error: error.response.data };
       } else {
@@ -277,11 +266,11 @@ class CallAPIUser {
       return { message: "No Network Connection" };
     }
     try {
-      const response = await getAxios().post("/auth/forgot-password", data);
-      console.log("🚀forgotPasswordAPI:", response.data);
+      const payload = { email: data.email.trim() };
+      const response = await getAxios().post("/auth/forgot-password", payload);
       return response.data;
     } catch (error) {
-      console.error("🚨Forgot Password API Error:", error);
+      console.error("Forgot Password API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {
@@ -291,19 +280,18 @@ class CallAPIUser {
   }
 
   // Reset Password API
-  async resetPasswordAPI(data: { 
-    token: string; 
-    newPassword: string 
+  async resetPasswordAPI(data: {
+    token: string;
+    newPassword: string
   }): Promise<any> {
     if (!(await checkNetwork())) {
       return { message: "No Network Connection" };
     }
     try {
       const response = await getAxios().post("/auth/reset-password", data);
-      console.log("🚀resetPasswordAPI:", response.data);
       return response.data;
     } catch (error) {
-      console.error("🚨Reset Password API Error:", error);
+      console.error("Reset Password API Error:", error instanceof Error ? error.message : "Unknown error");
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {

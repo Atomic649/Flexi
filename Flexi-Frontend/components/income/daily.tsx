@@ -67,7 +67,7 @@ const Daily = ({ refreshSignal = 0 }: DailyProps) => {
         const response = await CallAPIReport.getDailyReportsAPI(memberId);
         // Generate dates and merge with backend data
         const generatedDates = generateDates(30); // Show last 30 days
-        const mergedData = mergeDataWithDates(response || [], generatedDates);
+        const mergedData = mergeDataWithDates(Array.isArray(response) ? response : [], generatedDates);
         setDailyReport(mergedData);
       } else {
         console.log("Member ID is null");

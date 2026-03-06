@@ -97,7 +97,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
         );
   // DEBUG: log full response to inspect fields like sName
   // Keep log to help diagnose missing sName; can be removed later
-  console.log('DEBUG: AdsExpenseReport response =>', response);
+  // console.log('DEBUG: AdsExpenseReport response =>', response);
         // Ensure response is an array before setting state
         setExpense(Array.isArray(response) ? response : []);
       } else {
