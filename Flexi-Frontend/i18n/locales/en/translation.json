@@ -40,6 +40,7 @@
     "search": "Search",
     "saving": "Auto-saving...",
     "back": "Back",
+    "noData": "No data",
     "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later."
 
   },
@@ -481,6 +482,7 @@
       "title": "Social Media",
       "seeAll": "See All Platforms",
       "facebook": "Facebook",
+      "meta": "Meta (Facebook & Instagram)",
       "instagram": "Instagram",
       "twitter": "Twitter",
       "line": "Line",

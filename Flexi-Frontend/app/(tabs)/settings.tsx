@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { View } from "@/components/Themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome,FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {CustomButton} from "@/components/CustomButton";
 import { useTranslation } from "react-i18next";
@@ -437,15 +437,15 @@ export default function Setting() {
                     }
                   }}
                 >
-                  <FontAwesome
-                    name="facebook"
+                  <FontAwesome6
+                    name="infinity"
                     size={24}
                     color={theme === "dark" ? "#d9d2d2" : "#75726a"}
                     style={{ marginRight: 16 }}
                   />
                   <CustomText className="text-base"
                   weight="regular">
-                    {t("settings.socialMedia.facebook")}
+                    {t("settings.socialMedia.meta")}
                   </CustomText>
                 </Pressable>
                 <Switch
