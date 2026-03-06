@@ -11,12 +11,14 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
 import * as FileSystem from "expo-file-system/legacy";
+import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import ExpenseTable from "./ExpenseTable";
 import { getMemberId } from "@/utils/utility";
 import CallAPIExpense from "@/api/expense_api";
+import CallAPIBill from "@/api/bill_api";
 import { router } from "expo-router";
 import ExpenseDetail from "@/app/expenseDetail";
 import CreateExpense from "@/app/createAExpense";
@@ -46,6 +48,13 @@ export default function DetectExpense() {
   const [alertTitle, setAlertTitle] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertButtons, setAlertButtons] = useState<any[]>([]);
+
+  // FlexiID lookup modal state
+  const [flexiModalVisible, setFlexiModalVisible] = useState(false);
+  const [flexiIdInput, setFlexiIdInput] = useState("");
+  const [flexiLoading, setFlexiLoading] = useState(false);
+  const [flexiError, setFlexiError] = useState<string | null>(null);
+  const [flexiPrefillData, setFlexiPrefillData] = useState<any>(null);
 
   // auto delete if save is false
   const autoDelete = async () => {
@@ -259,6 +268,53 @@ export default function DetectExpense() {
     setIsCreateExpenseVisible(true);
   };
 
+  const handleFlexiLookup = async () => {
+    const trimmed = flexiIdInput.trim();
+    if (!trimmed) {
+      setFlexiError(t("expense.flexi.emptyId", "กรุณากรอก FlexiID"));
+      return;
+    }
+    setFlexiError(null);
+    setFlexiLoading(true);
+    try {
+      const bill = await CallAPIBill.lookupBillByFlexiIdAPI(trimmed);
+
+      const isInvoice = bill.documentType === "Invoice";
+      const amount = Number(bill.totalAfterTax ?? bill.total ?? 0);
+
+      // Build desc from product list
+      const descLines: string[] = (bill.products ?? []).map((p: any) =>
+        `${p.name} x${p.quantity}${p.unit && p.unit !== "NotSpecified" ? ` ${p.unit}` : ""} ${p.unitPrice} บาท`
+      );
+      const desc = descLines.join("\n");
+
+      setFlexiPrefillData({
+        sName: bill.supplier?.name ?? "",
+        sTaxId: bill.supplier?.taxId ?? "",
+        sAddress: bill.supplier?.address ?? "",
+        taxType: bill.supplier?.taxType ?? bill.taxType ?? "Individual",
+        taxInvoiceNo: bill.taxInvoiceNo ?? "",
+        amount,
+        vatIncluded: !!(bill.vatAmount && Number(bill.vatAmount) > 0),
+        vatAmount: Number(bill.vatAmount ?? 0),
+        withHoldingTax: !!bill.withHoldingTax,
+        WHTpercent: Number(bill.WHTpercent ?? 0),
+        WHTAmount: Number(bill.WHTAmount ?? 0),
+        isDebt: isInvoice,
+        desc,
+        purchaseAt: bill.purchaseAt ?? new Date().toISOString(),
+      });
+      setFlexiModalVisible(false);
+      setFlexiIdInput("");
+      setIsCreateExpenseVisible(true);
+    } catch (e: any) {
+      const msg = e?.message || t("expense.flexi.notFound", "ไม่พบเอกสาร กรุณาตรวจสอบ FlexiID");
+      setFlexiError(msg);
+    } finally {
+      setFlexiLoading(false);
+    }
+  };
+
   const toggleExpenseDetail = (expense: any) => {
     setSelectedExpense(expense);
     setRefreshTrigger((prev) => prev + 1); // Increment refresh trigger when viewing an expense
@@ -290,6 +346,12 @@ export default function DetectExpense() {
             alignSelf: "center",
           }}
           onPress={handleAdd}
+          onLongPress={() => {
+            setFlexiIdInput("");
+            setFlexiError(null);
+            setFlexiModalVisible(true);
+          }}
+          delayLongPress={500}
         >
           <Ionicons
             name="add"
@@ -503,14 +565,135 @@ export default function DetectExpense() {
         </View>
       </Modal>
 
+      {/* FlexiID Lookup Modal */}
+      <Modal
+        visible={flexiModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setFlexiModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? "#000000bb" : "#00000055",
+          }}
+        >
+          <View
+            style={{
+              width: "88%",
+              borderRadius: 16,
+              padding: 24,
+              backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
+            }}
+          >
+            <CustomText
+              weight="semibold"
+              style={{
+                fontSize: 16,
+                marginBottom: 6,
+                color: theme === "dark" ? "#ffffff" : "#111111",
+              }}
+            >
+              {t("expense.flexi.title", "ดึงเอกสารจาก FlexiID")}
+            </CustomText>
+            <CustomText
+              style={{
+                fontSize: 12,
+                marginBottom: 16,
+                color: theme === "dark" ? "#888" : "#777",
+              }}
+            >
+              {t("expense.flexi.subtitle", "วางรหัส FlexiID ของใบเสร็จหรือใบแจ้งหนี้ที่ต้องการบันทึกเป็นรายจ่าย")}
+            </CustomText>
+
+            {/* Input row */}
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <TextInput
+                style={{
+                  flex: 1,
+                  borderWidth: 1,
+                  borderColor: theme === "dark" ? "#444" : "#ccc",
+                  borderRadius: 10,
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  color: theme === "dark" ? "#fff" : "#111",
+                  fontSize: 13,
+                  fontFamily: i18n.language === "th" ? "IBMPlexSansThai-Regular" : "Poppins-Regular",
+                  backgroundColor: theme === "dark" ? "#2c2c2e" : "#f5f5f5",
+                }}
+                placeholder="FlexiID"
+                placeholderTextColor={theme === "dark" ? "#555" : "#aaa"}
+                value={flexiIdInput}
+                onChangeText={(v) => { setFlexiIdInput(v); setFlexiError(null); }}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <TouchableOpacity
+                onPress={async () => {
+                  const text = await Clipboard.getStringAsync();
+                  if (text) { setFlexiIdInput(text.trim()); setFlexiError(null); }
+                }}
+                style={{
+                  marginLeft: 8,
+                  padding: 10,
+                  borderRadius: 10,
+                  backgroundColor: theme === "dark" ? "#2c2c2e" : "#f0f0f0",
+                }}
+              >
+                <Ionicons name="clipboard-outline" size={20} color={theme === "dark" ? "#aaa" : "#555"} />
+              </TouchableOpacity>
+            </View>
+
+            {flexiError && (
+              <CustomText style={{ color: "#e74c3c", fontSize: 12, marginBottom: 10 }}>
+                {flexiError}
+              </CustomText>
+            )}
+
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
+              <TextButtonCancle
+                title={t("common.cancel")}
+                handlePress={() => { setFlexiModalVisible(false); setFlexiIdInput(""); setFlexiError(null); }}
+              />
+              <TouchableOpacity
+                onPress={handleFlexiLookup}
+                disabled={flexiLoading}
+                style={{
+                  backgroundColor: "#04ecc1",
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  opacity: flexiLoading ? 0.6 : 1,
+                }}
+              >
+                {flexiLoading
+                  ? <ActivityIndicator size="small" color="#004d40" />
+                  : (
+                    <CustomText weight="semibold" style={{ color: "#004d40", fontSize: 14 }}>
+                      {t("expense.flexi.fetch", "ดึงเอกสาร")}
+                    </CustomText>
+                  )
+                }
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <CreateExpense
         success={() => {
-          // Refresh immediately after a successful create
           onRefresh();
           console.log("🔥 Refreshed after create");
         }}
         visible={isCreateExpenseVisible}
-        onClose={() => setIsCreateExpenseVisible(false)}
+        onClose={() => {
+          setIsCreateExpenseVisible(false);
+          setFlexiPrefillData(null);
+        }}
         expense={{
           date: "",
           note: "",
@@ -521,6 +704,7 @@ export default function DetectExpense() {
           id: 0,
           group: "",
         }}
+        prefillData={flexiPrefillData ?? undefined}
       />
       <CustomAlert
         visible={alertVisible}

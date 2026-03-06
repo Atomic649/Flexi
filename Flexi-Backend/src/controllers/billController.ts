@@ -1691,6 +1691,14 @@ const lookupBillByFlexiId = async (req: Request, res: Response) => {
             businessPhone: true,
           },
         },
+        product: {
+          select: {
+            quantity: true,
+            unitPrice: true,
+            unit: true,
+            productList: { select: { name: true } },
+          },
+        },
       },
     });
 
@@ -1719,6 +1727,12 @@ const lookupBillByFlexiId = async (req: Request, res: Response) => {
         address: bill.businessId.businessAddress,
         phone: bill.businessId.businessPhone,
       },
+      products: bill.product.map((p) => ({
+        name: p.productList.name,
+        quantity: p.quantity,
+        unitPrice: p.unitPrice,
+        unit: p.unit,
+      })),
     });
   } catch (e) {
     console.error("lookupBillByFlexiId error:", e);

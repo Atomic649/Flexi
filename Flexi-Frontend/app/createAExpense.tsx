@@ -82,6 +82,23 @@ const formatDate = (dateString: string) => {
   }
 };
 
+interface FlexiPrefillData {
+  sName?: string;
+  sTaxId?: string;
+  sAddress?: string;
+  taxType?: "Individual" | "Juristic";
+  taxInvoiceNo?: string;
+  amount?: number;
+  vatIncluded?: boolean;
+  vatAmount?: number;
+  withHoldingTax?: boolean;
+  WHTpercent?: number;
+  WHTAmount?: number;
+  isDebt?: boolean;
+  desc?: string;
+  purchaseAt?: string;
+}
+
 interface ExpenseDetailProps {
   visible: boolean;
   onClose: () => void;
@@ -96,6 +113,7 @@ interface ExpenseDetailProps {
     id: number;
     group: string;
   };
+  prefillData?: FlexiPrefillData;
 }
 
 type AttachmentPreviewType = "image" | "pdf";
@@ -111,6 +129,7 @@ export default function CreateExpense({
   success,
   visible,
   onClose,
+  prefillData,
 }: ExpenseDetailProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -158,9 +177,6 @@ export default function CreateExpense({
     selectedDate?: string;
     selectedAddress?: string;
   }>({});
-  const hasAttachment = Boolean(attachment);
-  const isImageAttachment = attachment?.preview === "image";
-  const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(false);
   const [isDebt, setIsDebt] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -168,6 +184,34 @@ export default function CreateExpense({
   const [flexiIdInput, setFlexiIdInput] = useState("");
   const [flexiIdLoading, setFlexiIdLoading] = useState(false);
   const [flexiIdError, setFlexiIdError] = useState("");
+  const [isFlexiDocument, setIsFlexiDocument] = useState(false);
+  const hasAttachment = Boolean(attachment) || isFlexiDocument;
+  const isImageAttachment = attachment?.preview === "image";
+  const isPdfAttachment = attachment?.preview === "pdf";
+
+  // Apply prefillData when modal becomes visible with FlexiID data
+  useEffect(() => {
+    if (!visible || !prefillData) return;
+    if (prefillData.sName !== undefined) setSName(prefillData.sName);
+    if (prefillData.sTaxId !== undefined) setSTaxId(prefillData.sTaxId);
+    if (prefillData.sAddress !== undefined) setSAddress(prefillData.sAddress);
+    if (prefillData.taxType) setTaxType(prefillData.taxType);
+    if (prefillData.taxInvoiceNo !== undefined) setTaxInvoiceNo(prefillData.taxInvoiceNo);
+    if (prefillData.amount != null) setAmount(String(prefillData.amount));
+    if (prefillData.vatIncluded !== undefined) setVatIncluded(prefillData.vatIncluded);
+    if (prefillData.vatAmount != null) setVatAmount(prefillData.vatAmount);
+    if (prefillData.withHoldingTax !== undefined) setWithHoldingTax(prefillData.withHoldingTax);
+    if (prefillData.WHTpercent != null) setWHTpercent(prefillData.WHTpercent);
+    if (prefillData.WHTAmount != null) setWHTAmount(prefillData.WHTAmount);
+    if (prefillData.isDebt !== undefined) setIsDebt(prefillData.isDebt);
+    if (prefillData.desc !== undefined) setDesc(prefillData.desc);
+    if (prefillData.purchaseAt) {
+      setDate([prefillData.purchaseAt]);
+      setSelectedDates([prefillData.purchaseAt]);
+    }
+    setIsFlexiDocument(true);
+    setShowAllFormField(true);
+  }, [visible, prefillData]);
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -764,6 +808,7 @@ export default function CreateExpense({
     setOCRAlert(null);
     setShowOCRResult(false);
     setIsDebt(false);
+    setIsFlexiDocument(false);
   };
 
   const handleClose = () => {
@@ -2027,7 +2072,7 @@ export default function CreateExpense({
                     >
                       {vat && vatIncluded && (
                         <>
-                          <CustomText style={{ textAlign: "left" }}>
+                          <CustomText style={{ textAlign: "left" , paddingTop: i18n.language === "th" ? 1 : 0 }}>
                             {formatNumber(
                               // If vatIncluded is true we treat `amount` as final paid amount
                               // and reverse-calculate base and VAT using current WHTpercent.
@@ -2038,7 +2083,7 @@ export default function CreateExpense({
                               ).base,
                             )}
                           </CustomText>
-                          <CustomText style={{ textAlign: "left" }}>
+                          <CustomText style={{ textAlign: "left" , paddingTop: i18n.language === "th" ? 5 : 0 }}>
                             {formatNumber(
                               reverseCalculateFromFinal(
                                 Number(amount) || 0,
@@ -2052,7 +2097,7 @@ export default function CreateExpense({
                       {DocumentType &&
                         DocumentType.includes("WithholdingTax") &&
                         withHoldingTax && (
-                          <CustomText style={{ textAlign: "left" }}>
+                          <CustomText style={{ textAlign: "left", paddingTop: i18n.language === "th" ? 4 : 0 }}>
                             {typeof WHTAmount === "number" && !isNaN(WHTAmount)
                               ? formatNumber(WHTAmount)
                               : "0.00"}
@@ -2192,55 +2237,7 @@ export default function CreateExpense({
                   value={desc}
                   onChangeText={setDesc}
                 />
-                {/* FlexiID Lookup — auto-fill from another Flexi business's bill */}
-                <View style={{ marginTop: 8, marginBottom: 4 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                    <TextInput
-                      value={flexiIdInput}
-                      onChangeText={(v) => { setFlexiIdInput(v); setFlexiIdError(""); }}
-                      placeholder={t("expense.flexiIdPlaceholder", "FlexiID จากใบเสร็จ")}
-                      placeholderTextColor={theme === "dark" ? "#555" : "#aaa"}
-                      style={{
-                        flex: 1,
-                        height: 44,
-                        borderWidth: 1,
-                        borderColor: flexiIdError ? "#ef4444" : (theme === "dark" ? "#444" : "#d1d1d1"),
-                        borderRadius: 10,
-                        paddingHorizontal: 14,
-                        fontSize: 13,
-                        color: theme === "dark" ? "#e0e0e0" : "#333",
-                        backgroundColor: theme === "dark" ? "#2D2D2D" : "#f5f5f5",
-                        letterSpacing: 1,
-                      }}
-                      autoCapitalize="characters"
-                      returnKeyType="search"
-                      onSubmitEditing={handleFlexiIdLookup}
-                    />
-                    <TouchableOpacity
-                      onPress={handleFlexiIdLookup}
-                      disabled={flexiIdLoading || !flexiIdInput.trim()}
-                      style={{
-                        height: 44,
-                        paddingHorizontal: 14,
-                        borderRadius: 10,
-                        backgroundColor: flexiIdInput.trim() ? "#04ecc1" : (theme === "dark" ? "#333" : "#e0e0e0"),
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {flexiIdLoading
-                        ? <ActivityIndicator size="small" color="#004d40" />
-                        : <Ionicons name="search" size={18} color={flexiIdInput.trim() ? "#004d40" : (theme === "dark" ? "#555" : "#aaa")} />
-                      }
-                    </TouchableOpacity>
-                  </View>
-                  {flexiIdError ? (
-                    <CustomText style={{ color: "#ef4444", fontSize: 12, marginTop: 4, marginLeft: 4 }}>
-                      {flexiIdError}
-                    </CustomText>
-                  ) : null}
-                </View>
-
+              
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
                   value={sName}
@@ -2486,6 +2483,16 @@ export default function CreateExpense({
                 ) : null}
 
                 <View className="flex-row justify-evenly pt-2">
+                  {isFlexiDocument ? (
+                    <View className="items-center justify-center pt-2">
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#04ecc120", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
+                        <Ionicons name="link-outline" size={18} color="#04ecc1" />
+                        <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
+                          {t("expense.flexi.documentLinked", "เอกสารจาก FlexiID")}
+                        </CustomText>
+                      </View>
+                    </View>
+                  ) : (
                   <TouchableOpacity
                     onPress={handleOpenAttachmentPicker}
                     className=" items-center justify-center pt-2"
@@ -2499,6 +2506,7 @@ export default function CreateExpense({
                       {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
                     </CustomText>
                   </TouchableOpacity>
+                  )}
 
                   {isImageAttachment && (
                     <TouchableOpacity

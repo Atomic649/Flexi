@@ -213,7 +213,10 @@ export default function ExpenseDetail({
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
-  const hasAttachment = Boolean(attachment) || (isDebt
+  const [isFlexiDocument, setIsFlexiDocument] = useState(
+    !!(expense.sName && !expense.image && !expense.pdf && !expense.invoiceImage && !expense.invoicePdf)
+  );
+  const hasAttachment = Boolean(attachment) || isFlexiDocument || (isDebt
     ? Boolean(invoiceImage) || Boolean(invoicePdfUrl)
     : Boolean(image) || Boolean(pdfUrl));
   const isImageAttachment = attachment?.preview === "image";
@@ -245,6 +248,9 @@ export default function ExpenseDetail({
         setPdfUrl(fetchedExpense.pdf || "");
         setInvoiceImage(fetchedExpense.invoiceImage || "");
         setInvoicePdfUrl(fetchedExpense.invoicePdf || "");
+        setIsFlexiDocument(
+          !!(fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf)
+        );
         setGroup(fetchedExpense.group);
         setVatIncluded(fetchedExpense.vat);
         setWithHoldingTax(fetchedExpense.withHoldingTax || false);
@@ -1593,6 +1599,16 @@ export default function ExpenseDetail({
                     </CustomText>
                   </TouchableOpacity>
                   {/* attach bill document */}
+                  {isFlexiDocument ? (
+                    <View className="items-center justify-center">
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#04ecc120", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
+                        <Ionicons name="link-outline" size={18} color="#04ecc1" />
+                        <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
+                          {t("expense.flexi.documentLinked", "เอกสารจาก FlexiID")}
+                        </CustomText>
+                      </View>
+                    </View>
+                  ) : (
                   <TouchableOpacity
                     onPress={handleOpenAttachmentPicker}
                     className=" items-center justify-center"
@@ -1607,6 +1623,7 @@ export default function ExpenseDetail({
                       {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
                     </CustomText>
                   </TouchableOpacity>
+                  )}
 
                   <SecondaryButton
                     title={t("common.save")}
