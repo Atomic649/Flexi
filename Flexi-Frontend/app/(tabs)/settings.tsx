@@ -67,13 +67,42 @@ export default function Setting() {
       memberIdRef.current = memberId;
       const axios = await getAxiosWithAuth();
       const resp = await axios.get(`/facebook/status?memberId=${memberId}`);
-      setFacebook(resp.data?.login === true);
+      const data = resp.data;
+      setFacebook(data?.login === true);
+
+      // If login=true but token is expired, prompt re-login
+      if (data?.login === true && data?.expired === true) {
+        setAlertConfig({
+          visible: true,
+          title: t("settings.socialMedia.tokenExpiredTitle") || "Facebook Session Expired",
+          message:
+            t("settings.socialMedia.tokenExpiredMessage") ||
+            "Your Facebook connection has expired. Please re-connect to continue.",
+          buttons: [
+            {
+              text: t("common.cancel") || "Cancel",
+              style: "cancel",
+              onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
+            },
+            {
+              text: t("settings.socialMedia.reconnect") || "Re-connect",
+              onPress: async () => {
+                setAlertConfig((prev) => ({ ...prev, visible: false }));
+                const result = await loginWithFacebook(memberIdRef.current);
+                if (result?.success) {
+                  setFacebook(true);
+                }
+              },
+            },
+          ],
+        });
+      }
     } catch {
       setFacebook(false);
     } finally {
       setFbLoading(false);
     }
-  }, []);
+  }, [loginWithFacebook, t]);
 
   useEffect(() => {
     fetchFacebookStatus();
@@ -345,7 +374,7 @@ export default function Setting() {
           setAlertConfig({
             visible: true,
             title: t("common.error"),
-            message: result.error || t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
+            message: (result as { success: boolean; error: any }).error || t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
             buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
           });
           return;
@@ -400,7 +429,13 @@ export default function Setting() {
               <View className={`flex-row items-center justify-between p-4`}>
                 <Pressable
                   className="flex-row items-center !bg-transparent flex-1"
-                  onPress={() => router.push("/FacebookSetting")}
+                  onPress={() => {
+                    if (!Facebook) {
+                      handleFacebookToggle();
+                    } else {
+                      router.push("/FacebookSetting");
+                    }
+                  }}
                 >
                   <FontAwesome
                     name="facebook"

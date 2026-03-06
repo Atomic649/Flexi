@@ -63,6 +63,39 @@ const FacebookSetting = () => {
     getMemberId().then((id) => setMemberId(id));
   }, []);
 
+  // Detect expired Facebook token (OAuthException code 190)
+  const isFbTokenExpired = (e: any): boolean => {
+    const fbError =
+      e?.response?.data?.error || e?.response?.data?.details?.error;
+    return (
+      fbError?.type === "OAuthException" ||
+      fbError?.code === 190 ||
+      (typeof fbError?.message === "string" &&
+        fbError.message.toLowerCase().includes("oauthexception"))
+    );
+  };
+
+  const showReconnectAlert = useCallback(() => {
+    setAlertConfig({
+      visible: true,
+      title:
+        t("settings.socialMedia.tokenExpiredTitle") ||
+        "Facebook Session Expired",
+      message:
+        t("settings.socialMedia.tokenExpiredMessage") ||
+        "Your Facebook session has expired. Please go to Settings and re-connect Facebook.",
+      buttons: [
+        {
+          text: t("common.ok") || "OK",
+          onPress: () => {
+            setAlertConfig((prev) => ({ ...prev, visible: false }));
+            router.back();
+          },
+        },
+      ],
+    });
+  }, [t, router]);
+
   const loadAccounts = useCallback(async () => {
     try {
       setError(null);
@@ -74,11 +107,15 @@ const FacebookSetting = () => {
         setSelectedAccount(data[0].id);
       }
     } catch (e: any) {
-      setError(e?.message || t("facebook.errors.loadAccounts"));
+      if (isFbTokenExpired(e)) {
+        showReconnectAlert();
+      } else {
+        setError(e?.message || t("facebook.errors.loadAccounts"));
+      }
     } finally {
       setLoadingAccounts(false);
     }
-  }, [t, memberId]);
+  }, [t, memberId, showReconnectAlert]);
 
   const loadLinkedPlatforms = useCallback(async () => {
     try {
@@ -108,12 +145,16 @@ const FacebookSetting = () => {
         setSelectedCampaign(data[0].id);
       }
     } catch (e: any) {
-      setError(e?.message || t("facebook.errors.loadCampaigns"));
+      if (isFbTokenExpired(e)) {
+        showReconnectAlert();
+      } else {
+        setError(e?.message || t("facebook.errors.loadCampaigns"));
+      }
       setCampaigns([]);
     } finally {
       setLoadingCampaigns(false);
     }
-  }, [t, memberId]);
+  }, [t, memberId, showReconnectAlert]);
 
   const loadAdSets = useCallback(async (campaignId: string | null) => {
     if (!campaignId) return;
@@ -126,14 +167,18 @@ const FacebookSetting = () => {
       setSelectedAdSet(data.length > 0 ? data[0].id : null);
       setAds([]);
     } catch (e: any) {
-      setAdSetError(e?.message || t("facebook.errors.loadAdSets"));
+      if (isFbTokenExpired(e)) {
+        showReconnectAlert();
+      } else {
+        setAdSetError(e?.message || t("facebook.errors.loadAdSets"));
+      }
       setAdSets([]);
       setSelectedAdSet(null);
       setAds([]);
     } finally {
       setLoadingAdSets(false);
     }
-  }, [t, memberId]);
+  }, [t, memberId, showReconnectAlert]);
 
   const loadAds = useCallback(async (adSetId: string | null) => {
     if (!adSetId) return;
@@ -144,12 +189,16 @@ const FacebookSetting = () => {
       const data = await FacebookApi.getAds(adSetId, id);
       setAds(data);
     } catch (e: any) {
-      setAdError(e?.message || t("facebook.errors.loadAds"));
+      if (isFbTokenExpired(e)) {
+        showReconnectAlert();
+      } else {
+        setAdError(e?.message || t("facebook.errors.loadAds"));
+      }
       setAds([]);
     } finally {
       setLoadingAds(false);
     }
-  }, [t, memberId]);
+  }, [t, memberId, showReconnectAlert]);
 
   useEffect(() => {
     loadAccounts();

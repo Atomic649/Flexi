@@ -493,7 +493,11 @@
       "shopee": "ช้อปปี้",
       "youtube": "ยูทูบ",
       "connected": "เชื่อมต่อแล้ว",
-      "disconnected": "ยกเลิกการเชื่อมต่อแล้ว"
+      "disconnected": "ยกเลิกการเชื่อมต่อแล้ว",
+      "connectionFailed": "เชื่อมต่อ {{platform}} ไม่สำเร็จ",
+      "tokenExpiredTitle": "เซสชัน Facebook หมดอายุ",
+      "tokenExpiredMessage": "การเชื่อมต่อ Facebook ของคุณหมดอายุแล้ว กรุณาเชื่อมต่อใหม่อีกครั้ง",
+      "reconnect": "เชื่อมต่อใหม่"
     },
     "logout": {
       "logout": "ออกจากระบบ",

@@ -488,7 +488,11 @@
       "shopee": "Shopee",
       "youtube": "YouTube",
       "connected": "Connected",
-      "disconnected": "Disconnected"
+      "disconnected": "Disconnected",
+      "connectionFailed": "Failed to connect {{platform}}",
+      "tokenExpiredTitle": "Facebook Session Expired",
+      "tokenExpiredMessage": "Your Facebook connection has expired. Please re-connect to continue.",
+      "reconnect": "Re-connect"
     },
     "businessSetting": {
       "product": "Product",

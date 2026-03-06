@@ -957,22 +957,29 @@ export const facebookAdsCostCronJob = cron.schedule("9 0 * * *", async () => {
   await ingestFacebookSpendYesterdayToAdsCosts();
 });
 
-// Far-future expiry date used for all stored tokens.
-// Actual token validity is enforced by Facebook's API, not by this field.
-const FAR_FUTURE_EXPIRES = () =>
-  new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000);
+// Compute expiry from Facebook's actual expires_in response (seconds).
+// Long-lived user access tokens are valid for ~60 days per Facebook policy.
+// Falls back to 60 days if expires_in is missing.
+const computeExpiresAt = (expiresInSeconds?: number): Date => {
+  const seconds =
+    expiresInSeconds && expiresInSeconds > 0
+      ? expiresInSeconds
+      : 60 * 24 * 60 * 60; // 60-day fallback
+  return new Date(Date.now() + seconds * 1000);
+};
 
 /**
  * POST /facebook/token
- * Body: { memberId: string, token: string }
+ * Body: { memberId: string, token: string, expiresAt?: number (ms) }
  * Stores or updates the Facebook access token for a member in PlatformToken table.
- * Sets login=true and expiresAt=10 years from now.
+ * Uses caller-provided expiresAt if given, otherwise defaults to 60 days.
  */
 export const saveFacebookToken = async (req: Request, res: Response) => {
   try {
-    const { memberId, token } = req.body as {
+    const { memberId, token, expiresAt: expiresAtMs } = req.body as {
       memberId?: string;
       token?: string;
+      expiresAt?: number;
     };
 
     if (!memberId || !token) {
@@ -981,7 +988,9 @@ export const saveFacebookToken = async (req: Request, res: Response) => {
         .json({ message: "memberId and token are required" });
     }
 
-    const expiresDate = FAR_FUTURE_EXPIRES();
+    const expiresDate = expiresAtMs
+      ? new Date(expiresAtMs)
+      : computeExpiresAt();
 
     const existing = await prisma.platformToken.findFirst({
       where: { memberId, platform: SocialMedia.Facebook },
@@ -1060,10 +1069,12 @@ export const exchangeFacebookToken = async (req: Request, res: Response) => {
           details: r.data,
         });
 
-    // Always store with a far-future expiry — Facebook's API enforces real validity
-    const expiresDate = FAR_FUTURE_EXPIRES();
+    // Use Facebook's actual expires_in (seconds) — long-lived tokens are ~60 days
+    const expiresDate = computeExpiresAt(r.data?.expires_in);
     console.log(
-      "Exchanged Facebook token; storing with far-future expiry",
+      "Exchanged Facebook token; expires_in from Facebook:",
+      r.data?.expires_in,
+      "→ expiresAt:",
       expiresDate.toISOString(),
     );
 
@@ -1137,9 +1148,16 @@ export const getFacebookStatus = async (req: Request, res: Response) => {
       select: { login: true, expiresAt: true },
     });
 
+    const isExpired =
+      record?.login === true &&
+      !!record.expiresAt &&
+      record.expiresAt < new Date();
+
     return res.json({
       linked: record?.login === true,
       login: record?.login ?? false,
+      expired: isExpired,
+      expiresAt: record?.expiresAt?.getTime() ?? null,
     });
   } catch (err: any) {
     console.error("Failed to get Facebook status", err?.message || err);
@@ -1276,6 +1294,7 @@ export const facebookAuthCallback = async (req: Request, res: Response) => {
 
     // 2. Exchange short-lived → long-lived token
     let longToken = shortToken;
+    let longExpiresIn: number | undefined;
     try {
       const longRes = await axios.get(`${graphApiUrl}/oauth/access_token`, {
         params: {
@@ -1286,12 +1305,13 @@ export const facebookAuthCallback = async (req: Request, res: Response) => {
         },
       });
       longToken = longRes.data?.access_token || shortToken;
+      longExpiresIn = longRes.data?.expires_in; // seconds, typically ~60 days
     } catch {
       console.warn("Long-lived token exchange failed; using short-lived token");
     }
 
-    // 3. Save to DB
-    const expiresDate = FAR_FUTURE_EXPIRES();
+    // 3. Save to DB — use actual expires_in from Facebook (max ~60 days for user tokens)
+    const expiresDate = computeExpiresAt(longExpiresIn);
     if (memberId) {
       const existing = await prisma.platformToken.findFirst({
         where: { memberId, platform: SocialMedia.Facebook },

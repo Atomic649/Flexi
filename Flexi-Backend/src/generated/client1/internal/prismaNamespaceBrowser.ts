@@ -361,6 +361,7 @@ export const PlatformTokenScalarFieldEnum = {
   memberId: 'memberId',
   token: 'token',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   expiresAt: 'expiresAt',
   login: 'login'
 } as const

@@ -40,6 +40,7 @@ export type PlatformTokenMinAggregateOutputType = {
   memberId: string | null
   token: string | null
   createdAt: Date | null
+  updatedAt: Date | null
   expiresAt: Date | null
   login: boolean | null
 }
@@ -50,6 +51,7 @@ export type PlatformTokenMaxAggregateOutputType = {
   memberId: string | null
   token: string | null
   createdAt: Date | null
+  updatedAt: Date | null
   expiresAt: Date | null
   login: boolean | null
 }
@@ -60,6 +62,7 @@ export type PlatformTokenCountAggregateOutputType = {
   memberId: number
   token: number
   createdAt: number
+  updatedAt: number
   expiresAt: number
   login: number
   _all: number
@@ -80,6 +83,7 @@ export type PlatformTokenMinAggregateInputType = {
   memberId?: true
   token?: true
   createdAt?: true
+  updatedAt?: true
   expiresAt?: true
   login?: true
 }
@@ -90,6 +94,7 @@ export type PlatformTokenMaxAggregateInputType = {
   memberId?: true
   token?: true
   createdAt?: true
+  updatedAt?: true
   expiresAt?: true
   login?: true
 }
@@ -100,6 +105,7 @@ export type PlatformTokenCountAggregateInputType = {
   memberId?: true
   token?: true
   createdAt?: true
+  updatedAt?: true
   expiresAt?: true
   login?: true
   _all?: true
@@ -197,6 +203,7 @@ export type PlatformTokenGroupByOutputType = {
   memberId: string
   token: string
   createdAt: Date
+  updatedAt: Date
   expiresAt: Date
   login: boolean
   _count: PlatformTokenCountAggregateOutputType | null
@@ -230,6 +237,7 @@ export type PlatformTokenWhereInput = {
   memberId?: Prisma.StringFilter<"PlatformToken"> | string
   token?: Prisma.StringFilter<"PlatformToken"> | string
   createdAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   expiresAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   login?: Prisma.BoolFilter<"PlatformToken"> | boolean
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
@@ -241,6 +249,7 @@ export type PlatformTokenOrderByWithRelationInput = {
   memberId?: Prisma.SortOrder
   token?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   login?: Prisma.SortOrder
   member?: Prisma.MemberOrderByWithRelationInput
@@ -255,6 +264,7 @@ export type PlatformTokenWhereUniqueInput = Prisma.AtLeast<{
   platform?: Prisma.EnumSocialMediaFilter<"PlatformToken"> | $Enums.SocialMedia
   memberId?: Prisma.StringFilter<"PlatformToken"> | string
   createdAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   expiresAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   login?: Prisma.BoolFilter<"PlatformToken"> | boolean
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
@@ -266,6 +276,7 @@ export type PlatformTokenOrderByWithAggregationInput = {
   memberId?: Prisma.SortOrder
   token?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   login?: Prisma.SortOrder
   _count?: Prisma.PlatformTokenCountOrderByAggregateInput
@@ -284,6 +295,7 @@ export type PlatformTokenScalarWhereWithAggregatesInput = {
   memberId?: Prisma.StringWithAggregatesFilter<"PlatformToken"> | string
   token?: Prisma.StringWithAggregatesFilter<"PlatformToken"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformToken"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformToken"> | Date | string
   expiresAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformToken"> | Date | string
   login?: Prisma.BoolWithAggregatesFilter<"PlatformToken"> | boolean
 }
@@ -292,6 +304,7 @@ export type PlatformTokenCreateInput = {
   platform: $Enums.SocialMedia
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
   member: Prisma.MemberCreateNestedOneWithoutPlatformTokenInput
@@ -303,6 +316,7 @@ export type PlatformTokenUncheckedCreateInput = {
   memberId: string
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
 }
@@ -311,6 +325,7 @@ export type PlatformTokenUpdateInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
   member?: Prisma.MemberUpdateOneRequiredWithoutPlatformTokenNestedInput
@@ -322,6 +337,7 @@ export type PlatformTokenUncheckedUpdateInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -332,6 +348,7 @@ export type PlatformTokenCreateManyInput = {
   memberId: string
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
 }
@@ -340,6 +357,7 @@ export type PlatformTokenUpdateManyMutationInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -350,6 +368,7 @@ export type PlatformTokenUncheckedUpdateManyInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -370,6 +389,7 @@ export type PlatformTokenCountOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   token?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   login?: Prisma.SortOrder
 }
@@ -384,6 +404,7 @@ export type PlatformTokenMaxOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   token?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   login?: Prisma.SortOrder
 }
@@ -394,6 +415,7 @@ export type PlatformTokenMinOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   token?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   login?: Prisma.SortOrder
 }
@@ -448,6 +470,7 @@ export type PlatformTokenCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
 }
@@ -457,6 +480,7 @@ export type PlatformTokenUncheckedCreateWithoutMemberInput = {
   platform: $Enums.SocialMedia
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
 }
@@ -496,6 +520,7 @@ export type PlatformTokenScalarWhereInput = {
   memberId?: Prisma.StringFilter<"PlatformToken"> | string
   token?: Prisma.StringFilter<"PlatformToken"> | string
   createdAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   expiresAt?: Prisma.DateTimeFilter<"PlatformToken"> | Date | string
   login?: Prisma.BoolFilter<"PlatformToken"> | boolean
 }
@@ -505,6 +530,7 @@ export type PlatformTokenCreateManyMemberInput = {
   platform: $Enums.SocialMedia
   token: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   expiresAt: Date | string
   login?: boolean
 }
@@ -513,6 +539,7 @@ export type PlatformTokenUpdateWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -522,6 +549,7 @@ export type PlatformTokenUncheckedUpdateWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -531,6 +559,7 @@ export type PlatformTokenUncheckedUpdateManyWithoutMemberInput = {
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
   token?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   login?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -543,6 +572,7 @@ export type PlatformTokenSelect<ExtArgs extends runtime.Types.Extensions.Interna
   memberId?: boolean
   token?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   expiresAt?: boolean
   login?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -554,6 +584,7 @@ export type PlatformTokenSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   memberId?: boolean
   token?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   expiresAt?: boolean
   login?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -565,6 +596,7 @@ export type PlatformTokenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   memberId?: boolean
   token?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   expiresAt?: boolean
   login?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -576,11 +608,12 @@ export type PlatformTokenSelectScalar = {
   memberId?: boolean
   token?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   expiresAt?: boolean
   login?: boolean
 }
 
-export type PlatformTokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "memberId" | "token" | "createdAt" | "expiresAt" | "login", ExtArgs["result"]["platformToken"]>
+export type PlatformTokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "memberId" | "token" | "createdAt" | "updatedAt" | "expiresAt" | "login", ExtArgs["result"]["platformToken"]>
 export type PlatformTokenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
 }
@@ -602,6 +635,7 @@ export type $PlatformTokenPayload<ExtArgs extends runtime.Types.Extensions.Inter
     memberId: string
     token: string
     createdAt: Date
+    updatedAt: Date
     expiresAt: Date
     login: boolean
   }, ExtArgs["result"]["platformToken"]>
@@ -1033,6 +1067,7 @@ export interface PlatformTokenFieldRefs {
   readonly memberId: Prisma.FieldRef<"PlatformToken", 'String'>
   readonly token: Prisma.FieldRef<"PlatformToken", 'String'>
   readonly createdAt: Prisma.FieldRef<"PlatformToken", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"PlatformToken", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"PlatformToken", 'DateTime'>
   readonly login: Prisma.FieldRef<"PlatformToken", 'Boolean'>
 }
