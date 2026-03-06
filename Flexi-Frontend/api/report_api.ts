@@ -9,7 +9,7 @@ class CallAPIReport {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/report/daily/${memberId}`);
 
-            console.log("🚀DailyReportAPI:", response.data);
+          //  console.log("🚀DailyReportAPI:", response.data);
 
             return response.data;
         } catch (error) {
@@ -27,7 +27,7 @@ class CallAPIReport {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/report/monthly/${memberId}`);
 
-            console.log("🚀MonthlyReportAPI:", response.data);
+           // console.log("🚀MonthlyReportAPI:", response.data);
 
             return response.data;
         } catch (error) {
@@ -45,7 +45,7 @@ class CallAPIReport {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/report/ads&expense/${memberId}`);
 
-            console.log("🚀AdsExpenseReportAPI:", response.data);
+            // console.log("🚀AdsExpenseReportAPI:", response.data);
 
             return response.data;
         } catch (error) {
@@ -64,7 +64,7 @@ class CallAPIReport {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/report/${memberId}/${date}`);
 
-            console.log("🚀DetailsEachDateAPI:", response.data);
+           // console.log("🚀DetailsEachDateAPI:", response.data);
 
             return response.data;
         } catch (error) {
@@ -83,7 +83,7 @@ class CallAPIReport {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/report/month/${memberId}/${month}`);
 
-            console.log("🚀DetailsEachMonthAPI:", response.data);
+         //   console.log("🚀DetailsEachMonthAPI:", response.data);
 
             return response.data;
         } catch (error) {

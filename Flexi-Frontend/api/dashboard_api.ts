@@ -80,7 +80,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/metrics?${queryString}`);
 
-      console.log("🚀Dashboard Metrics API:", response.data);
+    //  console.log("🚀Dashboard Metrics API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -100,7 +100,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/sales-chart?${queryString}`);
 
-      console.log("🚀Sales Chart Data API:", response.data);
+    //  console.log("🚀Sales Chart Data API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -120,7 +120,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/top-products?${queryString}`);
 
-      console.log("🚀Top Products API:", response.data);
+      // console.log("🚀Top Products API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -140,7 +140,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/top-stores?${queryString}`);
 
-      console.log("🚀Top Stores API:", response.data);
+   //   console.log("🚀Top Stores API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -180,7 +180,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/accounts-payable-receivable?${queryString}`);
 
-      console.log("🚀Accounts Payable/Receivable API:", response.data);
+    //  console.log("🚀Accounts Payable/Receivable API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -240,7 +240,7 @@ class CallAPIDashboard {
       const queryString = this.buildQueryString(filters);
       const response = await axiosInstance.get(`/dashboard/expense-breakdown?${queryString}`);
 
-      console.log("🚀Expense Breakdown API:", response.data);
+   //   console.log("🚀Expense Breakdown API:", response.data);
 
       return response.data;
     } catch (error) {

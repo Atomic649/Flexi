@@ -17,7 +17,7 @@ class CallAPIMember {
 
     try {
       const response = await getAxios().post("/member/create", data);
-      console.log("📝createMemberAPI:", response.data);
+      //console.log("📝createMemberAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Create Member API Error:", error);
@@ -37,7 +37,7 @@ class CallAPIMember {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.delete(`/member/soft/${uniqueId}`);
-      console.log("🗑️ softDeleteMemberAPI:", response.data);
+      //console.log("🗑️ softDeleteMemberAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Soft Delete Member API Error:", error);
@@ -56,7 +56,7 @@ class CallAPIMember {
     }
     try {
       const response = await getAxios().get(`/member/business/${businessId}`);
-      console.log("📝getMembersByBusinessIdAPI:", response.data);
+     // console.log("📝getMembersByBusinessIdAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Get Members By BusinessId API Error:", error);
@@ -76,7 +76,7 @@ class CallAPIMember {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(`/member/invite`, data);
-      console.log("📝inviteMemberByUsernameAPI:", response.data);
+      //console.log("📝inviteMemberByUsernameAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Invite Member API Error:", error);
@@ -96,7 +96,7 @@ class CallAPIMember {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(`/member/accept`, data);
-      console.log("📝acceptInvitationAPI:", response.data);
+    //  console.log("📝acceptInvitationAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Accept Invitation API Error:", error);
@@ -116,7 +116,7 @@ class CallAPIMember {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/member/pending/${userId}`);
-      console.log("📝getPendingInvitationsByUserAPI:", response.data);
+     // console.log("📝getPendingInvitationsByUserAPI:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Get Pending Invitations API Error:", error);

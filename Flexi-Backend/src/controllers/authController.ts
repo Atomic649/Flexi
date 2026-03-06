@@ -23,6 +23,15 @@ interface UserInput {
 
 const Prisma = flexiDBPrismaClient;
 
+// JWT secrets — must be set in environment variables
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_RESET_SECRET = process.env.JWT_RESET_SECRET;
+
+if (!JWT_SECRET || !JWT_RESET_SECRET) {
+  console.error("FATAL: JWT_SECRET and JWT_RESET_SECRET must be set in environment variables");
+  process.exit(1);
+}
+
 // JWT token expiration configuration
 const tokenConfig = { expiresIn: "30day" };
 const resetTokenConfig = { expiresIn: "1h" };

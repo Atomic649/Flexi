@@ -23,7 +23,7 @@ class CallAPIBusiness {
     try {
       const response = await getAxios().post("/businessacc/register", data);
 
-      console.log("📝Business Register API:", response.data);
+   //  console.log("📝Business Register API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -43,7 +43,7 @@ class CallAPIBusiness {
     }
     try {
       const response = await getAxios().get(`/businessacc/detail/${memberId}`);
-      console.log("📝Business Details API:", response.data);
+    //  console.log("📝Business Details API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Business Details API Error:", error);
@@ -71,7 +71,7 @@ class CallAPIBusiness {
         data
       );
 
-      console.log("📝Business Register API:", response.data);
+    //  console.log("📝Business Register API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -100,7 +100,7 @@ class CallAPIBusiness {
           },
         }
       );
-      console.log("📝Update Business Avatar API:", response.data);
+      //console.log("📝Update Business Avatar API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Update Business Avatar API Error:", error);
@@ -134,7 +134,7 @@ class CallAPIBusiness {
         `/businessacc/${memberId}`,
         data
       );
-      console.log("📝Update Business Details API:", response.data);
+      //console.log("📝Update Business Details API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Update Business Details API Error:", error);
@@ -155,7 +155,7 @@ class CallAPIBusiness {
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      console.log("📝Update Business Logo API:", response.data);
+      //console.log("📝Update Business Logo API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Update Business Logo API Error:", error);
@@ -172,7 +172,7 @@ class CallAPIBusiness {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/businessacc/userId/${userId}`);
-      console.log("📝Business Account Choice API:", response.data);
+      //console.log("📝Business Account Choice API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Business Account Choice API Error:", error);
@@ -213,7 +213,7 @@ class CallAPIBusiness {
         `/businessacc/${businessId}/add-partner-member`,
         { memberId, role }
       );
-      console.log("📝Connect Partner API:", response.data);
+      //console.log("📝Connect Partner API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨Connect Partner API Error:", error);

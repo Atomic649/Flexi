@@ -14,7 +14,7 @@ class CallAPIAdsEvent {
         try {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.post(`/ads-tracking`, data);
-            console.log("🚀 Create Ads Event API Response:", response.data);
+          //  console.log("🚀 Create Ads Event API Response:", response.data);
             return response.data;
         } catch (error) {
             console.error("🚨 Create Ads Event API Error:", error);

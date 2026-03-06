@@ -9,7 +9,7 @@ class CallAPIProduct {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/product/member/${memberId}`);
 
-      console.log("🚀ProductAPI:", response.data);
+      // console.log("🚀ProductAPI:", response.data);
 
       return response.data;
     } catch (error) {

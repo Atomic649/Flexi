@@ -15,7 +15,7 @@ class CallAPIPrint {
         }
       });
 
-      console.log("🚀 Monthly Report API:", response.data);
+    //  console.log("🚀 Monthly Report API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -40,8 +40,8 @@ class CallAPIPrint {
         }
       });
 
-      console.log("🚀 Get Bills By Date Range API:", response.data);
-      console.log("startDate:", startDate, "endDate:", endDate);
+      // console.log("🚀 Get Bills By Date Range API:", response.data);
+      // console.log("startDate:", startDate, "endDate:", endDate);
 
       return response.data;
     } catch (error) {
@@ -66,8 +66,8 @@ class CallAPIPrint {
         }
       });
 
-      console.log("🚀 Get Expense By Date Range API:", response.data);
-      console.log("startDate:", startDate, "endDate:", endDate);
+      // console.log("🚀 Get Expense By Date Range API:", response.data);
+      // console.log("startDate:", startDate, "endDate:", endDate);
 
       return response.data;
     } catch (error) {
@@ -92,7 +92,7 @@ class CallAPIPrint {
         }
       });
 
-      console.log("🚀 Search Bills By Customer API:", response.data);
+      // console.log("🚀 Search Bills By Customer API:", response.data);
 
       return response.data;
     } catch (error) {

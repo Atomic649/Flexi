@@ -68,7 +68,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/expense/all/${memberId}`);
 
-      console.log("🚀GetAllExpensesAPI:", response.data);
+    //  console.log("🚀GetAllExpensesAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -89,7 +89,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.delete(`/pdf/autoDelete`);
 
-      console.log("🚀AutoDeleteExpenseAPI:", response.data);
+    //  console.log("🚀AutoDeleteExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -113,7 +113,7 @@ class CallAPIExpense {
         ids,
       });
 
-      console.log("🚀SaveDetectExpenseAPI:", response.data);
+    //  console.log("🚀SaveDetectExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -135,7 +135,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/expense/${id}`);
 
-      console.log("🚀GetExpenseByIdAPI:", response.data);
+ //    console.log("🚀GetExpenseByIdAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -157,7 +157,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.put(`/expense/${id}`, data);
 
-      console.log("🚀UpdateExpenseAPI:", response.data);
+    //  console.log("🚀UpdateExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -181,7 +181,7 @@ class CallAPIExpense {
         data: { memberId },
       });
 
-      console.log("🚀DeleteExpenseAPI:", response.data);
+   //   console.log("🚀DeleteExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -203,7 +203,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(`/expense/duplicate/${id}`);
 
-      console.log("🚀DuplicateExpenseAPI:", response.data);
+   //   console.log("🚀DuplicateExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -251,7 +251,7 @@ class CallAPIExpense {
       const axiosInstance = await getAxiosWithAuth();
   // Let axios set the Content-Type (including boundary) for FormData
   const response = await axiosInstance.post(`/expense`, formData);
-      console.log("🚀CreateExpenseAPI:", response.data);
+  //    console.log("🚀CreateExpenseAPI:", response.data);
 
       return response.data;
     } catch (error) {
@@ -274,7 +274,7 @@ class CallAPIExpense {
         params: { memberId },
       });
 
-      console.log("🚀Get This Year Expenses API:", response.data);
+   //   console.log("🚀Get This Year Expenses API:", response.data);
 
       return response.data;
     } catch (error) {
@@ -307,7 +307,7 @@ class CallAPIExpense {
         selectedData
       });
 
-      console.log("🚀 Update Expense with OCR Data API:", response.data);
+    //  console.log("🚀 Update Expense with OCR Data API:", response.data);
       return response.data;
     } catch (error) {
       console.error("🚨 Update Expense with OCR Data API Error:", error);

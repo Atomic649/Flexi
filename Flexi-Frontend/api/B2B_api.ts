@@ -27,7 +27,7 @@ class CallAPIB2B {
       const response = await axiosInstance.get(path, {
         params: { cursor, limit, ...(viewerId ? { viewerId } : {}) },
       });
-      console.log("🚀 B2B API Response:", response.data);
+     // console.log("🚀 B2B API Response:", response.data);
       return response.data;
     } catch (error) {
       handleError(error);
@@ -65,7 +65,7 @@ class CallAPIB2B {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/B2B/product/${id}`);
 
-      console.log("🚀 B2B Product Details API:", response.data);
+      //console.log("🚀 B2B Product Details API:", response.data);
 
       return response.data;
     } catch (error: unknown) {

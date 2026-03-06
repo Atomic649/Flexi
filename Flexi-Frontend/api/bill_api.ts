@@ -9,7 +9,7 @@ class CallAPIBill {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/bill/member/${memberId}`);
 
-            console.log("🚀BillAPI:", response.data);
+         //   console.log("🚀BillAPI:", response.data);
 
             return response.data;
         } catch (error) {
@@ -27,7 +27,7 @@ class CallAPIBill {
         try {
             const axiosInstance = await getAxiosWithAuth();
             const response = await axiosInstance.get(`/bill/${billId}`);
-            console.log("🚀Get Bill by ID API:", response.data)
+        //    console.log("🚀Get Bill by ID API:", response.data)
             return response.data;
         } catch (error) {
             console.error("🚨 Get Bill by ID API Error:", error)    
@@ -195,7 +195,7 @@ class CallAPIBill {
             const response = await axiosInstance.put(`/bill/document-type/${billId}`, {
                 DocumentType: documentType
             });
-            console.log("🚀Update Document Type API:", response.data);
+          //  console.log("🚀Update Document Type API:", response.data);
             return response.data;
         } catch (error) {
             console.error("🚨 Update Document Type API Error:", error);
