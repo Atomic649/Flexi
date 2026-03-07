@@ -289,6 +289,7 @@ export default function DetectExpense() {
       const desc = descLines.join("\n");
 
       setFlexiPrefillData({
+        flexiId: trimmed,
         sName: bill.supplier?.name ?? "",
         sTaxId: bill.supplier?.taxId ?? "",
         sAddress: bill.supplier?.address ?? "",
@@ -308,7 +309,8 @@ export default function DetectExpense() {
       setFlexiIdInput("");
       setIsCreateExpenseVisible(true);
     } catch (e: any) {
-      const msg = e?.message || t("expense.flexi.notFound", "ไม่พบเอกสาร กรุณาตรวจสอบ FlexiID");
+      const rawMsg = e?.message || "expense.flexi.notFound";
+      const msg = t(rawMsg, t("expense.flexi.notFound", "ไม่พบเอกสาร กรุณาตรวจสอบ FlexiID"));
       setFlexiError(msg);
     } finally {
       setFlexiLoading(false);
@@ -346,10 +348,15 @@ export default function DetectExpense() {
             alignSelf: "center",
           }}
           onPress={handleAdd}
-          onLongPress={() => {
-            setFlexiIdInput("");
+          onLongPress={async () => {
             setFlexiError(null);
             setFlexiModalVisible(true);
+            try {
+              const text = await Clipboard.getStringAsync();
+              setFlexiIdInput(text?.trim() ?? "");
+            } catch {
+              setFlexiIdInput("");
+            }
           }}
           delayLongPress={500}
         >

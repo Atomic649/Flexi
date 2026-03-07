@@ -1706,6 +1706,14 @@ const lookupBillByFlexiId = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Bill not found" });
     }
 
+    //flexiId is existing in expense table, return 404 to prevent auto-fill since it means the bill has already been used for an expense report
+    const existingExpense = await prisma.expense.findUnique({
+      where: { flexiId },
+    });
+    if (existingExpense) {
+      return res.status(404).json({ message: "expense.documentAlreadyUsed" });
+    }
+
     return res.json({
       flexiId: bill.flexiId,
       documentType: bill.DocumentType,

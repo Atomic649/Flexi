@@ -86,6 +86,7 @@ interface FlexiPrefillData {
   sName?: string;
   sTaxId?: string;
   sAddress?: string;
+  flexiId?: string;
   taxType?: "Individual" | "Juristic";
   taxInvoiceNo?: string;
   amount?: number;
@@ -181,7 +182,7 @@ export default function CreateExpense({
   const [isDebt, setIsDebt] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [dueDatePickerVisible, setDueDatePickerVisible] = useState(false);
-  const [flexiIdInput, setFlexiIdInput] = useState("");
+  const [flexiIdInput, setFlexiIdInput] = useState(""); 
   const [flexiIdLoading, setFlexiIdLoading] = useState(false);
   const [flexiIdError, setFlexiIdError] = useState("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(false);
@@ -193,6 +194,7 @@ export default function CreateExpense({
   useEffect(() => {
     if (!visible || !prefillData) return;
     if (prefillData.sName !== undefined) setSName(prefillData.sName);
+    if (prefillData.flexiId !== undefined) setFlexiIdInput(prefillData.flexiId);
     if (prefillData.sTaxId !== undefined) setSTaxId(prefillData.sTaxId);
     if (prefillData.sAddress !== undefined) setSAddress(prefillData.sAddress);
     if (prefillData.taxType) setTaxType(prefillData.taxType);
@@ -545,6 +547,7 @@ export default function CreateExpense({
       );
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
 
       await appendAttachmentToFormData(formData);
 
@@ -914,6 +917,7 @@ export default function CreateExpense({
       formData.append("date", Array.isArray(date) ? date[0] : date);
       formData.append("branch", branch || "");
       formData.append("taxType", taxType || "");
+      if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -993,6 +997,7 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -1091,6 +1096,7 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);

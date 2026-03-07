@@ -440,6 +440,12 @@ export default function ExpenseDetail({
     }
   };
 
+  // handleOpenInvoiceFromFlexiID
+  const handleOpenInvoiceFromFlexiID = () => {
+    if (!isFlexiDocument) return;
+    
+  }
+
   const handlePickPdf = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -1600,14 +1606,16 @@ export default function ExpenseDetail({
                   </TouchableOpacity>
                   {/* attach bill document */}
                   {isFlexiDocument ? (
-                    <View className="items-center justify-center">
+                    <TouchableOpacity 
+                    className="items-center justify-center"
+                    onPress={()=> handleOpenInvoiceFromFlexiID()}>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#04ecc120", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
                         <Ionicons name="link-outline" size={18} color="#04ecc1" />
                         <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
-                          {t("expense.flexi.documentLinked", "เอกสารจาก FlexiID")}
+                          {t("expense.flexi.documentLinked", "FlexiID")}
                         </CustomText>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   ) : (
                   <TouchableOpacity
                     onPress={handleOpenAttachmentPicker}

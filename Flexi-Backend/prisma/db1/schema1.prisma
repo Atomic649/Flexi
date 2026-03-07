@@ -195,46 +195,46 @@ enum ExpenseGroup {
 }
 
 model User {
-  id               Int           @id @default(autoincrement())
-  email            String        @unique
-  password         String
-  firstName        String
-  lastName         String
-  avatar           String?
-  emailVerifiedAt  DateTime?
-  emailVerifyToken String?
+  id                     Int           @id @default(autoincrement())
+  email                  String        @unique
+  password               String
+  firstName              String
+  lastName               String
+  avatar                 String?
+  emailVerifiedAt        DateTime?
+  emailVerifyToken       String?
   emailVerifyTokenExpiry DateTime?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  phone            String        @unique
-  username         String?       @unique
-  bio              String?
-  resetToken       String? // Optional field for reset token
-  resetTokenExpiry DateTime? // Optional field for token expiry
-  business         BusinessAcc[]
-  member           Member[]
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  phone                  String        @unique
+  username               String?       @unique
+  bio                    String?
+  resetToken             String? // Optional field for reset token
+  resetTokenExpiry       DateTime? // Optional field for token expiry
+  business               BusinessAcc[]
+  member                 Member[]
 
   @@schema("flexidb")
 }
 
 model Member {
-  uniqueId   String        @id @default(uuid())
-  role       UserRole      @default(owner)
-  permission String
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  deleted    Boolean?      @default(false)
+  uniqueId      String          @id @default(uuid())
+  role          UserRole        @default(owner)
+  permission    String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deleted       Boolean?        @default(false)
   // Relation
-  userId     Int
-  user       User          @relation(fields: [userId], references: [id])
-  businessId Int?
-  business   BusinessAcc?  @relation(fields: [businessId], references: [id])
-  bill       Bill[]
-  adsCost    AdsCost[]
-  expense    Expense[]
-  product    Product[]
-  platform   Platform[]
-  chat       ChatSession[]
+  userId        Int
+  user          User            @relation(fields: [userId], references: [id])
+  businessId    Int?
+  business      BusinessAcc?    @relation(fields: [businessId], references: [id])
+  bill          Bill[]
+  adsCost       AdsCost[]
+  expense       Expense[]
+  product       Product[]
+  platform      Platform[]
+  chat          ChatSession[]
   platformToken PlatformToken[]
 
   @@schema("flexidb")
@@ -256,7 +256,7 @@ model BusinessAcc {
   taxType          taxType           @default(Individual)
   userId           Int
   logo             String?
-  businessColor    String?           // Optional field for business color theme
+  businessColor    String? // Optional field for business color theme
   memberId         String[]          @default([]) // Track all member uniqueIds associated with this business
   DocumentType     DocumentType[]    @default([Receipt])
   user             User              @relation(fields: [userId], references: [id])
@@ -273,22 +273,22 @@ model BusinessAcc {
 }
 
 model Customer {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Identify customer within each business by phone
-  phone       String
-  firstName   String?
-  lastName    String?
-  gender      Gender?
-  email       String?
-  address     String?
-  province    String?
-  postId      String?
-  taxId       String?
+  phone     String
+  firstName String?
+  lastName  String?
+  gender    Gender?
+  email     String?
+  address   String?
+  province  String?
+  postId    String?
+  taxId     String?
 
-  deleted     Boolean?    @default(false)
+  deleted Boolean? @default(false)
 
   // Relation
   businessAcc Int
@@ -334,8 +334,8 @@ model Bill {
   totalBeforeTax       Decimal?
   totalAfterTax        Decimal?
   totalTax             Decimal?
-  vatPercent           Int?        
-  beforeDiscount       Decimal?  
+  vatPercent           Int?
+  beforeDiscount       Decimal?
   purchaseAt           DateTime      @default(now())
   cashStatus           Boolean?      @default(false)
   image                String?
@@ -364,7 +364,7 @@ model Bill {
   businessId   BusinessAcc @relation(fields: [businessAcc], references: [id])
   platformId   Int?
   platformInfo Platform?   @relation(fields: [platformId], references: [id])
-
+  expense      Expense?    @relation("BillToExpense")
   customerId   Int?
   customer     Customer?   @relation(fields: [customerId], references: [id])
 
@@ -372,11 +372,11 @@ model Bill {
 }
 
 model ProductItem {
-  id           Int    @id @default(autoincrement())
+  id           Int   @id @default(autoincrement())
   product      Int
   quantity     Int
   unitPrice    Int
-  unitDiscount Int?   @default(0)
+  unitDiscount Int?  @default(0)
   billId       Int?
   unit         Unit?
 
@@ -412,14 +412,15 @@ model Expense {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   id             Int            @id @default(autoincrement())
+  flexiId        String?        @unique
   expNo          String?
   amount         Decimal
   debtAmount     Decimal?       @default(0)
   group          ExpenseGroup?
   image          String?
   pdf            String?
-  invoiceImage     String?
-  invoicePdf       String?
+  invoiceImage   String?
+  invoicePdf     String?
   note           String?
   desc           String?
   deleted        Boolean?       @default(false)
@@ -440,12 +441,14 @@ model Expense {
   status         ExpenseStatus?
   DocumentType   DocumentType?  @default(Receipt)
   dueDate        DateTime?
-  
+
   // Relation
-  businessAcc    Int
-  businessId     BusinessAcc    @relation(fields: [businessAcc], references: [id])
-  memberId       String
-  member         Member         @relation(fields: [memberId], references: [uniqueId])
+  billFlexiId String?     @unique
+  bill        Bill?       @relation("BillToExpense", fields: [billFlexiId], references: [flexiId])
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  memberId    String
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
 
   @@schema("flexidb")
 }
@@ -453,7 +456,7 @@ model Expense {
 model Platform {
   id          Int         @id @default(autoincrement())
   platform    SocialMedia
-  accName     String      
+  accName     String
   accId       String?
   campaignId  String?     @unique
   createdAt   DateTime    @default(now())
@@ -473,7 +476,7 @@ model Platform {
 
 model Product {
   id          Int          @id @default(autoincrement())
-  name        String       
+  name        String
   unit        Unit?
   productType ProductType? @default(Product)
   description String?
@@ -524,15 +527,15 @@ model ChatMessage {
 }
 
 model PlatformToken {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   platform  SocialMedia
   memberId  String
-  member    Member   @relation(fields: [memberId], references: [uniqueId])
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  member    Member      @relation(fields: [memberId], references: [uniqueId])
+  token     String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now()) @updatedAt
   expiresAt DateTime
-  login     Boolean  @default(false)
+  login     Boolean     @default(false)
 
   @@schema("flexidb")
 }

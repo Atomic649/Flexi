@@ -150,6 +150,7 @@ function parseFlexibleDate(raw: any): Date | null {
 // Interface for request body from client
 interface Expense {
   WHTpercent?: number;
+  flexiId?:string;
   date: Date;
   amount: number;
   group: ExpenseGroup;
@@ -237,6 +238,7 @@ const schema = Joi.object({
   DocumentType: Joi.string().valid("Invoice", "Receipt").optional(),
   debtAmount: Joi.number().optional(),
   dueDate: Joi.date().optional(),
+  flexiId: Joi.string().optional().allow("", null),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -317,6 +319,7 @@ const createExpense = async (req: Request, res: Response) => {
     const expenseInput: Expense = {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
+      flexiId: req.body.flexiId || null,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
@@ -381,6 +384,7 @@ const createExpense = async (req: Request, res: Response) => {
     try {
       const expense = await prisma.expense.create({
         data: {
+          flexiId: expenseInput.flexiId,
           date: formattedDate,
           amount: expenseInput.amount,
           desc: expenseInput.desc,

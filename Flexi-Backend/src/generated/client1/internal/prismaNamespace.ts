@@ -1668,6 +1668,7 @@ export const ExpenseScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   id: 'id',
+  flexiId: 'flexiId',
   expNo: 'expNo',
   amount: 'amount',
   debtAmount: 'debtAmount',
@@ -1696,6 +1697,7 @@ export const ExpenseScalarFieldEnum = {
   status: 'status',
   DocumentType: 'DocumentType',
   dueDate: 'dueDate',
+  billFlexiId: 'billFlexiId',
   businessAcc: 'businessAcc',
   memberId: 'memberId'
 } as const

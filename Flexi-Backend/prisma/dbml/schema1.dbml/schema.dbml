@@ -159,6 +159,7 @@ Table Bill {
   businessId BusinessAcc [not null]
   platformId Int
   platformInfo Platform
+  expense Expense
   customerId Int
   customer Customer
 }
@@ -196,6 +197,7 @@ Table Expense {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   id Int [pk, increment]
+  flexiId String [unique]
   expNo String
   amount Decimal [not null]
   debtAmount Decimal [default: 0]
@@ -224,6 +226,8 @@ Table Expense {
   status ExpenseStatus
   DocumentType DocumentType [default: 'Receipt']
   dueDate DateTime
+  billFlexiId String [unique]
+  bill Bill
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
   memberId String [not null]
@@ -483,6 +487,8 @@ Ref: AdsCost.platformId > Platform.id
 Ref: AdsCost.businessAcc > BusinessAcc.id
 
 Ref: AdsCost.product > Product.id
+
+Ref: Expense.billFlexiId - Bill.flexiId
 
 Ref: Expense.businessAcc > BusinessAcc.id
 
