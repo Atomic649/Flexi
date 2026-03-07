@@ -23,6 +23,10 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { useTheme } from "@/providers/ThemeProvider";
 import CallAPIExpense from "@/api/expense_api";
+import CallAPIBill from "@/api/bill_api";
+import CallAPIBusiness from "@/api/business_api";
+import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
+import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import { getMemberId } from "@/utils/utility";
 import i18n from "@/i18n";
 import { useBusiness } from "@/providers/BusinessProvider";
@@ -36,6 +40,9 @@ import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
 import { isMobile, isTablet } from "@/utils/responsive";
 import { API_URL, IMAGE_URL } from "@/utils/config";
+
+const formatCurrencyForPDF = (amount: number) =>
+  amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) using the original UTC time
 const formatDate = (dateString: string) => {
@@ -79,6 +86,7 @@ interface ExpenseDetailProps {
     dueDate?: string;
     invoiceImage?: string;
     invoicePdf?: string;
+    flexiId?: string;
   };
 }
 
@@ -213,6 +221,9 @@ export default function ExpenseDetail({
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
+  const [flexiId, setFlexiId] = useState<string | null>(expense.flexiId || null);
+  const [businessDetails, setBusinessDetails] = useState<any>(null);
+  const [businessName, setBusinessName] = useState<string>("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(
     !!(expense.sName && !expense.image && !expense.pdf && !expense.invoiceImage && !expense.invoicePdf)
   );
@@ -262,6 +273,7 @@ export default function ExpenseDetail({
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
+        setFlexiId(fetchedExpense.flexiId || null);
         savedRef.current = {
           date: fetchedExpense.date,
           note: fetchedExpense.note,
@@ -286,7 +298,19 @@ export default function ExpenseDetail({
       }
     };
 
+    const fetchBusinessDetails = async () => {
+      try {
+        const memberId = String(await getMemberId());
+        const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+        setBusinessDetails(data);
+        setBusinessName(data?.businessName || "");
+      } catch (error) {
+        console.error("Error fetching business details:", error);
+      }
+    };
+
     fetchExpense();
+    fetchBusinessDetails();
   }, [expense.id]);
 
   // Track changes to expense data
@@ -440,13 +464,32 @@ export default function ExpenseDetail({
     }
   };
 
-  // handleOpenInvoiceFromFlexiID
-  const handleOpenInvoiceFromFlexiID = () => {
-    if (!isFlexiDocument) return;
-    
-  }
+  const openFlexiDocument = async (template: "invoice" | "receipt") => {
+    console.log("Opening Flexi document with ID:", flexiId);
+    if (!flexiId) return;
+    try {
+      const billData = await CallAPIBill.getBillByFlexiIdAPI(flexiId);
+      const htmlContent = template === "invoice"
+        ? generateInvoiceHTML({ invoice: billData, businessDetails, businessName, t, formatCurrencyForPDF, formatDate })
+        : generateReceiptHTML({ invoice: billData, businessDetails, businessName, t, formatCurrencyForPDF, formatDate });
 
-  const handleOpenReceipFromFlexiID = () => {}
+      if (Platform.OS === "web") {
+        const win = window.open("", "_blank");
+        if (win) {
+          win.document.write(htmlContent);
+          win.document.close();
+        }
+      } else {
+        await Print.printAsync({ html: htmlContent });
+      }
+    } catch (error: any) {
+      if (error?.message?.includes("did not complete")) return;
+      console.error(`Error opening ${template}:`, error);
+    }
+  };
+
+  const handleOpenInvoiceFromFlexiID = () => openFlexiDocument("invoice");
+  const handleOpenReceipFromFlexiID = () => openFlexiDocument("receipt");
 
   const handlePickPdf = async () => {
     try {

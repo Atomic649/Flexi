@@ -257,6 +257,28 @@ describe('expenseController', () => {
 			expect(payload?.DocumentType).toBe('Receipt');
 			expect(payload?.debtAmount).toBe(0);
 		});
+
+		test('persists flexiId when provided', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10 });
+			prismaMock.expense.create.mockResolvedValue({ id: 7, amount: 100, flexiId: 'FLEXI-ABC' });
+			const res = await request(app)
+				.post('/expense')
+				.send({ ...baseExpensePayload(), flexiId: 'FLEXI-ABC' });
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.flexiId).toBe('FLEXI-ABC');
+		});
+
+		test('stores null flexiId when not provided', async () => {
+			prismaMock.businessAcc.findFirst.mockResolvedValue({ id: 10 });
+			prismaMock.expense.create.mockResolvedValue({ id: 8, amount: 100, flexiId: null });
+			const res = await request(app)
+				.post('/expense')
+				.send(baseExpensePayload());
+			expect(res.status).toBe(200);
+			const payload = prismaMock.expense.create.mock.calls.at(-1)?.[0]?.data;
+			expect(payload?.flexiId).toBeNull();
+		});
 	});
 
 	describe('getExpenses', () => {

@@ -964,6 +964,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           desc: Joi.string().allow(""),
           image: Joi.string().allow(""),
           pdf: Joi.string().allow(""),
+          invoiceImage: Joi.string().optional().allow(""),
+          invoicePdf: Joi.string().optional().allow(""),
           memberId: Joi.string().required(),
           businessAcc: Joi.number().optional(),
           note: Joi.string().optional().allow(""),
@@ -984,6 +986,8 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           status: Joi.string().valid("Pass", "Fail", "Warning").optional(),
           DocumentType: Joi.string().valid("Invoice", "Receipt", "Quotation", "DebitNote", "CreditNote", "WithholdingTax").optional(),
           debtAmount: Joi.number().optional(),
+          dueDate: Joi.date().optional(),
+          flexiId: Joi.string().optional().allow("", null),
         })
       : // When no image, use original strict validation
         schema;
@@ -1267,7 +1271,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         desc: true,
         amount: true,
         image: true,
-    pdf: true,
+        pdf: true,
         group: true,
         vat: true,
         vatAmount: true,
@@ -1286,6 +1290,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         dueDate: true,
         invoiceImage: true,
         invoicePdf: true,
+        flexiId: true,
       },
     });
     res.json(expense);

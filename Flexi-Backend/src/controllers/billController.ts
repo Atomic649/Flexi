@@ -1748,10 +1748,38 @@ const lookupBillByFlexiId = async (req: Request, res: Response) => {
   }
 };
 
+// Get full bill data by flexiId — used to render Invoice/Receipt PDF from an expense
+const getBillByFlexiId = async (req: Request, res: Response) => {
+  const { flexiId } = req.params;
+  if (!flexiId) {
+    return res.status(400).json({ message: "flexiId is required" });
+  }
+  try {
+    const bill = await prisma.bill.findUnique({
+      where: { flexiId },
+      include: {
+        product: {
+          include: {
+            productList: { select: { name: true } },
+          },
+        },
+      },
+    });
+    if (!bill || bill.deleted) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    return res.json(bill);
+  } catch (e) {
+    console.error("getBillByFlexiId error:", e);
+    return res.status(500).json({ message: "Failed to get bill" });
+  }
+};
+
 export {
   createBill,
   getBills,
   getBillById,
+  getBillByFlexiId,
   deleteBill,
   updateBill,
   searchBill,
