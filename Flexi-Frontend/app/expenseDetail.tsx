@@ -1717,50 +1717,80 @@ export default function ExpenseDetail({
                   </CustomText>
                 ) : null}
 
-                <View className="flex-row justify-evenly mt-2">
-                  <TouchableOpacity
-                    onPress={() => showDeleteConfirmation()}
-                    className=" items-center justify-center"
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons name="trash-outline" size={24} color="#999999" />
-                    <CustomText className="text-center mt-1">
-                      {t("common.delete")}
-                    </CustomText>
-                  </TouchableOpacity>
-                  {/* attach bill document */}
-
-                 {/* hideAttachment if FlexiDocument */}
-                  
-                
-                  {!isFlexiDocument && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    paddingHorizontal: 4,
+                    paddingVertical: 4,
+                  }}
+                >
+                  {/* Left: icon buttons */}
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <TouchableOpacity
-                      onPress={handleOpenAttachmentPicker}
-                      className=" items-center justify-center"
+                      onPress={() => showDeleteConfirmation()}
                       activeOpacity={0.8}
+                      style={{ alignItems: "center", paddingHorizontal: 12, paddingVertical: 6 }}
                     >
-                      <Ionicons
-                        name="document-text-outline"
-                        size={24}
-                        color="#999999"
-                      />
-                      <CustomText className="text-center mt-1">
-                        {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
+                      <Ionicons name="trash-outline" size={22} color="#999999" />
+                      <CustomText style={{ fontSize: 11, marginTop: 2, color: "#999999", textAlign: "center" }}>
+                        {t("common.delete")}
                       </CustomText>
                     </TouchableOpacity>
-                  )}
 
-                  <SecondaryButton
-                    title={t("common.save")}
-                    handlePress={handleUpdateExpense}
-                    containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-                  />
-                  <GrayButton
-                    title="✕"
-                    handlePress={handleAttemptClose}
-                    containerStyles="px-6 mt-2"
-                  />
+                    {!isFlexiDocument && (
+                      <TouchableOpacity
+                        onPress={handleOpenAttachmentPicker}
+                        activeOpacity={0.8}
+                        style={{ alignItems: "center", paddingHorizontal: 12, paddingVertical: 6 }}
+                      >
+                        <Ionicons name="document-text-outline" size={22} color="#999999" />
+                        <CustomText style={{ fontSize: 11, marginTop: 2, color: "#999999", textAlign: "center" }}>
+                          {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Right: action buttons */}
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <TouchableOpacity
+                      onPress={handleUpdateExpense}
+                      activeOpacity={0.7}
+                      style={{
+                        height: 50,
+                        paddingHorizontal: 24,
+                        borderRadius: 12,
+                        backgroundColor: "#3bf6da",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: 1,
+                        borderColor: "#3bf6da",
+                      }}
+                    >
+                      <CustomText weight="bold" style={{ color: "#ffffff", fontSize: 14 }}>
+                        {t("common.save")}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleAttemptClose}
+                      activeOpacity={0.7}
+                      style={{
+                        height: 50,
+                        paddingHorizontal: 18,
+                        borderRadius: 12,
+                        backgroundColor: theme === "dark" ? "#333333" : "#f3f4f6",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CustomText weight="bold" style={{ color: theme === "dark" ? "#dadada" : "#666", fontSize: 14 }}>
+                        ✕
+                      </CustomText>
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
                 {/* Download WHT Doc & Preview */}

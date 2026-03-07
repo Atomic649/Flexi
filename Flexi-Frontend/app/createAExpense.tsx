@@ -2518,58 +2518,93 @@ export default function CreateExpense({
                   </View>
                 ) : null}
 
-                <View className="flex-row justify-evenly pt-2">
-                  {isFlexiDocument ? (
-                    <View className="items-center justify-center pt-2">
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    paddingHorizontal: 4,
+                    paddingVertical: 4,
+                  }}
+                >
+                  {/* Left: icon buttons */}
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    {isFlexiDocument ? (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#04ecc120", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
                         <Ionicons name="link-outline" size={18} color="#04ecc1" />
                         <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
                           {t("expense.flexi.documentLinked", "เอกสารจาก FlexiID")}
                         </CustomText>
                       </View>
-                    </View>
-                  ) : (
-                  <TouchableOpacity
-                    onPress={handleOpenAttachmentPicker}
-                    className=" items-center justify-center pt-2"
-                  >
-                    <Ionicons
-                      name="document-text-outline"
-                      size={26}
-                      color="#999999"
-                    />
-                    <CustomText className="text-center mt-1">
-                      {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
-                    </CustomText>
-                  </TouchableOpacity>
-                  )}
+                    ) : (
+                      <TouchableOpacity
+                        onPress={handleOpenAttachmentPicker}
+                        activeOpacity={0.8}
+                        style={{ alignItems: "center", paddingHorizontal: 12, paddingVertical: 6 }}
+                      >
+                        <Ionicons name="document-text-outline" size={22} color="#999999" />
+                        <CustomText style={{ fontSize: 11, marginTop: 2, color: "#999999", textAlign: "center" }}>
+                          {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
 
-                  {isImageAttachment && (
+                    {isImageAttachment && (
+                      <TouchableOpacity
+                        onPress={handleCreateExpenseWithOCR}
+                        activeOpacity={0.8}
+                        style={{ alignItems: "center", paddingHorizontal: 12, paddingVertical: 6 }}
+                      >
+                        <Ionicons name="scan" size={22} color="#999999" />
+                        <CustomText style={{ fontSize: 11, marginTop: 2, color: "#999999", textAlign: "center" }}>
+                          {t("common.OCR")}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Right: action buttons */}
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <TouchableOpacity
-                      onPress={() => {
-                        handleCreateExpenseWithOCR();
+                      onPress={() => handleCreateOrUpdate()}
+                      activeOpacity={0.7}
+                      disabled={isSubmittingExpense}
+                      style={{
+                        height: 50,
+                        paddingHorizontal: 24,
+                        borderRadius: 12,
+                        backgroundColor: isSubmittingExpense ? "#3bf6da80" : "#3bf6da",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                        gap: 6,
+                        borderWidth: 1,
+                        borderColor: "#3bf6da",
                       }}
-                      className=" items-center justify-center pt-2"
                     >
-                      <Ionicons name="scan" size={26} color="#999999" />
-                      <CustomText className="text-center mt-1">
-                        {t("common.OCR")}
+                      {isSubmittingExpense && <ActivityIndicator size="small" color="#000" />}
+                      <CustomText weight="bold" style={{ color: "#000", fontSize: 14 }}>
+                        {t("common.save")}
                       </CustomText>
                     </TouchableOpacity>
-                  )}
-
-                  <SecondaryButton
-                    title={t("common.save")}
-                    handlePress={() => handleCreateOrUpdate()}
-                    containerStyles="px-12 mt-2"
-                    textStyles="!text-white"
-                    isLoading={isSubmittingExpense}
-                  />
-                  <GrayButton
-                    title="✕"
-                    handlePress={handleAttemptClose}
-                    containerStyles="px-6 mt-2"
-                  />
+                    <TouchableOpacity
+                      onPress={handleAttemptClose}
+                      activeOpacity={0.7}
+                      style={{
+                        height: 50,
+                        paddingHorizontal: 18,
+                        borderRadius: 12,
+                        backgroundColor: theme === "dark" ? "#333333" : "#f3f4f6",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CustomText weight="bold" style={{ color: theme === "dark" ? "#dadada" : "#666", fontSize: 14 }}>
+                        ✕
+                      </CustomText>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
