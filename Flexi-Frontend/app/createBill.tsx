@@ -1270,95 +1270,63 @@ export default function CreateBill() {
               alignSelf: Platform.OS === "web" ? "center" : "auto",
             }}
           >
-            {/* Clear Button in Top Right */}
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                zIndex: 10,
-                flexDirection: "row",
-              }}
-            >
-              <AutoFillBill
-                onApply={handleAutoFillApply}
-                taxType={taxType}
-                containerStyle={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 5,
-                }}
-              />
+            {/* Row 1: Date (left) + AutoFill + Clear (right) */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, marginBottom: 2 }}>
+              {/* Date */}
               <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 10,
-                }}
-                onPress={handleClearFields}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                onPress={() => setCalendarVisible(true)}
+                activeOpacity={0.7}
+                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
               >
-                <CustomText
-                  weight="bold"
-                  style={{
-                    color: theme === "dark" ? "#03dbc1" : "#03dbc1",
-                    fontSize: 18,
-                    paddingHorizontal: 5,
-                  }}
-                >
-                  {t("bill.clearFields")}
+                <Ionicons name="calendar-outline" size={16} color={theme === "dark" ? "#c9c9c9" : "#48453e"} />
+                <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                  {SelectedDates.length > 0
+                    ? formatDate(SelectedDates[0])
+                    : t("dashboard.selectDate")}
                 </CustomText>
               </TouchableOpacity>
+
+              {/* AutoFill + Clear */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <AutoFillBill
+                  onApply={handleAutoFillApply}
+                  taxType={taxType}
+                  containerStyle={{ flexDirection: "row", alignItems: "center" }}
+                />
+                <TouchableOpacity
+                  onPress={handleClearFields}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10 }}
+                >
+                  <CustomText weight="bold" style={{ color: "#03dbc1", fontSize: 18, paddingHorizontal: 5 }}>
+                    {t("bill.clearFields")}
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View className="flex flex-row justify-between items-center">
-              <View className="w-1/2 pr-2">
-                {platformOptions.length > 0 ? (
-                  <DropdownClear
-                    title={t("bill.store")}
-                    options={platformOptions.map((plat) => {
-                      if (typeof plat === "string") {
-                        return { label: plat, value: plat };
-                      }
-                      const label =
-                        plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
-                      const value =
-                        plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
-                      return { label, value };
-                    })}
-                    placeholder={t("bill.selectStore")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    selectedValue={selectedPlatform}
-                    onValueChange={(value: any) => setSelectedPlatform(value)}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-2 mb-2"
-                  />
-                ) : null}
-              </View>
-              <View className="w-1/2 pr-2">
-                {/* Date selector */}
-                <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
-                  <CustomText
-                    className={`text-base mx-2 ${
-                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                    }`}
-                  >
-                    {SelectedDates.length > 0
-                      ? formatDate(SelectedDates[0])
-                      : t("dashboard.selectDate")}
-                  </CustomText>
-                  {/* icon Calendar */}
-                  <Ionicons
-                    name="calendar"
-                    size={24}
-                    color={theme === "dark" ? "#ffffff" : "#444541"}
-                    onPress={() => setCalendarVisible(true)}
-                  />
-                </View>
-              </View>
-            </View>
+            {/* Row 2: Platform dropdown — full width */}
+            {platformOptions.length > 0 && (
+              <DropdownClear
+                title={t("bill.store")}
+                options={platformOptions.map((plat) => {
+                  if (typeof plat === "string") {
+                    return { label: plat, value: plat };
+                  }
+                  const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                  const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                  return { label, value };
+                })}
+                placeholder={t("bill.selectStore")}
+                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                selectedValue={selectedPlatform}
+                onValueChange={(value: any) => setSelectedPlatform(value)}
+                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                otherStyles="mt-2 mb-2"
+              />
+            )}
             {/* Tax Type Checkboxes Row */}
             <View
               className="flex flex-row items-center mt-2 mb-2"

@@ -226,7 +226,7 @@ export default function ExpenseDetail({
   const [businessDetails, setBusinessDetails] = useState<any>(null);
   const [businessName, setBusinessName] = useState<string>("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(
-    !!(expense.sName && !expense.image && !expense.pdf && !expense.invoiceImage && !expense.invoicePdf)
+    !!(expense.flexiId && expense.sName && !expense.image && !expense.pdf && !expense.invoiceImage && !expense.invoicePdf)
   );
   const hasAttachment = Boolean(attachment) || isFlexiDocument || (isDebt
     ? Boolean(invoiceImage) || Boolean(invoicePdfUrl)
@@ -261,7 +261,7 @@ export default function ExpenseDetail({
         setInvoiceImage(fetchedExpense.invoiceImage || "");
         setInvoicePdfUrl(fetchedExpense.invoicePdf || "");
         setIsFlexiDocument(
-          !!(fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf)
+          !!(fetchedExpense.flexiId && fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf)
         );
         setGroup(fetchedExpense.group);
         setVatIncluded(fetchedExpense.vat);
@@ -276,7 +276,7 @@ export default function ExpenseDetail({
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
         const resolvedFlexiId = fetchedExpense.flexiId || null;
         setFlexiId(resolvedFlexiId);
-        const resolvedIsFlexiDocument = !!(fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf);
+        const resolvedIsFlexiDocument = !!(fetchedExpense.flexiId && fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf);
         let resolvedIsDebt = fetchedIsDebt;
         if (resolvedFlexiId && resolvedIsFlexiDocument) {
           try {
@@ -1449,10 +1449,110 @@ export default function ExpenseDetail({
                   value={note}
                   onChangeText={setNote}
                 />
-                <FloatingLabelInput
-                  label={t("expense.detail.description")}
-                  value={desc}
-                  onChangeText={setDesc}
+
+                <DropdownFloat
+                  title={t("expense.detail.group.title")}
+                  placeholder={t("expense.detail.group.title")}
+                  options={[
+                    {
+                      value: "Employee",
+                      label: t("expense.detail.group.employee"),
+                    },
+                    {
+                      value: "Freelancer",
+                      label: t("expense.detail.group.freelancer"),
+                    },
+                    {
+                      value: "Office",
+                      label: t("expense.detail.group.office"),
+                    },
+                    {
+                      value: "OfficeRental",
+                      label: t("expense.detail.group.officeRental"),
+                    },
+                    {
+                      value: "CarRental",
+                      label: t("expense.detail.group.carRental"),
+                    },
+                    {
+                      value: "Commission",
+                      label: t("expense.detail.group.commission"),
+                    },
+                    {
+                      value: "Advertising",
+                      label: t("expense.detail.group.advertising"),
+                    },
+                    {
+                      value: "Marketing",
+                      label: t("expense.detail.group.marketing"),
+                    },
+                    {
+                      value: "Copyright",
+                      label: t("expense.detail.group.copyright"),
+                    },
+                    {
+                      value: "Dividend",
+                      label: t("expense.detail.group.dividend"),
+                    },
+                    {
+                      value: "Interest",
+                      label: t("expense.detail.group.interest"),
+                    },
+                    {
+                      value: "Influencer",
+                      label: t("expense.detail.group.influencer"),
+                    },
+                    {
+                      value: "Accounting",
+                      label: t("expense.detail.group.accounting"),
+                    },
+                    {
+                      value: "Legal",
+                      label: t("expense.detail.group.legal"),
+                    },
+                    {
+                      value: "Taxation",
+                      label: t("expense.detail.group.taxation"),
+                    },
+                    {
+                      value: "Transport",
+                      label: t("expense.detail.group.transport"),
+                    },
+                    {
+                      value: "Product",
+                      label: t("expense.detail.group.product"),
+                    },
+                    {
+                      value: "Packing",
+                      label: t("expense.detail.group.packing"),
+                    },
+                    {
+                      value: "Fuel",
+                      label: t("expense.detail.group.fuel"),
+                    },
+                    {
+                      value: "Maintenance",
+                      label: t("expense.detail.group.maintenance"),
+                    },
+                    {
+                      value: "Utilities",
+                      label: t("expense.detail.group.utility"),
+                    },
+                    {
+                      value: "Operation",
+                      label: t("expense.detail.group.operation"),
+                    },
+                    {
+                      value: "Others",
+                      label: t("expense.detail.group.other"),
+                    },
+                  ]}
+                  selectedValue={group}
+                  onValueChange={handleGroupChange}
+                  borderColor={theme === "dark" ? "#555" : "#CCC"}
+                  textcolor={theme === "dark" ? "#FFF" : "#000"}
+                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                  otherStyles="mb-1"
                 />
 
                 <FloatingLabelInput
@@ -1597,109 +1697,11 @@ export default function ExpenseDetail({
                     />
                   </>
                 )}
-                  <DropdownFloat
-                    title={t("expense.detail.group.title")}
-                    placeholder={t("expense.detail.group.title")}
-                    options={[
-                      {
-                        value: "Employee",
-                        label: t("expense.detail.group.employee"),
-                      },
-                      {
-                        value: "Freelancer",
-                        label: t("expense.detail.group.freelancer"),
-                      },
-                      {
-                        value: "Office",
-                        label: t("expense.detail.group.office"),
-                      },
-                      {
-                        value: "OfficeRental",
-                        label: t("expense.detail.group.officeRental"),
-                      },
-                      {
-                        value: "CarRental",
-                        label: t("expense.detail.group.carRental"),
-                      },
-                      {
-                        value: "Commission",
-                        label: t("expense.detail.group.commission"),
-                      },
-                      {
-                        value: "Advertising",
-                        label: t("expense.detail.group.advertising"),
-                      },
-                      {
-                        value: "Marketing",
-                        label: t("expense.detail.group.marketing"),
-                      },
-                      {
-                        value: "Copyright",
-                        label: t("expense.detail.group.copyright"),
-                      },
-                      {
-                        value: "Dividend",
-                        label: t("expense.detail.group.dividend"),
-                      },
-                      {
-                        value: "Interest",
-                        label: t("expense.detail.group.interest"),
-                      },
-                      {
-                        value: "Influencer",
-                        label: t("expense.detail.group.influencer"),
-                      },
-                      {
-                        value: "Accounting",
-                        label: t("expense.detail.group.accounting"),
-                      },
-                      {
-                        value: "Legal",
-                        label: t("expense.detail.group.legal"),
-                      },
-                      {
-                        value: "Taxation",
-                        label: t("expense.detail.group.taxation"),
-                      },
-                      {
-                        value: "Transport",
-                        label: t("expense.detail.group.transport"),
-                      },
-                      {
-                        value: "Product",
-                        label: t("expense.detail.group.product"),
-                      },
-                      {
-                        value: "Packing",
-                        label: t("expense.detail.group.packing"),
-                      },
-                      {
-                        value: "Fuel",
-                        label: t("expense.detail.group.fuel"),
-                      },
-                      {
-                        value: "Maintenance",
-                        label: t("expense.detail.group.maintenance"),
-                      },
-                      {
-                        value: "Utilities",
-                        label: t("expense.detail.group.utility"),
-                      },
-                      {
-                        value: "Operation",
-                        label: t("expense.detail.group.operation"),
-                      },
-                      {
-                        value: "Others",
-                        label: t("expense.detail.group.other"),
-                      },
-                    ]}
-                    selectedValue={group}
-                    onValueChange={handleGroupChange}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
-                  />
+                <FloatingLabelInput
+                  label={t("expense.detail.description")}
+                  value={desc}
+                  onChangeText={setDesc}
+                />
 
                 {error ? (
                   <CustomText
@@ -1730,21 +1732,23 @@ export default function ExpenseDetail({
 
                  {/* hideAttachment if FlexiDocument */}
                   
-                  {!isFlexiDocument ? (
-                  <TouchableOpacity
-                    onPress={handleOpenAttachmentPicker}
-                    className=" items-center justify-center"
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name="document-text-outline"
-                      size={24}
-                      color="#999999"
-                    />
-                    <CustomText className="text-center mt-1">
-                      {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
-                    </CustomText>
-                  </TouchableOpacity>) : null}
+                
+                  {!isFlexiDocument && (
+                    <TouchableOpacity
+                      onPress={handleOpenAttachmentPicker}
+                      className=" items-center justify-center"
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="document-text-outline"
+                        size={24}
+                        color="#999999"
+                      />
+                      <CustomText className="text-center mt-1">
+                        {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
 
                   <SecondaryButton
                     title={t("common.save")}

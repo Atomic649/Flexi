@@ -76,7 +76,7 @@ const Dropdown = ({
 
   return (
     <View
-      className={`mt-4 w-full ${otherStyles} relative`}
+      className={`mt-1 w-full ${otherStyles} relative`}
       style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}
     >
       {/* Floating label over the border */}

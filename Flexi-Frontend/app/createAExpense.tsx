@@ -2266,12 +2266,112 @@ export default function CreateExpense({
                   onChangeText={setNote}
                   required={ocrProgress === 100}
                 />
-                <FloatingLabelInput
-                  label={t("expense.detail.description")}
-                  value={desc}
-                  onChangeText={setDesc}
+
+                <DropdownFloat
+                  title={t("expense.detail.group.title")}
+                  placeholder={t("expense.detail.group.title")}
+                  options={[
+                    {
+                      value: "Employee",
+                      label: t("expense.detail.group.employee"),
+                    },
+                    {
+                      value: "Freelancer",
+                      label: t("expense.detail.group.freelancer"),
+                    },
+                    {
+                      value: "Office",
+                      label: t("expense.detail.group.office"),
+                    },
+                    {
+                      value: "OfficeRental",
+                      label: t("expense.detail.group.officeRental"),
+                    },
+                    {
+                      value: "CarRental",
+                      label: t("expense.detail.group.carRental"),
+                    },
+                    {
+                      value: "Commission",
+                      label: t("expense.detail.group.commission"),
+                    },
+                    {
+                      value: "Advertising",
+                      label: t("expense.detail.group.advertising"),
+                    },
+                    {
+                      value: "Marketing",
+                      label: t("expense.detail.group.marketing"),
+                    },
+                    {
+                      value: "Copyright",
+                      label: t("expense.detail.group.copyright"),
+                    },
+                    {
+                      value: "Dividend",
+                      label: t("expense.detail.group.dividend"),
+                    },
+                    {
+                      value: "Interest",
+                      label: t("expense.detail.group.interest"),
+                    },
+                    {
+                      value: "Influencer",
+                      label: t("expense.detail.group.influencer"),
+                    },
+                    {
+                      value: "Accounting",
+                      label: t("expense.detail.group.accounting"),
+                    },
+                    {
+                      value: "Legal",
+                      label: t("expense.detail.group.legal"),
+                    },
+                    {
+                      value: "Taxation",
+                      label: t("expense.detail.group.taxation"),
+                    },
+                    {
+                      value: "Transport",
+                      label: t("expense.detail.group.transport"),
+                    },
+                    {
+                      value: "Product",
+                      label: t("expense.detail.group.product"),
+                    },
+                    {
+                      value: "Packing",
+                      label: t("expense.detail.group.packing"),
+                    },
+                    {
+                      value: "Fuel",
+                      label: t("expense.detail.group.fuel"),
+                    },
+                    {
+                      value: "Maintenance",
+                      label: t("expense.detail.group.maintenance"),
+                    },
+                    {
+                      value: "Utilities",
+                      label: t("expense.detail.group.utility"),
+                    },
+                    {
+                      value: "Operation",
+                      label: t("expense.detail.group.operation"),
+                    },
+                    {
+                      value: "Others",
+                      label: t("expense.detail.group.other"),
+                    },
+                  ]}
+                  selectedValue={group}
+                  onValueChange={handleGroupChange}
+                  borderColor={theme === "dark" ? "#555" : "#CCC"}
+                  textcolor={theme === "dark" ? "#FFF" : "#000"}
+                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                  otherStyles="mb-1"
                 />
-              
+
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
                   value={sName}
@@ -2406,108 +2506,10 @@ export default function CreateExpense({
                     />
                   </>
                 )}
-                <DropdownFloat
-                  title={t("expense.detail.group.title")}
-                  placeholder={t("expense.detail.group.title")}
-                  options={[
-                    {
-                      value: "Employee",
-                      label: t("expense.detail.group.employee"),
-                    },
-                    {
-                      value: "Freelancer",
-                      label: t("expense.detail.group.freelancer"),
-                    },
-                    {
-                      value: "Office",
-                      label: t("expense.detail.group.office"),
-                    },
-                    {
-                      value: "OfficeRental",
-                      label: t("expense.detail.group.officeRental"),
-                    },
-                    {
-                      value: "CarRental",
-                      label: t("expense.detail.group.carRental"),
-                    },
-                    {
-                      value: "Commission",
-                      label: t("expense.detail.group.commission"),
-                    },
-                    {
-                      value: "Advertising",
-                      label: t("expense.detail.group.advertising"),
-                    },
-                    {
-                      value: "Marketing",
-                      label: t("expense.detail.group.marketing"),
-                    },
-                    {
-                      value: "Copyright",
-                      label: t("expense.detail.group.copyright"),
-                    },
-                    {
-                      value: "Dividend",
-                      label: t("expense.detail.group.dividend"),
-                    },
-                    {
-                      value: "Interest",
-                      label: t("expense.detail.group.interest"),
-                    },
-                    {
-                      value: "Influencer",
-                      label: t("expense.detail.group.influencer"),
-                    },
-                    {
-                      value: "Accounting",
-                      label: t("expense.detail.group.accounting"),
-                    },
-                    {
-                      value: "Legal",
-                      label: t("expense.detail.group.legal"),
-                    },
-                    {
-                      value: "Taxation",
-                      label: t("expense.detail.group.taxation"),
-                    },
-                    {
-                      value: "Transport",
-                      label: t("expense.detail.group.transport"),
-                    },
-                    {
-                      value: "Product",
-                      label: t("expense.detail.group.product"),
-                    },
-                    {
-                      value: "Packing",
-                      label: t("expense.detail.group.packing"),
-                    },
-                    {
-                      value: "Fuel",
-                      label: t("expense.detail.group.fuel"),
-                    },
-                    {
-                      value: "Maintenance",
-                      label: t("expense.detail.group.maintenance"),
-                    },
-                    {
-                      value: "Utilities",
-                      label: t("expense.detail.group.utility"),
-                    },
-                    {
-                      value: "Operation",
-                      label: t("expense.detail.group.operation"),
-                    },
-                    {
-                      value: "Others",
-                      label: t("expense.detail.group.other"),
-                    },
-                  ]}
-                  selectedValue={group}
-                  onValueChange={handleGroupChange}
-                  borderColor={theme === "dark" ? "#555" : "#CCC"}
-                  textcolor={theme === "dark" ? "#FFF" : "#000"}
-                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                <FloatingLabelInput
+                  label={t("expense.detail.description")}
+                  value={desc}
+                  onChangeText={setDesc}
                 />
 
                 {error ? (
