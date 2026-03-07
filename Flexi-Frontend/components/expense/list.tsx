@@ -382,6 +382,7 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
                 DocumentType={expense.DocumentType}
                 debtAmount={expense.debtAmount}
                 dueDate={expense.dueDate}
+                flexiId={expense.flexiId}
                 onPaid={fetchExpenses}
                 Opacity={theme === "dark" ? 0.4 : 0.2}
                 AdsCardColor={theme === "dark" ? "#1d1d1d" : "#f4f4f4f4"}

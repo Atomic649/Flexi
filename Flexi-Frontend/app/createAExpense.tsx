@@ -96,6 +96,7 @@ interface FlexiPrefillData {
   WHTpercent?: number;
   WHTAmount?: number;
   isDebt?: boolean;
+  documentType?: string;
   desc?: string;
   purchaseAt?: string;
 }
@@ -186,6 +187,7 @@ export default function CreateExpense({
   const [flexiIdLoading, setFlexiIdLoading] = useState(false);
   const [flexiIdError, setFlexiIdError] = useState("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(false);
+  const [flexiBillDocumentType, setFlexiBillDocumentType] = useState<string | null>(null);
   const hasAttachment = Boolean(attachment) || isFlexiDocument;
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
@@ -205,7 +207,12 @@ export default function CreateExpense({
     if (prefillData.withHoldingTax !== undefined) setWithHoldingTax(prefillData.withHoldingTax);
     if (prefillData.WHTpercent != null) setWHTpercent(prefillData.WHTpercent);
     if (prefillData.WHTAmount != null) setWHTAmount(prefillData.WHTAmount);
-    if (prefillData.isDebt !== undefined) setIsDebt(prefillData.isDebt);
+    if (prefillData.documentType !== undefined) {
+      setFlexiBillDocumentType(prefillData.documentType);
+      setIsDebt(prefillData.documentType === "Invoice");
+    } else if (prefillData.isDebt !== undefined) {
+      setIsDebt(prefillData.isDebt);
+    }
     if (prefillData.desc !== undefined) setDesc(prefillData.desc);
     if (prefillData.purchaseAt) {
       setDate([prefillData.purchaseAt]);
@@ -214,6 +221,23 @@ export default function CreateExpense({
     setIsFlexiDocument(true);
     setShowAllFormField(true);
   }, [visible, prefillData]);
+
+  // Poll bill DocumentType when this is a FlexiDocument — auto-flip isDebt when seller marks it as Receipt
+  useEffect(() => {
+    if (!isFlexiDocument || !flexiIdInput.trim()) return;
+    const id = flexiIdInput.trim();
+    const poll = setInterval(async () => {
+      try {
+        const billLookup = await CallAPIBill.lookupBillByFlexiIdAPI(id);
+        const billDocType = billLookup?.documentType || null;
+        setFlexiBillDocumentType(billDocType);
+        setIsDebt(billDocType === "Invoice");
+      } catch {
+        // Ignore silently
+      }
+    }, 30000);
+    return () => clearInterval(poll);
+  }, [isFlexiDocument, flexiIdInput]);
 
   // Helpers and handlers to compute tax amounts and react to user events (replace effect-as-handler)
   const recomputeAmounts = (overrides?: {
@@ -282,6 +306,10 @@ export default function CreateExpense({
         setWHTpercent(Number(data.WHTpercent ?? 0));
         setWHTAmount(Number(data.WHTAmount ?? 0));
       }
+      const billDocType = data.documentType || null;
+      setFlexiBillDocumentType(billDocType);
+      setIsDebt(billDocType === "Invoice");
+      setIsFlexiDocument(true);
       setShowAllFormField(true);
     } catch {
       setFlexiIdError(t("expense.flexiIdNotFound", "ไม่พบเอกสาร FlexiID นี้"));
@@ -1956,9 +1984,9 @@ export default function CreateExpense({
                 <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme === "dark" ? "#444" : "#ddd", borderRadius: 8, overflow: "hidden" }}>
                     <TouchableOpacity
-                      onPress={() => setIsDebt(false)}
-                      activeOpacity={0.7}
-                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: !isDebt ? "#3bf6da" : "transparent" }}
+                      onPress={() => { if (!isFlexiDocument) setIsDebt(false); }}
+                      activeOpacity={isFlexiDocument ? 1 : 0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: !isDebt ? "#3bf6da" : "transparent", opacity: isFlexiDocument ? 0.5 : 1 }}
                     >
                       <CustomText style={{ fontSize: 11, color: !isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
                         {t("expense.create.paid")}
@@ -1966,9 +1994,9 @@ export default function CreateExpense({
                     </TouchableOpacity>
                     <View style={{ width: 1, alignSelf: "stretch", backgroundColor: theme === "dark" ? "#444" : "#ddd" }} />
                     <TouchableOpacity
-                      onPress={() => setIsDebt(true)}
-                      activeOpacity={0.7}
-                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: isDebt ? "#FF9C01" : "transparent" }}
+                      onPress={() => { if (!isFlexiDocument) setIsDebt(true); }}
+                      activeOpacity={isFlexiDocument ? 1 : 0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: isDebt ? "#FF9C01" : "transparent", opacity: isFlexiDocument ? 0.5 : 1 }}
                     >
                       <CustomText style={{ fontSize: 11, color: isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
                         {t("expense.create.debt")}

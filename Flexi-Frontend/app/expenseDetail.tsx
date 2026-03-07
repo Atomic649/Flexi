@@ -222,6 +222,7 @@ export default function ExpenseDetail({
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
   const [flexiId, setFlexiId] = useState<string | null>(expense.flexiId || null);
+  const [flexiBillDocumentType, setFlexiBillDocumentType] = useState<string | null>(null);
   const [businessDetails, setBusinessDetails] = useState<any>(null);
   const [businessName, setBusinessName] = useState<string>("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(
@@ -273,7 +274,19 @@ export default function ExpenseDetail({
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
-        setFlexiId(fetchedExpense.flexiId || null);
+        const resolvedFlexiId = fetchedExpense.flexiId || null;
+        setFlexiId(resolvedFlexiId);
+        const resolvedIsFlexiDocument = !!(fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf);
+        if (resolvedFlexiId && resolvedIsFlexiDocument) {
+          try {
+            const billData = await CallAPIBill.getBillByFlexiIdAPI(resolvedFlexiId);
+            const billDocType = billData?.DocumentType || null;
+            setFlexiBillDocumentType(billDocType);
+            setIsDebt(billDocType === "Invoice");
+          } catch {
+            setFlexiBillDocumentType(null);
+          }
+        }
         savedRef.current = {
           date: fetchedExpense.date,
           note: fetchedExpense.note,
@@ -312,6 +325,38 @@ export default function ExpenseDetail({
     fetchExpense();
     fetchBusinessDetails();
   }, [expense.id]);
+
+  // Poll bill DocumentType when this is a FlexiDocument — auto-flip isDebt and persist when seller marks it as Receipt
+  useEffect(() => {
+    if (!isFlexiDocument || !flexiId) return;
+    const poll = setInterval(async () => {
+      try {
+        const billData = await CallAPIBill.getBillByFlexiIdAPI(flexiId);
+        const billDocType = billData?.DocumentType || null;
+        setFlexiBillDocumentType((prev) => {
+          if (prev !== billDocType) {
+            const newIsDebt = billDocType === "Invoice";
+            setIsDebt(newIsDebt);
+            // Persist DocumentType change to the expense record
+            const memberId = getMemberId();
+            Promise.resolve(memberId).then((mid) => {
+              const formData = new FormData();
+              formData.append("memberId", String(mid));
+              formData.append("DocumentType", billDocType === "Invoice" ? "Invoice" : "Receipt");
+              formData.append("debtAmount", newIsDebt ? String(amount) : "0");
+              CallAPIExpense.updateExpenseAPI(expense.id, formData).catch((e) =>
+                console.error("Failed to sync expense DocumentType from bill:", e)
+              );
+            });
+          }
+          return billDocType;
+        });
+      } catch {
+        // Bill may return 404 if already used — ignore silently
+      }
+    }, 30000);
+    return () => clearInterval(poll);
+  }, [isFlexiDocument, flexiId]);
 
   // Track changes to expense data
   useEffect(() => {
@@ -967,7 +1012,7 @@ export default function ExpenseDetail({
                       <>
                         {/* FlexiDocument Invoice panel */}
                         <TouchableOpacity
-                          style={{ flex: 1, marginRight: 2 }}
+                          style={{ flex: 1, marginRight: isDebt ? 0 : 2 }}
                           className="items-center justify-center"
                           onPress={() => handleOpenInvoiceFromFlexiID()}>
                           <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#04ecc120", borderRadius: 8, borderWidth: 1, borderColor: "#04ecc140" }}>
@@ -977,18 +1022,20 @@ export default function ExpenseDetail({
                             </CustomText>
                           </View>
                         </TouchableOpacity>
-                        {/* FlexiDocument Receipt panel */}
-                        <TouchableOpacity
-                          style={{ flex: 1, marginLeft: 2 }}
-                          className="items-center justify-center"
-                          onPress={() => handleOpenReceipFromFlexiID()}>
-                          <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#04ecc120", borderRadius: 8, borderWidth: 1, borderColor: "#04ecc140" }}>
-                            <Ionicons name="link-outline" size={28} color="#04ecc1" />
-                            <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
-                              {t("expense.flexi.documentLinked", "Receipt")}
-                            </CustomText>
-                          </View>
-                        </TouchableOpacity>
+                        {/* FlexiDocument Receipt panel — only for non-debt expenses */}
+                        {!isDebt && (
+                          <TouchableOpacity
+                            style={{ flex: 1, marginLeft: 2 }}
+                            className="items-center justify-center"
+                            onPress={() => handleOpenReceipFromFlexiID()}>
+                            <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#04ecc120", borderRadius: 8, borderWidth: 1, borderColor: "#04ecc140" }}>
+                              <Ionicons name="link-outline" size={28} color="#04ecc1" />
+                              <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
+                                {t("expense.flexi.documentLinked", "Receipt")}
+                              </CustomText>
+                            </View>
+                          </TouchableOpacity>
+                        )}
                       </>
                     ) : null}
                     {/* Receipt panel */}
@@ -1100,9 +1147,9 @@ export default function ExpenseDetail({
                 <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme === "dark" ? "#444" : "#ddd", borderRadius: 8, overflow: "hidden" }}>
                     <TouchableOpacity
-                      onPress={() => setIsDebt(false)}
-                      activeOpacity={0.7}
-                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: !isDebt ? "#3bf6da" : "transparent" }}
+                      onPress={() => { if (!isFlexiDocument) setIsDebt(false); }}
+                      activeOpacity={isFlexiDocument ? 1 : 0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: !isDebt ? "#3bf6da" : "transparent", opacity: isFlexiDocument ? 0.5 : 1 }}
                     >
                       <CustomText style={{ fontSize: 11, color: !isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
                         {t("expense.create.paid")}
@@ -1110,9 +1157,9 @@ export default function ExpenseDetail({
                     </TouchableOpacity>
                     <View style={{ width: 1, alignSelf: "stretch", backgroundColor: theme === "dark" ? "#444" : "#ddd" }} />
                     <TouchableOpacity
-                      onPress={() => setIsDebt(true)}
-                      activeOpacity={0.7}
-                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: isDebt ? "#FF9C01" : "transparent" }}
+                      onPress={() => { if (!isFlexiDocument) setIsDebt(true); }}
+                      activeOpacity={isFlexiDocument ? 1 : 0.7}
+                      style={{ paddingHorizontal: 10, paddingVertical: 3, backgroundColor: isDebt ? "#FF9C01" : "transparent", opacity: isFlexiDocument ? 0.5 : 1 }}
                     >
                       <CustomText style={{ fontSize: 11, color: isDebt ? "#000" : (theme === "dark" ? "#555" : "#aaa") }}>
                         {t("expense.create.debt")}

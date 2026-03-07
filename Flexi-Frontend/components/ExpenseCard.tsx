@@ -53,6 +53,7 @@ export default function ExpenseCard({
   debtAmount,
   dueDate,
   onPaid,
+  flexiId,
 }: any) {
   const [detailVisible, setDetailVisible] = useState(false);
   const router = useRouter();
@@ -153,7 +154,7 @@ export default function ExpenseCard({
   };
 
   const leftActions: SwipeAction[] = [];
-  if (isDebt && type === "expense") {
+  if (isDebt && type === "expense" && !flexiId) {
     leftActions.push({
       id: "paid",
       icon: "checkmark-circle",
@@ -277,7 +278,7 @@ export default function ExpenseCard({
       >
         <SwipeableRow
           leftActions={leftActions}
-          disabled={!isDebt || type !== "expense"}
+          disabled={!isDebt || type !== "expense" || !!flexiId}
           threshold={80}
           actionWidth={80}
           actionHeight="92%"
