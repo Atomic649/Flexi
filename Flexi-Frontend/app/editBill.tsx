@@ -36,6 +36,7 @@ import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import * as ExpoPrint from "expo-print";
+import * as Clipboard from "expo-clipboard";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
@@ -179,6 +180,10 @@ export default function EditBill() {
     string[]
   >([]);
   const [isDocumentTypeLocked, setIsDocumentTypeLocked] = useState(false);
+
+  // FlexiId for sharing
+  const [flexiId, setFlexiId] = useState<string | null>(null);
+  const [flexiIdCopied, setFlexiIdCopied] = useState(false);
 
   // Business details for PDF generation
   const [businessDetails, setBusinessDetails] = useState<any>(null);
@@ -716,6 +721,7 @@ export default function EditBill() {
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
         setValidContactUntil(billData.validContactUntil || "");
+        setFlexiId(billData.flexiId || null);
 
         // Set note from bill data
         if (billData.note) {
@@ -1404,66 +1410,108 @@ export default function EditBill() {
             </View>
           )}
           <View
-            className="flex-1 justify-center h-full px-4 mt-5 mb-20 pb-20"
+            className="flex-1 justify-center h-full px-4 mt-1 mb-20 pb-20"
             style={{
               width: isDesktop() ? "80%" : "100%",
               maxWidth: 900,
               alignSelf: Platform.OS === "web" ? "center" : "auto",
             }}
           >
-            <View className="flex flex-row justify-between items-center">
-              <View className="w-1/2 pr-2">
-                {platformOptions.length > 0 ? (
-                  <DropdownClear
-                    title={t("bill.store")}
-                    options={platformOptions.map((plat) => {
-                      if (typeof plat === "string") {
-                        return { label: plat, value: plat };
-                      }
-                      const label =
-                        plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
-                      const value =
-                        plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
-                      return { label, value };
-                    })}
-                    placeholder={t("bill.selectStore")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    selectedValue={selectedPlatform}
-                    onValueChange={(value: any) => {
-                      if (isEditMode) setSelectedPlatform(value);
+            {/* Row 1: FlexiId pill + edit toggle + calendar icon */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, marginBottom: 2 }}>
+              {/* Date + calendar — left side */}
+              <TouchableOpacity
+                onPress={() => isEditMode ? setCalendarVisible(true) : null}
+                activeOpacity={isEditMode ? 0.7 : 1}
+                style={{ flexDirection: "row", alignItems: "center", gap: 6, opacity: isEditMode ? 1 : 0.6 }}
+              >
+                <Ionicons name="calendar-outline" size={16} color={theme === "dark" ? "#c9c9c9" : "#48453e"} />
+                <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                  {selectedDates.length > 0 ? formatDate(selectedDates[0]) : t("dashboard.selectDate")}
+                </CustomText>
+              </TouchableOpacity>
+
+              {/* FlexiId + edit — right side */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                {flexiId && selectedDocumentType !== "QA" && (
+                  <TouchableOpacity
+                    onPress={async () => {
+                      await Clipboard.setStringAsync(flexiId);
+                      setFlexiIdCopied(true);
+                      setTimeout(() => setFlexiIdCopied(false), 2000);
                     }}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-2 mb-2"
-                    disabled={!isEditMode}
-                  />
-                ) : null}
-              </View>
-              <View className="w-1/2 pr-2">
-                {/* Date selector */}
-                <View className="flex-row items-center justify-center bg-transparent mt-8 rounded-full p-2 ml-2">
-                  <CustomText
-                    className={`text-base mx-2 ${
-                      theme === "dark" ? "text-[#c9c9c9]" : "text-[#48453e]"
-                    }`}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: "#04ecc115",
+                      borderWidth: 1,
+                      borderColor: "#04ecc140",
+                      borderRadius: 20,
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      gap: 5,
+                      maxWidth: 160,
+                    }}
                   >
-                    {selectedDates.length > 0
-                      ? formatDate(selectedDates[0])
-                      : t("dashboard.selectDate")}
-                  </CustomText>
-                  {/* icon Calendar */}
+                    <CustomText style={{ fontSize: 11, color: "#04ecc1", letterSpacing: 0.4 }} numberOfLines={1}>
+                      {flexiId}
+                    </CustomText>
+                    <Ionicons
+                      name={flexiIdCopied ? "checkmark-circle" : "copy-outline"}
+                      size={12}
+                      color={flexiIdCopied ? "#04ecc1" : "#04ecc180"}
+                    />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  onPress={() => setIsEditMode((prev) => !prev)}
+                  activeOpacity={0.8}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: isEditMode ? "#ff8c0015" : "#04ecc115",
+                    borderWidth: 1,
+                    borderColor: isEditMode ? "#ff8c0040" : "#04ecc140",
+                    borderRadius: 20,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                  }}
+                >
                   <Ionicons
-                    name="calendar"
-                    size={24}
-                    color={theme === "dark" ? "#ffffff" : "#444541"}
-                    onPress={() =>
-                      isEditMode ? setCalendarVisible(true) : null
-                    }
-                    style={{ opacity: isEditMode ? 1 : 0.5 }}
+                    name={isEditMode ? "lock-closed" : "pencil-sharp"}
+                    size={13}
+                    color={isEditMode ? "#ff8c00" : "#04ecc1"}
                   />
-                </View>
+                </TouchableOpacity>
               </View>
+            </View>
+
+            {/* Row 2: Platform dropdown — full width */}
+            <View>
+              {platformOptions.length > 0 ? (
+                <DropdownClear
+                  title={t("bill.store")}
+                  options={platformOptions.map((plat) => {
+                    if (typeof plat === "string") {
+                      return { label: plat, value: plat };
+                    }
+                    const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                    const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                    return { label, value };
+                  })}
+                  placeholder={t("bill.selectStore")}
+                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  selectedValue={selectedPlatform}
+                  onValueChange={(value: any) => {
+                    if (isEditMode) setSelectedPlatform(value);
+                  }}
+                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
+                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  otherStyles="mt-1 mb-2"
+                  disabled={!isEditMode}
+                />
+              ) : null}
             </View>
             {/* Tax Type Checkboxes Row */}
             <View
@@ -2288,44 +2336,6 @@ export default function EditBill() {
               )}
             </View>
 
-            {/* Edit mode toggle button */}
-            <View
-              style={{
-                position: "absolute",
-                top: -10,
-                right: 2,
-                zIndex: 1000,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => setIsEditMode((prev) => !prev)}
-                activeOpacity={1}
-                style={{
-                  backgroundColor: isEditMode ? "#ff8c00" : "#04ecc1",
-                  borderRadius: 20,
-                  marginRight: 20,
-                  marginBottom: 10,
-                  padding: 10,
-                  paddingHorizontal: 15,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                }}
-              >
-                <Ionicons
-                  name={isEditMode ? "lock-closed" : "pencil-sharp"}
-                  size={16}
-                  color="#404040"
-                  style={{ marginRight: 5 }}
-                />
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

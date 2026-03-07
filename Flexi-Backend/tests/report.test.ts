@@ -134,8 +134,9 @@ describe('reportController', () => {
         { date: new Date('2025-11-19T00:00:00Z'), adsCost: 30, platform: { platform: 'FB', accName: 'A' } },
         { date: new Date('2025-11-20T00:00:00Z'), adsCost: 40, platform: { platform: 'GG', accName: 'B' } },
       ]);
+      prismaMock.member.findUnique.mockResolvedValue(null);
       prismaMock.expense.findMany.mockResolvedValue([
-        { id: 1, date: new Date('2025-11-18T00:00:00Z'), amount: 10, note: 'n', sName: 's', desc: 'd', image: '' },
+        { id: 1, date: new Date('2025-11-18T00:00:00Z'), amount: 10, note: 'n', sName: 's', desc: 'd', image: '', DocumentType: 'Receipt', debtAmount: 0, dueDate: null, flexiId: null },
       ]);
       const res = await request(app).get('/report/list/MID-1');
       expect(res.status).toBe(200);

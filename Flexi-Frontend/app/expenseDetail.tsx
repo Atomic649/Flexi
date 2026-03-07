@@ -277,12 +277,14 @@ export default function ExpenseDetail({
         const resolvedFlexiId = fetchedExpense.flexiId || null;
         setFlexiId(resolvedFlexiId);
         const resolvedIsFlexiDocument = !!(fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf);
+        let resolvedIsDebt = fetchedIsDebt;
         if (resolvedFlexiId && resolvedIsFlexiDocument) {
           try {
             const billData = await CallAPIBill.getBillByFlexiIdAPI(resolvedFlexiId);
             const billDocType = billData?.DocumentType || null;
             setFlexiBillDocumentType(billDocType);
-            setIsDebt(billDocType === "Invoice");
+            resolvedIsDebt = billDocType === "Invoice";
+            setIsDebt(resolvedIsDebt);
           } catch {
             setFlexiBillDocumentType(null);
           }
@@ -304,7 +306,7 @@ export default function ExpenseDetail({
           sAddress: fetchedExpense.sAddress || "",
           taxType: (fetchedExpense.taxType as "Individual" | "Juristic") || "Individual",
           branch: fetchedExpense.branch || "",
-          isDebt: fetchedIsDebt,
+          isDebt: resolvedIsDebt,
         };
       } catch (error) {
         console.error("Error fetching expense:", error);
