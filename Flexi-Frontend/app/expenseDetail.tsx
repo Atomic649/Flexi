@@ -446,6 +446,8 @@ export default function ExpenseDetail({
     
   }
 
+  const handleOpenReceipFromFlexiID = () => {}
+
   const handlePickPdf = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -915,11 +917,39 @@ export default function ExpenseDetail({
                 className="flex-1 justify-center h-full py-6 px-4 rounded-lg"
                 style={{ backgroundColor: "transparent" }}
               >
-                {hasBothPanels ? (
+                {hasBothPanels || isFlexiDocument ? (
                   /* Two-panel 50/50 layout */
                   <View style={{ flexDirection: "row", width: "100%", height: Platform.OS === "web" ? 300 : 280, marginBottom: 8 , paddingTop: 20 }}>
+                    {isFlexiDocument ? (
+                      <>
+                        {/* FlexiDocument Invoice panel */}
+                        <TouchableOpacity
+                          style={{ flex: 1, marginRight: 2 }}
+                          className="items-center justify-center"
+                          onPress={() => handleOpenInvoiceFromFlexiID()}>
+                          <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#04ecc120", borderRadius: 8, borderWidth: 1, borderColor: "#04ecc140" }}>
+                            <Ionicons name="link-outline" size={28} color="#04ecc1" />
+                            <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
+                              {t("expense.flexi.documentLinked", "Invoice")}
+                            </CustomText>
+                          </View>
+                        </TouchableOpacity>
+                        {/* FlexiDocument Receipt panel */}
+                        <TouchableOpacity
+                          style={{ flex: 1, marginLeft: 2 }}
+                          className="items-center justify-center"
+                          onPress={() => handleOpenReceipFromFlexiID()}>
+                          <View style={{ flex: 1, width: "100%", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#04ecc120", borderRadius: 8, borderWidth: 1, borderColor: "#04ecc140" }}>
+                            <Ionicons name="link-outline" size={28} color="#04ecc1" />
+                            <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
+                              {t("expense.flexi.documentLinked", "Receipt")}
+                            </CustomText>
+                          </View>
+                        </TouchableOpacity>
+                      </>
+                    ) : null}
                     {/* Receipt panel */}
-                    <View style={{ flex: 1, marginRight: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
+                    {!isFlexiDocument && <View style={{ flex: 1, marginRight: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
                       <CustomText style={{ position: "absolute", top: 4, left: 6, zIndex: 5, fontSize: 9, fontWeight: "700", color: theme === "dark" ? "#aaa" : "#666", backgroundColor: theme === "dark" ? "#18181bcc" : "#ffffffcc", paddingHorizontal: 4, borderRadius: 4 }}>
                         REC
                       </CustomText>
@@ -946,9 +976,9 @@ export default function ExpenseDetail({
                       <TouchableOpacity onPress={handleRemoveAttachment} style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#ef444475", borderRadius: 10, width: 20, height: 20, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
                         <Ionicons name="remove" size={12} color="#fff" />
                       </TouchableOpacity>
-                    </View>
+                    </View>}
                     {/* Invoice panel */}
-                    <View style={{ flex: 1, marginLeft: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
+                    {!isFlexiDocument && <View style={{ flex: 1, marginLeft: 2, position: "relative", overflow: "hidden", borderRadius: 8, borderWidth: 1, borderColor: theme === "dark" ? "#3f3f46" : "#e5e7eb" }}>
                       <CustomText style={{ position: "absolute", top: 4, left: 6, zIndex: 5, fontSize: 9, fontWeight: "700", color: "#ff2a00", backgroundColor: theme === "dark" ? "#18181bcc" : "#ffffffcc", paddingHorizontal: 4, borderRadius: 4 }}>
                         INV
                       </CustomText>
@@ -975,7 +1005,7 @@ export default function ExpenseDetail({
                       <TouchableOpacity onPress={handleRemoveInvoiceAttachment} style={{ position: "absolute", top: 4, right: 4, backgroundColor: "#ef444475", borderRadius: 10, width: 20, height: 20, justifyContent: "center", alignItems: "center", zIndex: 10 }}>
                         <Ionicons name="remove" size={12} color="#fff" />
                       </TouchableOpacity>
-                    </View>
+                    </View>}
                   </View>
                 ) : (
                   /* Single-panel (existing behavior) */
@@ -1605,18 +1635,10 @@ export default function ExpenseDetail({
                     </CustomText>
                   </TouchableOpacity>
                   {/* attach bill document */}
-                  {isFlexiDocument ? (
-                    <TouchableOpacity 
-                    className="items-center justify-center"
-                    onPress={()=> handleOpenInvoiceFromFlexiID()}>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#04ecc120", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-                        <Ionicons name="link-outline" size={18} color="#04ecc1" />
-                        <CustomText style={{ color: "#04ecc1", fontSize: 12 }} weight="semibold">
-                          {t("expense.flexi.documentLinked", "FlexiID")}
-                        </CustomText>
-                      </View>
-                    </TouchableOpacity>
-                  ) : (
+
+                 {/* hideAttachment if FlexiDocument */}
+                  
+                  {!isFlexiDocument ? (
                   <TouchableOpacity
                     onPress={handleOpenAttachmentPicker}
                     className=" items-center justify-center"
@@ -1630,8 +1652,7 @@ export default function ExpenseDetail({
                     <CustomText className="text-center mt-1">
                       {isDebt ? t("expense.detail.attachInv") : t("expense.detail.attachRec")}
                     </CustomText>
-                  </TouchableOpacity>
-                  )}
+                  </TouchableOpacity>) : null}
 
                   <SecondaryButton
                     title={t("common.save")}
