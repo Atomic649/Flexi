@@ -1,6 +1,6 @@
 import express from "express";
 import authenticateToken from "../middleware/authMiddleware";
-import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout, facebookAuthInit, facebookAuthCallback } from "../controllers/faceBookControllor";
+import { getFacebookDailySpend, getFacebookDailySpendRange, getFacebookCampaignDailySpend, getFacebookAdAccounts, getFacebookCampaigns, getFacebookAdSets, getFacebookAds, runFacebookAdsCostIngestion, facebookAdsCostCronJob, saveFacebookToken, exchangeFacebookToken, getFacebookStatus, facebookLogout, facebookAuthInit, facebookAuthCallback, saveFacebookTokenFromFragment, facebookFragmentCallback } from "../controllers/faceBookControllor";
 
 const router = express.Router();
 
@@ -16,6 +16,10 @@ router.get("/ads", authenticateToken, getFacebookAds);
 // Mobile OAuth flow — PUBLIC (no auth, Facebook redirects here)
 router.get("/auth", facebookAuthInit);
 router.get("/callback", facebookAuthCallback);
+// Bridge page navigates here with token in query; server saves to DB and HTTP 302 redirects to app
+router.get("/fragment-callback", facebookFragmentCallback);
+// Called by the OAuth bridge page to save the token from the URL fragment to DB
+router.post("/fragment-token", saveFacebookTokenFromFragment);
 
 // Exchange short-lived token for long-lived token (server-side)
 router.post("/exchange", authenticateToken, exchangeFacebookToken);

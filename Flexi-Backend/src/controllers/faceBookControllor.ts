@@ -1205,7 +1205,7 @@ export const facebookLogout = async (req: Request, res: Response) => {
 // Short-lived in-memory state store for CSRF protection (10-minute TTL)
 const oauthStateStore = new Map<
   string,
-  { memberId: string; createdAt: number }
+  { memberId: string; scheme: string; createdAt: number }
 >();
 setInterval(
   () => {
@@ -1219,7 +1219,7 @@ setInterval(
 
 const FB_CONFIG_ID =
   process.env.FACEBOOK_CONFIGURATION_ID || "1953026795255068";
-const MOBILE_SCHEME = process.env.MOBILE_APP_SCHEME || "exp+flexi";
+const MOBILE_SCHEME = process.env.MOBILE_APP_SCHEME || "flexi";
 
 /**
  * GET /facebook/auth?memberId=xxx  (PUBLIC — no auth middleware)
@@ -1228,8 +1228,9 @@ const MOBILE_SCHEME = process.env.MOBILE_APP_SCHEME || "exp+flexi";
  */
 export const facebookAuthInit = (req: Request, res: Response) => {
   const memberId = (req.query.memberId as string) ?? "";
+  const scheme = (req.query.scheme as string) || MOBILE_SCHEME;
   const state = `${memberId}:${randomUUID()}`;
-  oauthStateStore.set(state, { memberId, createdAt: Date.now() });
+  oauthStateStore.set(state, { memberId, scheme, createdAt: Date.now() });
 
   const callbackUrl = process.env.FACEBOOK_CALLBACK_URL;
   if (!callbackUrl) {
@@ -1242,7 +1243,7 @@ export const facebookAuthInit = (req: Request, res: Response) => {
     client_id: process.env.FACEBOOK_APP_ID!,
     config_id: FB_CONFIG_ID,
     redirect_uri: callbackUrl,
-    response_type: "code",
+    response_type: "token",
     scope: "public_profile,email,ads_read,ads_management",
     state,
   });
@@ -1264,7 +1265,30 @@ export const facebookAuthCallback = async (req: Request, res: Response) => {
     );
 
   if (error) return errorRedirect(error);
-  if (!code || !state) return errorRedirect("missing_code_or_state");
+
+  // Token flow (response_type=token): Facebook puts the token in the URL hash fragment.
+  // Serve an HTML bridge page that reads the fragment and navigates to a server endpoint
+  // with the token as a query param. The server then does a proper HTTP 302 redirect to
+  // the app deep link — ASWebAuthenticationSession intercepts HTTP redirects, not JS ones.
+  if (!code) {
+    return res.send(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Connecting...</title></head>
+<body><script>
+  var p = new URLSearchParams(window.location.hash.substring(1));
+  var token = p.get('access_token');
+  var state = p.get('state');
+  var err = p.get('error_description') || p.get('error');
+  if (err) {
+    location.replace('/facebook/fragment-callback?error=' + encodeURIComponent(err));
+  } else if (token) {
+    location.replace('/facebook/fragment-callback?token=' + encodeURIComponent(token) + '&state=' + encodeURIComponent(state || ''));
+  } else {
+    location.replace('/facebook/fragment-callback?error=no_token');
+  }
+</script><p>Connecting to Facebook...</p></body></html>`);
+  }
+
+  if (!state) return errorRedirect("missing_state");
 
   const stored = oauthStateStore.get(state);
   if (!stored) return errorRedirect("invalid_state");
@@ -1351,6 +1375,186 @@ export const facebookAuthCallback = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * GET /facebook/fragment-callback  (PUBLIC — bridge page navigates here with token in query)
+ * Saves the token to DB and issues a proper HTTP 302 redirect to the app deep link.
+ * ASWebAuthenticationSession intercepts HTTP redirects (not JS location.replace).
+ */
+export const facebookFragmentCallback = async (req: Request, res: Response) => {
+  const { token, state, error } = req.query as Record<string, string>;
+
+  // Resolve scheme from state store so we redirect back to whatever scheme the client sent
+  let memberId = "";
+  let scheme = MOBILE_SCHEME;
+  if (state) {
+    const stored = oauthStateStore.get(state);
+    if (stored) {
+      memberId = stored.memberId;
+      scheme = stored.scheme || MOBILE_SCHEME;
+      oauthStateStore.delete(state);
+    }
+  }
+
+  if (error) {
+    return res.redirect(
+      `${scheme}://facebook-success?error=${encodeURIComponent(error)}`,
+    );
+  }
+  if (!token) {
+    return res.redirect(`${scheme}://facebook-success?error=no_token`);
+  }
+
+  const appId = process.env.FACEBOOK_APP_ID;
+  const appSecret = process.env.FACEBOOK_APP_SECRET;
+  let longToken = token;
+  let longExpiresIn: number | undefined;
+  if (appId && appSecret) {
+    try {
+      const longRes = await axios.get(`${graphApiUrl}/oauth/access_token`, {
+        params: {
+          grant_type: "fb_exchange_token",
+          client_id: appId,
+          client_secret: appSecret,
+          fb_exchange_token: token,
+        },
+      });
+      longToken = longRes.data?.access_token || token;
+      longExpiresIn = longRes.data?.expires_in;
+    } catch {
+      console.warn("Long-lived token exchange failed; using short-lived token");
+    }
+  }
+
+  const expiresDate = computeExpiresAt(longExpiresIn);
+  if (memberId) {
+    try {
+      const existing = await prisma.platformToken.findFirst({
+        where: { memberId, platform: SocialMedia.Facebook },
+      });
+      if (existing) {
+        await prisma.platformToken.update({
+          where: { id: existing.id },
+          data: { token: longToken, expiresAt: expiresDate, login: true },
+        });
+      } else {
+        await prisma.platformToken.create({
+          data: {
+            memberId,
+            platform: SocialMedia.Facebook,
+            token: longToken,
+            expiresAt: expiresDate,
+            login: true,
+          },
+        });
+      }
+    } catch (err: any) {
+      console.error("Failed to save Facebook token from fragment", err?.message);
+      return res.send(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Error</title>
+<style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fff;}
+.box{text-align:center;padding:32px;}</style></head>
+<body><div class="box"><p style="color:#e53935;font-size:18px;">Connection failed. Please try again.</p></div></body></html>`);
+    }
+  }
+
+  // Show "Connected" page — user closes the popup manually.
+  // The app checks DB status after the popup closes.
+  return res.send(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Connected</title>
+<style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fff;}
+.box{text-align:center;padding:32px;}
+.check{font-size:64px;}
+h2{color:#1877F2;margin:12px 0 8px;}
+p{color:#555;margin:0 0 24px;}
+button{background:#1877F2;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:16px;cursor:pointer;}
+button:active{background:#1259b5;}</style></head>
+<body><div class="box">
+<div class="check">✓</div>
+<h2>Facebook Connected</h2>
+<p>Your account has been linked successfully.</p>
+</div></body></html>`);
+};
+
+/**
+ * POST /facebook/fragment-token  (PUBLIC — called from the OAuth bridge page)
+ * Body: { token: string, state?: string }
+ * Reads the access token from the bridge page (fragment can't be read server-side),
+ * exchanges it for a long-lived token, and saves to DB.
+ */
+export const saveFacebookTokenFromFragment = async (
+  req: Request,
+  res: Response,
+) => {
+  const { token, state } = req.body as { token?: string; state?: string };
+  if (!token) return res.status(400).json({ message: "token is required" });
+
+  // Resolve memberId from CSRF state store
+  let memberId = "";
+  if (state) {
+    const stored = oauthStateStore.get(state);
+    if (stored) {
+      memberId = stored.memberId;
+      oauthStateStore.delete(state);
+    }
+  }
+
+  const appId = process.env.FACEBOOK_APP_ID;
+  const appSecret = process.env.FACEBOOK_APP_SECRET;
+
+  let longToken = token;
+  let longExpiresIn: number | undefined;
+  if (appId && appSecret) {
+    try {
+      const longRes = await axios.get(`${graphApiUrl}/oauth/access_token`, {
+        params: {
+          grant_type: "fb_exchange_token",
+          client_id: appId,
+          client_secret: appSecret,
+          fb_exchange_token: token,
+        },
+      });
+      longToken = longRes.data?.access_token || token;
+      longExpiresIn = longRes.data?.expires_in;
+    } catch {
+      console.warn("Long-lived token exchange failed; using short-lived token");
+    }
+  }
+
+  const expiresDate = computeExpiresAt(longExpiresIn);
+
+  if (memberId) {
+    try {
+      const existing = await prisma.platformToken.findFirst({
+        where: { memberId, platform: SocialMedia.Facebook },
+      });
+      if (existing) {
+        await prisma.platformToken.update({
+          where: { id: existing.id },
+          data: { token: longToken, expiresAt: expiresDate, login: true },
+        });
+      } else {
+        await prisma.platformToken.create({
+          data: {
+            memberId,
+            platform: SocialMedia.Facebook,
+            token: longToken,
+            expiresAt: expiresDate,
+            login: true,
+          },
+        });
+      }
+    } catch (err: any) {
+      console.error(
+        "Failed to save Facebook token from fragment",
+        err?.message,
+      );
+      return res.status(500).json({ message: "Failed to save token" });
+    }
+  }
+
+  return res.status(200).json({ status: "ok", memberId: memberId || null });
+};
+
 export default {
   getFacebookDailySpend,
   getFacebookDailySpendRange,
@@ -1365,4 +1569,6 @@ export default {
   facebookLogout,
   facebookAuthInit,
   facebookAuthCallback,
+  facebookFragmentCallback,
+  saveFacebookTokenFromFragment,
 };

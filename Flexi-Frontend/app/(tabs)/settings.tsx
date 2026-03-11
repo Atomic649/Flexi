@@ -371,16 +371,21 @@ export default function Setting() {
         const result = await loginWithFacebook(memberIdRef.current);
 
         if (!result.success) {
-          setAlertConfig({
-            visible: true,
-            title: t("common.error"),
-            message: (result as { success: boolean; error: any }).error || t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
-            buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
-          });
+          // Don't show error if user simply closed the popup — token may already be saved.
+          // Only show error for actual failures (not "Login cancelled").
+          const errorMsg = (result as { success: boolean; error: any }).error;
+          if (errorMsg && errorMsg !== "Login cancelled") {
+            setAlertConfig({
+              visible: true,
+              title: t("common.error"),
+              message: errorMsg || t("settings.socialMedia.connectionFailed", { platform: "Facebook" }),
+              buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })) }],
+            });
+          }
           return;
         }
 
-        // Confirm login=true from DB
+        // Token saved to DB — update toggle and show success
         setFacebook(true);
         setAlertConfig({
           visible: true,

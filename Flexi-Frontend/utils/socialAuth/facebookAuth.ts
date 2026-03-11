@@ -16,8 +16,11 @@ const FB_APP_ID = "1393521459147449";
 const CONFIGURATION_ID = "1953026795255068";
 const SCOPES = ["public_profile", "email", "ads_read", "ads_management"];
 
-// Deep link scheme registered in Info.plist / app.json
-const APP_SCHEME = "exp+flexi";
+// Use exp+flexi in Expo Go, and the registered app scheme (flexi) in production builds
+const APP_SCHEME =
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+    ? "exp+flexi"
+    : "flexi";
 
 /**
  * Main Entry Point
@@ -51,36 +54,20 @@ export const loginWithFacebook = async (memberId?: string) => {
  */
 const handleNativeLogin = async (memberId: string) => {
   try {
-    const authUrl = `${API_URL}facebook/auth?memberId=${encodeURIComponent(memberId)}`;
+    const authUrl = `${API_URL}facebook/auth?memberId=${encodeURIComponent(memberId)}&scheme=${encodeURIComponent(APP_SCHEME)}`;
 
-    // Opens ASWebAuthenticationSession; watches for redirect to APP_SCHEME
-    const result = await WebBrowser.openAuthSessionAsync(authUrl, APP_SCHEME);
+    // Opens ASWebAuthenticationSession — popup shows "Connected" page after token is saved.
+    // User closes the popup manually (or it auto-dismisses). We then check DB status.
+    await WebBrowser.openAuthSessionAsync(authUrl, APP_SCHEME);
 
-    if (result.type !== "success") {
-      return { success: false, error: "Login cancelled or failed" };
+    // After popup closes (any reason), check DB to see if token was saved
+    const axios = await getAxiosWithAuth();
+    const resp = await axios.get(`/facebook/status?memberId=${encodeURIComponent(memberId)}`);
+    if (resp.data?.login === true) {
+      return { success: true };
     }
 
-    // Parse token from deep link: exp+flexi://facebook-success?accessToken=xxx&expiresAt=xxx
-    const url = new URL(result.url);
-    const accessToken = url.searchParams.get("accessToken");
-    const expiresAt = url.searchParams.get("expiresAt");
-
-    if (!accessToken) {
-      const error = url.searchParams.get("error") ?? "No token returned";
-      return { success: false, error };
-    }
-
-    const finalExpiresAt = expiresAt
-      ? Number(expiresAt)
-      : Date.now() + 60 * 24 * 60 * 60 * 1000;
-
-    // Save locally (backend already persisted to DB during callback)
-    await AsyncStorage.setItem(
-      "@facebook_auth_token",
-      JSON.stringify({ accessToken, timestamp: Date.now() })
-    );
-
-    return { success: true, accessToken, expiresAt: finalExpiresAt };
+    return { success: false, error: "Login cancelled" };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
