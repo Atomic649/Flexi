@@ -401,7 +401,7 @@ export default function DetectExpense() {
                 weight="semibold"
                 style={{ color: theme === "dark" ? "primary" : "#3b3b3b" }}
               >
-                {t("expense.buttons.pdf")}
+                {expenses.length > 0 ? t("expense.buttons.clear") : t("expense.buttons.pdf")}
               </CustomText>
             </>
           )}

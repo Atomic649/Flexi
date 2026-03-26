@@ -860,6 +860,7 @@
     }
   },
   "expense": {
+    "duplicateSuccess": "ทำรายการซ้ำสำเร็จ",
     "documentAlreadyUsed": "เอกสารนี้ถูกใช้สร้างค่าใช้จ่ายแล้ว",
     "confirmDuplicate": "ยืนยันการเพิ่มรายการที่ซ้ำกัน?",
     "titles": "ระบบจัดการค่าใช้จ่ายอัจฉริยะ",
@@ -870,6 +871,7 @@
     "buttons": {
       "save": "บันทึก",
       "pdf": "SCB/KBANK",
+      "clear": "ล้าง/เลือกใหม่",
       "detecting": "ตรวจจับข้อมูล"
     },
     "updated": {
