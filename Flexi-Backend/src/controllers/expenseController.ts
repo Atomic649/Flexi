@@ -209,6 +209,8 @@ const schema = Joi.object({
       "Utilities",
       "Maintenance",
       "Operation",
+      "Labor",  
+      "LaborMaterials",
       "Others"
     )
     .required(),
@@ -1676,6 +1678,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       WHTAmount,
       group,
       taxType,
+      note,
     } = req.body;
 
     // Debug: Log what we received
@@ -1761,7 +1764,6 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     const ThaiMonth = format(dateObj, "MMMM", { locale: th });
     const dateNumber = `${format(dateObj, "dd")}`;
 
-    const taxInvoiceNoStr = String(taxInvoiceNo || "");
     const sAddressStr = String(sAddress || "");
 
     // Format WHTAmount to 2 decimal places
@@ -1776,6 +1778,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
     const isEmployee = group === "Employee";
     const isFreelancerOrCommission =
       group === "Freelancer" || group === "Commission";
+    const isLaborMaterials = group === "LaborMaterials";
     const isRentalMarketingTransport =
       group === "CarRental" ||
       group === "OfficeRental" ||
@@ -1785,6 +1788,7 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       group === "Product" ||
       group === "Packing" ||
       group === "Office" ||
+      group === "Labor" ||
       group === "Transport";
     const isCopyright = group === "Copyright";
     const isInterest = group === "Interest";
@@ -1816,6 +1820,10 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       amountY = 218;
       WHTAmountY = 218;
       dateY = 218;
+    } else if (isLaborMaterials) {
+      amountY = 204;
+      WHTAmountY = 204;
+      dateY = 204;
     } else {
       amountY = 202;
       WHTAmountY = 202;
@@ -1876,6 +1884,8 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       zero1: { x: 248, y: 145, size: 12, align: "left" },
       zero2: { x: 373, y: 145, size: 12, align: "left" },
       zero3: { x: 512, y: 145, size: 12, align: "left" },
+
+      ...(isLaborMaterials && { note: { x: 101, y: 202, size: 12, align: "left" } }),
     };
 
     // Determine which checkmarks to show based on conditions
@@ -1931,6 +1941,8 @@ const generateWHTDocument = async (req: Request, res: Response) => {
       zero1: zero,
       zero2: zero,
       zero3: zero,
+
+      ...(isLaborMaterials && { note: String(note || "") }),
       dateNumber: dateNumber,
       ThaiMonth: ThaiMonth,
       BuddhistYear: String(buddhistYear),

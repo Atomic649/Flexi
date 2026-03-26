@@ -862,6 +862,7 @@ export default function ExpenseDetail({
             : "0",
         group: group || expense?.group || "",
         taxType: taxType || "Individual",
+        note: note || "",
       });
       const fileName = `WHTDocument_${expense.id}.pdf`;
       let fileUri: string;
@@ -1533,6 +1534,14 @@ export default function ExpenseDetail({
                     {
                       value: "Packing",
                       label: t("expense.detail.group.packing"),
+                    },
+                    {
+                      value: "Labor",
+                      label: t("expense.detail.group.labor"),
+                    },
+                    {
+                      value: "LaborMaterials",
+                      label: t("expense.detail.group.laborMaterials"),
                     },
                     {
                       value: "Fuel",

@@ -189,8 +189,9 @@ enum ExpenseGroup {
   Fuel
   Maintenance
   Operation
+  Labor
+  LaborMaterials
   Others
-
   @@schema("flexidb")
 }
 

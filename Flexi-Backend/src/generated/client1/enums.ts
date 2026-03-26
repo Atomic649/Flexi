@@ -200,6 +200,8 @@ export const ExpenseGroup = {
   Fuel: 'Fuel',
   Maintenance: 'Maintenance',
   Operation: 'Operation',
+  Labor: 'Labor',
+  LaborMaterials: 'LaborMaterials',
   Others: 'Others'
 } as const
 

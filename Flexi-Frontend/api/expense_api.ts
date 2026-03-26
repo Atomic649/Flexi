@@ -5,7 +5,7 @@ import { t } from "i18next";
 
 class CallAPIExpense {
   // Download WHT Document PDF from backend
-  async downloadWHTDocAPI({ sName, sTaxId, sAddress, amount, date, taxInvoiceNo,memberId,WHTAmount,group,taxType }: {
+  async downloadWHTDocAPI({ sName, sTaxId, sAddress, amount, date, taxInvoiceNo,memberId,WHTAmount,group,taxType,note }: {
     sName: string;
     sTaxId: string;
     sAddress: string;
@@ -16,12 +16,13 @@ class CallAPIExpense {
     WHTAmount: string;
     group:string;
     taxType: string;
+    note?: string;
   }): Promise<Blob> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.post(
         `/expense/generate-wht-document`,
-        { sName, sTaxId, sAddress, amount, date, taxInvoiceNo, memberId, WHTAmount, group, taxType },
+        { sName, sTaxId, sAddress, amount, date, taxInvoiceNo, memberId, WHTAmount, group, taxType, note },
         { responseType: 'blob' }
       );
       return response.data;

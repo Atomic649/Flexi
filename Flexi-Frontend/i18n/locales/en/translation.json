@@ -961,6 +961,8 @@
         "fuel": "Fuel",
         "maintenance": "Repair & Maintenance",
         "operation": "Operation",
+        "labor": "Labor (Wages Only)",
+        "laborMaterials": "Contract Labor (Wages + Materials)",
         "title": "Expense Category"
       },
       "attachBill": "Attach Bill",

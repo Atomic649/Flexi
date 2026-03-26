@@ -2344,6 +2344,14 @@ export default function CreateExpense({
                       label: t("expense.detail.group.packing"),
                     },
                     {
+                      value: "Labor",
+                      label: t("expense.detail.group.labor"),
+                    },
+                    {
+                      value: "LaborMaterials",
+                      label: t("expense.detail.group.laborMaterials"),
+                    },
+                    {
                       value: "Fuel",
                       label: t("expense.detail.group.fuel"),
                     },

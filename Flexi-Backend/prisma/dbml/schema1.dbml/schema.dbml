@@ -455,6 +455,8 @@ Enum ExpenseGroup {
   Fuel
   Maintenance
   Operation
+  Labor
+  LaborMaterials
   Others
 }
 
