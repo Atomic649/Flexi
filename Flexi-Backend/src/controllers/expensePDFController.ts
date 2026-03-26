@@ -110,6 +110,7 @@ export const pdfExtract = async (
         : (text.includes('KBPDF') || text.includes('K PLUS')) ? 'KBANK'
         : text.includes('ttbbank.com') ? 'TTB'
         : text.includes('Intraday Statement') ? 'SCB_INTRADAY'
+        : text.includes('Historical Statement') ? 'SCB_HISTORICAL'
         : 'SCB';
       console.log("🏦 Detected bank:", bankType);
 
@@ -324,6 +325,66 @@ export const pdfExtract = async (
             if (noteText && !/^(?:ENET|TELL|ATS|X[12])$/.test(noteText) && !/^\d/.test(noteText)) {
               note = noteText;
             }
+          }
+
+          codeAmount.push({ dateTime, code: 'X2/ENET', amount, desc, note });
+        }
+
+      } else if (bankType === 'SCB_HISTORICAL') {
+        // ── SCB Historical Statement parser ───────────────────────────────────
+        // Fields appear in this order (each on its own line):
+        //   X1 (credit) | X2 (debit)
+        //   channel              (ENET | TELL | ATS)
+        //   balance              (e.g. 9.90)
+        //   [optional note]
+        //   description          (Thai transfer text)
+        //   amount               (e.g. 1.00)
+        //   DD/MM/YYYY HH:MM     (date comes LAST)
+        // Only X2 (debit) transactions are expenses.
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+
+          // Anchor on X1/X2 code immediately followed by a known channel
+          if (!/^X[12]$/.test(line)) continue;
+          if (i + 1 >= lines.length) continue;
+          if (!/^(?:ENET|TELL|ATS)$/.test(lines[i + 1])) continue;
+
+          // Skip income (X1) transactions
+          if (line !== 'X2') continue;
+
+          // Scan forward (up to 10 lines) for the date line that closes this transaction
+          let dateIdx = -1;
+          for (let j = i + 2; j < lines.length && j <= i + 10; j++) {
+            if (/^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/.test(lines[j])) {
+              dateIdx = j;
+              break;
+            }
+          }
+          if (dateIdx === -1) continue;
+
+          // Amount is the line immediately before the date
+          const amountLine = lines[dateIdx - 1];
+          if (!/^\d{1,3}(?:,\d{3})*\.\d{2}$/.test(amountLine)) continue;
+
+          const dateMatch = lines[dateIdx].match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}:\d{2})$/);
+          if (!dateMatch) continue;
+
+          const [, day, month, year, time] = dateMatch;
+          const dateTime = `${year}-${month}-${day}T${time}:00.000Z`;
+          const amount   = parseFloat(amountLine.replace(/,/g, ''));
+
+          // Lines between balance (i+2) and amount (dateIdx-1) are: [note,] desc
+          //   length 1 → just desc, no note
+          //   length 2 → note then desc
+          const middleLines = lines.slice(i + 3, dateIdx - 1);
+          let desc = '';
+          let note = '';
+          if (middleLines.length === 1) {
+            desc = middleLines[0];
+          } else if (middleLines.length >= 2) {
+            note = middleLines[0];
+            desc = middleLines[1];
           }
 
           codeAmount.push({ dateTime, code: 'X2/ENET', amount, desc, note });
