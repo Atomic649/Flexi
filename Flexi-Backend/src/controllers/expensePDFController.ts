@@ -109,6 +109,7 @@ export const pdfExtract = async (
       const bankType = text.includes('กรุงศรีอยุธยา') ? 'KRUNGSRI'
         : (text.includes('KBPDF') || text.includes('K PLUS')) ? 'KBANK'
         : text.includes('ttbbank.com') ? 'TTB'
+        : text.includes('Intraday Statement') ? 'SCB_INTRADAY'
         : 'SCB';
       console.log("🏦 Detected bank:", bankType);
 
@@ -271,6 +272,61 @@ export const pdfExtract = async (
           if (desc === '-') desc = '';
 
           codeAmount.push({ dateTime, code: `TTB/${transType}`, amount, desc, note: '' });
+        }
+
+      } else if (bankType === 'SCB_INTRADAY') {
+        // ── SCB Intraday Statement parser ─────────────────────────────────────
+        // Each transaction spans 6 consecutive lines after an optional note line:
+        //   [optional note] <- line before transaction number
+        //   5-digit transaction number  (e.g. 90000)
+        //   DD/MM/YYYY HH:MM            (full 4-digit year)
+        //   X1 (credit) | X2 (debit)
+        //   amount                      (e.g. 1.00 or 1,000.00)
+        //   description                 (Thai transfer text)
+        //   channel                     (ENET | TELL | ATS)
+        // Only X2 (debit) transactions are expenses.
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+
+          // Anchor on 5-digit transaction number
+          if (!/^\d{5}$/.test(line)) continue;
+          if (i + 5 >= lines.length) continue;
+
+          const dateLine    = lines[i + 1];
+          const codeLine    = lines[i + 2];
+          const amountLine  = lines[i + 3];
+          const descLine    = lines[i + 4];
+
+          const dateMatch = dateLine.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}:\d{2})$/);
+          if (!dateMatch) continue;
+          if (!/^X[12]$/.test(codeLine)) continue;
+          if (!/^\d{1,3}(?:,\d{3})*\.\d{2}$/.test(amountLine)) continue;
+
+          // Only capture debits (X2 = withdrawal/expense)
+          if (codeLine !== 'X2') continue;
+
+          const [, day, month, year, time] = dateMatch;
+          const dateTime = `${year}-${month}-${day}T${time}:00.000Z`;
+          const amount   = parseFloat(amountLine.replace(/,/g, ''));
+          const desc     = descLine;
+
+          // Note is on the line immediately before the transaction number.
+          // The very first transaction's note is prefixed with the column header
+          // "บันทึกช่วยจํา" + "Note" — strip that prefix.
+          let note = '';
+          if (i > 0) {
+            const prevLine = lines[i - 1];
+            const noteText = prevLine
+              .replace(/^บันทึกช่วยจํา\s*Note\s*/, '')
+              .trim();
+            // Ignore if prev line is a channel name, code, or starts with a digit
+            if (noteText && !/^(?:ENET|TELL|ATS|X[12])$/.test(noteText) && !/^\d/.test(noteText)) {
+              note = noteText;
+            }
+          }
+
+          codeAmount.push({ dateTime, code: 'X2/ENET', amount, desc, note });
         }
 
       } else {
