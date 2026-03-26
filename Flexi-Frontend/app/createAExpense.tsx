@@ -2500,16 +2500,17 @@ export default function CreateExpense({
                       />
                     </View>
                     <FloatingLabelInput
-                      label={t("expense.detail.sAddress")}
-                      value={sAddress}
-                      onChangeText={setSAddress}
+                      label={t("expense.detail.description")}
+                      value={desc}
+                      onChangeText={setDesc}
                     />
                   </>
                 )}
                 <FloatingLabelInput
-                  label={t("expense.detail.description")}
-                  value={desc}
-                  onChangeText={setDesc}
+                  label={t("expense.detail.sAddress")}
+                  value={sAddress}
+                  onChangeText={setSAddress}
+                  containerStyle={{ flex: 1, marginVertical: 2 }}
                 />
 
                 {error ? (
@@ -2583,8 +2584,8 @@ export default function CreateExpense({
                         borderColor: "#3bf6da",
                       }}
                     >
-                      {isSubmittingExpense && <ActivityIndicator size="small" color="#000" />}
-                      <CustomText weight="bold" style={{ color: "#000", fontSize: 14 }}>
+                      {isSubmittingExpense && <ActivityIndicator size="small" color="#ffffff" />}
+                      <CustomText weight="bold" style={{ color: "#ffffff", fontSize: 14 }}>
                         {t("common.save")}
                       </CustomText>
                     </TouchableOpacity>

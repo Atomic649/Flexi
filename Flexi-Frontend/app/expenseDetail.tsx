@@ -232,7 +232,9 @@ export default function ExpenseDetail({
     : Boolean(image) || Boolean(pdfUrl));
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
-  const [showAllFormField, setShowAllFormField] = useState(false);
+  const [showAllFormField, setShowAllFormField] = useState(
+    !!(expense.desc || expense.sTaxId || expense.taxInvoiceNo || expense.branch)
+  );
   const [dueDate, setDueDate] = useState<Date | null>(
     expense.dueDate ? new Date(expense.dueDate) : null
   );
@@ -273,6 +275,9 @@ export default function ExpenseDetail({
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
+        if (fetchedExpense.desc || fetchedExpense.sTaxId || fetchedExpense.taxInvoiceNo || fetchedExpense.branch) {
+          setShowAllFormField(true);
+        }
         const resolvedFlexiId = fetchedExpense.flexiId || null;
         setFlexiId(resolvedFlexiId);
         const resolvedIsFlexiDocument = !!(fetchedExpense.flexiId && fetchedExpense.sName && !fetchedExpense.image && !fetchedExpense.pdf && !fetchedExpense.invoiceImage && !fetchedExpense.invoicePdf);
@@ -1694,16 +1699,17 @@ export default function ExpenseDetail({
                       />
                     </View>
                     <FloatingLabelInput
-                      label={t("expense.detail.sAddress")}
-                      value={sAddress}
-                      onChangeText={setSAddress}
+                      label={t("expense.detail.description")}
+                      value={desc}
+                      onChangeText={setDesc}
                     />
                   </>
                 )}
                 <FloatingLabelInput
-                  label={t("expense.detail.description")}
-                  value={desc}
-                  onChangeText={setDesc}
+                  label={t("expense.detail.sAddress")}
+                  value={sAddress}
+                  onChangeText={setSAddress}
+                  containerStyle={{ flex: 1, marginVertical: 2 }}
                 />
 
                 {error ? (
