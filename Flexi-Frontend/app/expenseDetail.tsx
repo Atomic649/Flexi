@@ -11,7 +11,6 @@ import DropdownFloat from "@/components/dropdown/DropdownFloat";
 import { View } from "@/components/Themed";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system/legacy";
-import { SecondaryButton, GrayButton } from "@/components/CustomButton";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
@@ -454,7 +453,11 @@ export default function ExpenseDetail({
     : invoicePdfUri2;
 
   const handleDateTimeChange = (next: Date) => {
-    setDate(format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
+    // next has local hours set to the UTC hours the user picked (because we
+    // passed a UTC-shifted value to the picker). Reverse the shift to get the
+    // real UTC moment back before storing.
+    const utcMs = next.getTime() - next.getTimezoneOffset() * 60000;
+    setDate(new Date(utcMs).toISOString());
   };
 
   // Direct handler for group changes to avoid effect-as-event-handler
@@ -1896,7 +1899,7 @@ export default function ExpenseDetail({
 
         <DateTimePicker
           visible={calendarVisible}
-          value={new Date(date)}
+          value={(() => { const d = new Date(date); return new Date(d.getTime() + d.getTimezoneOffset() * 60000); })()}
           onChange={handleDateTimeChange}
           onClose={() => setCalendarVisible(false)}
           maxDate={new Date()}
