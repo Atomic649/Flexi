@@ -10,7 +10,9 @@
       "Bash(node -e:*)",
       "Bash(grep:*)",
       "WebFetch(domain:docs.expo.dev)",
-      "Bash(npx expo install expo-build-properties)"
+      "Bash(npx expo install expo-build-properties)",
+      "Bash(find /Users/tananyarukoon/Flexi/Flexi-Frontend/app -maxdepth 1 -type f \\\\\\(-name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js \\\\\\))",
+      "Bash(ls -la /Users/tananyarukoon/Flexi/Flexi-Frontend/app/\\\\\\(tabs\\\\\\))"
     ]
   }
 }

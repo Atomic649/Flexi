@@ -1463,10 +1463,10 @@ export const facebookFragmentCallback = async (req: Request, res: Response) => {
 <html><head><meta charset="utf-8"><title>Connected</title>
 <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fff;}
 .box{text-align:center;padding:32px;}
-.check{font-size:64px;}
+.check{font-size:100px;}
 h2{color:#1877F2;margin:12px 0 8px;}
-p{color:#555;margin:0 0 24px;}
-button{background:#1877F2;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:16px;cursor:pointer;}
+p{color:#555;margin:0 0 48px;}
+button{background:#1877F2;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:36px;cursor:pointer;}
 button:active{background:#1259b5;}</style></head>
 <body><div class="box">
 <div class="check">✓</div>
