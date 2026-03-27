@@ -706,6 +706,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                     grandTotal,
                   )} ${t("common.THB")}</span>
                 </div>
+                ${
+                  Array.isArray(quotation.splitChildren) && quotation.splitChildren.length > 0
+                    ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed #ccc;">
+                        ${quotation.splitChildren.map((child: any, i: number) => `
+                          <div class="summary-row" style="margin-bottom:2px;">
+                            <span class="summary-label" style="font-style:italic; color:#555;">แบ่งชำระงวด ${i + 1} (${child.splitPercent}%)</span>
+                            <span class="summary-amount" style="font-style:italic; color:#555;">${formatNumber(Number(child.totalInvoice || 0))} ${t("common.THB")}</span>
+                          </div>`).join("")}
+                      </div>`
+                    : ""
+                }
               </div>
             </div>
           </div>

@@ -128,6 +128,7 @@ Table Bill {
   payment Payment
   total Decimal
   totalQuotation Decimal
+  totalInvoice Decimal
   totalBeforeTax Decimal
   totalAfterTax Decimal
   totalTax Decimal
@@ -150,6 +151,10 @@ Table Bill {
   withHoldingTax Boolean [default: false]
   WHTpercent Decimal [default: 0]
   WHTAmount Decimal [default: 0]
+  splitPercent Int [default: 100]
+  splitPercentMax Int [default: 100]
+  isSplitChild Boolean [not null, default: false]
+  splitGroupId String
   paymentTermCondition String
   remark String
   platform SocialMedia [not null]

@@ -510,6 +510,7 @@ const createBill = async (req: Request, res: Response) => {
                 priceValid: billInput.priceValid, // Include priceValid if provided
                 total: finalTotal,
                 totalQuotation: total, // Include totalQuotation field
+                totalInvoice: docType === "Invoice" ? total : 0,
                 totalBeforeTax: Number(totalBeforeTax),
                 totalAfterTax: Number(totalAfterTax),
                 vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
@@ -596,6 +597,7 @@ const createBill = async (req: Request, res: Response) => {
             priceValid: billInput.priceValid, // Include priceValid if provided
             total: finalTotal,
             totalQuotation: total, // Include totalQuotation field
+            totalInvoice: docType === "Invoice" ? total : 0,
             totalBeforeTax: totalBeforeTax,
             totalAfterTax: totalAfterTax,
             totalTax: vatAmount,
@@ -726,6 +728,13 @@ const getBills = async (req: Request, res: Response) => {
         rentalStockReleased: true,
         DocumentType: true,
         taxType: true,
+        isSplitChild: true,
+        splitGroupId: true,
+        splitPercent: true,
+        splitPercentMax: true,
+        flexiId: true,
+        invoiceId: true,
+        totalInvoice: true,
       } as any,
       take: 100, // Limit to 100 records
     });
@@ -755,9 +764,21 @@ const getBillById = async (req: Request, res: Response) => {
               },
             },
           },
-        }, // Include product items with product name
+        },
       },
-    });
+    }) as any;
+
+    if (!bill) return res.status(404).json({ message: "Bill not found" });
+
+    // If this is a split parent, attach children sorted by creation order
+    if (bill.flexiId && bill.splitGroupId === bill.flexiId && !bill.isSplitChild) {
+      bill.splitChildren = await prisma.bill.findMany({
+        where: { splitGroupId: bill.flexiId, isSplitChild: true } as any,
+        orderBy: { id: "asc" },
+        select: { id: true, splitPercent: true, totalInvoice: true, DocumentType: true } as any,
+      });
+    }
+
     console.log("🚀 Get Bill by ID:", bill);
     res.json(bill);
   } catch (e) {
@@ -1002,6 +1023,7 @@ const updateBill = async (req: Request, res: Response) => {
           image: req.file?.filename ?? "",
           total: finalTotal,
           totalQuotation: total, // Include totalQuotation field'
+          totalInvoice: docType === "Invoice" ? total : 0,
           totalBeforeTax: Number(totalBeforeTax),
           totalAfterTax: Number(totalAfterTax),
           vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
@@ -1150,6 +1172,68 @@ const updateBill = async (req: Request, res: Response) => {
             docType,
           );
         }
+
+        // Cascade updates to split children if this is a split parent
+        if (
+          (existingBill as any).flexiId &&
+          (existingBill as any).splitGroupId === (existingBill as any).flexiId &&
+          !(existingBill as any).isSplitChild
+        ) {
+          const splitChildren = await tx.bill.findMany({
+            where: {
+              splitGroupId: (existingBill as any).flexiId,
+              isSplitChild: true,
+            } as any,
+            select: { id: true, splitPercent: true } as any,
+          });
+
+          for (const child of splitChildren as any[]) {
+            // Recalculate child's totalInvoice based on its splitPercent
+            const childTotalInvoice = total * ((child.splitPercent ?? 0) / 100);
+
+            // Replace child's product items with parent's updated products
+            await tx.productItem.deleteMany({ where: { billId: child.id } });
+            for (const item of billInput.productItems) {
+              await tx.productItem.create({
+                data: {
+                  product: item.product,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  unitDiscount: item.unitDiscount || 0,
+                  unit: item.unit,
+                  billId: child.id,
+                } as any,
+              });
+            }
+
+            // Sync customer + meta fields (but NOT DocumentType, cashStatus, total, or split fields)
+            await tx.bill.update({
+              where: { id: child.id },
+              data: {
+                cName: billInput.cName,
+                cLastName: billInput.cLastName,
+                cPhone: billInput.cPhone,
+                cGender: billInput.cGender,
+                cAddress: billInput.cAddress,
+                cPostId: billInput.cPostId,
+                cProvince: billInput.cProvince,
+                cTaxId: billInput.cTaxId,
+                customerId: customerIdFromDb ?? (existingBill?.customerId ?? undefined),
+                platform: billInput.platform,
+                platformId: billInput.platformId,
+                purchaseAt: billInput.purchaseAt,
+                taxType: billInput.taxType || "Individual",
+                memberId: billInput.memberId,
+                note: billInput.note || "",
+                paymentTermCondition: billInput.paymentTermCondition || "",
+                remark: billInput.remark || "",
+                totalInvoice: childTotalInvoice,
+                totalQuotation: total,
+              } as any,
+            });
+          }
+        }
+
         return bill;
       });
 
@@ -1297,6 +1381,8 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         DocumentType: DocumentType as DocumentType,
         // Always preserve the original totalQuotation value - never change it
         totalQuotation: currentBill.totalQuotation,
+        // Preserve existing totalInvoice by default
+        totalInvoice: currentBill.totalInvoice,
       };
 
       // Generate ID if missing for the new DocumentType
@@ -1359,6 +1445,23 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         updateData.cashStatus = false;
         // If changing from Receipt to Invoice/Quotation, set total to 0 but keep totalQuotation unchanged
         updateData.total = 0;
+
+        // If changing TO Invoice, populate totalInvoice from totalQuotation (stored calculated total)
+        if (DocumentType === "Invoice") {
+          if (currentBill.totalQuotation !== null && currentBill.totalQuotation !== undefined) {
+            updateData.totalInvoice = currentBill.totalQuotation;
+          } else {
+            const calculatedTotal =
+              currentBill.product.reduce(
+                (sum, item) =>
+                  sum +
+                  (item.quantity * item.unitPrice -
+                    (item.unitDiscount || 0) * item.quantity),
+                0,
+              ) - (currentBill.billLevelDiscount || 0);
+            updateData.totalInvoice = calculatedTotal;
+          }
+        }
       }
 
       const bill = await tx.bill.update({
@@ -1398,6 +1501,52 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
           console.log(
             `Stock restored for product ${item.product} by ${item.quantity}`,
           );
+        }
+      }
+
+      // If this is a split child being set to Receipt, check if all siblings are paid → auto-promote parent
+      if (DocumentType === "Receipt" && (currentBill as any).isSplitChild && (currentBill as any).splitGroupId) {
+        const unpaidSiblings = await tx.bill.count({
+          where: {
+            splitGroupId: (currentBill as any).splitGroupId,
+            isSplitChild: true,
+            id: { not: Number(id) },
+            DocumentType: { not: "Receipt" },
+          },
+        });
+
+        if (unpaidSiblings === 0) {
+          const parent = await tx.bill.findFirst({
+            where: {
+              flexiId: (currentBill as any).splitGroupId,
+              isSplitChild: false,
+            },
+            include: { product: true },
+          });
+
+          if (parent) {
+            let parentBillId = parent.billId;
+            if (!parentBillId) {
+              parentBillId = await generateDocumentId(tx, parent.businessAcc, "Receipt");
+            }
+            await tx.bill.update({
+              where: { id: parent.id },
+              data: {
+                DocumentType: "Receipt",
+                cashStatus: true,
+                total: parent.totalInvoice,
+                billId: parentBillId,
+              },
+            });
+            for (const item of parent.product) {
+              if (!item.product) continue;
+              await tx.product.update({
+                where: { id: item.product },
+                data: { stock: { decrement: item.quantity } },
+              });
+            }
+            console.log(`Auto-promoted parent bill ${parent.id} to Receipt`);
+          }
         }
       }
 
@@ -1441,14 +1590,35 @@ const deleteBill = async (req: Request, res: Response) => {
           DocumentType: true,
           businessAcc: true,
           id: true,
+          flexiId: true,
           billId: true,
           invoiceId: true,
           quotationId: true,
+          isSplitChild: true,
+          splitGroupId: true,
         },
       });
 
       if (!bill) {
         throw new Error("Bill not found");
+      }
+
+      // If this is a split parent, cascade delete all child bills first
+      if (bill.splitGroupId && bill.splitGroupId === bill.flexiId) {
+        const children = await tx.bill.findMany({
+          where: { splitGroupId: bill.flexiId, isSplitChild: true },
+          select: { id: true },
+        });
+        for (const child of children) {
+          await tx.productItem.deleteMany({ where: { billId: child.id } });
+          await tx.bill.delete({ where: { id: child.id } });
+        }
+        if (children.length > 0) {
+          await tx.documentCounter.updateMany({
+            where: { businessId: bill.businessAcc, documentType: "Invoice" },
+            data: { count: { decrement: children.length } },
+          });
+        }
       }
 
       // update stock product back if DocumentType is Receipt
@@ -1775,6 +1945,211 @@ const getBillByFlexiId = async (req: Request, res: Response) => {
   }
 };
 
+// Create split child bills from a parent Invoice bill
+const createSplitChildren = async (req: Request, res: Response) => {
+  const { parentId } = req.params;
+  const { children } = req.body;
+
+  const schema = Joi.object({
+    children: Joi.array()
+      .items(
+        Joi.object({
+          splitPercent: Joi.number().min(1).max(100).required(),
+          splitPercentMax: Joi.number().min(1).max(100).required(),
+        }),
+      )
+      .min(1)
+      .required(),
+  });
+
+  const { error } = schema.validate({ children });
+  if (error) return res.status(400).json({ message: error.details[0].message });
+
+  const totalPercent = (children as any[]).reduce(
+    (sum: number, c: any) => sum + c.splitPercent,
+    0,
+  );
+  if (totalPercent > 100) {
+    return res
+      .status(400)
+      .json({ message: "Total split percentage cannot exceed 100%" });
+  }
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const parent = await tx.bill.findUnique({
+        where: { id: Number(parentId) },
+        include: { product: true },
+      });
+
+      if (!parent) throw new Error("Bill not found");
+      if ((parent as any).isSplitChild)
+        throw new Error("Cannot split a child bill");
+
+      // Use totalInvoice if available, otherwise fall back to totalQuotation or total
+      const parentTotal =
+        Number(parent.totalInvoice) > 0
+          ? Number(parent.totalInvoice)
+          : Number((parent as any).totalQuotation) > 0
+          ? Number((parent as any).totalQuotation)
+          : Number(parent.total);
+
+      const parentDocType = parent.DocumentType ?? "Invoice";
+
+      const createdChildren = [];
+
+      for (const child of children as any[]) {
+        const newId = await generateDocumentId(
+          tx,
+          parent.businessAcc,
+          parentDocType as any,
+        );
+        const childTotalInvoice = parentTotal * (child.splitPercent / 100);
+
+        // Pick the correct ID field based on parent's DocumentType
+        const idField: any =
+          parentDocType === "Receipt"
+            ? { billId: newId }
+            : parentDocType === "Quotation"
+            ? { quotationId: newId }
+            : { invoiceId: newId };
+
+        const childBill = await tx.bill.create({
+          data: {
+            flexiId: generateFlexiId(),
+            ...idField,
+            isSplitChild: true,
+            splitGroupId: parent.flexiId,
+            splitPercent: child.splitPercent,
+            splitPercentMax: child.splitPercentMax,
+            DocumentType: parentDocType,
+            cashStatus: parentDocType === "Receipt",
+            total: parentDocType === "Receipt" ? childTotalInvoice : 0,
+            totalInvoice: childTotalInvoice,
+            totalQuotation: 0,
+            totalBeforeTax: 0,
+            totalAfterTax: 0,
+            totalTax: 0,
+            vatPercent: 0,
+            beforeDiscount: 0,
+            cName: parent.cName,
+            cLastName: parent.cLastName,
+            cPhone: parent.cPhone,
+            cGender: parent.cGender,
+            cAddress: parent.cAddress,
+            cProvince: parent.cProvince,
+            cPostId: parent.cPostId,
+            cTaxId: parent.cTaxId,
+            memberId: parent.memberId,
+            businessAcc: parent.businessAcc,
+            platform: parent.platform,
+            platformId: parent.platformId,
+            taxType: parent.taxType,
+            purchaseAt: parent.purchaseAt,
+            customerId: parent.customerId,
+            discount: 0,
+            billLevelDiscount: 0,
+          } as any,
+        });
+
+        // Copy product items from parent to child
+        for (const item of parent.product) {
+          await tx.productItem.create({
+            data: {
+              product: item.product,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              unitDiscount: item.unitDiscount ?? 0,
+              unit: item.unit,
+              billId: childBill.id,
+            } as any,
+          });
+        }
+
+        createdChildren.push(childBill);
+      }
+
+      // Mark parent as a split parent by setting splitGroupId to its own flexiId
+      await tx.bill.update({
+        where: { id: parent.id },
+        data: { splitGroupId: parent.flexiId } as any,
+      });
+
+      return createdChildren;
+    });
+
+    res.json({
+      status: "ok",
+      message: `Created ${result.length} split children`,
+      children: result,
+    });
+  } catch (e: any) {
+    console.error(e);
+    if (e.message === "Bill not found")
+      return res.status(404).json({ message: "Bill not found" });
+    if (e.message === "Cannot split a child bill")
+      return res.status(400).json({ message: e.message });
+    res.status(500).json({ message: "failed to create split children" });
+  }
+};
+
+// Reset a split parent back to Quotation (deletes all child bills)
+const resetParentSplit = async (req: Request, res: Response) => {
+  const { parentId } = req.params;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const parent = await tx.bill.findUnique({
+        where: { id: Number(parentId) },
+      });
+
+      if (!parent) throw new Error("Bill not found");
+      if ((parent as any).isSplitChild)
+        throw new Error("Cannot reset a child bill");
+
+      const children = await tx.bill.findMany({
+        where: {
+          splitGroupId: (parent as any).flexiId,
+          isSplitChild: true,
+        },
+        select: { id: true },
+      });
+
+      for (const child of children) {
+        await tx.productItem.deleteMany({ where: { billId: child.id } });
+        await tx.bill.delete({ where: { id: child.id } });
+      }
+
+      if (children.length > 0) {
+        await tx.documentCounter.updateMany({
+          where: {
+            businessId: parent.businessAcc,
+            documentType: "Invoice",
+          },
+          data: { count: { decrement: children.length } },
+        });
+      }
+
+      await tx.bill.update({
+        where: { id: parent.id },
+        data: {
+          DocumentType: "Quotation",
+          splitGroupId: null,
+          cashStatus: false,
+          total: 0,
+        } as any,
+      });
+    });
+
+    res.json({ status: "ok", message: "Reset parent bill to Quotation" });
+  } catch (e: any) {
+    console.error(e);
+    if (e.message === "Bill not found")
+      return res.status(404).json({ message: "Bill not found" });
+    res.status(500).json({ message: "failed to reset parent split" });
+  }
+};
+
 export {
   createBill,
   getBills,
@@ -1787,4 +2162,6 @@ export {
   updateDocumentTypeById,
   getthisYearSales,
   lookupBillByFlexiId,
+  createSplitChildren,
+  resetParentSplit,
 };

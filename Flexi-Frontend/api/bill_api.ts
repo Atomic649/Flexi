@@ -222,6 +222,39 @@ class CallAPIBill {
         }
     }
 
+    // Create split children from a parent Invoice bill
+    async createSplitChildrenAPI(
+        parentId: number,
+        children: { splitPercent: number; splitPercentMax: number }[],
+    ): Promise<any> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.post(`/bill/split/${parentId}`, { children });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error(t("common.networkError"));
+            }
+        }
+    }
+
+    // Reset split parent back to Quotation (deletes all children)
+    async resetParentSplitAPI(parentId: number): Promise<any> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.delete(`/bill/split/${parentId}`);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error(t("common.networkError"));
+            }
+        }
+    }
+
     // Get full bill data by flexiId — authenticated, for PDF rendering
     async getBillByFlexiIdAPI(flexiId: string): Promise<any> {
         try {

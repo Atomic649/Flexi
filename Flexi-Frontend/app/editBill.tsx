@@ -6,6 +6,7 @@ import {
   ScrollView,
   Linking,
   KeyboardAvoidingView,
+  TextInput,
 } from "react-native";
 import { View } from "@/components/Themed";
 import { CustomButton } from "@/components/CustomButton";
@@ -175,6 +176,8 @@ export default function EditBill() {
   const [selectedDocumentType, setSelectedDocumentType] = useState<
     "QA" | "IV" | "RE"
   >("QA");
+  // Tracks the last-saved DocumentType from DB — used to reset when canceling edit
+  const savedDocumentTypeRef = useRef<"QA" | "IV" | "RE">("QA");
   const [showProgressSection, setShowProgressSection] = useState(true);
   const [availableDocumentTypes, setAvailableDocumentTypes] = useState<
     string[]
@@ -184,6 +187,78 @@ export default function EditBill() {
   // FlexiId for sharing
   const [flexiId, setFlexiId] = useState<string | null>(null);
   const [flexiIdCopied, setFlexiIdCopied] = useState(false);
+
+  // Split bill state
+  const [isSplitChild, setIsSplitChild] = useState(false);
+  const [isSplitParent, setIsSplitParent] = useState(false);
+  const [showSplitSection, setShowSplitSection] = useState(false);
+  // splitRows = user-editable rows; last row is always auto = remainder
+  const [splitRows, setSplitRows] = useState<{ splitPercent: string }[]>([]);
+  const [splitSubmitting, setSplitSubmitting] = useState(false);
+  // Base total used to calculate each split row's amount
+  const [splitBaseTotal, setSplitBaseTotal] = useState(0);
+
+  const splitUserTotal = splitRows.reduce((s, r) => s + (parseFloat(r.splitPercent) || 0), 0);
+  const splitRemainder = Math.max(0, 100 - splitUserTotal);
+  // All rows for display: user rows + auto remainder row
+  const splitAllRows = [...splitRows, { splitPercent: String(splitRemainder), auto: true }] as { splitPercent: string; auto?: boolean }[];
+  const splitIsValid = splitRows.length > 0 && splitRows.every((r) => parseFloat(r.splitPercent) > 0) && splitUserTotal < 100;
+
+  const handleSplitSubmit = async () => {
+    if (!splitIsValid || !id) return;
+    setSplitSubmitting(true);
+    try {
+      const allRows = splitAllRows.map((r, i) => ({
+        splitPercent: parseFloat(r.splitPercent),
+        splitPercentMax: 100 - splitAllRows.slice(0, i).reduce((s, row) => s + (parseFloat(row.splitPercent) || 0), 0),
+      }));
+      await CallAPIBill.createSplitChildrenAPI(Number(id), allRows);
+      setIsSplitParent(true);
+      setShowSplitSection(false);
+    } catch (e: any) {
+      setAlertConfig({
+        visible: true,
+        title: t("common.error") || "Error",
+        message: e?.message || "Failed to create split",
+        buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+      });
+    } finally {
+      setSplitSubmitting(false);
+    }
+  };
+
+  const handleResetSplit = () => {
+    setAlertConfig({
+      visible: true,
+      title: t("bill.resetSplit") || "Reset Split?",
+      message: t("bill.resetSplitConfirm") || "This will delete all installments and reset this bill to Quotation.",
+      buttons: [
+        { text: t("common.cancel"), style: "cancel", onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) },
+        {
+          text: t("common.confirm"),
+          onPress: async () => {
+            setAlertConfig((p) => ({ ...p, visible: false }));
+            try {
+              await CallAPIBill.resetParentSplitAPI(Number(id));
+              const refreshed = await CallAPIBill.getBillByIdAPI(Number(id));
+              const refreshedDocType = getDocumentTypeFromAPI(refreshed.DocumentType);
+              setSelectedDocumentType(refreshedDocType);
+              savedDocumentTypeRef.current = refreshedDocType;
+              setIsSplitParent(false);
+              setSplitRows([{ splitPercent: "" }]);
+            } catch (e: any) {
+              setAlertConfig({
+                visible: true,
+                title: t("common.error") || "Error",
+                message: e?.message || "Failed to reset",
+                buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+              });
+            }
+          },
+        },
+      ],
+    });
+  };
 
   // Business details for PDF generation
   const [businessDetails, setBusinessDetails] = useState<any>(null);
@@ -722,6 +797,20 @@ export default function EditBill() {
         setCTaxId(billData.cTaxId);
         setValidContactUntil(billData.validContactUntil || "");
         setFlexiId(billData.flexiId || null);
+        setIsSplitChild(billData.isSplitChild === true);
+        // Determine base total for split calculation
+        setSplitBaseTotal(
+          Number(billData.totalInvoice) > 0
+            ? Number(billData.totalInvoice)
+            : Number(billData.totalQuotation) > 0
+            ? Number(billData.totalQuotation)
+            : Number(billData.total) || 0,
+        );
+        setIsSplitParent(
+          !!billData.splitGroupId &&
+          billData.splitGroupId === billData.flexiId &&
+          !billData.isSplitChild,
+        );
 
         // Set note from bill data
         if (billData.note) {
@@ -747,6 +836,7 @@ export default function EditBill() {
             businessDocTypes.includes(billDocTypeName)
           ) {
             setSelectedDocumentType(billDocType);
+            savedDocumentTypeRef.current = billDocType;
           } else {
             // If bill's document type is not available, set to first available type
             if (businessDocTypes.includes("Quotation")) {
@@ -1191,6 +1281,28 @@ export default function EditBill() {
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
         >
+          {isSplitChild && (
+            <View
+              style={{
+                backgroundColor: "#4f46e5",
+                borderRadius: 10,
+                padding: 14,
+                margin: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <Ionicons name="git-branch" size={18} color="#ffffff" />
+              <CustomText
+                weight="semibold"
+                style={{ color: "#ffffff", flex: 1, fontSize: 13 }}
+              >
+                {t("bill.splitChildReadOnly") ||
+                  "This is a split installment — edit details on the parent bill."}
+              </CustomText>
+            </View>
+          )}
           {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
           {showProgressSection && (
             <View
@@ -1464,7 +1576,13 @@ export default function EditBill() {
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
-                  onPress={() => setIsEditMode((prev) => !prev)}
+                  onPress={() => setIsEditMode((prev) => {
+                    if (prev) {
+                      // Canceling edit — reset DocumentType to last saved DB value
+                      setSelectedDocumentType(savedDocumentTypeRef.current);
+                    }
+                    return !prev;
+                  })}
                   activeOpacity={0.8}
                   style={{
                     flexDirection: "row",
@@ -1485,6 +1603,177 @@ export default function EditBill() {
                 </TouchableOpacity>
               </View>
             </View>
+
+            {/* Split installments section — only for Invoice parent bills */}
+            {selectedDocumentType === "IV" && !isSplitChild && (
+              <View
+                style={{
+                  marginVertical: 10,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  borderWidth: 1,
+                  borderColor: isSplitParent
+                    ? "#04ecc140"
+                    : theme === "dark" ? "#3a3a3a" : "#e5e5e5",
+                  backgroundColor: theme === "dark" ? "#1a1a1b" : "#f9f9f9",
+                }}
+              >
+                {/* Header row */}
+                <TouchableOpacity
+                  onPress={() => !isSplitParent && setShowSplitSection((v) => !v)}
+                  activeOpacity={isSplitParent ? 1 : 0.7}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: 14,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <Ionicons name="git-branch-outline" size={16} color="#04ecc1" />
+                    <CustomText weight="semibold" style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e", fontSize: 14 }}>
+                      {isSplitParent
+                        ? t("bill.splitActive") || "Split Active"
+                        : t("bill.splitInstallments") || "Split Installments"}
+                    </CustomText>
+                  </View>
+                  {isSplitParent ? (
+                    <TouchableOpacity onPress={handleResetSplit} style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <Ionicons name="refresh" size={14} color="#dc2626" />
+                      <CustomText style={{ color: "#dc2626", fontSize: 12 }}>
+                        {t("bill.reset") || "Reset"}
+                      </CustomText>
+                    </TouchableOpacity>
+                  ) : (
+                    <Ionicons
+                      name={showSplitSection ? "chevron-up" : "chevron-down"}
+                      size={16}
+                      color={theme === "dark" ? "#666" : "#999"}
+                    />
+                  )}
+                </TouchableOpacity>
+
+                {/* Setup form */}
+                {!isSplitParent && showSplitSection && (
+                  <View style={{ paddingHorizontal: 14, paddingBottom: 14 }}>
+                    {splitAllRows.map((row, index) => {
+                      const isAuto = !!row.auto;
+                      const pct = parseFloat(row.splitPercent) || 0;
+                      const rowAmount = splitBaseTotal > 0 ? (splitBaseTotal * pct) / 100 : null;
+                      return (
+                        <View
+                          key={index}
+                          style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}
+                        >
+                          <CustomText style={{ color: theme === "dark" ? "#666" : "#999", fontSize: 12, width: 22 }}>
+                            {index + 1}.
+                          </CustomText>
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              backgroundColor: isAuto
+                                ? theme === "dark" ? "#1a1a1b" : "#f0f0f0"
+                                : theme === "dark" ? "#2a2b2c" : "#ffffff",
+                              borderRadius: 8,
+                              borderWidth: 1,
+                              borderColor: isAuto
+                                ? "#04ecc140"
+                                : theme === "dark" ? "#606060" : "#b1b1b1",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <TextInput
+                              style={{
+                                width: 48,
+                                color: isAuto
+                                  ? "#04ecc1"
+                                  : theme === "dark" ? "#b1b1b1" : "#606060",
+                                fontSize: 15,
+                                paddingVertical: 8,
+                              }}
+                              value={row.splitPercent}
+                              editable={!isAuto}
+                              onChangeText={(v) =>
+                                setSplitRows((prev) =>
+                                  prev.map((r, i) => i === index ? { ...r, splitPercent: v } : r),
+                                )
+                              }
+                              keyboardType="decimal-pad"
+                              placeholder="0"
+                              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                            />
+                            <CustomText style={{ color: isAuto ? "#04ecc1" : theme === "dark" ? "#606060" : "#b1b1b1", fontSize: 12, marginRight: 8 }}>
+                              {isAuto ? "% (auto)" : "%"}
+                            </CustomText>
+                            {rowAmount !== null && pct > 0 && (
+                              <>
+                                <CustomText style={{ color: theme === "dark" ? "#444" : "#ccc", fontSize: 12, marginRight: 8 }}>|</CustomText>
+                                <CustomText style={{ flex: 1, color: isAuto ? "#04ecc1" : theme === "dark" ? "#b1b1b1" : "#606060", fontSize: 13 }} numberOfLines={1}>
+                                  {rowAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </CustomText>
+                              </>
+                            )}
+                          </View>
+                          {!isAuto && (
+                            <TouchableOpacity
+                              onPress={() => setSplitRows((prev) => prev.filter((_, i) => i !== index))}
+                            >
+                              <Ionicons name="close-circle" size={18} color="#dc2626" />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      );
+                    })}
+
+                    {/* Add row + confirm */}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 }}>
+                      <TouchableOpacity
+                        onPress={() => setSplitRows((prev) => [...prev, { splitPercent: "" }])}
+                        disabled={splitRemainder <= 0}
+                        style={{
+                          flex: 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderWidth: 1,
+                          borderColor: splitRemainder > 0
+                            ? "#04ecc160"
+                            : theme === "dark" ? "#3a3a3a" : "#e0e0e0",
+                          borderRadius: 8,
+                          borderStyle: "dashed",
+                          paddingVertical: 8,
+                          gap: 4,
+                          opacity: splitRemainder > 0 ? 1 : 0.4,
+                        }}
+                      >
+                        <Ionicons name="add" size={14} color="#04ecc1" />
+                        <CustomText style={{ color: "#04ecc1", fontSize: 12 }}>
+                          {t("bill.addInstallment") || "Add"}
+                        </CustomText>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={handleSplitSubmit}
+                        disabled={!splitIsValid || splitSubmitting}
+                        style={{
+                          backgroundColor: splitIsValid && !splitSubmitting ? "#04ecc1" : theme === "dark" ? "#333" : "#ccc",
+                          borderRadius: 8,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          opacity: splitIsValid && !splitSubmitting ? 1 : 0.5,
+                        }}
+                      >
+                        <CustomText weight="semibold" style={{ color: theme === "dark" ? "#18181b" : "#ffffff", fontSize: 12 }}>
+                          {splitSubmitting ? "..." : t("common.confirm") || "Confirm"}
+                        </CustomText>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
 
             {/* Row 2: Platform dropdown — full width */}
             <View>

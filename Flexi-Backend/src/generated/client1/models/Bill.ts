@@ -30,6 +30,7 @@ export type BillAvgAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
   totalQuotation: runtime.Decimal | null
+  totalInvoice: runtime.Decimal | null
   totalBeforeTax: runtime.Decimal | null
   totalAfterTax: runtime.Decimal | null
   totalTax: runtime.Decimal | null
@@ -40,6 +41,8 @@ export type BillAvgAggregateOutputType = {
   billLevelDiscount: number | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
+  splitPercent: number | null
+  splitPercentMax: number | null
   businessAcc: number | null
   platformId: number | null
   customerId: number | null
@@ -49,6 +52,7 @@ export type BillSumAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
   totalQuotation: runtime.Decimal | null
+  totalInvoice: runtime.Decimal | null
   totalBeforeTax: runtime.Decimal | null
   totalAfterTax: runtime.Decimal | null
   totalTax: runtime.Decimal | null
@@ -59,6 +63,8 @@ export type BillSumAggregateOutputType = {
   billLevelDiscount: number | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
+  splitPercent: number | null
+  splitPercentMax: number | null
   businessAcc: number | null
   platformId: number | null
   customerId: number | null
@@ -83,6 +89,7 @@ export type BillMinAggregateOutputType = {
   payment: $Enums.Payment | null
   total: runtime.Decimal | null
   totalQuotation: runtime.Decimal | null
+  totalInvoice: runtime.Decimal | null
   totalBeforeTax: runtime.Decimal | null
   totalAfterTax: runtime.Decimal | null
   totalTax: runtime.Decimal | null
@@ -105,6 +112,10 @@ export type BillMinAggregateOutputType = {
   withHoldingTax: boolean | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
+  splitPercent: number | null
+  splitPercentMax: number | null
+  isSplitChild: boolean | null
+  splitGroupId: string | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
@@ -133,6 +144,7 @@ export type BillMaxAggregateOutputType = {
   payment: $Enums.Payment | null
   total: runtime.Decimal | null
   totalQuotation: runtime.Decimal | null
+  totalInvoice: runtime.Decimal | null
   totalBeforeTax: runtime.Decimal | null
   totalAfterTax: runtime.Decimal | null
   totalTax: runtime.Decimal | null
@@ -155,6 +167,10 @@ export type BillMaxAggregateOutputType = {
   withHoldingTax: boolean | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
+  splitPercent: number | null
+  splitPercentMax: number | null
+  isSplitChild: boolean | null
+  splitGroupId: string | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
@@ -183,6 +199,7 @@ export type BillCountAggregateOutputType = {
   payment: number
   total: number
   totalQuotation: number
+  totalInvoice: number
   totalBeforeTax: number
   totalAfterTax: number
   totalTax: number
@@ -205,6 +222,10 @@ export type BillCountAggregateOutputType = {
   withHoldingTax: number
   WHTpercent: number
   WHTAmount: number
+  splitPercent: number
+  splitPercentMax: number
+  isSplitChild: number
+  splitGroupId: number
   paymentTermCondition: number
   remark: number
   platform: number
@@ -220,6 +241,7 @@ export type BillAvgAggregateInputType = {
   id?: true
   total?: true
   totalQuotation?: true
+  totalInvoice?: true
   totalBeforeTax?: true
   totalAfterTax?: true
   totalTax?: true
@@ -230,6 +252,8 @@ export type BillAvgAggregateInputType = {
   billLevelDiscount?: true
   WHTpercent?: true
   WHTAmount?: true
+  splitPercent?: true
+  splitPercentMax?: true
   businessAcc?: true
   platformId?: true
   customerId?: true
@@ -239,6 +263,7 @@ export type BillSumAggregateInputType = {
   id?: true
   total?: true
   totalQuotation?: true
+  totalInvoice?: true
   totalBeforeTax?: true
   totalAfterTax?: true
   totalTax?: true
@@ -249,6 +274,8 @@ export type BillSumAggregateInputType = {
   billLevelDiscount?: true
   WHTpercent?: true
   WHTAmount?: true
+  splitPercent?: true
+  splitPercentMax?: true
   businessAcc?: true
   platformId?: true
   customerId?: true
@@ -273,6 +300,7 @@ export type BillMinAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalInvoice?: true
   totalBeforeTax?: true
   totalAfterTax?: true
   totalTax?: true
@@ -295,6 +323,10 @@ export type BillMinAggregateInputType = {
   withHoldingTax?: true
   WHTpercent?: true
   WHTAmount?: true
+  splitPercent?: true
+  splitPercentMax?: true
+  isSplitChild?: true
+  splitGroupId?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -323,6 +355,7 @@ export type BillMaxAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalInvoice?: true
   totalBeforeTax?: true
   totalAfterTax?: true
   totalTax?: true
@@ -345,6 +378,10 @@ export type BillMaxAggregateInputType = {
   withHoldingTax?: true
   WHTpercent?: true
   WHTAmount?: true
+  splitPercent?: true
+  splitPercentMax?: true
+  isSplitChild?: true
+  splitGroupId?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -373,6 +410,7 @@ export type BillCountAggregateInputType = {
   payment?: true
   total?: true
   totalQuotation?: true
+  totalInvoice?: true
   totalBeforeTax?: true
   totalAfterTax?: true
   totalTax?: true
@@ -395,6 +433,10 @@ export type BillCountAggregateInputType = {
   withHoldingTax?: true
   WHTpercent?: true
   WHTAmount?: true
+  splitPercent?: true
+  splitPercentMax?: true
+  isSplitChild?: true
+  splitGroupId?: true
   paymentTermCondition?: true
   remark?: true
   platform?: true
@@ -510,6 +552,7 @@ export type BillGroupByOutputType = {
   payment: $Enums.Payment | null
   total: runtime.Decimal | null
   totalQuotation: runtime.Decimal | null
+  totalInvoice: runtime.Decimal | null
   totalBeforeTax: runtime.Decimal | null
   totalAfterTax: runtime.Decimal | null
   totalTax: runtime.Decimal | null
@@ -532,6 +575,10 @@ export type BillGroupByOutputType = {
   withHoldingTax: boolean | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
+  splitPercent: number | null
+  splitPercentMax: number | null
+  isSplitChild: boolean
+  splitGroupId: string | null
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia
@@ -583,6 +630,7 @@ export type BillWhereInput = {
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
   total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -605,6 +653,10 @@ export type BillWhereInput = {
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
+  splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -639,6 +691,7 @@ export type BillOrderByWithRelationInput = {
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
   total?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrderInput | Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrderInput | Prisma.SortOrder
   totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -661,6 +714,10 @@ export type BillOrderByWithRelationInput = {
   withHoldingTax?: Prisma.SortOrderInput | Prisma.SortOrder
   WHTpercent?: Prisma.SortOrderInput | Prisma.SortOrder
   WHTAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  splitPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSplitChild?: Prisma.SortOrder
+  splitGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -698,6 +755,7 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
   total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -720,6 +778,10 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
+  splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -754,6 +816,7 @@ export type BillOrderByWithAggregationInput = {
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
   total?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuotation?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrderInput | Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrderInput | Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrderInput | Prisma.SortOrder
   totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -776,6 +839,10 @@ export type BillOrderByWithAggregationInput = {
   withHoldingTax?: Prisma.SortOrderInput | Prisma.SortOrder
   WHTpercent?: Prisma.SortOrderInput | Prisma.SortOrder
   WHTAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  splitPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSplitChild?: Prisma.SortOrder
+  splitGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -812,6 +879,7 @@ export type BillScalarWhereWithAggregatesInput = {
   payment?: Prisma.EnumPaymentNullableWithAggregatesFilter<"Bill"> | $Enums.Payment | null
   total?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -834,6 +902,10 @@ export type BillScalarWhereWithAggregatesInput = {
   withHoldingTax?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  isSplitChild?: Prisma.BoolWithAggregatesFilter<"Bill"> | boolean
+  splitGroupId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaWithAggregatesFilter<"Bill"> | $Enums.SocialMedia
@@ -861,6 +933,7 @@ export type BillCreateInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -883,6 +956,10 @@ export type BillCreateInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -913,6 +990,7 @@ export type BillUncheckedCreateInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -935,6 +1013,10 @@ export type BillUncheckedCreateInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -964,6 +1046,7 @@ export type BillUpdateInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -986,6 +1069,10 @@ export type BillUpdateInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1016,6 +1103,7 @@ export type BillUncheckedUpdateInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1038,6 +1126,10 @@ export type BillUncheckedUpdateInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1068,6 +1160,7 @@ export type BillCreateManyInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1090,6 +1183,10 @@ export type BillCreateManyInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1117,6 +1214,7 @@ export type BillUpdateManyMutationInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1139,6 +1237,10 @@ export type BillUpdateManyMutationInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1163,6 +1265,7 @@ export type BillUncheckedUpdateManyInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1185,6 +1288,10 @@ export type BillUncheckedUpdateManyInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -1223,6 +1330,7 @@ export type BillCountOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrder
   totalTax?: Prisma.SortOrder
@@ -1245,6 +1353,10 @@ export type BillCountOrderByAggregateInput = {
   withHoldingTax?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
+  splitPercent?: Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrder
+  isSplitChild?: Prisma.SortOrder
+  splitGroupId?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1258,6 +1370,7 @@ export type BillAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrder
   totalTax?: Prisma.SortOrder
@@ -1268,6 +1381,8 @@ export type BillAvgOrderByAggregateInput = {
   billLevelDiscount?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
+  splitPercent?: Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -1292,6 +1407,7 @@ export type BillMaxOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrder
   totalTax?: Prisma.SortOrder
@@ -1314,6 +1430,10 @@ export type BillMaxOrderByAggregateInput = {
   withHoldingTax?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
+  splitPercent?: Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrder
+  isSplitChild?: Prisma.SortOrder
+  splitGroupId?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1342,6 +1462,7 @@ export type BillMinOrderByAggregateInput = {
   payment?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrder
   totalTax?: Prisma.SortOrder
@@ -1364,6 +1485,10 @@ export type BillMinOrderByAggregateInput = {
   withHoldingTax?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
+  splitPercent?: Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrder
+  isSplitChild?: Prisma.SortOrder
+  splitGroupId?: Prisma.SortOrder
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
@@ -1377,6 +1502,7 @@ export type BillSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
   totalQuotation?: Prisma.SortOrder
+  totalInvoice?: Prisma.SortOrder
   totalBeforeTax?: Prisma.SortOrder
   totalAfterTax?: Prisma.SortOrder
   totalTax?: Prisma.SortOrder
@@ -1387,6 +1513,8 @@ export type BillSumOrderByAggregateInput = {
   billLevelDiscount?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
+  splitPercent?: Prisma.SortOrder
+  splitPercentMax?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -1643,6 +1771,7 @@ export type BillCreateWithoutMemberInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1665,6 +1794,10 @@ export type BillCreateWithoutMemberInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1694,6 +1827,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1716,6 +1850,10 @@ export type BillUncheckedCreateWithoutMemberInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1774,6 +1912,7 @@ export type BillScalarWhereInput = {
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
   total?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1796,6 +1935,10 @@ export type BillScalarWhereInput = {
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
+  splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
@@ -1823,6 +1966,7 @@ export type BillCreateWithoutBusinessIdInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1845,6 +1989,10 @@ export type BillCreateWithoutBusinessIdInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1874,6 +2022,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1896,6 +2045,10 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -1950,6 +2103,7 @@ export type BillCreateWithoutCustomerInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1972,6 +2126,10 @@ export type BillCreateWithoutCustomerInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2001,6 +2159,7 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2023,6 +2182,10 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2077,6 +2240,7 @@ export type BillCreateWithoutProductInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2099,6 +2263,10 @@ export type BillCreateWithoutProductInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2128,6 +2296,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2150,6 +2319,10 @@ export type BillUncheckedCreateWithoutProductInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2194,6 +2367,7 @@ export type BillUpdateWithoutProductInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2216,6 +2390,10 @@ export type BillUpdateWithoutProductInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2245,6 +2423,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2267,6 +2446,10 @@ export type BillUncheckedUpdateWithoutProductInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2295,6 +2478,7 @@ export type BillCreateWithoutExpenseInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2317,6 +2501,10 @@ export type BillCreateWithoutExpenseInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2346,6 +2534,7 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2368,6 +2557,10 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2412,6 +2605,7 @@ export type BillUpdateWithoutExpenseInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2434,6 +2628,10 @@ export type BillUpdateWithoutExpenseInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2463,6 +2661,7 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2485,6 +2684,10 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2513,6 +2716,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2535,6 +2739,10 @@ export type BillCreateWithoutPlatformInfoInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2564,6 +2772,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2586,6 +2795,10 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2641,6 +2854,7 @@ export type BillCreateManyMemberInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2663,6 +2877,10 @@ export type BillCreateManyMemberInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2689,6 +2907,7 @@ export type BillUpdateWithoutMemberInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2711,6 +2930,10 @@ export type BillUpdateWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2740,6 +2963,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2762,6 +2986,10 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2791,6 +3019,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2813,6 +3042,10 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2840,6 +3073,7 @@ export type BillCreateManyBusinessIdInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2862,6 +3096,10 @@ export type BillCreateManyBusinessIdInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -2888,6 +3126,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2910,6 +3149,10 @@ export type BillUpdateWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2939,6 +3182,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2961,6 +3205,10 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -2990,6 +3238,7 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3012,6 +3261,10 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3039,6 +3292,7 @@ export type BillCreateManyCustomerInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3061,6 +3315,10 @@ export type BillCreateManyCustomerInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -3087,6 +3345,7 @@ export type BillUpdateWithoutCustomerInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3109,6 +3368,10 @@ export type BillUpdateWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3138,6 +3401,7 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3160,6 +3424,10 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3189,6 +3457,7 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3211,6 +3480,10 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3238,6 +3511,7 @@ export type BillCreateManyPlatformInfoInput = {
   payment?: $Enums.Payment | null
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3260,6 +3534,10 @@ export type BillCreateManyPlatformInfoInput = {
   withHoldingTax?: boolean | null
   WHTpercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: number | null
+  splitPercentMax?: number | null
+  isSplitChild?: boolean
+  splitGroupId?: string | null
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
@@ -3286,6 +3564,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3308,6 +3587,10 @@ export type BillUpdateWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3337,6 +3620,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3359,6 +3643,10 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3388,6 +3676,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
   total?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalQuotation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalInvoice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalBeforeTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalAfterTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -3410,6 +3699,10 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
@@ -3468,6 +3761,7 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalInvoice?: boolean
   totalBeforeTax?: boolean
   totalAfterTax?: boolean
   totalTax?: boolean
@@ -3490,6 +3784,10 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   withHoldingTax?: boolean
   WHTpercent?: boolean
   WHTAmount?: boolean
+  splitPercent?: boolean
+  splitPercentMax?: boolean
+  isSplitChild?: boolean
+  splitGroupId?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -3525,6 +3823,7 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalInvoice?: boolean
   totalBeforeTax?: boolean
   totalAfterTax?: boolean
   totalTax?: boolean
@@ -3547,6 +3846,10 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   withHoldingTax?: boolean
   WHTpercent?: boolean
   WHTAmount?: boolean
+  splitPercent?: boolean
+  splitPercentMax?: boolean
+  isSplitChild?: boolean
+  splitGroupId?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -3579,6 +3882,7 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalInvoice?: boolean
   totalBeforeTax?: boolean
   totalAfterTax?: boolean
   totalTax?: boolean
@@ -3601,6 +3905,10 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   withHoldingTax?: boolean
   WHTpercent?: boolean
   WHTAmount?: boolean
+  splitPercent?: boolean
+  splitPercentMax?: boolean
+  isSplitChild?: boolean
+  splitGroupId?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -3633,6 +3941,7 @@ export type BillSelectScalar = {
   payment?: boolean
   total?: boolean
   totalQuotation?: boolean
+  totalInvoice?: boolean
   totalBeforeTax?: boolean
   totalAfterTax?: boolean
   totalTax?: boolean
@@ -3655,6 +3964,10 @@ export type BillSelectScalar = {
   withHoldingTax?: boolean
   WHTpercent?: boolean
   WHTAmount?: boolean
+  splitPercent?: boolean
+  splitPercentMax?: boolean
+  isSplitChild?: boolean
+  splitGroupId?: boolean
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
@@ -3664,7 +3977,7 @@ export type BillSelectScalar = {
   customerId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -3716,6 +4029,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     payment: $Enums.Payment | null
     total: runtime.Decimal | null
     totalQuotation: runtime.Decimal | null
+    totalInvoice: runtime.Decimal | null
     totalBeforeTax: runtime.Decimal | null
     totalAfterTax: runtime.Decimal | null
     totalTax: runtime.Decimal | null
@@ -3738,6 +4052,10 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     withHoldingTax: boolean | null
     WHTpercent: runtime.Decimal | null
     WHTAmount: runtime.Decimal | null
+    splitPercent: number | null
+    splitPercentMax: number | null
+    isSplitChild: boolean
+    splitGroupId: string | null
     paymentTermCondition: string | null
     remark: string | null
     platform: $Enums.SocialMedia
@@ -4192,6 +4510,7 @@ export interface BillFieldRefs {
   readonly payment: Prisma.FieldRef<"Bill", 'Payment'>
   readonly total: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly totalQuotation: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly totalInvoice: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly totalBeforeTax: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly totalAfterTax: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly totalTax: Prisma.FieldRef<"Bill", 'Decimal'>
@@ -4214,6 +4533,10 @@ export interface BillFieldRefs {
   readonly withHoldingTax: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly WHTpercent: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly WHTAmount: Prisma.FieldRef<"Bill", 'Decimal'>
+  readonly splitPercent: Prisma.FieldRef<"Bill", 'Int'>
+  readonly splitPercentMax: Prisma.FieldRef<"Bill", 'Int'>
+  readonly isSplitChild: Prisma.FieldRef<"Bill", 'Boolean'>
+  readonly splitGroupId: Prisma.FieldRef<"Bill", 'String'>
   readonly paymentTermCondition: Prisma.FieldRef<"Bill", 'String'>
   readonly remark: Prisma.FieldRef<"Bill", 'String'>
   readonly platform: Prisma.FieldRef<"Bill", 'SocialMedia'>

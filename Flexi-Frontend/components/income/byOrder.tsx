@@ -16,6 +16,7 @@ import { getMemberId } from "@/utils/utility";
 import BillCard from "../billCard";
 import { useBackgroundColorClass } from "@/utils/themeUtils";
 import { CustomText } from "../CustomText";
+import SwipeableRow, { SwipeAction } from "../swipe/SwipeableRow";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
@@ -47,7 +48,14 @@ type Bill = {
   unit: string;
   discount: number;
   totalQuotation: number;
-  DocumentType?: string; // Add DocumentType field
+  totalInvoice?: number;
+  flexiId?: string;
+  invoiceId?: string;
+  isSplitChild?: boolean;
+  splitGroupId?: string;
+  splitPercent?: number;
+  splitPercentMax?: number;
+  DocumentType?: string;
   product?: Array<{
     product: string;
     unitPrice: number;
@@ -149,6 +157,49 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
 
   const handleDelete = async (id: number) => {};
 
+  // Map parentFlexiId → children (split bills)
+  const splitChildrenMap = useMemo(() => {
+    const map: Record<string, Bill[]> = {};
+    bills.forEach((bill) => {
+      if (bill.isSplitChild && bill.splitGroupId) {
+        if (!map[bill.splitGroupId]) map[bill.splitGroupId] = [];
+        map[bill.splitGroupId].push(bill);
+      }
+    });
+    return map;
+  }, [bills]);
+
+  // Only top-level (non-child) bills appear in the date groups
+  const parentBills = useMemo(
+    () => bills.filter((b) => !b.isSplitChild),
+    [bills],
+  );
+
+  // Navigate to editBill — the split section is embedded there
+  const handleSplitBill = useCallback((billId: number) => {
+    router.push({
+      pathname: "/editBill",
+      params: { id: billId.toString() },
+    });
+  }, []);
+
+  // Reset parent split back to Quotation
+  const handleResetSplit = useCallback(
+    async (billId: number) => {
+      try {
+        await CallAPIBill.resetParentSplitAPI(billId);
+        const memberId = await getMemberId();
+        if (memberId) {
+          const response = await CallAPIBill.getBillsAPI(memberId);
+          setBills(Array.isArray(response) ? response : []);
+        }
+      } catch (error) {
+        console.error("Error resetting split:", error);
+      }
+    },
+    [],
+  );
+
   // Handle document type updates
   const handleUpdateDocumentType = async (
     billId: number,
@@ -182,8 +233,8 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
   // State to track expanded future bills
   const [showAllFuture, setShowAllFuture] = useState(false);
 
-  // Create memoized grouped bills to ensure data is always fresh
-  const groupedBills = useMemo(() => groupByDate(bills), [bills]);
+  // Create memoized grouped bills — only top-level (non-child) bills
+  const groupedBills = useMemo(() => groupByDate(parentBills), [parentBills]);
 
   // Sort date groups chronologically
   const sortedDateGroups = useMemo(() => {
@@ -527,7 +578,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
         renderItem={({ item: date }) => (
           <View
             style={{
-              alignItems: isMobileApp() ? "flex-start" : "center",
+              alignItems: "stretch",
             }}
           >
             <Text
@@ -538,37 +589,209 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
               {getDateGroupDisplayName(date)}
             </Text>
 
-            {getBillsToDisplay(date, groupedBills[date]).map((bill) => (
-              <BillCard
-                key={bill.id}
-                id={bill.id}
-                platform={bill.platform}
-                product={bill.product}
-                amount={bill.amount}
-                cName={bill.cName}
-                cLastName={bill.cLastName}
-                total={bill.total}
-                totalQuotation={bill.totalQuotation}
-                purchaseAt={bill.purchaseAt}
-                CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
-                onDelete={handleDelete}
-                PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
-                cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
-                getBorderColor={getBorderColor(bill.platform)}
-                unit={undefined} // Don't pass bill.unit, let BillCard handle per-product unit
-                discount={bill.discount}
-                currentDocumentType={bill.DocumentType}
-                onUpdateDocumentType={handleUpdateDocumentType}
-                iconColor={theme === "dark" ? "#232425" : "#ffffff"}
-                onPress={() =>
-                  router.push({
-                    pathname: "/editBill",
-                    params: { id: bill.id },
-                  })
-                }
-                onDuplicate={handleDuplicateBill}
-              />
-            ))}
+            {getBillsToDisplay(date, groupedBills[date]).map((bill) => {
+              const children = bill.flexiId ? (splitChildrenMap[bill.flexiId] ?? []) : [];
+              const isParentWithSplit = children.length > 0;
+              const lineColor = theme === 'dark' ? '#04ecc1' : '#04ecc1';
+              const dotColor = theme === 'dark' ? '#04ecc1' : '#04ecc1';
+              return (
+                <View key={bill.id} style={{ marginBottom: isParentWithSplit ? 10 : 2 }}>
+                  <BillCard
+                    id={bill.id}
+                    platform={bill.platform}
+                    product={bill.product}
+                    amount={bill.amount}
+                    cName={bill.cName}
+                    cLastName={bill.cLastName}
+                    total={bill.total}
+                    totalQuotation={bill.totalQuotation}
+                    purchaseAt={bill.purchaseAt}
+                    CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
+                    onDelete={handleDelete}
+                    PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
+                    cNameColor={theme === "dark" ? "#8c8c8c" : "#746f67"}
+                    getBorderColor={getBorderColor(bill.platform)}
+                    unit={undefined}
+                    discount={bill.discount}
+                    currentDocumentType={bill.DocumentType}
+                    onUpdateDocumentType={isParentWithSplit ? undefined : handleUpdateDocumentType}
+                    iconColor={theme === "dark" ? "#232425" : "#ffffff"}
+                    onPress={() => router.push({ pathname: "/editBill", params: { id: bill.id } })}
+                    onDuplicate={handleDuplicateBill}
+                    isParentWithSplit={isParentWithSplit}
+                    splitChildCount={children.length}
+                    onSplit={!isParentWithSplit ? () => handleSplitBill(bill.id) : undefined}
+                    onResetSplit={isParentWithSplit && bill.DocumentType !== "Receipt" ? () => handleResetSplit(bill.id) : undefined}
+                  />
+
+                  {/* Children with tree connector */}
+                  {isParentWithSplit && (
+                    <View style={{ flexDirection: 'row', paddingLeft: 8 }}>
+                      <View style={{ width: 16 }} />
+
+                      {/* Children list */}
+                      <View style={{ flex: 1 }}>
+                        {[...children].sort((a, b) => a.id - b.id).map((child, i) => {
+                          const isLast = i === children.length - 1;
+                          const childAmount = Number(child.totalInvoice ?? child.total ?? 0);
+                          const statusColor =
+                            child.DocumentType === 'Receipt'
+                              ? theme === 'dark' ? '#04ecd5' : '#01e0c6'
+                              : child.DocumentType === 'Invoice'
+                              ? '#ffa12e'
+                              : theme === 'dark' ? '#8c8c8c' : '#746f67';
+                          const statusLabel =
+                            child.DocumentType === 'Receipt'
+                              ? t('bill.status.paid') || 'Paid'
+                              : child.DocumentType === 'Invoice'
+                              ? t('bill.status.waitingPayment') || 'Waiting'
+                              : t('bill.status.waitingResponse') || 'Pending';
+                          const childLeftActions: SwipeAction[] = [];
+                          if (child.DocumentType !== 'Receipt') {
+                            if (child.DocumentType !== 'Invoice') {
+                              childLeftActions.push({
+                                id: 'confirm',
+                                text: t('bill.confirm') || 'Confirm',
+                                backgroundColor: '#ff8c00',
+                                textColor: theme === 'dark' ? '#1c1d1e' : '#ffffff',
+                                onPress: () => handleUpdateDocumentType(child.id, 'Invoice'),
+                              });
+                            }
+                            childLeftActions.push({
+                              id: 'paid',
+                              text: t('bill.paid') || 'Paid',
+                              backgroundColor: theme === 'dark' ? '#04ecd5' : '#01e0c6',
+                              textColor: theme === 'dark' ? '#1c1d1e' : '#ffffff',
+                              onPress: () => handleUpdateDocumentType(child.id, 'Receipt'),
+                            });
+                          }
+                          return (
+                            <View key={child.id} style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                              {/* Tree connector column */}
+                              <View style={{ width: 16, alignItems: 'center' }}>
+                                {/* Top half of vertical line — always shown */}
+                                <View style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 5,
+                                  width: 1.5,
+                                  height: '50%',
+                                  backgroundColor: lineColor,
+                                }} />
+                                {/* Bottom half — only if not last child */}
+                                {!isLast && (
+                                  <View style={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: 5,
+                                    bottom: 0,
+                                    width: 1.5,
+                                    backgroundColor: lineColor,
+                                  }} />
+                                )}
+                                {/* Horizontal arm */}
+                                <View style={{
+                                  position: 'absolute',
+                                  top: '50%',
+                                  left: 5,
+                                  width: 10,
+                                  height: 1.5,
+                                  backgroundColor: lineColor,
+                                }} />
+                                {/* Dot */}
+                                <View style={{
+                                  position: 'absolute',
+                                  top: '50%',
+                                  left: 10,
+                                  marginTop: -3,
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: 3,
+                                  backgroundColor: dotColor,
+                                }} />
+                              </View>
+
+                              <View style={{ flex: 1 }}>
+                                <SwipeableRow
+                                  leftActions={childLeftActions}
+                                  rightActions={[]}
+                                  disabled={child.DocumentType === 'Receipt'}
+                                  threshold={80}
+                                  actionWidth={80}
+                                  actionHeight="92%"
+                                  actionBorderRadius={4}
+                                >
+                                  <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => router.push({ pathname: '/editBill', params: { id: child.id } })}
+                                    style={{
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      paddingVertical: 8,
+                                      paddingHorizontal: 12,
+                                      backgroundColor: theme === 'dark' ? '#1e1f20' : '#f2f2f2',
+                                      borderRadius: 8,
+                                      marginVertical: 3,
+                                      borderWidth: 1,
+                                      borderColor: theme === 'dark' ? '#2e2f30' : '#e8e8e8',
+                                    }}
+                                  >
+                                    {/* Installment number */}
+                                    <CustomText style={{ color: theme === 'dark' ? '#555' : '#bbb', fontSize: 11, width: 18 }}>
+                                      {i + 1}.
+                                    </CustomText>
+                                    {/* % badge */}
+                                    <View style={{
+                                      paddingHorizontal: 7,
+                                      paddingVertical: 2,
+                                      borderRadius: 6,
+                                      backgroundColor: '#04ecc112',
+                                      borderWidth: 1,
+                                      borderColor: '#04ecc135',
+                                      marginRight: 10,
+                                    }}>
+                                      <CustomText style={{ color: '#04ecc1', fontSize: 11 }} weight="semibold">
+                                        {child.splitPercent}%
+                                      </CustomText>
+                                    </View>
+                                    {/* Amount */}
+                                    <CustomText
+                                      style={{
+                                        flex: 1,
+                                        color: statusColor,
+                                        fontSize: 14,
+                                        opacity: child.DocumentType === 'Receipt' ? 1 : 0.65,
+                                      }}
+                                      weight="semibold"
+                                      numberOfLines={1}
+                                    >
+                                      {child.DocumentType === 'Receipt' ? '+' : ''}{formatNumber(childAmount)}
+                                    </CustomText>
+                                    {/* Status pill */}
+                                    <View style={{
+                                      paddingHorizontal: 8,
+                                      paddingVertical: 3,
+                                      borderRadius: 6,
+                                      backgroundColor: statusColor + '18',
+                                      borderWidth: 1,
+                                      borderColor: statusColor + '40',
+                                    }}>
+                                      <CustomText style={{ color: statusColor, fontSize: 10 }} weight="semibold">
+                                        {statusLabel}
+                                      </CustomText>
+                                    </View>
+                                  </TouchableOpacity>
+                                </SwipeableRow>
+                              </View>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
 
             {/* Show "See More" button for Future group */}
             {date === "Future" && groupedBills[date].length > 1 && (

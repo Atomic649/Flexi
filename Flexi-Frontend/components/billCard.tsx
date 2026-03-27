@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";
 import CustomAlert from "./CustomAlert";
 import { format } from "date-fns";
+import { Ionicons } from "@expo/vector-icons";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -35,6 +36,12 @@ export default function BillCard({
   currentDocumentType, // Current document type to show appropriate actions
   onPress, // Add onPress prop to handle navigation from parent
   onDuplicate,
+  isSplitChild,     // True if this card is a split child
+  splitPercent,     // Percentage for split child badge
+  isParentWithSplit, // True if parent has active split children
+  splitChildCount,  // Number of split children (for parent badge)
+  onSplit,          // Callback to open split screen (Invoice parent, no children yet)
+  onResetSplit,     // Callback to reset split back to Quotation
 }: any) {
   const { t, i18n } = useTranslation();
 
@@ -164,6 +171,7 @@ export default function BillCard({
 
   // Define swipe actions for the bill card
   const leftActions: SwipeAction[] = [];
+  const rightActions: SwipeAction[] = [];
 
   // Add actions based on document type
   if (onUpdateDocumentType && currentDocumentType !== "Receipt") {
@@ -187,6 +195,30 @@ export default function BillCard({
       backgroundColor: PriceColor,
       textColor: iconColor,
       onPress: handleCustomerPaid,
+    });
+  }
+
+  // Split action — shown on Invoice parents that have no children yet
+  if (onSplit) {
+    rightActions.push({
+      id: "split",
+      icon: "git-branch",
+      text: t("bill.split") || "Split",
+      backgroundColor: "#4f46e5",
+      textColor: "#ffffff",
+      onPress: onSplit,
+    });
+  }
+
+  // Reset split action — shown on Invoice parents that have active children
+  if (onResetSplit) {
+    rightActions.push({
+      id: "resetSplit",
+      icon: "refresh",
+      text: t("bill.resetSplit") || "Reset",
+      backgroundColor: "#dc2626",
+      textColor: "#ffffff",
+      onPress: onResetSplit,
     });
   }
 
@@ -290,6 +322,23 @@ export default function BillCard({
             </View>
           </View>
           <View className="pt-2 flex flex-col items-end">
+            {isSplitChild && splitPercent != null && (
+              <View
+                style={{
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: 999,
+                  backgroundColor: '#04ecc120',
+                  borderWidth: 1,
+                  borderColor: '#04ecc150',
+                  marginBottom: 4,
+                }}
+              >
+                <CustomText style={{ color: '#04ecc1', fontSize: 10 }} weight="semibold">
+                  {splitPercent}%
+                </CustomText>
+              </View>
+            )}
             <Text
               className="text-xl font-bold justify-end"
               style={{
@@ -335,6 +384,27 @@ export default function BillCard({
                 </View>
               </RNAnimated.View>
             )}
+            {/* Parent split children count badge */}
+            {isParentWithSplit && (
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 3,
+                marginTop: 4,
+                paddingHorizontal: 8,
+                paddingVertical: 2,
+                borderRadius: 999,
+                backgroundColor: '#04ecc115',
+                borderWidth: 1,
+                borderColor: '#04ecc140',
+                alignSelf: 'flex-end',
+              }}>
+                <Ionicons name="git-branch-outline" size={9} color="#04ecc1" />
+                <CustomText style={{ color: '#04ecc1', fontSize: 9 }}>
+                  {splitChildCount}
+                </CustomText>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -352,7 +422,8 @@ export default function BillCard({
     >
       <SwipeableRow
         leftActions={leftActions}
-        disabled={!onUpdateDocumentType || currentDocumentType === "Receipt"}
+        rightActions={rightActions}
+        disabled={!onUpdateDocumentType && rightActions.length === 0 || currentDocumentType === "Receipt" && rightActions.length === 0}
         threshold={80}
         actionWidth={80}
         actionHeight="92%"

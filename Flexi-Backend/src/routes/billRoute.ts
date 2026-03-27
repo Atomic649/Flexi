@@ -11,6 +11,8 @@ import {
   updateDocumentTypeById,
   lookupBillByFlexiId,
   getBillByFlexiId,
+  createSplitChildren,
+  resetParentSplit,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -49,5 +51,11 @@ router.put("/document-type/:id", authenticateToken, updateDocumentTypeById);
 
 // Get Yearly Sales
 router.get("/yearly/sales", authenticateToken, getthisYearSales);
+
+// Create split children from a parent Invoice bill
+router.post("/split/:parentId", authenticateToken, createSplitChildren);
+
+// Reset split parent back to Quotation (deletes all children)
+router.delete("/split/:parentId", authenticateToken, resetParentSplit);
 
 export default router;

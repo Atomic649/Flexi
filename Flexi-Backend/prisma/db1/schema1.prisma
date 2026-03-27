@@ -332,6 +332,7 @@ model Bill {
   payment              Payment?
   total                Decimal?
   totalQuotation       Decimal?
+  totalInvoice         Decimal?
   totalBeforeTax       Decimal?
   totalAfterTax        Decimal?
   totalTax             Decimal?
@@ -354,6 +355,10 @@ model Bill {
   withHoldingTax       Boolean?      @default(false)
   WHTpercent           Decimal?      @default(0)
   WHTAmount            Decimal?      @default(0)
+  splitPercent         Int?          @default(100)
+  splitPercentMax      Int?          @default(100)
+  isSplitChild         Boolean       @default(false)
+  splitGroupId         String?
   paymentTermCondition String? // Optional field for payment
   remark               String?
   platform             SocialMedia

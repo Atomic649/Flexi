@@ -13,7 +13,7 @@ import { CustomText } from "../CustomText";
 
 export interface SwipeAction {
   id: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap;
   text?: string;
   backgroundColor: string;
   textColor?: string;
@@ -153,11 +153,13 @@ export const SwipeableRow: React.FC<SwipeableRowProps> = ({
               borderRadius: actionBorderRadius,
             }}
           >
-            <Ionicons
-              name={action.icon}
-              size={20}
-              color={action.textColor || "#FFFFFF"}
-            />
+            {action.icon && (
+              <Ionicons
+                name={action.icon}
+                size={20}
+                color={action.textColor || "#FFFFFF"}
+              />
+            )}
             {action.text && (
               <CustomText
                 style={{

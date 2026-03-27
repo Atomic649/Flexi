@@ -783,6 +783,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     grandTotal,
                   )} ${t("common.THB")}</span>
                 </div>
+                ${
+                  invoice.isSplitChild && invoice.splitPercent != null
+                    ? `<div class="summary-row" style="margin-top:6px; padding-top:6px; border-top:1px dashed #ccc;">
+                        <span class="summary-label" style="font-style:italic; color:#555;">แบ่งชำระ (${invoice.splitPercent}%)</span>
+                        <span class="summary-amount" style="font-style:italic; color:#555;">${formatNumber(Number(invoice.totalInvoice || 0))} ${t("common.THB")}</span>
+                      </div>`
+                    : ""
+                }
               </div>
             </div>
 
