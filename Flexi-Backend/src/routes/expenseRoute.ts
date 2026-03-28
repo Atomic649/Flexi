@@ -4,13 +4,14 @@ import {
   createExpenseWithOCR,
   getExpenses,
   getExpenseById,
-  updateExpenseById, 
+  updateExpenseById,
   searchExpenseByDate,
   getThisYearExpensesAPI,
   deleteExpenseById,
   generateWHTDocument,
   updateExpenseWithOCRData,
   duplicateExpense,
+  getExpenseNoteSuggestions,
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -46,5 +47,8 @@ router.post("/generate-wht-document", authenticateToken, generateWHTDocument);
 
 // Update expense with selected OCR data
 router.put("/update-ocr/:id", authenticateToken, updateExpenseWithOCRData);
+
+// Get note suggestions sorted by most-used
+router.get("/note-suggestions/:memberId", authenticateToken, getExpenseNoteSuggestions);
 
 export default router;

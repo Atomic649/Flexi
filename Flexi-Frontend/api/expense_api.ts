@@ -323,6 +323,18 @@ class CallAPIExpense {
     }
   }
 
+  // Get note suggestions sorted by most-used for a business
+  async getExpenseNoteSuggestionsAPI(memberId: string): Promise<{ note: string; sName: string; sAddress: string; sTaxId: string; group: string; taxType: string }[]> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.get(`/expense/note-suggestions/${memberId}`);
+      return response.data.suggestions ?? [];
+    } catch (error) {
+      console.error("🚨 Get Note Suggestions API Error:", error);
+      return [];
+    }
+  }
+
 }
 
 export default new CallAPIExpense();

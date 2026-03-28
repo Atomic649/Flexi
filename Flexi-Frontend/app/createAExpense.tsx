@@ -183,11 +183,13 @@ export default function CreateExpense({
   const [isDebt, setIsDebt] = useState(false);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [dueDatePickerVisible, setDueDatePickerVisible] = useState(false);
-  const [flexiIdInput, setFlexiIdInput] = useState(""); 
+  const [flexiIdInput, setFlexiIdInput] = useState("");
   const [flexiIdLoading, setFlexiIdLoading] = useState(false);
   const [flexiIdError, setFlexiIdError] = useState("");
   const [isFlexiDocument, setIsFlexiDocument] = useState(false);
   const [flexiBillDocumentType, setFlexiBillDocumentType] = useState<string | null>(null);
+  const [noteSuggestions, setNoteSuggestions] = useState<{ note: string; sName: string; sAddress: string; sTaxId: string; group: string; taxType: string }[]>([]);
+  const [showNoteSuggestions, setShowNoteSuggestions] = useState(false);
   const hasAttachment = Boolean(attachment) || isFlexiDocument;
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
@@ -221,6 +223,17 @@ export default function CreateExpense({
     setIsFlexiDocument(true);
     setShowAllFormField(true);
   }, [visible, prefillData]);
+
+  // Fetch note suggestions when modal opens
+  useEffect(() => {
+    if (!visible) return;
+    (async () => {
+      const memberId = await getMemberId();
+      if (!memberId) return;
+      const suggestions = await CallAPIExpense.getExpenseNoteSuggestionsAPI(memberId);
+      setNoteSuggestions(suggestions);
+    })();
+  }, [visible]);
 
   // Poll bill DocumentType when this is a FlexiDocument — auto-flip isDebt when seller marks it as Receipt
   useEffect(() => {
@@ -2263,9 +2276,61 @@ export default function CreateExpense({
                 <FloatingLabelInput
                   label={t("expense.detail.note")}
                   value={note}
-                  onChangeText={setNote}
+                  onChangeText={(text) => {
+                    setNote(text);
+                    setShowNoteSuggestions(true);
+                  }}
+                  onFocus={() => setShowNoteSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowNoteSuggestions(false), 150)}
                   required={ocrProgress === 100}
                 />
+                {showNoteSuggestions && noteSuggestions.filter((s) =>
+                  note.trim() === "" || s.note.toLowerCase().includes(note.toLowerCase())
+                ).length > 0 && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    style={{ marginBottom: 8 }}
+                    contentContainerStyle={{ gap: 8, paddingHorizontal: 2 }}
+                  >
+                    {noteSuggestions
+                      .filter((s) =>
+                        note.trim() === "" || s.note.toLowerCase().includes(note.toLowerCase())
+                      )
+                      .map((suggestion) => (
+                        <TouchableOpacity
+                          key={suggestion.note}
+                          onPress={() => {
+                            setNote(suggestion.note);
+                            if (suggestion.sName) setSName(suggestion.sName);
+                            if (suggestion.sAddress) setSAddress(suggestion.sAddress);
+                            if (suggestion.sTaxId) setSTaxId(suggestion.sTaxId);
+                            if (suggestion.group) setGroup(suggestion.group);
+                            if (suggestion.taxType) setTaxType(suggestion.taxType as "Individual" | "Juristic");
+                            setShowNoteSuggestions(false);
+                          }}
+                          style={{
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            borderRadius: 16,
+                            backgroundColor: theme === "dark" ? "#333333" : "#F0F0F0",
+                            borderWidth: 1,
+                            borderColor: theme === "dark" ? "#555555" : "#DDDDDD",
+                          }}
+                        >
+                          <CustomText
+                            style={{
+                              fontSize: 13,
+                              color: theme === "dark" ? "#DDDDDD" : "#333333",
+                            }}
+                          >
+                            {suggestion.note}
+                          </CustomText>
+                        </TouchableOpacity>
+                      ))}
+                  </ScrollView>
+                )}
 
                 <DropdownFloat
                   title={t("expense.detail.group.title")}

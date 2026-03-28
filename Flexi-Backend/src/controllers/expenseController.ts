@@ -2085,6 +2085,50 @@ const updateExpenseWithOCRData = async (req: Request, res: Response) => {
   }
 };
 
+// Get note suggestions for a business, sorted by most-used first
+const getExpenseNoteSuggestions = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  try {
+    const member = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+    const businessId = member?.businessId ?? 0;
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: businessId,
+        save: true,
+        note: { not: "" },
+      },
+      select: { note: true, sName: true, sAddress: true, sTaxId: true, group: true, taxType: true, date: true },
+      orderBy: { date: "desc" },
+    });
+
+    // Build map: note -> { count, sName, sAddress, sTaxId } using most-recent entry per note
+    const noteMap: Record<string, { count: number; sName: string; sAddress: string; sTaxId: string; group: string; taxType: string }> = {};
+    for (const e of expenses) {
+      if (!e.note) continue;
+      if (!noteMap[e.note]) {
+        // First occurrence is most recent (sorted desc) — use its fields
+        noteMap[e.note] = { count: 1, sName: e.sName ?? "", sAddress: e.sAddress ?? "", sTaxId: e.sTaxId ?? "", group: e.group ?? "", taxType: e.taxType ?? "" };
+      } else {
+        noteMap[e.note].count += 1;
+      }
+    }
+
+    // Sort by frequency descending
+    const suggestions = Object.entries(noteMap)
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([note, { sName, sAddress, sTaxId, group, taxType }]) => ({ note, sName, sAddress, sTaxId, group, taxType }));
+
+    res.json({ suggestions });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to get note suggestions" });
+  }
+};
+
 export {
   createExpense,
   createExpenseWithOCR,
@@ -2098,6 +2142,7 @@ export {
   getThisYearExpensesAPI,
   generateWHTDocument,
   updateExpenseWithOCRData,
+  getExpenseNoteSuggestions,
 };
 
 
