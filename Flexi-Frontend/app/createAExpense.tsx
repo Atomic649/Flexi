@@ -190,6 +190,11 @@ export default function CreateExpense({
   const [flexiBillDocumentType, setFlexiBillDocumentType] = useState<string | null>(null);
   const [noteSuggestions, setNoteSuggestions] = useState<{ note: string; sName: string; sAddress: string; sTaxId: string; group: string; taxType: string }[]>([]);
   const [showNoteSuggestions, setShowNoteSuggestions] = useState(false);
+  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [projectSuggestions, setProjectSuggestions] = useState<{ id: number; name: string }[]>([]);
+  const [customGroup, setCustomGroup] = useState<string>("");
+  const [customGroupSuggestions, setCustomGroupSuggestions] = useState<string[]>([]);
+  const [showCustomGroupSuggestions, setShowCustomGroupSuggestions] = useState(false);
   const hasAttachment = Boolean(attachment) || isFlexiDocument;
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
@@ -224,14 +229,20 @@ export default function CreateExpense({
     setShowAllFormField(true);
   }, [visible, prefillData]);
 
-  // Fetch note suggestions when modal opens
+  // Fetch note + project suggestions when modal opens
   useEffect(() => {
     if (!visible) return;
     (async () => {
       const memberId = await getMemberId();
       if (!memberId) return;
-      const suggestions = await CallAPIExpense.getExpenseNoteSuggestionsAPI(memberId);
-      setNoteSuggestions(suggestions);
+      const [noteSugg, projectSugg, customGroupSugg] = await Promise.all([
+        CallAPIExpense.getExpenseNoteSuggestionsAPI(memberId),
+        CallAPIExpense.getProjectSuggestionsAPI(memberId),
+        CallAPIExpense.getCustomGroupSuggestionsAPI(memberId),
+      ]);
+      setNoteSuggestions(noteSugg);
+      setProjectSuggestions(projectSugg);
+      setCustomGroupSuggestions(customGroupSugg);
     })();
   }, [visible]);
 
@@ -853,6 +864,8 @@ export default function CreateExpense({
     setShowOCRResult(false);
     setIsDebt(false);
     setIsFlexiDocument(false);
+    setProjectId(undefined);
+    setCustomGroup("");
   };
 
   const handleClose = () => {
@@ -958,7 +971,9 @@ export default function CreateExpense({
       formData.append("date", Array.isArray(date) ? date[0] : date);
       formData.append("branch", branch || "");
       formData.append("taxType", taxType || "");
+      formData.append("customGroup", customGroup || "");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
+      if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -1038,7 +1053,9 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      formData.append("customGroup", customGroup || "");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
+      if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -1137,7 +1154,9 @@ export default function CreateExpense({
       formData.append("sAddress", sAddress);
       formData.append("branch", branch);
       formData.append("taxType", taxType);
+      formData.append("customGroup", customGroup || "");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
+      if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -2438,12 +2457,33 @@ export default function CreateExpense({
                     },
                   ]}
                   selectedValue={group}
-                  onValueChange={handleGroupChange}
+                  onValueChange={(val: string) => {
+                    handleGroupChange(val);
+                    if (val !== "Others") setCustomGroup("");
+                  }}
                   borderColor={theme === "dark" ? "#555" : "#CCC"}
                   textcolor={theme === "dark" ? "#FFF" : "#000"}
                   bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
-                  otherStyles="mb-1"
+                  otherStyles="mb-2"
                 />
+
+                {showAllFormField && (
+                  <DropdownFloat
+                    title={t("expense.detail.customGroup") || "Custom Group"}
+                    placeholder={t("expense.detail.customGroup") || "Custom Group"}
+                    options={customGroupSuggestions.map((s) => ({ label: s, value: s }))}
+                    selectedValue={customGroup}
+                    onValueChange={(val: string) => setCustomGroup(val)}
+                    onAddNew={(newVal: string) => {
+                      setCustomGroupSuggestions((prev) => [...new Set([...prev, newVal])]);
+                      setCustomGroup(newVal);
+                    }}
+                    borderColor={theme === "dark" ? "#555" : "#CCC"}
+                    textcolor={theme === "dark" ? "#FFF" : "#000"}
+                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                    otherStyles="mb-1"
+                  />
+                )}
 
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
@@ -2585,6 +2625,39 @@ export default function CreateExpense({
                   onChangeText={setSAddress}
                   containerStyle={{ flex: 1, marginVertical: 2 }}
                 />
+
+                {showAllFormField && (
+                  <DropdownFloat
+                    title="Project"
+                    placeholder="Project"
+                    options={[
+                      { value: "", label: "— None —" },
+                      ...projectSuggestions.map((p) => ({
+                        value: String(p.id),
+                        label: p.name,
+                      })),
+                    ]}
+                    selectedValue={projectId != null ? String(projectId) : ""}
+                    onValueChange={(val: string) =>
+                      setProjectId(val ? Number(val) : undefined)
+                    }
+                    onAddNew={async (name: string) => {
+                      try {
+                        const memberId = await getMemberId();
+                        if (!memberId) return;
+                        const newProject = await CallAPIExpense.createProjectAPI(memberId, name);
+                        setProjectSuggestions((prev) => [...prev, newProject]);
+                        setProjectId(newProject.id);
+                      } catch (e) {
+                        console.error("Failed to create project", e);
+                      }
+                    }}
+                    borderColor={theme === "dark" ? "#555" : "#CCC"}
+                    textcolor={theme === "dark" ? "#FFF" : "#000"}
+                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                    otherStyles="mb-1"
+                  />
+                )}
 
                 {error ? (
                   <View className="items-center">

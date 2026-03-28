@@ -21,6 +21,8 @@ import CallAPIBill from "@/api/bill_api";
 import CallAPIBusiness from "@/api/business_api";
 import CallAPIPlatform from "@/api/platform_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
+import DropdownFloat from "@/components/dropdown/DropdownFloat";
+import CallAPIExpense from "@/api/expense_api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -95,6 +97,10 @@ export default function EditBill() {
   const [note, setNote] = useState("");
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
   const [remark, setRemark] = useState("");
+
+  // Project state
+  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [projectSuggestions, setProjectSuggestions] = useState<{ id: number; name: string }[]>([]);
 
   // Payment information
   const [payment, setPayment] = useState("");
@@ -772,6 +778,13 @@ export default function EditBill() {
           } catch (error) {
             console.error("Error fetching business details:", error);
           }
+          // Fetch project suggestions
+          try {
+            const projects = await CallAPIExpense.getProjectSuggestionsAPI(memberId);
+            setProjectSuggestions(projects);
+          } catch (error) {
+            console.error("Error fetching project suggestions:", error);
+          }
         }
 
         // Use DocumentType from BusinessProvider context instead of calling API
@@ -825,6 +838,10 @@ export default function EditBill() {
         // Set remark from bill data
         if (billData.remark) {
           setRemark(billData.remark);
+        }
+        // Set project from bill data
+        if (billData.projectId) {
+          setProjectId(billData.projectId);
         }
         // Set document type from API data, but only if it's available in business
         let isReceiptDocument = false;
@@ -1224,6 +1241,7 @@ export default function EditBill() {
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
         taxType: taxType,
+        ...(projectId != null && { projectId }),
       });
       if (data.error) throw new Error(data.error);
       setAlertConfig({
@@ -2351,6 +2369,39 @@ export default function EditBill() {
                 }, 200);
               }}
               onBlur={() => setIsNoteFocused(false)}
+            />
+
+            {/* Project Section */}
+            <DropdownFloat
+              title="Project"
+              placeholder="Project"
+              options={[
+                { value: "", label: "— None —" },
+                ...projectSuggestions.map((p) => ({
+                  value: String(p.id),
+                  label: p.name,
+                })),
+              ]}
+              selectedValue={projectId != null ? String(projectId) : ""}
+              onValueChange={(val: string) =>
+                setProjectId(val ? Number(val) : undefined)
+              }
+              onAddNew={async (name: string) => {
+                try {
+                  const mId = await getMemberId();
+                  if (!mId) return;
+                  const newProject = await CallAPIExpense.createProjectAPI(mId, name);
+                  setProjectSuggestions((prev) => [...prev, newProject]);
+                  setProjectId(newProject.id);
+                } catch (e) {
+                  console.error("Failed to create project", e);
+                }
+              }}
+              disabled={!isEditMode}
+              borderColor={theme === "dark" ? "#555" : "#CCC"}
+              textcolor={theme === "dark" ? "#FFF" : "#000"}
+              bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+              otherStyles="mb-1"
             />
 
             {/* Price Valid Section */}

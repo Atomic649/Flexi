@@ -395,6 +395,7 @@ export const ModelName = {
   Expense: 'Expense',
   Platform: 'Platform',
   Product: 'Product',
+  Project: 'Project',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   PlatformToken: 'PlatformToken'
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "member" | "businessAcc" | "customer" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "product" | "chatSession" | "chatMessage" | "platformToken"
+    modelProps: "user" | "member" | "businessAcc" | "customer" | "documentCounter" | "bill" | "productItem" | "adsCost" | "expense" | "platform" | "product" | "project" | "chatSession" | "chatMessage" | "platformToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1231,6 +1232,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Project: {
+      payload: Prisma.$ProjectPayload<ExtArgs>
+      fields: Prisma.ProjectFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        update: {
+          args: Prisma.ProjectUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProject>
+        }
+        groupBy: {
+          args: Prisma.ProjectGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectCountAggregateOutputType> | number
+        }
+      }
+    }
     ChatSession: {
       payload: Prisma.$ChatSessionPayload<ExtArgs>
       fields: Prisma.ChatSessionFieldRefs
@@ -1636,7 +1711,8 @@ export const BillScalarFieldEnum = {
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   platformId: 'platformId',
-  customerId: 'customerId'
+  customerId: 'customerId',
+  projectId: 'projectId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -1680,6 +1756,7 @@ export const ExpenseScalarFieldEnum = {
   amount: 'amount',
   debtAmount: 'debtAmount',
   group: 'group',
+  customGroup: 'customGroup',
   image: 'image',
   pdf: 'pdf',
   invoiceImage: 'invoiceImage',
@@ -1706,7 +1783,8 @@ export const ExpenseScalarFieldEnum = {
   dueDate: 'dueDate',
   billFlexiId: 'billFlexiId',
   businessAcc: 'businessAcc',
-  memberId: 'memberId'
+  memberId: 'memberId',
+  projectId: 'projectId'
 } as const
 
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
@@ -1749,6 +1827,20 @@ export const ProductScalarFieldEnum = {
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deleted: 'deleted',
+  businessAcc: 'businessAcc',
+  memberId: 'memberId'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
 export const ChatSessionScalarFieldEnum = {
@@ -2198,6 +2290,7 @@ export type GlobalOmitConfig = {
   expense?: Prisma.ExpenseOmit
   platform?: Prisma.PlatformOmit
   product?: Prisma.ProductOmit
+  project?: Prisma.ProjectOmit
   chatSession?: Prisma.ChatSessionOmit
   chatMessage?: Prisma.ChatMessageOmit
   platformToken?: Prisma.PlatformTokenOmit

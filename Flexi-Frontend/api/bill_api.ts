@@ -134,6 +134,7 @@ class CallAPIBill {
         withholdingTax?: boolean; // Optional withholding tax
         withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
+        projectId?: number; // Optional project link
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

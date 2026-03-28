@@ -233,12 +233,19 @@ export default function ExpenseDetail({
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
   const [showAllFormField, setShowAllFormField] = useState(
-    !!(expense.desc || expense.sTaxId || expense.taxInvoiceNo || expense.branch)
+    !!(expense.desc || expense.sTaxId || expense.taxInvoiceNo || expense.branch || (expense as any).projectId || (expense as any).customGroup)
   );
   const [dueDate, setDueDate] = useState<Date | null>(
     expense.dueDate ? new Date(expense.dueDate) : null
   );
   const [dueDatePickerVisible, setDueDatePickerVisible] = useState(false);
+  const [projectId, setProjectId] = useState<number | undefined>(
+    (expense as any).projectId ?? undefined
+  );
+  const [projectSuggestions, setProjectSuggestions] = useState<{ id: number; name: string }[]>([]);
+  const [customGroup, setCustomGroup] = useState<string>((expense as any).customGroup ?? "");
+  const [customGroupSuggestions, setCustomGroupSuggestions] = useState<string[]>([]);
+  const [showCustomGroupSuggestions, setShowCustomGroupSuggestions] = useState(false);
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -275,7 +282,9 @@ export default function ExpenseDetail({
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
-        if (fetchedExpense.desc || fetchedExpense.sTaxId || fetchedExpense.taxInvoiceNo || fetchedExpense.branch) {
+        if (fetchedExpense.projectId) setProjectId(fetchedExpense.projectId);
+        setCustomGroup(fetchedExpense.customGroup ?? "");
+        if (fetchedExpense.desc || fetchedExpense.sTaxId || fetchedExpense.taxInvoiceNo || fetchedExpense.branch || fetchedExpense.projectId || fetchedExpense.customGroup) {
           setShowAllFormField(true);
         }
         const resolvedFlexiId = fetchedExpense.flexiId || null;
@@ -320,9 +329,15 @@ export default function ExpenseDetail({
     const fetchBusinessDetails = async () => {
       try {
         const memberId = String(await getMemberId());
-        const data = await CallAPIBusiness.getBusinessDetailsAPI(memberId);
+        const [data, projects, customGroupSugg] = await Promise.all([
+          CallAPIBusiness.getBusinessDetailsAPI(memberId),
+          CallAPIExpense.getProjectSuggestionsAPI(memberId),
+          CallAPIExpense.getCustomGroupSuggestionsAPI(memberId),
+        ]);
         setBusinessDetails(data);
         setBusinessName(data?.businessName || "");
+        setProjectSuggestions(projects);
+        setCustomGroupSuggestions(customGroupSugg);
       } catch (error) {
         console.error("Error fetching business details:", error);
       }
@@ -799,6 +814,8 @@ export default function ExpenseDetail({
       formData.append("sAddress", sAddress);
       formData.append("taxType", taxType);
       formData.append("branch", branch);
+      formData.append("customGroup", customGroup || "");
+      if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
         formData.append("debtAmount", normalizedAmount);
@@ -1005,7 +1022,7 @@ export default function ExpenseDetail({
                     ? 0.2
                     : 0.1,
                 justifyContent: "center",
-                width: isMobile() || isTablet() ? "auto" : "100%",
+                width: showAllFormField ? "100%" : isMobile() || isTablet() ? "auto" : "100%",
                 backgroundColor: theme === "dark" ? "#181818" : "#ffffff",
                 borderRadius: 10,
                 padding: Platform.OS === "web" ? 60 : 0,
@@ -1565,12 +1582,34 @@ export default function ExpenseDetail({
                     },
                   ]}
                   selectedValue={group}
-                  onValueChange={handleGroupChange}
+                  onValueChange={(val: string) => {
+                    handleGroupChange(val);
+                    if (val !== "Others") setCustomGroup("");
+                  }}
                   borderColor={theme === "dark" ? "#555" : "#CCC"}
                   textcolor={theme === "dark" ? "#FFF" : "#000"}
                   bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
-                  otherStyles="mb-1"
+                  otherStyles="mb-3"
                 />
+
+
+                {showAllFormField && (
+                  <DropdownFloat
+                    title={t("expense.detail.customGroup") || "Custom Group"}
+                    placeholder={t("expense.detail.customGroup") || "Custom Group"}
+                    options={customGroupSuggestions.map((s) => ({ label: s, value: s }))}
+                    selectedValue={customGroup}
+                    onValueChange={(val: string) => setCustomGroup(val)}
+                    onAddNew={(newVal: string) => {
+                      setCustomGroupSuggestions((prev) => [...new Set([...prev, newVal])]);
+                      setCustomGroup(newVal);
+                    }}
+                    borderColor={theme === "dark" ? "#555" : "#CCC"}
+                    textcolor={theme === "dark" ? "#FFF" : "#000"}
+                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                    otherStyles="mb-1"
+                  />
+                )}
 
                 <FloatingLabelInput
                   label={t("expense.detail.sName")}
@@ -1711,6 +1750,7 @@ export default function ExpenseDetail({
                       label={t("expense.detail.description")}
                       value={desc}
                       onChangeText={setDesc}
+                      containerStyle={{ flex: 1,  marginBottom: 13 }}
                     />
                   </>
                 )}
@@ -1718,8 +1758,41 @@ export default function ExpenseDetail({
                   label={t("expense.detail.sAddress")}
                   value={sAddress}
                   onChangeText={setSAddress}
-                  containerStyle={{ flex: 1, marginVertical: 2 }}
+                  containerStyle={{ flex: 1, marginVertical: 2 , marginBottom: 12 }}
                 />
+
+                {showAllFormField && (
+                  <DropdownFloat
+                    title="Project"
+                    placeholder="Project"
+                    options={[
+                      { value: "", label: "— None —" },
+                      ...projectSuggestions.map((p) => ({
+                        value: String(p.id),
+                        label: p.name,
+                      })),
+                    ]}
+                    selectedValue={projectId != null ? String(projectId) : ""}
+                    onValueChange={(val: string) =>
+                      setProjectId(val ? Number(val) : undefined)
+                    }
+                    onAddNew={async (name: string) => {
+                      try {
+                        const memberId = await getMemberId();
+                        if (!memberId) return;
+                        const newProject = await CallAPIExpense.createProjectAPI(memberId, name);
+                        setProjectSuggestions((prev) => [...prev, newProject]);
+                        setProjectId(newProject.id);
+                      } catch (e) {
+                        console.error("Failed to create project", e);
+                      }
+                    }}
+                    borderColor={theme === "dark" ? "#555" : "#CCC"}
+                    textcolor={theme === "dark" ? "#FFF" : "#000"}
+                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
+                    otherStyles="mb-1"
+                  />
+                )}
 
                 {error ? (
                   <CustomText

@@ -38,6 +38,7 @@
     "noDataAvailable": "ไม่มีข้อมูล",
     "continue": "ไปต่อ",
     "search": "ค้นหา",
+    "searchAdd": "ค้นหา/เพิ่ม",
     "overRateLimit": "คุณส่งคำขอมากเกินไป กรุณาลองใหม่อีกครั้งในภายหลัง",
     "noData": "ไม่มีข้อมูล"
   },
@@ -912,6 +913,7 @@
       "selectDueDate": "เลือกวันครบกำหนด"
     },
     "detail": {
+      "customGroup": "Tag(กำหนดเอง)",
       "description": "รายละเอียด(ไม่บังคับ)",
       "chooseAttachmentType": "เลือกประเภทไฟล์แนบ",
       "removeAttachment": "ลบไฟล์แนบ",

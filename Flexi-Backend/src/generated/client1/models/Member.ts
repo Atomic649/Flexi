@@ -253,6 +253,7 @@ export type MemberWhereInput = {
   platform?: Prisma.PlatformListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
   platformToken?: Prisma.PlatformTokenListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }
 
 export type MemberOrderByWithRelationInput = {
@@ -273,6 +274,7 @@ export type MemberOrderByWithRelationInput = {
   platform?: Prisma.PlatformOrderByRelationAggregateInput
   chat?: Prisma.ChatSessionOrderByRelationAggregateInput
   platformToken?: Prisma.PlatformTokenOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
 }
 
 export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -296,6 +298,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   platform?: Prisma.PlatformListRelationFilter
   chat?: Prisma.ChatSessionListRelationFilter
   platformToken?: Prisma.PlatformTokenListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }, "uniqueId">
 
 export type MemberOrderByWithAggregationInput = {
@@ -344,6 +347,7 @@ export type MemberCreateInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateInput = {
@@ -362,6 +366,7 @@ export type MemberUncheckedCreateInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUpdateInput = {
@@ -380,6 +385,7 @@ export type MemberUpdateInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateInput = {
@@ -398,6 +404,7 @@ export type MemberUncheckedUpdateInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateManyInput = {
@@ -659,6 +666,20 @@ export type MemberUpdateOneRequiredWithoutProductNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProductInput, Prisma.MemberUpdateWithoutProductInput>, Prisma.MemberUncheckedUpdateWithoutProductInput>
 }
 
+export type MemberCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProjectsInput, Prisma.MemberUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneRequiredWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProjectsInput, Prisma.MemberUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.MemberUpsertWithoutProjectsInput
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProjectsInput, Prisma.MemberUpdateWithoutProjectsInput>, Prisma.MemberUncheckedUpdateWithoutProjectsInput>
+}
+
 export type MemberCreateNestedOneWithoutChatInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutChatInput, Prisma.MemberUncheckedCreateWithoutChatInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutChatInput
@@ -702,6 +723,7 @@ export type MemberCreateWithoutUserInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutUserInput = {
@@ -719,6 +741,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutUserInput = {
@@ -776,6 +799,7 @@ export type MemberCreateWithoutBusinessInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutBusinessInput = {
@@ -793,6 +817,7 @@ export type MemberUncheckedCreateWithoutBusinessInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutBusinessInput = {
@@ -836,6 +861,7 @@ export type MemberCreateWithoutBillInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutBillInput = {
@@ -853,6 +879,7 @@ export type MemberUncheckedCreateWithoutBillInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutBillInput = {
@@ -886,6 +913,7 @@ export type MemberUpdateWithoutBillInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutBillInput = {
@@ -903,6 +931,7 @@ export type MemberUncheckedUpdateWithoutBillInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutAdsCostInput = {
@@ -920,6 +949,7 @@ export type MemberCreateWithoutAdsCostInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutAdsCostInput = {
@@ -937,6 +967,7 @@ export type MemberUncheckedCreateWithoutAdsCostInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutAdsCostInput = {
@@ -970,6 +1001,7 @@ export type MemberUpdateWithoutAdsCostInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutAdsCostInput = {
@@ -987,6 +1019,7 @@ export type MemberUncheckedUpdateWithoutAdsCostInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutExpenseInput = {
@@ -1004,6 +1037,7 @@ export type MemberCreateWithoutExpenseInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutExpenseInput = {
@@ -1021,6 +1055,7 @@ export type MemberUncheckedCreateWithoutExpenseInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutExpenseInput = {
@@ -1054,6 +1089,7 @@ export type MemberUpdateWithoutExpenseInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutExpenseInput = {
@@ -1071,6 +1107,7 @@ export type MemberUncheckedUpdateWithoutExpenseInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutPlatformInput = {
@@ -1088,6 +1125,7 @@ export type MemberCreateWithoutPlatformInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutPlatformInput = {
@@ -1105,6 +1143,7 @@ export type MemberUncheckedCreateWithoutPlatformInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutPlatformInput = {
@@ -1138,6 +1177,7 @@ export type MemberUpdateWithoutPlatformInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutPlatformInput = {
@@ -1155,6 +1195,7 @@ export type MemberUncheckedUpdateWithoutPlatformInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutProductInput = {
@@ -1172,6 +1213,7 @@ export type MemberCreateWithoutProductInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutProductInput = {
@@ -1189,6 +1231,7 @@ export type MemberUncheckedCreateWithoutProductInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutProductInput = {
@@ -1222,6 +1265,7 @@ export type MemberUpdateWithoutProductInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutProductInput = {
@@ -1236,6 +1280,95 @@ export type MemberUncheckedUpdateWithoutProductInput = {
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
   expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
+  chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
+}
+
+export type MemberCreateWithoutProjectsInput = {
+  uniqueId?: string
+  role?: $Enums.UserRole
+  permission: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  user: Prisma.UserCreateNestedOneWithoutMemberInput
+  business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
+  bill?: Prisma.BillCreateNestedManyWithoutMemberInput
+  adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
+  expense?: Prisma.ExpenseCreateNestedManyWithoutMemberInput
+  product?: Prisma.ProductCreateNestedManyWithoutMemberInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
+  chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+}
+
+export type MemberUncheckedCreateWithoutProjectsInput = {
+  uniqueId?: string
+  role?: $Enums.UserRole
+  permission: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deleted?: boolean | null
+  userId: number
+  businessId?: number | null
+  bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
+  adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
+  expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutMemberInput
+  product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
+  chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+}
+
+export type MemberCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProjectsInput, Prisma.MemberUncheckedCreateWithoutProjectsInput>
+}
+
+export type MemberUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutProjectsInput, Prisma.MemberUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProjectsInput, Prisma.MemberUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutProjectsInput, Prisma.MemberUncheckedUpdateWithoutProjectsInput>
+}
+
+export type MemberUpdateWithoutProjectsInput = {
+  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  permission?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
+  business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
+  bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
+  adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
+  expense?: Prisma.ExpenseUpdateManyWithoutMemberNestedInput
+  product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
+  chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutProjectsInput = {
+  uniqueId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  permission?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
+  adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
+  expense?: Prisma.ExpenseUncheckedUpdateManyWithoutMemberNestedInput
+  product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
@@ -1256,6 +1389,7 @@ export type MemberCreateWithoutChatInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   platformToken?: Prisma.PlatformTokenCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutChatInput = {
@@ -1273,6 +1407,7 @@ export type MemberUncheckedCreateWithoutChatInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   platformToken?: Prisma.PlatformTokenUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutChatInput = {
@@ -1306,6 +1441,7 @@ export type MemberUpdateWithoutChatInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutChatInput = {
@@ -1323,6 +1459,7 @@ export type MemberUncheckedUpdateWithoutChatInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateWithoutPlatformTokenInput = {
@@ -1340,6 +1477,7 @@ export type MemberCreateWithoutPlatformTokenInput = {
   product?: Prisma.ProductCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutMemberInput
 }
 
 export type MemberUncheckedCreateWithoutPlatformTokenInput = {
@@ -1357,6 +1495,7 @@ export type MemberUncheckedCreateWithoutPlatformTokenInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutMemberInput
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutMemberInput
   chat?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type MemberCreateOrConnectWithoutPlatformTokenInput = {
@@ -1390,6 +1529,7 @@ export type MemberUpdateWithoutPlatformTokenInput = {
   product?: Prisma.ProductUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutPlatformTokenInput = {
@@ -1407,6 +1547,7 @@ export type MemberUncheckedUpdateWithoutPlatformTokenInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutMemberNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberCreateManyUserInput = {
@@ -1434,6 +1575,7 @@ export type MemberUpdateWithoutUserInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutUserInput = {
@@ -1451,6 +1593,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutUserInput = {
@@ -1488,6 +1631,7 @@ export type MemberUpdateWithoutBusinessInput = {
   platform?: Prisma.PlatformUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutBusinessInput = {
@@ -1505,6 +1649,7 @@ export type MemberUncheckedUpdateWithoutBusinessInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutMemberNestedInput
   chat?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   platformToken?: Prisma.PlatformTokenUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type MemberUncheckedUpdateManyWithoutBusinessInput = {
@@ -1530,6 +1675,7 @@ export type MemberCountOutputType = {
   platform: number
   chat: number
   platformToken: number
+  projects: number
 }
 
 export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1540,6 +1686,7 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   platform?: boolean | MemberCountOutputTypeCountPlatformArgs
   chat?: boolean | MemberCountOutputTypeCountChatArgs
   platformToken?: boolean | MemberCountOutputTypeCountPlatformTokenArgs
+  projects?: boolean | MemberCountOutputTypeCountProjectsArgs
 }
 
 /**
@@ -1601,6 +1748,13 @@ export type MemberCountOutputTypeCountPlatformTokenArgs<ExtArgs extends runtime.
   where?: Prisma.PlatformTokenWhereInput
 }
 
+/**
+ * MemberCountOutputType without action
+ */
+export type MemberCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
 
 export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   uniqueId?: boolean
@@ -1620,6 +1774,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
   platformToken?: boolean | Prisma.Member$platformTokenArgs<ExtArgs>
+  projects?: boolean | Prisma.Member$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
 
@@ -1671,6 +1826,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   platform?: boolean | Prisma.Member$platformArgs<ExtArgs>
   chat?: boolean | Prisma.Member$chatArgs<ExtArgs>
   platformToken?: boolean | Prisma.Member$platformTokenArgs<ExtArgs>
+  projects?: boolean | Prisma.Member$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1694,6 +1850,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     platform: Prisma.$PlatformPayload<ExtArgs>[]
     chat: Prisma.$ChatSessionPayload<ExtArgs>[]
     platformToken: Prisma.$PlatformTokenPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     uniqueId: string
@@ -2107,6 +2264,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   platform<T extends Prisma.Member$platformArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$platformArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chat<T extends Prisma.Member$chatArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$chatArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   platformToken<T extends Prisma.Member$platformTokenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$platformTokenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.Member$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2724,6 +2882,30 @@ export type Member$platformTokenArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.PlatformTokenScalarFieldEnum | Prisma.PlatformTokenScalarFieldEnum[]
+}
+
+/**
+ * Member.projects
+ */
+export type Member$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
 }
 
 /**

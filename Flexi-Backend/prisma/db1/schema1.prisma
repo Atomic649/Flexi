@@ -237,6 +237,7 @@ model Member {
   platform      Platform[]
   chat          ChatSession[]
   platformToken PlatformToken[]
+  projects      Project[]
 
   @@schema("flexidb")
 }
@@ -269,6 +270,7 @@ model BusinessAcc {
   product          Product[]
   documentCounters DocumentCounter[]
   customers        Customer[]
+  projects         Project[]
 
   @@schema("flexidb")
 }
@@ -365,7 +367,7 @@ model Bill {
   remark               String?
   platform             SocialMedia
 
-  // Relation   
+  // Relation
   memberId     String
   member       Member      @relation(fields: [memberId], references: [uniqueId])
   businessAcc  Int
@@ -375,6 +377,8 @@ model Bill {
   expense      Expense?    @relation("BillToExpense")
   customerId   Int?
   customer     Customer?   @relation(fields: [customerId], references: [id])
+  projectId    Int?
+  project      Project?    @relation(fields: [projectId], references: [id])
 
   @@schema("flexidb")
 }
@@ -425,6 +429,7 @@ model Expense {
   amount         Decimal
   debtAmount     Decimal?       @default(0)
   group          ExpenseGroup?
+  customGroup    String?
   image          String?
   pdf            String?
   invoiceImage   String?
@@ -457,6 +462,8 @@ model Expense {
   businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
   memberId    String
   member      Member      @relation(fields: [memberId], references: [uniqueId])
+  projectId   Int?
+  project     Project?    @relation(fields: [projectId], references: [id])
 
   @@schema("flexidb")
 }
@@ -506,6 +513,25 @@ model Product {
   member      Member        @relation(fields: [memberId], references: [uniqueId])
   businessAcc Int
   businessId  BusinessAcc   @relation(fields: [businessAcc], references: [id])
+
+  @@schema("flexidb")
+}
+
+model Project {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deleted     Boolean?    @default(false)
+
+  // Relation
+  businessAcc Int
+  businessId  BusinessAcc @relation(fields: [businessAcc], references: [id])
+  memberId    String
+  member      Member      @relation(fields: [memberId], references: [uniqueId])
+  bills       Bill[]
+  expenses    Expense[]
 
   @@schema("flexidb")
 }

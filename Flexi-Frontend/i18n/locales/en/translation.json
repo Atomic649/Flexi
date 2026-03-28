@@ -38,6 +38,7 @@
     "noDataAvailable": "No data available",
     "continue": "Continue",
     "search": "Search",
+     "searchAdd": "Search/Add",
     "saving": "Auto-saving...",
     "back": "Back",
     "noData": "No data",
@@ -912,6 +913,7 @@
       "selectDueDate": "Select due date"
     },
     "detail": {
+      "customGroup": "Tag",
       "description": "Description (optional)",
       "chooseAttachmentType": "Choose Attachment Type",
       "removeAttachment": "Remove Attachment",

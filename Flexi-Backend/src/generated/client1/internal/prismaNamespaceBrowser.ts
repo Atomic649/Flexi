@@ -62,6 +62,7 @@ export const ModelName = {
   Expense: 'Expense',
   Platform: 'Platform',
   Product: 'Product',
+  Project: 'Project',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   PlatformToken: 'PlatformToken'
@@ -227,7 +228,8 @@ export const BillScalarFieldEnum = {
   memberId: 'memberId',
   businessAcc: 'businessAcc',
   platformId: 'platformId',
-  customerId: 'customerId'
+  customerId: 'customerId',
+  projectId: 'projectId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -271,6 +273,7 @@ export const ExpenseScalarFieldEnum = {
   amount: 'amount',
   debtAmount: 'debtAmount',
   group: 'group',
+  customGroup: 'customGroup',
   image: 'image',
   pdf: 'pdf',
   invoiceImage: 'invoiceImage',
@@ -297,7 +300,8 @@ export const ExpenseScalarFieldEnum = {
   dueDate: 'dueDate',
   billFlexiId: 'billFlexiId',
   businessAcc: 'businessAcc',
-  memberId: 'memberId'
+  memberId: 'memberId',
+  projectId: 'projectId'
 } as const
 
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
@@ -340,6 +344,20 @@ export const ProductScalarFieldEnum = {
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deleted: 'deleted',
+  businessAcc: 'businessAcc',
+  memberId: 'memberId'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
 export const ChatSessionScalarFieldEnum = {

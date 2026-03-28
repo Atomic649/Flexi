@@ -215,6 +215,7 @@ interface billInput {
   withholdingPercent?: number;
   WHTAmount?: number;
   updateCustomer?: boolean; // Flag to update customer details
+  projectId?: number; // Optional project link
 }
 
 // Validate the request body
@@ -275,6 +276,7 @@ const schema = Joi.object({
   paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
   remark: Joi.string().allow("").optional(), // Optional remark
   taxType: Joi.string().valid("Juristic", "Individual").optional(), // Optional tax type
+  projectId: Joi.number().optional(), // Optional project link
 });
 
 //Create a New Bill - Post
@@ -530,6 +532,7 @@ const createBill = async (req: Request, res: Response) => {
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
                 taxType: billInput.taxType || "Individual",
+                ...(billInput.projectId != null && { projectId: billInput.projectId }),
               };
 
               if (contractValidUntil) {
@@ -617,6 +620,7 @@ const createBill = async (req: Request, res: Response) => {
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
             taxType: billInput.taxType || "Individual",
+            ...(billInput.projectId != null && { projectId: billInput.projectId }),
           };
 
           const singleValidUntil = calculateValidContactUntil(
@@ -1112,6 +1116,7 @@ const updateBill = async (req: Request, res: Response) => {
           WHTpercent: billInput.withholdingPercent ?? 0,
           WHTAmount: billInput.WHTAmount ?? 0,
           validContactUntil: validContactUntil,
+          ...(billInput.projectId != null && { projectId: billInput.projectId }),
         };
 
         if (customerIdFromDb !== null) {

@@ -41,6 +41,7 @@ Table Member {
   platform Platform [not null]
   chat ChatSession [not null]
   platformToken PlatformToken [not null]
+  projects Project [not null]
 }
 
 Table BusinessAcc {
@@ -71,6 +72,7 @@ Table BusinessAcc {
   product Product [not null]
   documentCounters DocumentCounter [not null]
   customers Customer [not null]
+  projects Project [not null]
 }
 
 Table Customer {
@@ -169,6 +171,8 @@ Table Bill {
   expense Expense
   customerId Int
   customer Customer
+  projectId Int
+  project Project
 }
 
 Table ProductItem {
@@ -209,6 +213,7 @@ Table Expense {
   amount Decimal [not null]
   debtAmount Decimal [default: 0]
   group ExpenseGroup
+  customGroup String
   image String
   pdf String
   invoiceImage String
@@ -239,6 +244,8 @@ Table Expense {
   businessId BusinessAcc [not null]
   memberId String [not null]
   member Member [not null]
+  projectId Int
+  project Project
 }
 
 Table Platform {
@@ -282,6 +289,21 @@ Table Product {
   member Member [not null]
   businessAcc Int [not null]
   businessId BusinessAcc [not null]
+}
+
+Table Project {
+  id Int [pk, increment]
+  name String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [default: false]
+  businessAcc Int [not null]
+  businessId BusinessAcc [not null]
+  memberId String [not null]
+  member Member [not null]
+  bills Bill [not null]
+  expenses Expense [not null]
 }
 
 Table ChatSession {
@@ -485,6 +507,8 @@ Ref: Bill.platformId > Platform.id
 
 Ref: Bill.customerId > Customer.id
 
+Ref: Bill.projectId > Project.id
+
 Ref: ProductItem.billId > Bill.id
 
 Ref: ProductItem.product > Product.id
@@ -503,6 +527,8 @@ Ref: Expense.businessAcc > BusinessAcc.id
 
 Ref: Expense.memberId > Member.uniqueId
 
+Ref: Expense.projectId > Project.id
+
 Ref: Platform.productId > Product.id
 
 Ref: Platform.businessAcc > BusinessAcc.id
@@ -512,6 +538,10 @@ Ref: Platform.memberId > Member.uniqueId
 Ref: Product.memberId > Member.uniqueId
 
 Ref: Product.businessAcc > BusinessAcc.id
+
+Ref: Project.businessAcc > BusinessAcc.id
+
+Ref: Project.memberId > Member.uniqueId
 
 Ref: ChatSession.userId > Member.uniqueId
 

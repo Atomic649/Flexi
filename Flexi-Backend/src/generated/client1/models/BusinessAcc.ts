@@ -325,6 +325,7 @@ export type BusinessAccWhereInput = {
   product?: Prisma.ProductListRelationFilter
   documentCounters?: Prisma.DocumentCounterListRelationFilter
   customers?: Prisma.CustomerListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }
 
 export type BusinessAccOrderByWithRelationInput = {
@@ -355,6 +356,7 @@ export type BusinessAccOrderByWithRelationInput = {
   product?: Prisma.ProductOrderByRelationAggregateInput
   documentCounters?: Prisma.DocumentCounterOrderByRelationAggregateInput
   customers?: Prisma.CustomerOrderByRelationAggregateInput
+  projects?: Prisma.ProjectOrderByRelationAggregateInput
 }
 
 export type BusinessAccWhereUniqueInput = Prisma.AtLeast<{
@@ -388,6 +390,7 @@ export type BusinessAccWhereUniqueInput = Prisma.AtLeast<{
   product?: Prisma.ProductListRelationFilter
   documentCounters?: Prisma.DocumentCounterListRelationFilter
   customers?: Prisma.CustomerListRelationFilter
+  projects?: Prisma.ProjectListRelationFilter
 }, "id" | "businessName" | "businessUserName" | "taxId">
 
 export type BusinessAccOrderByWithAggregationInput = {
@@ -466,6 +469,7 @@ export type BusinessAccCreateInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateInput = {
@@ -495,6 +499,7 @@ export type BusinessAccUncheckedCreateInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUpdateInput = {
@@ -523,6 +528,7 @@ export type BusinessAccUpdateInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateInput = {
@@ -552,6 +558,7 @@ export type BusinessAccUncheckedUpdateInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateManyInput = {
@@ -902,6 +909,20 @@ export type BusinessAccUpdateOneRequiredWithoutProductNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BusinessAccUpdateToOneWithWhereWithoutProductInput, Prisma.BusinessAccUpdateWithoutProductInput>, Prisma.BusinessAccUncheckedUpdateWithoutProductInput>
 }
 
+export type BusinessAccCreateNestedOneWithoutProjectsInput = {
+  create?: Prisma.XOR<Prisma.BusinessAccCreateWithoutProjectsInput, Prisma.BusinessAccUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.BusinessAccCreateOrConnectWithoutProjectsInput
+  connect?: Prisma.BusinessAccWhereUniqueInput
+}
+
+export type BusinessAccUpdateOneRequiredWithoutProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.BusinessAccCreateWithoutProjectsInput, Prisma.BusinessAccUncheckedCreateWithoutProjectsInput>
+  connectOrCreate?: Prisma.BusinessAccCreateOrConnectWithoutProjectsInput
+  upsert?: Prisma.BusinessAccUpsertWithoutProjectsInput
+  connect?: Prisma.BusinessAccWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BusinessAccUpdateToOneWithWhereWithoutProjectsInput, Prisma.BusinessAccUpdateWithoutProjectsInput>, Prisma.BusinessAccUncheckedUpdateWithoutProjectsInput>
+}
+
 export type BusinessAccCreateWithoutUserInput = {
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -927,6 +948,7 @@ export type BusinessAccCreateWithoutUserInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutUserInput = {
@@ -955,6 +977,7 @@ export type BusinessAccUncheckedCreateWithoutUserInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutUserInput = {
@@ -1032,6 +1055,7 @@ export type BusinessAccCreateWithoutAllMemberInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutAllMemberInput = {
@@ -1060,6 +1084,7 @@ export type BusinessAccUncheckedCreateWithoutAllMemberInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutAllMemberInput = {
@@ -1103,6 +1128,7 @@ export type BusinessAccUpdateWithoutAllMemberInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutAllMemberInput = {
@@ -1131,6 +1157,7 @@ export type BusinessAccUncheckedUpdateWithoutAllMemberInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutCustomersInput = {
@@ -1158,6 +1185,7 @@ export type BusinessAccCreateWithoutCustomersInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutBusinessIdInput
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutCustomersInput = {
@@ -1186,6 +1214,7 @@ export type BusinessAccUncheckedCreateWithoutCustomersInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutCustomersInput = {
@@ -1229,6 +1258,7 @@ export type BusinessAccUpdateWithoutCustomersInput = {
   platform?: Prisma.PlatformUpdateManyWithoutBusinessIdNestedInput
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutCustomersInput = {
@@ -1257,6 +1287,7 @@ export type BusinessAccUncheckedUpdateWithoutCustomersInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutDocumentCountersInput = {
@@ -1284,6 +1315,7 @@ export type BusinessAccCreateWithoutDocumentCountersInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutBusinessIdInput
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutDocumentCountersInput = {
@@ -1312,6 +1344,7 @@ export type BusinessAccUncheckedCreateWithoutDocumentCountersInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutDocumentCountersInput = {
@@ -1355,6 +1388,7 @@ export type BusinessAccUpdateWithoutDocumentCountersInput = {
   platform?: Prisma.PlatformUpdateManyWithoutBusinessIdNestedInput
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutDocumentCountersInput = {
@@ -1383,6 +1417,7 @@ export type BusinessAccUncheckedUpdateWithoutDocumentCountersInput = {
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutBillRecordInput = {
@@ -1410,6 +1445,7 @@ export type BusinessAccCreateWithoutBillRecordInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutBillRecordInput = {
@@ -1438,6 +1474,7 @@ export type BusinessAccUncheckedCreateWithoutBillRecordInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutBillRecordInput = {
@@ -1481,6 +1518,7 @@ export type BusinessAccUpdateWithoutBillRecordInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutBillRecordInput = {
@@ -1509,6 +1547,7 @@ export type BusinessAccUncheckedUpdateWithoutBillRecordInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutAdsCostRecordInput = {
@@ -1536,6 +1575,7 @@ export type BusinessAccCreateWithoutAdsCostRecordInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutAdsCostRecordInput = {
@@ -1564,6 +1604,7 @@ export type BusinessAccUncheckedCreateWithoutAdsCostRecordInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutAdsCostRecordInput = {
@@ -1607,6 +1648,7 @@ export type BusinessAccUpdateWithoutAdsCostRecordInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutAdsCostRecordInput = {
@@ -1635,6 +1677,7 @@ export type BusinessAccUncheckedUpdateWithoutAdsCostRecordInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutExpenseRecordInput = {
@@ -1662,6 +1705,7 @@ export type BusinessAccCreateWithoutExpenseRecordInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutExpenseRecordInput = {
@@ -1690,6 +1734,7 @@ export type BusinessAccUncheckedCreateWithoutExpenseRecordInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutExpenseRecordInput = {
@@ -1733,6 +1778,7 @@ export type BusinessAccUpdateWithoutExpenseRecordInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutExpenseRecordInput = {
@@ -1761,6 +1807,7 @@ export type BusinessAccUncheckedUpdateWithoutExpenseRecordInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutPlatformInput = {
@@ -1788,6 +1835,7 @@ export type BusinessAccCreateWithoutPlatformInput = {
   product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutPlatformInput = {
@@ -1816,6 +1864,7 @@ export type BusinessAccUncheckedCreateWithoutPlatformInput = {
   product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutPlatformInput = {
@@ -1859,6 +1908,7 @@ export type BusinessAccUpdateWithoutPlatformInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutPlatformInput = {
@@ -1887,6 +1937,7 @@ export type BusinessAccUncheckedUpdateWithoutPlatformInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccCreateWithoutProductInput = {
@@ -1914,6 +1965,7 @@ export type BusinessAccCreateWithoutProductInput = {
   platform?: Prisma.PlatformCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccUncheckedCreateWithoutProductInput = {
@@ -1942,6 +1994,7 @@ export type BusinessAccUncheckedCreateWithoutProductInput = {
   platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
   documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutBusinessIdInput
 }
 
 export type BusinessAccCreateOrConnectWithoutProductInput = {
@@ -1985,6 +2038,7 @@ export type BusinessAccUpdateWithoutProductInput = {
   platform?: Prisma.PlatformUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutProductInput = {
@@ -2011,6 +2065,137 @@ export type BusinessAccUncheckedUpdateWithoutProductInput = {
   expenseRecord?: Prisma.ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
   adsCostRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
   platform?: Prisma.PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
+  documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
+}
+
+export type BusinessAccCreateWithoutProjectsInput = {
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  businessName: string
+  businessUserName?: string | null
+  businessAvatar?: string | null
+  businessAddress?: string | null
+  businessWebsite?: string | null
+  businessPhone?: string | null
+  vat?: boolean | null
+  taxId: string
+  businessType?: $Enums.BusinessType
+  taxType?: $Enums.taxType
+  logo?: string | null
+  businessColor?: string | null
+  memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
+  DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
+  user: Prisma.UserCreateNestedOneWithoutBusinessInput
+  AllMember?: Prisma.MemberCreateNestedManyWithoutBusinessInput
+  billRecord?: Prisma.BillCreateNestedManyWithoutBusinessIdInput
+  expenseRecord?: Prisma.ExpenseCreateNestedManyWithoutBusinessIdInput
+  adsCostRecord?: Prisma.AdsCostCreateNestedManyWithoutBusinessIdInput
+  platform?: Prisma.PlatformCreateNestedManyWithoutBusinessIdInput
+  product?: Prisma.ProductCreateNestedManyWithoutBusinessIdInput
+  documentCounters?: Prisma.DocumentCounterCreateNestedManyWithoutBusinessInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutBusinessIdInput
+}
+
+export type BusinessAccUncheckedCreateWithoutProjectsInput = {
+  id?: number
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  businessName: string
+  businessUserName?: string | null
+  businessAvatar?: string | null
+  businessAddress?: string | null
+  businessWebsite?: string | null
+  businessPhone?: string | null
+  vat?: boolean | null
+  taxId: string
+  businessType?: $Enums.BusinessType
+  taxType?: $Enums.taxType
+  userId: number
+  logo?: string | null
+  businessColor?: string | null
+  memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
+  DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
+  AllMember?: Prisma.MemberUncheckedCreateNestedManyWithoutBusinessInput
+  billRecord?: Prisma.BillUncheckedCreateNestedManyWithoutBusinessIdInput
+  expenseRecord?: Prisma.ExpenseUncheckedCreateNestedManyWithoutBusinessIdInput
+  adsCostRecord?: Prisma.AdsCostUncheckedCreateNestedManyWithoutBusinessIdInput
+  platform?: Prisma.PlatformUncheckedCreateNestedManyWithoutBusinessIdInput
+  product?: Prisma.ProductUncheckedCreateNestedManyWithoutBusinessIdInput
+  documentCounters?: Prisma.DocumentCounterUncheckedCreateNestedManyWithoutBusinessInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBusinessIdInput
+}
+
+export type BusinessAccCreateOrConnectWithoutProjectsInput = {
+  where: Prisma.BusinessAccWhereUniqueInput
+  create: Prisma.XOR<Prisma.BusinessAccCreateWithoutProjectsInput, Prisma.BusinessAccUncheckedCreateWithoutProjectsInput>
+}
+
+export type BusinessAccUpsertWithoutProjectsInput = {
+  update: Prisma.XOR<Prisma.BusinessAccUpdateWithoutProjectsInput, Prisma.BusinessAccUncheckedUpdateWithoutProjectsInput>
+  create: Prisma.XOR<Prisma.BusinessAccCreateWithoutProjectsInput, Prisma.BusinessAccUncheckedCreateWithoutProjectsInput>
+  where?: Prisma.BusinessAccWhereInput
+}
+
+export type BusinessAccUpdateToOneWithWhereWithoutProjectsInput = {
+  where?: Prisma.BusinessAccWhereInput
+  data: Prisma.XOR<Prisma.BusinessAccUpdateWithoutProjectsInput, Prisma.BusinessAccUncheckedUpdateWithoutProjectsInput>
+}
+
+export type BusinessAccUpdateWithoutProjectsInput = {
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  businessUserName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessAvatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vat?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  taxId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
+  DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
+  user?: Prisma.UserUpdateOneRequiredWithoutBusinessNestedInput
+  AllMember?: Prisma.MemberUpdateManyWithoutBusinessNestedInput
+  billRecord?: Prisma.BillUpdateManyWithoutBusinessIdNestedInput
+  expenseRecord?: Prisma.ExpenseUpdateManyWithoutBusinessIdNestedInput
+  adsCostRecord?: Prisma.AdsCostUpdateManyWithoutBusinessIdNestedInput
+  platform?: Prisma.PlatformUpdateManyWithoutBusinessIdNestedInput
+  product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
+  documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+}
+
+export type BusinessAccUncheckedUpdateWithoutProjectsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  businessUserName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessAvatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vat?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  taxId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
+  DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
+  AllMember?: Prisma.MemberUncheckedUpdateManyWithoutBusinessNestedInput
+  billRecord?: Prisma.BillUncheckedUpdateManyWithoutBusinessIdNestedInput
+  expenseRecord?: Prisma.ExpenseUncheckedUpdateManyWithoutBusinessIdNestedInput
+  adsCostRecord?: Prisma.AdsCostUncheckedUpdateManyWithoutBusinessIdNestedInput
+  platform?: Prisma.PlatformUncheckedUpdateManyWithoutBusinessIdNestedInput
+  product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
@@ -2060,6 +2245,7 @@ export type BusinessAccUpdateWithoutUserInput = {
   product?: Prisma.ProductUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateWithoutUserInput = {
@@ -2088,6 +2274,7 @@ export type BusinessAccUncheckedUpdateWithoutUserInput = {
   product?: Prisma.ProductUncheckedUpdateManyWithoutBusinessIdNestedInput
   documentCounters?: Prisma.DocumentCounterUncheckedUpdateManyWithoutBusinessNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBusinessIdNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutBusinessIdNestedInput
 }
 
 export type BusinessAccUncheckedUpdateManyWithoutUserInput = {
@@ -2124,6 +2311,7 @@ export type BusinessAccCountOutputType = {
   product: number
   documentCounters: number
   customers: number
+  projects: number
 }
 
 export type BusinessAccCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2135,6 +2323,7 @@ export type BusinessAccCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   product?: boolean | BusinessAccCountOutputTypeCountProductArgs
   documentCounters?: boolean | BusinessAccCountOutputTypeCountDocumentCountersArgs
   customers?: boolean | BusinessAccCountOutputTypeCountCustomersArgs
+  projects?: boolean | BusinessAccCountOutputTypeCountProjectsArgs
 }
 
 /**
@@ -2203,6 +2392,13 @@ export type BusinessAccCountOutputTypeCountCustomersArgs<ExtArgs extends runtime
   where?: Prisma.CustomerWhereInput
 }
 
+/**
+ * BusinessAccCountOutputType without action
+ */
+export type BusinessAccCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectWhereInput
+}
+
 
 export type BusinessAccSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2232,6 +2428,7 @@ export type BusinessAccSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   product?: boolean | Prisma.BusinessAcc$productArgs<ExtArgs>
   documentCounters?: boolean | Prisma.BusinessAcc$documentCountersArgs<ExtArgs>
   customers?: boolean | Prisma.BusinessAcc$customersArgs<ExtArgs>
+  projects?: boolean | Prisma.BusinessAcc$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessAccCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["businessAcc"]>
 
@@ -2311,6 +2508,7 @@ export type BusinessAccInclude<ExtArgs extends runtime.Types.Extensions.Internal
   product?: boolean | Prisma.BusinessAcc$productArgs<ExtArgs>
   documentCounters?: boolean | Prisma.BusinessAcc$documentCountersArgs<ExtArgs>
   customers?: boolean | Prisma.BusinessAcc$customersArgs<ExtArgs>
+  projects?: boolean | Prisma.BusinessAcc$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessAccCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BusinessAccIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2332,6 +2530,7 @@ export type $BusinessAccPayload<ExtArgs extends runtime.Types.Extensions.Interna
     product: Prisma.$ProductPayload<ExtArgs>[]
     documentCounters: Prisma.$DocumentCounterPayload<ExtArgs>[]
     customers: Prisma.$CustomerPayload<ExtArgs>[]
+    projects: Prisma.$ProjectPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -2755,6 +2954,7 @@ export interface Prisma__BusinessAccClient<T, Null = never, ExtArgs extends runt
   product<T extends Prisma.BusinessAcc$productArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAcc$productArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   documentCounters<T extends Prisma.BusinessAcc$documentCountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAcc$documentCountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentCounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customers<T extends Prisma.BusinessAcc$customersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAcc$customersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.BusinessAcc$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessAcc$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3387,6 +3587,30 @@ export type BusinessAcc$customersArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.CustomerScalarFieldEnum | Prisma.CustomerScalarFieldEnum[]
+}
+
+/**
+ * BusinessAcc.projects
+ */
+export type BusinessAcc$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Project
+   */
+  select?: Prisma.ProjectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Project
+   */
+  omit?: Prisma.ProjectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectInclude<ExtArgs> | null
+  where?: Prisma.ProjectWhereInput
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectScalarFieldEnum | Prisma.ProjectScalarFieldEnum[]
 }
 
 /**

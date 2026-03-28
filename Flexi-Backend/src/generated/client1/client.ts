@@ -93,6 +93,11 @@ export type Platform = Prisma.PlatformModel
  */
 export type Product = Prisma.ProductModel
 /**
+ * Model Project
+ * 
+ */
+export type Project = Prisma.ProjectModel
+/**
  * Model ChatSession
  * 
  */

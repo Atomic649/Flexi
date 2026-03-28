@@ -178,6 +178,8 @@ interface Expense {
   DocumentType?: DocumentType;
   debtAmount?: number;
   dueDate?: Date;
+  projectId?: number;
+  customGroup?: string;
 }
 
 // Validate the request body
@@ -241,6 +243,8 @@ const schema = Joi.object({
   debtAmount: Joi.number().optional(),
   dueDate: Joi.date().optional(),
   flexiId: Joi.string().optional().allow("", null),
+  projectId: Joi.number().optional(),
+  customGroup: Joi.string().optional().allow(""),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -415,6 +419,8 @@ const createExpense = async (req: Request, res: Response) => {
           DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
           debtAmount: expenseInput.debtAmount ?? 0,
           dueDate: expenseInput.dueDate ?? null,
+          customGroup: expenseInput.customGroup ?? "",
+          ...(expenseInput.projectId != null && { projectId: Number(expenseInput.projectId) }),
         },
       });
       res.json(expense);
@@ -990,6 +996,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           debtAmount: Joi.number().optional(),
           dueDate: Joi.date().optional(),
           flexiId: Joi.string().optional().allow("", null),
+          customGroup: Joi.string().optional().allow(""),
         })
       : // When no image, use original strict validation
         schema;
@@ -1114,6 +1121,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
             debtAmount: expenseInput.debtAmount ?? 0,
             dueDate: expenseInput.dueDate ?? null,
+            customGroup: expenseInput.customGroup ?? "",
           },
         });
         console.log("✅ Successfully updated expense with OCR data");
@@ -1150,6 +1158,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
             DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
             debtAmount: expenseInput.debtAmount ?? 0,
             dueDate: expenseInput.dueDate ?? null,
+            customGroup: expenseInput.customGroup ?? "",
           },
         });
       }
@@ -1293,6 +1302,8 @@ const getExpenseById = async (req: Request, res: Response) => {
         invoiceImage: true,
         invoicePdf: true,
         flexiId: true,
+        customGroup: true,
+        projectId: true,
       },
     });
     res.json(expense);
@@ -1501,6 +1512,8 @@ const updateExpenseById = async (req: Request, res: Response) => {
           DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
           debtAmount: expenseInput.debtAmount ?? 0,
           dueDate: expenseInput.dueDate ?? null,
+          customGroup: expenseInput.customGroup ?? "",
+          ...(expenseInput.projectId != null && { projectId: Number(expenseInput.projectId) }),
         },
       });
       res.json(expense);
@@ -2129,6 +2142,97 @@ const getExpenseNoteSuggestions = async (req: Request, res: Response) => {
   }
 };
 
+// Create a new project for a business
+const createProject = async (req: Request, res: Response) => {
+  const { memberId, name } = req.body;
+  if (!memberId || !name?.trim()) {
+    return res.status(400).json({ message: "memberId and name are required" });
+  }
+  try {
+    const member = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+    const businessId = member?.businessId;
+    if (!businessId) return res.status(404).json({ message: "Business not found" });
+
+    const project = await prisma.project.create({
+      data: { name: name.trim(), businessAcc: businessId, memberId },
+      select: { id: true, name: true },
+    });
+    res.json(project);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to create project" });
+  }
+};
+
+// Get customGroup suggestions sorted by most-used
+const getCustomGroupSuggestions = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  try {
+    const member = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+    const businessId = member?.businessId ?? 0;
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: businessId,
+        save: true,
+        customGroup: { not: "" },
+      },
+      select: { customGroup: true },
+    });
+
+    const countMap: Record<string, number> = {};
+    for (const e of expenses) {
+      if (e.customGroup) countMap[e.customGroup] = (countMap[e.customGroup] ?? 0) + 1;
+    }
+
+    const suggestions = Object.entries(countMap)
+      .sort((a, b) => b[1] - a[1])
+      .map(([value]) => value);
+
+    res.json({ suggestions });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to get custom group suggestions" });
+  }
+};
+
+// Get projects for a business sorted by most-used in expenses
+const getProjectSuggestions = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  try {
+    const member = await prisma.member.findUnique({
+      where: { uniqueId: memberId },
+      select: { businessId: true },
+    });
+    const businessId = member?.businessId ?? 0;
+
+    const projects = await prisma.project.findMany({
+      where: { businessAcc: businessId, deleted: false },
+      select: {
+        id: true,
+        name: true,
+        _count: { select: { expenses: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const sorted = projects
+      .sort((a, b) => b._count.expenses - a._count.expenses)
+      .map(({ id, name }) => ({ id, name }));
+
+    res.json({ projects: sorted });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to get project suggestions" });
+  }
+};
+
 export {
   createExpense,
   createExpenseWithOCR,
@@ -2143,6 +2247,9 @@ export {
   generateWHTDocument,
   updateExpenseWithOCRData,
   getExpenseNoteSuggestions,
+  getCustomGroupSuggestions,
+  getProjectSuggestions,
+  createProject,
 };
 
 

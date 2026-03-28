@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   View,
   TouchableOpacity,
   ScrollView,
   Platform,
+  Keyboard,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "../CustomText";
@@ -24,13 +26,30 @@ const Dropdown = ({
   bgChoiceColor,
   textcolor,
   disabled = false,
+  onAddNew,
   ...props
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [openUpward, setOpenUpward] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const containerRef = useRef<View>(null);
   const { theme } = useTheme();
   const webScrollStyle =
     Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   // Find selected label for display (fallback to selectedValue if check fails)
   const selectedLabel = Array.isArray(options)
@@ -68,6 +87,14 @@ const Dropdown = ({
         closeSelf();
         clearDropdown(closeSelf);
       } else {
+        // Measure position to decide open direction
+        if (containerRef.current) {
+          containerRef.current.measure((_x, _y, _width, height, _pageX, pageY) => {
+            const screenHeight = Dimensions.get("window").height;
+            const spaceBelow = screenHeight - keyboardHeight - (pageY + height);
+            setOpenUpward(spaceBelow < 280);
+          });
+        }
         openDropdown(closeSelf);
         setIsOpen(true);
       }
@@ -76,6 +103,7 @@ const Dropdown = ({
 
   return (
     <View
+      ref={containerRef}
       className={`mt-1 w-full ${otherStyles} relative`}
       style={{ position: "relative", zIndex: isOpen ? 2000 : 1 }}
     >
@@ -136,7 +164,7 @@ const Dropdown = ({
         <View
           style={{
             position: "absolute",
-            top: 52, // Height (50) + gap (2)
+            ...(openUpward ? { bottom: 52 } : { top: 52 }),
             left: 0,
             right: 0,
             maxHeight: 260,
@@ -148,12 +176,12 @@ const Dropdown = ({
             zIndex: 2000,
             elevation: 5,
             shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
+            shadowOffset: { width: 0, height: openUpward ? -2 : 2 },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
           }}
         >
-          {options && options.length >= 4 && (
+          {(options && options.length >= 4 || onAddNew) && (
           <View style={{ padding: 10 }}>
             <View
               style={{
@@ -173,7 +201,7 @@ const Dropdown = ({
               <CustomTextInput
                 value={searchText}
                 onChangeText={setSearchText}
-                placeholder={t("common.search")}
+                placeholder={onAddNew ? t("common.searchAdd") : t("common.search")}
                 placeholderTextColor={theme === "dark" ? "#71717a" : "#a1a1aa"}
                 style={{
                   flex: 1,
@@ -213,7 +241,7 @@ const Dropdown = ({
               filteredOptions.map((item: any, index: number) => {
                 const isSelected =
                   item.label === selectedValue || item.value === selectedValue;
-                const itemTextColor = theme === "dark" ? "#e4e4e7" : "#18181b"; // zinc-200 : zinc-900
+                const itemTextColor = theme === "dark" ? "#e4e4e7" : "#18181b";
 
                 return (
                   <TouchableOpacity
@@ -254,12 +282,41 @@ const Dropdown = ({
                   className="font-pmedium text-sm text-center"
                   style={{ color: theme === "dark" ? "#a1a1aa" : "#71717a" }}
                 >
-                  {Array.isArray(options) && options.length > 0
-                    ? t("common.noOptions")
-                    : t("common.noOptions")}
+                  {t("common.noOptions")}
                 </CustomText>
               </View>
             )}
+            {onAddNew && searchText.trim().length > 0 &&
+              !filteredOptions.some(
+                (o: any) => o.label.toLowerCase() === searchText.trim().toLowerCase(),
+              ) && (
+                <TouchableOpacity
+                  className="w-full py-3 px-4 flex flex-row items-center"
+                  style={{
+                    borderTopWidth: 0.5,
+                    borderTopColor: theme === "dark" ? "#3f3f46" : "#e4e4e7",
+                    gap: 8,
+                  }}
+                  onPress={() => {
+                    onAddNew(searchText.trim());
+                    closeSelf();
+                    clearDropdown(closeSelf);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={18}
+                    color={theme === "dark" ? "#60a5fa" : "#3b82f6"}
+                  />
+                  <CustomText
+                    className="font-pmedium text-base"
+                    style={{ color: theme === "dark" ? "#60a5fa" : "#3b82f6" }}
+                  >
+                    {`Add "${searchText.trim()}"`}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
           </ScrollView>
         </View>
       )}

@@ -12,6 +12,9 @@ import {
   updateExpenseWithOCRData,
   duplicateExpense,
   getExpenseNoteSuggestions,
+  getCustomGroupSuggestions,
+  getProjectSuggestions,
+  createProject,
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -50,5 +53,14 @@ router.put("/update-ocr/:id", authenticateToken, updateExpenseWithOCRData);
 
 // Get note suggestions sorted by most-used
 router.get("/note-suggestions/:memberId", authenticateToken, getExpenseNoteSuggestions);
+
+// Get custom group suggestions sorted by most-used
+router.get("/custom-group-suggestions/:memberId", authenticateToken, getCustomGroupSuggestions);
+
+// Get project suggestions sorted by most-used in expenses
+router.get("/project-suggestions/:memberId", authenticateToken, getProjectSuggestions);
+
+// Create a new project
+router.post("/projects", authenticateToken, createProject);
 
 export default router;
