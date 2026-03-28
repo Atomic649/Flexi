@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -230,6 +231,11 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
     });
   }, []);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<string>("All");
+  const [filterPlatform, setFilterPlatform] = useState<string>("All");
+  const [showFilters, setShowFilters] = useState(false);
+
   // State to track expanded future bills
   const [showAllFuture, setShowAllFuture] = useState(false);
 
@@ -254,8 +260,24 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
     setCollapsedGroups(prev => ({ ...prev, [flexiId]: !prev[flexiId] }));
   }, []);
 
+  // Apply all filters
+  const filteredParentBills = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return parentBills.filter((b) => {
+      if (filterType !== "All" && b.DocumentType !== filterType) return false;
+      if (filterPlatform !== "All" && b.platform !== filterPlatform) return false;
+      if (q) {
+        const name = `${b.cName ?? ""} ${b.cLastName ?? ""}`.toLowerCase();
+        const phone = (b.cPhone ?? "").toLowerCase();
+        const flexiId = (b.flexiId ?? "").toLowerCase();
+        if (!name.includes(q) && !phone.includes(q) && !flexiId.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [parentBills, filterType, filterPlatform, searchQuery]);
+
   // Create memoized grouped bills — only top-level (non-child) bills
-  const groupedBills = useMemo(() => groupByDate(parentBills), [parentBills]);
+  const groupedBills = useMemo(() => groupByDate(filteredParentBills), [filteredParentBills]);
 
   // Sort date groups chronologically
   const sortedDateGroups = useMemo(() => {
@@ -861,31 +883,126 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
     );
   };
 
-  return (
-    <View className={`h-full ${useBackgroundColorClass()}`}>
+  const accent = theme === "dark" ? "#04ecd5" : "#01e0c6";
+  const chipBg = theme === "dark" ? "#2a2b2c" : "#efefef";
+  const chipBorder = theme === "dark" ? "#3a3b3c" : "#e0e0e0";
+  const chipText = theme === "dark" ? "#aaaaaa" : "#666666";
+  const inputBg = theme === "dark" ? "#1e1f20" : "#f5f5f5";
+  const inputBorder = theme === "dark" ? "#333435" : "#e0e0e0";
+  const placeholder = theme === "dark" ? "#555" : "#bbb";
+
+  const renderChip = (
+    chipKey: string,
+    label: string,
+    value: string,
+    active: string,
+    onPress: (v: string) => void,
+    icon?: React.ReactNode,
+  ) => {
+    const isActive = active === value;
+    return (
       <TouchableOpacity
+        key={chipKey}
+        onPress={() => onPress(value)}
         style={{
-          position: "static",
-          backgroundColor: theme === "dark" ? "#302f2f00" : "#ffffff",
-          borderRadius: 12,
-          padding: 10,
-          elevation: 5,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4,
+          paddingHorizontal: 12,
+          height: 30,
+          borderRadius: 20,
+          backgroundColor: isActive ? accent : chipBg,
+          borderWidth: 1,
+          borderColor: isActive ? accent : chipBorder,
+          marginRight: 6,
         }}
-        onPress={() => {
-          router.push("/createBill");
-        }}
-        activeOpacity={1}
       >
-        <Ionicons
-          name="add"
-          size={24}
-          style={{
-            alignSelf: "center",
-          }}
-          color={theme === "dark" ? "#ffffff" : "#444541"}
-        />
+        {icon}
+        <CustomText
+          style={{ fontSize: 12, color: isActive ? (theme === "dark" ? "#1c1d1e" : "#fff") : chipText }}
+          weight={isActive ? "semibold" : "regular"}
+        >
+          {label}
+        </CustomText>
       </TouchableOpacity>
-      {isDesktop() ? renderTableView() : renderCardView()}
+    );
+  };
+
+  const platformOptions = [
+    { key: "All", label: t("common.all") || "All", icon: null },
+    { key: "Facebook", label: "FB", icon: <Ionicons name="logo-facebook" size={13} color={filterPlatform === "Facebook" ? (theme === "dark" ? "#1c1d1e" : "#fff") : "#1877f2"} /> },
+    { key: "Tiktok", label: "TT", icon: <Ionicons name="logo-tiktok" size={13} color={filterPlatform === "Tiktok" ? (theme === "dark" ? "#1c1d1e" : "#fff") : (theme === "dark" ? "#fff" : "#000")} /> },
+    { key: "Line", label: "Line", icon: <Ionicons name="chatbubble-ellipses" size={13} color={filterPlatform === "Line" ? (theme === "dark" ? "#1c1d1e" : "#fff") : "#06c755"} /> },
+    { key: "Shopee", label: "Shopee", icon: <Ionicons name="bag" size={13} color={filterPlatform === "Shopee" ? (theme === "dark" ? "#1c1d1e" : "#fff") : "#ee4d2d"} /> },
+    { key: "Shop", label: t("bill.platform") || "Shop", icon: <Image source={icons.shop} style={{ width: 13, height: 13, tintColor: filterPlatform === "Shop" ? (theme === "dark" ? "#1c1d1e" : "#fff") : "#989898" }} /> },
+  ];
+
+  return (
+    <View style={{ flex: 1 }} className={useBackgroundColorClass()}>
+      {/* Header row: search + filter toggle + add */}
+      <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingTop: 10, paddingBottom: 4, gap: 8 }}>
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: inputBg, borderRadius: 10, borderWidth: 1, borderColor: inputBorder, paddingHorizontal: 10, height: 38 }}>
+          <Ionicons name="search" size={16} color={placeholder} style={{ marginRight: 6 }} />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t("common.searchBillHint") || "Search by name, phone or bill ID"}
+            placeholderTextColor={placeholder}
+            style={{ flex: 1, fontSize: 13, color: theme === "dark" ? "#ffffff" : "#333333", paddingVertical: 0, fontFamily: "IBMPlexSansThai-Medium" }}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <Ionicons name="close-circle" size={16} color={placeholder} />
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity
+          onPress={() => setShowFilters((v) => !v)}
+          style={{
+            width: 38, height: 38, borderRadius: 10,
+            backgroundColor: showFilters || filterType !== "All" || filterPlatform !== "All" ? accent : chipBg,
+            borderWidth: 1,
+            borderColor: showFilters || filterType !== "All" || filterPlatform !== "All" ? accent : chipBorder,
+            alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <Ionicons
+            name="options-outline"
+            size={18}
+            color={showFilters || filterType !== "All" || filterPlatform !== "All"
+              ? (theme === "dark" ? "#1c1d1e" : "#fff")
+              : (theme === "dark" ? "#aaaaaa" : "#666")}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push("/createBill")}
+          style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: accent, alignItems: "center", justifyContent: "center" }}
+        >
+          <Ionicons name="add" size={22} color={theme === "dark" ? "#1c1d1e" : "#ffffff"} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Filter chips — shown only when toggled */}
+      {showFilters && (
+        <View style={{ height: 46 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, alignItems: "center", height: 46 }}>
+            {(["All", "Quotation", "Invoice", "Receipt"] as const).map((key) =>
+              renderChip(
+                `doc-${key}`,
+                key === "All" ? (t("common.all") || "All") : key === "Quotation" ? (t("bill.quotation") || "Quotation") : key === "Invoice" ? (t("bill.invoice") || "Invoice") : (t("bill.receipt") || "Receipt"),
+                key, filterType, setFilterType,
+              )
+            )}
+            <View style={{ width: 1, height: 18, backgroundColor: chipBorder, marginHorizontal: 6 }} />
+            {platformOptions.map((p) => renderChip(`plat-${p.key}`, p.label, p.key, filterPlatform, setFilterPlatform, p.icon ?? undefined))}
+          </ScrollView>
+        </View>
+      )}
+
+      <View style={{ flex: 1 }}>
+        {isDesktop() ? renderTableView() : renderCardView()}
+      </View>
     </View>
   );
 };

@@ -38,11 +38,13 @@
     "noDataAvailable": "No data available",
     "continue": "Continue",
     "search": "Search",
+    "searchBillHint": "Search by name, phone or bill ID",
      "searchAdd": "Search/Add",
     "saving": "Auto-saving...",
     "back": "Back",
     "noData": "No data",
-    "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later."
+    "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later.",
+    "all": "All"
 
   },
   "months": {
