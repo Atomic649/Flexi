@@ -184,6 +184,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       where: {
         memberId: memberId,
         save: true,
+        
       },
       select: {
         date: true,
@@ -405,6 +406,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
+        billId:{not: null},
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
@@ -436,7 +438,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
 
     const expenses = await prisma.expense.findMany({
       where: {
-        memberId: memberId,
+        memberId: memberId,        
         date: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
@@ -505,7 +507,8 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
-      // isSplitChild: false, 
+        billId:{not: null},
+        //isSplitChild: false, 
         purchaseAt: {
           gte: new Date(`${month}-01T00:00:00.000Z`),
           lt: new Date(`${month}-31T23:59:59.999Z`),
@@ -581,8 +584,8 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
       take: 100, // Limit to 100 records
     });
 
-    // console.log("🚀 Mbills", bills);
-     console.log("🚀 Mexpenses", expenses);
+     console.log("🚀 Mbills", bills);
+     //console.log("🚀 Mexpenses", expenses);
     // console.log("🚀 Mads", ads);
     
     res.json({ bills, expenses, ads });

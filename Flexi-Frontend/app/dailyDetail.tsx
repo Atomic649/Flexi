@@ -5,7 +5,6 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
@@ -199,10 +198,15 @@ export default function DailyDetail() {
             (() => {
               // Calculate expenses from detailed data if available, otherwise use selectedItem.expenses (which will be 0)
               const calculatedExpenses = reportDetails
-                ? reportDetails.expenses.reduce(
-                    (sum, expense) => sum + Number(expense.amount),
-                    0,
-                  )
+                ? reportDetails.expenses
+                    .filter(
+                      (expense) =>
+                        !(Number(expense.debtAmount ?? 0) > 0),
+                    )
+                    .reduce(
+                      (sum, expense) => sum + Number(expense.amount),
+                      0,
+                    )
                 : selectedItem.expenses || 0;
 
               // Recalculate profit using detailed data

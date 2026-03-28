@@ -206,14 +206,16 @@ export default function MonthlyDetail() {
             (() => {
               // Calculate expenses from detailed data if available, otherwise use selectedItem.expenses (which will be 0)
               const calculatedExpenses = reportDetails
-                ? reportDetails.expenses.reduce(
-                    (sum, expense) =>
-                      sum +
-                      (parseFloat(expense.debtAmount?.toString() ?? "0") > 0
-                        ? parseFloat(expense.debtAmount!.toString())
-                        : parseFloat(expense.amount.toString())),
-                    0,
-                  )
+                ? reportDetails.expenses
+                    .filter(
+                      (expense) =>
+                        !(parseFloat(expense.debtAmount?.toString() ?? "0") > 0),
+                    )
+                    .reduce(
+                      (sum, expense) =>
+                        sum + parseFloat(expense.amount.toString()),
+                      0,
+                    )
                 : selectedItem.expenses || 0;
 
               // Recalculate profit using detailed data
