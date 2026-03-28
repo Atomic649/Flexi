@@ -43,6 +43,7 @@ export default function BillCard({
   splitChildCount,  // Number of split children (for parent badge)
   onSplit,          // Callback to open split screen (Invoice parent, no children yet)
   onResetSplit,     // Callback to reset split back to Quotation
+  onToggleSplitChildren, // Callback to toggle showing/hiding split children
 }: any) {
   const { t, i18n } = useTranslation();
 
@@ -297,6 +298,35 @@ export default function BillCard({
                   -
                 </CustomText>
               )}
+
+               {/* Parent split children count badge */}
+            {isParentWithSplit && (
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation?.();
+                  if (onToggleSplitChildren) onToggleSplitChildren();
+                }}
+                activeOpacity={0.7}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 3,
+                  marginTop: 4,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: 999,
+                  backgroundColor: '#04ecc115',
+                  borderWidth: 1,
+                  borderColor: '#04ecc140',
+                  alignSelf: 'flex-start',
+                }}
+              >
+                <Ionicons name="git-branch-outline" size={9} color="#04ecc1" />
+                <CustomText style={{ color: '#04ecc1', fontSize: 9 }}>
+                  {splitChildCount}
+                </CustomText>
+              </TouchableOpacity>
+            )}
             </View>
           </View>
           <View className="pt-2 flex flex-col items-end">
@@ -364,27 +394,7 @@ export default function BillCard({
                 </View>
               </RNAnimated.View>
             )}
-            {/* Parent split children count badge */}
-            {isParentWithSplit && (
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 3,
-                marginTop: 4,
-                paddingHorizontal: 8,
-                paddingVertical: 2,
-                borderRadius: 999,
-                backgroundColor: '#04ecc115',
-                borderWidth: 1,
-                borderColor: '#04ecc140',
-                alignSelf: 'flex-end',
-              }}>
-                <Ionicons name="git-branch-outline" size={9} color="#04ecc1" />
-                <CustomText style={{ color: '#04ecc1', fontSize: 9 }}>
-                  {splitChildCount}
-                </CustomText>
-              </View>
-            )}
+           
           </View>
         </View>
       </View>

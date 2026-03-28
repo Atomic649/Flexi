@@ -1122,8 +1122,8 @@ const updateBill = async (req: Request, res: Response) => {
         if ((existingBill as any).isSplitChild && (existingBill as any).splitPercent != null) {
           const splitPct = Number((existingBill as any).splitPercent) || 0;
           const splitAmount = total * (splitPct / 100);
-          // totalInvoice = split portion for Invoice AND Receipt (not Quotation)
-          updateData.totalInvoice = docType !== "Quotation" ? splitAmount : 0;
+          // totalInvoice = split portion for Invoice only; 0 for Receipt and Quotation
+          updateData.totalInvoice = docType === "Invoice" ? splitAmount : 0;
           // total (actual received) = split portion for Receipt
           if (docType === "Receipt") {
             updateData.total = splitAmount;
@@ -1151,6 +1151,11 @@ const updateBill = async (req: Request, res: Response) => {
         }
 
         // Generate ID if missing for the new DocumentType
+        // Parent bills (those with split children) should never receive an invoiceId
+        const isParentBill = existingBill.flexiId
+          ? (await tx.bill.count({ where: { splitGroupId: existingBill.flexiId, isSplitChild: true } })) > 0
+          : false;
+
         if (docType === "Receipt") {
           if (!existingBill.billId) {
             updateData.billId = await generateDocumentId(
@@ -1162,7 +1167,8 @@ const updateBill = async (req: Request, res: Response) => {
           // If skipping from Quotation to Receipt, also generate Invoice ID if missing
           if (
             existingBill.DocumentType === "Quotation" &&
-            !existingBill.invoiceId
+            !existingBill.invoiceId &&
+            !isParentBill
           ) {
             updateData.invoiceId = await generateDocumentId(
               tx,
@@ -1170,7 +1176,7 @@ const updateBill = async (req: Request, res: Response) => {
               "Invoice",
             );
           }
-        } else if (docType === "Invoice" && !existingBill.invoiceId) {
+        } else if (docType === "Invoice" && !existingBill.invoiceId && !isParentBill) {
           updateData.invoiceId = await generateDocumentId(
             tx,
             billInput.businessAcc,
@@ -1268,7 +1274,7 @@ const updateBill = async (req: Request, res: Response) => {
           // Find all sibling split children (exclude current)
           const siblings = await tx.bill.findMany({
             where: { splitGroupId, isSplitChild: true, id: { not: Number(id) } } as any,
-            select: { id: true, splitPercent: true } as any,
+            select: { id: true, splitPercent: true, DocumentType: true } as any,
           });
 
           const sharedData = {
@@ -1328,7 +1334,7 @@ const updateBill = async (req: Request, res: Response) => {
 
           // Sync all siblings
           for (const sibling of siblings as any[]) {
-            const siblingTotalInvoice = total * ((sibling.splitPercent ?? 0) / 100);
+            const siblingTotalInvoice = sibling.DocumentType === "Invoice" ? total * ((sibling.splitPercent ?? 0) / 100) : 0;
             await tx.productItem.deleteMany({ where: { billId: sibling.id } });
             for (const item of billInput.productItems) {
               await tx.productItem.create({
@@ -1363,12 +1369,12 @@ const updateBill = async (req: Request, res: Response) => {
               splitGroupId: (existingBill as any).flexiId,
               isSplitChild: true,
             } as any,
-            select: { id: true, splitPercent: true } as any,
+            select: { id: true, splitPercent: true, DocumentType: true } as any,
           });
 
           for (const child of splitChildren as any[]) {
-            // Recalculate child's totalInvoice based on its splitPercent
-            const childTotalInvoice = total * ((child.splitPercent ?? 0) / 100);
+            // Recalculate child's totalInvoice based on its splitPercent — only for Invoice
+            const childTotalInvoice = child.DocumentType === "Invoice" ? total * ((child.splitPercent ?? 0) / 100) : 0;
 
             // Replace child's product items with parent's updated products
             await tx.productItem.deleteMany({ where: { billId: child.id } });
@@ -1564,6 +1570,11 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       };
 
       // Generate ID if missing for the new DocumentType
+      // Parent bills (those with split children) should never receive an invoiceId
+      const isParentBill = (currentBill as any).flexiId
+        ? (await tx.bill.count({ where: { splitGroupId: (currentBill as any).flexiId, isSplitChild: true } })) > 0
+        : false;
+
       if (DocumentType === "Receipt") {
         if (!currentBill.billId) {
           updateData.billId = await generateDocumentId(
@@ -1575,7 +1586,8 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         // If skipping from Quotation to Receipt, also generate Invoice ID if missing
         if (
           currentBill.DocumentType === "Quotation" &&
-          !currentBill.invoiceId
+          !currentBill.invoiceId &&
+          !isParentBill
         ) {
           updateData.invoiceId = await generateDocumentId(
             tx,
@@ -1583,7 +1595,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
             "Invoice",
           );
         }
-      } else if (DocumentType === "Invoice" && !currentBill.invoiceId) {
+      } else if (DocumentType === "Invoice" && !currentBill.invoiceId && !isParentBill) {
         updateData.invoiceId = await generateDocumentId(
           tx,
           currentBill.businessAcc,
@@ -1616,7 +1628,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       if (DocumentType === "Receipt") {
         updateData.cashStatus = true;
         updateData.total = splitAmount;
-        updateData.totalInvoice = splitAmount;
+        updateData.totalInvoice = 0;
       } else {
         updateData.cashStatus = false;
         updateData.total = 0;
@@ -1670,6 +1682,30 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         }
       }
 
+      // If this is a split child changing from Invoice to Receipt, deduct its splitAmount from parent's totalInvoice
+      if (
+        DocumentType === "Receipt" &&
+        currentBill.DocumentType === "Invoice" &&
+        (currentBill as any).isSplitChild &&
+        (currentBill as any).splitGroupId
+      ) {
+        const parentForDeduction = await tx.bill.findFirst({
+          where: { flexiId: (currentBill as any).splitGroupId, isSplitChild: false } as any,
+          select: { id: true, totalInvoice: true } as any,
+        }) as any;
+
+        if (parentForDeduction) {
+          const newParentTotalInvoice = Math.max(0, Number(parentForDeduction.totalInvoice) - splitAmount);
+          await tx.bill.update({
+            where: { id: parentForDeduction.id },
+            data: {
+              totalInvoice: newParentTotalInvoice,
+              total: { increment: splitAmount },
+            } as any,
+          });
+        }
+      }
+
       // If this is a split child being set to Receipt, check if all siblings are paid → auto-promote parent
       if (DocumentType === "Receipt" && (currentBill as any).isSplitChild && (currentBill as any).splitGroupId) {
         const unpaidSiblings = await tx.bill.count({
@@ -1700,7 +1736,6 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
               data: {
                 DocumentType: "Receipt",
                 cashStatus: true,
-                total: parent.totalInvoice,
                 billId: parentBillId,
               },
             });
@@ -2241,10 +2276,16 @@ const createSplitChildren = async (req: Request, res: Response) => {
         createdChildren.push(childBill);
       }
 
-      // Mark parent as a split parent by setting splitGroupId to its own flexiId
+      // Mark parent as a split parent and set DocumentType to Invoice
       await tx.bill.update({
         where: { id: parent.id },
-        data: { splitGroupId: parent.flexiId } as any,
+        data: {
+          splitGroupId: parent.flexiId,
+          DocumentType: "Invoice",
+          cashStatus: false,
+          total: 0,
+          totalInvoice: parentTotal,
+        } as any,
       });
 
       return createdChildren;

@@ -233,6 +233,27 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
   // State to track expanded future bills
   const [showAllFuture, setShowAllFuture] = useState(false);
 
+  // Track which split groups have children collapsed
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+  // Auto-collapse groups where all children are Receipt (only for groups not yet manually toggled)
+  useEffect(() => {
+    setCollapsedGroups(prev => {
+      const next = { ...prev };
+      Object.entries(splitChildrenMap).forEach(([groupId, children]) => {
+        if (!(groupId in prev)) {
+          const allReceipt = children.length > 0 && children.every(c => c.DocumentType === 'Receipt');
+          next[groupId] = allReceipt;
+        }
+      });
+      return next;
+    });
+  }, [splitChildrenMap]);
+
+  const handleToggleSplitChildren = useCallback((flexiId: string) => {
+    setCollapsedGroups(prev => ({ ...prev, [flexiId]: !prev[flexiId] }));
+  }, []);
+
   // Create memoized grouped bills — only top-level (non-child) bills
   const groupedBills = useMemo(() => groupByDate(parentBills), [parentBills]);
 
@@ -490,18 +511,16 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                             flex: 1.5,
                             alignItems: "flex-end",
                             justifyContent: "flex-end",
-                            color: bill.total <= 0
-                              ? theme === "dark"
-                                ? "#7d7d7d27"
-                                : "#7d7d7d27"
-                              : theme === "dark"
-                              ? "#04ecd5"
-                              : "#01e0c6",
+                            color: bill.DocumentType === "Receipt"
+                              ? theme === "dark" ? "#04ecd5" : "#01e0c6"
+                              : theme === "dark" ? "#7d7d7d" : "#9e9e9e",
                           }}
                         >
-                          {bill.total <= 0
-                            ? formatNumber(bill.totalQuotation || 0)
-                            : formatNumber(bill.total || 0)}
+                          {bill.DocumentType === "Receipt"
+                            ? `+${formatNumber(bill.total || 0)}`
+                            : bill.DocumentType === "Invoice"
+                            ? formatNumber(bill.totalInvoice || 0)
+                            : formatNumber(bill.totalQuotation || 0)}
                         </CustomText>
                         <View
                           className={`flex items-center justify-center`}
@@ -623,10 +642,11 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                     splitChildCount={children.length}
                     onSplit={!isParentWithSplit ? () => handleSplitBill(bill.id) : undefined}
                     onResetSplit={isParentWithSplit && bill.DocumentType !== "Receipt" ? () => handleResetSplit(bill.id) : undefined}
+                    onToggleSplitChildren={isParentWithSplit && bill.flexiId ? () => handleToggleSplitChildren(bill.flexiId!) : undefined}
                   />
 
                   {/* Children with tree connector */}
-                  {isParentWithSplit && (
+                  {isParentWithSplit && !collapsedGroups[bill.flexiId ?? ''] && (
                     <View style={{ flexDirection: 'row', paddingLeft: 8 }}>
                       <View style={{ width: 16 }} />
 
@@ -634,7 +654,12 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                       <View style={{ flex: 1 }}>
                         {[...children].sort((a, b) => a.id - b.id).map((child, i) => {
                           const isLast = i === children.length - 1;
-                          const childAmount = Number(child.totalInvoice ?? child.total ?? 0);
+                          const childAmount =
+                            child.DocumentType === 'Receipt'
+                              ? Number(child.total ?? 0)
+                              : child.DocumentType === 'Invoice'
+                              ? Number(child.totalInvoice ?? 0)
+                              : Number(child.totalQuotation ?? 0);
                           const statusColor =
                             child.DocumentType === 'Receipt'
                               ? theme === 'dark' ? '#04ecd5' : '#01e0c6'
