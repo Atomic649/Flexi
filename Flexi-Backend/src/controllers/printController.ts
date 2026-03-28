@@ -103,32 +103,116 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       where : { uniqueId: String(memberId) },
       select:{ businessId: true },
     });
-    // Get bills within the date range
-    const bills = await prisma.bill.findMany({
+    // Get ALL bills in date range (for summary calculations)
+    const allBills = await prisma.bill.findMany({
       where: {
-        businessAcc : businessId?.businessId ?? 0,
-        isSplitChild: false,
-        purchaseAt: {
-          gte: start,
-          lte: end,
-        },
+        businessAcc: businessId?.businessId ?? 0,
+        purchaseAt: { gte: start, lte: end },
       },
-      orderBy: {
-        purchaseAt: "desc",
-      },
+      orderBy: { purchaseAt: "desc" },
       include: {
         product: {
-          include: {
-            productList: {
-              select: { name: true },
-            },
-          },
+          include: { productList: { select: { name: true } } },
         },
+      },
+    });
+
+    // Build a lookup: parent flexiId → parent quotationId
+    const parentQuotationIdMap = new Map<string, string | null>();
+    allBills.forEach((b: any) => {
+      if (!b.isSplitChild && b.flexiId) {
+        parentQuotationIdMap.set(b.flexiId, b.quotationId ?? null);
       }
     });
 
-    // console.log("🚀 Get Bills By Date Range API:", bills);
-    return res.status(200).json(bills);
+    // Collect unique splitGroupIds from child bills to fetch all siblings
+    const childSplitGroupIds = [
+      ...new Set(
+        allBills
+          .filter((b: any) => b.isSplitChild && b.splitGroupId)
+          .map((b: any) => b.splitGroupId as string),
+      ),
+    ];
+
+    // Fetch ALL siblings for those groups (may be outside the date range)
+    const siblingsMap = new Map<string, any[]>();
+    if (childSplitGroupIds.length > 0) {
+      const allSiblings = await (prisma.bill as any).findMany({
+        where: {
+          splitGroupId: { in: childSplitGroupIds },
+          isSplitChild: true,
+        },
+        select: { id: true, splitPercent: true, totalInvoice: true, DocumentType: true, splitGroupId: true, cashStatus: true },
+      });
+      childSplitGroupIds.forEach((groupId) => {
+        siblingsMap.set(
+          groupId,
+          allSiblings.filter((s: any) => s.splitGroupId === groupId),
+        );
+      });
+    }
+
+    // Keep only child bills (isSplitChild === true) and regular bills (no splitGroupId)
+    // Attach parentQuotationId + splitSiblings to child bills
+    const bills = allBills
+      .filter((b: any) => b.isSplitChild === true || b.splitGroupId === null)
+      .map((b: any) => ({
+        ...b,
+        parentQuotationId: b.isSplitChild && b.splitGroupId
+          ? parentQuotationIdMap.get(b.splitGroupId) ?? null
+          : null,
+        splitSiblings: b.isSplitChild && b.splitGroupId
+          ? siblingsMap.get(b.splitGroupId) ?? []
+          : [],
+      }));
+
+    // totalSale from ALL bills (parent + child)
+    const totalSale = allBills.reduce((sum, b) => sum + Number(b.total || 0), 0);
+
+    // amount + parentBills: count only parent/non-child bills (isSplitChild === false)
+    const parentBills = allBills.filter((b: any) => !b.isSplitChild);
+    const paidParentCount = parentBills.filter((b) => b.cashStatus).length;
+    const amount = `${paidParentCount}/${parentBills.length}`;
+
+    // accountReceivable: totalInvoice of parent + non-child bills only
+    const accountReceivable = parentBills.reduce((sum, b) => sum + Number((b as any).totalInvoice || 0), 0);
+
+    // averageSale: (totalSale + totalInvoice of ALL bills) / parentBills count
+    const totalInvoiceAll = allBills.reduce((sum, b) => sum + Number((b as any).totalInvoice || 0), 0);
+    const averageSale = parentBills.length > 0 ? (totalSale + totalInvoiceAll) / parentBills.length : 0;
+
+    // Total expenses in the date range
+    const expenses = await prisma.expense.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        date: { gte: start, lte: end },
+        save: true,
+      },
+      select: { amount: true },
+    });
+    const totalExpense = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+
+    // Ads spend in the date range
+    const adsCosts = await prisma.adsCost.findMany({
+      where: {
+        businessAcc: businessId?.businessId ?? 0,
+        date: { gte: start, lte: end },
+      },
+      select: { adsCost: true },
+    });
+    const adsSpend = adsCosts.reduce((sum, a) => sum + Number(a.adsCost || 0), 0);
+
+    const summary = {
+      totalSale,
+      totalExpense,
+      accountReceivable,
+      adsSpend,
+      amount,
+      averageSale,
+    };
+
+    console.log("🚀 Get Bills By Date Range API - Summary:", summary);
+    return res.status(200).json({ summary, bills });
   } catch (error) {
     console.error("Error fetching bills by date range:", error);
     return res

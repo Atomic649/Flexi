@@ -18,6 +18,7 @@ interface SalesChartData {
   date: string;
   income: number;
   expense: number;
+  adsCost: number;
   profit: number;
 }
 

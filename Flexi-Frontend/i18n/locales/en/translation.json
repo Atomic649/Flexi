@@ -694,6 +694,8 @@
   "dashboard": {
     "title": "Dashboard",
     "ads": "Ads",
+    "income": "Income",
+    "expense": "Expense",
     "selectDate": "Select Date",
     "sale": "Sale",
     "profit": "Profit",
@@ -1601,6 +1603,9 @@
     "receipt": "Receipt",
     "taxInvoiceReceipt": "Tax Invoice/Receipt",
     "totalSales": "Total Sales",
+    "accountReceivable": "Accounts Receivable",
+    "totalExpenses": "Total Expenses",
+    "adsSpend": "Ads Spend",
     "totalSalesBeforeTax": "Total Sales Before Tax",
     "totalSalesAfterTax": "Total Sales After Tax",    
     "totalOrders": "Total Orders",

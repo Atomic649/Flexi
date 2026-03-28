@@ -83,13 +83,13 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const billsAggregation = await prisma.bill.findMany({
       where: {
         ...baseWhere,
-        isSplitChild: false
       },
       select: {
         total: true,
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
+        isSplitChild: true,
       },
     });
 
@@ -110,7 +110,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     billsAggregation.forEach(bill => {
       // Use the total field which already has discounts applied
       income += Number(bill.total);
-      orders += 1;
+      if (!bill.isSplitChild && Number(bill.total) > 0) orders += 1;
       totalDiscount += Number(bill.discount || 0);
       totalBillLevelDiscount += Number(bill.billLevelDiscount || 0);
       totalBeforeDiscount += Number(bill.beforeDiscount || 0);
@@ -165,7 +165,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       forcastProfitloss,
       adsPercentage
     });
-
+   
   } catch (error) {
     console.error("Error fetching dashboard metrics:", error);
     res.status(500).json({ error: "Failed to fetch dashboard metrics" });
@@ -301,19 +301,19 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       }
     });
 
+    const emptyDateEntry = () => ({
+      income: 0,
+      expense: 0,
+      adsCost: 0,
+      totalDiscount: 0,
+      billLevelDiscount: 0,
+      beforeDiscount: 0,
+    });
+
     // Group bills by date
     const billsByDate = bills.reduce((acc: any, bill) => {
       const date = format(new Date(bill.purchaseAt), 'yyyy-MM-dd');
-      if (!acc[date]) {
-        acc[date] = { 
-          income: 0, 
-          expense: 0, 
-          totalDiscount: 0, 
-          billLevelDiscount: 0, 
-          beforeDiscount: 0 
-        };
-      }
-      // Use bill.total which already has discounts applied
+      if (!acc[date]) acc[date] = emptyDateEntry();
       acc[date].income += Number(bill.total);
       acc[date].totalDiscount += Number(bill.discount || 0);
       acc[date].billLevelDiscount += Number(bill.billLevelDiscount || 0);
@@ -324,31 +324,15 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     // Group expenses by date
     expenses.forEach(expense => {
       const date = format(new Date(expense.date), 'yyyy-MM-dd');
-      if (!billsByDate[date]) {
-        billsByDate[date] = { 
-          income: 0, 
-          expense: 0, 
-          totalDiscount: 0, 
-          billLevelDiscount: 0, 
-          beforeDiscount: 0 
-        };
-      }
+      if (!billsByDate[date]) billsByDate[date] = emptyDateEntry();
       billsByDate[date].expense += Number(expense.amount);
     });
 
-    // Group ads costs by date
+    // Group ads costs by date (separate from expense)
     adsCosts.forEach(adsCost => {
       const date = format(new Date(adsCost.date), 'yyyy-MM-dd');
-      if (!billsByDate[date]) {
-        billsByDate[date] = { 
-          income: 0, 
-          expense: 0, 
-          totalDiscount: 0, 
-          billLevelDiscount: 0, 
-          beforeDiscount: 0 
-        };
-      }
-      billsByDate[date].expense += Number(adsCost.adsCost);
+      if (!billsByDate[date]) billsByDate[date] = emptyDateEntry();
+      billsByDate[date].adsCost += Number(adsCost.adsCost);
     });
 
     // Convert to array format
@@ -356,10 +340,11 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       date,
       income: billsByDate[date].income,
       expense: billsByDate[date].expense,
-      profit: billsByDate[date].income - billsByDate[date].expense,
+      adsCost: billsByDate[date].adsCost,
+      profit: billsByDate[date].income - billsByDate[date].expense - billsByDate[date].adsCost,
       totalDiscount: billsByDate[date].totalDiscount,
       billLevelDiscount: billsByDate[date].billLevelDiscount,
-      beforeDiscount: billsByDate[date].beforeDiscount
+      beforeDiscount: billsByDate[date].beforeDiscount,
     })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     res.json(chartData);
@@ -1004,13 +989,18 @@ export const getAPARDetail = async (req: Request, res: Response) => {
     });
 
     // Invoice Bills: customers owe you (Accounts Receivable)
+    // Include: standalone bills (no split group) + all split children
+    // Exclude: split parent bills (they have children and total=0)
     const invoiceBills = await prisma.bill.findMany({
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        // DocumentType: "Invoice",
         purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
-        isSplitChild: false, // Exclude split child bills to avoid duplicates
+        totalInvoice: { gt: 0 },
+        OR: [
+          { isSplitChild: true },
+          { isSplitChild: false, splitGroupId: null },
+        ],
       },
       select: {
         id: true,
@@ -1044,6 +1034,8 @@ export const getAPARDetail = async (req: Request, res: Response) => {
       },
       orderBy: { date: 'desc' },
     });
+
+    console.log("Invoice Bills:", invoiceBills);
 
     res.json({
       invoiceBills: invoiceBills.map((b) => ({

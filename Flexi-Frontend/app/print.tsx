@@ -32,6 +32,7 @@ import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTempla
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import { vatRate } from "@/components/TaxVariable";
 import { useLocalSearchParams } from "expo-router";
+import InvoiceDetailsModal from "@/components/print/InvoiceDetailsModal";
 
 // Constants for search types and tab indices
 const SEARCH_TYPES = {
@@ -122,13 +123,16 @@ export default function Print() {
     paidOrders: 0,
     unpaidOrders: 0,
     averageOrderValue: 0,
-    // Add expense-specific totals
     totalExpenses: 0,
     totalExpenseCount: 0,
     vatExpenses: 0,
     whtExpenses: 0,
     averageExpenseAmount: 0,
     expensesByGroup: {} as { [key: string]: number },
+    // Summary fields from API
+    accountReceivable: 0,
+    adsSpend: 0,
+    amount: "0/0",
   });
 
   // Add expenses state
@@ -348,61 +352,31 @@ export default function Print() {
         throw new Error(response.error);
       }
 
-      setBills(response);
+      const { summary, bills: responseBills } = response;
+      setBills(responseBills ?? []);
 
-      // Calculate monthly totals
-      if (response && response.length > 0) {
-        const totalSales = response.reduce((sum: number, bill: any) => {
-          // Include only bills that are paid OR are receipts
-          if (bill.cashStatus || bill.DocumentType === "Receipt") {
-            return sum + calculateInvoiceTotal(bill);
-          }
-          return sum;
-        }, 0);
+      const [paidStr, totalStr] = (summary?.amount ?? "0/0").split("/");
+      const paidOrders = parseInt(paidStr) || 0;
+      const totalOrders = parseInt(totalStr) || 0;
+      const unpaidOrders = totalOrders - paidOrders;
 
-        const totalUnpaidSales = response.reduce((sum: number, bill: any) => {
-          // Include only bills that are unpaid AND not receipts
-          if (!bill.cashStatus && bill.DocumentType !== "Receipt") {
-            return sum + calculateInvoiceTotal(bill);
-          }
-          return sum;
-        }, 0);
-
-        const paidOrders = response.filter(
-          (bill: any) => bill.cashStatus,
-        ).length;
-        const unpaidOrders = response.length - paidOrders;
-
-        setMonthlyTotals({
-          totalSales,
-          totalUnpaidSales,
-          totalOrders: response.length,
-          paidOrders,
-          unpaidOrders,
-          averageOrderValue: paidOrders > 0 ? totalSales / paidOrders : 0,
-          totalExpenses: 0,
-          totalExpenseCount: 0,
-          vatExpenses: 0,
-          whtExpenses: 0,
-          averageExpenseAmount: 0,
-          expensesByGroup: {},
-        });
-      } else {
-        setMonthlyTotals({
-          totalSales: 0,
-          totalUnpaidSales: 0,
-          totalOrders: 0,
-          paidOrders: 0,
-          unpaidOrders: 0,
-          averageOrderValue: 0,
-          totalExpenses: 0,
-          totalExpenseCount: 0,
-          vatExpenses: 0,
-          whtExpenses: 0,
-          averageExpenseAmount: 0,
-          expensesByGroup: {},
-        });
-      }
+      setMonthlyTotals({
+        totalSales: summary?.totalSale ?? 0,
+        totalUnpaidSales: 0,
+        totalOrders,
+        paidOrders,
+        unpaidOrders,
+        averageOrderValue: summary?.averageSale ?? 0,
+        totalExpenses: summary?.totalExpense ?? 0,
+        totalExpenseCount: 0,
+        vatExpenses: 0,
+        whtExpenses: 0,
+        averageExpenseAmount: 0,
+        expensesByGroup: {},
+        accountReceivable: summary?.accountReceivable ?? 0,
+        adsSpend: summary?.adsSpend ?? 0,
+        amount: summary?.amount ?? "0/0",
+      });
     } catch (error) {
       console.error("Error fetching monthly report data:", error);
       setAlertConfig({
@@ -605,9 +579,10 @@ export default function Print() {
         throw new Error(response.error);
       }
 
-      setBills(response);
+      const responseBills = response.bills ?? response;
+      setBills(responseBills);
 
-      if (response.length === 0) {
+      if (responseBills.length === 0) {
         setAlertConfig({
           visible: true,
           title: t("print.noResults"),
@@ -1600,6 +1575,34 @@ export default function Print() {
                 {displayId}
               </CustomText>
             </View>
+            {invoice.isSplitChild && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  alignSelf: "flex-start",
+                  borderWidth: 1,
+                  borderColor: theme === "dark" ? "#555" : "#d1d5db",
+                  borderRadius: 4,
+                  paddingHorizontal: 4,
+                  paddingVertical: 1,
+                  marginBottom: 4,
+                  gap: 3,
+                }}
+              >
+                <Ionicons
+                  name="sync-outline"
+                  size={10}
+                  color={theme === "dark" ? "#9ca3af" : "#6b7280"}
+                />
+                <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
+                  {invoice.parentQuotationId ?? invoice.splitGroupId}
+                </CustomText>
+                <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
+                  {invoice.splitPercent}%
+                </CustomText>
+              </View>
+            )}
             <View className="flex-row gap-1">
               <CustomText className="mb-1">{invoice.cName}</CustomText>
               <CustomText className="mb-1">{invoice.cLastName}</CustomText>
@@ -1610,7 +1613,9 @@ export default function Print() {
           </View>
           <View className="items-end">
             <CustomText weight="bold" className="text-base">
-              {formatCurrency(calculateInvoiceTotal(invoice))}
+              {invoice.cashStatus
+                ? formatCurrency(calculateInvoiceTotal(invoice))
+                : formatCurrency(Number(invoice.totalInvoice || 0))}
             </CustomText>
             <View
               className={`mt-2 p-1 px-2 rounded-full ${
@@ -1671,426 +1676,30 @@ export default function Print() {
       </Modal>
 
       {/* Invoice Details Modal */}
-      <Modal
+      <InvoiceDetailsModal
         visible={invoiceModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={closeInvoiceModalAndRefresh} // Use centralized function
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-        >
-          <View
-            style={{
-              width: isMobile() ? "95%" : "60%",
-              maxWidth: 700,
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-              borderRadius: 10,
-              padding: 20,
-            }}
-          >
-            {selectedInvoice && (
-              <View ref={printRef} className="p-4">
-                <View className="flex-row justify-between items-center mb-6">
-                  <View className="flex-col pt-1">
-                    <CustomText weight="bold" className="text-xl pt-1">
-                      {getDocumentTitle(selectedInvoice)}
-                    </CustomText>
-                    <View className="flex-row">
-                      <CustomText weight="regular" className="text-xl">
-                        #
-                      </CustomText>
-                      <CustomText weight="regular" className="text-base">
-                        {getDisplayId(selectedInvoice)}
-                      </CustomText>
-                    </View>
-                  </View>
-                  <TouchableOpacity
-                    onPress={closeInvoiceModalAndRefresh} // Use centralized function
-                    className="p-2"
-                  >
-                    <Ionicons
-                      name="close"
-                      size={24}
-                      color={theme === "dark" ? "#ffffff" : "#000000"}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <View className="flex-row justify-between mb-6">
-                  <View style={{ maxWidth: "50%" }}>
-                    <CustomText weight="bold" className="mb-1">
-                      {t("print.billedTo")}
-                    </CustomText>
-                    <View className="flex-row gap-1">
-                      <CustomText
-                        style={{
-                          fontSize: getResponsiveStyles().smallFontSize,
-                        }}
-                      >
-                        {selectedInvoice.cName}
-                      </CustomText>
-                      <CustomText
-                        style={{
-                          fontSize: getResponsiveStyles().smallFontSize,
-                        }}
-                      >
-                        {selectedInvoice.cLastName}
-                      </CustomText>
-                    </View>
-                    <CustomText
-                      style={{ fontSize: getResponsiveStyles().smallFontSize }}
-                    >
-                      {selectedInvoice.cPhone}
-                    </CustomText>
-                    <CustomText
-                      numberOfLines={3}
-                      ellipsizeMode="tail"
-                      style={{
-                        flexWrap: "wrap",
-                        fontSize: getResponsiveStyles().smallFontSize,
-                      }}
-                    >
-                      {selectedInvoice.cAddress}
-                    </CustomText>
-                    <View className="flex-row gap-1">
-                      <CustomText
-                        style={{
-                          fontSize: getResponsiveStyles().smallFontSize,
-                        }}
-                      >
-                        {selectedInvoice.cProvince}
-                      </CustomText>
-                      <CustomText
-                        style={{
-                          fontSize: getResponsiveStyles().smallFontSize,
-                        }}
-                      >
-                        {selectedInvoice.cPostId}
-                      </CustomText>
-                    </View>
-                  </View>
-                  <View className="items-end">
-                    <CustomText weight="bold" className="mb-1">
-                      {t("print.invoiceDate")}
-                    </CustomText>
-                    <CustomText>
-                      {formatDate(selectedInvoice.purchaseAt)}
-                    </CustomText>
-
-                    <CustomText weight="bold" className="mb-1 mt-2">
-                      {t("print.paymentMethod")}
-                    </CustomText>
-                    <CustomText>
-                      {selectedInvoice.payment
-                        ? t(`bill.payment.${selectedInvoice.payment}`)
-                        : t("common.unknown")}
-                    </CustomText>
-
-                    <CustomText weight="bold" className="mb-1 mt-2">
-                      {t("print.status")}
-                    </CustomText>
-                    <View
-                      className={`p-1 px-2 rounded-full ${
-                        selectedInvoice.cashStatus
-                          ? "bg-green-700"
-                          : "bg-orange-700"
-                      }`}
-                    >
-                      <CustomText style={{ color: "white", fontSize: 12 }}>
-                        {selectedInvoice.cashStatus
-                          ? t("bill.status.paid")
-                          : t("bill.status.unpaid")}
-                      </CustomText>
-                    </View>
-                  </View>
-                </View>
-
-                <View className="">
-                  <View className="flex-row justify-between items-center mb-1 border-b border-zinc-300">
-                    <CustomText weight="bold" style={{ width: "38%" }}>
-                      {t("print.productName")}
-                    </CustomText>
-                    <CustomText
-                      weight="bold"
-                      style={{ width: "22%", textAlign: "center" }}
-                    >
-                      {t("print.quantity")}
-                    </CustomText>
-                    <CustomText
-                      weight="bold"
-                      style={{ width: "20%", textAlign: "right" }}
-                    >
-                      {t("print.price")}
-                    </CustomText>
-                    <CustomText
-                      weight="bold"
-                      style={{ width: "20%", textAlign: "right" }}
-                    >
-                      {t("print.total")}
-                    </CustomText>
-                  </View>
-
-                  {/* Product item rows for multi-product */}
-                  {Array.isArray(selectedInvoice.product) &&                
-                    selectedInvoice.product.map((item: any, idx: number) => (
-                      <View
-                        key={idx}
-                        className="flex-row justify-between items-center py-2"
-                      >
-                        <CustomText style={{ width: "38%" }}>
-                          {item.productList?.name ?? item.product}
-                        </CustomText>
-                        <CustomText
-                          style={{ width: "22%", textAlign: "center" }}
-                        >
-                          {item.quantity}
-                          {/* {item.unit ? t(`product.unit.${item.unit}`) || item.unit : t("common.pcs")} */}
-                        </CustomText>
-
-                        <CustomText
-                          style={{ width: "20%", textAlign: "right" }}
-                        >
-                          {isVatRegistered
-                            ? (
-                                item.unitPrice /
-                                ((100 + vatRate) / 100)
-                              ).toFixed(1)
-                            : item.unitPrice}
-                        </CustomText>
-
-                        {/* total unitPrice *quatity */}
-                        <CustomText
-                          style={{ width: "20%", textAlign: "right" }}
-                        >
-                          {isVatRegistered
-                            ? (
-                                (item.unitPrice / ((100 + vatRate) / 100)) *
-                                item.quantity
-                              ).toFixed(1)
-                            : (item.unitPrice * item.quantityz).toFixed(1)}
-                        </CustomText>
-                      </View>
-                    ))
-                  }
-                </View>
-
-                <View className="flex-row justify-end mt-2">
-                  <View className="w-2/3">
-                    {/* Show discount if any discounts exist */}
-                    {(selectedInvoice.discount > 0 ||
-                      selectedInvoice.billLevelDiscount > 0) && (
-                      <View className="flex-row justify-between mb-2">
-                        <CustomText weight="bold">
-                          {t("print.totalDiscount")}
-                        </CustomText>
-                        <CustomText>
-                          {formatCurrency(
-                            (selectedInvoice.discount || 0) +
-                              (selectedInvoice.billLevelDiscount || 0),
-                          )}
-                        </CustomText>
-                      </View>
-                    )}
-                    {isVatRegistered && (
-                      <View className="flex-row justify-between mb-2">
-                        <CustomText weight="bold">
-                          {t("print.subtotal")}
-                        </CustomText>
-                        <CustomText>{formatCurrency(selectedInvoice.totalBeforeTax)}</CustomText>
-                      </View>
-                    )}
-                    {isVatRegistered && (
-                      <View className="flex-row justify-between mb-2">
-                        <View className="flex-row">
-                          <CustomText weight="bold">
-                            {t("print.tax")}
-                          </CustomText>
-                          <CustomText weight="bold">{` (${vatRate}%)`}</CustomText>
-                        </View>
-
-                        <CustomText>{formatCurrency(selectedInvoice.totalTax)}</CustomText>
-                      </View>
-                    )}
-
-                    {selectedInvoice.WHTAmount>0 &&(
-                     <View className="flex-row justify-between mb-2">
-                        <View className="flex-row">
-                          <CustomText weight="bold">
-                            {t("print.WHT")}
-                          </CustomText>
-                         </View>
-                        <CustomText>{formatCurrency(selectedInvoice.WHTAmount)}</CustomText>
-                      </View>
-                    )}
-                    <View className="flex-row justify-between mb-2">
-                      <CustomText weight="bold">
-                        {t("print.grandTotal")}
-                      </CustomText>
-                      <CustomText weight="bold">
-                        {formatCurrency(selectedInvoice.totalQuotation)}
-                      </CustomText>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
-
-            {/* Print Options Progression UI */}
-            <View
-              style={{
-                backgroundColor: "transparent",
-                borderRadius: 15,
-                padding: 5,
-                marginVertical: 2,
-                borderWidth: 0,
-                borderColor: "transparent",
-              }}
-            >
-              {/* Progress Line Container */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "transparent",
-                  paddingVertical: 8,
-                }}
-              >
-                {getAvailablePrintSteps().map((step, index) => {
-                  const stepConfig = {
-                    QA: {
-                      icon: "document-text-outline",
-                      label: t("print.printQuotation"),
-                      type: "Quotation",
-                      onPress: () => {
-                        handlePrintQuotation();
-                      },
-                    },
-                    IV: {
-                      icon: "receipt-outline",
-                      label: t("print.printInvoice"),
-                      type: "Invoice",
-                      onPress: () => {
-                        handlePrintInvoice();
-                      },
-                    },
-                    RE: {
-                      icon: "checkmark-circle-outline",
-                      label: isVatRegistered
-                        ? t("print.printTaxInvoice")
-                        : t("print.printReceipt"),
-                      type: "Receipt",
-                      onPress: () => {
-                        handlePrintReceipt();
-                      },
-                    },
-                  };
-
-                  const availableSteps = getAvailablePrintSteps();
-                  const isLastStep = index === availableSteps.length - 1;
-                  const isStepActive = isPrintStepCompleted(step);
-
-                  return (
-                    <React.Fragment key={step}>
-                      {/* Step Circle */}
-                      <TouchableOpacity
-                        style={{
-                          alignItems: "center",
-                          backgroundColor: "transparent",
-                        }}
-                        onPress={
-                          isStepActive ? stepConfig[step].onPress : undefined
-                        }
-                        activeOpacity={isStepActive ? 0.7 : 1}
-                        disabled={!isStepActive}
-                      >
-                        <View
-                          style={{
-                            width: 45,
-                            height: 45,
-                            borderRadius: 22.5,
-                            backgroundColor: getPrintStepBackgroundColor(step),
-                            borderWidth: 3,
-                            borderColor: getPrintStepBorderColor(step),
-                            alignItems: "center",
-                            justifyContent: "center",
-                            opacity: getPrintStepOpacity(step),
-                            shadowColor: isPrintStepCompleted(step)
-                              ? "#04ecc1"
-                              : "transparent",
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: isPrintStepCompleted(step) ? 0.6 : 0,
-                            shadowRadius: isPrintStepCompleted(step) ? 8 : 0,
-                            elevation: isPrintStepCompleted(step) ? 8 : 0,
-                          }}
-                        >
-                          <Ionicons
-                            name={stepConfig[step].icon as any}
-                            size={20}
-                            color={getPrintStepIconColor(step)}
-                          />
-                        </View>
-                        <CustomText
-                          style={{
-                            fontSize: 9,
-                            color: getPrintStepDescriptionColor(step),
-                            textAlign: "center",
-                            marginTop: 4,
-                            fontWeight: "500",
-                          }}
-                        >
-                          {stepConfig[step].label}
-                        </CustomText>
-                      </TouchableOpacity>
-
-                      {/* Connection Line - Only show if not last step */}
-                      {!isLastStep && (
-                        <View
-                          style={{
-                            width: 30,
-                            height: 3,
-                            marginHorizontal: 6,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingHorizontal: 2,
-                          }}
-                        >
-                          {[...Array(3)].map((_, dotIndex) => (
-                            <View
-                              key={dotIndex}
-                              style={{
-                                width: 3,
-                                height: 3,
-                                borderRadius: 1.5,
-                                backgroundColor:
-                                  index <
-                                  availableSteps.findIndex(
-                                    (s) => s === selectedPrintType,
-                                  )
-                                    ? "#04ecc1"
-                                    : theme === "dark"
-                                      ? "#444"
-                                      : "#ddd",
-                              }}
-                            />
-                          ))}
-                        </View>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={closeInvoiceModalAndRefresh}
+        selectedInvoice={selectedInvoice}
+        printRef={printRef}
+        theme={theme}
+        t={t}
+        isVatRegistered={isVatRegistered}
+        formatCurrency={formatCurrency}
+        formatDate={formatDate}
+        getDocumentTitle={getDocumentTitle}
+        getDisplayId={getDisplayId}
+        selectedPrintType={selectedPrintType}
+        getAvailablePrintSteps={getAvailablePrintSteps}
+        isPrintStepCompleted={isPrintStepCompleted}
+        getPrintStepBackgroundColor={getPrintStepBackgroundColor}
+        getPrintStepBorderColor={getPrintStepBorderColor}
+        getPrintStepOpacity={getPrintStepOpacity}
+        getPrintStepIconColor={getPrintStepIconColor}
+        getPrintStepDescriptionColor={getPrintStepDescriptionColor}
+        handlePrintQuotation={handlePrintQuotation}
+        handlePrintInvoice={handlePrintInvoice}
+        handlePrintReceipt={handlePrintReceipt}
+      />
 
       {/* PDF Preview Modal */}
       <Modal
@@ -2321,136 +1930,62 @@ export default function Print() {
                   <>
                     {/* Monthly Statistics */}
                     <View className="flex-row flex-wrap mb-4">
-                      <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className=" mb-1">
-                            {t("print.totalSales")}
-                          </CustomText>
+                      {/* Total Sale */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.totalSales")}</CustomText>
                           <CustomText weight="bold" className="text-xl">
                             {formatCurrency(monthlyTotals.totalSales)}
                           </CustomText>
                         </View>
                       </View>
 
-                      <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pl-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className=" mb-1">
-                            {t("print.totalUnpaidSales")}
-                          </CustomText>
+                      {/* Account Receivable */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.accountReceivable")}</CustomText>
                           <CustomText weight="bold" className="text-xl">
-                            {formatCurrency(monthlyTotals.totalUnpaidSales)}
+                            {formatCurrency(monthlyTotals.accountReceivable)}
                           </CustomText>
                         </View>
                       </View>
 
-                      <View
-                        className={`w-1/2 p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className=" mb-1">
-                            {t("print.totalOrders")}
-                          </CustomText>
+                      {/* Total Expense */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.totalExpenses")}</CustomText>
                           <CustomText weight="bold" className="text-xl">
-                            {monthlyTotals.totalOrders}
+                            {formatCurrency(monthlyTotals.totalExpenses)}
                           </CustomText>
                         </View>
                       </View>
 
-                      <View
-                        className={`p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className="mb-1">
-                            {t("print.paidOrders")}
+                      {/* Ads Spend */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.adsSpend")}</CustomText>
+                          <CustomText weight="bold" className="text-xl">
+                            {formatCurrency(monthlyTotals.adsSpend)}
                           </CustomText>
+                        </View>
+                      </View>
+
+                      {/* Paid / Total (parent bills) */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.paidOrders")}</CustomText>
                           <View className="flex-row items-center">
                             <CustomText weight="bold" className="text-xl">
                               {monthlyTotals.paidOrders}
                             </CustomText>
-                            <View className="ml-2 pt-1 px-2 rounded-full bg-green-700">
-                              <CustomText
-                                className="text-white text-xs"
-                                style={{ color: "white", fontSize: 10 }}
-                              >
-                                {monthlyTotals.totalOrders > 0
-                                  ? `${Math.round(
-                                      (monthlyTotals.paidOrders /
-                                        monthlyTotals.totalOrders) *
-                                        100,
-                                    )}%`
-                                  : "0%"}
-                              </CustomText>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-
-                      <View
-                        className={`p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className=" mb-1">
-                            {t("print.unpaidOrders")}
-                          </CustomText>
-                          <View className="flex-row items-center">
+                            <CustomText className="text-xl mx-1">/</CustomText>
                             <CustomText weight="bold" className="text-xl">
-                              {monthlyTotals.unpaidOrders}
+                              {monthlyTotals.totalOrders}
                             </CustomText>
-                            <View className="ml-2 pt-1 px-2 rounded-full bg-orange-700">
-                              <CustomText
-                                className="text-white text-xs"
-                                style={{ color: "white", fontSize: 10 }}
-                              >
+                            <View className="ml-2 pt-1 px-2 rounded-full bg-green-700">
+                              <CustomText style={{ color: "white", fontSize: 10 }}>
                                 {monthlyTotals.totalOrders > 0
-                                  ? `${Math.round(
-                                      (monthlyTotals.unpaidOrders /
-                                        monthlyTotals.totalOrders) *
-                                        100,
-                                    )}%`
+                                  ? `${Math.round((monthlyTotals.paidOrders / monthlyTotals.totalOrders) * 100)}%`
                                   : "0%"}
                               </CustomText>
                             </View>
@@ -2458,21 +1993,10 @@ export default function Print() {
                         </View>
                       </View>
 
-                      <View
-                        className={`p-4 ${
-                          isMobile() ? "w-full" : "w-1/2 pr-2"
-                        } mb-4`}
-                      >
-                        <View
-                          style={{
-                            backgroundColor:
-                              theme === "dark" ? "#2D2D2D" : "#e1e1e1",
-                          }}
-                          className="p-4 rounded-lg"
-                        >
-                          <CustomText className=" mb-1">
-                            {t("print.avgOrderValue")}
-                          </CustomText>
+                      {/* Average Sale */}
+                      <View className={`p-2 ${isMobile() ? "w-full" : "w-1/2"} mb-3`}>
+                        <View style={{ backgroundColor: theme === "dark" ? "#2D2D2D" : "#e1e1e1" }} className="p-4 rounded-lg">
+                          <CustomText className="mb-1">{t("print.avgOrderValue")}</CustomText>
                           <CustomText weight="bold" className="text-xl">
                             {formatCurrency(monthlyTotals.averageOrderValue)}
                           </CustomText>
