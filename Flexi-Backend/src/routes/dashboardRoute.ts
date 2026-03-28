@@ -7,6 +7,7 @@ import {
   getTopStores,
   getRevenueByPlatform,
   getExpenseBreakdown,
+  getExpenseByCustomGroup,
   getAccountsPayableReceivable,
   getAPARDetail,
   getIncomeExpenseDetail,
@@ -31,6 +32,9 @@ router.get("/revenue-by-platform", authenticateToken, getRevenueByPlatform);
 
 // Expense breakdown endpoint - GET /dashboard/expense-breakdown
 router.get("/expense-breakdown", authenticateToken, getExpenseBreakdown);
+
+// Expense by custom group - GET /dashboard/expense-by-custom-group
+router.get("/expense-by-custom-group", authenticateToken, getExpenseByCustomGroup);
 
 // Accounts payable/receivable endpoint - GET /dashboard/accounts-payable-receivable
 router.get("/accounts-payable-receivable", authenticateToken, getAccountsPayableReceivable);

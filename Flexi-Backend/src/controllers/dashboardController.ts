@@ -748,6 +748,109 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
   }
 };
 
+// Get Expense by Custom Group
+export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
+  try {
+    const { memberId, period, startDate, endDate } = req.query;
+
+    if (!memberId) {
+      return res.status(400).json({ error: "Member ID is required" });
+    }
+
+    let dateFilter: any = {};
+    const now = new Date();
+
+    switch (period) {
+      case 'today': {
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = new Date(now);
+        todayEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: todayStart, lte: todayEnd };
+        break;
+      }
+      case 'thisMonth': {
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        dateFilter = { gte: monthStart, lte: monthEnd };
+        break;
+      }
+      case 'custom': {
+        if (startDate && endDate) {
+          const start = new Date(startDate as string);
+          const end = new Date(endDate as string);
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
+        }
+        break;
+      }
+    }
+
+    const businessId = await prisma.member.findUnique({
+      where: { uniqueId: memberId as string },
+      select: { businessId: true },
+    });
+
+    const [totalAgg, namedExpenses] = await Promise.all([
+      // Total of ALL expenses in the period
+      prisma.expense.aggregate({
+        where: {
+          businessAcc: businessId?.businessId ?? 0,
+          deleted: false,
+          save: true,
+          date: dateFilter,
+        },
+        _sum: { amount: true },
+      }),
+      // Only expenses with a named customGroup
+      prisma.expense.findMany({
+        where: {
+          businessAcc: businessId?.businessId ?? 0,
+          deleted: false,
+          save: true,
+          date: dateFilter,
+          customGroup: { not: null },
+          AND: [{ customGroup: { not: "" } }],
+        },
+        select: { customGroup: true, amount: true },
+      }),
+    ]);
+
+    const total = totalAgg._sum.amount?.toNumber() ?? 0;
+
+    // Group named customGroup expenses
+    const groupMap: Record<string, number> = {};
+    for (const e of namedExpenses) {
+      const key = e.customGroup!.trim();
+      groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+    }
+
+    const namedTotal = Object.values(groupMap).reduce((sum, v) => sum + v, 0);
+    const othersAmount = total - namedTotal;
+
+    const named = Object.entries(groupMap).map(([group, amount]) => ({
+      group,
+      amount,
+      percentage: total > 0 ? Math.round((amount / total) * 1000) / 10 : 0,
+    })).sort((a, b) => b.amount - a.amount);
+
+    // Append Others at the end if there is any
+    const result = othersAmount > 0
+      ? [...named, {
+          group: "Others",
+          amount: othersAmount,
+          percentage: total > 0 ? Math.round((othersAmount / total) * 1000) / 10 : 0,
+        }]
+      : named;
+
+    res.json({ data: result, total });
+  } catch (error) {
+    console.error("Error fetching expense by custom group:", error);
+    res.status(500).json({ error: "Failed to fetch expense by custom group" });
+  }
+};
+
 // Get Accounts Payable and Receivable
 export const getAccountsPayableReceivable = async (req: Request, res: Response) => {
   try {

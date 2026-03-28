@@ -716,6 +716,12 @@
       "title": "Top Platforms",
       "noData": "No platform data available"
     },
+    "expenseByCustomGroup": {
+      "title": "Expense by Custom Group",
+      "noData": "No custom group data available",
+      "total": "Total",
+      "others": "Others"
+    },
     "start": {
       "title": "Start Your Business Journey",
       "subtitle": "Please do the following steps to get started",

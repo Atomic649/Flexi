@@ -51,6 +51,12 @@ interface ExpenseBreakdown {
   type: 'expense' | 'ads';
 }
 
+interface ExpenseByCustomGroup {
+  group: string;
+  amount: number;
+  percentage: number;
+}
+
 interface DashboardFilters {
   memberId: string;
   startDate?: string;
@@ -226,6 +232,23 @@ class CallAPIDashboard {
       return response.data;
     } catch (error) {
       console.error("🚨 Get AP/AR Detail API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
+  // Get Expense by Custom Group
+  async getExpenseByCustomGroupAPI(filters: Partial<DashboardFilters>): Promise<{ data: ExpenseByCustomGroup[]; total: number }> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const queryString = this.buildQueryString(filters);
+      const response = await axiosInstance.get(`/dashboard/expense-by-custom-group?${queryString}`);
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Get Expense By Custom Group API Error:", error);
       if (axios.isAxiosError(error) && error.response) {
         throw error.response.data;
       } else {

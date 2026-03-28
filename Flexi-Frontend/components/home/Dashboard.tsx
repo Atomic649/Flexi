@@ -23,6 +23,7 @@ import Dropdown3 from "../dropdown/Dropdown3";
 import { Text } from "react-native";
 import { getResponsiveStyles } from "@/utils/responsive";
 import LinearChart from "@/components/LinearChart";
+import PieChart from "@/components/PieChart";
 
 const styles = getResponsiveStyles();
 const { headerFontSize } = styles;
@@ -193,6 +194,7 @@ export default function Dashboard() {
   const [salesChartData, setSalesChartData] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
+  const [expenseByCustomGroup, setExpenseByCustomGroup] = useState<{ data: any[]; total: number }>({ data: [], total: 0 });
 
   useEffect(() => {
     fetchInitialData();
@@ -274,13 +276,14 @@ export default function Dashboard() {
       //   console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData, platformsData, apArData] =
+      const [metricsData, chartData, productsData, platformsData, apArData, customGroupData] =
         await Promise.all([
           CallDashboardAPI.getDashboardMetricsAPI(filters),
           CallDashboardAPI.getSalesChartDataAPI(filters),
           CallDashboardAPI.getTopProductsAPI({ ...filters, limit: 5 }),
           CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
           CallDashboardAPI.getAccountsPayableReceivableAPI(filters),
+          CallDashboardAPI.getExpenseByCustomGroupAPI(filters),
         ]);
 
       // Update state with fetched data
@@ -301,6 +304,7 @@ export default function Dashboard() {
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
       setTopPlatforms(platformsData || []);
+      setExpenseByCustomGroup(customGroupData || { data: [], total: 0 });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -1156,6 +1160,31 @@ export default function Dashboard() {
                   </View>
                 )}
               </View>
+
+              {/* Expense by Custom Group */}
+              {expenseByCustomGroup.data.length > 0 && (
+                <View
+                  style={{
+                    backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                    borderRadius: 16,
+                    padding: 20,
+                    marginBottom: 24,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
+                    <Ionicons
+                      name="pie-chart"
+                      size={18}
+                      color={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                      style={{ marginRight: 8 }}
+                    />
+                    <CustomText weight="bold" className="text-lg pt-1">
+                      {t("dashboard.expenseByCustomGroup.title")}
+                    </CustomText>
+                  </View>
+                  <PieChart data={expenseByCustomGroup.data} total={expenseByCustomGroup.total} />
+                </View>
+              )}
 
               {/* Top Platforms - New Section */}
               <View
