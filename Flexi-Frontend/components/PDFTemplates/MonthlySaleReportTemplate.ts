@@ -38,20 +38,29 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
   // Check if business is VAT registered
   const isVatRegistered = businessDetails?.vat === true;
 
+  // For split child bills, amounts stored are the full parent amount — apply splitPercent
+  const getSplitAmount = (bill: any, field: string): number => {
+    const amount = Number(bill[field]) || 0;
+    if (bill.isSplitChild && bill.splitPercent != null) {
+      return amount * (bill.splitPercent / 100);
+    }
+    return amount;
+  };
+
   // Recalculate monthlyTotals based on receiptBills
   const totalSales = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (Number(bill.total) || 0),
+    (sum: number, bill: any) => sum + getSplitAmount(bill, "total"),
     0,
   );
   const totalSalesBeforeTax = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (Number(bill.totalBeforeTax) || 0),
+    (sum: number, bill: any) => sum + getSplitAmount(bill, "totalBeforeTax"),
     0,
   );
   const whtBills = receiptBills.filter(
     (bill: any) => (Number(bill.WHTAmount) || 0) > 0,
   );
   const WHTAmount = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (Number(bill.WHTAmount) || 0),
+    (sum: number, bill: any) => sum + getSplitAmount(bill, "WHTAmount"),
     0,
   );
   const totalOrders = receiptBills.length;
@@ -65,18 +74,18 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
   // Calculate totals for all product items across all
   const vatTotal = isVatRegistered
     ? receiptBills.reduce(
-        (sum: number, bill: any) => sum + (Number(bill.totalTax) || 0),
+        (sum: number, bill: any) => sum + getSplitAmount(bill, "totalTax"),
         0,
       )
     : 0;
   const grandTotal = isVatRegistered
     ? receiptBills.reduce(
-        (sum: number, bill: any) => sum + (Number(bill.totalAfterTax) || 0),
+        (sum: number, bill: any) => sum + getSplitAmount(bill, "totalAfterTax"),
         0,
       )
     : totalSales;
   const rawTotal = receiptBills.reduce(
-    (sum: number, bill: any) => sum + (Number(bill.totalBeforeTax) || 0),
+    (sum: number, bill: any) => sum + getSplitAmount(bill, "totalBeforeTax"),
     0,
   );
   return `
@@ -293,11 +302,11 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                             .join("")}
                         </ul>
                       </td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.totalBeforeTax)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(getSplitAmount(bill, "totalBeforeTax"))}</td>
                       ${
                         isVatRegistered
-                          ? `<td class="text-right">${formatCurrencyForPDF(bill.totalTax)}</td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.totalAfterTax)}</td>`
+                          ? `<td class="text-right">${formatCurrencyForPDF(getSplitAmount(bill, "totalTax"))}</td>
+                      <td class="text-right">${formatCurrencyForPDF(getSplitAmount(bill, "totalAfterTax"))}</td>`
                           : ""
                       }
                     </tr>
@@ -363,9 +372,9 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
                             .join("")}
                         </ul>
                       </td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.totalBeforeTax)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(getSplitAmount(bill, "totalBeforeTax"))}</td>
                       <td class="text-right">${bill.WHTpercent || 0}%</td>
-                      <td class="text-right">${formatCurrencyForPDF(bill.WHTAmount)}</td>
+                      <td class="text-right">${formatCurrencyForPDF(getSplitAmount(bill, "WHTAmount"))}</td>
                     </tr>
                   `;
                   })
