@@ -227,7 +227,7 @@ export const generateMonthlyReportHTML = (data: MonthlyReportData): string => {
           <div class="summary-grid">
             <div class="summary-card">
               <div class="label">${t("print.totalSalesAfterTax")}</div>
-              <div class="value">${formatCurrencyForPDF(filteredMonthlyTotals.totalSales)}</div>
+              <div class="value">${formatCurrencyForPDF(grandTotal)}</div>
             </div>
               <div class="summary-card">
               <div class="label">${t("print.totalSalesBeforeTax")}</div>
