@@ -38,6 +38,7 @@ type ProductDetail = {
 
 type BillDetail = {
   billId: string;
+  expNo: string;
   purchaseAt: string;
   total: number;
   discount: number;
@@ -48,8 +49,10 @@ type BillDetail = {
 
 type ExpenseDetail = {
   id: string;
+  expNo: string;
   date: string;
   amount: number;
+  debtAmount?: number;
   note?: string;
   sName?: string;
   desc?: string;
@@ -149,6 +152,22 @@ export default function MonthlyDetail() {
     router.push(`/print?billId=${encodeURIComponent(String(billId))}`);
   };
 
+  // Navigate to expense detail screen
+  const handlePressExpNo = (expense: ExpenseDetail) => {
+    router.push({
+      pathname: "/expenseDetailScreen",
+      params: {
+        id: String(expense.id),
+        date: expense.date,
+        expenses: String(expense.amount),
+        note: expense.note ?? "",
+        desc: expense.desc ?? "",
+        image: expense.image ?? "",
+        type: "expense",
+      },
+    });
+  };
+
   return (
     <View
       className={`flex-1 ${backgroundColorClass}`}
@@ -189,7 +208,10 @@ export default function MonthlyDetail() {
               const calculatedExpenses = reportDetails
                 ? reportDetails.expenses.reduce(
                     (sum, expense) =>
-                      sum + parseFloat(expense.amount.toString()),
+                      sum +
+                      (parseFloat(expense.debtAmount?.toString() ?? "0") > 0
+                        ? parseFloat(expense.debtAmount!.toString())
+                        : parseFloat(expense.amount.toString())),
                     0,
                   )
                 : selectedItem.expenses || 0;
@@ -366,7 +388,8 @@ export default function MonthlyDetail() {
                                               : "#656565",
                                         }}
                                       >
-                                        {product.productList?.name ?? product.product}
+                                        {product.productList?.name ??
+                                          product.product}
                                       </CustomText>
                                       <View className="flex-row items-center ">
                                         <Text
@@ -459,7 +482,7 @@ export default function MonthlyDetail() {
                         className={`border-b pb-3 mb-3 ${theme === "dark" ? "border-zinc-700" : "border-zinc-200"}`}
                       >
                         <Text
-                          className={`text-sm ${textColorClass} opacity-70`}
+                          className={`text-sm ${textColorClass} opacity-70 mb-1`}
                         >
                           {new Date(expense.date).toLocaleDateString("th-TH")}{" "}
                           {new Date(expense.date).toLocaleTimeString("th-TH", {
@@ -468,18 +491,40 @@ export default function MonthlyDetail() {
                             hour12: false,
                           })}
                         </Text>
+                        <View className="flex-row justify-between items-center mb-1">
+                          <TouchableOpacity
+                            onPress={() => handlePressExpNo(expense)}
+                            activeOpacity={0.7}
+                          >
+                            <CustomText
+                              className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
+                              style={{
+                                backgroundColor:
+                                  theme === "dark" ? "#1f2937" : "#dededd",
+                              }}
+                            >
+                              {`#${expense.expNo}`}
+                            </CustomText>
+                          </TouchableOpacity>
+                        </View>
                         <View className="flex-row justify-between items-center">
                           <CustomText
                             className={`font-medium ${textColorClass}`}
                           >
                             {expense.sName}
                           </CustomText>
-                          <Text
-                            className={`font-bold text-base text-[#ef4444]`}
-                          >
-                            {`${formatCurrency(parseFloat(expense.amount.toString()))}`}
-                          </Text>
+
+                          {parseFloat(expense.debtAmount?.toString() ?? "0") > 0 ? (
+                            <Text className={`font-bold text-base text-[#ef444483]`}>
+                              {formatCurrency(parseFloat(expense.debtAmount!.toString()))}
+                            </Text>
+                          ) : (
+                            <Text className={`font-bold text-base text-[#ef4444]`}>
+                              {formatCurrency(parseFloat(expense.amount.toString()))}
+                            </Text>
+                          )}
                         </View>
+
                         {(expense.desc || expense.note) && (
                           <CustomText
                             className={`text-sm ${textColorClass} opacity-70`}

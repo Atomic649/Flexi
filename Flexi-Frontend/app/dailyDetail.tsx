@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
 import { getMemberId } from "@/utils/utility";
 import CallAPIReport from "@/api/report_api";
@@ -41,8 +48,10 @@ type BillDetail = {
 
 type ExpenseDetail = {
   id: string;
+  expNo: string;
   date: string;
   amount: number;
+  debtAmount?: number;
   note?: string;
   sName?: string;
   desc?: string;
@@ -78,7 +87,7 @@ export default function DailyDetail() {
   const textColorClass = useTextColorClass();
 
   const [reportDetails, setReportDetails] = useState<ReportDetails | null>(
-    null
+    null,
   );
   const [loadingDetails, setLoadingDetails] = useState(true);
   const [selectedItem, setSelectedItem] = useState<DailyCardProps | null>(null);
@@ -103,14 +112,14 @@ export default function DailyDetail() {
         if (memberId && params.date) {
           const details = await CallAPIReport.getDetailsEachDateAPI(
             memberId,
-            params.date as string
+            params.date as string,
           );
           setReportDetails(details);
 
           // Parse the selected item from params
           if (params.selectedItem) {
             const item = JSON.parse(
-              params.selectedItem as string
+              params.selectedItem as string,
             ) as DailyCardProps;
             setSelectedItem(item);
           }
@@ -131,14 +140,31 @@ export default function DailyDetail() {
     router.push(`/print?billId=${encodeURIComponent(String(billId))}`);
   };
 
+  // Navigate to expense detail screen
+  const handlePressExpNo = (expense: ExpenseDetail) => {
+    router.push({
+      pathname: "/expenseDetailScreen",
+      params: {
+        id: String(expense.id),
+        date: expense.date,
+        expenses: String(expense.amount),
+        note: expense.note ?? "",
+        desc: expense.desc ?? "",
+        image: expense.image ?? "",
+        type: "expense",
+      },
+    });
+  };
 
   return (
-    <View className={`flex-1  ${backgroundColorClass}`}
-    style={{
-              width: isDesktop() ? "60%" : "100%",
-              maxWidth: 900,
-              alignSelf: "center",
-            }}>
+    <View
+      className={`flex-1  ${backgroundColorClass}`}
+      style={{
+        width: isDesktop() ? "60%" : "100%",
+        maxWidth: 900,
+        alignSelf: "center",
+      }}
+    >
       {/* Header */}
       <View
         className={`flex-row items-center justify-center p-4 border-b ${
@@ -147,12 +173,12 @@ export default function DailyDetail() {
       >
         <Text
           className={`text-lg font-bold ${textColorClass}`}
-          style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}          
+          style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
         >
           {(() => {
             const date = new Date(params.date as string);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
             const year = String(date.getFullYear()).slice(-2);
             return `${day}/${month}/${year}`;
           })()}
@@ -175,17 +201,23 @@ export default function DailyDetail() {
               const calculatedExpenses = reportDetails
                 ? reportDetails.expenses.reduce(
                     (sum, expense) => sum + Number(expense.amount),
-                    0
+                    0,
                   )
                 : selectedItem.expenses || 0;
 
               // Recalculate profit using detailed data
               const calculatedAds = reportDetails
-                ? reportDetails.ads.reduce((sum, ad) => sum + Number(ad.adsCost), 0)
+                ? reportDetails.ads.reduce(
+                    (sum, ad) => sum + Number(ad.adsCost),
+                    0,
+                  )
                 : selectedItem.adsCost;
 
               const calculatedSales = reportDetails
-                ? reportDetails.bills.reduce((sum, bill) => sum + Number(bill.total), 0)
+                ? reportDetails.bills.reduce(
+                    (sum, bill) => sum + Number(bill.total),
+                    0,
+                  )
                 : selectedItem.sale;
 
               const recalculatedProfit = calculatedSales - calculatedExpenses;
@@ -205,7 +237,7 @@ export default function DailyDetail() {
                   <View className="space-y-2">
                     <View className="flex-row justify-between">
                       <CustomText className={textColorClass}>{`${t(
-                        "daily.sale"
+                        "daily.sale",
                       )} :`}</CustomText>
                       <Text className={`font-semibold ${textColorClass}`}>
                         {formatCurrency(calculatedSales)}
@@ -214,7 +246,7 @@ export default function DailyDetail() {
 
                     <View className="flex-row justify-between">
                       <CustomText className={textColorClass}>{`${t(
-                        "daily.expenses"
+                        "daily.expenses",
                       )} :`}</CustomText>
                       <Text className={`font-semibold text-[#ef4444]`}>
                         {`-${formatCurrency(calculatedExpenses)}`}
@@ -222,10 +254,14 @@ export default function DailyDetail() {
                     </View>
                     <View className="flex-row pl-5 justify-between">
                       <CustomText className={textColorClass}>{`${t(
-                        "daily.adsCost"
+                        "daily.adsCost",
                       )} :`}</CustomText>
-                      <Text className={`font-semibold `}
-                      style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}>
+                      <Text
+                        className={`font-semibold `}
+                        style={{
+                          color: theme === "dark" ? "#d4d4d8" : "#27272a",
+                        }}
+                      >
                         {`${formatCurrency(calculatedAds)}`}
                       </Text>
                     </View>
@@ -262,77 +298,122 @@ export default function DailyDetail() {
               >
                 <CustomText
                   className={`text-lg font-semibold mb-3 ${textColorClass}`}
-                   weight="bold"
+                  weight="bold"
                 >
                   {`${t("daily.bills")} (${reportDetails.bills.length})`}
                 </CustomText>
                 {reportDetails.bills.length > 0 ? (
                   <>
-                  {(showAllBills ? reportDetails.bills : reportDetails.bills.slice(0, 5)).map((bill) => (
-                    <View
-                      key={bill.billId}
-                      className={`border-b pb-4 mb-1 ${
-                        theme === "dark" ? "border-zinc-700" : "border-zinc-200"
-                      }`}
-                    >
-                      {/* Bill Info */}
-                      <View className="flex-row justify-between items-center mb-2">
-                        <Text
-                          className={`text-sm ${textColorClass} opacity-70`}
-                        >
-                          {new Date(bill.purchaseAt).toLocaleTimeString(
-                            "th-TH",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            }
-                          )}
-                        </Text>
-                      </View>
+                    {(showAllBills
+                      ? reportDetails.bills
+                      : reportDetails.bills.slice(0, 5)
+                    ).map((bill) => (
+                      <View
+                        key={bill.billId}
+                        className={`border-b pb-4 mb-1 ${
+                          theme === "dark"
+                            ? "border-zinc-700"
+                            : "border-zinc-200"
+                        }`}
+                      >
+                        {/* Bill Info */}
+                        <View className="flex-row justify-between items-center mb-2">
+                          <Text
+                            className={`text-sm ${textColorClass} opacity-70`}
+                          >
+                            {new Date(bill.purchaseAt).toLocaleTimeString(
+                              "th-TH",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              },
+                            )}
+                          </Text>
+                        </View>
 
-                      {/* Bill Header */}
-                      <View className="flex-row justify-between items-center mb-1">
-                        <TouchableOpacity
-                          onPress={() => handlePressBillId(String(bill.billId))}
-                          activeOpacity={0.7}
-                        >
-                          <CustomText
-                            className={`font-bold text-sm pt-1 px-1 ${textColorClass}
+                        {/* Bill Header */}
+                        <View className="flex-row justify-between items-center mb-1">
+                          <TouchableOpacity
+                            onPress={() =>
+                              handlePressBillId(String(bill.billId))
+                            }
+                            activeOpacity={0.7}
+                          >
+                            <CustomText
+                              className={`font-bold text-sm pt-1 px-1 ${textColorClass}
                            `}
+                              style={{
+                                backgroundColor:
+                                  theme === "dark" ? "#1f2937" : "#dededd",
+                              }}
+                            >
+                              {`#${String(bill.billId)}`}
+                            </CustomText>
+                          </TouchableOpacity>
+                          <Text
+                            className={`font-bold text-base ${textColorClass}`}
                             style={{
-                              backgroundColor:
-                                theme === "dark" ? "#1f2937" : "#dededd",
+                              color: theme === "dark" ? "#d4d4d8" : "#27272a",
                             }}
                           >
-                            {`#${String(bill.billId)}`}
-                          </CustomText>
-                        </TouchableOpacity>
-                        <Text
-                          className={`font-bold text-base ${textColorClass}`}
-                          style={{
-                            color: theme === "dark" ? "#d4d4d8" : "#27272a",
-                          }}
-                        >
-                          {formatCurrency(bill.total )}
-                        </Text>
-                      </View>
+                            {formatCurrency(bill.total)}
+                          </Text>
+                        </View>
 
-                      {/* Products List */}
-                      {bill.product && bill.product.length > 0 && (
-                        <View
-                          className={`rounded-md`}
-                        >
-                          {bill.product.map((product, index) => {
-                            const itemTotal =
-                              product.quantity * product.unitPrice -
-                              product.unitDiscount;
-                            return (
-                              <View key={index} className="mb-1 last:mb-0">
-                                <View className="flex-row justify-between items-start">
-                                  <View className="flex-1 mr-2 ">
-                                    <CustomText
-                                      className={`text-sm font-medium ${textColorClass}`}
+                        {/* Products List */}
+                        {bill.product && bill.product.length > 0 && (
+                          <View className={`rounded-md`}>
+                            {bill.product.map((product, index) => {
+                              const itemTotal =
+                                product.quantity * product.unitPrice -
+                                product.unitDiscount;
+                              return (
+                                <View key={index} className="mb-1 last:mb-0">
+                                  <View className="flex-row justify-between items-start">
+                                    <View className="flex-1 mr-2 ">
+                                      <CustomText
+                                        className={`text-sm font-medium ${textColorClass}`}
+                                        style={{
+                                          color:
+                                            theme === "dark"
+                                              ? "#d4d4d8"
+                                              : "#656565",
+                                        }}
+                                      >
+                                        {product.productList?.name ??
+                                          product.product}
+                                      </CustomText>
+                                      <View className="flex-row items-center ">
+                                        <Text
+                                          className={`text-xs opacity-60`}
+                                          style={{
+                                            color:
+                                              theme === "dark"
+                                                ? "#a1a1aa"
+                                                : "#7c7c7c",
+                                          }}
+                                        >
+                                          {`${product.quantity} ${
+                                            product.unit
+                                          } × ${formatCurrency(
+                                            product.unitPrice,
+                                          )}`}
+                                        </Text>
+                                        {product.unitDiscount > 0 && (
+                                          <Text
+                                            className="text-xs text-bold ml-2"
+                                            style={{ color: "#e33201a2" }}
+                                          >
+                                            {`-${formatCurrency(
+                                              product.unitDiscount,
+                                            )}`}
+                                          </Text>
+                                        )}
+                                      </View>
+                                    </View>
+                                    <Text
+                                      className={`text-sm font-semibold ${textColorClass}`}
                                       style={{
                                         color:
                                           theme === "dark"
@@ -340,60 +421,35 @@ export default function DailyDetail() {
                                             : "#656565",
                                       }}
                                     >
-                                      {product.productList?.name ?? product.product}
-                                    </CustomText>
-                                    <View className="flex-row items-center ">
-                                      <Text className={`text-xs opacity-60`}
-                                      style ={{ color: theme === "dark" ? "#a1a1aa" : "#7c7c7c" }}>
-                                        {`${product.quantity} ${
-                                          product.unit
-                                        } × ${formatCurrency(
-                                          product.unitPrice
-                                        )}`}
-                                      </Text>
-                                      {product.unitDiscount > 0 && (
-                                        <Text
-                                          className="text-xs text-bold ml-2"
-                                          style={{ color: "#e33201a2" }}
-                                        >
-                                          {`-${formatCurrency(
-                                            product.unitDiscount
-                                          )}`}
-                                        </Text>
-                                      )}
-                                    </View>
+                                      {formatCurrency(itemTotal)}
+                                    </Text>
                                   </View>
-                                  <Text
-                                    className={`text-sm font-semibold ${textColorClass}`}
-                                    style={{
-                                      color:
-                                        theme === "dark"
-                                          ? "#d4d4d8"
-                                          : "#656565",
-                                    }}
-                                  >
-                                    {formatCurrency(itemTotal)}
-                                  </Text>
                                 </View>
-                              </View>
-                            );
-                          })}
-                        </View>
-                      )}
-                    </View>
-                  ))}
-                  {reportDetails.bills.length > 5 && (
-                    <TouchableOpacity
-                      onPress={() => setShowAllBills(!showAllBills)}
-                      className="mt-3 p-3 rounded-lg"
-                      activeOpacity={0.7}
-                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
-                    >
-                      <CustomText className={`text-center ${textColorClass} font-medium`}>
-                        {showAllBills ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.bills.length - 5})`}
-                      </CustomText>
-                    </TouchableOpacity>
-                  )}
+                              );
+                            })}
+                          </View>
+                        )}
+                      </View>
+                    ))}
+                    {reportDetails.bills.length > 5 && (
+                      <TouchableOpacity
+                        onPress={() => setShowAllBills(!showAllBills)}
+                        className="mt-3 p-3 rounded-lg"
+                        activeOpacity={0.7}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
+                      >
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllBills
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.bills.length - 5})`}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
                   </>
                 ) : (
                   <CustomText
@@ -412,56 +468,103 @@ export default function DailyDetail() {
               >
                 <CustomText
                   className={`text-lg font-semibold mb-3 ${textColorClass}`}
-                   weight="bold"
+                  weight="bold"
                 >
                   {`${t("daily.expenses")} (${reportDetails.expenses.length})`}
                 </CustomText>
                 {reportDetails.expenses.length > 0 ? (
                   <>
-                  {(showAllExpenses ? reportDetails.expenses : reportDetails.expenses.slice(0, 5)).map((expense) => (
-                    <View
-                      key={expense.id}
-                      className={`border-b pb-3 mb-3 ${
-                        theme === "dark" ? "border-zinc-700" : "border-zinc-200"
-                      }`}
-                    >
-                      <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(expense.date).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })}
-                      </Text>
-                      <View className="flex-row justify-between items-center">
-                        <CustomText className={`font-medium ${textColorClass}`}>
-                          {expense.sName}
-                        </CustomText>
-                        <Text className={`font-bold text-base text-[#ef4444]`}>
-                          {`${formatCurrency(expense.amount)}`}
-                        </Text>
-                      </View>
-                      {(expense.desc || expense.note) && (
-                        <CustomText
-                          className={`text-sm ${textColorClass} opacity-70`}
+                    {(showAllExpenses
+                      ? reportDetails.expenses
+                      : reportDetails.expenses.slice(0, 5)
+                    ).map((expense) => (
+                      <View
+                        key={expense.id}
+                        className={`border-b pb-3 mb-3 ${
+                          theme === "dark"
+                            ? "border-zinc-700"
+                            : "border-zinc-200"
+                        }`}
+                      >
+                        <Text
+                          className={`text-sm ${textColorClass} opacity-70 mb-1`}
                         >
-                          {expense.desc || expense.note}
+                          {new Date(expense.date).toLocaleTimeString("th-TH", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </Text>
+                        <View className="flex-row justify-between items-center mb-1">
+                          <TouchableOpacity
+                            onPress={() => handlePressExpNo(expense)}
+                            activeOpacity={0.7}
+                          >
+                            <CustomText
+                              className={`font-bold text-sm pt-1 px-1 ${textColorClass}`}
+                              style={{
+                                backgroundColor:
+                                  theme === "dark" ? "#1f2937" : "#dededd",
+                              }}
+                            >
+                              {`#${expense.expNo}`}
+                            </CustomText>
+                          </TouchableOpacity>
+                        </View>
+                        <View className="flex-row justify-between items-center">
+                          <CustomText
+                            className={`font-medium ${textColorClass}`}
+                          >
+                            {expense.sName}
+                          </CustomText>
+
+                          {parseFloat(expense.debtAmount?.toString() ?? "0") >
+                          0 ? (
+                            <Text
+                              className={`font-bold text-base text-[#ef444483]`}
+                            >
+                              {formatCurrency(
+                                parseFloat(expense.debtAmount!.toString()),
+                              )}
+                            </Text>
+                          ) : (
+                            <Text
+                              className={`font-bold text-base text-[#ef4444]`}
+                            >
+                              {formatCurrency(
+                                parseFloat(expense.amount.toString()),
+                              )}
+                            </Text>
+                          )}
+                        </View>
+                        {(expense.desc || expense.note) && (
+                          <CustomText
+                            className={`text-sm ${textColorClass} opacity-70`}
+                          >
+                            {expense.desc || expense.note}
+                          </CustomText>
+                        )}
+                      </View>
+                    ))}
+                    {reportDetails.expenses.length > 5 && (
+                      <TouchableOpacity
+                        onPress={() => setShowAllExpenses(!showAllExpenses)}
+                        className="mt-3 p-3 rounded-lg"
+                        activeOpacity={0.7}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
+                      >
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllExpenses
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.expenses.length - 5})`}
                         </CustomText>
-                      )}
-                      
-                    </View>
-                  ))}
-                  {reportDetails.expenses.length > 5 && (
-                    <TouchableOpacity
-                      onPress={() => setShowAllExpenses(!showAllExpenses)}
-                      className="mt-3 p-3 rounded-lg"
-                      activeOpacity={0.7}
-                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
-                    >
-                      <CustomText className={`text-center ${textColorClass} font-medium`}>
-                        {showAllExpenses ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.expenses.length - 5})`}
-                      </CustomText>
-                    </TouchableOpacity>
-                  )}
+                      </TouchableOpacity>
+                    )}
                   </>
                 ) : (
                   <CustomText
@@ -481,65 +584,82 @@ export default function DailyDetail() {
                 <CustomText
                   className={`text-lg font-semibold mb-3 `}
                   style={{ color: theme === "dark" ? "#d4d4d8" : "#27272a" }}
-                   weight="bold"
+                  weight="bold"
                 >
                   {`${t("daily.adsCost")} (${reportDetails.ads?.length || 0})`}
                 </CustomText>
                 {reportDetails.ads && reportDetails.ads.length > 0 ? (
                   <>
-                  {(showAllAds ? reportDetails.ads : reportDetails.ads.slice(0, 5)).map((ad) => (
-                    <View
-                      key={ad.id}
-                      className={`border-b pb-3 mb-3 ${
-                        theme === "dark" ? "border-zinc-700" : "border-zinc-200"
-                      }`}
-                    >
-                       <Text className={`text-sm ${textColorClass} opacity-70`}>
-                        {new Date(ad.date).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })}
-                      </Text>
-                      <View className="flex-row justify-between items-center mb-2">
-                        <View className="flex-1">
-                          <CustomText
-                            className={`font-medium ${textColorClass}`}
-                          >
-                            {ad.platform.platform}
-                          </CustomText>
-                          <CustomText
-                            className={`text-sm ${textColorClass} opacity-70`}
-                          >
-                          {ad.platform.accName}
-                          </CustomText>
-                          {(ad.platform.accId || ad.platform.campaignId) && (
-                            <CustomText
-                              className={`text-xs ${textColorClass} opacity-60 mt-1`}
-                            >
-                              {ad.platform.accId ? `${ad.platform.accId}` : ""}
-                            </CustomText>
-                          )}
-                        </View>
-                        <Text className={`font-bold text-base text-[#ef4444]`}>
-                          {formatCurrency(ad.adsCost)}
+                    {(showAllAds
+                      ? reportDetails.ads
+                      : reportDetails.ads.slice(0, 5)
+                    ).map((ad) => (
+                      <View
+                        key={ad.id}
+                        className={`border-b pb-3 mb-3 ${
+                          theme === "dark"
+                            ? "border-zinc-700"
+                            : "border-zinc-200"
+                        }`}
+                      >
+                        <Text
+                          className={`text-sm ${textColorClass} opacity-70`}
+                        >
+                          {new Date(ad.date).toLocaleTimeString("th-TH", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
                         </Text>
+                        <View className="flex-row justify-between items-center mb-2">
+                          <View className="flex-1">
+                            <CustomText
+                              className={`font-medium ${textColorClass}`}
+                            >
+                              {ad.platform.platform}
+                            </CustomText>
+                            <CustomText
+                              className={`text-sm ${textColorClass} opacity-70`}
+                            >
+                              {ad.platform.accName}
+                            </CustomText>
+                            {(ad.platform.accId || ad.platform.campaignId) && (
+                              <CustomText
+                                className={`text-xs ${textColorClass} opacity-60 mt-1`}
+                              >
+                                {ad.platform.accId
+                                  ? `${ad.platform.accId}`
+                                  : ""}
+                              </CustomText>
+                            )}
+                          </View>
+                          <Text
+                            className={`font-bold text-base text-[#ef4444]`}
+                          >
+                            {formatCurrency(ad.adsCost)}
+                          </Text>
+                        </View>
                       </View>
-                     
-                    </View>
-                  ))}
-                  {reportDetails.ads && reportDetails.ads.length > 5 && (
-                    <TouchableOpacity
-                      onPress={() => setShowAllAds(!showAllAds)}
-                      className="mt-3 p-3 rounded-lg"
-                      activeOpacity={0.7}
-                      style={{ backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6" }}
-                    >
-                      <CustomText className={`text-center ${textColorClass} font-medium`}>
-                        {showAllAds ? t("common.showLess") : `${t("common.seeMore")} (${reportDetails.ads.length - 5})`}
-                      </CustomText>
-                    </TouchableOpacity>
-                  )}
+                    ))}
+                    {reportDetails.ads && reportDetails.ads.length > 5 && (
+                      <TouchableOpacity
+                        onPress={() => setShowAllAds(!showAllAds)}
+                        className="mt-3 p-3 rounded-lg"
+                        activeOpacity={0.7}
+                        style={{
+                          backgroundColor:
+                            theme === "dark" ? "#374151" : "#f3f4f6",
+                        }}
+                      >
+                        <CustomText
+                          className={`text-center ${textColorClass} font-medium`}
+                        >
+                          {showAllAds
+                            ? t("common.showLess")
+                            : `${t("common.seeMore")} (${reportDetails.ads.length - 5})`}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
                   </>
                 ) : (
                   <CustomText

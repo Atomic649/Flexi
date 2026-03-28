@@ -403,20 +403,20 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        // DocumentType: "Receipt",
-        isSplitChild: false,
+        DocumentType: "Receipt",
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
         },
       },
-      select: {       
+      select: {
         billId: true,
         purchaseAt: true,
         total: true,
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
+        isSplitChild: true,
         product: {
           select: {
             product: true,
@@ -444,8 +444,10 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
       },
       select: {
         id: true,
+        expNo: true,
         date: true,
         amount: true,
+        debtAmount: true,
         note: true,
         sName:true,
         desc: true,
@@ -502,7 +504,7 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
-        isSplitChild: false,
+      // isSplitChild: false, 
         purchaseAt: {
           gte: new Date(`${month}-01T00:00:00.000Z`),
           lt: new Date(`${month}-31T23:59:59.999Z`),
@@ -515,6 +517,7 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
+        isSplitChild: true,
         product: {
           select: {
             product: true,
@@ -542,8 +545,10 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
       },
       select: {
         id: true,
+        expNo: true,
         date: true,
         amount: true,
+        debtAmount: true,
         note: true,
         sName:true,
         desc: true,        
@@ -576,7 +581,7 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
     });
 
     // console.log("🚀 Mbills", bills);
-    // console.log("🚀 Mexpenses", expenses);
+     console.log("🚀 Mexpenses", expenses);
     // console.log("🚀 Mads", ads);
     
     res.json({ bills, expenses, ads });
