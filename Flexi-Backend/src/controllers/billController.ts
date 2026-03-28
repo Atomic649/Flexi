@@ -1601,7 +1601,7 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
           currentBill.businessAcc,
           "Invoice",
         );
-      } else if (DocumentType === "Quotation" && !currentBill.quotationId) {
+      } else if (DocumentType === "Quotation" && !currentBill.quotationId && !(currentBill as any).isSplitChild) {
         updateData.quotationId = await generateDocumentId(
           tx,
           currentBill.businessAcc,
@@ -1679,75 +1679,6 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
           console.log(
             `Stock restored for product ${item.product} by ${item.quantity}`,
           );
-        }
-      }
-
-      // If this is a split child changing from Invoice to Receipt, deduct its splitAmount from parent's totalInvoice
-      if (
-        DocumentType === "Receipt" &&
-        currentBill.DocumentType === "Invoice" &&
-        (currentBill as any).isSplitChild &&
-        (currentBill as any).splitGroupId
-      ) {
-        const parentForDeduction = await tx.bill.findFirst({
-          where: { flexiId: (currentBill as any).splitGroupId, isSplitChild: false } as any,
-          select: { id: true, totalInvoice: true } as any,
-        }) as any;
-
-        if (parentForDeduction) {
-          const newParentTotalInvoice = Math.max(0, Number(parentForDeduction.totalInvoice) - splitAmount);
-          await tx.bill.update({
-            where: { id: parentForDeduction.id },
-            data: {
-              totalInvoice: newParentTotalInvoice,
-              total: { increment: splitAmount },
-            } as any,
-          });
-        }
-      }
-
-      // If this is a split child being set to Receipt, check if all siblings are paid → auto-promote parent
-      if (DocumentType === "Receipt" && (currentBill as any).isSplitChild && (currentBill as any).splitGroupId) {
-        const unpaidSiblings = await tx.bill.count({
-          where: {
-            splitGroupId: (currentBill as any).splitGroupId,
-            isSplitChild: true,
-            id: { not: Number(id) },
-            DocumentType: { not: "Receipt" },
-          },
-        });
-
-        if (unpaidSiblings === 0) {
-          const parent = await tx.bill.findFirst({
-            where: {
-              flexiId: (currentBill as any).splitGroupId,
-              isSplitChild: false,
-            },
-            include: { product: true },
-          });
-
-          if (parent) {
-            let parentBillId = parent.billId;
-            if (!parentBillId) {
-              parentBillId = await generateDocumentId(tx, parent.businessAcc, "Receipt");
-            }
-            await tx.bill.update({
-              where: { id: parent.id },
-              data: {
-                DocumentType: "Receipt",
-                cashStatus: true,
-                billId: parentBillId,
-              },
-            });
-            for (const item of parent.product) {
-              if (!item.product) continue;
-              await tx.product.update({
-                where: { id: item.product },
-                data: { stock: { decrement: item.quantity } },
-              });
-            }
-            console.log(`Auto-promoted parent bill ${parent.id} to Receipt`);
-          }
         }
       }
 
@@ -2214,6 +2145,7 @@ const createSplitChildren = async (req: Request, res: Response) => {
           data: {
             flexiId: generateFlexiId(),
             invoiceId: newId,
+            quotationId: (parent as any).quotationId ?? null,
             isSplitChild: true,
             splitGroupId: parent.flexiId,
             splitPercent: child.splitPercent,

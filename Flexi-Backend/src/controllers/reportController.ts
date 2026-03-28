@@ -16,8 +16,7 @@ const dailyReport = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Receipt",
-        isSplitChild: false, // Exclude split child bills to avoid duplicates
+        // DocumentType: "Receipt",
       },
        select: {
         purchaseAt: true,
@@ -25,6 +24,7 @@ const dailyReport = async (req: Request, res: Response) => {
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
+        isSplitChild: true,
         product: {
           select: {
             product: true,
@@ -64,8 +64,8 @@ const dailyReport = async (req: Request, res: Response) => {
           beforeDiscount: 0,
         };
       }
-      // Sum amount from all product items (quantity)
-      if (bill.product && Array.isArray(bill.product)) {
+      // Sum amount (quantity) only for parent bills
+      if (!bill.isSplitChild && bill.product && Array.isArray(bill.product)) {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
         acc[date].total += Number(bill.total || 0);
@@ -141,8 +141,7 @@ const monthlyReport = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Receipt",
-        isSplitChild: false, // Exclude split child bills to avoid duplicates
+        // DocumentType: "Receipt",
       },
        select: {
         purchaseAt: true,
@@ -150,6 +149,7 @@ const monthlyReport = async (req: Request, res: Response) => {
         discount: true,
         billLevelDiscount: true,
         beforeDiscount: true,
+        isSplitChild: true,
         product: {
           select: {
             product: true,
@@ -206,8 +206,8 @@ const monthlyReport = async (req: Request, res: Response) => {
           beforeDiscount: 0,
         };
       }
-      // Sum amount from all product items (quantity)
-      if (bill.product && Array.isArray(bill.product)) {
+      // Sum amount (quantity) only for parent bills
+      if (!bill.isSplitChild && bill.product && Array.isArray(bill.product)) {
         acc[date].amount += bill.product.reduce((sum: number, item: any) => sum + Number(item.quantity), 0);
       }
         acc[date].total += Number(bill.total || 0);
@@ -403,7 +403,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Receipt",
+        // DocumentType: "Receipt",
         isSplitChild: false,
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
