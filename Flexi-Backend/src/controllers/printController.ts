@@ -35,7 +35,7 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
 
     // Get all bills for the member within the date range
     const bills = await prisma.bill.findMany({
-      where: {
+      where: {       
         businessAcc : businessId?.businessId ?? 0,
         purchaseAt: {
           gte: new Date(formattedStartDate),
@@ -55,6 +55,8 @@ export const getMonthlyReport = async (req: Request, res: Response) => {
         },
       },
     });
+
+    console.log("🚀 Monthly Report - Bills Data:", bills);
 
 //  find tatal sales from total in bills table
     const totalSales = bills.reduce((sum, bill) => Number(bill.total) + sum, 0);
@@ -105,7 +107,7 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
+        isSplitChild: false,
         purchaseAt: {
           gte: start,
           lte: end,
@@ -204,6 +206,7 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
+       
 
         OR: [
           {
@@ -266,7 +269,7 @@ export const searchBillsByPhone = async (req: Request, res: Response) => {
     // Search by customer name or last name with case-insensitive search
     const bills = await prisma.bill.findMany({
       where: {
-        businessAcc : businessId?.businessId ?? 0,
+        businessAcc : businessId?.businessId ?? 0,     
 
         cPhone: {
           contains: customerPhone as string,

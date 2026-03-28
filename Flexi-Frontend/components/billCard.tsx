@@ -26,6 +26,7 @@ export default function BillCard({
   product = [], // Expecting array of { product, quantity, unitPrice }
   total,
   totalQuotation,
+  totalInvoice,
   purchaseAt,
   CardColor,
   PriceColor,
@@ -198,29 +199,6 @@ export default function BillCard({
     });
   }
 
-  // Split action — shown on Invoice parents that have no children yet
-  if (onSplit) {
-    rightActions.push({
-      id: "split",
-      icon: "git-branch",
-      text: t("bill.split") || "Split",
-      backgroundColor: "#4f46e5",
-      textColor: "#ffffff",
-      onPress: onSplit,
-    });
-  }
-
-  // Reset split action — shown on Invoice parents that have active children
-  if (onResetSplit) {
-    rightActions.push({
-      id: "resetSplit",
-      icon: "refresh",
-      text: t("bill.resetSplit") || "Reset",
-      backgroundColor: "#dc2626",
-      textColor: "#ffffff",
-      onPress: onResetSplit,
-    });
-  }
 
   const cardContent = (
     <TouchableOpacity
@@ -352,6 +330,8 @@ export default function BillCard({
             >
               {effectiveDocumentType === "Receipt"
                 ? `+${formatNumber(total || 0)}`
+                : effectiveDocumentType === "Invoice"
+                ? formatNumber(totalInvoice || 0)
                 : formatNumber(totalQuotation || 0)}
             </Text>
 

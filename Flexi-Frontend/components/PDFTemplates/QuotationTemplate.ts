@@ -476,7 +476,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             <div class="quotation-meta" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
               <div class="quotation-number"><span class="bill-label">${t("print.billNo")}</span> <span class="bill-id">${quotation.quotationId}</span></div>              
               <p style="margin-top: 2px;">${(() => {
-                const d = new Date(quotation.purchaseAt);
+                const d = new Date(quotation.quotationAt || quotation.purchaseAt);
                 if (isNaN(d.getTime())) return "";
                 const dd = String(d.getDate()).padStart(2, "0");
                 const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -733,7 +733,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   businessDetails?.businessName || businessName
                 } </div>
 
-              <div class="signature-date">${t("print.date")}: ${formatDate(quotation.purchaseAt)}</div>
+              <div class="signature-date">${t("print.date")}: ${formatDate(quotation.quotationAt || quotation.purchaseAt)}</div>
               </div>
               <div class="signature-block" style="flex: 1; min-width: 0; max-width: 180px; text-align: center; min-height: 60px; margin: 0 auto;">            
               <div class="business-stamp">

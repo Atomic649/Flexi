@@ -17,6 +17,7 @@ const dailyReport = async (req: Request, res: Response) => {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
        select: {
         purchaseAt: true,
@@ -141,6 +142,7 @@ const monthlyReport = async (req: Request, res: Response) => {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
        select: {
         purchaseAt: true,
@@ -402,6 +404,7 @@ const ReportDetailsEachDate = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
+        isSplitChild: false,
         purchaseAt: {
           gte: new Date(`${date}T00:00:00.000Z`),
           lt: new Date(`${date}T23:59:59.999Z`),
@@ -499,6 +502,7 @@ const ReportDetailsEachMonth = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
+        isSplitChild: false,
         purchaseAt: {
           gte: new Date(`${month}-01T00:00:00.000Z`),
           lt: new Date(`${month}-31T23:59:59.999Z`),

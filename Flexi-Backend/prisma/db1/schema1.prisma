@@ -320,6 +320,9 @@ model Bill {
   invoiceId            String?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
+  quotationAt          DateTime?     @default(now())
+  invoiceAt            DateTime?     @default(now())
+  purchaseAt           DateTime     @default(now())
   cName                String
   cLastName            String?
   cPhone               String?
@@ -337,8 +340,7 @@ model Bill {
   totalAfterTax        Decimal?
   totalTax             Decimal?
   vatPercent           Int?
-  beforeDiscount       Decimal?
-  purchaseAt           DateTime      @default(now())
+  beforeDiscount       Decimal?  
   cashStatus           Boolean?      @default(false)
   image                String?
   deleted              Boolean?      @default(false)

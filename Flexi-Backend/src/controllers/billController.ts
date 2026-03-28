@@ -190,6 +190,8 @@ interface billInput {
   cashStatus: boolean;
   memberId: string;
   purchaseAt: Date;
+  quotationAt?: Date;
+  invoiceAt?: Date;
   businessAcc: number;
   cTaxId: string;
   image: string;
@@ -222,6 +224,8 @@ const schema = Joi.object({
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   purchaseAt: Joi.date(),
+  quotationAt: Joi.date().optional(),
+  invoiceAt: Joi.date().optional(),
   cName: Joi.string().required(),
   cLastName: Joi.string().allow(""),
   cPhone: Joi.string().min(10).max(10).required(),
@@ -237,7 +241,7 @@ const schema = Joi.object({
   cashStatus: Joi.boolean().optional(),
   memberId: Joi.string().required(),
   businessAcc: Joi.number().required(),
-  image: Joi.string().allow(""),
+  image: Joi.string().allow("", null).optional(),
   platformId: Joi.number().optional(),
   platform: Joi.string().required(),
   total: Joi.number(),
@@ -697,6 +701,8 @@ const getBills = async (req: Request, res: Response) => {
         payment: true,
         // cashStatus: true,
         purchaseAt: true,
+        quotationAt: true,
+        invoiceAt: true,
         platformId: true,
         discount: true, // Include discount
         priceValid: true, // Include priceValid
@@ -779,6 +785,61 @@ const getBillById = async (req: Request, res: Response) => {
       });
     }
 
+    // If this is a split child with missing fields, fill from parent as fallback
+    if (bill.isSplitChild && bill.splitGroupId) {
+      const needsFallback =
+        !bill.withHoldingTax &&
+        (!bill.note || bill.note === "") &&
+        (!bill.totalBeforeTax || bill.totalBeforeTax === 0);
+
+      if (needsFallback) {
+        const parent = await prisma.bill.findFirst({
+          where: { flexiId: bill.splitGroupId, isSplitChild: false } as any,
+          select: {
+            withHoldingTax: true,
+            WHTpercent: true,
+            WHTAmount: true,
+            note: true,
+            paymentTermCondition: true,
+            remark: true,
+            payment: true,
+            priceValid: true,
+            repeat: true,
+            repeatMonths: true,
+            totalBeforeTax: true,
+            totalAfterTax: true,
+            totalTax: true,
+            vatPercent: true,
+            beforeDiscount: true,
+            discount: true,
+            totalQuotation: true,
+            image: true,
+          } as any,
+        }) as any;
+
+        if (parent) {
+          bill.withHoldingTax = parent.withHoldingTax ?? bill.withHoldingTax;
+          bill.WHTpercent = parent.WHTpercent ?? bill.WHTpercent;
+          bill.WHTAmount = parent.WHTAmount ?? bill.WHTAmount;
+          bill.note = parent.note ?? bill.note;
+          bill.paymentTermCondition = parent.paymentTermCondition ?? bill.paymentTermCondition;
+          bill.remark = parent.remark ?? bill.remark;
+          bill.payment = parent.payment ?? bill.payment;
+          bill.priceValid = parent.priceValid ?? bill.priceValid;
+          bill.repeat = parent.repeat ?? bill.repeat;
+          bill.repeatMonths = parent.repeatMonths ?? bill.repeatMonths;
+          bill.totalBeforeTax = parent.totalBeforeTax ?? bill.totalBeforeTax;
+          bill.totalAfterTax = parent.totalAfterTax ?? bill.totalAfterTax;
+          bill.totalTax = parent.totalTax ?? bill.totalTax;
+          bill.vatPercent = parent.vatPercent ?? bill.vatPercent;
+          bill.beforeDiscount = parent.beforeDiscount ?? bill.beforeDiscount;
+          bill.discount = parent.discount ?? bill.discount;
+          bill.totalQuotation = parent.totalQuotation ?? bill.totalQuotation;
+          bill.image = (!bill.image || bill.image === "") ? (parent.image ?? "") : bill.image;
+        }
+      }
+    }
+
     console.log("🚀 Get Bill by ID:", bill);
     res.json(bill);
   } catch (e) {
@@ -812,6 +873,12 @@ const updateBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase(),
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    if (billInput.quotationAt) {
+      billInput.quotationAt = new Date(billInput.quotationAt);
+    }
+    if (billInput.invoiceAt) {
+      billInput.invoiceAt = new Date(billInput.invoiceAt);
+    }
     if (billInput.validContactUntil) {
       billInput.validContactUntil = new Date(billInput.validContactUntil);
     }
@@ -1018,7 +1085,9 @@ const updateBill = async (req: Request, res: Response) => {
           platformId: billInput.platformId,
           cashStatus: finalCashStatus,
           memberId: billInput.memberId,
-          purchaseAt: billInput.purchaseAt,
+          purchaseAt: docType === "Receipt" ? billInput.purchaseAt : existingBill.purchaseAt,
+          quotationAt: docType === "Quotation" ? (billInput.quotationAt ?? billInput.purchaseAt) : existingBill.quotationAt,
+          invoiceAt: docType === "Invoice" ? (billInput.invoiceAt ?? billInput.purchaseAt) : existingBill.invoiceAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
           total: finalTotal,
@@ -1047,6 +1116,19 @@ const updateBill = async (req: Request, res: Response) => {
 
         if (customerIdFromDb !== null) {
           updateData.customerId = customerIdFromDb;
+        }
+
+        // If this is a split child, fix totals to be splitPercent% of full total
+        if ((existingBill as any).isSplitChild && (existingBill as any).splitPercent != null) {
+          const splitPct = Number((existingBill as any).splitPercent) || 0;
+          const splitAmount = total * (splitPct / 100);
+          // totalInvoice = split portion for Invoice AND Receipt (not Quotation)
+          updateData.totalInvoice = docType !== "Quotation" ? splitAmount : 0;
+          // total (actual received) = split portion for Receipt
+          if (docType === "Receipt") {
+            updateData.total = splitAmount;
+          }
+          updateData.totalQuotation = total;
         }
 
         const customerIdToUpdate =
@@ -1173,6 +1255,103 @@ const updateBill = async (req: Request, res: Response) => {
           );
         }
 
+        // Cascade updates to parent and all siblings if this is a split child
+        if ((existingBill as any).isSplitChild && (existingBill as any).splitGroupId) {
+          const splitGroupId = (existingBill as any).splitGroupId;
+
+          // Find the parent bill
+          const parent = await tx.bill.findFirst({
+            where: { flexiId: splitGroupId, isSplitChild: false } as any,
+            select: { id: true, splitPercent: true, totalInvoice: true } as any,
+          }) as any;
+
+          // Find all sibling split children (exclude current)
+          const siblings = await tx.bill.findMany({
+            where: { splitGroupId, isSplitChild: true, id: { not: Number(id) } } as any,
+            select: { id: true, splitPercent: true } as any,
+          });
+
+          const sharedData = {
+            cName: billInput.cName,
+            cLastName: billInput.cLastName,
+            cPhone: billInput.cPhone,
+            cGender: billInput.cGender,
+            cAddress: billInput.cAddress,
+            cPostId: billInput.cPostId,
+            cProvince: billInput.cProvince,
+            cTaxId: billInput.cTaxId,
+            customerId: customerIdFromDb ?? (existingBill?.customerId ?? undefined),
+            platform: billInput.platform,
+            platformId: billInput.platformId,
+            payment: billInput.payment,
+            taxType: billInput.taxType || "Individual",
+            memberId: billInput.memberId,
+            note: billInput.note || "",
+            paymentTermCondition: billInput.paymentTermCondition || "",
+            remark: billInput.remark || "",
+            image: req.file?.filename ?? existingBill?.image ?? "",
+            discount: discount,
+            beforeDiscount: beforeDiscount,
+            priceValid: billInput.priceValid,
+            withHoldingTax: billInput.withholdingTax ?? false,
+            WHTpercent: billInput.withholdingPercent ?? 0,
+            WHTAmount: billInput.WHTAmount ?? 0,
+            repeat: billInput.repeat,
+            repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
+            totalBeforeTax: Number(totalBeforeTax),
+            totalAfterTax: Number(totalAfterTax),
+            vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+            totalTax: Number(vatAmount),
+            totalQuotation: total,
+          };
+
+          // Sync parent (keep parent's own total/DocumentType/split fields)
+          if (parent) {
+            await tx.productItem.deleteMany({ where: { billId: parent.id } as any });
+            for (const item of billInput.productItems) {
+              await tx.productItem.create({
+                data: {
+                  product: item.product,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  unitDiscount: item.unitDiscount || 0,
+                  unit: item.unit,
+                  billId: parent.id,
+                } as any,
+              });
+            }
+            await tx.bill.update({
+              where: { id: parent.id },
+              data: sharedData as any,
+            });
+          }
+
+          // Sync all siblings
+          for (const sibling of siblings as any[]) {
+            const siblingTotalInvoice = total * ((sibling.splitPercent ?? 0) / 100);
+            await tx.productItem.deleteMany({ where: { billId: sibling.id } });
+            for (const item of billInput.productItems) {
+              await tx.productItem.create({
+                data: {
+                  product: item.product,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  unitDiscount: item.unitDiscount || 0,
+                  unit: item.unit,
+                  billId: sibling.id,
+                } as any,
+              });
+            }
+            await tx.bill.update({
+              where: { id: sibling.id },
+              data: {
+                ...sharedData,
+                totalInvoice: siblingTotalInvoice,
+              } as any,
+            });
+          }
+        }
+
         // Cascade updates to split children if this is a split parent
         if (
           (existingBill as any).flexiId &&
@@ -1221,7 +1400,6 @@ const updateBill = async (req: Request, res: Response) => {
                 customerId: customerIdFromDb ?? (existingBill?.customerId ?? undefined),
                 platform: billInput.platform,
                 platformId: billInput.platformId,
-                purchaseAt: billInput.purchaseAt,
                 taxType: billInput.taxType || "Individual",
                 memberId: billInput.memberId,
                 note: billInput.note || "",
@@ -1419,48 +1597,36 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         );
       }
 
+      // Determine full base total from totalQuotation or calculate from products
+      const baseTotal =
+        (currentBill.totalQuotation !== null && currentBill.totalQuotation !== undefined && (currentBill as any).totalQuotation > 0)
+          ? Number(currentBill.totalQuotation)
+          : currentBill.product.reduce(
+              (sum, item) =>
+                sum + (item.quantity * item.unitPrice - (item.unitDiscount || 0) * item.quantity),
+              0,
+            ) - (currentBill.billLevelDiscount || 0);
+
+      // For split children, amounts are scaled by splitPercent
+      const isSplitChild = (currentBill as any).isSplitChild;
+      const splitPct = isSplitChild ? (Number((currentBill as any).splitPercent) || 0) : 100;
+      const splitAmount = baseTotal * (splitPct / 100);
+
       // Set cashStatus and total based on DocumentType
       if (DocumentType === "Receipt") {
         updateData.cashStatus = true;
-
-        // If changing to Receipt, use totalQuotation or calculate from products
-        if (
-          currentBill.totalQuotation !== null &&
-          currentBill.totalQuotation !== undefined
-        ) {
-          updateData.total = currentBill.totalQuotation;
-        } else {
-          // Calculate total from product items if totalQuotation is not available
-          const calculatedTotal =
-            currentBill.product.reduce(
-              (sum, item) =>
-                sum +
-                (item.quantity * item.unitPrice -
-                  (item.unitDiscount || 0) * item.quantity),
-              0,
-            ) - (currentBill.billLevelDiscount || 0);
-          updateData.total = calculatedTotal;
-        }
+        updateData.total = splitAmount;
+        updateData.totalInvoice = splitAmount;
       } else {
         updateData.cashStatus = false;
-        // If changing from Receipt to Invoice/Quotation, set total to 0 but keep totalQuotation unchanged
         updateData.total = 0;
 
-        // If changing TO Invoice, populate totalInvoice from totalQuotation (stored calculated total)
+        // If changing TO Invoice, populate totalInvoice as split portion (or full for regular bills)
         if (DocumentType === "Invoice") {
-          if (currentBill.totalQuotation !== null && currentBill.totalQuotation !== undefined) {
-            updateData.totalInvoice = currentBill.totalQuotation;
-          } else {
-            const calculatedTotal =
-              currentBill.product.reduce(
-                (sum, item) =>
-                  sum +
-                  (item.quantity * item.unitPrice -
-                    (item.unitDiscount || 0) * item.quantity),
-                0,
-              ) - (currentBill.billLevelDiscount || 0);
-            updateData.totalInvoice = calculatedTotal;
-          }
+          updateData.totalInvoice = splitAmount;
+        } else {
+          // Quotation — clear totalInvoice
+          updateData.totalInvoice = 0;
         }
       }
 
@@ -1601,6 +1767,11 @@ const deleteBill = async (req: Request, res: Response) => {
 
       if (!bill) {
         throw new Error("Bill not found");
+      }
+
+      // Prevent deletion of split child bills
+      if ((bill as any).isSplitChild) {
+        throw new Error("Cannot delete a split installment bill");
       }
 
       // If this is a split parent, cascade delete all child bills first
@@ -1994,44 +2165,36 @@ const createSplitChildren = async (req: Request, res: Response) => {
           ? Number((parent as any).totalQuotation)
           : Number(parent.total);
 
-      const parentDocType = parent.DocumentType ?? "Invoice";
-
       const createdChildren = [];
 
       for (const child of children as any[]) {
         const newId = await generateDocumentId(
           tx,
           parent.businessAcc,
-          parentDocType as any,
+          "Invoice",
         );
         const childTotalInvoice = parentTotal * (child.splitPercent / 100);
-
-        // Pick the correct ID field based on parent's DocumentType
-        const idField: any =
-          parentDocType === "Receipt"
-            ? { billId: newId }
-            : parentDocType === "Quotation"
-            ? { quotationId: newId }
-            : { invoiceId: newId };
 
         const childBill = await tx.bill.create({
           data: {
             flexiId: generateFlexiId(),
-            ...idField,
+            invoiceId: newId,
             isSplitChild: true,
             splitGroupId: parent.flexiId,
             splitPercent: child.splitPercent,
             splitPercentMax: child.splitPercentMax,
-            DocumentType: parentDocType,
-            cashStatus: parentDocType === "Receipt",
-            total: parentDocType === "Receipt" ? childTotalInvoice : 0,
+            DocumentType: "Invoice",
+            cashStatus: false,
+            total: 0,
             totalInvoice: childTotalInvoice,
-            totalQuotation: 0,
-            totalBeforeTax: 0,
-            totalAfterTax: 0,
-            totalTax: 0,
-            vatPercent: 0,
-            beforeDiscount: 0,
+            totalQuotation: (parent as any).totalQuotation ?? 0,
+            totalBeforeTax: (parent as any).totalBeforeTax ?? 0,
+            totalAfterTax: (parent as any).totalAfterTax ?? 0,
+            totalTax: (parent as any).totalTax ?? 0,
+            vatPercent: (parent as any).vatPercent ?? 0,
+            beforeDiscount: (parent as any).beforeDiscount ?? 0,
+            discount: (parent as any).discount ?? 0,
+            billLevelDiscount: 0,
             cName: parent.cName,
             cLastName: parent.cLastName,
             cPhone: parent.cPhone,
@@ -2044,11 +2207,20 @@ const createSplitChildren = async (req: Request, res: Response) => {
             businessAcc: parent.businessAcc,
             platform: parent.platform,
             platformId: parent.platformId,
+            payment: parent.payment,
             taxType: parent.taxType,
             purchaseAt: parent.purchaseAt,
             customerId: parent.customerId,
-            discount: 0,
-            billLevelDiscount: 0,
+            note: (parent as any).note ?? "",
+            paymentTermCondition: (parent as any).paymentTermCondition ?? "",
+            remark: (parent as any).remark ?? "",
+            withHoldingTax: (parent as any).withHoldingTax ?? false,
+            WHTpercent: (parent as any).WHTpercent ?? 0,
+            WHTAmount: (parent as any).WHTAmount ?? 0,
+            priceValid: (parent as any).priceValid ?? null,
+            repeat: (parent as any).repeat ?? false,
+            repeatMonths: (parent as any).repeatMonths ?? 0,
+            image: (parent as any).image ?? "",
           } as any,
         });
 

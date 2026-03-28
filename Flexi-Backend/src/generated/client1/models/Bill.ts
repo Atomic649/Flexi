@@ -78,6 +78,9 @@ export type BillMinAggregateOutputType = {
   invoiceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  quotationAt: Date | null
+  invoiceAt: Date | null
+  purchaseAt: Date | null
   cName: string | null
   cLastName: string | null
   cPhone: string | null
@@ -95,7 +98,6 @@ export type BillMinAggregateOutputType = {
   totalTax: runtime.Decimal | null
   vatPercent: number | null
   beforeDiscount: runtime.Decimal | null
-  purchaseAt: Date | null
   cashStatus: boolean | null
   image: string | null
   deleted: boolean | null
@@ -133,6 +135,9 @@ export type BillMaxAggregateOutputType = {
   invoiceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  quotationAt: Date | null
+  invoiceAt: Date | null
+  purchaseAt: Date | null
   cName: string | null
   cLastName: string | null
   cPhone: string | null
@@ -150,7 +155,6 @@ export type BillMaxAggregateOutputType = {
   totalTax: runtime.Decimal | null
   vatPercent: number | null
   beforeDiscount: runtime.Decimal | null
-  purchaseAt: Date | null
   cashStatus: boolean | null
   image: string | null
   deleted: boolean | null
@@ -188,6 +192,9 @@ export type BillCountAggregateOutputType = {
   invoiceId: number
   createdAt: number
   updatedAt: number
+  quotationAt: number
+  invoiceAt: number
+  purchaseAt: number
   cName: number
   cLastName: number
   cPhone: number
@@ -205,7 +212,6 @@ export type BillCountAggregateOutputType = {
   totalTax: number
   vatPercent: number
   beforeDiscount: number
-  purchaseAt: number
   cashStatus: number
   image: number
   deleted: number
@@ -289,6 +295,9 @@ export type BillMinAggregateInputType = {
   invoiceId?: true
   createdAt?: true
   updatedAt?: true
+  quotationAt?: true
+  invoiceAt?: true
+  purchaseAt?: true
   cName?: true
   cLastName?: true
   cPhone?: true
@@ -306,7 +315,6 @@ export type BillMinAggregateInputType = {
   totalTax?: true
   vatPercent?: true
   beforeDiscount?: true
-  purchaseAt?: true
   cashStatus?: true
   image?: true
   deleted?: true
@@ -344,6 +352,9 @@ export type BillMaxAggregateInputType = {
   invoiceId?: true
   createdAt?: true
   updatedAt?: true
+  quotationAt?: true
+  invoiceAt?: true
+  purchaseAt?: true
   cName?: true
   cLastName?: true
   cPhone?: true
@@ -361,7 +372,6 @@ export type BillMaxAggregateInputType = {
   totalTax?: true
   vatPercent?: true
   beforeDiscount?: true
-  purchaseAt?: true
   cashStatus?: true
   image?: true
   deleted?: true
@@ -399,6 +409,9 @@ export type BillCountAggregateInputType = {
   invoiceId?: true
   createdAt?: true
   updatedAt?: true
+  quotationAt?: true
+  invoiceAt?: true
+  purchaseAt?: true
   cName?: true
   cLastName?: true
   cPhone?: true
@@ -416,7 +429,6 @@ export type BillCountAggregateInputType = {
   totalTax?: true
   vatPercent?: true
   beforeDiscount?: true
-  purchaseAt?: true
   cashStatus?: true
   image?: true
   deleted?: true
@@ -541,6 +553,9 @@ export type BillGroupByOutputType = {
   invoiceId: string | null
   createdAt: Date
   updatedAt: Date
+  quotationAt: Date | null
+  invoiceAt: Date | null
+  purchaseAt: Date
   cName: string
   cLastName: string | null
   cPhone: string | null
@@ -558,7 +573,6 @@ export type BillGroupByOutputType = {
   totalTax: runtime.Decimal | null
   vatPercent: number | null
   beforeDiscount: runtime.Decimal | null
-  purchaseAt: Date
   cashStatus: boolean | null
   image: string | null
   deleted: boolean | null
@@ -619,6 +633,9 @@ export type BillWhereInput = {
   invoiceId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -636,7 +653,6 @@ export type BillWhereInput = {
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
   beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
@@ -680,6 +696,9 @@ export type BillOrderByWithRelationInput = {
   invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  quotationAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   cPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -697,7 +716,6 @@ export type BillOrderByWithRelationInput = {
   totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
   vatPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -744,6 +762,9 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   invoiceId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -761,7 +782,6 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
   beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
@@ -805,6 +825,9 @@ export type BillOrderByWithAggregationInput = {
   invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  quotationAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   cPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -822,7 +845,6 @@ export type BillOrderByWithAggregationInput = {
   totalTax?: Prisma.SortOrderInput | Prisma.SortOrder
   vatPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -868,6 +890,9 @@ export type BillScalarWhereWithAggregatesInput = {
   invoiceId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
+  quotationAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+  invoiceAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+  purchaseAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   cName?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
@@ -885,7 +910,6 @@ export type BillScalarWhereWithAggregatesInput = {
   totalTax?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
   beforeDiscount?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   deleted?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
@@ -922,6 +946,9 @@ export type BillCreateInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -939,7 +966,6 @@ export type BillCreateInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -979,6 +1005,9 @@ export type BillUncheckedCreateInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -996,7 +1025,6 @@ export type BillUncheckedCreateInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -1035,6 +1063,9 @@ export type BillUpdateInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1052,7 +1083,6 @@ export type BillUpdateInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1092,6 +1122,9 @@ export type BillUncheckedUpdateInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1109,7 +1142,6 @@ export type BillUncheckedUpdateInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1149,6 +1181,9 @@ export type BillCreateManyInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1166,7 +1201,6 @@ export type BillCreateManyInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -1203,6 +1237,9 @@ export type BillUpdateManyMutationInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1220,7 +1257,6 @@ export type BillUpdateManyMutationInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1254,6 +1290,9 @@ export type BillUncheckedUpdateManyInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1271,7 +1310,6 @@ export type BillUncheckedUpdateManyInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -1319,6 +1357,9 @@ export type BillCountOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  quotationAt?: Prisma.SortOrder
+  invoiceAt?: Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrder
   cPhone?: Prisma.SortOrder
@@ -1336,7 +1377,6 @@ export type BillCountOrderByAggregateInput = {
   totalTax?: Prisma.SortOrder
   vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
   image?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -1396,6 +1436,9 @@ export type BillMaxOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  quotationAt?: Prisma.SortOrder
+  invoiceAt?: Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrder
   cPhone?: Prisma.SortOrder
@@ -1413,7 +1456,6 @@ export type BillMaxOrderByAggregateInput = {
   totalTax?: Prisma.SortOrder
   vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
   image?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -1451,6 +1493,9 @@ export type BillMinOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  quotationAt?: Prisma.SortOrder
+  invoiceAt?: Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrder
   cPhone?: Prisma.SortOrder
@@ -1468,7 +1513,6 @@ export type BillMinOrderByAggregateInput = {
   totalTax?: Prisma.SortOrder
   vatPercent?: Prisma.SortOrder
   beforeDiscount?: Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
   cashStatus?: Prisma.SortOrder
   image?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
@@ -1760,6 +1804,9 @@ export type BillCreateWithoutMemberInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1777,7 +1824,6 @@ export type BillCreateWithoutMemberInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -1816,6 +1862,9 @@ export type BillUncheckedCreateWithoutMemberInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1833,7 +1882,6 @@ export type BillUncheckedCreateWithoutMemberInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -1901,6 +1949,9 @@ export type BillScalarWhereInput = {
   invoiceId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
+  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -1918,7 +1969,6 @@ export type BillScalarWhereInput = {
   totalTax?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
   beforeDiscount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   cashStatus?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   image?: Prisma.StringNullableFilter<"Bill"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
@@ -1955,6 +2005,9 @@ export type BillCreateWithoutBusinessIdInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1972,7 +2025,6 @@ export type BillCreateWithoutBusinessIdInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2011,6 +2063,9 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2028,7 +2083,6 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2092,6 +2146,9 @@ export type BillCreateWithoutCustomerInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2109,7 +2166,6 @@ export type BillCreateWithoutCustomerInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2148,6 +2204,9 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2165,7 +2224,6 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2229,6 +2287,9 @@ export type BillCreateWithoutProductInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2246,7 +2307,6 @@ export type BillCreateWithoutProductInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2285,6 +2345,9 @@ export type BillUncheckedCreateWithoutProductInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2302,7 +2365,6 @@ export type BillUncheckedCreateWithoutProductInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2356,6 +2418,9 @@ export type BillUpdateWithoutProductInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2373,7 +2438,6 @@ export type BillUpdateWithoutProductInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -2412,6 +2476,9 @@ export type BillUncheckedUpdateWithoutProductInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2429,7 +2496,6 @@ export type BillUncheckedUpdateWithoutProductInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -2467,6 +2533,9 @@ export type BillCreateWithoutExpenseInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2484,7 +2553,6 @@ export type BillCreateWithoutExpenseInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2523,6 +2591,9 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2540,7 +2611,6 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2594,6 +2664,9 @@ export type BillUpdateWithoutExpenseInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2611,7 +2684,6 @@ export type BillUpdateWithoutExpenseInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -2650,6 +2722,9 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2667,7 +2742,6 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -2705,6 +2779,9 @@ export type BillCreateWithoutPlatformInfoInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2722,7 +2799,6 @@ export type BillCreateWithoutPlatformInfoInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2761,6 +2837,9 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2778,7 +2857,6 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2843,6 +2921,9 @@ export type BillCreateManyMemberInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2860,7 +2941,6 @@ export type BillCreateManyMemberInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -2896,6 +2976,9 @@ export type BillUpdateWithoutMemberInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2913,7 +2996,6 @@ export type BillUpdateWithoutMemberInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -2952,6 +3034,9 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2969,7 +3054,6 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3008,6 +3092,9 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3025,7 +3112,6 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3062,6 +3148,9 @@ export type BillCreateManyBusinessIdInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3079,7 +3168,6 @@ export type BillCreateManyBusinessIdInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -3115,6 +3203,9 @@ export type BillUpdateWithoutBusinessIdInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3132,7 +3223,6 @@ export type BillUpdateWithoutBusinessIdInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3171,6 +3261,9 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3188,7 +3281,6 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3227,6 +3319,9 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3244,7 +3339,6 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3281,6 +3375,9 @@ export type BillCreateManyCustomerInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3298,7 +3395,6 @@ export type BillCreateManyCustomerInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -3334,6 +3430,9 @@ export type BillUpdateWithoutCustomerInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3351,7 +3450,6 @@ export type BillUpdateWithoutCustomerInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3390,6 +3488,9 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3407,7 +3508,6 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3446,6 +3546,9 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3463,7 +3566,6 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3500,6 +3602,9 @@ export type BillCreateManyPlatformInfoInput = {
   invoiceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quotationAt?: Date | string | null
+  invoiceAt?: Date | string | null
+  purchaseAt?: Date | string
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3517,7 +3622,6 @@ export type BillCreateManyPlatformInfoInput = {
   totalTax?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: number | null
   beforeDiscount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Date | string
   cashStatus?: boolean | null
   image?: string | null
   deleted?: boolean | null
@@ -3553,6 +3657,9 @@ export type BillUpdateWithoutPlatformInfoInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3570,7 +3677,6 @@ export type BillUpdateWithoutPlatformInfoInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3609,6 +3715,9 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3626,7 +3735,6 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3665,6 +3773,9 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3682,7 +3793,6 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   totalTax?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   vatPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   beforeDiscount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cashStatus?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -3750,6 +3860,9 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   invoiceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  quotationAt?: boolean
+  invoiceAt?: boolean
+  purchaseAt?: boolean
   cName?: boolean
   cLastName?: boolean
   cPhone?: boolean
@@ -3767,7 +3880,6 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   totalTax?: boolean
   vatPercent?: boolean
   beforeDiscount?: boolean
-  purchaseAt?: boolean
   cashStatus?: boolean
   image?: boolean
   deleted?: boolean
@@ -3812,6 +3924,9 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   invoiceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  quotationAt?: boolean
+  invoiceAt?: boolean
+  purchaseAt?: boolean
   cName?: boolean
   cLastName?: boolean
   cPhone?: boolean
@@ -3829,7 +3944,6 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   totalTax?: boolean
   vatPercent?: boolean
   beforeDiscount?: boolean
-  purchaseAt?: boolean
   cashStatus?: boolean
   image?: boolean
   deleted?: boolean
@@ -3871,6 +3985,9 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   invoiceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  quotationAt?: boolean
+  invoiceAt?: boolean
+  purchaseAt?: boolean
   cName?: boolean
   cLastName?: boolean
   cPhone?: boolean
@@ -3888,7 +4005,6 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   totalTax?: boolean
   vatPercent?: boolean
   beforeDiscount?: boolean
-  purchaseAt?: boolean
   cashStatus?: boolean
   image?: boolean
   deleted?: boolean
@@ -3930,6 +4046,9 @@ export type BillSelectScalar = {
   invoiceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  quotationAt?: boolean
+  invoiceAt?: boolean
+  purchaseAt?: boolean
   cName?: boolean
   cLastName?: boolean
   cPhone?: boolean
@@ -3947,7 +4066,6 @@ export type BillSelectScalar = {
   totalTax?: boolean
   vatPercent?: boolean
   beforeDiscount?: boolean
-  purchaseAt?: boolean
   cashStatus?: boolean
   image?: boolean
   deleted?: boolean
@@ -3977,7 +4095,7 @@ export type BillSelectScalar = {
   customerId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "purchaseAt" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -4018,6 +4136,9 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     invoiceId: string | null
     createdAt: Date
     updatedAt: Date
+    quotationAt: Date | null
+    invoiceAt: Date | null
+    purchaseAt: Date
     cName: string
     cLastName: string | null
     cPhone: string | null
@@ -4035,7 +4156,6 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     totalTax: runtime.Decimal | null
     vatPercent: number | null
     beforeDiscount: runtime.Decimal | null
-    purchaseAt: Date
     cashStatus: boolean | null
     image: string | null
     deleted: boolean | null
@@ -4499,6 +4619,9 @@ export interface BillFieldRefs {
   readonly invoiceId: Prisma.FieldRef<"Bill", 'String'>
   readonly createdAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Bill", 'DateTime'>
+  readonly quotationAt: Prisma.FieldRef<"Bill", 'DateTime'>
+  readonly invoiceAt: Prisma.FieldRef<"Bill", 'DateTime'>
+  readonly purchaseAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly cName: Prisma.FieldRef<"Bill", 'String'>
   readonly cLastName: Prisma.FieldRef<"Bill", 'String'>
   readonly cPhone: Prisma.FieldRef<"Bill", 'String'>
@@ -4516,7 +4639,6 @@ export interface BillFieldRefs {
   readonly totalTax: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly vatPercent: Prisma.FieldRef<"Bill", 'Int'>
   readonly beforeDiscount: Prisma.FieldRef<"Bill", 'Decimal'>
-  readonly purchaseAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly cashStatus: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly image: Prisma.FieldRef<"Bill", 'String'>
   readonly deleted: Prisma.FieldRef<"Bill", 'Boolean'>

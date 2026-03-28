@@ -605,6 +605,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                     cLastName={bill.cLastName}
                     total={bill.total}
                     totalQuotation={bill.totalQuotation}
+                    totalInvoice={bill.totalInvoice}
                     purchaseAt={bill.purchaseAt}
                     CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
                     onDelete={handleDelete}

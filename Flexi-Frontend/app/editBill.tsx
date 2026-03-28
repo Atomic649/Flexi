@@ -70,6 +70,8 @@ export default function EditBill() {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [error, setError] = useState("");
   const [purchaseAt, setPurchaseAt] = useState(new Date());
+  const [quotationAt, setQuotationAt] = useState(new Date());
+  const [invoiceAt, setInvoiceAt] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingBill, setIsUpdatingBill] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -332,9 +334,9 @@ export default function EditBill() {
 
   const getAvailableSteps = (): ("QA" | "IV" | "RE")[] => {
     const steps: ("QA" | "IV" | "RE")[] = [];
-    if (isDocumentTypeAvailable("Quotation")) steps.push("QA");
-    if (isDocumentTypeAvailable("Invoice")) steps.push("IV");
-    if (isDocumentTypeAvailable("Receipt")) steps.push("RE");
+    if (!isSplitChild && isDocumentTypeAvailable("Quotation")) steps.push("QA");
+    if (!isSplitParent && isDocumentTypeAvailable("Invoice")) steps.push("IV");
+    if (!isSplitParent && isDocumentTypeAvailable("Receipt")) steps.push("RE");
     return steps;
   };
 
@@ -931,12 +933,21 @@ export default function EditBill() {
             setPriceValidDays(45);
           }
         }
-        // Set purchase date
-        if (billData.purchaseAt) {
-          setPurchaseAt(new Date(billData.purchaseAt));
-          setSelectedDates([new Date(billData.purchaseAt).toISOString()]);
-          setDate([new Date(billData.purchaseAt).toISOString()]);
-        }
+        // Load each date column independently
+        const loadedPurchaseAt = billData.purchaseAt ? new Date(billData.purchaseAt) : new Date();
+        const loadedQuotationAt = billData.quotationAt ? new Date(billData.quotationAt) : loadedPurchaseAt;
+        const loadedInvoiceAt = billData.invoiceAt ? new Date(billData.invoiceAt) : loadedPurchaseAt;
+        setPurchaseAt(loadedPurchaseAt);
+        setQuotationAt(loadedQuotationAt);
+        setInvoiceAt(loadedInvoiceAt);
+        // Show date for the current DocumentType
+        const docTypeLoaded = billData.DocumentType;
+        const activeDate =
+          docTypeLoaded === "Invoice" ? loadedInvoiceAt
+          : docTypeLoaded === "Quotation" ? loadedQuotationAt
+          : loadedPurchaseAt;
+        setSelectedDates([activeDate.toISOString()]);
+        setDate([activeDate.toISOString()]);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching bill data:", error);
@@ -1173,6 +1184,8 @@ export default function EditBill() {
       const data = await CallAPIBill.updateBillAPI({
         id: Number(id),
         purchaseAt,
+        quotationAt: selectedDocumentType === "QA" ? purchaseAt : undefined,
+        invoiceAt: selectedDocumentType === "IV" ? purchaseAt : undefined,
         cName,
         cLastName,
         cPhone,
@@ -1236,10 +1249,12 @@ export default function EditBill() {
 
   const handleDateTimeChange = (next: Date) => {
     const formatted = format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-    setPurchaseAt(next);
+    if (selectedDocumentType === "QA") setQuotationAt(next);
+    else if (selectedDocumentType === "IV") setInvoiceAt(next);
+    else setPurchaseAt(next);
     setSelectedDates([formatted]);
     setDate([formatted]);
-  }; // force to choose only one date
+  };
 
   if (isLoading) {
     return (
@@ -1261,7 +1276,11 @@ export default function EditBill() {
     >
       <DateTimePicker
         visible={calendarVisible}
-        value={purchaseAt}
+        value={
+          selectedDocumentType === "QA" ? quotationAt
+          : selectedDocumentType === "IV" ? invoiceAt
+          : purchaseAt
+        }
         onChange={handleDateTimeChange}
         onClose={() => setCalendarVisible(false)}
         maxDate={new Date()}
@@ -1281,28 +1300,6 @@ export default function EditBill() {
           ref={scrollViewRef}
           keyboardShouldPersistTaps="handled"
         >
-          {isSplitChild && (
-            <View
-              style={{
-                backgroundColor: "#4f46e5",
-                borderRadius: 10,
-                padding: 14,
-                margin: 12,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <Ionicons name="git-branch" size={18} color="#ffffff" />
-              <CustomText
-                weight="semibold"
-                style={{ color: "#ffffff", flex: 1, fontSize: 13 }}
-              >
-                {t("bill.splitChildReadOnly") ||
-                  "This is a split installment — edit details on the parent bill."}
-              </CustomText>
-            </View>
-          )}
           {/* Enhanced DocumentType Progression - Only show if not Receipt-only business */}
           {showProgressSection && (
             <View
@@ -1360,39 +1357,16 @@ export default function EditBill() {
                             backgroundColor: "transparent",
                           }}
                           onPress={() => {
-                            console.log(
-                              "🎯 Circle pressed:",
-                              step,
-                              "isEditMode:",
-                              isEditMode,
-                            );
                             if (!isEditMode) {
-                              // View document functionality when not in edit mode
-                              // Only allow viewing if the step is completed (active)
-                              if (!isStepCompleted(step)) {
-                                console.log(
-                                  "⛔ Cannot view inactive document type:",
-                                  step,
-                                );
-                                return;
-                              }
-                              console.log(
-                                "📋 Viewing document for step:",
-                                step,
-                              );
+                              if (!isStepCompleted(step)) return;
                               switch (step) {
                                 case "QA":
-                                  console.log(
-                                    "🔄 Calling viewQuotationDocument",
-                                  );
                                   viewQuotationDocument();
                                   break;
                                 case "IV":
-                                  console.log("🔄 Calling viewInvoiceDocument");
                                   viewInvoiceDocument();
                                   break;
                                 case "RE":
-                                  console.log("🔄 Calling viewReceiptDocument");
                                   viewReceiptDocument();
                                   break;
                               }
@@ -1430,26 +1404,22 @@ export default function EditBill() {
                             isStepCompleted(step) || isEditMode ? 0.7 : 1
                           }
                         >
+                          {(() => {
+                            return (
                           <View
                             style={{
                               width: 50,
                               height: 50,
                               borderRadius: 25,
-                              backgroundColor: isStepCompleted(step)
-                                ? "#04ecc1"
-                                : "transparent",
+                              backgroundColor: isStepCompleted(step) ? "#04ecc1" : "transparent",
                               borderWidth: 3,
                               borderColor: isStepCompleted(step)
                                 ? "#04ecc1"
-                                : theme === "dark"
-                                  ? "#666"
-                                  : "#ccc",
+                                : theme === "dark" ? "#666" : "#ccc",
                               alignItems: "center",
                               justifyContent: "center",
                               opacity: getStepOpacity(step),
-                              shadowColor: isStepCompleted(step)
-                                ? "#04ecc1"
-                                : "transparent",
+                              shadowColor: isStepCompleted(step) ? "#04ecc1" : "transparent",
                               shadowOffset: { width: 0, height: 0 },
                               shadowOpacity: 0.6,
                               shadowRadius: 8,
@@ -1461,13 +1431,13 @@ export default function EditBill() {
                               size={24}
                               color={
                                 isStepCompleted(step)
-                                  ? theme === "dark"
-                                    ? "#18181b"
-                                    : "#ffffff"
+                                  ? theme === "dark" ? "#18181b" : "#ffffff"
                                   : getStepIconColor(step)
                               }
                             />
                           </View>
+                            );
+                          })()}
                           <CustomText
                             style={{
                               fontSize: 10,
@@ -1604,8 +1574,8 @@ export default function EditBill() {
               </View>
             </View>
 
-            {/* Split installments section — only for Invoice parent bills */}
-            {selectedDocumentType === "IV" && !isSplitChild && (
+            {/* Split installments section */}
+            {(selectedDocumentType === "IV" || (selectedDocumentType === "QA" && isSplitParent)) && !isSplitChild && (
               <View
                 style={{
                   marginVertical: 10,
@@ -2567,6 +2537,7 @@ export default function EditBill() {
             ) : null}
 
             <View className="flex-row gap-3 justify-center items-left">
+              {!isSplitChild && (
               <TouchableOpacity
                 onPress={async () => {
                   setAlertConfig({
@@ -2613,6 +2584,7 @@ export default function EditBill() {
               >
                 <Ionicons name="trash" size={24} color="#9f9d9a" />
               </TouchableOpacity>
+              )}
 
               {isEditMode && (
                 <CustomButton

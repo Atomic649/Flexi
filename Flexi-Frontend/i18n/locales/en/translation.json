@@ -1499,7 +1499,13 @@
       "phoneFormat": "Phone number must be 10 digits",
       "invalidRepeat": "Invalid Repeat Value",
       "repeatMonth": "Limit only 2-12 months"
-    }
+    },
+    "splitActive": "Split Bill Active",
+    "reset": "Reset",
+    "resetSplit": "Reset Split Bill",
+    "resetSplitConfirm" : "Are you sure you want to reset the split bill? This will clear all current split data and start over.",
+    "splitInstallments": "Split Installments",
+    "addInstallment": "Add Installment"
   },
   "forgotPassword": {
     "title": "Forgot Password",

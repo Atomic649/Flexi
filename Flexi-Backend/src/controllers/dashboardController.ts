@@ -84,6 +84,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
       where: {
         ...baseWhere,
         DocumentType: "Receipt",
+        isSplitChild: false
       },
       select: {
         total: true,
@@ -95,8 +96,10 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 
     // Count all bills (all DocumentTypes) for subValue orders
     const allBillsCount = await prisma.bill.count({
-      where: baseWhere,
-    });
+      where: {
+        ...baseWhere,
+        isSplitChild: false
+      }    });
 
     // Calculate income and orders from bills
     let income = 0;
@@ -242,6 +245,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         deleted: false,
         purchaseAt: dateFilter,
         DocumentType: "Receipt",
+        isSplitChild: false,
         ...platformFilter,
         ...(productName
           ? {
@@ -441,6 +445,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
         DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
+        isSplitChild: false,
         ...platformFilter,
         ...(productName
           ? {
@@ -577,7 +582,8 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         DocumentType: "Receipt",
-        purchaseAt: dateFilter
+        purchaseAt: dateFilter,
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
       select: {
         platform: true,
@@ -811,6 +817,7 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
         deleted: false,
         DocumentType: "Invoice",
         purchaseAt: dateFilter,
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
       select: { totalQuotation: true },
     });
@@ -896,6 +903,7 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
         purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
         ...(platform ? { platform: platform as any } : {}),
         ...(productName ? { product: { some: { productList: { name: productName as string } } } } : {}),
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
       select: {
         id: true,
@@ -1004,6 +1012,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
         deleted: false,
         DocumentType: "Invoice",
         purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
       select: {
         id: true,
@@ -1135,7 +1144,8 @@ export const getTopStores = async (req: Request, res: Response) => {
         DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
-        ...platformFilter
+        ...platformFilter,
+        isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
       select: {
         platform: true,

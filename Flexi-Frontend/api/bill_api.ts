@@ -100,6 +100,8 @@ class CallAPIBill {
     async updateBillAPI(data: {
         id: number;
         purchaseAt: Date;
+        quotationAt?: Date;
+        invoiceAt?: Date;
         cName: string;
         cLastName: string;
         cPhone: string;
