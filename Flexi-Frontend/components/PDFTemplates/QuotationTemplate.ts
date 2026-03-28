@@ -706,20 +706,22 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                     grandTotal,
                   )} ${t("common.THB")}</span>
                 </div>
-                ${
-                  Array.isArray(quotation.splitChildren) && quotation.splitChildren.length > 0
-                    ? `<div style="margin-top:8px; padding-top:8px; border-top:1px dashed #ccc;">
-                        ${quotation.splitChildren.map((child: any, i: number) => `
-                          <div class="summary-row" style="margin-bottom:2px;">
-                            <span class="summary-label" style="font-style:italic; color:#555;">แบ่งชำระงวด ${i + 1} (${child.splitPercent}%)</span>
-                            <span class="summary-amount" style="font-style:italic; color:#555;">${formatNumber(Number(child.totalInvoice || 0))} ${t("common.THB")}</span>
-                          </div>`).join("")}
-                      </div>`
-                    : ""
-                }
               </div>
             </div>
           </div>
+          ${
+            Array.isArray(quotation.splitChildren) && quotation.splitChildren.length > 0
+              ? `<div style="display:flex; justify-content:flex-end;">
+                  <div style="width:50%; padding:10px 14px; border:1px dashed #ccc; border-radius:6px; background:#f9f9f9;">
+                    ${quotation.splitChildren.map((child: any, i: number) => `
+                      <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0;">
+                        <span style="font-style:italic; color:#555;">${t("print.splitPayment")} ${t("print.installmentNo")} ${i + 1} (${child.splitPercent}%)</span>
+                        <span style="font-style:italic; color:#555; font-weight:600;">${formatNumber(grandTotal * (child.splitPercent / 100))} ${t("common.THB")}</span>
+                      </div>`).join("")}
+                  </div>
+                </div>`
+              : ""
+          }
 
 
           <!-- Footer -->

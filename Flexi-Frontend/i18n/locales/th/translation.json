@@ -1645,6 +1645,8 @@
     "termsAndConditions": "เงื่อนไขและข้อตกลง",
     "vatAmount": "ภาษีมูลค่าเพิ่ม",
     "grandTotal": "ยอดรวมทั้งหมด",
+    "splitPayment": "แบ่งชำระ",
+    "installmentNo": "งวดที่",
     "totalAmountIncludingVat": "ยอดรวมรวม VAT",
     "taxCalculation": "การคำนวณภาษี",
     "vatRegistered": "จดทะเบียน VAT",

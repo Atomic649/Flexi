@@ -1643,6 +1643,8 @@
     "termsAndConditions": "Terms and Conditions",
     "vatAmount": "VAT Amount",
     "grandTotal": "Grand Total",
+    "splitPayment": "Split Payment",
+    "installmentNo": "Installment",
     "totalAmountIncludingVat": "Total Amount Including VAT",
     "taxCalculation": "Tax Calculation",
     "vatRegistered": "VAT Registered",
