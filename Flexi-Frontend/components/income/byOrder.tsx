@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
-  Text,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -270,7 +269,9 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
         const name = `${b.cName ?? ""} ${b.cLastName ?? ""}`.toLowerCase();
         const phone = (b.cPhone ?? "").toLowerCase();
         const flexiId = (b.flexiId ?? "").toLowerCase();
-        if (!name.includes(q) && !phone.includes(q) && !flexiId.includes(q)) return false;
+        const d = new Date(b.purchaseAt);
+        const date = `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d.getFullYear()}`;
+        if (!name.includes(q) && !phone.includes(q) && !flexiId.includes(q) && !date.startsWith(q)) return false;
       }
       return true;
     });
@@ -622,13 +623,12 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
               alignItems: "stretch",
             }}
           >
-            <Text
-              className={`text-base font-bold ${
-                theme === "dark" ? "text-zinc-400" : "text-zinc-600"
-              } p-4`}
+            <CustomText
+              weight="medium"
+              style={{ fontSize: 11, color: theme === "dark" ? "#555" : "#aaa", paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}
             >
               {getDateGroupDisplayName(date)}
-            </Text>
+            </CustomText>
 
             {getBillsToDisplay(date, groupedBills[date]).map((bill) => {
               const children = bill.flexiId ? (splitChildrenMap[bill.flexiId] ?? []) : [];
@@ -946,7 +946,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder={t("common.searchBillHint") || "Search by name, phone or bill ID"}
+            placeholder={t("common.searchBillHint") || "Search by name, phone, bill ID or date"}
             placeholderTextColor={placeholder}
             style={{ flex: 1, fontSize: 13, color: theme === "dark" ? "#ffffff" : "#333333", paddingVertical: 0, fontFamily: "IBMPlexSansThai-Medium" }}
             returnKeyType="search"

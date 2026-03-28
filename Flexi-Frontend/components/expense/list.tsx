@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
-  Text,
   FlatList,
   RefreshControl,
   Platform,
   ScrollView,
   Dimensions,
   TouchableOpacity,
+  TextInput,
   TextStyle,
 } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -41,6 +41,7 @@ type Expense = {
   sName: string;
   desc: string;
   image: string;
+  flexiId?: string;
 };
 
 // Group expenses by date
@@ -84,6 +85,10 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
     }).format(value);
   const [refreshing, setRefreshing] = useState(false);
   const [expense, setExpense] = useState<Expense[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<string>("All");
+  const [filterStatus, setFilterStatus] = useState<string>("All");
+  const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
   
@@ -134,8 +139,25 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
 
   const handleDelete = async (id: number) => {};
 
+  // Apply search + type filter
+  const filteredExpenses = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return (expense || []).filter((e) => {
+      if (filterType !== "All" && e.type !== filterType) return false;
+      if (filterStatus === "debt" && e.DocumentType !== "Invoice") return false;
+      if (filterStatus === "paid" && e.DocumentType === "Invoice") return false;
+      if (q) {
+        const d = new Date(e.date);
+        const date = `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d.getFullYear()}`;
+        const haystack = `${e.sName ?? ""} ${e.note ?? ""} ${e.desc ?? ""}`.toLowerCase();
+        if (!haystack.includes(q) && !date.startsWith(q)) return false;
+      }
+      return true;
+    });
+  }, [expense, filterType, filterStatus, searchQuery]);
+
   // Safely compute groupedExpense by ensuring expense is an array
-  const groupedExpense = groupByDate(expense || []);
+  const groupedExpense = groupByDate(filteredExpenses);
   const today = new Date().toISOString().split("T")[0];
 
   // Function to get expense text color
@@ -357,16 +379,15 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
         renderItem={({ item: date }) => (
           <View
             style={{
-              alignItems: Platform.OS === "web" ? "center" : "center",
+              alignItems: Platform.OS === "web" ? "center" : "flex-start",
             }}
           >
-            <Text
-              className={`text-base font-bold ${
-                theme === "dark" ? "text-white" : "text-zinc-600"
-              } p-4`}
+            <CustomText
+              weight="medium"
+              style={{ fontSize: 11, color: theme === "dark" ? "#555" : "#aaa", paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}
             >
               {date === today ? t("common.today") : date}
-            </Text>
+            </CustomText>
 
             {groupedExpense[date].map((expense) => (
               <ExpenseCard
@@ -409,10 +430,101 @@ const List = ({ refreshTrigger = 0 }: ListProps) => {
     );
   };
 
+  const accent = theme === "dark" ? "#04ecd5" : "#01e0c6";
+  const chipBg = theme === "dark" ? "#2a2b2c" : "#efefef";
+  const chipBorder = theme === "dark" ? "#3a3b3c" : "#e0e0e0";
+  const chipText = theme === "dark" ? "#aaaaaa" : "#666666";
+  const inputBg = theme === "dark" ? "#1e1f20" : "#f5f5f5";
+  const inputBorder = theme === "dark" ? "#333435" : "#e0e0e0";
+  const placeholder = theme === "dark" ? "#555" : "#bbb";
+
+  const renderChip = (chipKey: string, label: string, value: string, active: string, onPress: (v: string) => void) => {
+    const isActive = active === value;
+    return (
+      <TouchableOpacity
+        key={chipKey}
+        onPress={() => onPress(value)}
+        style={{
+          paddingHorizontal: 12,
+          height: 30,
+          borderRadius: 20,
+          backgroundColor: isActive ? accent : chipBg,
+          borderWidth: 1,
+          borderColor: isActive ? accent : chipBorder,
+          marginRight: 6,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CustomText
+          style={{ fontSize: 12, color: isActive ? (theme === "dark" ? "#1c1d1e" : "#fff") : chipText }}
+          weight={isActive ? "semibold" : "regular"}
+        >
+          {label}
+        </CustomText>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View className={`h-full  ${useBackgroundColorClass()} `}>
-        {isDesktop() ? renderTableView() : renderCardView()}
+      <View style={{ flex: 1 }} className={useBackgroundColorClass()}>
+        {/* Header row: search + filter toggle */}
+        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingTop: 10, paddingBottom: 4, gap: 8 }}>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: inputBg, borderRadius: 10, borderWidth: 1, borderColor: inputBorder, paddingHorizontal: 10, height: 38 }}>
+            <Ionicons name="search" size={16} color={placeholder} style={{ marginRight: 6 }} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t("common.searchBillHint") || "Search by name, note or description"}
+              placeholderTextColor={placeholder}
+              style={{ flex: 1, fontSize: 13, color: theme === "dark" ? "#ffffff" : "#333333", paddingVertical: 0, fontFamily: "IBMPlexSansThai-Medium" }}
+              returnKeyType="search"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery("")}>
+                <Ionicons name="close-circle" size={16} color={placeholder} />
+              </TouchableOpacity>
+            )}
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowFilters((v) => !v)}
+            style={{
+              width: 38, height: 38, borderRadius: 10,
+              backgroundColor: showFilters || filterType !== "All" ? accent : chipBg,
+              borderWidth: 1,
+              borderColor: showFilters || filterType !== "All" ? accent : chipBorder,
+              alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <Ionicons
+              name="options-outline"
+              size={18}
+              color={showFilters || filterType !== "All"
+                ? (theme === "dark" ? "#1c1d1e" : "#fff")
+                : (theme === "dark" ? "#aaaaaa" : "#666")}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Filter chips */}
+        {showFilters && (
+          <View style={{ height: 46 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, alignItems: "center", height: 46 }}>
+              {renderChip("status-All", t("common.all") || "All", "All", filterStatus, setFilterStatus)}
+              {renderChip("status-debt", t("expense.status.debt") || "Debt", "debt", filterStatus, setFilterStatus)}
+              {renderChip("status-paid", t("expense.status.paid") || "Paid", "paid", filterStatus, setFilterStatus)}
+              <View style={{ width: 1, height: 18, backgroundColor: chipBorder, marginHorizontal: 6 }} />
+              {renderChip("type-All", t("common.all") || "All", "All", filterType, setFilterType)}
+              {renderChip("type-expense", t("expense.type.expense") || "Expense", "expense", filterType, setFilterType)}
+              {renderChip("type-ads", t("expense.type.ads") || "Ads", "ads", filterType, setFilterType)}
+            </ScrollView>
+          </View>
+        )}
+
+        <View style={{ flex: 1 }}>
+          {isDesktop() ? renderTableView() : renderCardView()}
+        </View>
       </View>
     </GestureHandlerRootView>
   );

@@ -38,7 +38,7 @@
     "noDataAvailable": "No data available",
     "continue": "Continue",
     "search": "Search",
-    "searchBillHint": "Search by name, phone or bill ID",
+    "searchBillHint": "Search by name, phone, bill ID or date",
      "searchAdd": "Search/Add",
     "saving": "Auto-saving...",
     "back": "Back",
@@ -891,6 +891,14 @@
       "required": "Please fill at least the date, account note, and amount fields"
     },
     "forecastAdsCost": "Forecast Ads Cost",
+    "type": {
+      "expense": "Expense",
+      "ads": "Ads"
+    },
+    "status": {
+      "debt": "Debt",
+      "paid": "Paid"
+    },
     "table": {
       "date": "Date",
       "notedesc": "Note/Description",
