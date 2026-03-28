@@ -1273,7 +1273,7 @@ const updateBill = async (req: Request, res: Response) => {
           // Find the parent bill
           const parent = await tx.bill.findFirst({
             where: { flexiId: splitGroupId, isSplitChild: false } as any,
-            select: { id: true, splitPercent: true, totalInvoice: true } as any,
+            select: { id: true, splitPercent: true, totalInvoice: true, total: true } as any,
           }) as any;
 
           // Find all sibling split children (exclude current)
@@ -1331,9 +1331,30 @@ const updateBill = async (req: Request, res: Response) => {
                 } as any,
               });
             }
+
+            // If child transitions Invoice → Receipt, subtract splitAmount from parent's totalInvoice and add to parent's total
+            const parentExtraData: any = {};
+            if ((existingBill as any).DocumentType === "Invoice" && docType === "Receipt") {
+              const splitPct = Number((existingBill as any).splitPercent) || 0;
+              const splitAmount = total * (splitPct / 100);
+              const currentParentInvoice = Number(parent.totalInvoice) || 0;
+              const currentParentTotal = Number(parent.total) || 0;
+              parentExtraData.totalInvoice = Math.max(0, currentParentInvoice - splitAmount);
+              parentExtraData.total = currentParentTotal + splitAmount;
+
+              // If all siblings are also Receipt, promote parent to Receipt
+              const allSiblingsPaid = (siblings as any[]).every(
+                (s) => s.DocumentType === "Receipt",
+              );
+              if (allSiblingsPaid) {
+                parentExtraData.DocumentType = "Receipt";
+                parentExtraData.cashStatus = true;
+              }
+            }
+
             await tx.bill.update({
               where: { id: parent.id },
-              data: sharedData as any,
+              data: { ...sharedData, ...parentExtraData } as any,
             });
           }
 
@@ -1653,6 +1674,41 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         },
         data: updateData,
       });
+
+      // If split child transitions Invoice → Receipt, subtract splitAmount from parent's totalInvoice and add to parent's total
+      if (
+        isSplitChild &&
+        currentBill.DocumentType === "Invoice" &&
+        DocumentType === "Receipt"
+      ) {
+        const parentBill = await tx.bill.findFirst({
+          where: { flexiId: (currentBill as any).splitGroupId, isSplitChild: false } as any,
+          select: { id: true, totalInvoice: true, total: true } as any,
+        }) as any;
+
+        if (parentBill) {
+          const currentParentInvoice = Number(parentBill.totalInvoice) || 0;
+          const currentParentTotal = Number(parentBill.total) || 0;
+
+          // Check if all other children are also Receipt
+          const otherChildren = await tx.bill.findMany({
+            where: { splitGroupId: (currentBill as any).splitGroupId, isSplitChild: true, id: { not: Number(id) } } as any,
+            select: { DocumentType: true } as any,
+          });
+          const allChildrenPaid = (otherChildren as any[]).every(
+            (c) => c.DocumentType === "Receipt",
+          );
+
+          await tx.bill.update({
+            where: { id: parentBill.id },
+            data: {
+              totalInvoice: Math.max(0, currentParentInvoice - splitAmount),
+              total: currentParentTotal + splitAmount,
+              ...(allChildrenPaid && { DocumentType: "Receipt", cashStatus: true }),
+            } as any,
+          });
+        }
+      }
 
       // Update stock based on DocumentType change
       if (

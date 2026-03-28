@@ -80,3 +80,8 @@ cert.pem
 key.pem
 
 ONLYME.md
+
+# ocr-service
+ocr-service/venv/
+ocr-service/__pycache__/
+ocr-service/*.pyc

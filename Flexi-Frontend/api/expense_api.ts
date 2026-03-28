@@ -1,6 +1,8 @@
 
 import axios from "axios";
 import { getAxiosWithAuth } from "@/utils/axiosInstance";
+import { getToken } from "@/utils/utility";
+import { API_URL } from "@/utils/config";
 import { t } from "i18next";
 
 class CallAPIExpense {
@@ -220,12 +222,73 @@ class CallAPIExpense {
     }
   }
 
+  async createAExpenseWithOCRStream(
+    formData: FormData,
+    onProgress: (stage: string, progress: number, message: string) => void
+  ): Promise<any> {
+    const token = await getToken();
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_URL}expense/ocr-stream`);
+      if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+
+      let result: any = null;
+      let processedLength = 0;
+
+      const parseSSELine = (line: string) => {
+        if (!line.startsWith("data: ")) return;
+        try {
+          const data = JSON.parse(line.slice(6));
+          if (data.event === "progress") {
+            onProgress(data.stage, data.progress, data.message ?? "");
+          } else if (data.event === "result") {
+            result = data.data;
+          } else if (data.event === "error") {
+            reject(new Error(data.message ?? "OCR stream error"));
+          }
+        } catch {
+          // ignore partial/malformed lines
+        }
+      };
+
+      // Fires as each SSE chunk arrives — real-time progress
+      xhr.onprogress = () => {
+        const newText = xhr.responseText.slice(processedLength);
+        processedLength = xhr.responseText.length;
+        for (const line of newText.split("\n")) {
+          parseSSELine(line);
+        }
+      };
+
+      xhr.onload = () => {
+        // Parse any remaining text not caught by onprogress
+        const remaining = xhr.responseText.slice(processedLength);
+        for (const line of remaining.split("\n")) {
+          parseSSELine(line);
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+          return reject(new Error(`OCR request failed: ${xhr.status}`));
+        }
+        if (!result) return reject(new Error(t("common.networkError")));
+        resolve(result);
+      };
+
+      xhr.onerror = () => {
+        console.error("🚨 Create Expense OCR Stream Error");
+        reject(new Error(t("common.networkError")));
+      };
+
+      xhr.send(formData);
+    });
+  }
+
     // create expense
   async createAExpenseWithOCRAPI(formData: FormData): Promise<any> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-  // Let axios set the Content-Type (including boundary) for FormData
-  const response = await axiosInstance.post(`/expense/ocr`, formData);
+      // OCR requests can be slow (HEIC conversion + EasyOCR) — use a longer timeout
+      const response = await axiosInstance.post(`/expense/ocr`, formData, { timeout: 90000 });
       console.log("🚀CreateExpenseAPI - Full Response:", response.data);
       console.log("🔍 OCR Alert in API Response:", response.data.ocrAlert ? "Present" : "Missing");
       if (response.data.ocrAlert) {

@@ -83,6 +83,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const billsAggregation = await prisma.bill.findMany({
       where: {
         ...baseWhere,
+        isSplitChild: false // Only consider parent bills for income calculation to avoid double counting
       },
       select: {
         total: true,

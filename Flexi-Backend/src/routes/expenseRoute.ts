@@ -2,6 +2,7 @@ import express from "express";
 import {
   createExpense,
   createExpenseWithOCR,
+  createExpenseWithOCRStream,
   getExpenses,
   getExpenseById,
   updateExpenseById,
@@ -25,6 +26,9 @@ router.post("/", authenticateToken, createExpense);
 
 // Creating a New Expense with OCR
 router.post("/ocr", authenticateToken, createExpenseWithOCR);
+
+// Creating a New Expense with OCR — SSE version (streams real progress to frontend)
+router.post("/ocr-stream", authenticateToken, createExpenseWithOCRStream);
 // Duplicate an existing expense (no image copy, mark as saved)
 router.post("/duplicate/:id", authenticateToken, duplicateExpense);
 

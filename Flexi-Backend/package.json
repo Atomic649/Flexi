@@ -54,6 +54,8 @@
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "fontkit": "^2.0.4",
+    "form-data": "^4.0.5",
+    "heic-convert": "^2.1.0",
     "i": "^0.3.7",
     "joi": "^17.13.1",
     "jsonwebtoken": "^9.0.2",

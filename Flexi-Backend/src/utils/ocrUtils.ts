@@ -1,9 +1,10 @@
-import Tesseract from 'tesseract.js';
+import { createWorker, Worker } from 'tesseract.js';
 import sharp from 'sharp';
-import { 
-  thaiProvinces, 
-  generalAddressKeywords, 
-  receiptTitleKeywords 
+import path from 'path';
+import {
+  thaiProvinces,
+  generalAddressKeywords,
+  receiptTitleKeywords
 } from './ocrKeywords';
 
 export interface ExtractedData {
@@ -25,6 +26,7 @@ export interface OCRDetectionResult {
   addressFound: boolean;
   receiptTitleFound: boolean;
   vatAmountFound: boolean;
+  isThaiIdCard: boolean;
   // Add detailed detection results
   amountsDetected: string[];
   datesDetected: string[];
@@ -332,48 +334,173 @@ const extractFullAddressLines = (text: string): string[] => {
           }
         } else {
           console.log(`      ❌ SHORT LINE ADDRESS VALIDATION FAILED - Skipping: "${line}"`);
+          // Fallback: try to find an embedded address starting with house number (e.g. "333/33 แขวง...")
+          const embeddedMatch = line.match(/(\d+\/\d+[^\n\r]*\d{5})/);
+          if (embeddedMatch) {
+            const candidate = embeddedMatch[1].trim();
+            const cHasProvince = thaiProvinces.some(p => candidate.toLowerCase().includes(p.toLowerCase()));
+            const cHasKeyword = generalAddressKeywords.some(k => candidate.toLowerCase().includes(k.toLowerCase())) || cHasProvince;
+            if (/\d{5}$/.test(candidate) && cHasProvince && cHasKeyword && candidate.length >= 20) {
+              if (!addresses.includes(candidate)) {
+                addresses.push(candidate);
+                console.log(`      🏠 EMBEDDED ADDRESS EXTRACTED: "${candidate}"`);
+              }
+            }
+          }
         }
       }
     }
   }
-  
+
   console.log(`🔍 TOTAL ADDRESSES EXTRACTED: ${addresses.length}`);
   return addresses;
 };
 
-export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDetectionResult> => {
+const OCR_SERVICE_URL = process.env.OCR_SERVICE_URL || 'http://ocr-service:5000';
+const TESSERACT_CACHE = path.join(process.cwd(), '.tesseract-cache');
+const THAI_ID_KEYWORDS = /thai\s*national\s*id\s*card|บัตรประจำตัวประชาชน|เลขประจำตัวประชาชน/i;
+
+// Persistent workers — created once, reused across requests
+let workerEng: Worker | null = null;
+let workerThaiEng: Worker | null = null;
+
+async function getEngWorker(): Promise<Worker> {
+  if (!workerEng) {
+    workerEng = await createWorker('eng', 1, { cachePath: TESSERACT_CACHE });
+  }
+  return workerEng;
+}
+
+async function getThaiEngWorker(): Promise<Worker> {
+  if (!workerThaiEng) {
+    workerThaiEng = await createWorker(['tha', 'eng'], 1, { cachePath: TESSERACT_CACHE });
+  }
+  return workerThaiEng;
+}
+
+async function runEasyOCR(
+  imageBuffer: Buffer,
+  onProgress?: (stage: string, progress: number) => void
+): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', new Blob([new Uint8Array(imageBuffer)], { type: 'image/jpeg' }), 'image.jpg');
+
+  let response = await fetch(`${OCR_SERVICE_URL}/ocr-stream`, { method: 'POST', body: formData });
+
+  // Fallback: if /ocr-stream not available (old service version), use plain /ocr
+  if (response.status === 404) {
+    console.log('⚠️ /ocr-stream not found — falling back to /ocr (no real-time progress)');
+    const fallbackForm = new FormData();
+    fallbackForm.append('file', new Blob([new Uint8Array(imageBuffer)], { type: 'image/jpeg' }), 'image.jpg');
+    const fallbackRes = await fetch(`${OCR_SERVICE_URL}/ocr`, { method: 'POST', body: fallbackForm });
+    if (!fallbackRes.ok) {
+      const errBody = await fallbackRes.text().catch(() => '');
+      throw new Error(`OCR service responded with status ${fallbackRes.status}: ${errBody}`);
+    }
+    const result = await fallbackRes.json() as { text: string; confidence: number };
+    console.log(`🔍 EasyOCR (fallback) confidence: ${result.confidence}`);
+    return result.text;
+  }
+
+  if (!response.ok || !response.body) {
+    const errBody = await response.text().catch(() => '');
+    throw new Error(`OCR service responded with status ${response.status}: ${errBody}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+  let buf = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      try {
+        const data = JSON.parse(line.slice(6)) as { stage: string; progress: number; text?: string; message?: string };
+        if (onProgress) onProgress(data.stage, data.progress);
+        if (data.stage === 'done' && data.text !== undefined) text = data.text;
+        if (data.stage === 'error') throw new Error(`OCR service error: ${data.message}`);
+        console.log(`🔍 EasyOCR progress: ${data.stage} ${data.progress}%`);
+      } catch (e: any) {
+        if (e.message?.startsWith('OCR service error')) throw e;
+        // ignore JSON parse errors on partial lines
+      }
+    }
+  }
+
+  return text;
+}
+
+export const extractTextFromImage = async (
+  imageBuffer: Buffer,
+  onProgress?: (stage: string, progress: number) => void
+): Promise<OCRDetectionResult> => {
+  const yield_ = () => new Promise<void>(r => setImmediate(r));
+
   try {
-    console.log('🔍 Starting image preprocessing...');
-    
-    // Preprocess image for better OCR results
-    const processedImage = await sharp(imageBuffer)
-      .resize({ width: 1200, height: 1600, fit: 'inside' })
-      .greyscale()
-      .normalize()
-      .sharpen()
-      .toBuffer();
+    console.log(`🔍 Buffer size: ${imageBuffer.length} bytes, first 4 bytes: ${imageBuffer.subarray(0, 4).toString('hex')}`);
 
-    console.log('🔍 Starting OCR processing...');
+    // Fire immediately so the progress bar starts moving before any heavy work
+    if (onProgress) { onProgress('preprocessing', 8); await yield_(); }
 
-    // Perform OCR with Thai language support
-    const { data: { text } } = await Tesseract.recognize(
-      processedImage,
-      'tha+eng', // Thai and English languages
-      {
-        logger: (m: any) => {
-          if (m.status === 'recognizing text') {
-            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
-          }
+    // Convert to JPEG — Tesseract.js can't read HEIC/AVIF; sharp may not have HEIC support compiled in
+    let jpegBuffer: Buffer | null = null;
+    try {
+      jpegBuffer = await sharp(imageBuffer).jpeg().toBuffer();
+    } catch {
+      console.log('⚠️ sharp cannot decode this format (likely HEIC) — routing directly to EasyOCR');
+    }
+
+    let text: string;
+
+    if (!jpegBuffer) {
+      // Unsupported by sharp (HEIC etc.) — EasyOCR Python service handles these via pillow-heif
+      console.log('🪪 Sending to EasyOCR (format not supported by Tesseract)...');
+      text = await runEasyOCR(imageBuffer, onProgress);
+    } else {
+      // Quick English-only Tesseract pass to detect Thai ID card
+      if (onProgress) { onProgress('quick_scan', 12); await yield_(); }
+      console.log('🔍 Quick Tesseract scan (eng) for document type detection...');
+      const engWorker = await getEngWorker();
+      const { data: { text: quickText } } = await engWorker.recognize(jpegBuffer);
+
+      if (THAI_ID_KEYWORDS.test(quickText)) {
+        console.log('🪪 Thai ID card detected — running EasyOCR for accurate Thai extraction...');
+        text = await runEasyOCR(imageBuffer, onProgress);
+      } else {
+        console.log('📄 Regular document — running full Tesseract (tha+eng)...');
+        if (onProgress) { onProgress('preprocessing', 15); await yield_(); }
+        const thaiWorker = await getThaiEngWorker();
+        if (onProgress) { onProgress('ocr_running', 35); await yield_(); }
+        const { data: { text: fullText } } = await thaiWorker.recognize(jpegBuffer);
+        if (onProgress) { onProgress('processing', 85); await yield_(); }
+
+        // Check if Tesseract produced meaningful text
+        // "Meaningful" = at least 10 Thai or Latin alphanumeric characters
+        const meaningfulChars = (fullText.match(/[\u0E00-\u0E7Fa-zA-Z0-9]/g) ?? []).length;
+        if (meaningfulChars < 10) {
+          console.log(`⚠️ Tesseract returned low-quality text (${meaningfulChars} meaningful chars) — falling back to EasyOCR...`);
+          if (onProgress) { onProgress('easyocr_fallback', 87); await yield_(); }
+          text = await runEasyOCR(imageBuffer, (stage, pct) => {
+            // Remap EasyOCR's 15–100 into 87–100 band
+            const mapped = 87 + Math.round((pct / 100) * 13);
+            if (onProgress) onProgress(stage, Math.min(mapped, 100));
+          });
+          console.log('✅ EasyOCR fallback complete');
+        } else {
+          if (onProgress) { onProgress('done', 100); await yield_(); }
+          text = fullText;
         }
       }
-    );
+    }
 
     console.log('🔍 Raw extracted text:', text);
-
-    // Detect data presence from text
-    const result = detectDataPresence(text);
-    
-    return result;
+    return detectDataPresence(text);
   } catch (error) {
     console.error('OCR Error:', error);
     return {
@@ -386,6 +513,7 @@ export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDete
       addressFound: false,
       receiptTitleFound: false,
       vatAmountFound: false,
+      isThaiIdCard: false,
       amountsDetected: [],
       datesDetected: [],
       addressesDetected: [],
@@ -409,10 +537,81 @@ export const extractTextFromImage = async (imageBuffer: Buffer): Promise<OCRDete
 /**
  * Detect presence of data elements in text without selecting specific values
  */
+const extractThaiIdCardData = (rawText: string): { name: string | null; idNumber: string | null; address: string | null } => {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  // --- Name: Thai title + first + last name on the same line (no cross-line match) ---
+  let name: string | null = null;
+  for (const line of lines) {
+    const m = line.match(/^.*?(?:น\.?ส\.?|นางสาว|นาย|นาง(?!สาว))[^\S\n]*([ก-๙]+(?:[^\S\n]+[ก-๙]+)+)/);
+    if (m) {
+      name = m[1].trim();
+      break;
+    }
+  }
+
+  // --- ID number: X XXXX XXXXX XX X (13 digits with spaces) ---
+  let idNumber: string | null = null;
+  const idMatch = rawText.match(/(\d)\s+(\d{4})\s+(\d{5})\s+(\d{2})\s+(\d)/);
+  if (idMatch) {
+    idNumber = idMatch.slice(1).join('');
+  }
+
+  // --- Address: collect all candidate lines around ที่อยู่, parse components, reassemble in order ---
+  const thaiProvincePattern = /กรุงเทพมหานคร|กรุงเทพฯ|[ก-๙]+(?:บุรี|นคร|ธานี|สงขลา|ภูเก็ต|เชียงใหม่|ขอนแก่น|อุดรธานี|นครราชสีมา|นนทบุรี|ปทุมธานี|สมุทร[ก-๙]+)/;
+  let address: string | null = null;
+  const addressLabelIdx = lines.findIndex(l => /ที่อยู่|ที่อยุ่/.test(l));
+  if (addressLabelIdx !== -1) {
+    // Gather candidate lines: up to 4 before + all after (until expiry/dates)
+    const candidates: string[] = [];
+    for (let i = Math.max(0, addressLabelIdx - 4); i < lines.length; i++) {
+      if (i === addressLabelIdx) continue; // skip the label itself
+      const line = lines[i];
+      if (i > addressLabelIdx) {
+        if (/วันออก|วันบัตร|วันหมด|date.*issu|date.*expir|เจ้าหน้าที่|เจ้าพนักงาน/i.test(line)) break;
+        if (/^[l1Ilo0\s\d]+$/.test(line)) continue;
+      }
+      if (/[ก-๙]/.test(line) || /\d+\/\d+/.test(line)) {
+        candidates.push(line.replace(/^\./, 'ถ.')); // fix leading '.' OCR noise
+      }
+      if (i > addressLabelIdx && thaiProvincePattern.test(line)) break;
+    }
+
+    // Parse address components from all candidates
+    const joined = candidates.join(' ').replace(/\s+/g, ' ');
+    const houseMatch  = joined.match(/(\d+\/\d+|\d+)\s*(?=ถ\.|ซ\.|แขวง|เขต|ตำบล|อำเภอ|$)/);
+    const soiMatch    = joined.match(/ซ(?:อย)?\.?\s*([ก-๙a-zA-Z0-9\s]+?)(?=\s*(?:ถ\.|แขวง|ตำบล|เขต|อำเภอ|กรุงเทพ|จังหวัด|$))/);
+    const roadMatch   = joined.match(/ถ(?:นน)?\.?\s*([ก-๙a-zA-Z0-9\s]+?)(?=\s*(?:แขวง|ตำบล|เขต|อำเภอ|กรุงเทพ|จังหวัด|$))/);
+    const subDistMatch= joined.match(/(?:แขวง|ตำบล)\s*([ก-๙]+)/);
+    const distMatch   = joined.match(/(?:เขต|อำเภอ)\s*([ก-๙]+)/);
+    const provMatch   = joined.match(thaiProvincePattern);
+
+    const parts: string[] = [];
+    if (houseMatch)   parts.push(houseMatch[1].trim());
+    if (soiMatch)     parts.push(`ซ.${soiMatch[1].trim()}`);
+    if (roadMatch)    parts.push(`ถ.${roadMatch[1].trim()}`);
+    if (subDistMatch) parts.push(`แขวง${subDistMatch[1].trim()}`);
+    if (distMatch)    parts.push(`เขต${distMatch[1].trim()}`);
+    if (provMatch)    parts.push(provMatch[0].trim());
+
+    if (parts.length > 0) {
+      address = parts.join(' ');
+    }
+  }
+
+  return { name, idNumber, address };
+};
+
 export const detectDataPresence = (text: string): OCRDetectionResult => {
   // Clean up the text - remove extra whitespace and normalize
   const cleanText = text.replace(/\s+/g, ' ').trim();
   console.log('🔍 Starting data detection...');
+
+  // --- Thai National ID Card detection ---
+  const isThaiIdCard = /thai\s*national\s*id\s*card|บัตรประจำตัวประชาชน|บัตรประชาชน|เลขประจำตัวประชาชน/i.test(cleanText);
+  if (isThaiIdCard) {
+    console.log('🪪 Thai National ID Card detected — using ID card extraction patterns');
+  }
   
   // Initialize arrays to collect actual detected values
   const detectedAmounts: string[] = [];
@@ -462,6 +661,14 @@ export const detectDataPresence = (text: string): OCRDetectionResult => {
         fullName = fullName.replace(/\d{13}.*$/i, '').trim();
         fullName = fullName.replace(/เอกสารนี.*$/i, '').trim();
         fullName = fullName.replace(/การ.*$/i, '').trim();
+        // Remove phone numbers so they don't trigger address detection
+        fullName = fullName.replace(/\b0\d{8,9}\b/g, '').trim();
+        // Remove tax-label suffixes that follow the company name
+        fullName = fullName.replace(/เลขประจํา.*$/i, '').trim();
+        fullName = fullName.replace(/เลขประจำ.*$/i, '').trim();
+        fullName = fullName.replace(/เลขผู้เสียภาษี.*$/i, '').trim();
+        // Normalize whitespace
+        fullName = fullName.replace(/\s+/g, ' ').trim();
         
         if (fullName.startsWith('จํากัด ') || fullName.startsWith('จำกัด ')) {
           fullName = fullName.replace(/^(จํากัด|จำกัด)\s+/, '').trim();
@@ -614,6 +821,24 @@ for (const rawName of namesFound) {
     continue;
   }
 
+  // Reject fragments that start with a Thai vowel/tone mark (e.g. "าขาพิเศษ 2" from "สาขาพิเศษ")
+  if (/^[าิีึืุูเแโใไ็่้๊๋์ํ]/.test(cleaned)) {
+    console.log(`   ❌ Skipped: starts with Thai vowel/tone mark (fragment)`);
+    continue;
+  }
+
+  // Reject standalone prefix words with no actual name attached
+  if (/^บริษัท\s*$|^ห้างหุ้นส่วน\s*$|^นาย\s*$|^นาง\s*$|^น\.ส\.\s*$/.test(cleaned)) {
+    console.log(`   ❌ Skipped: prefix word only, no name`);
+    continue;
+  }
+
+  // Reject legal/document boilerplate (long strings with document keywords)
+  if (cleaned.length > 60 && /เอกสาร|จัดทํา|จัดทำ|กรมสรรพากร|ข้อมูล|ฉบับนี้|ส่งข้อมูล/.test(cleaned)) {
+    console.log(`   ❌ Skipped: legal/document boilerplate`);
+    continue;
+  }
+
   if (!cleanedNames.includes(cleaned)) {
     cleanedNames.push(cleaned);
     console.log(`   ✅ KEPT: "${cleaned}"`);
@@ -750,8 +975,8 @@ cleanedNames.forEach((name, index) => {
       if (match && match[1]) {
         let invoiceId = match[1].trim();
         
-        // Clean up the invoice ID
-        invoiceId = invoiceId.replace(/\s+/g, ' ').trim();
+        // Keep only valid invoice ID characters — strip trailing Thai/noise
+        invoiceId = invoiceId.replace(/[^A-Za-z0-9\-\_\/]/g, ' ').trim().split(/\s+/)[0];
         
         // Filter out obvious non-invoice IDs (like tax IDs, phone numbers, etc.)
         const isValidInvoiceId = (id: string): boolean => {
@@ -787,6 +1012,15 @@ cleanedNames.forEach((name, index) => {
     }
     pattern.lastIndex = 0;
   }
+
+  // Remove IDs that are a prefix of a longer ID already captured (e.g. "REC2026" when "REC2026/001" exists)
+  const deduplicatedInvoiceIds = taxInvoiceIdsFound.filter(
+    id => !taxInvoiceIdsFound.some(longer => longer !== id && longer.startsWith(id))
+  );
+  taxInvoiceIdsFound.length = 0;
+  deduplicatedInvoiceIds.forEach(id => taxInvoiceIdsFound.push(id));
+  detectedTaxInvoiceIds.length = 0;
+  deduplicatedInvoiceIds.forEach(id => detectedTaxInvoiceIds.push(id));
 
   console.log(`🔍 TAX INVOICE IDs DETECTED: ${taxInvoiceIdsFound.length} invoice IDs found`);
   taxInvoiceIdsFound.forEach((invoiceId, index) => {
@@ -853,8 +1087,14 @@ cleanedNames.forEach((name, index) => {
 
   // Fallback: pick the largest currency-like number found in the text (useful when labels are OCR-mangled)
   if (!amountFound) {
+    // Strip tax IDs and phone numbers so their digit sub-sequences can't pollute amount candidates
+    let textForAmountFallback = cleanText;
+    for (const taxId of taxIdsFound) {
+      textForAmountFallback = textForAmountFallback.replace(taxId, '');
+    }
+    textForAmountFallback = textForAmountFallback.replace(/\b0\d{8,9}\b/g, ''); // Thai phone numbers
     // Find all numbers that look like currency (with commas or decimals) and are not dates (dd/mm/yyyy)
-    const currencyLike = Array.from(cleanText.matchAll(/\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+\.\d{2}/g)).map(m => m[0]);
+    const currencyLike = Array.from(textForAmountFallback.matchAll(/\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+\.\d{2}/g)).map(m => m[0]);
     const candidates: number[] = [];
     for (const c of currencyLike) {
       // skip things that look like dates (e.g., 10/09/2025 already removed earlier) and postal codes
@@ -1015,10 +1255,11 @@ cleanedNames.forEach((name, index) => {
             
             // Check for context that suggests this is NOT a VAT amount
             const nonVatIndicators = [
-              /ราคา.*ภาษีมูลค่าเพิ่ม/i, // "ราคาภาษีมูลค่าเพิ่ม" (price including VAT)
-              /รวมภาษีมูลค่าเพิ่ม/i,   // "รวมภาษีมูลค่าเพิ่ม" (total including VAT)
-              /ก่อนภาษีมูลค่าเพิ่ม/i,   // "ก่อนภาษีมูลค่าเพิ่ม" (before VAT)
-              /สินค้า.*ภาษีมูลค่าเพิ่ม/i // Product with VAT context
+              /ราคา.*ภาษีมูลค่าเพิ่ม/i,  // "ราคาภาษีมูลค่าเพิ่ม" (price including VAT)
+              /รวมภาษีมูลค่าเพิ่ม/i,    // "รวมภาษีมูลค่าเพิ่ม" (total including VAT)
+              /ก่อนภาษีมูลค่าเพิ่ม/i,    // "ก่อนภาษีมูลค่าเพิ่ม" (before VAT)
+              /ก่อนภาษี/i,               // "ยอดรวมก่อนภาษี" (subtotal before tax)
+              /สินค้า.*ภาษีมูลค่าเพิ่ม/i  // Product with VAT context
             ];
             
             if (nonVatIndicators.some(indicator => 
@@ -1052,10 +1293,9 @@ cleanedNames.forEach((name, index) => {
     
     pattern.lastIndex = 0; // Reset regex state
     
-    // If we found high-confidence matches and this was a high-confidence pattern, 
-    // we can stop processing less specific patterns
-    if (highConfidenceFound && i >= 4 && foundInThisPattern) {
-      console.log(`🎯 Stopping VAT detection - found high-confidence matches from specific patterns`);
+    // Stop processing low-confidence patterns once a high-confidence VAT was found
+    if (highConfidenceFound && i >= 4) {
+      console.log(`🎯 Stopping VAT detection - high-confidence match already found`);
       break;
     }
   }
@@ -1344,6 +1584,29 @@ cleanedNames.forEach((name, index) => {
   const vatAmountsFoundFiltered = filterNonZero(vatAmountsFound);
   const detectedVatAmountsFiltered = filterNonZero(detectedVatAmounts);
 
+  // --- Override with Thai ID card specific extraction ---
+  if (isThaiIdCard) {
+    const idCardData = extractThaiIdCardData(text);
+    if (idCardData.name) {
+      namesFound.length = 0;
+      namesFound.push(idCardData.name);
+      console.log(`🪪 ID card name override: "${idCardData.name}"`);
+    }
+    if (idCardData.idNumber) {
+      taxIdsFound.length = 0;
+      taxIdsFound.push(idCardData.idNumber);
+      console.log(`🪪 ID card number override: "${idCardData.idNumber}"`);
+    }
+    if (idCardData.address) {
+      detectedAddresses.length = 0;
+      detectedAddresses.push(idCardData.address);
+      console.log(`🪪 ID card address override: "${idCardData.address}"`);
+    }
+    summary.hasAtLeast2Names = false; // ID card has 1 person, not 2 parties
+    summary.hasAtLeast1TaxId = taxIdsFound.length >= 1;
+    summary.hasReceiptTitle = false;
+  }
+
   return {
     namesFound,
     taxIdsFound,
@@ -1353,6 +1616,7 @@ cleanedNames.forEach((name, index) => {
     addressFound,
     receiptTitleFound,
     vatAmountFound,
+    isThaiIdCard,
     // Return the actual collected values instead of placeholder text
     amountsDetected: detectedAmounts,
     datesDetected: detectedDates,

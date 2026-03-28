@@ -596,44 +596,27 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           namesCountForRequirement =
             filteredNames.length + (businessNameDetected ? 1 : 0);
 
-          // Filter out business tax ID from tax IDs
-          const filteredTaxIds = detectionResult.taxIdsFound.filter((taxId) => {
-            const isBusinessTaxId = taxId.trim() === businessAcc.taxId.trim();
-            if (isBusinessTaxId) {
-              // console.log(`   🚫 Filtered out business tax ID: "${taxId}"`);
-              return false;
-            }
-            return true;
-          });
+          // Filter out business tax ID from tax IDs (skip for Thai ID cards — the person's ID is intentional)
+          const filteredTaxIds = detectionResult.isThaiIdCard
+            ? detectionResult.taxIdsFound
+            : detectionResult.taxIdsFound.filter((taxId) => taxId.trim() !== businessAcc.taxId.trim());
           detectionResult.taxIdsFound = filteredTaxIds;
 
-          // Filter out business addresses from detected addresses
-          const filteredAddresses = detectionResult.addressesDetected.filter(
-            (address) => {
-              const addressToCheck = address.toLowerCase().trim();
-
-              // Known business address patterns to filter out
-              const businessAddressPatterns = [
-                /555\/39.*หมู่บ้าน.*พลีโน่/i, // Specific address pattern
-                /พลีโน่.*รามอินทรา.*จตุโชติ/i, // Location identifiers
-                /สามวาตะวันตก.*คลองสามวา/i, // District identifiers
-              ];
-
-              // Check if this address matches user's business patterns
-              const isBusinessAddress =
-                businessAddressPatterns.some((pattern) =>
-                  pattern.test(address)
-                ) ||
-                // Also check if the address contains the business name
-                addressToCheck.includes(businessAcc.businessName.toLowerCase());
-
-              if (isBusinessAddress) {
-                // console.log(`   🚫 Filtered out business address: "${address}"`);
-                return false;
-              }
-              return true;
-            }
-          );
+          // Filter out business addresses from detected addresses (skip for Thai ID cards — address belongs to the person)
+          const filteredAddresses = detectionResult.isThaiIdCard
+            ? detectionResult.addressesDetected
+            : detectionResult.addressesDetected.filter((address) => {
+                const addressToCheck = address.toLowerCase().trim();
+                const businessAddressPatterns = [
+                  /555\/39.*หมู่บ้าน.*พลีโน่/i,
+                  /พลีโน่.*รามอินทรา.*จตุโชติ/i,
+                  /สามวาตะวันตก.*คลองสามวา/i,
+                ];
+                return (
+                  !businessAddressPatterns.some((p) => p.test(address)) &&
+                  !addressToCheck.includes(businessAcc.businessName.toLowerCase())
+                );
+              });
           detectionResult.addressesDetected = filteredAddresses;
           // Update summary counts after filtering
           // Count business name (if detected) toward the "2 names" requirement
@@ -757,6 +740,29 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           failedRequirements.push({ key: "ocr.failed.address" });
         }
 
+        // For Thai ID cards only expose name/taxId/address/province — no invoice/vat/amount/date
+        const selectableOptions = detectionResult.isThaiIdCard
+          ? {
+              names: detectionResult.namesFound || [],
+              taxIds: detectionResult.taxIdsFound || [],
+              taxInvoiceIds: [],
+              vatAmounts: [],
+              amounts: [],
+              dates: [],
+              addresses: detectionResult.addressesDetected || [],
+              provinces: detectionResult.provincesDetected || [],
+            }
+          : {
+              names: detectionResult.namesFound || [],
+              taxIds: detectionResult.taxIdsFound || [],
+              taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
+              vatAmounts: detectionResult.vatAmountsFound || [],
+              amounts: detectionResult.amountsDetected || [],
+              dates: detectionResult.datesDetected || [],
+              addresses: detectionResult.addressesDetected || [],
+              provinces: detectionResult.provincesDetected || [],
+            };
+
         // Decide alert type: success / warning (only taxId missing) / fail
         if (allRequirementsMet) {
           ocrAlert = {
@@ -776,16 +782,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
                 hasAddress: detectionResult.summary.hasAddress,
                 hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
               },
-              selectableOptions: {
-                names: detectionResult.namesFound || [],
-                taxIds: detectionResult.taxIdsFound || [],
-                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
-                vatAmounts: detectionResult.vatAmountsFound || [],
-                amounts: detectionResult.amountsDetected || [],
-                dates: detectionResult.datesDetected || [],
-                addresses: detectionResult.addressesDetected || [],
-                provinces: detectionResult.provincesDetected || [],
-              },
+              selectableOptions,
             },
           };
         } else if (onlyTaxIdMissing) {
@@ -816,16 +813,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
                 hasAddress: detectionResult.summary.hasAddress,
                 hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
               },
-              selectableOptions: {
-                names: detectionResult.namesFound || [],
-                taxIds: detectionResult.taxIdsFound || [],
-                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
-                vatAmounts: detectionResult.vatAmountsFound || [],
-                amounts: detectionResult.amountsDetected || [],
-                dates: detectionResult.datesDetected || [],
-                addresses: detectionResult.addressesDetected || [],
-                provinces: detectionResult.provincesDetected || [],
-              },
+              selectableOptions,
             },
           };
         } else {
@@ -847,16 +835,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
                 hasAddress: detectionResult.summary.hasAddress,
                 hasReceiptTitle: detectionResult.summary.hasReceiptTitle,
               },
-              selectableOptions: {
-                names: detectionResult.namesFound || [],
-                taxIds: detectionResult.taxIdsFound || [],
-                taxInvoiceIds: detectionResult.taxInvoiceIdsFound || [],
-                vatAmounts: detectionResult.vatAmountsFound || [],
-                amounts: detectionResult.amountsDetected || [],
-                dates: detectionResult.datesDetected || [],
-                addresses: detectionResult.addressesDetected || [],
-                provinces: detectionResult.provincesDetected || [],
-              },
+              selectableOptions,
             },
           };
         }
@@ -1177,6 +1156,287 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
     } catch (e) {
       console.error(e);
       res.status(500).json({ message: "Failed to create expense" });
+    }
+  });
+};
+
+/**
+ * POST /expense/ocr-stream
+ * Same as createExpenseWithOCR but streams progress events via SSE so the
+ * frontend can show real-time progress instead of a fake simulated bar.
+ *
+ * SSE event shapes:
+ *   { event: 'progress', stage: string, progress: number, message: string }
+ *   { event: 'result',   data: <expense object with optional ocrAlert> }
+ *   { event: 'error',    message: string, status: number }
+ */
+const createExpenseWithOCRStream = async (req: Request, res: Response) => {
+  // Set SSE headers before anything else so the client knows it's a stream
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  // Disable Nagle's algorithm so each res.write() is sent immediately as its own TCP packet
+  (req.socket as any)?.setNoDelay?.(true);
+
+  const sendProgress = (stage: string, progress: number, message: string) => {
+    res.write(`data: ${JSON.stringify({ event: 'progress', stage, progress, message })}\n\n`);
+    (res as any).flush?.(); // flush compression middleware if present
+  };
+  const sendResult = (data: any) => {
+    res.write(`data: ${JSON.stringify({ event: 'result', data })}\n\n`);
+    res.end();
+  };
+  const sendError = (message: string, status = 500) => {
+    res.write(`data: ${JSON.stringify({ event: 'error', message, status })}\n\n`);
+    res.end();
+  };
+
+  upload(req, res, async (err: any) => {
+    if (err) return sendError(err.message, 400);
+
+    const multerReq = req as MulterReadyRequest;
+    const imageFile = getUploadedFile(multerReq, attachmentUploadConfig.imageKeyUpload);
+    const pdfFile = getUploadedFile(multerReq, attachmentUploadConfig.pdfKeyUpload);
+    const invoiceImageFile = getUploadedFile(multerReq, 'invoiceImage');
+    const invoicePdfFile = getUploadedFile(multerReq, 'invoicePdf');
+    multerReq.file = imageFile;
+
+    sendProgress('uploading', 8, 'Processing upload...');
+
+    let imageUrl = req.body.image ?? '';
+    let pdfUrl = req.body.pdf ?? '';
+    let invoiceImageUrl = req.body.invoiceImage ?? '';
+    let invoicePdfUrl = req.body.invoicePdf ?? '';
+
+    if (invoiceImageFile?.buffer) {
+      try {
+        invoiceImageUrl = await uploadToS3(invoiceImageFile.buffer, invoiceImageFile.mimetype, invoiceImageFile.fieldname);
+      } catch { return sendError('Failed to upload invoice image'); }
+    }
+    if (invoicePdfFile?.buffer) {
+      try {
+        invoicePdfUrl = await uploadToS3(invoicePdfFile.buffer, invoicePdfFile.mimetype, invoicePdfFile.fieldname);
+      } catch { return sendError('Failed to upload invoice PDF'); }
+    }
+
+    const rawDateOCR = req.body.date;
+    let normalizedDateOCR: any = rawDateOCR ? rawDateOCR : new Date();
+    if (rawDateOCR) {
+      const parsed = new Date(rawDateOCR);
+      normalizedDateOCR = !isNaN(parsed.getTime()) ? parsed : rawDateOCR;
+    }
+    const parsedDateOCR = parseFlexibleDate(normalizedDateOCR) ?? new Date();
+
+    let expenseInput: Expense = {
+      ...req.body,
+      vat: req.body.vat === 'true' ? true : false,
+      withHoldingTax: req.body.withHoldingTax === 'true' ? true : false,
+      image: imageUrl,
+      pdf: pdfUrl,
+      invoiceImage: invoiceImageUrl,
+      invoicePdf: invoicePdfUrl,
+      desc: req.body.desc ?? '',
+      date: parsedDateOCR,
+      amount: req.body.amount ? Number(req.body.amount) : 0,
+      note: req.body.note || '',
+      group: req.body.group || 'Others',
+      taxType: req.body.taxType === 'Juristic' ? taxType.Juristic : taxType.Individual,
+      DocumentType: (req.body.DocumentType as DocumentType) ?? DocumentType.Receipt,
+      debtAmount: req.body.debtAmount ? Number(req.body.debtAmount) : 0,
+      dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
+    };
+
+    let ocrAlert = null;
+    let namesCountForRequirement = 0;
+
+    if (imageFile?.buffer) {
+      console.log('Processing OCR stream for uploaded image...');
+      try {
+        const memberId = req.body.memberId;
+        const businessAcc = await prisma.businessAcc.findFirst({
+          where: { memberId: { has: memberId } },
+          select: { id: true, businessName: true, taxId: true },
+        });
+
+        sendProgress('ocr_start', 12, 'Starting OCR...');
+
+        // Map OCR service progress (15–100) into our 12–80 band
+        const detectionResult = await extractTextFromImage(imageFile.buffer, (stage, pct) => {
+          const mapped = 12 + Math.round((pct / 100) * 68);
+          const messages: Record<string, string> = {
+            preprocessing: 'Preprocessing image...',
+            ocr_running:   'Reading text (this may take a moment)...',
+            processing:    'Detecting data...',
+            done:          'OCR complete',
+          };
+          sendProgress(stage, Math.min(mapped, 80), messages[stage] ?? 'Processing...');
+        });
+
+        // --- date conversion (same logic as createExpenseWithOCR) ---
+        const parsedDatesFromOCR = detectionResult.datesDetected
+          .map((d) => parseFlexibleDate(d))
+          .filter((d): d is Date => d !== null);
+        const convertedDates = parsedDatesFromOCR.map((d) => {
+          const day   = d.getDate().toString().padStart(2, '0');
+          const month = (d.getMonth() + 1).toString().padStart(2, '0');
+          return `${day}/${month}/${d.getFullYear()}`;
+        });
+        if (convertedDates.length > 0) detectionResult.datesDetected = convertedDates;
+
+        // --- business account filtering (same logic as createExpenseWithOCR) ---
+        let businessNameDetected = false;
+        if (businessAcc) {
+          const originalNames = detectionResult.namesFound.slice();
+          const filteredNames = originalNames.filter((name) => {
+            const n = name.toLowerCase().trim();
+            const b = businessAcc.businessName.toLowerCase().trim();
+            const cleanB = b.replace(/บริษัท\s+/g, '').replace(/จำกัด|จํากัด/g, '').trim();
+            const cleanN = n.replace(/^.*ชื่อบริษัท:\s*/i, '').replace(/^.*บริษัท\s+/i, '').replace(/จำกัด|จํากัด.*$/gi, '').trim();
+            return !(n === b || name.trim() === businessAcc.businessName.trim() || n.includes(b) || b.includes(n) || cleanN.includes(cleanB) || cleanB.includes(cleanN) || n.includes(cleanB) || cleanB.includes(cleanN));
+          });
+          detectionResult.namesFound = filteredNames;
+          businessNameDetected = originalNames.length > filteredNames.length;
+          namesCountForRequirement = filteredNames.length + (businessNameDetected ? 1 : 0);
+          const filteredTaxIds = detectionResult.isThaiIdCard
+            ? detectionResult.taxIdsFound
+            : detectionResult.taxIdsFound.filter((id) => id.trim() !== businessAcc.taxId.trim());
+          detectionResult.taxIdsFound = filteredTaxIds;
+          const filteredAddresses = detectionResult.isThaiIdCard
+            ? detectionResult.addressesDetected
+            : detectionResult.addressesDetected.filter((a) => {
+                const at = a.toLowerCase().trim();
+                return ![/555\/39.*หมู่บ้าน.*พลีโน่/i, /พลีโน่.*รามอินทรา.*จตุโชติ/i, /สามวาตะวันตก.*คลองสามวา/i].some((p) => p.test(a)) && !at.includes(businessAcc.businessName.toLowerCase());
+              });
+          detectionResult.addressesDetected = filteredAddresses;
+          detectionResult.summary.hasAtLeast2Names = namesCountForRequirement >= 2;
+          detectionResult.summary.hasAtLeast1TaxId = filteredTaxIds.length >= 1;
+        }
+
+        sendProgress('analyzing', 82, 'Analyzing results...');
+
+        const allRequirementsMet =
+          detectionResult.summary.hasAtLeast2Names &&
+          detectionResult.summary.hasAtLeast1TaxId &&
+          detectionResult.summary.hasTaxInvoiceId &&
+          detectionResult.summary.hasAmount &&
+          detectionResult.summary.hasDate &&
+          detectionResult.summary.hasAddress &&
+          detectionResult.summary.hasReceiptTitle;
+        const onlyTaxIdMissing =
+          detectionResult.summary.hasAtLeast2Names &&
+          !detectionResult.summary.hasAtLeast1TaxId &&
+          detectionResult.summary.hasTaxInvoiceId &&
+          detectionResult.summary.hasAmount &&
+          detectionResult.summary.hasDate &&
+          detectionResult.summary.hasAddress &&
+          detectionResult.summary.hasReceiptTitle;
+
+        const failedRequirements = [];
+        if (!detectionResult.summary.hasReceiptTitle) failedRequirements.push({ key: 'ocr.failed.receiptTitle', values: { examples: ['ใบเสร็จ', 'ใบกำกับภาษี', 'ใบเสร็จรับเงิน'] } });
+        if (!detectionResult.summary.hasAtLeast1TaxId) failedRequirements.push({ key: 'ocr.failed.taxId', values: { found: detectionResult.taxIdsFound.length, required: 1 } });
+        if (!detectionResult.summary.hasTaxInvoiceId) failedRequirements.push({ key: 'ocr.failed.taxInvoiceId', values: { found: detectionResult.taxInvoiceIdsFound.length, required: 1 } });
+        if (!detectionResult.summary.hasAmount) failedRequirements.push({ key: 'ocr.failed.amount' });
+        if (!detectionResult.summary.hasDate) failedRequirements.push({ key: 'ocr.failed.date' });
+        if (!detectionResult.summary.hasAddress) failedRequirements.push({ key: 'ocr.failed.address' });
+
+        const selectableOptions = detectionResult.isThaiIdCard
+          ? { names: detectionResult.namesFound, taxIds: detectionResult.taxIdsFound, taxInvoiceIds: [], vatAmounts: [], amounts: [], dates: [], addresses: detectionResult.addressesDetected, provinces: detectionResult.provincesDetected }
+          : { names: detectionResult.namesFound, taxIds: detectionResult.taxIdsFound, taxInvoiceIds: detectionResult.taxInvoiceIdsFound, vatAmounts: detectionResult.vatAmountsFound, amounts: detectionResult.amountsDetected, dates: detectionResult.datesDetected, addresses: detectionResult.addressesDetected, provinces: detectionResult.provincesDetected };
+
+        const detectedData = { names: detectionResult.namesFound, taxIds: detectionResult.taxIdsFound, taxInvoiceIds: detectionResult.taxInvoiceIdsFound, vatAmounts: detectionResult.vatAmountsFound, hasAmount: detectionResult.summary.hasAmount, hasDate: detectionResult.summary.hasDate, hasAddress: detectionResult.summary.hasAddress, hasReceiptTitle: detectionResult.summary.hasReceiptTitle };
+
+        if (allRequirementsMet) {
+          ocrAlert = { type: 'success', title: 'OCR Detection Success', message: 'All required data elements detected in the uploaded image', details: { status: 'success', detectedData, selectableOptions } };
+        } else if (onlyTaxIdMissing) {
+          ocrAlert = { type: 'warning', title: 'OCR Detection Warning', message: 'Tax ID is missing but allowed. Other required data detected.', details: { status: 'partial', allowedMissing: 'taxId', failedRequirements: [{ key: 'ocr.failed.taxId', values: { found: detectionResult.taxIdsFound.length, required: 1 } }], detectedData, selectableOptions } };
+        } else {
+          ocrAlert = { type: 'fail', title: 'OCR Detection Alert', message: 'Some required data elements are missing from the uploaded image', details: { status: 'partial', failedRequirements, detectedData, selectableOptions } };
+        }
+
+        sendProgress('uploading_image', 88, 'Uploading image...');
+        imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype);
+        expenseInput.image = imageUrl;
+      } catch (ocrError) {
+        console.warn('OCR stream processing failed:', ocrError);
+        ocrAlert = { type: 'error', title: 'OCR Processing Failed', message: 'Unable to process the uploaded image for data detection', details: { status: 'error', error: 'OCR processing encountered an error.' } };
+        try {
+          imageUrl = await uploadToS3(imageFile.buffer, imageFile.mimetype);
+          expenseInput.image = imageUrl;
+        } catch { return sendError('Failed to upload image'); }
+      }
+    }
+
+    if (pdfFile?.buffer) {
+      try {
+        pdfUrl = await uploadToS3(pdfFile.buffer, pdfFile.mimetype, pdfFile.fieldname);
+        expenseInput.pdf = pdfUrl;
+      } catch { return sendError('Failed to upload PDF'); }
+    }
+
+    sendProgress('saving', 92, 'Saving expense...');
+
+    const memberId = req.body.memberId;
+    const businessAcc = await prisma.businessAcc.findFirst({
+      where: { memberId: { has: memberId } },
+      select: { id: true },
+    });
+    if (!businessAcc) return sendError('Business account not found', 400);
+
+    const formattedDate = format(new Date(expenseInput.date), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    if (expenseInput.vat) expenseInput.vatAmount = expenseInput.amount * 0.07;
+    if (expenseInput.withHoldingTax) expenseInput.WHTAmount = (expenseInput.amount * (expenseInput.WHTpercent ?? 0)) / 100;
+    const datePart = format(new Date(), 'yyyyMMdd');
+    expenseInput.expNo = `EXP${datePart}${Math.floor(1000 + Math.random() * 9000)}`;
+
+    if (expenseInput.sName) {
+      const detectedTaxType = autoDetectTaxType(expenseInput.sName);
+      if (detectedTaxType === taxType.Juristic) expenseInput.taxType = taxType.Juristic;
+    }
+
+    try {
+      const expense = await prisma.expense.create({
+        data: {
+          date: formattedDate,
+          amount: expenseInput.amount,
+          desc: expenseInput.desc,
+          group: expenseInput.group,
+          image: expenseInput.image,
+          pdf: expenseInput.pdf,
+          invoiceImage: expenseInput.invoiceImage ?? '',
+          invoicePdf: expenseInput.invoicePdf ?? '',
+          memberId: expenseInput.memberId,
+          businessAcc: businessAcc.id,
+          note: expenseInput.note,
+          channel: expenseInput.channel,
+          save: false,
+          vat: expenseInput.vat,
+          vatAmount: expenseInput.vatAmount,
+          withHoldingTax: expenseInput.withHoldingTax ?? false,
+          WHTAmount: expenseInput.WHTAmount ?? 0,
+          WHTpercent: expenseInput.WHTpercent ?? 0,
+          sName: expenseInput.sName ?? '',
+          taxInvoiceNo: expenseInput.taxInvoiceNo ?? '',
+          sTaxId: expenseInput.sTaxId ?? '',
+          sAddress: expenseInput.sAddress ?? '',
+          branch: expenseInput.branch ?? '',
+          taxType: expenseInput.taxType ?? taxType.Individual,
+          expNo: expenseInput.expNo ?? '',
+          status: ocrAlert?.type === 'success' ? 'Pass' : 'Warning',
+          DocumentType: expenseInput.DocumentType ?? DocumentType.Receipt,
+          debtAmount: expenseInput.debtAmount ?? 0,
+          dueDate: expenseInput.dueDate ?? null,
+          customGroup: expenseInput.customGroup ?? '',
+        },
+      });
+
+      console.log('🔍 Final OCR Alert being sent to frontend:', ocrAlert);
+      sendResult(ocrAlert ? { ...expense, ocrAlert } : expense);
+    } catch (e) {
+      console.error(e);
+      sendError('Failed to create expense');
     }
   });
 };
@@ -2236,6 +2496,7 @@ const getProjectSuggestions = async (req: Request, res: Response) => {
 export {
   createExpense,
   createExpenseWithOCR,
+  createExpenseWithOCRStream,
   duplicateExpense,
   getExpenses,
   getExpenseById,

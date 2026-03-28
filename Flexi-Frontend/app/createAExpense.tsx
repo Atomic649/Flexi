@@ -8,6 +8,8 @@ import {
   Platform,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from "react-native";
 import { View } from "@/components/Themed";
 import {
@@ -164,6 +166,11 @@ export default function CreateExpense({
   const [branch, setBranch] = useState<string>("headOffice");
   const [isProcessingOCR, setIsProcessingOCR] = useState(false);
   const [ocrProgress, setOCRProgress] = useState(0);
+  const [ocrStepMessage, setOCRStepMessage] = useState("");
+  const ocrProgressAnim = useRef(new Animated.Value(0)).current;
+  const ocrPulseAnim = useRef(new Animated.Value(1)).current;
+  const [ocrDisplayProgress, setOCRDisplayProgress] = useState(0);
+  const ocrDisplayRef = useRef(0);
   const [ocrAlert, setOCRAlert] = useState<any>(null);
   const [showOCRResult, setShowOCRResult] = useState(false);
   const [showOCRSelection, setShowOCRSelection] = useState(false);
@@ -750,23 +757,60 @@ export default function CreateExpense({
     });
   };
 
-  // Simulate OCR progress for visual feedback
-  const simulateOCRProgress = () => {
-    setIsProcessingOCR(true);
-    setOCRProgress(0);
+  // Smooth tween for the bar + count up the number independently via setInterval
+  useEffect(() => {
+    const start = ocrDisplayRef.current;
+    const target = ocrProgress;
+    const steps = Math.abs(target - start);
 
-    const progressSteps = [
-      { progress: 20, delay: 500, message: "Processing image..." },
-      { progress: 50, delay: 1000, message: "Analyzing text..." },
-      { progress: 80, delay: 1500, message: "Detecting data..." },
-      { progress: 95, delay: 2000, message: "Finalizing..." },
-    ];
+    // Bar animation — duration scales with distance so bar and number finish together
+    const duration = Math.max(steps * 60, 300);
+    Animated.timing(ocrProgressAnim, {
+      toValue: target,
+      duration,
+      easing: Easing.linear,
+      useNativeDriver: false,
+    }).start();
 
-    progressSteps.forEach(({ progress, delay }) => {
-      setTimeout(() => {
-        setOCRProgress(progress);
-      }, delay);
-    });
+    // Number counter — 60ms per integer so each digit is visible
+    const startTime = Date.now();
+    const id = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const next = Math.round(start + (target - start) * t);
+      ocrDisplayRef.current = next;
+      setOCRDisplayProgress(next);
+      if (t >= 1) clearInterval(id);
+    }, 16);
+
+    return () => clearInterval(id);
+  }, [ocrProgress]);
+
+  // Pulsing dot while processing
+  useEffect(() => {
+    if (!isProcessingOCR || ocrProgress >= 100) return;
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(ocrPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+        Animated.timing(ocrPulseAnim, { toValue: 1,   duration: 700, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [isProcessingOCR, ocrProgress]);
+
+  const ocrStageLabels: Record<string, string> = {
+    uploading:       t("ocr.stage.uploading"),
+    ocr_start:       t("ocr.stage.starting"),
+    preprocessing:   t("ocr.stage.preprocessing"),
+    quick_scan:      t("ocr.stage.quick_scan"),
+    ocr_running:     t("ocr.stage.reading"),
+    processing:      t("ocr.stage.detecting"),
+    done:            t("ocr.stage.ocr_done"),
+    analyzing:       t("ocr.stage.analyzing"),
+    uploading_image:    t("ocr.stage.uploading_image"),
+    saving:             t("ocr.stage.saving"),
+    easyocr_fallback:   t("ocr.stage.easyocr_fallback"),
   };
 
   // Add alert config state
@@ -860,6 +904,10 @@ export default function CreateExpense({
     setTaxType("Individual");
     setIsProcessingOCR(false);
     setOCRProgress(0);
+    setOCRStepMessage("");
+    setOCRDisplayProgress(0);
+    ocrDisplayRef.current = 0;
+    ocrProgressAnim.setValue(0);
     setOCRAlert(null);
     setShowOCRResult(false);
     setIsDebt(false);
@@ -1128,11 +1176,6 @@ export default function CreateExpense({
         "yyyy-MM-dd'T'HH:mm:ss.SSSxxx",
       );
 
-      // Start OCR progress simulation if image is present
-      if (hasImageAttachment) {
-        simulateOCRProgress();
-      }
-
       const formData = new FormData();
       formData.append("date", formattedDate);
       formData.append("note", note);
@@ -1172,8 +1215,26 @@ export default function CreateExpense({
       }
 
       console.log("📤 Sending expense data to backend...");
-      const data = await CallAPIExpense.createAExpenseWithOCRAPI(formData);
-      if (data.error) throw new Error(data.error);
+
+      // Show progress modal and use streaming OCR for real progress
+      if (hasImageAttachment) {
+        // Instant reset — no backward animation from previous scan's 100%
+        ocrProgressAnim.setValue(0);
+        ocrDisplayRef.current = 0;
+        setOCRDisplayProgress(0);
+        setOCRProgress(0);
+        setOCRStepMessage(ocrStageLabels.uploading);
+        setIsProcessingOCR(true);
+      }
+
+      const data = await CallAPIExpense.createAExpenseWithOCRStream(
+        formData,
+        (stage, progress, message) => {
+          setOCRProgress(progress);
+          setOCRStepMessage(ocrStageLabels[stage] ?? message);
+        },
+      );
+      if (data?.error) throw new Error(data.error);
 
       console.log("📥 Full backend response received:", data);
       console.log(
@@ -1214,17 +1275,23 @@ export default function CreateExpense({
         }
 
         setOCRAlert(data.ocrAlert);
-        console.log("🔍 OCR Alert received:", data.ocrAlert);
-        console.log("📋 OCR Alert type:", data.ocrAlert.type);
-        console.log("📋 OCR Alert details:", data.ocrAlert.details);
 
-        // Show OCR result in the progress indicator
-        setTimeout(() => {
-          console.log(
-            "⏰ About to show OCR result, setting showOCRResult to true",
-          );
-          setShowOCRResult(true);
-        }, 500);
+        // Auto-populate first option from each selectable category and go directly to selection
+        const opts = data.ocrAlert?.details?.selectableOptions;
+        if (opts) {
+          setSelectedOCRData((prev: any) => ({
+            ...prev,
+            selectedName:          opts.names?.[0]          || prev.selectedName,
+            selectedTaxId:         opts.taxIds?.[0]         || prev.selectedTaxId,
+            selectedTaxInvoiceId:  opts.taxInvoiceIds?.[0]  || prev.selectedTaxInvoiceId,
+            selectedVatAmount:     opts.vatAmounts?.[0]     || prev.selectedVatAmount,
+            selectedAmount:        opts.amounts?.[0]        || prev.selectedAmount,
+            selectedDate:          opts.dates?.[0]          || prev.selectedDate,
+            selectedAddress:       opts.addresses?.[0]      || prev.selectedAddress,
+          }));
+        }
+        setShowSelection(true);
+        setTimeout(() => setShowOCRResult(true), 500);
 
         return; // Don't continue to normal success until user dismisses OCR result
       } else {
@@ -1574,22 +1641,21 @@ export default function CreateExpense({
                 )}
 
                 {/* -----------------------OCR Progress Indicator---------------------------------- */}
-                {isProcessingOCR && (
+                <Modal
+                  visible={isProcessingOCR}
+                  transparent
+                  animationType="fade"
+                  statusBarTranslucent
+                >
                   <View
                     style={{
+                      flex: 1,
                       backgroundColor:
                         theme === "dark"
-                          ? "rgba(0, 0, 0, 0.947)"
-                          : "rgba(55, 55, 55, 0.9)",
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
+                          ? "rgba(0, 0, 0, 0.85)"
+                          : "rgba(55, 55, 55, 0.75)",
                       justifyContent: "center",
                       alignItems: "center",
-                      borderRadius: 10,
-                      zIndex: 1000,
                     }}
                   >
                     <View
@@ -1600,6 +1666,7 @@ export default function CreateExpense({
                         borderRadius: 10,
                         minWidth: 300,
                         maxWidth: "90%",
+                        maxHeight: "88%",
                         alignItems: "center",
                       }}
                     >
@@ -1619,9 +1686,13 @@ export default function CreateExpense({
                               marginTop: 10,
                             }}
                           >
-                            <View
+                            <Animated.View
                               style={{
-                                width: `${ocrProgress}%`,
+                                width: ocrProgressAnim.interpolate({
+                                  inputRange: [0, 100],
+                                  outputRange: ["0%", "100%"],
+                                  extrapolate: "clamp",
+                                }),
                                 height: "100%",
                                 backgroundColor:
                                   ocrProgress === 100 ? "#22c55e" : "#3b82f6",
@@ -1635,217 +1706,51 @@ export default function CreateExpense({
                               fontSize: 14,
                               color: theme === "dark" ? "#ccc" : "#666",
                             }}
-                          >{`${ocrProgress}% ${t(
+                          >{`${ocrDisplayProgress}% ${t(
                             "common.complete",
                           )}`}</CustomText>
-                          <CustomText
-                            style={{
-                              fontSize: 12,
-                              color: theme === "dark" ? "#999" : "#888",
-                              marginTop: 5,
-                              textAlign: "center",
-                            }}
-                          >
-                            {ocrProgress < 100
-                              ? t("ocr.analyzing")
-                              : t("ocr.complete")}
-                          </CustomText>
+
+                          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
+                            {ocrProgress < 100 && (
+                              <Animated.View
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: 3,
+                                  backgroundColor: "#3b82f6",
+                                  marginRight: 6,
+                                  opacity: ocrPulseAnim,
+                                }}
+                              />
+                            )}
+                            <CustomText
+                              style={{
+                                fontSize: 12,
+                                color: theme === "dark" ? "#999" : "#888",
+                                textAlign: "center",
+                              }}
+                            >
+                              {ocrProgress >= 100
+                                ? t("ocr.complete")
+                                : ocrStepMessage || t("ocr.analyzing")}
+                            </CustomText>
+                          </View>
                         </>
                       ) : (
                         // Results view
                         <>
-                          {console.log(
-                            "📱 Rendering OCR Results View - showOCRResult:",
-                            showOCRResult,
-                          )}
-                          {console.log("📋 OCR Alert in results:", ocrAlert)}
-                          {/* Replace title emoji/text with status image */}
-
-                          {/* Alert Section */}
-
-                          {!showSelection && (
-                            <Image
-                              source={
-                                ocrAlert?.type === "success"
-                                  ? require("@/constants/images").default
-                                      .listcheck
-                                  : ocrAlert?.type === "warning"
-                                    ? require("@/constants/images").default
-                                        .warning
-                                    : ocrAlert?.type === "fail"
-                                      ? require("@/constants/images").default
-                                          .falseSign
-                                      : require("@/constants/images").default
-                                          .bug
-                              }
-                              style={{
-                                width: 100,
-                                height: 100,
-                                marginBottom: 10,
-                              }}
-                              resizeMode="contain"
-                            />
-                          )}
-                          {!showSelection && (
-                            <CustomText
-                              style={{
-                                fontSize: 14,
-                                fontWeight: "normal",
-                                marginBottom: 15,
-                                color: theme === "dark" ? "#fff" : "#000",
-                                textAlign: "center",
-                              }}
-                            >
-                              {ocrAlert?.type === "success"
-                                ? `${t("ocr.alert.pass")}`
-                                : ocrAlert?.type === "warning"
-                                  ? `${t("ocr.alert.warning")}`
-                                  : ocrAlert?.type === "fail"
-                                    ? `${t("ocr.alert.fail")}`
-                                    : `${t("ocr.alert.error")}`}
-                            </CustomText>
-                          )}
-
-                          {!showSelection &&
-                            (ocrAlert?.type === "warning" ||
-                              ocrAlert?.type === "fail") &&
-                            ocrAlert?.details?.failedRequirements && (
-                              <>
-                                <CustomText
-                                  style={{
-                                    fontSize: 13,
-                                    alignSelf: "flex-start",
-                                    marginLeft: 10,
-                                    color:
-                                      theme === "dark" ? "#ac1b02" : "#ff2d31",
-                                  }}
-                                >
-                                  {t("ocr.shouldSpecify")}
-                                </CustomText>
-                                {ocrAlert.details.failedRequirements.map(
-                                  (
-                                    req: {
-                                      key: string;
-                                      values?: Record<string, string>;
-                                    },
-                                    index: number,
-                                  ) => (
-                                    <CustomText
-                                      key={index}
-                                      style={{
-                                        fontSize: 13,
-                                        alignSelf: "flex-start",
-                                        marginLeft: 10,
-                                        color:
-                                          theme === "dark"
-                                            ? "#ac1b02"
-                                            : "#ff2d31",
-                                      }}
-                                    >
-                                      {`• ${t(req.key, req.values)}`}
-                                    </CustomText>
-                                  ),
-                                )}
-                              </>
-                            )}
-
-                          {/* If Fail show 2 CustomButton and GreyButton ( Save Anyway and Close) */}
-                          {ocrAlert?.type == "fail" && !hasSelectableData && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginTop: 15,
-                                gap: 4,
-                                backgroundColor: "transparent",
-                              }}
-                            >
-                              <DarkGrayButton
-                                title={t("ocr.alert.saveAnyway")}
-                                handlePress={handleSaveAnyway}
-                                containerStyles="px-12 mt-2"
-                              />
-                              <GrayButton
-                                title={t("ocr.alert.close")}
-                                handlePress={handleSkip}
-                                containerStyles="px-12 mt-2"
-                              />
-                            </View>
-                          )}
-
-                          {/* Select All Button + Close */}
-                          {!showSelection && (ocrAlert?.type !== "fail" || hasSelectableData) && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignSelf: "center",
-                                marginTop: 15,
-                                gap: 8,
-                              }}
-                            >
-                              <DarkGrayButton
-                                title={t("ocr.selectAll")}
-                                handlePress={() => {
-                                  console.log(
-                                    "🔄 Selecting all available OCR data",
-                                  );
-
-                                  setSelectedOCRData((prev) => ({
-                                    ...prev,
-                                    // Select first available option from each category
-                                    selectedName:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.names?.[0] || prev.selectedName,
-                                    selectedTaxId:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.taxIds?.[0] || prev.selectedTaxId,
-                                    selectedTaxInvoiceId:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.taxInvoiceIds?.[0] ||
-                                      prev.selectedTaxInvoiceId,
-                                    selectedVatAmount:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.vatAmounts?.[0] ||
-                                      prev.selectedVatAmount,
-                                    selectedAmount:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.amounts?.[0] || prev.selectedAmount,
-                                    selectedDate:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.dates?.[0] || prev.selectedDate,
-                                    selectedAddress:
-                                      ocrAlert?.details?.selectableOptions
-                                        ?.addresses?.[0] ||
-                                      prev.selectedAddress,
-                                  }));
-
-                                  // reveal selection UI
-                                  setShowSelection(true);
-
-                                  console.log(
-                                    "✅ All available OCR data selected",
-                                  );
-                                }}
-                                containerStyles="px-6 mt-2"
-                              />
-
-                              <GrayButton
-                                title={t("ocr.alert.close")}
-                                handlePress={handleSkip}
-                                containerStyles="px-6 mt-2"
-                              />
-                            </View>
-                          )}
+                         
 
                           {/* End Alert Section */}
 
-                          {showSelection && (ocrAlert?.type !== "fail" || hasSelectableData) && (
+                          {(ocrAlert?.type !== "fail" || hasSelectableData) && (
                             <ScrollView
                               style={{
-                                maxHeight: 500,
+                                flex: 1,
                                 width: "100%",
                               }}
                               showsVerticalScrollIndicator={true}
+                              nestedScrollEnabled={true}
                             >
                               {/* Selectable OCR Data */}
                               {(ocrAlert?.type !== "fail" || hasSelectableData) &&
@@ -2020,7 +1925,7 @@ export default function CreateExpense({
                       )}
                     </View>
                   </View>
-                )}
+                </Modal>
                 {/* -----------------------End OCR Progress Indicator------------------------------ */}
                 {/* Debt / Paid toggle */}
                 <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>

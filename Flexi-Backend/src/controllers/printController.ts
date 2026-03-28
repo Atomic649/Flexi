@@ -106,6 +106,22 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
     // Get ALL bills in date range (for summary calculations)
     const allBills = await prisma.bill.findMany({
       where: {
+        //isSplitChild: false, // Start with parent bills only
+        businessAcc: businessId?.businessId ?? 0,
+        purchaseAt: { gte: start, lte: end },
+      },
+      orderBy: { purchaseAt: "desc" },
+      include: {
+        product: {
+          include: { productList: { select: { name: true } } },
+        },
+      },
+    });
+
+    // Get ALL bills in date range (for summary calculations)
+    const parentBill = await prisma.bill.findMany({
+      where: {
+        isSplitChild: false, // Start with parent bills only
         businessAcc: businessId?.businessId ?? 0,
         purchaseAt: { gte: start, lte: end },
       },
@@ -167,7 +183,7 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       }));
 
     // totalSale from ALL bills (parent + child)
-    const totalSale = allBills.reduce((sum, b) => sum + Number(b.total || 0), 0);
+    const totalSale = parentBill.reduce((sum, b) => sum + Number(b.total || 0), 0);
 
     // amount + parentBills: count only parent/non-child bills (isSplitChild === false)
     const parentBills = allBills.filter((b: any) => !b.isSplitChild);

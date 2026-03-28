@@ -1794,6 +1794,19 @@
     "processing": "Processing OCR...",
     "analyzing": "Analyzing image for invoice data...",
     "complete": "Processing complete!",
+    "stage": {
+      "uploading": "Uploading...",
+      "starting": "Starting OCR...",
+      "preprocessing": "Preprocessing image...",
+      "quick_scan": "Detecting document type...",
+      "reading": "Reading text (may take a moment)...",
+      "detecting": "Detecting data...",
+      "ocr_done": "OCR complete",
+      "analyzing": "Analyzing results...",
+      "uploading_image": "Uploading image...",
+      "saving": "Saving expense...",
+      "easyocr_fallback": "Enhancing with AI OCR..."
+    },
     "alert": {
       "pass": "Document meets quality standards of revenue department.",
       "warning": "Document quality is missing some requirements. in consideration of the revenue department to accept.",
