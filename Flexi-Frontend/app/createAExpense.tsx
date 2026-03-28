@@ -1373,6 +1373,19 @@ export default function CreateExpense({
     );
   };
 
+  const hasSelectableData = !!(
+    ocrAlert?.details?.selectableOptions &&
+    (
+      (ocrAlert.details.selectableOptions.names?.length > 0) ||
+      (ocrAlert.details.selectableOptions.taxIds?.length > 0) ||
+      (ocrAlert.details.selectableOptions.taxInvoiceIds?.length > 0) ||
+      (ocrAlert.details.selectableOptions.vatAmounts?.length > 0) ||
+      (ocrAlert.details.selectableOptions.amounts?.length > 0) ||
+      (ocrAlert.details.selectableOptions.dates?.length > 0) ||
+      (ocrAlert.details.selectableOptions.addresses?.length > 0)
+    )
+  );
+
   return (
     <Modal
       visible={visible}
@@ -1737,7 +1750,7 @@ export default function CreateExpense({
                             )}
 
                           {/* If Fail show 2 CustomButton and GreyButton ( Save Anyway and Close) */}
-                          {ocrAlert?.type == "fail" && (
+                          {ocrAlert?.type == "fail" && !hasSelectableData && (
                             <View
                               style={{
                                 flexDirection: "row",
@@ -1761,7 +1774,7 @@ export default function CreateExpense({
                           )}
 
                           {/* Select All Button + Close */}
-                          {!showSelection && ocrAlert?.type !== "fail" && (
+                          {!showSelection && (ocrAlert?.type !== "fail" || hasSelectableData) && (
                             <View
                               style={{
                                 flexDirection: "row",
@@ -1826,7 +1839,7 @@ export default function CreateExpense({
 
                           {/* End Alert Section */}
 
-                          {showSelection && ocrAlert?.type !== "fail" && (
+                          {showSelection && (ocrAlert?.type !== "fail" || hasSelectableData) && (
                             <ScrollView
                               style={{
                                 maxHeight: 500,
@@ -1835,7 +1848,7 @@ export default function CreateExpense({
                               showsVerticalScrollIndicator={true}
                             >
                               {/* Selectable OCR Data */}
-                              {ocrAlert?.type !== "fail" &&
+                              {(ocrAlert?.type !== "fail" || hasSelectableData) &&
                                 ocrAlert?.details?.selectableOptions && (
                                   <>
                                     <CustomText
@@ -1978,10 +1991,7 @@ export default function CreateExpense({
                             <View
                               style={{
                                 flexDirection: "row",
-                                justifyContent:
-                                  ocrAlert?.type !== "fail"
-                                    ? "space-around"
-                                    : "center",
+                                justifyContent: "space-around",
                                 alignSelf: "center",
                                 marginTop: 10,
                                 width: "100%",
@@ -1989,7 +1999,7 @@ export default function CreateExpense({
                               }}
                             >
                               {/* Use Selected Data Button */}
-                              {ocrAlert?.type !== "fail" && (
+                              {(ocrAlert?.type !== "fail" || hasSelectableData) && (
                                 <MiniCustomButton
                                   title={t("ocr.useData")}
                                   handlePress={applySelectedOCRData}
