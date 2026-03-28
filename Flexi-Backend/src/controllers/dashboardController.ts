@@ -83,7 +83,6 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const billsAggregation = await prisma.bill.findMany({
       where: {
         ...baseWhere,
-        DocumentType: "Receipt",
         isSplitChild: false
       },
       select: {
@@ -243,8 +242,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
-        purchaseAt: dateFilter,
-        DocumentType: "Receipt",
+        purchaseAt: dateFilter,       
         isSplitChild: false,
         ...platformFilter,
         ...(productName
@@ -442,7 +440,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-        DocumentType: "Receipt",
+        //DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
         isSplitChild: false,
@@ -581,7 +579,7 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Receipt",
+        //DocumentType: "Receipt",
         purchaseAt: dateFilter,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
@@ -815,15 +813,15 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Invoice",
+        //DocumentType: "Invoice",
         purchaseAt: dateFilter,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
-      select: { totalQuotation: true },
+      select: { totalInvoice: true },
     });
 
     const accountsPayable = invoiceBills.reduce(
-      (sum, bill) => sum + Number(bill.totalQuotation || 0),
+      (sum, bill) => sum + Number(bill.totalInvoice || 0),
       0
     );
 
@@ -1010,7 +1008,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
       where: {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
-        DocumentType: "Invoice",
+        // DocumentType: "Invoice",
         purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
       },
@@ -1019,7 +1017,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
         cName: true,
         cLastName: true,
         purchaseAt: true,
-        totalQuotation: true,
+        totalInvoice: true,
         priceValid: true,
         note: true,
         invoiceId: true,
@@ -1052,7 +1050,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
         id: b.id,
         name: [b.cName, b.cLastName].filter(Boolean).join(' '),
         date: b.purchaseAt,
-        amount: Number(b.totalQuotation || 0),
+        amount: Number(b.totalInvoice || 0),
         dueDate: b.priceValid ?? null,
         note: b.note ?? null,
         invoiceId: b.invoiceId ?? null,
@@ -1141,7 +1139,7 @@ export const getTopStores = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-        DocumentType: "Receipt",
+        //DocumentType: "Receipt",
         deleted: false,
         purchaseAt: dateFilter,
         ...platformFilter,
