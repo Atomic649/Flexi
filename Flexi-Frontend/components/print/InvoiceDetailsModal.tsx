@@ -124,7 +124,9 @@ export default function InvoiceDetailsModal({
                     </View>
                   )}
                 </View>
-                <TouchableOpacity onPress={onClose} className="p-2">
+                <TouchableOpacity
+                onPress={onClose}
+                className="p-2">
                   <Ionicons
                     name="close"
                     size={24}

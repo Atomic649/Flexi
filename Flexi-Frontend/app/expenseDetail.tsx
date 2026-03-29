@@ -40,6 +40,7 @@ import { format } from "date-fns";
 import { isMobile, isTablet } from "@/utils/responsive";
 import { API_URL, IMAGE_URL } from "@/utils/config";
 import { detectIsExport } from "@/constants/detectIsExport";
+import { useRouter } from "expo-router";
 
 const formatCurrencyForPDF = (amount: number) =>
   amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -167,6 +168,7 @@ export default function ExpenseDetail({
 
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const router = useRouter();
   const [date, setDate] = useState(expense.date);
   const [note, setNote] = useState(expense.note);
   const [desc, setDesc] = useState(expense.desc);
@@ -733,14 +735,15 @@ export default function ExpenseDetail({
   // Close the modal and navigate back to the expense table
   const handleCloseAfterChanges = () => {
     // Let parent control visibility; invoke onClose directly
-    onClose();
+    // onClose();
+    router.back(); // Navigate where it was
   };
 
   const handleAttemptClose = () => {
     if (isClosingRef.current) return;
     if (!hasChanges) {
       isClosingRef.current = true;
-      onClose();
+      router.back(); // Navigate where it was
       return;
     }
     setAlertConfig({

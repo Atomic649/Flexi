@@ -31,7 +31,7 @@ import { generateInvoiceHTML } from "@/components/PDFTemplates/InvoiceTemplate";
 import { generateQuotationHTML } from "@/components/PDFTemplates/QuotationTemplate";
 import { generateInvoiceHTML as generateReceiptHTML } from "@/components/PDFTemplates/ReceiptTemplate";
 import { vatRate } from "@/components/TaxVariable";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import InvoiceDetailsModal from "@/components/print/InvoiceDetailsModal";
 
 // Constants for search types and tab indices
@@ -663,6 +663,10 @@ export default function Print() {
 
   // Centralized function to close modal and refresh component
   const closeInvoiceModalAndRefresh = () => {
+    if (params?.billId) {
+      router.back();
+      return;
+    }
     setInvoiceModalVisible(false);
     // Clear any pending alerts when closing modal
     setAlertConfig({
