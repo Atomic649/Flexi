@@ -42,6 +42,7 @@ import { DEFAULT_VAT_PERCENT, DEFAULT_WHT_PERCENT } from "@/utils/taxUtils";
 import DateTimePicker from "@/components/DateTimePicker";
 import { isMobile, isTablet } from "@/utils/responsive";
 import DropdownFloat from "@/components/dropdown/DropdownFloat";
+import { detectIsExport } from "@/constants/detectIsExport";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -160,6 +161,8 @@ export default function CreateExpense({
   const [sTaxId, setSTaxId] = useState<string>("");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState<string>("");
   const [sAddress, setSAddress] = useState<string>("");
+  const [isExport, setIsExport] = useState(false);
+  const isExportManualOverride = useRef(false);
   const [taxType, setTaxType] = useState<"Individual" | "Juristic">(
     "Individual",
   );
@@ -205,6 +208,15 @@ export default function CreateExpense({
   const hasAttachment = Boolean(attachment) || isFlexiDocument;
   const isImageAttachment = attachment?.preview === "image";
   const isPdfAttachment = attachment?.preview === "pdf";
+
+  useEffect(() => {
+    if (!sAddress.trim()) {
+      isExportManualOverride.current = false;
+    }
+    if (!isExportManualOverride.current) {
+      setIsExport(detectIsExport(sAddress));
+    }
+  }, [sAddress]);
 
   // Apply prefillData when modal becomes visible with FlexiID data
   useEffect(() => {
@@ -1020,6 +1032,7 @@ export default function CreateExpense({
       formData.append("branch", branch || "");
       formData.append("taxType", taxType || "");
       formData.append("customGroup", customGroup || "");
+      formData.append("isExport", isExport ? "true" : "false");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
@@ -1102,6 +1115,7 @@ export default function CreateExpense({
       formData.append("branch", branch);
       formData.append("taxType", taxType);
       formData.append("customGroup", customGroup || "");
+      formData.append("isExport", isExport ? "true" : "false");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
@@ -1198,6 +1212,7 @@ export default function CreateExpense({
       formData.append("branch", branch);
       formData.append("taxType", taxType);
       formData.append("customGroup", customGroup || "");
+      formData.append("isExport", isExport ? "true" : "false");
       if (flexiIdInput.trim()) formData.append("flexiId", flexiIdInput.trim());
       if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
@@ -2534,6 +2549,20 @@ export default function CreateExpense({
                   onChangeText={setSAddress}
                   containerStyle={{ flex: 1, marginVertical: 2 }}
                 />
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center", marginBottom: 8, marginTop: 4 }}
+                  onPress={() => { isExportManualOverride.current = true; setIsExport((prev) => !prev); }}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons
+                    name={isExport ? "checkbox" : "square-outline"}
+                    size={22}
+                    color="#606060"
+                  />
+                  <CustomText className="ml-2" style={{ color: "#606060" }}>
+                    {t("expense.detail.isExport")}
+                  </CustomText>
+                </TouchableOpacity>
 
                 {showAllFormField && (
                   <DropdownFloat

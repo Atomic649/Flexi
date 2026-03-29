@@ -37,6 +37,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
+import { detectIsExport } from "@/constants/detectIsExport";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -214,6 +215,8 @@ export default function CreateBill() {
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
+  const [isExport, setIsExport] = useState(false);
+  const isExportManualOverride = useRef(false);
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
   const [projectId, setProjectId] = useState<number | undefined>(undefined);
@@ -409,6 +412,15 @@ export default function CreateBill() {
         return "QA";
     }
   };
+
+  useEffect(() => {
+    if (!cAddress.trim() && !cProvince) {
+      isExportManualOverride.current = false;
+    }
+    if (!isExportManualOverride.current) {
+      setIsExport(detectIsExport(cAddress, cProvince || undefined));
+    }
+  }, [cAddress, cProvince]);
 
   useEffect(() => {
     const fetchMemberId = async () => {
@@ -1000,6 +1012,7 @@ export default function CreateBill() {
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         taxType: taxType,
+        isExport,
       });
 
       if (data.error) throw new Error(data.error);
@@ -1568,6 +1581,24 @@ export default function CreateBill() {
                 />
               </View>
             </View>
+
+            <TouchableOpacity
+              style={{ flexDirection: "row", alignItems: "center", marginBottom: 8, marginTop: 4 }}
+              onPress={() => { isExportManualOverride.current = true; setIsExport((prev) => !prev); }}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name={isExport ? "checkbox" : "square-outline"}
+                size={22}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
+              />
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                {t("bill.isExport")}
+              </CustomText>
+            </TouchableOpacity>
 
             {/* Product Items Section */}
             {productItems.map((item, idx) => (

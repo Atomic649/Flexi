@@ -39,6 +39,7 @@ import DateTimePicker from "@/components/DateTimePicker";
 import { format } from "date-fns";
 import { isMobile, isTablet } from "@/utils/responsive";
 import { API_URL, IMAGE_URL } from "@/utils/config";
+import { detectIsExport } from "@/constants/detectIsExport";
 
 const formatCurrencyForPDF = (amount: number) =>
   amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -86,6 +87,7 @@ interface ExpenseDetailProps {
     invoiceImage?: string;
     invoicePdf?: string;
     flexiId?: string;
+    isExport?: boolean;
   };
 }
 
@@ -201,6 +203,7 @@ export default function ExpenseDetail({
     taxType: (expense.taxType as "Individual" | "Juristic") || "Individual",
     branch: expense.branch || "",
     isDebt: initialIsDebt,
+    isExport: expense.isExport ?? false,
   });
   // Use the visible prop directly instead of mirroring to local state
   const { vat, DocumentType } = useBusiness();
@@ -217,6 +220,8 @@ export default function ExpenseDetail({
   const [sName, setSName] = useState(expense.sName || "");
   const [taxInvoiceNo, setTaxInvoiceNo] = useState(expense.taxInvoiceNo || "");
   const [sAddress, setSAddress] = useState(expense.sAddress || "");
+  const [isExport, setIsExport] = useState<boolean>(expense.isExport ?? detectIsExport(expense.sAddress || ""));
+  const isExportManualOverride = useRef(false);
   const [isDownloadingWHT, setIsDownloadingWHT] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentFile | null>(null);
   const [attachmentPickerVisible, setAttachmentPickerVisible] = useState(false);
@@ -246,6 +251,15 @@ export default function ExpenseDetail({
   const [customGroup, setCustomGroup] = useState<string>((expense as any).customGroup ?? "");
   const [customGroupSuggestions, setCustomGroupSuggestions] = useState<string[]>([]);
   const [showCustomGroupSuggestions, setShowCustomGroupSuggestions] = useState(false);
+
+  useEffect(() => {
+    if (!sAddress.trim()) {
+      isExportManualOverride.current = false;
+    }
+    if (!isExportManualOverride.current) {
+      setIsExport(detectIsExport(sAddress));
+    }
+  }, [sAddress]);
 
   useEffect(() => {
     const fetchExpense = async () => {
@@ -279,6 +293,8 @@ export default function ExpenseDetail({
         setSName(fetchedExpense.sName || "");
         setTaxInvoiceNo(fetchedExpense.taxInvoiceNo || "");
         setSAddress(fetchedExpense.sAddress || "");
+        isExportManualOverride.current = true;
+        setIsExport(fetchedExpense.isExport ?? detectIsExport(fetchedExpense.sAddress || ""));
         setTaxType(fetchedExpense.taxType || "Individual");
         setBranch(fetchedExpense.branch || "");
         setDueDate(fetchedExpense.dueDate ? new Date(fetchedExpense.dueDate) : null);
@@ -320,6 +336,7 @@ export default function ExpenseDetail({
           taxType: (fetchedExpense.taxType as "Individual" | "Juristic") || "Individual",
           branch: fetchedExpense.branch || "",
           isDebt: resolvedIsDebt,
+          isExport: (fetchedExpense as any).isExport ?? false,
         };
       } catch (error) {
         console.error("Error fetching expense:", error);
@@ -401,6 +418,7 @@ export default function ExpenseDetail({
         taxType !== s.taxType ||
         sAddress !== s.sAddress ||
         isDebt !== s.isDebt ||
+        isExport !== s.isExport ||
         Boolean(attachment)
       ) {
         setHasChanges(true);
@@ -428,6 +446,7 @@ export default function ExpenseDetail({
     taxType,
     branch,
     isDebt,
+    isExport,
     attachment,
   ]);
 
@@ -815,6 +834,7 @@ export default function ExpenseDetail({
       formData.append("taxType", taxType);
       formData.append("branch", branch);
       formData.append("customGroup", customGroup || "");
+      formData.append("isExport", isExport ? "true" : "false");
       if (projectId != null) formData.append("projectId", String(projectId));
       if (isDebt) {
         formData.append("DocumentType", "Invoice");
@@ -829,7 +849,7 @@ export default function ExpenseDetail({
       savedRef.current = {
         date, note, desc, amount, image, pdf: pdfUrl, group,
         vat: vatIncluded, withHoldingTax, WHTpercent,
-        sTaxId, sName, taxInvoiceNo, sAddress, taxType, branch, isDebt,
+        sTaxId, sName, taxInvoiceNo, sAddress, taxType, branch, isDebt, isExport,
       };
       setHasChanges(false);
       handleCloseAfterChanges(); // Close modal after successful update
@@ -1754,6 +1774,23 @@ export default function ExpenseDetail({
                   onChangeText={setSAddress}
                   containerStyle={{ flex: 1, marginVertical: 2 , marginBottom: 12 }}
                 />
+                <TouchableOpacity
+                  style={{ flexDirection: "row", alignItems: "center", marginBottom: 8, marginTop: 4 }}
+                  onPress={() => { isExportManualOverride.current = true; setIsExport((prev) => !prev); }}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons
+                    name={isExport ? "checkbox" : "square-outline"}
+                    size={22}
+                    color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                  />
+                  <CustomText
+                    className="ml-2"
+                    style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+                  >
+                    {t("expense.detail.isExport")}
+                  </CustomText>
+                </TouchableOpacity>
 
                 {showAllFormField && (
                   <DropdownFloat

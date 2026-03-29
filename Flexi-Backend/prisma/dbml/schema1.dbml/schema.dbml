@@ -162,6 +162,7 @@ Table Bill {
   paymentTermCondition String
   remark String
   platform SocialMedia [not null]
+  isExport Boolean [default: false]
   memberId String [not null]
   member Member [not null]
   businessAcc Int [not null]
@@ -238,6 +239,7 @@ Table Expense {
   status ExpenseStatus
   DocumentType DocumentType [default: 'Receipt']
   dueDate DateTime
+  isExport Boolean [default: false]
   billFlexiId String [unique]
   bill Bill
   businessAcc Int [not null]

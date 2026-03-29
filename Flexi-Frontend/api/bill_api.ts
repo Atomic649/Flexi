@@ -78,6 +78,7 @@ class CallAPIBill {
         withholdingTax?: boolean; // Optional withholding tax
         withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
+        isExport?: boolean; // Optional export flag (non-Thai address)
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();
@@ -135,6 +136,7 @@ class CallAPIBill {
         withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
         projectId?: number; // Optional project link
+        isExport?: boolean; // Optional export flag (non-Thai address)
     }): Promise<any> {
         try {
             const axiosInstance = await getAxiosWithAuth();

@@ -123,6 +123,7 @@ export type BillMinAggregateOutputType = {
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
+  isExport: boolean | null
   memberId: string | null
   businessAcc: number | null
   platformId: number | null
@@ -181,6 +182,7 @@ export type BillMaxAggregateOutputType = {
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia | null
+  isExport: boolean | null
   memberId: string | null
   businessAcc: number | null
   platformId: number | null
@@ -239,6 +241,7 @@ export type BillCountAggregateOutputType = {
   paymentTermCondition: number
   remark: number
   platform: number
+  isExport: number
   memberId: number
   businessAcc: number
   platformId: number
@@ -345,6 +348,7 @@ export type BillMinAggregateInputType = {
   paymentTermCondition?: true
   remark?: true
   platform?: true
+  isExport?: true
   memberId?: true
   businessAcc?: true
   platformId?: true
@@ -403,6 +407,7 @@ export type BillMaxAggregateInputType = {
   paymentTermCondition?: true
   remark?: true
   platform?: true
+  isExport?: true
   memberId?: true
   businessAcc?: true
   platformId?: true
@@ -461,6 +466,7 @@ export type BillCountAggregateInputType = {
   paymentTermCondition?: true
   remark?: true
   platform?: true
+  isExport?: true
   memberId?: true
   businessAcc?: true
   platformId?: true
@@ -606,6 +612,7 @@ export type BillGroupByOutputType = {
   paymentTermCondition: string | null
   remark: string | null
   platform: $Enums.SocialMedia
+  isExport: boolean | null
   memberId: string
   businessAcc: number
   platformId: number | null
@@ -687,6 +694,7 @@ export type BillWhereInput = {
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
+  isExport?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -752,6 +760,7 @@ export type BillOrderByWithRelationInput = {
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
+  isExport?: Prisma.SortOrderInput | Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -820,6 +829,7 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
+  isExport?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -885,6 +895,7 @@ export type BillOrderByWithAggregationInput = {
   paymentTermCondition?: Prisma.SortOrderInput | Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
+  isExport?: Prisma.SortOrderInput | Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -951,6 +962,7 @@ export type BillScalarWhereWithAggregatesInput = {
   paymentTermCondition?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaWithAggregatesFilter<"Bill"> | $Enums.SocialMedia
+  isExport?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
   memberId?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   businessAcc?: Prisma.IntWithAggregatesFilter<"Bill"> | number
   platformId?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
@@ -1008,6 +1020,7 @@ export type BillCreateInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -1068,6 +1081,7 @@ export type BillUncheckedCreateInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -1127,6 +1141,7 @@ export type BillUpdateInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -1187,6 +1202,7 @@ export type BillUncheckedUpdateInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1247,6 +1263,7 @@ export type BillCreateManyInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -1304,6 +1321,7 @@ export type BillUpdateManyMutationInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type BillUncheckedUpdateManyInput = {
@@ -1357,6 +1375,7 @@ export type BillUncheckedUpdateManyInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1425,6 +1444,7 @@ export type BillCountOrderByAggregateInput = {
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
@@ -1506,6 +1526,7 @@ export type BillMaxOrderByAggregateInput = {
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
@@ -1564,6 +1585,7 @@ export type BillMinOrderByAggregateInput = {
   paymentTermCondition?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   platform?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   platformId?: Prisma.SortOrder
@@ -1919,6 +1941,7 @@ export type BillCreateWithoutMemberInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
@@ -1978,6 +2001,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   businessAcc: number
   platformId?: number | null
   customerId?: number | null
@@ -2066,6 +2090,7 @@ export type BillScalarWhereInput = {
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
   remark?: Prisma.StringNullableFilter<"Bill"> | string | null
   platform?: Prisma.EnumSocialMediaFilter<"Bill"> | $Enums.SocialMedia
+  isExport?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   memberId?: Prisma.StringFilter<"Bill"> | string
   businessAcc?: Prisma.IntFilter<"Bill"> | number
   platformId?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -2123,6 +2148,7 @@ export type BillCreateWithoutBusinessIdInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
@@ -2182,6 +2208,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   platformId?: number | null
   customerId?: number | null
@@ -2266,6 +2293,7 @@ export type BillCreateWithoutCustomerInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -2325,6 +2353,7 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -2409,6 +2438,7 @@ export type BillCreateWithoutProductInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
   platformInfo?: Prisma.PlatformCreateNestedOneWithoutBillRecordInput
@@ -2468,6 +2498,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -2542,6 +2573,7 @@ export type BillUpdateWithoutProductInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
@@ -2601,6 +2633,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2659,6 +2692,7 @@ export type BillCreateWithoutExpenseInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -2718,6 +2752,7 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -2792,6 +2827,7 @@ export type BillUpdateWithoutExpenseInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -2851,6 +2887,7 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2909,6 +2946,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -2968,6 +3006,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   customerId?: number | null
@@ -3052,6 +3091,7 @@ export type BillCreateWithoutProjectInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   product?: Prisma.ProductItemCreateNestedManyWithoutBillInput
   member: Prisma.MemberCreateNestedOneWithoutBillInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutBillRecordInput
@@ -3111,6 +3151,7 @@ export type BillUncheckedCreateWithoutProjectInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -3196,6 +3237,7 @@ export type BillCreateManyMemberInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   businessAcc: number
   platformId?: number | null
   customerId?: number | null
@@ -3252,6 +3294,7 @@ export type BillUpdateWithoutMemberInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
@@ -3311,6 +3354,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3370,6 +3414,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3427,6 +3472,7 @@ export type BillCreateManyBusinessIdInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   platformId?: number | null
   customerId?: number | null
@@ -3483,6 +3529,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   platformInfo?: Prisma.PlatformUpdateOneWithoutBillRecordNestedInput
@@ -3542,6 +3589,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3601,6 +3649,7 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3658,6 +3707,7 @@ export type BillCreateManyCustomerInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -3714,6 +3764,7 @@ export type BillUpdateWithoutCustomerInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -3773,6 +3824,7 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3832,6 +3884,7 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3889,6 +3942,7 @@ export type BillCreateManyPlatformInfoInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   customerId?: number | null
@@ -3945,6 +3999,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -4004,6 +4059,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4063,6 +4119,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4120,6 +4177,7 @@ export type BillCreateManyProjectInput = {
   paymentTermCondition?: string | null
   remark?: string | null
   platform: $Enums.SocialMedia
+  isExport?: boolean | null
   memberId: string
   businessAcc: number
   platformId?: number | null
@@ -4176,6 +4234,7 @@ export type BillUpdateWithoutProjectInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   product?: Prisma.ProductItemUpdateManyWithoutBillNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutBillNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutBillRecordNestedInput
@@ -4235,6 +4294,7 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4294,6 +4354,7 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.EnumSocialMediaFieldUpdateOperationsInput | $Enums.SocialMedia
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   platformId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4382,6 +4443,7 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
+  isExport?: boolean
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
@@ -4448,6 +4510,7 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
+  isExport?: boolean
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
@@ -4511,6 +4574,7 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
+  isExport?: boolean
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
@@ -4574,6 +4638,7 @@ export type BillSelectScalar = {
   paymentTermCondition?: boolean
   remark?: boolean
   platform?: boolean
+  isExport?: boolean
   memberId?: boolean
   businessAcc?: boolean
   platformId?: boolean
@@ -4581,7 +4646,7 @@ export type BillSelectScalar = {
   projectId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -4669,6 +4734,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     paymentTermCondition: string | null
     remark: string | null
     platform: $Enums.SocialMedia
+    isExport: boolean | null
     memberId: string
     businessAcc: number
     platformId: number | null
@@ -5154,6 +5220,7 @@ export interface BillFieldRefs {
   readonly paymentTermCondition: Prisma.FieldRef<"Bill", 'String'>
   readonly remark: Prisma.FieldRef<"Bill", 'String'>
   readonly platform: Prisma.FieldRef<"Bill", 'SocialMedia'>
+  readonly isExport: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly memberId: Prisma.FieldRef<"Bill", 'String'>
   readonly businessAcc: Prisma.FieldRef<"Bill", 'Int'>
   readonly platformId: Prisma.FieldRef<"Bill", 'Int'>

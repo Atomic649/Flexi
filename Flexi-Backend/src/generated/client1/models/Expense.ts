@@ -83,6 +83,7 @@ export type ExpenseMinAggregateOutputType = {
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
   dueDate: Date | null
+  isExport: boolean | null
   billFlexiId: string | null
   businessAcc: number | null
   memberId: string | null
@@ -124,6 +125,7 @@ export type ExpenseMaxAggregateOutputType = {
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
   dueDate: Date | null
+  isExport: boolean | null
   billFlexiId: string | null
   businessAcc: number | null
   memberId: string | null
@@ -165,6 +167,7 @@ export type ExpenseCountAggregateOutputType = {
   status: number
   DocumentType: number
   dueDate: number
+  isExport: number
   billFlexiId: number
   businessAcc: number
   memberId: number
@@ -230,6 +233,7 @@ export type ExpenseMinAggregateInputType = {
   status?: true
   DocumentType?: true
   dueDate?: true
+  isExport?: true
   billFlexiId?: true
   businessAcc?: true
   memberId?: true
@@ -271,6 +275,7 @@ export type ExpenseMaxAggregateInputType = {
   status?: true
   DocumentType?: true
   dueDate?: true
+  isExport?: true
   billFlexiId?: true
   businessAcc?: true
   memberId?: true
@@ -312,6 +317,7 @@ export type ExpenseCountAggregateInputType = {
   status?: true
   DocumentType?: true
   dueDate?: true
+  isExport?: true
   billFlexiId?: true
   businessAcc?: true
   memberId?: true
@@ -440,6 +446,7 @@ export type ExpenseGroupByOutputType = {
   status: $Enums.ExpenseStatus | null
   DocumentType: $Enums.DocumentType | null
   dueDate: Date | null
+  isExport: boolean | null
   billFlexiId: string | null
   businessAcc: number
   memberId: string
@@ -504,6 +511,7 @@ export type ExpenseWhereInput = {
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
   dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
+  isExport?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
   billFlexiId?: Prisma.StringNullableFilter<"Expense"> | string | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
@@ -549,6 +557,7 @@ export type ExpenseOrderByWithRelationInput = {
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  isExport?: Prisma.SortOrderInput | Prisma.SortOrder
   billFlexiId?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
@@ -598,6 +607,7 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
   dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
+  isExport?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
   projectId?: Prisma.IntNullableFilter<"Expense"> | number | null
@@ -642,6 +652,7 @@ export type ExpenseOrderByWithAggregationInput = {
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  isExport?: Prisma.SortOrderInput | Prisma.SortOrder
   billFlexiId?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
@@ -691,6 +702,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumExpenseStatusNullableWithAggregatesFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableWithAggregatesFilter<"Expense"> | $Enums.DocumentType | null
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Expense"> | Date | string | null
+  isExport?: Prisma.BoolNullableWithAggregatesFilter<"Expense"> | boolean | null
   billFlexiId?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   businessAcc?: Prisma.IntWithAggregatesFilter<"Expense"> | number
   memberId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
@@ -731,6 +743,7 @@ export type ExpenseCreateInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   bill?: Prisma.BillCreateNestedOneWithoutExpenseInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
@@ -772,6 +785,7 @@ export type ExpenseUncheckedCreateInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   memberId: string
@@ -812,6 +826,7 @@ export type ExpenseUpdateInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bill?: Prisma.BillUpdateOneWithoutExpenseNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
@@ -853,6 +868,7 @@ export type ExpenseUncheckedUpdateInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -894,6 +910,7 @@ export type ExpenseCreateManyInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   memberId: string
@@ -934,6 +951,7 @@ export type ExpenseUpdateManyMutationInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type ExpenseUncheckedUpdateManyInput = {
@@ -971,6 +989,7 @@ export type ExpenseUncheckedUpdateManyInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1027,6 +1046,7 @@ export type ExpenseCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   billFlexiId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
@@ -1079,6 +1099,7 @@ export type ExpenseMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   billFlexiId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
@@ -1120,6 +1141,7 @@ export type ExpenseMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  isExport?: Prisma.SortOrder
   billFlexiId?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
@@ -1341,6 +1363,7 @@ export type ExpenseCreateWithoutMemberInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   bill?: Prisma.BillCreateNestedOneWithoutExpenseInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
   project?: Prisma.ProjectCreateNestedOneWithoutExpensesInput
@@ -1381,6 +1404,7 @@ export type ExpenseUncheckedCreateWithoutMemberInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   projectId?: number | null
@@ -1450,6 +1474,7 @@ export type ExpenseScalarWhereInput = {
   status?: Prisma.EnumExpenseStatusNullableFilter<"Expense"> | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Expense"> | $Enums.DocumentType | null
   dueDate?: Prisma.DateTimeNullableFilter<"Expense"> | Date | string | null
+  isExport?: Prisma.BoolNullableFilter<"Expense"> | boolean | null
   billFlexiId?: Prisma.StringNullableFilter<"Expense"> | string | null
   businessAcc?: Prisma.IntFilter<"Expense"> | number
   memberId?: Prisma.StringFilter<"Expense"> | string
@@ -1490,6 +1515,7 @@ export type ExpenseCreateWithoutBusinessIdInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   bill?: Prisma.BillCreateNestedOneWithoutExpenseInput
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
   project?: Prisma.ProjectCreateNestedOneWithoutExpensesInput
@@ -1530,6 +1556,7 @@ export type ExpenseUncheckedCreateWithoutBusinessIdInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   memberId: string
   projectId?: number | null
@@ -1595,6 +1622,7 @@ export type ExpenseCreateWithoutBillInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
   project?: Prisma.ProjectCreateNestedOneWithoutExpensesInput
@@ -1635,6 +1663,7 @@ export type ExpenseUncheckedCreateWithoutBillInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   businessAcc: number
   memberId: string
   projectId?: number | null
@@ -1690,6 +1719,7 @@ export type ExpenseUpdateWithoutBillInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
   project?: Prisma.ProjectUpdateOneWithoutExpensesNestedInput
@@ -1730,6 +1760,7 @@ export type ExpenseUncheckedUpdateWithoutBillInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1769,6 +1800,7 @@ export type ExpenseCreateWithoutProjectInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   bill?: Prisma.BillCreateNestedOneWithoutExpenseInput
   businessId: Prisma.BusinessAccCreateNestedOneWithoutExpenseRecordInput
   member: Prisma.MemberCreateNestedOneWithoutExpenseInput
@@ -1809,6 +1841,7 @@ export type ExpenseUncheckedCreateWithoutProjectInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   memberId: string
@@ -1875,6 +1908,7 @@ export type ExpenseCreateManyMemberInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   projectId?: number | null
@@ -1914,6 +1948,7 @@ export type ExpenseUpdateWithoutMemberInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bill?: Prisma.BillUpdateOneWithoutExpenseNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   project?: Prisma.ProjectUpdateOneWithoutExpensesNestedInput
@@ -1954,6 +1989,7 @@ export type ExpenseUncheckedUpdateWithoutMemberInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1994,6 +2030,7 @@ export type ExpenseUncheckedUpdateManyWithoutMemberInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2034,6 +2071,7 @@ export type ExpenseCreateManyBusinessIdInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   memberId: string
   projectId?: number | null
@@ -2073,6 +2111,7 @@ export type ExpenseUpdateWithoutBusinessIdInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bill?: Prisma.BillUpdateOneWithoutExpenseNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
   project?: Prisma.ProjectUpdateOneWithoutExpensesNestedInput
@@ -2113,6 +2152,7 @@ export type ExpenseUncheckedUpdateWithoutBusinessIdInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2153,6 +2193,7 @@ export type ExpenseUncheckedUpdateManyWithoutBusinessIdInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2193,6 +2234,7 @@ export type ExpenseCreateManyProjectInput = {
   status?: $Enums.ExpenseStatus | null
   DocumentType?: $Enums.DocumentType | null
   dueDate?: Date | string | null
+  isExport?: boolean | null
   billFlexiId?: string | null
   businessAcc: number
   memberId: string
@@ -2232,6 +2274,7 @@ export type ExpenseUpdateWithoutProjectInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bill?: Prisma.BillUpdateOneWithoutExpenseNestedInput
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutExpenseRecordNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutExpenseNestedInput
@@ -2272,6 +2315,7 @@ export type ExpenseUncheckedUpdateWithoutProjectInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2312,6 +2356,7 @@ export type ExpenseUncheckedUpdateManyWithoutProjectInput = {
   status?: Prisma.NullableEnumExpenseStatusFieldUpdateOperationsInput | $Enums.ExpenseStatus | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isExport?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   billFlexiId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2354,6 +2399,7 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   DocumentType?: boolean
   dueDate?: boolean
+  isExport?: boolean
   billFlexiId?: boolean
   businessAcc?: boolean
   memberId?: boolean
@@ -2399,6 +2445,7 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   DocumentType?: boolean
   dueDate?: boolean
+  isExport?: boolean
   billFlexiId?: boolean
   businessAcc?: boolean
   memberId?: boolean
@@ -2444,6 +2491,7 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   DocumentType?: boolean
   dueDate?: boolean
+  isExport?: boolean
   billFlexiId?: boolean
   businessAcc?: boolean
   memberId?: boolean
@@ -2489,13 +2537,14 @@ export type ExpenseSelectScalar = {
   status?: boolean
   DocumentType?: boolean
   dueDate?: boolean
+  isExport?: boolean
   billFlexiId?: boolean
   businessAcc?: boolean
   memberId?: boolean
   projectId?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "flexiId" | "expNo" | "amount" | "debtAmount" | "group" | "customGroup" | "image" | "pdf" | "invoiceImage" | "invoicePdf" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "DocumentType" | "dueDate" | "billFlexiId" | "businessAcc" | "memberId" | "projectId", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"date" | "createdAt" | "updatedAt" | "id" | "flexiId" | "expNo" | "amount" | "debtAmount" | "group" | "customGroup" | "image" | "pdf" | "invoiceImage" | "invoicePdf" | "note" | "desc" | "deleted" | "save" | "channel" | "code" | "vat" | "vatAmount" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "sName" | "sTaxId" | "sAddress" | "taxInvoiceNo" | "branch" | "taxType" | "status" | "DocumentType" | "dueDate" | "isExport" | "billFlexiId" | "businessAcc" | "memberId" | "projectId", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.Expense$billArgs<ExtArgs>
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -2558,6 +2607,7 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: $Enums.ExpenseStatus | null
     DocumentType: $Enums.DocumentType | null
     dueDate: Date | null
+    isExport: boolean | null
     billFlexiId: string | null
     businessAcc: number
     memberId: string
@@ -3023,6 +3073,7 @@ export interface ExpenseFieldRefs {
   readonly status: Prisma.FieldRef<"Expense", 'ExpenseStatus'>
   readonly DocumentType: Prisma.FieldRef<"Expense", 'DocumentType'>
   readonly dueDate: Prisma.FieldRef<"Expense", 'DateTime'>
+  readonly isExport: Prisma.FieldRef<"Expense", 'Boolean'>
   readonly billFlexiId: Prisma.FieldRef<"Expense", 'String'>
   readonly businessAcc: Prisma.FieldRef<"Expense", 'Int'>
   readonly memberId: Prisma.FieldRef<"Expense", 'String'>

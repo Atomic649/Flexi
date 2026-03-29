@@ -216,6 +216,7 @@ interface billInput {
   WHTAmount?: number;
   updateCustomer?: boolean; // Flag to update customer details
   projectId?: number; // Optional project link
+  isExport?: boolean; // Optional export flag (non-Thai address)
 }
 
 // Validate the request body
@@ -277,6 +278,7 @@ const schema = Joi.object({
   remark: Joi.string().allow("").optional(), // Optional remark
   taxType: Joi.string().valid("Juristic", "Individual").optional(), // Optional tax type
   projectId: Joi.number().optional(), // Optional project link
+  isExport: Joi.boolean().optional(), // Optional export flag
 });
 
 //Create a New Bill - Post
@@ -532,6 +534,7 @@ const createBill = async (req: Request, res: Response) => {
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
                 taxType: billInput.taxType || "Individual",
+                isExport: billInput.isExport ?? false,
                 ...(billInput.projectId != null && { projectId: billInput.projectId }),
               };
 
@@ -1116,6 +1119,7 @@ const updateBill = async (req: Request, res: Response) => {
           WHTpercent: billInput.withholdingPercent ?? 0,
           WHTAmount: billInput.WHTAmount ?? 0,
           validContactUntil: validContactUntil,
+          isExport: billInput.isExport ?? false,
           ...(billInput.projectId != null && { projectId: billInput.projectId }),
         };
 

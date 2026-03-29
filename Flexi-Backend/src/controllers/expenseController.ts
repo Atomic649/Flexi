@@ -180,6 +180,7 @@ interface Expense {
   dueDate?: Date;
   projectId?: number;
   customGroup?: string;
+  isExport?: boolean;
 }
 
 // Validate the request body
@@ -245,6 +246,7 @@ const schema = Joi.object({
   flexiId: Joi.string().optional().allow("", null),
   projectId: Joi.number().optional(),
   customGroup: Joi.string().optional().allow(""),
+  isExport: Joi.boolean().optional(),
 });
 //  create a new expense - Post
 const createExpense = async (req: Request, res: Response) => {
@@ -327,6 +329,7 @@ const createExpense = async (req: Request, res: Response) => {
       vat: req.body.vat === "true" ? true : false,
       flexiId: req.body.flexiId || null,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
+      isExport: req.body.isExport === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
       invoiceImage: invoiceImageUrl,
@@ -420,6 +423,7 @@ const createExpense = async (req: Request, res: Response) => {
           debtAmount: expenseInput.debtAmount ?? 0,
           dueDate: expenseInput.dueDate ?? null,
           customGroup: expenseInput.customGroup ?? "",
+          isExport: expenseInput.isExport ?? false,
           ...(expenseInput.projectId != null && { projectId: Number(expenseInput.projectId) }),
         },
       });
@@ -482,6 +486,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
+      isExport: req.body.isExport === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
       invoiceImage: invoiceImageUrl,
@@ -976,6 +981,7 @@ const createExpenseWithOCR = async (req: Request, res: Response) => {
           dueDate: Joi.date().optional(),
           flexiId: Joi.string().optional().allow("", null),
           customGroup: Joi.string().optional().allow(""),
+          isExport: Joi.boolean().optional(),
         })
       : // When no image, use original strict validation
         schema;
@@ -1234,6 +1240,7 @@ const createExpenseWithOCRStream = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === 'true' ? true : false,
       withHoldingTax: req.body.withHoldingTax === 'true' ? true : false,
+      isExport: req.body.isExport === 'true' ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
       invoiceImage: invoiceImageUrl,
@@ -1564,6 +1571,7 @@ const getExpenseById = async (req: Request, res: Response) => {
         flexiId: true,
         customGroup: true,
         projectId: true,
+        isExport: true,
       },
     });
     res.json(expense);
@@ -1712,6 +1720,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
       ...req.body,
       vat: req.body.vat === "true" ? true : false,
       withHoldingTax: req.body.withHoldingTax === "true" ? true : false,
+      isExport: req.body.isExport === "true" ? true : false,
       image: imageUrl,
       pdf: pdfUrl,
       invoiceImage: invoiceImageUrl,
@@ -1773,6 +1782,7 @@ const updateExpenseById = async (req: Request, res: Response) => {
           debtAmount: expenseInput.debtAmount ?? 0,
           dueDate: expenseInput.dueDate ?? null,
           customGroup: expenseInput.customGroup ?? "",
+          isExport: expenseInput.isExport ?? false,
           ...(expenseInput.projectId != null && { projectId: Number(expenseInput.projectId) }),
         },
       });

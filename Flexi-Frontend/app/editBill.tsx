@@ -43,6 +43,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
+import { detectIsExport } from "@/constants/detectIsExport";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -85,6 +86,8 @@ export default function EditBill() {
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
+  const [isExport, setIsExport] = useState(false);
+  const isExportManualOverride = useRef(false);
   const [cTaxId, setCTaxId] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | 45 | null>(
@@ -759,6 +762,15 @@ export default function EditBill() {
     }
   };
 
+  useEffect(() => {
+    if (!cAddress.trim() && !cProvince) {
+      isExportManualOverride.current = false;
+    }
+    if (!isExportManualOverride.current) {
+      setIsExport(detectIsExport(cAddress, cProvince || undefined));
+    }
+  }, [cAddress, cProvince]);
+
   // Fetch bill data
   useEffect(() => {
     const fetchBillData = async () => {
@@ -804,6 +816,8 @@ export default function EditBill() {
         setCAddress(billData.cAddress);
         setCPostId(billData.cPostId);
         setCProvince(billData.cProvince);
+        isExportManualOverride.current = true;
+        setIsExport(billData.isExport ?? detectIsExport(billData.cAddress, billData.cProvince || undefined));
         setPayment(billData.payment);
         setCashStatus(billData.cashStatus);
         setSelectedPlatform(billData.platform ?? "");
@@ -1240,6 +1254,7 @@ export default function EditBill() {
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
         taxType: taxType,
+        isExport,
         ...(projectId != null && { projectId }),
       });
       if (data.error) throw new Error(data.error);
@@ -1996,6 +2011,24 @@ export default function EditBill() {
                 />
               </View>
             </View>
+
+            <TouchableOpacity
+              style={{ flexDirection: "row", alignItems: "center", marginBottom: 8, marginTop: 4 }}
+              onPress={() => { if (isEditMode) { isExportManualOverride.current = true; setIsExport((prev) => !prev); } }}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name={isExport ? "checkbox" : "square-outline"}
+                size={22}
+                color={theme === "dark" ? "#b1b1b1" : "#606060"}
+              />
+              <CustomText
+                className="ml-2"
+                style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}
+              >
+                {t("bill.isExport")}
+              </CustomText>
+            </TouchableOpacity>
 
             {/* --- Product Items UI --- */}
             {productItems.map((item, idx) => (
