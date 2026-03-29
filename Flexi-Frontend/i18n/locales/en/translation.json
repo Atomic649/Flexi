@@ -44,7 +44,10 @@
     "back": "Back",
     "noData": "No data",
     "overRateLimit": "Too many requests, request has been blocked to prevent abuse. Please try again later.",
-    "all": "All"
+    "all": "All",
+    "none": "— None —",
+    "project": "Project",
+    "enterProject": "Enter project"
 
   },
   "months": {

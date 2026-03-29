@@ -26,6 +26,7 @@ const Dropdown = ({
   bgChoiceColor,
   textcolor,
   disabled = false,
+  onAddNew,
   ...props
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +34,12 @@ const Dropdown = ({
   const buttonRef = useRef<View>(null);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const { theme } = useTheme();
+
+  // Default colors — callers can override via props
+  const resolvedBorderColor = borderColor ?? (theme === "dark" ? "#606060" : "#b1b1b1");
+  const resolvedPlaceholderColor = placeholderColor ?? (theme === "dark" ? "#606060" : "#b1b1b1");
+  const resolvedBgChoiceColor = bgChoiceColor ?? (theme === "dark" ? "#212121" : "#e7e7e7");
+  const resolvedTextColor = textcolor ?? (theme === "dark" ? "#b1b1b1" : "#606060");
   const webScrollStyle =
     Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
 
@@ -95,11 +102,10 @@ const Dropdown = ({
         right: Platform.OS === "web" ? undefined : 0,
         width: Platform.OS === "web" ? dropdownPos.width : undefined,
         maxHeight: 260,
-        backgroundColor:
-          bgChoiceColor || (theme === "dark" ? "#18181b" : "#ffffff"),
+        backgroundColor: resolvedBgChoiceColor,
         borderRadius: 12,
-        borderWidth: borderColor ? 0.5 : 0,
-        borderColor: borderColor || "transparent",
+        borderWidth: 0.5,
+        borderColor: resolvedBorderColor,
         zIndex: 2000,
         elevation: 5,
         shadowColor: "#000",
@@ -108,7 +114,7 @@ const Dropdown = ({
         shadowRadius: 3.84,
       }}
     >
-      {options && options.length >= 4 && (
+      {(options && options.length >= 4 || onAddNew) && (
       <View style={{ padding: 10 }}>
         <View
           style={{
@@ -128,7 +134,7 @@ const Dropdown = ({
           <CustomTextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder={t("common.search")}
+            placeholder={onAddNew ? t("common.searchAdd") : t("common.search")}
             placeholderTextColor={theme === "dark" ? "#71717a" : "#a1a1aa"}
             style={{
               flex: 1,
@@ -216,6 +222,38 @@ const Dropdown = ({
           </View>
         )}
       </ScrollView>
+
+      {onAddNew && searchText.trim().length > 0 &&
+        !filteredOptions.some(
+          (o: any) => o.label.toLowerCase() === searchText.trim().toLowerCase(),
+        ) && (
+          <TouchableOpacity
+            className="w-full py-3 px-4 flex flex-row items-center"
+            style={{
+              borderTopWidth: 0.5,
+              borderTopColor: theme === "dark" ? "#3f3f46" : "#e4e4e7",
+              gap: 8,
+            }}
+            onPress={() => {
+              onAddNew(searchText.trim());
+              closeSelf();
+              clearDropdown(closeSelf);
+            }}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="add-circle-outline"
+              size={18}
+              color={theme === "dark" ? "#60a5fa" : "#3b82f6"}
+            />
+            <CustomText
+              className="font-pmedium text-base"
+              style={{ color: theme === "dark" ? "#60a5fa" : "#3b82f6" }}
+            >
+              {`Add "${searchText.trim()}"`}
+            </CustomText>
+          </TouchableOpacity>
+        )}
     </View>
   );
 
@@ -250,8 +288,8 @@ const Dropdown = ({
         activeOpacity={1}
         style={{
           backgroundColor: "transparent",
-          borderColor: borderColor ? borderColor : "transparent",
-          borderWidth: borderColor ? 0.5 : 0,
+          borderColor: resolvedBorderColor,
+          borderWidth: 0.5,
           opacity: disabled ? 0.7 : 0.9,
           height: 50,
         }}
@@ -264,7 +302,7 @@ const Dropdown = ({
               ? theme === "dark"
                 ? "#b4b3b3"
                 : "#2a2a2a"
-              : placeholderColor,
+              : resolvedPlaceholderColor,
           }}
         >
           {selectedLabel}

@@ -366,6 +366,7 @@ model Bill {
   paymentTermCondition String? // Optional field for payment
   remark               String?
   platform             SocialMedia
+  isExport             Boolean?       @default(false)
 
   // Relation
   memberId     String
@@ -454,6 +455,7 @@ model Expense {
   status         ExpenseStatus?
   DocumentType   DocumentType?  @default(Receipt)
   dueDate        DateTime?
+  isExport       Boolean?       @default(false)
 
   // Relation
   billFlexiId String?     @unique

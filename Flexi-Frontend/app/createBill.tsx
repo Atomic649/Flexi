@@ -24,6 +24,7 @@ import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIBill from "@/api/bill_api";
 import CallAPICustomer from "@/api/customer_api";
 import CallAPIPlatform from "@/api/platform_api";
+import CallAPIExpense from "@/api/expense_api";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -74,16 +75,10 @@ export default function CreateBill() {
   const { vat } = useBusiness();
 
   const normalizeText = (value?: string | null) =>
-    (value || "")
-      .toString()
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
+    (value || "").toString().trim().replace(/\s+/g, " ").toLowerCase();
 
   const normalizeDigits = (value?: string | null) =>
-    (value || "")
-      .toString()
-      .replace(/\D+/g, "");
+    (value || "").toString().replace(/\D+/g, "");
 
   const isSameCustomerData = (customer: any) => {
     return (
@@ -221,6 +216,10 @@ export default function CreateBill() {
   const [cProvince, setCProvince] = useState("");
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
+  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [projectSuggestions, setProjectSuggestions] = useState<
+    { id: number; name: string }[]
+  >([]);
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
 
   // Handler to save payment terms to AsyncStorage
@@ -433,7 +432,7 @@ export default function CreateBill() {
           setPaymentTermCondition(defaultTerm);
         }
       }
-      // Fetch platforms for this member
+      // Fetch platforms and projects for this member
       if (uniqueId) {
         try {
           const platformData =
@@ -442,6 +441,13 @@ export default function CreateBill() {
         } catch (error) {
           console.error("Failed to fetch platforms:", error);
           setPlatformOptions([]);
+        }
+        try {
+          const projects =
+            await CallAPIExpense.getProjectSuggestionsAPI(uniqueId);
+          setProjectSuggestions(projects);
+        } catch (error) {
+          console.error("Failed to fetch projects:", error);
         }
       }
     };
@@ -652,7 +658,12 @@ export default function CreateBill() {
           (priceValidDate.getTime() - baseDate.getTime()) /
             (1000 * 60 * 60 * 24),
         );
-        if (diffDays === 7 || diffDays === 15 || diffDays === 30 || diffDays === 45) {
+        if (
+          diffDays === 7 ||
+          diffDays === 15 ||
+          diffDays === 30 ||
+          diffDays === 45
+        ) {
           setPriceValidDays(diffDays as 7 | 15 | 30 | 45);
         } else {
           setPriceValidDays(null);
@@ -976,6 +987,7 @@ export default function CreateBill() {
           quantity: Number(item.quantity),
         })),
         note,
+        ...(projectId != null && { projectId }),
         paymentTermCondition: paymentTermCondition,
         remark: remark || undefined,
         withholdingTax: withholdingTax,
@@ -1271,15 +1283,32 @@ export default function CreateBill() {
             }}
           >
             {/* Row 1: Date (left) + AutoFill + Clear (right) */}
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8, marginBottom: 2 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginTop: 8,
+                marginBottom: 2,
+              }}
+            >
               {/* Date */}
               <TouchableOpacity
                 onPress={() => setCalendarVisible(true)}
                 activeOpacity={0.7}
                 style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
               >
-                <Ionicons name="calendar-outline" size={16} color={theme === "dark" ? "#c9c9c9" : "#48453e"} />
-                <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                <Ionicons
+                  name="calendar-outline"
+                  size={16}
+                  color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+                />
+                <CustomText
+                  style={{
+                    fontSize: 13,
+                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                  }}
+                >
                   {SelectedDates.length > 0
                     ? formatDate(SelectedDates[0])
                     : t("dashboard.selectDate")}
@@ -1287,18 +1316,34 @@ export default function CreateBill() {
               </TouchableOpacity>
 
               {/* AutoFill + Clear */}
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
                 <AutoFillBill
                   onApply={handleAutoFillApply}
                   taxType={taxType}
-                  containerStyle={{ flexDirection: "row", alignItems: "center" }}
+                  containerStyle={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
                 />
                 <TouchableOpacity
                   onPress={handleClearFields}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10 }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 10,
+                  }}
                 >
-                  <CustomText weight="bold" style={{ color: "#03dbc1", fontSize: 18, paddingHorizontal: 5 }}>
+                  <CustomText
+                    weight="bold"
+                    style={{
+                      color: "#03dbc1",
+                      fontSize: 18,
+                      paddingHorizontal: 5,
+                    }}
+                  >
                     {t("bill.clearFields")}
                   </CustomText>
                 </TouchableOpacity>
@@ -1313,17 +1358,15 @@ export default function CreateBill() {
                   if (typeof plat === "string") {
                     return { label: plat, value: plat };
                   }
-                  const label = plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
-                  const value = plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
+                  const label =
+                    plat?.accName ?? plat?.platform ?? plat?.plat ?? "";
+                  const value =
+                    plat?.platform ?? plat?.plat ?? plat?.accName ?? "";
                   return { label, value };
                 })}
                 placeholder={t("bill.selectStore")}
-                placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 selectedValue={selectedPlatform}
                 onValueChange={(value: any) => setSelectedPlatform(value)}
-                borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles="mt-2 mb-2"
               />
             )}
@@ -1462,14 +1505,10 @@ export default function CreateBill() {
                       },
                     ]}
                     placeholder={t("bill.selectGender")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
                     }
                     onValueChange={(value: string) => setCGender(value)}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                   />
                 </View>
@@ -1509,11 +1548,7 @@ export default function CreateBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.enterProvince")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles={fieldStyles}
+                  otherStyles={fieldStyles}
                 />
               </View>
               <View className="w-1/2 pr-2">
@@ -1562,14 +1597,10 @@ export default function CreateBill() {
                       value: product.id?.toString() ?? "",
                     }))}
                     placeholder={t("bill.selectProduct")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={item.product}
                     onValueChange={(value: string) =>
                       handleProductItemChange(idx, "product", value)
                     }
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-1 mb-1"
                   />
                 </View>
@@ -1669,14 +1700,10 @@ export default function CreateBill() {
                       { label: t("bill.payment.cash"), value: "Cash" },
                     ]}
                     placeholder={t("bill.selectPayment")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
                     }
                     onValueChange={setPayment}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                   />
                 </View>
@@ -1688,7 +1715,6 @@ export default function CreateBill() {
                       { label: t("bill.status.unpaid"), value: "false" },
                     ]}
                     placeholder={t("bill.selectStatus")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       cashStatus === true
                         ? t("bill.status.paid")
@@ -1697,9 +1723,6 @@ export default function CreateBill() {
                           : ""
                     }
                     onValueChange={() => {}} // Disabled - backend handles cashStatus automatically
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                     disabled={true} // Make it read-only
                   />
@@ -1806,57 +1829,89 @@ export default function CreateBill() {
 
               {withholdingTax && (
                 <>
-                <View className="flex flex-row justify-between">
-                <View className="w-1/2 ">
-                  <FormFieldClear
-                    title={t("bill.withHoldingTaxPercent")}                    
-                    value={withholdingPercent}
-                    handleChangeText={(value: string) => {
-                      const numeric = value.replace(/[^0-9.]/g, "");
-                      setWithholdingPercent(numeric);
-                    }}
-                    placeholder={t("bill.enterWithHoldingTax")}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles={fieldStyles}
-                    keyboardType="numeric"
-                    maxLength={6}
-                  />
-                </View>
+                  <View className="flex flex-row justify-between">
+                    <View className="w-1/2 ">
+                      <FormFieldClear
+                        title={t("bill.withHoldingTaxPercent")}
+                        value={withholdingPercent}
+                        handleChangeText={(value: string) => {
+                          const numeric = value.replace(/[^0-9.]/g, "");
+                          setWithholdingPercent(numeric);
+                        }}
+                        placeholder={t("bill.enterWithHoldingTax")}
+                        borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                        placeholderTextColor={
+                          theme === "dark" ? "#606060" : "#b1b1b1"
+                        }
+                        textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                        otherStyles={fieldStyles}
+                        keyboardType="numeric"
+                        maxLength={6}
+                      />
+                    </View>
 
-                  <View
-                  className="w-1/2 items-start justify-start"
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      marginTop: 6,
-                    }}
-                  >
-                    <CustomText
-                      className="text-sm pt-1"
-                      style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                    <View
+                      className="w-1/2 items-start justify-start"
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                        marginTop: 6,
+                      }}
                     >
-                      {t("bill.withHoldingTaxAmount")}:
-                    </CustomText>
-                    <CustomText
-                      className="text-sm ml-2"
-                      weight="bold"
-                      style={{ color: theme === "dark" ? "#fff" : "#222" }}
-                    >
-                      {withholdingTaxAmount.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </CustomText>
-                  </View>
+                      <CustomText
+                        className="text-sm pt-1"
+                        style={{ color: theme === "dark" ? "#bbb" : "#666" }}
+                      >
+                        {t("bill.withHoldingTaxAmount")}:
+                      </CustomText>
+                      <CustomText
+                        className="text-sm ml-2"
+                        weight="bold"
+                        style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                      >
+                        {withholdingTaxAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </CustomText>
+                    </View>
                   </View>
                 </>
               )}
             </View>
+
+            {/* Project Section */}
+            <DropdownClear
+              title={t("common.project")}
+              placeholder={t("common.enterProject")}
+              options={[
+                { value: "", label: t("common.none") },
+                ...projectSuggestions.map((p) => ({
+                  value: String(p.id),
+                  label: p.name,
+                })),
+              ]}
+              selectedValue={projectId != null ? String(projectId) : ""}
+              onValueChange={(val: string) =>
+                setProjectId(val ? Number(val) : undefined)
+              }
+              onAddNew={async (name: string) => {
+                try {
+                  const mId = await getMemberId();
+                  if (!mId) return;
+                  const newProject = await CallAPIExpense.createProjectAPI(
+                    mId,
+                    name,
+                  );
+                  setProjectSuggestions((prev) => [...prev, newProject]);
+                  setProjectId(newProject.id);
+                } catch (e) {
+                  console.error("Failed to create project", e);
+                }
+              }}
+              otherStyles="mt-1 mb-2"
+            />
 
             {/* Note Section */}
             <FormFieldClear
@@ -1901,105 +1956,105 @@ export default function CreateBill() {
                   </CustomText>
 
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginRight: 20,
-                    }}
-                    onPress={() => handlePriceValidDaysChange(7)}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name={
-                        priceValidDays === 7 ? "checkbox" : "square-outline"
-                      }
-                      size={22}
-                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    />
-                    <CustomText
-                      className="ml-2"
+                    <TouchableOpacity
                       style={{
-                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 20,
                       }}
+                      onPress={() => handlePriceValidDaysChange(7)}
+                      activeOpacity={0.8}
                     >
-                      7 {t("common.days")}
-                    </CustomText>
-                  </TouchableOpacity>
+                      <Ionicons
+                        name={
+                          priceValidDays === 7 ? "checkbox" : "square-outline"
+                        }
+                        size={22}
+                        color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      />
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        }}
+                      >
+                        7 {t("common.days")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginRight: 20,
-                    }}
-                    onPress={() => handlePriceValidDaysChange(15)}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name={
-                        priceValidDays === 15 ? "checkbox" : "square-outline"
-                      }
-                      size={22}
-                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    />
-                    <CustomText
-                      className="ml-2"
+                    <TouchableOpacity
                       style={{
-                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 20,
                       }}
+                      onPress={() => handlePriceValidDaysChange(15)}
+                      activeOpacity={0.8}
                     >
-                      15 {t("common.days")}
-                    </CustomText>
-                  </TouchableOpacity>
+                      <Ionicons
+                        name={
+                          priceValidDays === 15 ? "checkbox" : "square-outline"
+                        }
+                        size={22}
+                        color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      />
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        }}
+                      >
+                        15 {t("common.days")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginRight: 20,
-                    }}
-                    onPress={() => handlePriceValidDaysChange(30)}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name={
-                        priceValidDays === 30 ? "checkbox" : "square-outline"
-                      }
-                      size={22}
-                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    />
-                    <CustomText
-                      className="ml-2"
+                    <TouchableOpacity
                       style={{
-                        color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 20,
                       }}
+                      onPress={() => handlePriceValidDaysChange(30)}
+                      activeOpacity={0.8}
                     >
-                      30 {t("common.days")}
-                    </CustomText>
-                  </TouchableOpacity>
+                      <Ionicons
+                        name={
+                          priceValidDays === 30 ? "checkbox" : "square-outline"
+                        }
+                        size={22}
+                        color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      />
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        }}
+                      >
+                        30 {t("common.days")}
+                      </CustomText>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={{ flexDirection: "row", alignItems: "center" }}
-                    onPress={() => handlePriceValidDaysChange(45)}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name={
-                        priceValidDays === 45 ? "checkbox" : "square-outline"
-                      }
-                      size={22}
-                      color={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    />
-                    <CustomText
-                      className="ml-2"
-                      style={{
-                        color: theme === "dark" ? "#b1b1b1" : "#606060",
-                      }}
+                    <TouchableOpacity
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                      onPress={() => handlePriceValidDaysChange(45)}
+                      activeOpacity={0.8}
                     >
-                      45 {t("common.days")}
-                    </CustomText>
-                  </TouchableOpacity>
+                      <Ionicons
+                        name={
+                          priceValidDays === 45 ? "checkbox" : "square-outline"
+                        }
+                        size={22}
+                        color={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      />
+                      <CustomText
+                        className="ml-2"
+                        style={{
+                          color: theme === "dark" ? "#b1b1b1" : "#606060",
+                        }}
+                      >
+                        45 {t("common.days")}
+                      </CustomText>
+                    </TouchableOpacity>
                   </View>
                 </View>
 

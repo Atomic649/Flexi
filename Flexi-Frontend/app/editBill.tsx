@@ -21,7 +21,6 @@ import CallAPIBill from "@/api/bill_api";
 import CallAPIBusiness from "@/api/business_api";
 import CallAPIPlatform from "@/api/platform_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
-import DropdownFloat from "@/components/dropdown/DropdownFloat";
 import CallAPIExpense from "@/api/expense_api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router, useLocalSearchParams } from "expo-router";
@@ -1777,14 +1776,11 @@ export default function EditBill() {
                     return { label, value };
                   })}
                   placeholder={t("bill.selectStore")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                  
                   selectedValue={selectedPlatform}
                   onValueChange={(value: any) => {
                     if (isEditMode) setSelectedPlatform(value);
                   }}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-1 mb-2"
                   disabled={!isEditMode}
                 />
@@ -1934,14 +1930,10 @@ export default function EditBill() {
                       },
                     ]}
                     placeholder={t("bill.selectGender")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       cGender ? t(`bill.gender.${cGender.toLowerCase()}`) : ""
                     }
                     onValueChange={setCGender}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                     disabled={!isEditMode}
                   />
@@ -1983,10 +1975,6 @@ export default function EditBill() {
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.selectProvince")}
-                  placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                  bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                  textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                   otherStyles="mt-2 mb-2"
                   disabled={!isEditMode}
                 />
@@ -2037,14 +2025,10 @@ export default function EditBill() {
                       value: product.id?.toString() ?? "",
                     }))}
                     placeholder={t("bill.selectProduct")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={item.product}
                     onValueChange={(value: string) =>
                       handleProductItemChange(idx, "product", value)
                     }
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-1 mb-1"
                     disabled={!isEditMode}
                   />
@@ -2154,14 +2138,10 @@ export default function EditBill() {
                       },
                     ]}
                     placeholder={t("bill.selectPayment")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       payment ? t(`bill.payment.${payment.toLowerCase()}`) : ""
                     }
                     onValueChange={setPayment}
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                     disabled={!isEditMode}
                   />
@@ -2174,16 +2154,12 @@ export default function EditBill() {
                       { label: t("bill.status.unpaid"), value: "false" },
                     ]}
                     placeholder={t("bill.selectStatus")}
-                    placeholderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                     selectedValue={
                       cashStatus
                         ? t("bill.status.paid")
                         : t("bill.status.unpaid")
                     }
                     onValueChange={() => {}} // Disabled - backend handles cashStatus automatically
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    bgChoiceColor={theme === "dark" ? "#212121" : "#e7e7e7"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                     otherStyles="mt-2 mb-2"
                     disabled={true} // Always disabled - backend handles this automatically
                   />
@@ -2340,6 +2316,37 @@ export default function EditBill() {
               )}
             </View>
 
+             {/* Project Section */}
+            <DropdownClear
+              title={t("common.project")}
+              placeholder={t("common.enterProject")}
+              options={[
+                { value: "", label: t("common.none") },
+                ...projectSuggestions.map((p) => ({
+                  value: String(p.id),
+                  label: p.name,
+                })),
+              ]}
+              selectedValue={projectId != null ? String(projectId) : ""}
+              onValueChange={(val: string) =>
+                setProjectId(val ? Number(val) : undefined)
+              }
+              onAddNew={async (name: string) => {
+                try {
+                  const mId = await getMemberId();
+                  if (!mId) return;
+                  const newProject = await CallAPIExpense.createProjectAPI(mId, name);
+                  setProjectSuggestions((prev) => [...prev, newProject]);
+                  setProjectId(newProject.id);
+                } catch (e) {
+                  console.error("Failed to create project", e);
+                }
+              }}
+              disabled={!isEditMode}
+              
+                  otherStyles="mt-1 mb-2"
+            />
+
             {/* Note Section */}
             <FormFieldClear
               title={t("bill.note")}
@@ -2371,38 +2378,7 @@ export default function EditBill() {
               onBlur={() => setIsNoteFocused(false)}
             />
 
-            {/* Project Section */}
-            <DropdownFloat
-              title="Project"
-              placeholder="Project"
-              options={[
-                { value: "", label: "— None —" },
-                ...projectSuggestions.map((p) => ({
-                  value: String(p.id),
-                  label: p.name,
-                })),
-              ]}
-              selectedValue={projectId != null ? String(projectId) : ""}
-              onValueChange={(val: string) =>
-                setProjectId(val ? Number(val) : undefined)
-              }
-              onAddNew={async (name: string) => {
-                try {
-                  const mId = await getMemberId();
-                  if (!mId) return;
-                  const newProject = await CallAPIExpense.createProjectAPI(mId, name);
-                  setProjectSuggestions((prev) => [...prev, newProject]);
-                  setProjectId(newProject.id);
-                } catch (e) {
-                  console.error("Failed to create project", e);
-                }
-              }}
-              disabled={!isEditMode}
-              borderColor={theme === "dark" ? "#555" : "#CCC"}
-              textcolor={theme === "dark" ? "#FFF" : "#000"}
-              bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
-              otherStyles="mb-1"
-            />
+           
 
             {/* Price Valid Section */}
             {isEditMode &&
