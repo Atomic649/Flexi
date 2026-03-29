@@ -1596,7 +1596,7 @@ export default function Print() {
                   color={theme === "dark" ? "#9ca3af" : "#6b7280"}
                 />
                 <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
-                  {invoice.parentQuotationId ?? invoice.splitGroupId}
+                  {invoice.parentQuotationId ?? invoice.invoiceId}
                 </CustomText>
                 <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
                   {invoice.splitPercent}%

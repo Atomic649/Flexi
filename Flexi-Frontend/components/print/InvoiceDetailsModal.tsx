@@ -116,7 +116,7 @@ export default function InvoiceDetailsModal({
                         color={theme === "dark" ? "#9ca3af" : "#6b7280"}
                       />
                       <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
-                        {selectedInvoice.parentQuotationId ?? selectedInvoice.splitGroupId}
+                        {selectedInvoice.parentQuotationId ?? selectedInvoice.invoiceId}
                       </CustomText>
                       <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
                         {selectedInvoice.splitPercent}%
