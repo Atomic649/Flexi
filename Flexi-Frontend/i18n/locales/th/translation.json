@@ -707,6 +707,10 @@
     "avr": "AVR",
     "thisMonth": "เดือนนี้",
     "today": "วันนี้",
+    "yesterday": "เมื่อวาน",
+    "thisWeek": "สัปดาห์นี้",
+    "lastWeek": "สัปดาห์ที่แล้ว",
+    "lastMonth": "เดือนที่แล้ว",
     "salesChart": {
       "title": "กราฟยอดขาย",
       "noData": "ไม่มีข้อมูลยอดขายสำหรับช่วงเวลานี้"
@@ -718,6 +722,12 @@
     "topPlatforms": {
       "title": "แพลตฟอร์มที่ขายดีที่สุด",
       "noData": "ไม่มีข้อมูลแพลตฟอร์ม"
+    },
+    "expenseByNote": {
+      "title": "รายจ่ายตามบันทึก"
+    },
+    "expenseByGroup": {
+      "title": "รายจ่ายตามประเภท"
     },
     "expenseByCustomGroup": {
       "title": "รายจ่ายตามกลุ่มกำหนดเอง",
@@ -745,7 +755,8 @@
       "product": "สินค้า",
       "chooseProduct": "สินค้า",
       "store": "ร้านค้า",
-      "choosePlatform": "แพลตฟอร์ม"
+      "choosePlatform": "แพลตฟอร์ม",
+      "chooseProject": "โปรเจกต์"
     },
     "metrics": {
       "income": "รายได้",

@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   ScrollView,
   View,
@@ -17,9 +17,9 @@ import { isDesktop, isMobile } from "@/utils/responsive";
 import { getMemberId } from "@/utils/utility";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIPlatform from "@/api/platform_api";
+import CallAPIExpense from "@/api/expense_api";
 import CallDashboardAPI from "@/api/dashboard_api";
 import { format } from "date-fns";
-import Dropdown3 from "../dropdown/Dropdown3";
 import { Text } from "react-native";
 import { getResponsiveStyles } from "@/utils/responsive";
 import LinearChart from "@/components/LinearChart";
@@ -68,19 +68,18 @@ const MetricCard = ({
   return (
     <View
       style={{
-        backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+        backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
         borderRadius: 16,
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 4,
+        padding: 16,
+        margin: 4,
         flex: flex,
-        minHeight: 110,
         borderWidth: 1,
-        borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
-        shadowColor: theme === "dark" ? "#000" : "#ccc",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb",
+        shadowColor: theme === "dark" ? "#000" : "#000000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: theme === "dark" ? 0.25 : 0.07,
+        shadowRadius: 6,
+        elevation: 3,
       }}
     >
       <View
@@ -92,14 +91,14 @@ const MetricCard = ({
       >
         <CustomText
           className="text-sm opacity-70 pt-1"
-          style={{ color: theme === "dark" ? "#c9c9c9" : "#48453e" }}
+          style={{ color: theme === "dark" ? "#aaaaaa" : "#888888" }}
         >
           {title}
         </CustomText>
         <Ionicons
           name={icon}
           size={22}
-          color={theme === "dark" ? "#fff" : "#75726a"}
+          color={theme === "dark" ? "#888" : "#b0b0b0"}
         />
       </View>
       <View
@@ -115,7 +114,7 @@ const MetricCard = ({
           style={{
             fontSize: headerFontSize,
             fontWeight: "bold",
-            color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+            color: valueColor || (theme === "dark" ? "#ffffff" : "#111111"),
           }}
           numberOfLines={1}
           adjustsFontSizeToFit
@@ -127,7 +126,7 @@ const MetricCard = ({
             style={{
               fontSize: headerFontSize,
               fontWeight: "bold",
-              color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+              color: valueColor || (theme === "dark" ? "#ffffff" : "#111111"),
               opacity: 0.2,
             }}
             numberOfLines={1}
@@ -141,7 +140,7 @@ const MetricCard = ({
             style={{
               fontSize: headerFontSize * 1.5,
               fontWeight: "bold",
-              color: valueColor || (theme === "dark" ? "#ffffff" : "#3c3c3c"),
+              color: valueColor || (theme === "dark" ? "#ffffff" : "#111111"),
               opacity: 0.5,
             }}
             numberOfLines={1}
@@ -163,11 +162,13 @@ export default function Dashboard() {
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
+  const [projects, setProjects] = useState<{ id: number; name: string }[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<
-    "today" | "thisMonth" | "custom"
+    "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth" | "custom"
   >("thisMonth");
 
   // Dashboard data state
@@ -195,6 +196,11 @@ export default function Dashboard() {
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [topPlatforms, setTopPlatforms] = useState<any[]>([]);
   const [expenseByCustomGroup, setExpenseByCustomGroup] = useState<{ data: any[]; total: number }>({ data: [], total: 0 });
+  const [expenseByNote, setExpenseByNote] = useState<{ data: any[]; total: number }>({ data: [], total: 0 });
+  const [expenseByGroup, setExpenseByGroup] = useState<{ data: any[]; total: number }>({ data: [], total: 0 });
+  const [activePieIndex, setActivePieIndex] = useState(0);
+  const pieScrollRef = useRef<any>(null);
+  const [pieContainerWidth, setPieContainerWidth] = useState(0);
 
   useEffect(() => {
     fetchInitialData();
@@ -203,7 +209,7 @@ export default function Dashboard() {
   useEffect(() => {
     // Fetch dashboard data when filters change
     fetchDashboardData();
-  }, [selectedDates, selectedProduct, selectedPlatform, selectedPeriod]);
+  }, [selectedDates, selectedProduct, selectedPlatform, selectedPeriod, selectedProject]);
 
   const fetchInitialData = async () => {
     setIsLoading(true);
@@ -211,10 +217,11 @@ export default function Dashboard() {
       const memberId = await getMemberId();
       // console.log("Member ID:", memberId);
       if (memberId) {
-        // Fetch products and platforms for filters
-        const [productResponse, platformResponse] = await Promise.all([
+        // Fetch products, platforms, and projects for filters
+        const [productResponse, platformResponse, projectResponse] = await Promise.all([
           CallAPIProduct.getProductChoiceAPI(memberId),
           CallAPIPlatform.getPlatformEnumAPI(memberId),
+          CallAPIExpense.getProjectSuggestionsAPI(memberId),
         ]);
 
         const normalizedProducts = Array.isArray(productResponse)
@@ -230,6 +237,7 @@ export default function Dashboard() {
 
         setProducts(normalizedProducts);
         setPlatforms(normalizedPlatforms);
+        setProjects(Array.isArray(projectResponse) ? projectResponse : []);
       }
     } catch (error) {
       console.error("Error fetching initial data:", error);
@@ -273,10 +281,15 @@ export default function Dashboard() {
         filters.platform = selectedPlatform;
       }
 
+      // Add project filter if selected
+      if (selectedProject) {
+        filters.projectId = selectedProject;
+      }
+
       //   console.log("📊 Dashboard API Filters:", filters);
 
       // Fetch all dashboard data in parallel
-      const [metricsData, chartData, productsData, platformsData, apArData, customGroupData] =
+      const [metricsData, chartData, productsData, platformsData, apArData, customGroupData, noteGroupData, expenseGroupData] =
         await Promise.all([
           CallDashboardAPI.getDashboardMetricsAPI(filters),
           CallDashboardAPI.getSalesChartDataAPI(filters),
@@ -284,6 +297,8 @@ export default function Dashboard() {
           CallDashboardAPI.getTopStoresAPI({ ...filters, limit: 5 }),
           CallDashboardAPI.getAccountsPayableReceivableAPI(filters),
           CallDashboardAPI.getExpenseByCustomGroupAPI(filters),
+          CallDashboardAPI.getExpenseByCustomGroupAPI({ ...filters, groupBy: 'note' }),
+          CallDashboardAPI.getExpenseByCustomGroupAPI({ ...filters, groupBy: 'group' }),
         ]);
 
       // Update state with fetched data
@@ -305,6 +320,8 @@ export default function Dashboard() {
       setTopProducts(productsData || []);
       setTopPlatforms(platformsData || []);
       setExpenseByCustomGroup(customGroupData || { data: [], total: 0 });
+      setExpenseByNote(noteGroupData || { data: [], total: 0 });
+      setExpenseByGroup(expenseGroupData || { data: [], total: 0 });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -364,7 +381,7 @@ export default function Dashboard() {
     }
   };
 
-  const handlePeriodChange = (period: "today" | "thisMonth") => {
+  const handlePeriodChange = (period: "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth") => {
     setSelectedPeriod(period);
     setSelectedDates([]); // Clear custom dates when selecting predefined period
   };
@@ -410,10 +427,15 @@ export default function Dashboard() {
     })
     .filter(Boolean) as { label: string; value: string }[];
 
+  const projectOptions = (Array.isArray(projects) ? projects : []).map((p) => ({
+    label: p.name,
+    value: String(p.id),
+  }));
+
   const isFiltered = Boolean(selectedProduct || selectedPlatform);
 
   return (
-    <View className={`h-full ${useBackgroundColorClass()}`}>
+    <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#09090b" : "#f5f5f5" }}>
       {/* Calendar Modal */}
       <Modal
         visible={calendarVisible}
@@ -436,7 +458,7 @@ export default function Dashboard() {
               width: isMobile() ? "90%" : "40%",
               minWidth: 300,
               maxWidth: 500,
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              backgroundColor: theme === "dark" ? "#18181b" : "#f0fbfa",
               borderRadius: 16,
               padding: 20,
             }}
@@ -467,7 +489,7 @@ export default function Dashboard() {
             onStartShouldSetResponder={() => true}
             onTouchEnd={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              backgroundColor: theme === "dark" ? "#18181b" : "#f0fbfa",
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               padding: 20,
@@ -567,7 +589,7 @@ export default function Dashboard() {
             onStartShouldSetResponder={() => true}
             onTouchEnd={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+              backgroundColor: theme === "dark" ? "#18181b" : "#f0fbfa",
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               padding: 20,
@@ -653,210 +675,108 @@ export default function Dashboard() {
             paddingHorizontal: 16,
             alignSelf: "center",
             marginTop: Platform.OS === "web" ? 80 : 10,
+            paddingBottom: 40,
           }}
         >
-          <View
-            style={{
-              backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
-              borderColor: theme === "dark" ? "#3f3f42" : "#e5e7eb",
-              borderWidth: 1,
-              borderRadius: 16,
-              padding: 8,
-              marginBottom: 12,
-              shadowColor: theme === "dark" ? "#000" : "#ccc",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.1,
-              shadowRadius: 2,
-              zIndex: 2000,
-            }}
-          >
-            {/* Header and Time Period Selection */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 8,
-              }}
-            >
-              {/* Time period buttons and date selection - 30/30/40 split */}
+          {/* Filter bar */}
+          {(() => {
+            const accent     = theme === "dark" ? "#04ecd5" : "#01c4ad";
+            const chipBg     = theme === "dark" ? "#2a2b2c" : "#f0f0f0";
+            const chipBorder = theme === "dark" ? "#3a3b3c" : "#dddddd";
+            const chipText   = theme === "dark" ? "#aaaaaa" : "#444444";
+            const accentText = theme === "dark" ? "#1c1d1e" : "#ffffff";
+            const divider    = theme === "dark" ? "#3a3b3c" : "#e0e0e0";
+
+            const Chip = ({ chipKey, label, isActive, onPress, icon }: { chipKey: string; label: string; isActive: boolean; onPress: () => void; icon?: React.ReactNode }) => (
               <TouchableOpacity
-                onPress={() => handlePeriodChange("today")}
-                activeOpacity={1}
-                style={{
-                  backgroundColor:
-                    selectedPeriod === "today"
-                      ? theme === "dark"
-                        ? "#474747"
-                        : "#e3e3e3"
-                      : theme === "dark"
-                        ? "#27272a"
-                        : "#f4f4f5",
-                  paddingVertical: isMobile() ? 10 : 14,
-                  paddingHorizontal: 16,
-                  borderRadius: 16,
-                  minHeight: isMobile() ? 44 : 54,
-                  justifyContent: "center",
-                  flex: 3, // 30%
-                  marginRight: 8,
-                  alignItems: "center",
-                }}
+                key={chipKey}
+                onPress={onPress}
+                style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, height: 30, borderRadius: 20, backgroundColor: isActive ? accent : chipBg, borderWidth: 1, borderColor: isActive ? accent : chipBorder }}
               >
-                <CustomText
-                  weight="bold"
-                  style={{
-                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: getResponsiveStyles().bodyFontSize,
-                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
-                    textAlignVertical: "center",
-                    paddingTop: 2,
-                  }}
-                >
-                  {t("dashboard.today")}
+                {icon}
+                <CustomText weight={isActive ? "semibold" : "regular"} style={{ fontSize: 12, color: isActive ? accentText : chipText }}>
+                  {label}
                 </CustomText>
               </TouchableOpacity>
+            );
 
-              <TouchableOpacity
-                onPress={() => handlePeriodChange("thisMonth")}
-                activeOpacity={1}
-                style={{
-                  backgroundColor:
-                    selectedPeriod === "thisMonth"
-                      ? theme === "dark"
-                        ? "#474747"
-                        : "#e3e3e3"
-                      : theme === "dark"
-                        ? "#27272a"
-                        : "#f4f4f5",
-                  paddingVertical: isMobile() ? 10 : 14,
-                  paddingHorizontal: 16,
-                  borderRadius: 16,
-                  minHeight: isMobile() ? 44 : 54,
-                  justifyContent: "center",
-                  flex: 3, // 30%
-                  marginRight: 8,
-                  alignItems: "center",
-                }}
-              >
-                <CustomText
-                  weight="bold"
-                  style={{
-                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                    fontSize: getResponsiveStyles().bodyFontSize,
-                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
-                    textAlignVertical: "center",
-                    paddingTop: 2,
-                  }}
-                >
-                  {t("dashboard.thisMonth")}
-                </CustomText>
-              </TouchableOpacity>
+            const MiniSelect = ({ value, onChange, options, placeholder }: { value: string | null; onChange: (v: string | null) => void; options: { label: string; value: string }[]; placeholder: string }) => {
+              const [open, setOpen] = useState(false);
+              const selected = options.find((o) => o.value === value);
+              const isActive = !!value;
+              return (
+                <>
+                  <TouchableOpacity
+                    onPress={() => setOpen(true)}
+                    style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, height: 30, borderRadius: 20, backgroundColor: isActive ? accent : chipBg, borderWidth: 1, borderColor: isActive ? accent : chipBorder }}
+                  >
+                    <CustomText weight={isActive ? "semibold" : "regular"} numberOfLines={1} style={{ fontSize: 12, color: isActive ? accentText : chipText }}>
+                      {selected?.label || placeholder}
+                    </CustomText>
+                    <Ionicons name="chevron-down" size={11} color={isActive ? accentText : chipText} />
+                  </TouchableOpacity>
+                  <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+                    <TouchableOpacity style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" }} activeOpacity={1} onPress={() => setOpen(false)}>
+                      <View onStartShouldSetResponder={() => true} style={{ width: "80%", maxWidth: 320, backgroundColor: theme === "dark" ? "#1c1c1e" : "#f0fbfa", borderRadius: 16, padding: 16, maxHeight: 360 }}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                          {[{ label: t("common.all") || "All", value: "" }, ...options].map((opt) => {
+                            const isSelected = (value ?? "") === opt.value;
+                            return (
+                              <TouchableOpacity
+                                key={opt.value || "__all__"}
+                                onPress={() => { onChange(opt.value || null); setOpen(false); }}
+                                style={{ paddingVertical: 12, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: theme === "dark" ? "#2e2e30" : "#f0f0f0", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
+                              >
+                                <CustomText weight={isSelected ? "semibold" : "regular"} style={{ fontSize: 14, color: isSelected ? (theme === "dark" ? "#f0f0f0" : "#111111") : chipText }}>
+                                  {opt.label}
+                                </CustomText>
+                                {isSelected && <Ionicons name="checkmark" size={15} color={accent} />}
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </ScrollView>
+                      </View>
+                    </TouchableOpacity>
+                  </Modal>
+                </>
+              );
+            };
 
-              {/* Calendar date picker */}
-              <TouchableOpacity
-                onPress={() => setCalendarVisible(true)}
-                activeOpacity={1}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor:
-                    selectedPeriod === "custom"
-                      ? theme === "dark"
-                        ? "#474747"
-                        : "#e3e3e3"
-                      : theme === "dark"
-                        ? "#27272a"
-                        : "#f4f4f5",
-                  paddingVertical: isMobile() ? 10 : 14,
-                  paddingHorizontal: 16,
-                  borderRadius: 16,
-                  minHeight: isMobile() ? 44 : 54,
-                  flex: 4, // 40%
-                }}
-              >
-                <CustomText
-                  style={{
-                    fontSize: getResponsiveStyles().bodyFontSize,
-                    lineHeight: getResponsiveStyles().bodyFontSize * 1.5,
-                    textAlignVertical: "center",
-                    paddingTop: 2,
-                    paddingRight: 4,
-                  }}
-                  numberOfLines={2}
-                >
-                  {formatDateRange()}
-                </CustomText>
-                <Ionicons
-                  name="calendar"
-                  size={20}
-                  color={theme === "dark" ? "#c9c9c9" : "#48453e"}
-                />
-              </TouchableOpacity>
-            </View>
+            return (
+              <View style={{ marginBottom: 16, zIndex: 2000, backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff", borderRadius: 16, borderWidth: 1, borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb", padding: 10, shadowColor: theme === "dark" ? "#000" : "#000000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: theme === "dark" ? 0.3 : 0.07, shadowRadius: 6, gap: 6 }}>
+                {/* Row 1 — period chips */}
+                <View style={{ height: 30 }}>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center", gap: 6, height: 30 }}>
+                    <TouchableOpacity
+                      onPress={() => setCalendarVisible(true)}
+                      style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, height: 30, borderRadius: 20, backgroundColor: selectedPeriod === "custom" ? accent : chipBg, borderWidth: 1, borderColor: selectedPeriod === "custom" ? accent : chipBorder }}
+                    >
+                      <Ionicons name="calendar-outline" size={12} color={selectedPeriod === "custom" ? accentText : chipText} />
+                      <CustomText weight={selectedPeriod === "custom" ? "semibold" : "regular"} style={{ fontSize: 12, color: selectedPeriod === "custom" ? accentText : chipText }} numberOfLines={1}>
+                        {formatDateRange()}
+                      </CustomText>
+                    </TouchableOpacity>
+                    <View style={{ width: 1, height: 18, backgroundColor: divider, marginHorizontal: 2 }} />
+                    <Chip chipKey="today" label={t("dashboard.today")} isActive={selectedPeriod === "today"} onPress={() => handlePeriodChange("today")} />
+                    <Chip chipKey="thisMonth" label={t("dashboard.thisMonth")} isActive={selectedPeriod === "thisMonth"} onPress={() => handlePeriodChange("thisMonth")} />
+                    <Chip chipKey="yesterday" label={t("dashboard.yesterday")} isActive={selectedPeriod === "yesterday"} onPress={() => handlePeriodChange("yesterday")} />
+                    <Chip chipKey="thisWeek" label={t("dashboard.thisWeek")} isActive={selectedPeriod === "thisWeek"} onPress={() => handlePeriodChange("thisWeek")} />
+                    <Chip chipKey="lastWeek" label={t("dashboard.lastWeek")} isActive={selectedPeriod === "lastWeek"} onPress={() => handlePeriodChange("lastWeek")} />
+                    <Chip chipKey="lastMonth" label={t("dashboard.lastMonth")} isActive={selectedPeriod === "lastMonth"} onPress={() => handlePeriodChange("lastMonth")} />
+                  </ScrollView>
+                </View>
 
-            {/* Filters Section - Using Dropdown3 */}
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                marginBottom: 1,
-                zIndex: 10,
-              }}
-            >
-              {/* Product Filter */}
-              <View
-                style={{
-                  flex: 1,
-                  minWidth: 150,
-                  marginRight: 8,
-                  marginBottom: 0,
-                  zIndex: 2000,
-                }}
-              >
-                <Dropdown3
-                  options={[
-                    { label: "All Products", value: "" },
-                    ...productOptions,
-                  ]}
-                  placeholder={t("dashboard.filter.chooseProduct")}
-                  selectedValue={selectedProduct || ""}
-                  onValueChange={(value: string) =>
-                    setSelectedProduct(value || null)
-                  }
-                  bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
-                  bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
-                  textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
-                  otherStyles={{}}
-                />
+                {/* Row 2 — product & platform */}
+                <View style={{ height: 30 }}>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center", gap: 6, height: 30 }}>
+                    <MiniSelect value={selectedProject !== null ? String(selectedProject) : null} onChange={(v) => setSelectedProject(v ? parseInt(v) : null)} options={projectOptions} placeholder={t("dashboard.filter.chooseProject")} />
+                    <MiniSelect value={selectedProduct} onChange={setSelectedProduct} options={productOptions} placeholder={t("dashboard.filter.chooseProduct")} />
+                    <MiniSelect value={selectedPlatform} onChange={setSelectedPlatform} options={platformOptions} placeholder={t("dashboard.filter.choosePlatform")} />
+                  </ScrollView>
+                </View>
               </View>
-
-              {/* Platform Filter */}
-              <View
-                style={{
-                  flex: 1,
-                  minWidth: 150,
-                  zIndex: 2000,
-                }}
-              >
-                <Dropdown3
-                  options={[
-                    { label: "All Platforms", value: "" },
-                    ...platformOptions,
-                  ]}
-                  placeholder={t("dashboard.filter.choosePlatform")}
-                  selectedValue={selectedPlatform || ""}
-                  onValueChange={(value: string) =>
-                    setSelectedPlatform(value || null)
-                  }
-                  bgColor={theme === "dark" ? "#474747" : "#e3e3e3"}
-                  bgChoiceColor={theme === "dark" ? "#27272a" : "#f4f4f5"}
-                  textcolor={theme === "dark" ? "#ffffff" : "#48453e"}
-                  otherStyles={{}}
-                />
-              </View>
-            </View>
-          </View>
+            );
+          })()}
 
           {isLoading ? (
             <View
@@ -870,7 +790,7 @@ export default function Dashboard() {
             >
               <ActivityIndicator
                 size="large"
-                color={theme === "dark" ? "#a78bfa" : "#8b5cf6"}
+                color={theme === "dark" ? "#04ecd5" : "#01e0c6"}
               />
             </View>
           ) : (
@@ -879,7 +799,7 @@ export default function Dashboard() {
               <View style={{ marginBottom: 24, zIndex: 1 }}>
                 <View
                   style={{
-                    flexDirection: isDesktop() ? "column" : "column",
+                    flexDirection: "column",
                   }}
                 >
                   {isFiltered ? (
@@ -891,8 +811,8 @@ export default function Dashboard() {
                       valueColor={
                         metrics.forcastProfitloss >= 30
                           ? theme === "dark"
-                            ? "#00fad9"
-                            : "#09ddc1"
+                            ? "#04ecd5"
+                            : "#01e0c6"
                           : "#FF006E"
                       }
                     />
@@ -904,8 +824,8 @@ export default function Dashboard() {
                       valueColor={
                         metrics.profitloss >= 0
                           ? theme === "dark"
-                            ? "#00fad9"
-                            : "#09ddc1"
+                            ? "#04ecd5"
+                            : "#01e0c6"
                           : "#FF006E"
                       }
                     />
@@ -949,7 +869,7 @@ export default function Dashboard() {
                           borderTopColor:
                             theme === "dark"
                               ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.05)",
+                              : "#eeeeee",
                           flexDirection: "row",
                           justifyContent: "space-between",
                           alignItems: "center",
@@ -982,7 +902,7 @@ export default function Dashboard() {
                       title={t("dashboard.metrics.accountsReceivable")}
                       value={formatCurrency(accountsPayable)}
                       icon="arrow-up-circle-outline"
-                      valueColor={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                      valueColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity style={{ flex: 1 }} onPress={() => openApArModal('payable')} activeOpacity={0.8}>
@@ -999,10 +919,17 @@ export default function Dashboard() {
               {/* Sales Chart */}
               <View
                 style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                  backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
                   borderRadius: 16,
-                  padding: 20,
-                  marginBottom: 24,
+                  borderWidth: 1,
+                  borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb",
+                  padding: 16,
+                  marginBottom: 16,
+                  shadowColor: theme === "dark" ? "#000" : "#000000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: theme === "dark" ? 0.25 : 0.07,
+                  shadowRadius: 6,
+                  elevation: 3,
                 }}
               >
                 <View
@@ -1015,10 +942,10 @@ export default function Dashboard() {
                   <Ionicons
                     name="analytics"
                     size={18}
-                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                    color={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                     style={{ marginRight: 8 }}
                   />
-                  <CustomText weight="bold" className="text-lg">
+                  <CustomText weight="bold" style={{ fontSize: 15 }}>
                     {t("dashboard.salesChart.title")}
                   </CustomText>
                 </View>
@@ -1053,10 +980,17 @@ export default function Dashboard() {
               {/* Top Products */}
               <View
                 style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                  backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
                   borderRadius: 16,
-                  padding: 20,
-                  marginBottom: 24,
+                  borderWidth: 1,
+                  borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb",
+                  padding: 16,
+                  marginBottom: 16,
+                  shadowColor: theme === "dark" ? "#000" : "#000000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: theme === "dark" ? 0.25 : 0.07,
+                  shadowRadius: 6,
+                  elevation: 3,
                 }}
               >
                 <View
@@ -1069,15 +1003,15 @@ export default function Dashboard() {
                   <Ionicons
                     name="list"
                     size={18}
-                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                    color={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                     style={{ marginRight: 8 }}
                   />
-                  <CustomText weight="bold" className="text-lg">
+                  <CustomText weight="bold" style={{ fontSize: 15 }}>
                     {t("dashboard.topProducts.title")}
                   </CustomText>
                   <View
                     style={{
-                      backgroundColor: theme === "dark" ? "#3f3f42" : "#ffffff",
+                      backgroundColor: theme === "dark" ? "#2a2a2c" : "#d0f5f1",
                       paddingHorizontal: 8,
                       paddingVertical: 2,
                       borderRadius: 12,
@@ -1103,14 +1037,15 @@ export default function Dashboard() {
                           borderBottomWidth:
                             index < topProducts.length - 1 ? 1 : 0,
                           borderBottomColor:
-                            theme === "dark" ? "#3f3f42" : "#e5e7eb",
+                            theme === "dark" ? "#2e2e30" : "#f0f0f0",
                         }}
                       >
+                        <CustomText weight="bold" style={{ fontSize: 13, color: theme === "dark" ? "#555" : "#cccccc", marginRight: 12, width: 18, textAlign: "center" }}>{index + 1}</CustomText>
                         <View style={{ flex: 1 }}>
                           <CustomText
                             weight="bold"
                             style={{
-                              color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                              color: theme === "dark" ? "#c9c9c9" : "#111111",
                             }}
                           >
                             {product.name}
@@ -1133,7 +1068,7 @@ export default function Dashboard() {
                         <CustomText
                           weight="bold"
                           style={{
-                            color: theme === "dark" ? "#00fad9" : "#09ddc1",
+                            color: theme === "dark" ? "#04ecd5" : "#01e0c6",
                           }}
                         >
                           {formatCurrency(product.revenue)}
@@ -1161,38 +1096,95 @@ export default function Dashboard() {
                 )}
               </View>
 
-              {/* Expense by Custom Group */}
-              {expenseByCustomGroup.data.length > 0 && (
+              {/* Expense Pie Charts — swipeable */}
+              {(expenseByCustomGroup.data.length > 0 || expenseByNote.data.length > 0 || expenseByGroup.data.length > 0) && (
                 <View
                   style={{
-                    backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                    backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
                     borderRadius: 16,
-                    padding: 20,
-                    marginBottom: 24,
+                    borderWidth: 1,
+                    borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb",
+                    padding: 16,
+                    marginBottom: 16,
+                    shadowColor: theme === "dark" ? "#000" : "#000000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: theme === "dark" ? 0.25 : 0.07,
+                    shadowRadius: 6,
+                    elevation: 3,
                   }}
                 >
+                  {/* Header */}
                   <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
-                    <Ionicons
-                      name="pie-chart"
-                      size={18}
-                      color={theme === "dark" ? "#00fad9" : "#09ddc1"}
-                      style={{ marginRight: 8 }}
-                    />
-                    <CustomText weight="bold" className="text-lg pt-1">
-                      {t("dashboard.expenseByCustomGroup.title")}
+                    <Ionicons name="pie-chart" size={18} color={theme === "dark" ? "#04ecd5" : "#01e0c6"} style={{ marginRight: 8 }} />
+                    <CustomText weight="bold" style={{ fontSize: 15 }}>
+                      {activePieIndex === 0 ? t("dashboard.expenseByCustomGroup.title") : activePieIndex === 1 ? t("dashboard.expenseByNote.title") : t("dashboard.expenseByGroup.title")}
                     </CustomText>
                   </View>
-                  <PieChart data={expenseByCustomGroup.data} total={expenseByCustomGroup.total} />
+
+                  {/* Paged charts */}
+                  <View onLayout={(e) => setPieContainerWidth(e.nativeEvent.layout.width)}>
+                    {pieContainerWidth > 0 && (
+                      <ScrollView
+                        ref={pieScrollRef}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        scrollEventThrottle={16}
+                        onMomentumScrollEnd={(e) => {
+                          const idx = Math.round(e.nativeEvent.contentOffset.x / pieContainerWidth);
+                          setActivePieIndex(idx);
+                        }}
+                      >
+                        <View style={{ width: pieContainerWidth }}>
+                          <PieChart data={expenseByCustomGroup.data} total={expenseByCustomGroup.total} />
+                        </View>
+                        <View style={{ width: pieContainerWidth }}>
+                          <PieChart data={expenseByNote.data} total={expenseByNote.total} />
+                        </View>
+                        <View style={{ width: pieContainerWidth }}>
+                          <PieChart data={expenseByGroup.data} total={expenseByGroup.total} />
+                        </View>
+                      </ScrollView>
+                    )}
+                  </View>
+
+                  {/* Dot indicators */}
+                  <View style={{ flexDirection: "row", justifyContent: "center", gap: 6, marginTop: 12 }}>
+                    {[0, 1, 2].map((i) => (
+                      <TouchableOpacity
+                        key={i}
+                        onPress={() => {
+                          setActivePieIndex(i);
+                          pieScrollRef.current?.scrollTo({ x: i * pieContainerWidth, animated: true });
+                        }}
+                        style={{
+                          width: activePieIndex === i ? 18 : 6,
+                          height: 6,
+                          borderRadius: 3,
+                          backgroundColor: activePieIndex === i
+                            ? (theme === "dark" ? "#04ecd5" : "#01c4ad")
+                            : (theme === "dark" ? "#3a3b3c" : "#dddddd"),
+                        }}
+                      />
+                    ))}
+                  </View>
                 </View>
               )}
 
               {/* Top Platforms - New Section */}
               <View
                 style={{
-                  backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+                  backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
                   borderRadius: 16,
-                  padding: 20,
-                  marginBottom: 24,
+                  borderWidth: 1,
+                  borderColor: theme === "dark" ? "#2e2e30" : "#ebebeb",
+                  padding: 16,
+                  marginBottom: 16,
+                  shadowColor: theme === "dark" ? "#000" : "#000000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: theme === "dark" ? 0.25 : 0.07,
+                  shadowRadius: 6,
+                  elevation: 3,
                 }}
               >
                 <View
@@ -1205,15 +1197,15 @@ export default function Dashboard() {
                   <Ionicons
                     name="storefront"
                     size={18}
-                    color={theme === "dark" ? "#00fad9" : "#09ddc1"}
+                    color={theme === "dark" ? "#04ecd5" : "#01e0c6"}
                     style={{ marginRight: 8 }}
                   />
-                  <CustomText weight="bold" className="text-lg pt-1">
+                  <CustomText weight="bold" style={{ fontSize: 15 }}>
                     {t("dashboard.topPlatforms.title")}
                   </CustomText>
                   <View
                     style={{
-                      backgroundColor: theme === "dark" ? "#3f3f42" : "#ffffff",
+                      backgroundColor: theme === "dark" ? "#2a2a2c" : "#d0f5f1",
                       paddingHorizontal: 8,
                       paddingVertical: 2,
                       borderRadius: 12,
@@ -1239,14 +1231,15 @@ export default function Dashboard() {
                           borderBottomWidth:
                             index < topPlatforms.length - 1 ? 1 : 0,
                           borderBottomColor:
-                            theme === "dark" ? "#3f3f42" : "#e5e7eb",
+                            theme === "dark" ? "#2e2e30" : "#f0f0f0",
                         }}
                       >
+                        <CustomText weight="bold" style={{ fontSize: 13, color: theme === "dark" ? "#555" : "#cccccc", marginRight: 12, width: 18, textAlign: "center" }}>{index + 1}</CustomText>
                         <View style={{ flex: 1 }}>
                           <CustomText
                             weight="bold"
                             style={{
-                              color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                              color: theme === "dark" ? "#c9c9c9" : "#111111",
                             }}
                           >
                             {platform.name}
@@ -1269,7 +1262,7 @@ export default function Dashboard() {
                         <CustomText
                           weight="bold"
                           style={{
-                            color: theme === "dark" ? "#00fad9" : "#09ddc1",
+                            color: theme === "dark" ? "#04ecd5" : "#01e0c6",
                           }}
                         >
                           {formatCurrency(platform.revenue)}

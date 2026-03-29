@@ -9,7 +9,7 @@ const prisma = flexiDBPrismaClient;
 // Get Dashboard Metrics
 export const getDashboardMetrics = async (req: Request, res: Response) => {
   try {
-  const { memberId, period, startDate, endDate, productName, platform } = req.query;
+  const { memberId, period, startDate, endDate, productName, platform, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -20,42 +20,61 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
     const now = new Date();
     
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }// Find business ID by member ID from member table
@@ -78,6 +97,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
             },
           }
         : {}),
+      ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
     };
 
     const billsAggregation = await prisma.bill.findMany({
@@ -123,7 +143,8 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
         date: dateFilter,
-        save: true
+        save: true,
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       _sum: {
         amount: true
@@ -176,7 +197,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 // Get Sales Chart Data
 export const getSalesChartData = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName, platform, platformId } = req.query;
+    const { memberId, period, startDate, endDate, productName, platform, platformId, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -185,44 +206,63 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     // Build date filter
     let dateFilter: any = {};
     const now = new Date();
-    
+
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }
@@ -243,7 +283,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
       where: {
         businessAcc : businessId?.businessId ?? 0,
         deleted: false,
-        purchaseAt: dateFilter,       
+        purchaseAt: dateFilter,
         isSplitChild: false,
         ...platformFilter,
         ...(productName
@@ -253,6 +293,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
               },
             }
           : {}),
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         purchaseAt: true,
@@ -270,10 +311,10 @@ export const getSalesChartData = async (req: Request, res: Response) => {
     const expenses = await prisma.expense.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-
         deleted: false,
         date: dateFilter,
-        save: true
+        save: true,
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         date: true,
@@ -359,7 +400,7 @@ export const getSalesChartData = async (req: Request, res: Response) => {
 // Get Top Products (multi-product support)
 export const getTopProducts = async (req: Request, res: Response) => {
   try {
-  const { memberId, period, startDate, endDate, productName, platform, platformId, limit = 5 } = req.query;
+  const { memberId, period, startDate, endDate, productName, platform, platformId, projectId, limit = 5 } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -368,44 +409,63 @@ export const getTopProducts = async (req: Request, res: Response) => {
     // Build date filter
     let dateFilter: any = {};
     const now = new Date();
-    
+
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }
@@ -438,6 +498,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
               },
             }
           : {}),
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         product: {
@@ -503,7 +564,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
 // Get Revenue by Platform (multi-product support)
 export const getRevenueByPlatform = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName } = req.query;
+    const { memberId, period, startDate, endDate, productName, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -512,44 +573,63 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
     // Build date filter
     let dateFilter: any = {};
     const now = new Date();
-    
+
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }
@@ -568,6 +648,7 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         //DocumentType: "Receipt",
         purchaseAt: dateFilter,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         platform: true,
@@ -630,7 +711,7 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
 // Get Expense Breakdown
 export const getExpenseBreakdown = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate } = req.query;
+    const { memberId, period, startDate, endDate, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -639,44 +720,63 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
     // Build date filter
     let dateFilter: any = {};
     const now = new Date();
-    
+
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }
@@ -685,8 +785,7 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
       where : { uniqueId: memberId as string },
       select:{ businessId: true },
     });
-   
-    
+
 
     // Get expenses grouped by category
     const expenses = await prisma.expense.findMany({
@@ -694,7 +793,8 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
         businessAcc: businessId?.businessId ?? 0,
         deleted: false,
         date: dateFilter,
-        save: true
+        save: true,
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         group: true,
@@ -752,7 +852,7 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
 // Get Expense by Custom Group
 export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate } = req.query;
+    const { memberId, period, startDate, endDate, projectId, groupBy = 'customGroup' } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -770,10 +870,44 @@ export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
         dateFilter = { gte: todayStart, lte: todayEnd };
         break;
       }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
       case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         dateFilter = { gte: monthStart, lte: monthEnd };
+        break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
         break;
       }
       case 'custom': {
@@ -793,38 +927,71 @@ export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
       select: { businessId: true },
     });
 
-    const [totalAgg, namedExpenses] = await Promise.all([
-      // Total of ALL expenses in the period
+    const projectFilter = projectId ? { projectId: parseInt(projectId as string) } : {};
+    const baseExpenseWhere = {
+      businessAcc: businessId?.businessId ?? 0,
+      deleted: false,
+      save: true,
+      date: dateFilter,
+      ...projectFilter,
+    };
+
+    const [totalAgg, groupedExpenses, allExpenses] = await Promise.all([
       prisma.expense.aggregate({
-        where: {
-          businessAcc: businessId?.businessId ?? 0,
-          deleted: false,
-          save: true,
-          date: dateFilter,
-        },
+        where: baseExpenseWhere,
         _sum: { amount: true },
       }),
-      // Only expenses with a named customGroup
-      prisma.expense.findMany({
-        where: {
-          businessAcc: businessId?.businessId ?? 0,
-          deleted: false,
-          save: true,
-          date: dateFilter,
-          customGroup: { not: null },
-          AND: [{ customGroup: { not: "" } }],
-        },
-        select: { customGroup: true, amount: true },
-      }),
+      groupBy === 'note'
+        ? prisma.expense.findMany({
+            where: baseExpenseWhere,
+            select: { note: true, amount: true },
+          })
+        : groupBy === 'group'
+        ? prisma.expense.findMany({
+            where: { ...baseExpenseWhere, group: { not: null } },
+            select: { group: true, amount: true },
+          })
+        : prisma.expense.findMany({
+            where: {
+              ...baseExpenseWhere,
+              customGroup: { not: null },
+              AND: [{ customGroup: { not: "" } }],
+            },
+            select: { customGroup: true, amount: true },
+          }),
+      // Fallback for customGroup mode when projectId set and no customGroups exist
+      groupBy === 'customGroup' && projectId
+        ? prisma.expense.findMany({
+            where: baseExpenseWhere,
+            select: { sName: true, desc: true, amount: true },
+          })
+        : Promise.resolve([] as { sName: string | null; desc: string | null; amount: any }[]),
     ]);
 
     const total = totalAgg._sum.amount?.toNumber() ?? 0;
 
-    // Group named customGroup expenses
     const groupMap: Record<string, number> = {};
-    for (const e of namedExpenses) {
-      const key = e.customGroup!.trim();
-      groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+
+    if (groupBy === 'note') {
+      for (const e of groupedExpenses as { note: string | null; amount: any }[]) {
+        const key = e.note?.trim() || "No note";
+        groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+      }
+    } else if (groupBy === 'group') {
+      for (const e of groupedExpenses as { group: string | null; amount: any }[]) {
+        const key = e.group || "Other";
+        groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+      }
+    } else if ((groupedExpenses as any[]).length > 0) {
+      for (const e of groupedExpenses as { customGroup: string | null; amount: any }[]) {
+        const key = e.customGroup!.trim();
+        groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+      }
+    } else if (projectId && (allExpenses as any[]).length > 0) {
+      for (const e of allExpenses as { sName: string | null; desc: string | null; amount: any }[]) {
+        const key = e.sName?.trim() || e.desc?.trim() || "Other";
+        groupMap[key] = (groupMap[key] ?? 0) + Number(e.amount);
+      }
     }
 
     const namedTotal = Object.values(groupMap).reduce((sum, v) => sum + v, 0);
@@ -836,8 +1003,7 @@ export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
       percentage: total > 0 ? Math.round((amount / total) * 1000) / 10 : 0,
     })).sort((a, b) => b.amount - a.amount);
 
-    // Append Others at the end if there is any
-    const result = othersAmount > 0
+    const result = othersAmount > 0.01
       ? [...named, {
           group: "Others",
           amount: othersAmount,
@@ -855,7 +1021,7 @@ export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
 // Get Accounts Payable and Receivable
 export const getAccountsPayableReceivable = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate } = req.query;
+    const { memberId, period, startDate, endDate, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -905,6 +1071,7 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
         //DocumentType: "Invoice",
         purchaseAt: dateFilter,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: { totalInvoice: true },
     });
@@ -922,6 +1089,7 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
         DocumentType: "Invoice",
         date: dateFilter,
         save: true,
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: { debtAmount: true },
     });
@@ -941,7 +1109,7 @@ export const getAccountsPayableReceivable = async (req: Request, res: Response) 
 // Get Income / Expense Detail Lists
 export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName, platform } = req.query;
+    const { memberId, period, startDate, endDate, productName, platform, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -991,6 +1159,7 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
         ...(platform ? { platform: platform as any } : {}),
         ...(productName ? { product: { some: { productList: { name: productName as string } } } } : {}),
         isSplitChild: false, // Exclude split child bills to avoid duplicates
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         id: true,
@@ -1012,6 +1181,7 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
         save: true,
         date: Object.keys(dateFilter).length ? dateFilter : undefined,
         amount: { gt: 0 },
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         id: true,
@@ -1051,7 +1221,7 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
 // Get Accounts Payable/Receivable Detail Lists
 export const getAPARDetail = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate } = req.query;
+    const { memberId, period, startDate, endDate, projectId } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -1105,6 +1275,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
           { isSplitChild: true },
           { isSplitChild: false, splitGroupId: null },
         ],
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         id: true,
@@ -1127,6 +1298,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
         DocumentType: "Invoice",
         date: Object.keys(dateFilter).length ? dateFilter : undefined,
         save: true,
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         id: true,
@@ -1169,7 +1341,7 @@ export const getAPARDetail = async (req: Request, res: Response) => {
 // Get Top Platforms (multi-product support)
 export const getTopStores = async (req: Request, res: Response) => {
   try {
-    const { memberId, period, startDate, endDate, productName, platform, platformId, limit = 5 } = req.query;
+    const { memberId, period, startDate, endDate, productName, platform, platformId, projectId, limit = 5 } = req.query;
 
     if (!memberId) {
       return res.status(400).json({ error: "Member ID is required" });
@@ -1178,44 +1350,63 @@ export const getTopStores = async (req: Request, res: Response) => {
     // Build date filter
     let dateFilter: any = {};
     const now = new Date();
-    
+
     switch (period) {
-      case 'today':
+      case 'today': {
         const todayStart = new Date(now);
         todayStart.setHours(0, 0, 0, 0);
         const todayEnd = new Date(now);
         todayEnd.setHours(23, 59, 59, 999);
-        dateFilter = {
-          gte: todayStart,
-          lte: todayEnd
-        };
+        dateFilter = { gte: todayStart, lte: todayEnd };
         break;
-      case 'thisMonth':
+      }
+      case 'yesterday': {
+        const yStart = new Date(now);
+        yStart.setDate(yStart.getDate() - 1);
+        yStart.setHours(0, 0, 0, 0);
+        const yEnd = new Date(yStart);
+        yEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: yStart, lte: yEnd };
+        break;
+      }
+      case 'thisWeek': {
+        const wStart = new Date(now);
+        wStart.setDate(wStart.getDate() - wStart.getDay());
+        wStart.setHours(0, 0, 0, 0);
+        const wEnd = new Date(now);
+        wEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: wStart, lte: wEnd };
+        break;
+      }
+      case 'lastWeek': {
+        const lwStart = new Date(now);
+        lwStart.setDate(lwStart.getDate() - lwStart.getDay() - 7);
+        lwStart.setHours(0, 0, 0, 0);
+        const lwEnd = new Date(lwStart);
+        lwEnd.setDate(lwEnd.getDate() + 6);
+        lwEnd.setHours(23, 59, 59, 999);
+        dateFilter = { gte: lwStart, lte: lwEnd };
+        break;
+      }
+      case 'thisMonth': {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-        dateFilter = {
-          gte: monthStart,
-          lte: monthEnd
-        };
+        dateFilter = { gte: monthStart, lte: monthEnd };
         break;
+      }
+      case 'lastMonth': {
+        const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
           const end = new Date(endDate as string);
-          
-          // If it's the same date, set the end date to end of day
-          if (startDate === endDate) {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          } else {
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-          }
-          
-          dateFilter = {
-            gte: start,
-            lte: end
-          };
+          start.setHours(0, 0, 0, 0);
+          end.setHours(23, 59, 59, 999);
+          dateFilter = { gte: start, lte: end };
         }
         break;
     }
@@ -1240,6 +1431,7 @@ export const getTopStores = async (req: Request, res: Response) => {
         purchaseAt: dateFilter,
         ...platformFilter,
         isSplitChild: false, // Exclude split child bills to avoid duplicates
+        ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         platform: true,

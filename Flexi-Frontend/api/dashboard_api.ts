@@ -63,7 +63,8 @@ interface DashboardFilters {
   endDate?: string;
   productName?: string;
   storeId?: number;
-  period?: 'today' | 'thisMonth' | 'lastMonth' | 'last30Days' | 'custom';
+  projectId?: number;
+  period?: 'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'custom';
 }
 
 class CallAPIDashboard {
@@ -241,7 +242,7 @@ class CallAPIDashboard {
   }
 
   // Get Expense by Custom Group
-  async getExpenseByCustomGroupAPI(filters: Partial<DashboardFilters>): Promise<{ data: ExpenseByCustomGroup[]; total: number }> {
+  async getExpenseByCustomGroupAPI(filters: Partial<DashboardFilters> & { groupBy?: 'customGroup' | 'note' | 'group' }): Promise<{ data: ExpenseByCustomGroup[]; total: number }> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const queryString = this.buildQueryString(filters);

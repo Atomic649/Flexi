@@ -706,6 +706,10 @@
     "avr": "AVR",
     "thisMonth": "This Month",
     "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "lastMonth": "Last Month",
     "salesChart": {
       "title": "Sales Chart",
       "noData": "No sales data available for this period"
@@ -717,6 +721,12 @@
     "topPlatforms": {
       "title": "Top Platforms",
       "noData": "No platform data available"
+    },
+    "expenseByNote": {
+      "title": "Expense by Note"
+    },
+    "expenseByGroup": {
+      "title": "Expense by Group"
     },
     "expenseByCustomGroup": {
       "title": "Expense by Custom Group",
@@ -744,7 +754,8 @@
       "product": "Product",
       "chooseProduct": "Product",
       "store": "Store",
-      "choosePlatform": "Platform"
+      "choosePlatform": "Platform",
+      "chooseProject": "Project"
     },
     "metrics": {
       "income": "Income",
