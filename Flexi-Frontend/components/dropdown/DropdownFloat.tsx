@@ -22,9 +22,6 @@ const Dropdown = ({
   placeholder,
   placeholderColor,
   otherStyles,
-  borderColor,
-  bgChoiceColor,
-  textcolor,
   disabled = false,
   onAddNew,
   ...props
@@ -35,6 +32,8 @@ const Dropdown = ({
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const containerRef = useRef<View>(null);
   const { theme } = useTheme();
+  const borderColor = theme === "dark" ? "#555" : "#CCC";
+  const bgChoiceColor = theme === "dark" ? "#333" : "#FFF";
   const webScrollStyle =
     Platform.OS === "web" ? ({ overflowY: "auto" } as any) : undefined;
 

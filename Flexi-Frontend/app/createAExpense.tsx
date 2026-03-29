@@ -1695,7 +1695,7 @@ export default function CreateExpense({
                                 }),
                                 height: "100%",
                                 backgroundColor:
-                                  ocrProgress === 100 ? "#22c55e" : "#3b82f6",
+                                  ocrProgress === 100 ? "#22c55e" : "#23e6bf",
                                 borderRadius: 3,
                               }}
                             />
@@ -1717,7 +1717,7 @@ export default function CreateExpense({
                                   width: 6,
                                   height: 6,
                                   borderRadius: 3,
-                                  backgroundColor: "#3b82f6",
+                                  backgroundColor: "#23e6bf",
                                   marginRight: 6,
                                   opacity: ocrPulseAnim,
                                 }}
@@ -2376,9 +2376,6 @@ export default function CreateExpense({
                     handleGroupChange(val);
                     if (val !== "Others") setCustomGroup("");
                   }}
-                  borderColor={theme === "dark" ? "#555" : "#CCC"}
-                  textcolor={theme === "dark" ? "#FFF" : "#000"}
-                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                   otherStyles="mb-2"
                 />
 
@@ -2393,9 +2390,6 @@ export default function CreateExpense({
                       setCustomGroupSuggestions((prev) => [...new Set([...prev, newVal])]);
                       setCustomGroup(newVal);
                     }}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                     otherStyles="mb-1"
                   />
                 )}
@@ -2567,9 +2561,6 @@ export default function CreateExpense({
                         console.error("Failed to create project", e);
                       }
                     }}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                     otherStyles="mb-1"
                   />
                 )}

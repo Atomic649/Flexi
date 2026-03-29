@@ -1586,9 +1586,6 @@ export default function ExpenseDetail({
                     handleGroupChange(val);
                     if (val !== "Others") setCustomGroup("");
                   }}
-                  borderColor={theme === "dark" ? "#555" : "#CCC"}
-                  textcolor={theme === "dark" ? "#FFF" : "#000"}
-                  bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                   otherStyles="mb-3"
                 />
 
@@ -1604,9 +1601,6 @@ export default function ExpenseDetail({
                       setCustomGroupSuggestions((prev) => [...new Set([...prev, newVal])]);
                       setCustomGroup(newVal);
                     }}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                     otherStyles="mb-1"
                   />
                 )}
@@ -1787,9 +1781,6 @@ export default function ExpenseDetail({
                         console.error("Failed to create project", e);
                       }
                     }}
-                    borderColor={theme === "dark" ? "#555" : "#CCC"}
-                    textcolor={theme === "dark" ? "#FFF" : "#000"}
-                    bgChoiceColor={theme === "dark" ? "#333" : "#FFF"}
                     otherStyles="mb-1"
                   />
                 )}

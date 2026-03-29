@@ -680,7 +680,7 @@ export default function Dashboard() {
         >
           {/* Filter bar */}
           {(() => {
-            const accent     = theme === "dark" ? "#04ecd5" : "#01c4ad";
+            const accent     = theme === "dark" ? "#04ecd5" : "#14dbc4";
             const chipBg     = theme === "dark" ? "#2a2b2c" : "#f0f0f0";
             const chipBorder = theme === "dark" ? "#3a3b3c" : "#dddddd";
             const chipText   = theme === "dark" ? "#aaaaaa" : "#444444";
