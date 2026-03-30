@@ -43,6 +43,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
+import { COMMON_COUNTRY_KEYS } from "@/constants/CommonCountries";
 import { detectIsExport } from "@/constants/detectIsExport";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
@@ -86,6 +87,8 @@ export default function EditBill() {
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
+  const [cCountry, setCCountry] = useState("Thailand");
+  const [countryOptions, setCountryOptions] = useState<string[]>([]);
   const [isExport, setIsExport] = useState(false);
   const isExportManualOverride = useRef(false);
   const [cTaxId, setCTaxId] = useState("");
@@ -816,6 +819,7 @@ export default function EditBill() {
         setCAddress(billData.cAddress);
         setCPostId(billData.cPostId);
         setCProvince(billData.cProvince);
+        setCCountry(billData.cCountry ?? "Thailand");
         isExportManualOverride.current = true;
         setIsExport(billData.isExport ?? detectIsExport(billData.cAddress, billData.cProvince || undefined));
         setPayment(billData.payment);
@@ -1007,6 +1011,12 @@ export default function EditBill() {
         } catch (error) {
           console.error("Failed to fetch platforms:", error);
           setPlatformOptions([]);
+        }
+        try {
+          const countries = await CallAPIBill.getCountryEnumAPI(uniqueId);
+          setCountryOptions(countries);
+        } catch (error) {
+          console.error("Failed to fetch country history:", error);
         }
       }
     };
@@ -1223,6 +1233,7 @@ export default function EditBill() {
         cAddress,
         cPostId,
         cProvince,
+        cCountry: isExport ? cCountry : "Thailand",
         cTaxId: cTaxId,
         payment: payment as
           | "COD"
@@ -1984,14 +1995,15 @@ export default function EditBill() {
                 <DropdownClear
                   title={t("bill.customerProvince")}
                   options={THAI_PROVINCES_KEYS.map((key) => ({
-                    label: t(`provinces.${key}`),
-                    value: t(`provinces.${key}`),
+                    label: isExport ? t(`provinces.${key}`, { lng: "en" }) : t(`provinces.${key}`),
+                    value: isExport ? t(`provinces.${key}`, { lng: "en" }) : t(`provinces.${key}`),
                   }))}
                   selectedValue={cProvince}
                   onValueChange={setCProvince}
                   placeholder={t("bill.selectProvince")}
                   otherStyles="mt-2 mb-2"
                   disabled={!isEditMode}
+                  onAddNew={isEditMode ? (val: string) => setCProvince(val) : undefined}
                 />
               </View>
               <View className="w-1/2 pr-2">
@@ -2029,6 +2041,29 @@ export default function EditBill() {
                 {t("bill.isExport")}
               </CustomText>
             </TouchableOpacity>
+
+            {isExport && (
+              <DropdownClear
+                title={t("bill.customerCountry")}
+                options={(() => {
+                  const suggestionOptions = COMMON_COUNTRY_KEYS.map((key) => ({
+                    label: t(`countries.${key}`, { lng: "en" }),
+                    value: t(`countries.${key}`, { lng: "en" }),
+                  }));
+                  const existingValues = new Set(suggestionOptions.map((o) => o.value));
+                  const historyOptions = countryOptions
+                    .filter((c) => !existingValues.has(c))
+                    .map((c) => ({ label: c, value: c }));
+                  return [...suggestionOptions, ...historyOptions];
+                })()}
+                selectedValue={cCountry}
+                onValueChange={setCCountry}
+                placeholder={t("bill.customerCountry")}
+                otherStyles="mt-2 mb-2"
+                disabled={!isEditMode}
+                onAddNew={isEditMode ? (val: string) => setCCountry(val) : undefined}
+              />
+            )}
 
             {/* --- Product Items UI --- */}
             {productItems.map((item, idx) => (

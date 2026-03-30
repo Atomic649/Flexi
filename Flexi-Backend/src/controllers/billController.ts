@@ -186,6 +186,7 @@ interface billInput {
   cAddress: string;
   cPostId: string;
   cProvince: string;
+  cCountry?: string;
   payment: Payment;
   cashStatus: boolean;
   memberId: string;
@@ -279,6 +280,7 @@ const schema = Joi.object({
   taxType: Joi.string().valid("Juristic", "Individual").optional(), // Optional tax type
   projectId: Joi.number().optional(), // Optional project link
   isExport: Joi.boolean().optional(), // Optional export flag
+  cCountry: Joi.string().allow("").optional(), // Optional country (for export bills)
 });
 
 //Create a New Bill - Post
@@ -495,6 +497,7 @@ const createBill = async (req: Request, res: Response) => {
                 cAddress: billInput.cAddress,
                 cPostId: billInput.cPostId,
                 cProvince: billInput.cProvince,
+                cCountry: billInput.cCountry ?? "Thailand",
                 cTaxId: billInput.cTaxId,
                 product: {
                   create: billInput.productItems.map((item) => ({
@@ -584,6 +587,7 @@ const createBill = async (req: Request, res: Response) => {
             cAddress: billInput.cAddress,
             cPostId: billInput.cPostId,
             cProvince: billInput.cProvince,
+            cCountry: billInput.cCountry ?? "Thailand",
             cTaxId: billInput.cTaxId,
             product: {
               create: billInput.productItems.map((item) => ({
@@ -1077,6 +1081,7 @@ const updateBill = async (req: Request, res: Response) => {
           cAddress: billInput.cAddress,
           cPostId: billInput.cPostId,
           cProvince: billInput.cProvince,
+          cCountry: billInput.cCountry ?? "Thailand",
           cTaxId: billInput.cTaxId,
           product: {
             create: billInput.productItems.map((item) => ({
@@ -1294,6 +1299,7 @@ const updateBill = async (req: Request, res: Response) => {
             cAddress: billInput.cAddress,
             cPostId: billInput.cPostId,
             cProvince: billInput.cProvince,
+            cCountry: billInput.cCountry ?? "Thailand",
             cTaxId: billInput.cTaxId,
             customerId: customerIdFromDb ?? (existingBill?.customerId ?? undefined),
             platform: billInput.platform,
@@ -1432,6 +1438,7 @@ const updateBill = async (req: Request, res: Response) => {
                 cAddress: billInput.cAddress,
                 cPostId: billInput.cPostId,
                 cProvince: billInput.cProvince,
+                cCountry: billInput.cCountry ?? "Thailand",
                 cTaxId: billInput.cTaxId,
                 customerId: customerIdFromDb ?? (existingBill?.customerId ?? undefined),
                 platform: billInput.platform,
@@ -2360,6 +2367,24 @@ const resetParentSplit = async (req: Request, res: Response) => {
   }
 };
 
+const getCountryEnumByMemberId = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  try {
+    const rows = await prisma.bill.findMany({
+      where: { memberId, cCountry: { not: null } } as any,
+      select: { cCountry: true } as any,
+      distinct: ["cCountry"] as any,
+    });
+    const countries = (rows as any[])
+      .map((r) => r.cCountry as string)
+      .filter(Boolean);
+    res.json(countries);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "failed to get country list" });
+  }
+};
+
 export {
   createBill,
   getBills,
@@ -2374,4 +2399,5 @@ export {
   lookupBillByFlexiId,
   createSplitChildren,
   resetParentSplit,
+  getCountryEnumByMemberId,
 };

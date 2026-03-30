@@ -17,6 +17,9 @@ import { CustomText } from "@/components/CustomText";
 import { CustomButton, GrayButton } from "@/components/CustomButton";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import { isMobile } from "@/utils/responsive";
+import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
+import { COMMON_COUNTRY_KEYS } from "@/constants/CommonCountries";
+import enTranslation from "@/i18n/locales/en/translation.json";
 
 export type ParsedCustomerInfo = {
   name?: string;
@@ -26,6 +29,7 @@ export type ParsedCustomerInfo = {
   address?: string;
   province?: string;
   postal?: string;
+  country?: string;
   taxType?: "Individual" | "Juristic";
   gender?: "Male" | "Female" | "NotSpecified";
 };
@@ -36,85 +40,22 @@ type AutoFillBillProps = {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-const THAI_PROVINCES = [
-  "กรุงเทพมหานคร",
-  "กระบี่",
-  "กาญจนบุรี",
-  "กาฬสินธุ์",
-  "กำแพงเพชร",
-  "ขอนแก่น",
-  "จันทบุรี",
-  "ฉะเชิงเทรา",
-  "ชลบุรี",
-  "ชัยนาท",
-  "ชัยภูมิ",
-  "ชุมพร",
-  "เชียงราย",
-  "เชียงใหม่",
-  "ตรัง",
-  "ตราด",
-  "ตาก",
-  "นครนายก",
-  "นครปฐม",
-  "นครพนม",
-  "นครราชสีมา",
-  "นครศรีธรรมราช",
-  "นครสวรรค์",
-  "นนทบุรี",
-  "นราธิวาส",
-  "น่าน",
-  "บึงกาฬ",
-  "บุรีรัมย์",
-  "ปทุมธานี",
-  "ประจวบคีรีขันธ์",
-  "ปราจีนบุรี",
-  "ปัตตานี",
-  "พระนครศรีอยุธยา",
-  "พะเยา",
-  "พังงา",
-  "พัทลุง",
-  "พิจิตร",
-  "พิษณุโลก",
-  "เพชรบุรี",
-  "เพชรบูรณ์",
-  "แพร่",
-  "ภูเก็ต",
-  "มหาสารคาม",
-  "มุกดาหาร",
-  "แม่ฮ่องสอน",
-  "ยโสธร",
-  "ยะลา",
-  "ร้อยเอ็ด",
-  "ระนอง",
-  "ระยอง",
-  "ราชบุรี",
-  "ลพบุรี",
-  "ลำปาง",
-  "ลำพูน",
-  "เลย",
-  "ศรีสะเกษ",
-  "สกลนคร",
-  "สงขลา",
-  "สตูล",
-  "สมุทรปราการ",
-  "สมุทรสงคราม",
-  "สมุทรสาคร",
-  "สระแก้ว",
-  "สระบุรี",
-  "สิงห์บุรี",
-  "สุโขทัย",
-  "สุพรรณบุรี",
-  "สุราษฎร์ธานี",
-  "สุรินทร์",
-  "หนองคาย",
-  "หนองบัวลำภู",
-  "อ่างทอง",
-  "อำนาจเจริญ",
-  "อุดรธานี",
-  "อุตรดิตถ์",
-  "อุทัยธานี",
-  "อุบลราชธานี",
-];
+// English province names from translation file
+const THAI_PROVINCES_EN: string[] = Object.values(
+  (enTranslation as any).provinces as Record<string, string>
+);
+
+// Map English province name → Thai key
+const EN_TO_THAI_PROVINCE: Record<string, string> = Object.fromEntries(
+  Object.entries((enTranslation as any).provinces as Record<string, string>).map(
+    ([thaiKey, enName]) => [enName.toLowerCase(), thaiKey]
+  )
+);
+
+// English country name → canonical English name (lowercase → canonical)
+const EN_TO_COUNTRY: Record<string, string> = Object.fromEntries(
+  COMMON_COUNTRY_KEYS.map((key) => [key.toLowerCase(), key])
+);
 
 const COMPANY_KEYWORDS = [
   "บริษัท",
@@ -122,6 +63,20 @@ const COMPANY_KEYWORDS = [
   "ห้างหุ้นส่วนจำกัด",
   "มหาชน",
   "company",
+  "co.",
+  "ltd",
+  "limited",
+  "llc",
+  "l.l.c",
+  "l.l.c.",
+  "corp",
+  "corporation",
+  "inc",
+  "inc.",
+  "pte",
+  "plc",
+  "gmbh",
+  "s.a.",
 ];
 
 const FEMALE_TITLES = ["นางสาว", "นาง", "น.ส."];
@@ -139,6 +94,10 @@ const INFO_LABELS = [
   "tel",
   "tax id",
   "taxid",
+  "vat",
+  "th vat",
+  "tax no",
+  "tax number",
   "address",
   "โทรศัพท์มือถือ",
   "เลขประจำตัวผู้เสียภาษีอากร",
@@ -153,7 +112,7 @@ const INFO_LABELS = [
 const escapeRegex = (text: string) =>
   text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const ADDRESS_HINTS = [
+const ADDRESS_HINTS_TH = [
   "หมู่บ้าน",
   "หมู่",
   "หมู่ที่",
@@ -174,27 +133,55 @@ const ADDRESS_HINTS = [
   "อ.",
 ];
 
+// English address tokens that indicate address content
+const ADDRESS_HINTS_EN = [
+  "street",
+  "st",
+  "road",
+  "rd",
+  "ave",
+  "avenue",
+  "blvd",
+  "boulevard",
+  "lane",
+  "ln",
+  "drive",
+  "dr",
+  "court",
+  "ct",
+  "floor",
+  "fl",
+  "suite",
+  "apt",
+  "building",
+  "bldg",
+  "district",
+  "city",
+  "state",
+  "zip",
+  "postal",
+  "po box",
+  "p.o.",
+];
+
 const tokenLooksLikeAddress = (token: string) => {
-  const cleaned = token.replace(/[.,]/g, "");
-  if (/\d/.test(cleaned)) {
-    return true;
-  }
-  return ADDRESS_HINTS.some((hint) => cleaned.startsWith(hint));
+  const cleaned = token.replace(/[.,]/g, "").toLowerCase();
+  if (/\d/.test(cleaned)) return true;
+  if (ADDRESS_HINTS_TH.some((hint) => cleaned.startsWith(hint))) return true;
+  if (ADDRESS_HINTS_EN.some((hint) => cleaned === hint || cleaned.startsWith(hint + " "))) return true;
+  return false;
 };
 
 const detectGenderFromText = (text: string): "Male" | "Female" | undefined => {
-  if (FEMALE_TITLES.some((title) => text.includes(title))) {
-    return "Female";
-  }
-  if (MALE_TITLES.some((title) => text.includes(title))) {
-    return "Male";
-  }
+  if (FEMALE_TITLES.some((title) => text.includes(title))) return "Female";
+  if (MALE_TITLES.some((title) => text.includes(title))) return "Male";
   return undefined;
 };
 
 const normalizeAutoFillText = (text: string) =>
   text
     .replace(/[\r\n]+/g, " ")
+    .replace(/\S+@\S+\.\S+/g, " ") // strip email addresses
     .replace(/[:,]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -206,6 +193,44 @@ const stripInfoLabels = (text: string) => {
   const lookahead = "(?=\\s|[:：\\-.,]|\\d|$)";
   const regex = new RegExp(`${boundary}(?:${pattern})${lookahead}`, "gi");
   return text.replace(regex, " ").replace(/\s+/g, " ").trim();
+};
+
+// Try to detect country from text (English country names as whole words)
+const detectCountry = (text: string): { name: string; index: number } | null => {
+  let best: { name: string; index: number } | null = null;
+  // Sort longest-first so "United Arab Emirates" matches before "United"
+  const sortedKeys = [...COMMON_COUNTRY_KEYS].sort((a, b) => b.length - a.length);
+  for (const key of sortedKeys) {
+    const regex = new RegExp(
+      `\\b${escapeRegex(key)}\\b`,
+      "i"
+    );
+    const match = text.match(regex);
+    if (match && match.index !== undefined) {
+      if (!best || match.index > best.index) {
+        best = { name: key, index: match.index };
+      }
+    }
+  }
+  return best;
+};
+
+// Try to detect English province from text
+const detectEnglishProvince = (text: string): { thaiKey: string; enName: string; index: number } | null => {
+  let best: { thaiKey: string; enName: string; index: number } | null = null;
+  // Sort longest-first to prefer specific matches
+  const sortedEN = [...THAI_PROVINCES_EN].sort((a, b) => b.length - a.length);
+  for (const enName of sortedEN) {
+    const regex = new RegExp(`\\b${escapeRegex(enName)}\\b`, "i");
+    const match = text.match(regex);
+    if (match && match.index !== undefined) {
+      const thaiKey = EN_TO_THAI_PROVINCE[enName.toLowerCase()];
+      if (thaiKey && (!best || match.index > best.index)) {
+        best = { thaiKey, enName, index: match.index };
+      }
+    }
+  }
+  return best;
 };
 
 const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
@@ -220,16 +245,12 @@ const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
   let working = stripInfoLabels(normalized);
   const result: ParsedCustomerInfo = {};
 
-  const postalMatch = working.match(/(\d{5})(?!.*\d{5})/);
-  if (postalMatch) {
-    result.postal = postalMatch[1];
-    working = working.replace(postalMatch[1], " ").replace(/\s+/g, " ").trim();
-  }
-
-  const numberCandidates = Array.from(working.matchAll(/\d{10,13}/g)).map(
+  // --- Tax ID (13-digit) and phone (9-10 digit starting with 0) ---
+  // Must run BEFORE postal extraction — long numbers contain 5-digit substrings
+  // that would otherwise be falsely matched as postal codes.
+  const numberCandidates = Array.from(working.matchAll(/(?<!\d)\d{9,13}(?!\d)/g)).map(
     (match) => match[0]
   );
-
   for (const candidate of numberCandidates) {
     if (candidate.length === 13 && !result.taxId) {
       result.taxId = candidate;
@@ -246,8 +267,45 @@ const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
     }
   }
 
+  // --- Postal code (standalone 5-digit, not part of a longer number) ---
+  const postalMatches = Array.from(working.matchAll(/(?<!\d)(\d{5})(?!\d)/g));
+  if (postalMatches.length) {
+    const lastPostal = postalMatches[postalMatches.length - 1];
+    result.postal = lastPostal[1];
+    working = (
+      working.slice(0, lastPostal.index!) +
+      " " +
+      working.slice(lastPostal.index! + lastPostal[1].length)
+    )
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  // --- Country (English, checked before province to avoid false province match) ---
+  const countryMatch = detectCountry(working);
+  if (countryMatch && countryMatch.name !== "Thailand") {
+    result.country = countryMatch.name;
+    working = (
+      working.slice(0, countryMatch.index) +
+      " " +
+      working.slice(countryMatch.index + countryMatch.name.length)
+    )
+      .replace(/\s+/g, " ")
+      .trim();
+  } else if (countryMatch && countryMatch.name === "Thailand") {
+    // Strip "Thailand" from text but don't set country (domestic)
+    working = (
+      working.slice(0, countryMatch.index) +
+      " " +
+      working.slice(countryMatch.index + countryMatch.name.length)
+    )
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  // --- Province: Thai script first, then English ---
   let provinceMatch: { name: string; index: number } | null = null;
-  for (const province of THAI_PROVINCES) {
+  for (const province of THAI_PROVINCES_KEYS) {
     const index = working.lastIndexOf(province);
     if (index !== -1 && (!provinceMatch || index > provinceMatch.index)) {
       provinceMatch = { name: province, index };
@@ -256,18 +314,32 @@ const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
 
   if (provinceMatch) {
     result.province = provinceMatch.name;
-    working = `${working.slice(0, provinceMatch.index)} ${working.slice(
-      provinceMatch.index + provinceMatch.name.length
-    )}`
+    working = (
+      working.slice(0, provinceMatch.index) +
+      " " +
+      working.slice(provinceMatch.index + provinceMatch.name.length)
+    )
       .replace(/\s+/g, " ")
       .trim();
+  } else {
+    // Try English province
+    const enProvince = detectEnglishProvince(working);
+    if (enProvince) {
+      result.province = enProvince.thaiKey;
+      working = (
+        working.slice(0, enProvince.index) +
+        " " +
+        working.slice(enProvince.index + enProvince.enName.length)
+      )
+        .replace(/\s+/g, " ")
+        .trim();
+    }
   }
 
+  // --- Name + address ---
   const tokens = working.split(" ").filter(Boolean);
   if (!tokens.length) {
-    if (hasCompanyKeyword) {
-      result.taxType = "Juristic";
-    }
+    if (hasCompanyKeyword) result.taxType = "Juristic";
     return Object.keys(result).length ? result : null;
   }
 
@@ -303,22 +375,20 @@ const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
       if (nameTokens.length > 1) {
         result.lastName = nameTokens.slice(1).join(" ");
       }
-    } else {
+    } else if (addressStartIndex === -1) {
+      // No address detected at all — treat first tokens as name
       result.name = tokens[0];
-      if (tokens[1]) {
-        result.lastName = tokens[1];
-      }
+      if (tokens[1]) result.lastName = tokens[1];
     }
+    // addressStartIndex === 0 means the whole text is address — no name to extract
   }
 
   if (!hasCompanyKeyword) {
     const gender = detectGenderFromText(normalized);
-    if (gender) {
-      result.gender = gender;
-    }
+    if (gender) result.gender = gender;
   }
 
-  return result;
+  return Object.keys(result).length ? result : null;
 };
 
 const AutoFillBill: React.FC<AutoFillBillProps> = ({
@@ -360,25 +430,6 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
         t("bill.autoFill.parseError", {
           defaultValue: "ไม่สามารถอ่านข้อมูลได้ กรุณาลองอีกครั้ง",
         })
-      );
-      return;
-    }
-
-    const effectiveTaxType = parsed.taxType ?? taxType;
-    const missingFields: string[] = [];
-    if (!parsed.name) missingFields.push(t("bill.customerName"));
-    if (!parsed.lastName && effectiveTaxType !== "Juristic")
-      missingFields.push(t("bill.customerLastName"));
-    if (!parsed.phone) missingFields.push(t("bill.customerPhone"));
-    if (!parsed.address) missingFields.push(t("bill.customerAddress"));
-    if (!parsed.province) missingFields.push(t("bill.customerProvince"));
-    if (!parsed.postal) missingFields.push(t("bill.customerPostal"));
-
-    if (missingFields.length > 0) {
-      setError(
-        `${t("bill.validation.missingFields")}:\n• ${missingFields.join(
-          "\n• "
-        )}`
       );
       return;
     }
@@ -478,9 +529,7 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
                     title=""
                     value={inputText}
                     handleChangeText={(value: string) => {
-                      if (error) {
-                        setError(null);
-                      }
+                      if (error) setError(null);
                       setInputText(value);
                     }}
                     placeholder=""

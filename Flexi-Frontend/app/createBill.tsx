@@ -37,6 +37,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
 import { THAI_PROVINCES_KEYS } from "@/constants/ThaiProvinces";
+import { COMMON_COUNTRY_KEYS } from "@/constants/CommonCountries";
 import { detectIsExport } from "@/constants/detectIsExport";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
@@ -50,12 +51,20 @@ const formatDate = (dateString: string) => {
 export default function CreateBill() {
   const [memberId, setMemberId] = useState<string | null>(null);
   const { t } = useTranslation();
+  const [isExport, setIsExport] = useState(false);
+  const isExportManualOverride = useRef(false);
   const provinceOptions = useMemo(() => {
+    if (isExport) {
+      return THAI_PROVINCES_KEYS.map((prov) => ({
+        label: t(`provinces.${prov}`, { lng: "en" }),
+        value: t(`provinces.${prov}`, { lng: "en" }),
+      }));
+    }
     return THAI_PROVINCES_KEYS.map((prov) => ({
       label: t(`provinces.${prov}`),
       value: prov,
     }));
-  }, [t]);
+  }, [t, isExport]);
   const { theme } = useTheme();
   const searchParams = useLocalSearchParams<{
     duplicateId?: string | string[];
@@ -215,8 +224,8 @@ export default function CreateBill() {
   const [cAddress, setCAddress] = useState("");
   const [cPostId, setCPostId] = useState("");
   const [cProvince, setCProvince] = useState("");
-  const [isExport, setIsExport] = useState(false);
-  const isExportManualOverride = useRef(false);
+  const [cCountry, setCCountry] = useState("");
+  const [countryOptions, setCountryOptions] = useState<string[]>([]);
   const [cTaxId, setTaxId] = useState("");
   const [note, setNote] = useState("");
   const [projectId, setProjectId] = useState<number | undefined>(undefined);
@@ -461,6 +470,12 @@ export default function CreateBill() {
         } catch (error) {
           console.error("Failed to fetch projects:", error);
         }
+        try {
+          const countries = await CallAPIBill.getCountryEnumAPI(uniqueId);
+          setCountryOptions(countries);
+        } catch (error) {
+          console.error("Failed to fetch country history:", error);
+        }
       }
     };
 
@@ -589,6 +604,7 @@ export default function CreateBill() {
       setCAddress(billData.cAddress ?? "");
       setCPostId(billData.cPostId ?? "");
       setCProvince(billData.cProvince ?? "");
+      setCCountry(billData.cCountry ?? "Thailand");
       setTaxId(billData.cTaxId ?? "");
       setPayment(billData.payment ?? "NotSpecified");
       setCashStatus(Boolean(billData.cashStatus));
@@ -979,6 +995,7 @@ export default function CreateBill() {
         cAddress,
         cPostId,
         cProvince,
+        cCountry: isExport ? cCountry : "Thailand",
         updateCustomer,
         cTaxId: String(cTaxId),
         payment: payment as
@@ -1081,25 +1098,28 @@ export default function CreateBill() {
   const handleAutoFillApply = (parsed: ParsedCustomerInfo) => {
     const effectiveTaxType = parsed.taxType ?? taxType;
 
-    if (parsed.taxType) {
-      setTaxType(parsed.taxType);
-    }
-
-    setCName(parsed.name ?? "");
+    if (parsed.taxType) setTaxType(parsed.taxType);
+    if (parsed.name !== undefined) setCName(parsed.name);
 
     if (effectiveTaxType === "Juristic") {
       setCLastName("");
       setCGender("NotSpecified");
     } else {
-      setCLastName(parsed.lastName ?? "");
-      setCGender(parsed.gender ?? "");
+      if (parsed.lastName !== undefined) setCLastName(parsed.lastName);
+      if (parsed.gender !== undefined) setCGender(parsed.gender);
     }
 
-    setCPhone(parsed.phone ?? "");
-    setTaxId(parsed.taxId ?? "");
-    setCAddress(parsed.address ?? "");
-    setCProvince(parsed.province ?? "");
-    setCPostId(parsed.postal ?? "");
+    if (parsed.phone !== undefined) setCPhone(parsed.phone);
+    if (parsed.taxId !== undefined) setTaxId(parsed.taxId);
+    if (parsed.address !== undefined) setCAddress(parsed.address);
+    if (parsed.province !== undefined) setCProvince(parsed.province);
+    if (parsed.postal !== undefined) setCPostId(parsed.postal);
+
+    if (parsed.country !== undefined) {
+      setCCountry(parsed.country);
+      isExportManualOverride.current = true;
+      setIsExport(true);
+    }
   };
 
   const scrollViewRef = useRef<ScrollView>(null);
@@ -1562,6 +1582,7 @@ export default function CreateBill() {
                   onValueChange={setCProvince}
                   placeholder={t("bill.enterProvince")}
                   otherStyles={fieldStyles}
+                  onAddNew={(val: string) => setCProvince(val)}
                 />
               </View>
               <View className="w-1/2 pr-2">
@@ -1599,6 +1620,28 @@ export default function CreateBill() {
                 {t("bill.isExport")}
               </CustomText>
             </TouchableOpacity>
+
+            {isExport && (
+              <DropdownClear
+                title={t("bill.customerCountry")}
+                options={(() => {
+                  const suggestionOptions = COMMON_COUNTRY_KEYS.map((key) => ({
+                    label: t(`countries.${key}`, { lng: "en" }),
+                    value: t(`countries.${key}`, { lng: "en" }),
+                  }));
+                  const existingValues = new Set(suggestionOptions.map((o) => o.value));
+                  const historyOptions = countryOptions
+                    .filter((c) => !existingValues.has(c))
+                    .map((c) => ({ label: c, value: c }));
+                  return [...suggestionOptions, ...historyOptions];
+                })()}
+                selectedValue={cCountry}
+                onValueChange={setCCountry}
+                placeholder={t("bill.customerCountry")}
+                otherStyles={fieldStyles}
+                onAddNew={(val: string) => setCCountry(val)}
+              />
+            )}
 
             {/* Product Items Section */}
             {productItems.map((item, idx) => (

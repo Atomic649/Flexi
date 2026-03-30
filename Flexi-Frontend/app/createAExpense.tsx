@@ -43,6 +43,7 @@ import DateTimePicker from "@/components/DateTimePicker";
 import { isMobile, isTablet } from "@/utils/responsive";
 import DropdownFloat from "@/components/dropdown/DropdownFloat";
 import { detectIsExport } from "@/constants/detectIsExport";
+import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
 
 // Format date in DD/MM/YYYY HH:MM (24-hour) format
 const formatDate = (dateString: string) => {
@@ -400,6 +401,23 @@ export default function CreateExpense({
     }
     setWithHoldingTax(next);
     recomputeAmounts({ withHoldingTax: next, WHTpercent: nextPercent });
+  };
+
+  const handleAutoFillApply = (parsed: ParsedCustomerInfo) => {
+    if (parsed.taxType) handleTaxTypeChange(parsed.taxType);
+
+    const effectiveTaxType = parsed.taxType ?? taxType;
+    if (effectiveTaxType === "Juristic") {
+      if (parsed.name !== undefined) setSName(parsed.name);
+    } else {
+      const fullName = [parsed.name, parsed.lastName].filter(Boolean).join(" ");
+      if (fullName) setSName(fullName);
+    }
+
+    if (parsed.taxId !== undefined) setSTaxId(parsed.taxId);
+
+    const addressParts = [parsed.address, parsed.province, parsed.postal].filter(Boolean);
+    if (addressParts.length) setSAddress(addressParts.join(" "));
   };
 
   const handleTaxTypeChange = (nextType: "Individual" | "Juristic") => {
@@ -1943,7 +1961,12 @@ export default function CreateExpense({
                 </Modal>
                 {/* -----------------------End OCR Progress Indicator------------------------------ */}
                 {/* Debt / Paid toggle */}
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 8, marginBottom: 6 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 8, marginBottom: 6 }}>
+                  
+                  <AutoFillBill
+                    onApply={handleAutoFillApply}
+                    taxType={taxType}
+                  />
                   <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme === "dark" ? "#444" : "#ddd", borderRadius: 8, overflow: "hidden" }}>
                     <TouchableOpacity
                       onPress={() => { if (!isFlexiDocument) setIsDebt(false); }}

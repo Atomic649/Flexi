@@ -127,6 +127,7 @@ Table Bill {
   cGender Gender
   cAddress String
   cProvince String
+  cCountry String [default: 'Thailand']
   cPostId String
   cTaxId String
   product ProductItem [not null]

@@ -53,6 +53,7 @@ class CallAPIBill {
         cPostId: string;
         cTaxId: string;
         cProvince: string;
+        cCountry?: string;
         updateCustomer?: boolean;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
@@ -110,6 +111,7 @@ class CallAPIBill {
         cAddress: string;
         cPostId: string;
         cProvince: string;
+        cCountry?: string;
         cTaxId : string;
         payment: "COD" | "Transfer" | "CreditCard" | "Cash"| "NotSpecified";
         memberId: string;
@@ -190,6 +192,18 @@ class CallAPIBill {
             } else {
                 throw new Error(t("common.networkError"));
             }
+        }
+    }
+
+    // Get distinct country values used in bills for a member (export dropdown history)
+    async getCountryEnumAPI(memberId: string): Promise<string[]> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.get(`/bill/countryEnum/${memberId}`);
+            return Array.isArray(response.data) ? response.data : [];
+        } catch (error) {
+            console.error("🚨 Get Country Enum API Error:", error);
+            return [];
         }
     }
 

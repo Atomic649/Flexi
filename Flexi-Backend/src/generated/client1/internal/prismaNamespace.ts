@@ -1674,6 +1674,7 @@ export const BillScalarFieldEnum = {
   cGender: 'cGender',
   cAddress: 'cAddress',
   cProvince: 'cProvince',
+  cCountry: 'cCountry',
   cPostId: 'cPostId',
   cTaxId: 'cTaxId',
   payment: 'payment',

@@ -89,6 +89,7 @@ export type BillMinAggregateOutputType = {
   cGender: $Enums.Gender | null
   cAddress: string | null
   cProvince: string | null
+  cCountry: string | null
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
@@ -148,6 +149,7 @@ export type BillMaxAggregateOutputType = {
   cGender: $Enums.Gender | null
   cAddress: string | null
   cProvince: string | null
+  cCountry: string | null
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
@@ -207,6 +209,7 @@ export type BillCountAggregateOutputType = {
   cGender: number
   cAddress: number
   cProvince: number
+  cCountry: number
   cPostId: number
   cTaxId: number
   payment: number
@@ -314,6 +317,7 @@ export type BillMinAggregateInputType = {
   cGender?: true
   cAddress?: true
   cProvince?: true
+  cCountry?: true
   cPostId?: true
   cTaxId?: true
   payment?: true
@@ -373,6 +377,7 @@ export type BillMaxAggregateInputType = {
   cGender?: true
   cAddress?: true
   cProvince?: true
+  cCountry?: true
   cPostId?: true
   cTaxId?: true
   payment?: true
@@ -432,6 +437,7 @@ export type BillCountAggregateInputType = {
   cGender?: true
   cAddress?: true
   cProvince?: true
+  cCountry?: true
   cPostId?: true
   cTaxId?: true
   payment?: true
@@ -578,6 +584,7 @@ export type BillGroupByOutputType = {
   cGender: $Enums.Gender | null
   cAddress: string | null
   cProvince: string | null
+  cCountry: string | null
   cPostId: string | null
   cTaxId: string | null
   payment: $Enums.Payment | null
@@ -660,6 +667,7 @@ export type BillWhereInput = {
   cGender?: Prisma.EnumGenderNullableFilter<"Bill"> | $Enums.Gender | null
   cAddress?: Prisma.StringNullableFilter<"Bill"> | string | null
   cProvince?: Prisma.StringNullableFilter<"Bill"> | string | null
+  cCountry?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
@@ -726,6 +734,7 @@ export type BillOrderByWithRelationInput = {
   cGender?: Prisma.SortOrderInput | Prisma.SortOrder
   cAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   cProvince?: Prisma.SortOrderInput | Prisma.SortOrder
+  cCountry?: Prisma.SortOrderInput | Prisma.SortOrder
   cPostId?: Prisma.SortOrderInput | Prisma.SortOrder
   cTaxId?: Prisma.SortOrderInput | Prisma.SortOrder
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -795,6 +804,7 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   cGender?: Prisma.EnumGenderNullableFilter<"Bill"> | $Enums.Gender | null
   cAddress?: Prisma.StringNullableFilter<"Bill"> | string | null
   cProvince?: Prisma.StringNullableFilter<"Bill"> | string | null
+  cCountry?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
@@ -861,6 +871,7 @@ export type BillOrderByWithAggregationInput = {
   cGender?: Prisma.SortOrderInput | Prisma.SortOrder
   cAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   cProvince?: Prisma.SortOrderInput | Prisma.SortOrder
+  cCountry?: Prisma.SortOrderInput | Prisma.SortOrder
   cPostId?: Prisma.SortOrderInput | Prisma.SortOrder
   cTaxId?: Prisma.SortOrderInput | Prisma.SortOrder
   payment?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -928,6 +939,7 @@ export type BillScalarWhereWithAggregatesInput = {
   cGender?: Prisma.EnumGenderNullableWithAggregatesFilter<"Bill"> | $Enums.Gender | null
   cAddress?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cProvince?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
+  cCountry?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cPostId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableWithAggregatesFilter<"Bill"> | $Enums.Payment | null
@@ -986,6 +998,7 @@ export type BillCreateInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -1047,6 +1060,7 @@ export type BillUncheckedCreateInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -1107,6 +1121,7 @@ export type BillUpdateInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -1168,6 +1183,7 @@ export type BillUncheckedUpdateInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -1229,6 +1245,7 @@ export type BillCreateManyInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -1287,6 +1304,7 @@ export type BillUpdateManyMutationInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -1341,6 +1359,7 @@ export type BillUncheckedUpdateManyInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -1410,6 +1429,7 @@ export type BillCountOrderByAggregateInput = {
   cGender?: Prisma.SortOrder
   cAddress?: Prisma.SortOrder
   cProvince?: Prisma.SortOrder
+  cCountry?: Prisma.SortOrder
   cPostId?: Prisma.SortOrder
   cTaxId?: Prisma.SortOrder
   payment?: Prisma.SortOrder
@@ -1492,6 +1512,7 @@ export type BillMaxOrderByAggregateInput = {
   cGender?: Prisma.SortOrder
   cAddress?: Prisma.SortOrder
   cProvince?: Prisma.SortOrder
+  cCountry?: Prisma.SortOrder
   cPostId?: Prisma.SortOrder
   cTaxId?: Prisma.SortOrder
   payment?: Prisma.SortOrder
@@ -1551,6 +1572,7 @@ export type BillMinOrderByAggregateInput = {
   cGender?: Prisma.SortOrder
   cAddress?: Prisma.SortOrder
   cProvince?: Prisma.SortOrder
+  cCountry?: Prisma.SortOrder
   cPostId?: Prisma.SortOrder
   cTaxId?: Prisma.SortOrder
   payment?: Prisma.SortOrder
@@ -1907,6 +1929,7 @@ export type BillCreateWithoutMemberInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -1967,6 +1990,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2056,6 +2080,7 @@ export type BillScalarWhereInput = {
   cGender?: Prisma.EnumGenderNullableFilter<"Bill"> | $Enums.Gender | null
   cAddress?: Prisma.StringNullableFilter<"Bill"> | string | null
   cProvince?: Prisma.StringNullableFilter<"Bill"> | string | null
+  cCountry?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPostId?: Prisma.StringNullableFilter<"Bill"> | string | null
   cTaxId?: Prisma.StringNullableFilter<"Bill"> | string | null
   payment?: Prisma.EnumPaymentNullableFilter<"Bill"> | $Enums.Payment | null
@@ -2114,6 +2139,7 @@ export type BillCreateWithoutBusinessIdInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2174,6 +2200,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2259,6 +2286,7 @@ export type BillCreateWithoutCustomerInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2319,6 +2347,7 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2404,6 +2433,7 @@ export type BillCreateWithoutProductInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2464,6 +2494,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2539,6 +2570,7 @@ export type BillUpdateWithoutProductInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -2599,6 +2631,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -2658,6 +2691,7 @@ export type BillCreateWithoutExpenseInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2718,6 +2752,7 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2793,6 +2828,7 @@ export type BillUpdateWithoutExpenseInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -2853,6 +2889,7 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -2912,6 +2949,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -2972,6 +3010,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3057,6 +3096,7 @@ export type BillCreateWithoutProjectInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3117,6 +3157,7 @@ export type BillUncheckedCreateWithoutProjectInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3203,6 +3244,7 @@ export type BillCreateManyMemberInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3260,6 +3302,7 @@ export type BillUpdateWithoutMemberInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3320,6 +3363,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3380,6 +3424,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3438,6 +3483,7 @@ export type BillCreateManyBusinessIdInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3495,6 +3541,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3555,6 +3602,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3615,6 +3663,7 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3673,6 +3722,7 @@ export type BillCreateManyCustomerInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3730,6 +3780,7 @@ export type BillUpdateWithoutCustomerInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3790,6 +3841,7 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3850,6 +3902,7 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -3908,6 +3961,7 @@ export type BillCreateManyPlatformInfoInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -3965,6 +4019,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4025,6 +4080,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4085,6 +4141,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4143,6 +4200,7 @@ export type BillCreateManyProjectInput = {
   cGender?: $Enums.Gender | null
   cAddress?: string | null
   cProvince?: string | null
+  cCountry?: string | null
   cPostId?: string | null
   cTaxId?: string | null
   payment?: $Enums.Payment | null
@@ -4200,6 +4258,7 @@ export type BillUpdateWithoutProjectInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4260,6 +4319,7 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4320,6 +4380,7 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   cGender?: Prisma.NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
   cAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPostId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cTaxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payment?: Prisma.NullableEnumPaymentFieldUpdateOperationsInput | $Enums.Payment | null
@@ -4409,6 +4470,7 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   cGender?: boolean
   cAddress?: boolean
   cProvince?: boolean
+  cCountry?: boolean
   cPostId?: boolean
   cTaxId?: boolean
   payment?: boolean
@@ -4476,6 +4538,7 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   cGender?: boolean
   cAddress?: boolean
   cProvince?: boolean
+  cCountry?: boolean
   cPostId?: boolean
   cTaxId?: boolean
   payment?: boolean
@@ -4540,6 +4603,7 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   cGender?: boolean
   cAddress?: boolean
   cProvince?: boolean
+  cCountry?: boolean
   cPostId?: boolean
   cTaxId?: boolean
   payment?: boolean
@@ -4604,6 +4668,7 @@ export type BillSelectScalar = {
   cGender?: boolean
   cAddress?: boolean
   cProvince?: boolean
+  cCountry?: boolean
   cPostId?: boolean
   cTaxId?: boolean
   payment?: boolean
@@ -4646,7 +4711,7 @@ export type BillSelectScalar = {
   projectId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cCountry" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -4700,6 +4765,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     cGender: $Enums.Gender | null
     cAddress: string | null
     cProvince: string | null
+    cCountry: string | null
     cPostId: string | null
     cTaxId: string | null
     payment: $Enums.Payment | null
@@ -5186,6 +5252,7 @@ export interface BillFieldRefs {
   readonly cGender: Prisma.FieldRef<"Bill", 'Gender'>
   readonly cAddress: Prisma.FieldRef<"Bill", 'String'>
   readonly cProvince: Prisma.FieldRef<"Bill", 'String'>
+  readonly cCountry: Prisma.FieldRef<"Bill", 'String'>
   readonly cPostId: Prisma.FieldRef<"Bill", 'String'>
   readonly cTaxId: Prisma.FieldRef<"Bill", 'String'>
   readonly payment: Prisma.FieldRef<"Bill", 'Payment'>

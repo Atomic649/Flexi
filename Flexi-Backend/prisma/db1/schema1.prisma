@@ -330,7 +330,8 @@ model Bill {
   cPhone               String?
   cGender              Gender?
   cAddress             String?
-  cProvince            String?
+  cProvince            String?  
+  cCountry             String?     @default("Thailand")
   cPostId              String?
   cTaxId               String?
   product              ProductItem[]

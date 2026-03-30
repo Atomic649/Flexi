@@ -13,6 +13,7 @@ import {
   getBillByFlexiId,
   createSplitChildren,
   resetParentSplit,
+  getCountryEnumByMemberId,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -57,5 +58,8 @@ router.post("/split/:parentId", authenticateToken, createSplitChildren);
 
 // Reset split parent back to Quotation (deletes all children)
 router.delete("/split/:parentId", authenticateToken, resetParentSplit);
+
+// Get distinct country values for a member (for export country dropdown)
+router.get("/countryEnum/:memberId", authenticateToken, getCountryEnumByMemberId);
 
 export default router;
