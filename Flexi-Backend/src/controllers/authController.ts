@@ -1010,10 +1010,14 @@ const changePassword = async (req: Request, res: Response) => {
     currentPassword: Joi.string().required(),
     newPassword: passwordSchema.required(),
   });
+
+
   const { error } = schema.validate({ id, currentPassword, newPassword });
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
+
+  console.log(`error details: ${error?.details[0]?.message}, currentPassword: ${currentPassword}, newPassword: ${newPassword}`);
 
   try {
     const user = await Prisma.user.findUnique({

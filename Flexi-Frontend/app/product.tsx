@@ -158,28 +158,7 @@ export default function Home() {
                 onDelete={() => handleDeleteProduct(item.id)}
               />
             )}
-            ListHeaderComponent={() => (
-              <View className="my-6 px-4 ">
-                <View className="flex flex-col  mb-5 items-center">
-                  <CustomText
-                    className={`text-sm font-normal ${
-                      theme === "dark" ? "text-white" : "text-[#5d5a54]"
-                    }`}
-                  >
-                    {t("product.limit")}
-                  </CustomText>
-                  <TouchableOpacity onPress={() => router.push("/roadmap")}>
-                    <Text className={`mt-1 text-base font-bold text-[#FF006E]`}>
-                      {t("product.help")}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* <CustomText className={`text-xl font-semibold ${textColorClass}`}>
-                {t("product.Products")}
-              </CustomText> */}
-              </View>
-            )}
+           
             ListEmptyComponent={() => (
               <CustomText className="pt-10 text-center text-white">
                 {t("common.notfound")}
@@ -193,7 +172,7 @@ export default function Home() {
 
         {/* Footer */}
         {/* Setting Limit Product "3" */}
-        {products.length < 3 && (
+        {products.length < 20 && (
           <TouchableOpacity
             style={{
               position: "absolute",

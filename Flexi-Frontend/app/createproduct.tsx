@@ -310,8 +310,8 @@ export default function CreateProduct() {
             otherStyles="mt-0 mb-2"
           />
 
-          <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
+       
+          
               <FormField2
                 title={productType !== "Service" ? t("product.productName") : t("product.serviceName")}
                 value={name}
@@ -320,8 +320,8 @@ export default function CreateProduct() {
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
               />
-            </View>
-            <View className="w-1/2 pl-2">
+           
+        
               {/* Unit dropdown moved beside product name */}
               <Dropdown2
                 title={t("product.unitTitle")}
@@ -336,8 +336,7 @@ export default function CreateProduct() {
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles }
               />
-            </View>
-          </View>
+       
 
           {/* Barcode field is conditionally rendered based on product type */}
           {productType !== "Service" && productType !== "Rental" && (
