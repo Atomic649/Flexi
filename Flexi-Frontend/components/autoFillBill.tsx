@@ -42,19 +42,19 @@ type AutoFillBillProps = {
 
 // English province names from translation file
 const THAI_PROVINCES_EN: string[] = Object.values(
-  (enTranslation as any).provinces as Record<string, string>
+  (enTranslation as any).provinces as Record<string, string>,
 );
 
 // Map English province name → Thai key
 const EN_TO_THAI_PROVINCE: Record<string, string> = Object.fromEntries(
-  Object.entries((enTranslation as any).provinces as Record<string, string>).map(
-    ([thaiKey, enName]) => [enName.toLowerCase(), thaiKey]
-  )
+  Object.entries(
+    (enTranslation as any).provinces as Record<string, string>,
+  ).map(([thaiKey, enName]) => [enName.toLowerCase(), thaiKey]),
 );
 
 // English country name → canonical English name (lowercase → canonical)
 const EN_TO_COUNTRY: Record<string, string> = Object.fromEntries(
-  COMMON_COUNTRY_KEYS.map((key) => [key.toLowerCase(), key])
+  COMMON_COUNTRY_KEYS.map((key) => [key.toLowerCase(), key]),
 );
 
 const COMPANY_KEYWORDS = [
@@ -172,7 +172,12 @@ const tokenLooksLikeAddress = (token: string) => {
   const cleaned = token.replace(/[.,]/g, "").toLowerCase();
   if (/\d/.test(cleaned)) return true;
   if (ADDRESS_HINTS_TH.some((hint) => cleaned.startsWith(hint))) return true;
-  if (ADDRESS_HINTS_EN.some((hint) => cleaned === hint || cleaned.startsWith(hint + " "))) return true;
+  if (
+    ADDRESS_HINTS_EN.some(
+      (hint) => cleaned === hint || cleaned.startsWith(hint + " "),
+    )
+  )
+    return true;
   return false;
 };
 
@@ -214,7 +219,7 @@ const preCleanOCRText = (text: string): string => {
         .replace(ARTIFACT_PREFIX, "")
         // Strip Thai document label prefixes: "บริษัท :", "ชื่อ :", "ที่อยู่ :", "สาขา :"
         .replace(/^(?:บริษัท|ชื่อ|ชื่อบริษัท|ที่อยู่|สาขา)\s*[:.：]\s*/i, "")
-        .trim()
+        .trim(),
     )
     .filter(Boolean)
     .join("\n");
@@ -238,15 +243,16 @@ const stripInfoLabels = (text: string) => {
 };
 
 // Try to detect country from text (English country names as whole words)
-const detectCountry = (text: string): { name: string; index: number } | null => {
+const detectCountry = (
+  text: string,
+): { name: string; index: number } | null => {
   let best: { name: string; index: number } | null = null;
   // Sort longest-first so "United Arab Emirates" matches before "United"
-  const sortedKeys = [...COMMON_COUNTRY_KEYS].sort((a, b) => b.length - a.length);
+  const sortedKeys = [...COMMON_COUNTRY_KEYS].sort(
+    (a, b) => b.length - a.length,
+  );
   for (const key of sortedKeys) {
-    const regex = new RegExp(
-      `\\b${escapeRegex(key)}\\b`,
-      "i"
-    );
+    const regex = new RegExp(`\\b${escapeRegex(key)}\\b`, "i");
     const match = text.match(regex);
     if (match && match.index !== undefined) {
       if (!best || match.index > best.index) {
@@ -258,7 +264,9 @@ const detectCountry = (text: string): { name: string; index: number } | null => 
 };
 
 // Try to detect English province from text
-const detectEnglishProvince = (text: string): { thaiKey: string; enName: string; index: number } | null => {
+const detectEnglishProvince = (
+  text: string,
+): { thaiKey: string; enName: string; index: number } | null => {
   let best: { thaiKey: string; enName: string; index: number } | null = null;
   // Sort longest-first to prefer specific matches
   const sortedEN = [...THAI_PROVINCES_EN].sort((a, b) => b.length - a.length);
@@ -275,13 +283,15 @@ const detectEnglishProvince = (text: string): { thaiKey: string; enName: string;
   return best;
 };
 
-export const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
+export const parseAutoFillInput = (
+  input: string,
+): ParsedCustomerInfo | null => {
   const normalized = normalizeAutoFillText(preCleanOCRText(input));
   if (!normalized) return null;
 
   const normalizedLower = normalized.toLowerCase();
   const hasCompanyKeyword = COMPANY_KEYWORDS.some((keyword) =>
-    normalizedLower.includes(keyword.toLowerCase())
+    normalizedLower.includes(keyword.toLowerCase()),
   );
 
   let working = stripInfoLabels(normalized);
@@ -290,9 +300,9 @@ export const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => 
   // --- Tax ID (13-digit) and phone (9-10 digit starting with 0) ---
   // Must run BEFORE postal extraction — long numbers contain 5-digit substrings
   // that would otherwise be falsely matched as postal codes.
-  const numberCandidates = Array.from(working.matchAll(/(?<!\d)\d{9,13}(?!\d)/g)).map(
-    (match) => match[0]
-  );
+  const numberCandidates = Array.from(
+    working.matchAll(/(?<!\d)\d{9,13}(?!\d)/g),
+  ).map((match) => match[0]);
   for (const candidate of numberCandidates) {
     if (candidate.length === 13 && !result.taxId) {
       result.taxId = candidate;
@@ -386,7 +396,7 @@ export const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => 
   }
 
   const addressStartIndex = tokens.findIndex((token) =>
-    tokenLooksLikeAddress(token)
+    tokenLooksLikeAddress(token),
   );
 
   const nameTokens =
@@ -444,6 +454,7 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
   const [inputText, setInputText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isTextInputFocused, setIsTextInputFocused] = useState(false);
+  const [contentHeight, setContentHeight] = useState(150);
 
   const handleOpenModal = () => {
     setError(null);
@@ -454,6 +465,7 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
     setModalVisible(false);
     setInputText("");
     setError(null);
+    setContentHeight(150);
   };
 
   const handleConfirm = () => {
@@ -461,7 +473,7 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
       setError(
         t("bill.autoFill.enterText", {
           defaultValue: "กรุณาวางข้อมูลลูกค้าก่อนยืนยัน",
-        })
+        }),
       );
       return;
     }
@@ -471,13 +483,17 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
       setError(
         t("bill.autoFill.parseError", {
           defaultValue: "ไม่สามารถอ่านข้อมูลได้ กรุณาลองอีกครั้ง",
-        })
+        }),
       );
       return;
     }
 
     onApply(parsed);
     handleCancel();
+  };
+
+  const handleContentSizeChange = (width: number, height: number) => {
+    setContentHeight(Math.max(150, Math.min(height + 10, 400)));
   };
 
   return (
@@ -584,7 +600,8 @@ const AutoFillBill: React.FC<AutoFillBillProps> = ({
                     multiline={true}
                     numberOfLines={15}
                     maxLength={500}
-                    boxheight={isTextInputFocused ? 150 : undefined}
+                    boxheight={contentHeight}
+                    onContentSizeChange={handleContentSizeChange}
                     onFocus={() => setIsTextInputFocused(true)}
                     onBlur={() => setIsTextInputFocused(false)}
                   />

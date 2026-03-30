@@ -1578,18 +1578,47 @@ export default function CreateBill() {
               }}
               onBlur={() => setIsAddressFocused(false)}
             />
+
             <View className="flex flex-row justify-between">
-              <View className="w-1/2 pr-2">
-                <DropdownClear
-                  title={t("bill.customerProvince")}
-                  options={provinceOptions}
-                  selectedValue={cProvince}
-                  onValueChange={setCProvince}
-                  placeholder={t("bill.enterProvince")}
-                  otherStyles={fieldStyles}
-                  onAddNew={(val: string) => setCProvince(val)}
-                />
+              {!isExport && (
+                <View className=" w-1/2 pr-2">
+                  <DropdownClear
+                    title={t("bill.customerProvince")}
+                    options={provinceOptions}
+                    selectedValue={cProvince}
+                    onValueChange={setCProvince}
+                    placeholder={t("bill.enterProvince")}
+                    otherStyles={fieldStyles}
+                    onAddNew={(val: string) => setCProvince(val)}
+                  />
+                </View>
+              )}
+              {isExport && (
+                <View className=" w-1/2 pr-2">
+              <DropdownClear
+                title={t("bill.customerCountry")}
+                options={(() => {
+                  const suggestionOptions = COMMON_COUNTRY_KEYS.map((key) => ({
+                    label: t(`countries.${key}`, { lng: "en" }),
+                    value: t(`countries.${key}`, { lng: "en" }),
+                  }));
+                  const existingValues = new Set(
+                    suggestionOptions.map((o) => o.value),
+                  );
+                  const historyOptions = countryOptions
+                    .filter((c) => !existingValues.has(c))
+                    .map((c) => ({ label: c, value: c }));
+                  return [...suggestionOptions, ...historyOptions];
+                })()}
+                selectedValue={cCountry}
+                onValueChange={setCCountry}
+                placeholder={t("bill.customerCountry")}
+                otherStyles={fieldStyles}
+                onAddNew={(val: string) => setCCountry(val)}
+              />
               </View>
+              )}
+              
               <View className="w-1/2 pr-2">
                 <FormFieldClear
                   title={t("bill.customerPostal")}
