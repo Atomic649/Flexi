@@ -10,9 +10,15 @@ import multer from "multer";
 import multerConfig from "../middleware/multer_config";
 import { flexiDBPrismaClient } from "../../lib/PrismaClient1";
 import { randomBytes } from "node:crypto";
+import { extractRawTextFromImage } from "../utils/ocrUtils";
 
 const upload = multer(multerConfig.multerConfigImage.config).single(
   multerConfig.multerConfigImage.keyUpload,
+);
+
+// Memory-only multer for OCR (image never saved to disk or S3)
+const uploadMemory = multer(multerConfig.multerConfigImageMemory.config).single(
+  multerConfig.multerConfigImageMemory.keyUpload,
 );
 
 // Create  instance of PrismaClient
@@ -2385,6 +2391,30 @@ const getCountryEnumByMemberId = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * POST /bill/ocr-extract
+ * Accepts an image (multipart/form-data, field: "image"), runs Tesseract OCR in memory,
+ * returns the raw extracted text. Image is never saved to disk or S3.
+ */
+const ocrExtractCustomer = (req: Request, res: Response) => {
+  uploadMemory(req, res, async (err: any) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    const file = (req as any).file as Express.Multer.File | undefined;
+    if (!file?.buffer) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+    try {
+      const text = await extractRawTextFromImage(file.buffer);
+      return res.json({ text });
+    } catch (e) {
+      console.error("OCR extract error:", e);
+      return res.status(500).json({ message: "OCR processing failed" });
+    }
+  });
+};
+
 export {
   createBill,
   getBills,
@@ -2400,4 +2430,5 @@ export {
   createSplitChildren,
   resetParentSplit,
   getCountryEnumByMemberId,
+  ocrExtractCustomer,
 };

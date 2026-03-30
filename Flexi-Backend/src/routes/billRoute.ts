@@ -14,6 +14,7 @@ import {
   createSplitChildren,
   resetParentSplit,
   getCountryEnumByMemberId,
+  ocrExtractCustomer,
 } from "../controllers/billController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -61,5 +62,8 @@ router.delete("/split/:parentId", authenticateToken, resetParentSplit);
 
 // Get distinct country values for a member (for export country dropdown)
 router.get("/countryEnum/:memberId", authenticateToken, getCountryEnumByMemberId);
+
+// OCR: extract customer info from image (memory only — image is never saved)
+router.post("/ocr-extract", authenticateToken, ocrExtractCustomer);
 
 export default router;

@@ -288,5 +288,22 @@ class CallAPIBill {
             }
         }
     }
+
+    // OCR: send image to backend, get raw extracted text back (image never saved on server)
+    async ocrExtractAPI(formData: FormData): Promise<{ text: string }> {
+        try {
+            const axiosInstance = await getAxiosWithAuth();
+            const response = await axiosInstance.post("/bill/ocr-extract", formData, {
+                timeout: 60000,
+            });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error(t("common.networkError"));
+            }
+        }
+    }
 }
 export default new CallAPIBill();

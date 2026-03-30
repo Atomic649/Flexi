@@ -33,6 +33,7 @@ import { getBusinessId, getMemberId } from "@/utils/utility";
 import { isMobile, isMobileApp, isTabletWeb } from "@/utils/responsive";
 import FormFieldClear from "@/components/formfield/FormFieldClear";
 import AutoFillBill, { ParsedCustomerInfo } from "@/components/autoFillBill";
+import OCRFillBill from "@/components/ocrFillBill";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { format } from "date-fns";
 import { DEFAULT_VAT_PERCENT } from "@/utils/taxUtils";
@@ -1360,6 +1361,10 @@ export default function CreateBill() {
                     alignItems: "center",
                   }}
                 />
+
+                {/* OCR - Auto detect Image to filled form */}
+                <OCRFillBill onApply={handleAutoFillApply} />
+
                 <TouchableOpacity
                   onPress={handleClearFields}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1604,8 +1609,16 @@ export default function CreateBill() {
             </View>
 
             <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center", marginBottom: 8, marginTop: 4 }}
-              onPress={() => { isExportManualOverride.current = true; setIsExport((prev) => !prev); }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 8,
+                marginTop: 4,
+              }}
+              onPress={() => {
+                isExportManualOverride.current = true;
+                setIsExport((prev) => !prev);
+              }}
               activeOpacity={0.8}
             >
               <Ionicons
@@ -1629,7 +1642,9 @@ export default function CreateBill() {
                     label: t(`countries.${key}`, { lng: "en" }),
                     value: t(`countries.${key}`, { lng: "en" }),
                   }));
-                  const existingValues = new Set(suggestionOptions.map((o) => o.value));
+                  const existingValues = new Set(
+                    suggestionOptions.map((o) => o.value),
+                  );
                   const historyOptions = countryOptions
                     .filter((c) => !existingValues.has(c))
                     .map((c) => ({ label: c, value: c }));

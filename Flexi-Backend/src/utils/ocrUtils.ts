@@ -1696,3 +1696,33 @@ export const validateExtractedData = (data: OCRResult): { isValid: boolean; erro
     errors
   };
 };
+
+/**
+ * Lightweight OCR — returns raw text only (no structured detection).
+ * Used for bill customer info extraction: image is processed in memory and never saved.
+ */
+export const extractRawTextFromImage = async (imageBuffer: Buffer): Promise<string> => {
+  let jpegBuffer: Buffer | null = null;
+  try {
+    jpegBuffer = await sharp(imageBuffer).jpeg().toBuffer();
+  } catch {
+    // Format not supported by sharp (e.g. HEIC) — fall back to EasyOCR
+    console.log('⚠️ sharp cannot decode format — routing to EasyOCR');
+  }
+
+  if (!jpegBuffer) {
+    return runEasyOCR(imageBuffer);
+  }
+
+  const worker = await getThaiEngWorker();
+  const { data: { text } } = await worker.recognize(jpegBuffer);
+
+  // If Tesseract produced low-quality output, try EasyOCR
+  const meaningfulChars = (text.match(/[\u0E00-\u0E7Fa-zA-Z0-9]/g) ?? []).length;
+  if (meaningfulChars < 10) {
+    console.log(`⚠️ Tesseract low-quality output (${meaningfulChars} chars) — falling back to EasyOCR`);
+    return runEasyOCR(imageBuffer);
+  }
+
+  return text;
+};

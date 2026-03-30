@@ -131,6 +131,10 @@ const ADDRESS_HINTS_TH = [
   "ต.",
   "อำเภอ",
   "อ.",
+  // Branch/office indicators — mark the boundary between company name and address
+  "สํานักงานใหญ่",
+  "สำนักงานใหญ่",
+  "สาขา",
 ];
 
 // English address tokens that indicate address content
@@ -176,6 +180,44 @@ const detectGenderFromText = (text: string): "Male" | "Female" | undefined => {
   if (FEMALE_TITLES.some((title) => text.includes(title))) return "Female";
   if (MALE_TITLES.some((title) => text.includes(title))) return "Male";
   return undefined;
+};
+
+/**
+ * Pre-clean OCR output before parsing:
+ * 1. Remove noise lines — lines where most tokens are isolated 1-2 char fragments
+ *    (typical OCR garbage like "๕ 7   a ๓  ซ  ll" or "ส   ป    a  4")
+ * 2. Strip common OCR label artifacts at the start of lines (e.g. "Neg:", "No.")
+ */
+const preCleanOCRText = (text: string): string => {
+  // Common OCR mis-read prefixes that appear before address/content lines
+  const ARTIFACT_PREFIX = /^(?:Neg|No|Net|Ref|Fax|Tel|Mob)\s*[:.]\s*/i;
+
+  return text
+    .split(/[\r\n]+/)
+    .filter((line) => {
+      const stripped = line.trim();
+      if (!stripped) return false;
+      const tokens = stripped.split(/\s+/).filter(Boolean);
+      if (tokens.length === 0) return false;
+      // Filter: if ≥60% of tokens are 1-2 characters it is likely noise
+      if (tokens.length >= 3) {
+        const shortCount = tokens.filter((t) => t.length <= 2).length;
+        if (shortCount / tokens.length >= 0.6) return false;
+      } else if (tokens.length <= 2 && tokens.every((t) => t.length <= 2)) {
+        // Short line with all tiny tokens — noise
+        return false;
+      }
+      return true;
+    })
+    .map((line) =>
+      line
+        .replace(ARTIFACT_PREFIX, "")
+        // Strip Thai document label prefixes: "บริษัท :", "ชื่อ :", "ที่อยู่ :", "สาขา :"
+        .replace(/^(?:บริษัท|ชื่อ|ชื่อบริษัท|ที่อยู่|สาขา)\s*[:.：]\s*/i, "")
+        .trim()
+    )
+    .filter(Boolean)
+    .join("\n");
 };
 
 const normalizeAutoFillText = (text: string) =>
@@ -233,8 +275,8 @@ const detectEnglishProvince = (text: string): { thaiKey: string; enName: string;
   return best;
 };
 
-const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
-  const normalized = normalizeAutoFillText(input);
+export const parseAutoFillInput = (input: string): ParsedCustomerInfo | null => {
+  const normalized = normalizeAutoFillText(preCleanOCRText(input));
   if (!normalized) return null;
 
   const normalizedLower = normalized.toLowerCase();
