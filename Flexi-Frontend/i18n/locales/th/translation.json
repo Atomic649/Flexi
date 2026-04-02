@@ -45,7 +45,9 @@
     "all": "ทั้งหมด",
     "none": "— ไม่มี —",
     "project": "โปรเจกต์",
-    "enterProject": "เลือกโปรเจกต์"
+    "enterProject": "เลือกโปรเจกต์",
+    "projectDescription": "คำอธิบายโปรเจกต์",
+    "enterProjectDescription": "ระบุคำอธิบายโปรเจกต์"
   },
   "months": {
     "january": "มกราคม",
@@ -1440,6 +1442,10 @@
       "notSpecified": "ไม่ระบุ",
       "notspecified": "-"
     },
+    "billLevelDiscount": "ส่วนลดท้ายบิล",
+    "billLevelDiscountPercent": "ส่วนลด %",
+    "billLevelDiscountAmount": "จำนวนส่วนลด",
+    "enterBillLevelDiscount": "ระบุจำนวนส่วนลดท้ายบิล",
     "withHoldingTax": "หัก ณ ที่จ่าย",
     "enterWithHoldingTax": "กรอกจำนวนหัก ณ ที่จ่าย (%)",
     "withHoldingTaxAmount": "จำนวนหัก ณ ที่จ่าย",

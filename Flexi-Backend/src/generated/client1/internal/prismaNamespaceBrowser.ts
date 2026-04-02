@@ -215,6 +215,8 @@ export const BillScalarFieldEnum = {
   DocumentType: 'DocumentType',
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',
+  billLevelDiscountIsPercent: 'billLevelDiscountIsPercent',
+  billLevelDiscountPercent: 'billLevelDiscountPercent',
   priceValid: 'priceValid',
   validContactUntil: 'validContactUntil',
   rentalStockReleased: 'rentalStockReleased',

@@ -39,6 +39,7 @@ export type BillAvgAggregateOutputType = {
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
+  billLevelDiscountPercent: number | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
   splitPercent: number | null
@@ -62,6 +63,7 @@ export type BillSumAggregateOutputType = {
   repeatMonths: number | null
   discount: number | null
   billLevelDiscount: number | null
+  billLevelDiscountPercent: number | null
   WHTpercent: runtime.Decimal | null
   WHTAmount: runtime.Decimal | null
   splitPercent: number | null
@@ -111,6 +113,8 @@ export type BillMinAggregateOutputType = {
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
+  billLevelDiscountIsPercent: boolean | null
+  billLevelDiscountPercent: number | null
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean | null
@@ -171,6 +175,8 @@ export type BillMaxAggregateOutputType = {
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
+  billLevelDiscountIsPercent: boolean | null
+  billLevelDiscountPercent: number | null
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean | null
@@ -231,6 +237,8 @@ export type BillCountAggregateOutputType = {
   DocumentType: number
   discount: number
   billLevelDiscount: number
+  billLevelDiscountIsPercent: number
+  billLevelDiscountPercent: number
   priceValid: number
   validContactUntil: number
   rentalStockReleased: number
@@ -267,6 +275,7 @@ export type BillAvgAggregateInputType = {
   repeatMonths?: true
   discount?: true
   billLevelDiscount?: true
+  billLevelDiscountPercent?: true
   WHTpercent?: true
   WHTAmount?: true
   splitPercent?: true
@@ -290,6 +299,7 @@ export type BillSumAggregateInputType = {
   repeatMonths?: true
   discount?: true
   billLevelDiscount?: true
+  billLevelDiscountPercent?: true
   WHTpercent?: true
   WHTAmount?: true
   splitPercent?: true
@@ -339,6 +349,8 @@ export type BillMinAggregateInputType = {
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
+  billLevelDiscountIsPercent?: true
+  billLevelDiscountPercent?: true
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
@@ -399,6 +411,8 @@ export type BillMaxAggregateInputType = {
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
+  billLevelDiscountIsPercent?: true
+  billLevelDiscountPercent?: true
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
@@ -459,6 +473,8 @@ export type BillCountAggregateInputType = {
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
+  billLevelDiscountIsPercent?: true
+  billLevelDiscountPercent?: true
   priceValid?: true
   validContactUntil?: true
   rentalStockReleased?: true
@@ -606,6 +622,8 @@ export type BillGroupByOutputType = {
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
+  billLevelDiscountIsPercent: boolean | null
+  billLevelDiscountPercent: number | null
   priceValid: Date | null
   validContactUntil: Date | null
   rentalStockReleased: boolean
@@ -689,6 +707,8 @@ export type BillWhereInput = {
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  billLevelDiscountIsPercent?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  billLevelDiscountPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
@@ -756,6 +776,8 @@ export type BillOrderByWithRelationInput = {
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
+  billLevelDiscountIsPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   priceValid?: Prisma.SortOrderInput | Prisma.SortOrder
   validContactUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
@@ -826,6 +848,8 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  billLevelDiscountIsPercent?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  billLevelDiscountPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
@@ -893,6 +917,8 @@ export type BillOrderByWithAggregationInput = {
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
+  billLevelDiscountIsPercent?: Prisma.SortOrderInput | Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   priceValid?: Prisma.SortOrderInput | Prisma.SortOrder
   validContactUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
@@ -961,6 +987,8 @@ export type BillScalarWhereWithAggregatesInput = {
   DocumentType?: Prisma.EnumDocumentTypeNullableWithAggregatesFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  billLevelDiscountIsPercent?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
+  billLevelDiscountPercent?: Prisma.FloatNullableWithAggregatesFilter<"Bill"> | number | null
   priceValid?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolWithAggregatesFilter<"Bill"> | boolean
@@ -1020,6 +1048,8 @@ export type BillCreateInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -1082,6 +1112,8 @@ export type BillUncheckedCreateInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -1143,6 +1175,8 @@ export type BillUpdateInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1205,6 +1239,8 @@ export type BillUncheckedUpdateInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1267,6 +1303,8 @@ export type BillCreateManyInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -1326,6 +1364,8 @@ export type BillUpdateManyMutationInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1381,6 +1421,8 @@ export type BillUncheckedUpdateManyInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1451,6 +1493,8 @@ export type BillCountOrderByAggregateInput = {
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  billLevelDiscountIsPercent?: Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrder
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
@@ -1485,6 +1529,7 @@ export type BillAvgOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
   splitPercent?: Prisma.SortOrder
@@ -1534,6 +1579,8 @@ export type BillMaxOrderByAggregateInput = {
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  billLevelDiscountIsPercent?: Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrder
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
@@ -1594,6 +1641,8 @@ export type BillMinOrderByAggregateInput = {
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  billLevelDiscountIsPercent?: Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrder
   priceValid?: Prisma.SortOrder
   validContactUntil?: Prisma.SortOrder
   rentalStockReleased?: Prisma.SortOrder
@@ -1628,6 +1677,7 @@ export type BillSumOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
+  billLevelDiscountPercent?: Prisma.SortOrder
   WHTpercent?: Prisma.SortOrder
   WHTAmount?: Prisma.SortOrder
   splitPercent?: Prisma.SortOrder
@@ -1787,6 +1837,14 @@ export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
 
 export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
   set?: $Enums.DocumentType | null
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type BoolFieldUpdateOperationsInput = {
@@ -1951,6 +2009,8 @@ export type BillCreateWithoutMemberInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2012,6 +2072,8 @@ export type BillUncheckedCreateWithoutMemberInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2102,6 +2164,8 @@ export type BillScalarWhereInput = {
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
+  billLevelDiscountIsPercent?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
+  billLevelDiscountPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
   priceValid?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   validContactUntil?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   rentalStockReleased?: Prisma.BoolFilter<"Bill"> | boolean
@@ -2161,6 +2225,8 @@ export type BillCreateWithoutBusinessIdInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2222,6 +2288,8 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2308,6 +2376,8 @@ export type BillCreateWithoutCustomerInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2369,6 +2439,8 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2455,6 +2527,8 @@ export type BillCreateWithoutProductInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2516,6 +2590,8 @@ export type BillUncheckedCreateWithoutProductInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2592,6 +2668,8 @@ export type BillUpdateWithoutProductInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2653,6 +2731,8 @@ export type BillUncheckedUpdateWithoutProductInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2713,6 +2793,8 @@ export type BillCreateWithoutExpenseInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2774,6 +2856,8 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -2850,6 +2934,8 @@ export type BillUpdateWithoutExpenseInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2911,6 +2997,8 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2971,6 +3059,8 @@ export type BillCreateWithoutPlatformInfoInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3032,6 +3122,8 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3118,6 +3210,8 @@ export type BillCreateWithoutProjectInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3179,6 +3273,8 @@ export type BillUncheckedCreateWithoutProjectInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3266,6 +3362,8 @@ export type BillCreateManyMemberInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3324,6 +3422,8 @@ export type BillUpdateWithoutMemberInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3385,6 +3485,8 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3446,6 +3548,8 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3505,6 +3609,8 @@ export type BillCreateManyBusinessIdInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3563,6 +3669,8 @@ export type BillUpdateWithoutBusinessIdInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3624,6 +3732,8 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3685,6 +3795,8 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3744,6 +3856,8 @@ export type BillCreateManyCustomerInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -3802,6 +3916,8 @@ export type BillUpdateWithoutCustomerInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3863,6 +3979,8 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3924,6 +4042,8 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3983,6 +4103,8 @@ export type BillCreateManyPlatformInfoInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -4041,6 +4163,8 @@ export type BillUpdateWithoutPlatformInfoInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4102,6 +4226,8 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4163,6 +4289,8 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4222,6 +4350,8 @@ export type BillCreateManyProjectInput = {
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
+  billLevelDiscountIsPercent?: boolean | null
+  billLevelDiscountPercent?: number | null
   priceValid?: Date | string | null
   validContactUntil?: Date | string | null
   rentalStockReleased?: boolean
@@ -4280,6 +4410,8 @@ export type BillUpdateWithoutProjectInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4341,6 +4473,8 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4402,6 +4536,8 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  billLevelDiscountIsPercent?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  billLevelDiscountPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   priceValid?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validContactUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rentalStockReleased?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4492,6 +4628,8 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
+  billLevelDiscountIsPercent?: boolean
+  billLevelDiscountPercent?: boolean
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
@@ -4560,6 +4698,8 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
+  billLevelDiscountIsPercent?: boolean
+  billLevelDiscountPercent?: boolean
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
@@ -4625,6 +4765,8 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
+  billLevelDiscountIsPercent?: boolean
+  billLevelDiscountPercent?: boolean
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
@@ -4690,6 +4832,8 @@ export type BillSelectScalar = {
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
+  billLevelDiscountIsPercent?: boolean
+  billLevelDiscountPercent?: boolean
   priceValid?: boolean
   validContactUntil?: boolean
   rentalStockReleased?: boolean
@@ -4711,7 +4855,7 @@ export type BillSelectScalar = {
   projectId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cCountry" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cCountry" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "billLevelDiscountIsPercent" | "billLevelDiscountPercent" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -4787,6 +4931,8 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     DocumentType: $Enums.DocumentType | null
     discount: number | null
     billLevelDiscount: number | null
+    billLevelDiscountIsPercent: boolean | null
+    billLevelDiscountPercent: number | null
     priceValid: Date | null
     validContactUntil: Date | null
     rentalStockReleased: boolean
@@ -5274,6 +5420,8 @@ export interface BillFieldRefs {
   readonly DocumentType: Prisma.FieldRef<"Bill", 'DocumentType'>
   readonly discount: Prisma.FieldRef<"Bill", 'Int'>
   readonly billLevelDiscount: Prisma.FieldRef<"Bill", 'Int'>
+  readonly billLevelDiscountIsPercent: Prisma.FieldRef<"Bill", 'Boolean'>
+  readonly billLevelDiscountPercent: Prisma.FieldRef<"Bill", 'Float'>
   readonly priceValid: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly validContactUntil: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly rentalStockReleased: Prisma.FieldRef<"Bill", 'Boolean'>

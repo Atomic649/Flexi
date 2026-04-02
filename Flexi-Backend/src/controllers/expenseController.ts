@@ -2414,7 +2414,7 @@ const getExpenseNoteSuggestions = async (req: Request, res: Response) => {
 
 // Create a new project for a business
 const createProject = async (req: Request, res: Response) => {
-  const { memberId, name } = req.body;
+  const { memberId, name, description } = req.body;
   if (!memberId || !name?.trim()) {
     return res.status(400).json({ message: "memberId and name are required" });
   }
@@ -2427,13 +2427,29 @@ const createProject = async (req: Request, res: Response) => {
     if (!businessId) return res.status(404).json({ message: "Business not found" });
 
     const project = await prisma.project.create({
-      data: { name: name.trim(), businessAcc: businessId, memberId },
-      select: { id: true, name: true },
+      data: { name: name.trim(), description: description?.trim() || null, businessAcc: businessId, memberId },
+      select: { id: true, name: true, description: true },
     });
     res.json(project);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Failed to create project" });
+  }
+};
+
+const updateProject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { description } = req.body;
+  try {
+    const project = await prisma.project.update({
+      where: { id: Number(id) },
+      data: { description: description?.trim() ?? null },
+      select: { id: true, name: true, description: true },
+    });
+    res.json(project);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to update project" });
   }
 };
 
@@ -2487,6 +2503,7 @@ const getProjectSuggestions = async (req: Request, res: Response) => {
       select: {
         id: true,
         name: true,
+        description: true,
         _count: { select: { expenses: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -2494,7 +2511,7 @@ const getProjectSuggestions = async (req: Request, res: Response) => {
 
     const sorted = projects
       .sort((a, b) => b._count.expenses - a._count.expenses)
-      .map(({ id, name }) => ({ id, name }));
+      .map(({ id, name, description }) => ({ id, name, description }));
 
     res.json({ projects: sorted });
   } catch (e) {
@@ -2521,6 +2538,7 @@ export {
   getCustomGroupSuggestions,
   getProjectSuggestions,
   createProject,
+  updateProject,
 };
 
 

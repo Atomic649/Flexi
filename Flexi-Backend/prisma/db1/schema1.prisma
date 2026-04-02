@@ -354,9 +354,11 @@ model Bill {
   note                 String?
   taxType              taxType?      @default(Individual)
   DocumentType         DocumentType? @default(Receipt)
-  discount             Int?          @default(0)
-  billLevelDiscount    Int?          @default(0)
-  priceValid           DateTime? // Optional field for expiration
+  discount                   Int?     @default(0)
+  billLevelDiscount          Int?     @default(0)
+  billLevelDiscountIsPercent Boolean? @default(false)
+  billLevelDiscountPercent   Float?   @default(0)
+  priceValid                 DateTime? // Optional field for expiration
   validContactUntil    DateTime?
   rentalStockReleased  Boolean       @default(false)
   withHoldingTax       Boolean?      @default(false)

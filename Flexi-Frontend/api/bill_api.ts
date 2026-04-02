@@ -71,6 +71,9 @@ class CallAPIBill {
         DocumentType: ("Bill" | "Invoice" | "Receipt" | "Quotation")[];
         note?: string; // Optional note field
         discount?: number; // Optional discount field
+        billLevelDiscount?: number; // Optional bill-level discount field
+        billLevelDiscountIsPercent?: boolean; // Optional flag to indicate if bill-level discount is a percentage
+        billLevelDiscountPercent?: number; // Optional bill-level discount percentage (if the above flag is true)
         priceValid?: Date; // Optional price validity field
         validContactUntil?: Date; // Optional valid contact date
         paymentTermCondition?: string; // Optional payment term condition
@@ -129,6 +132,9 @@ class CallAPIBill {
         DocumentType: ("Bill" | "Invoice" | "Receipt" | "Quotation")[];
         note?: string; // Optional note field
         discount?: number; // Optional discount field
+        billLevelDiscount?: number; // Optional bill-level discount field
+        billLevelDiscountIsPercent?: boolean; // Optional flag to indicate if bill-level discount is a percentage
+        billLevelDiscountPercent?: number; // Optional bill-level discount percentage (if the above flag is true)
         priceValid?: Date; // Optional price validity field
         validContactUntil?: Date; // Optional valid contact date
         paymentTermCondition?: string; // Optional payment term condition

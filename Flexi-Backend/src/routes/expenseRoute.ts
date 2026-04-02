@@ -16,6 +16,7 @@ import {
   getCustomGroupSuggestions,
   getProjectSuggestions,
   createProject,
+  updateProject,
 } from "../controllers/expenseController";
 import authenticateToken from "../middleware/authMiddleware";
 // Create express router
@@ -66,5 +67,8 @@ router.get("/project-suggestions/:memberId", authenticateToken, getProjectSugges
 
 // Create a new project
 router.post("/projects", authenticateToken, createProject);
+
+// Update project description
+router.put("/projects/:id", authenticateToken, updateProject);
 
 export default router;

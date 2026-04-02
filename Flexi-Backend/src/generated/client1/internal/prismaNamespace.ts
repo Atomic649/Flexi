@@ -1698,6 +1698,8 @@ export const BillScalarFieldEnum = {
   DocumentType: 'DocumentType',
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',
+  billLevelDiscountIsPercent: 'billLevelDiscountIsPercent',
+  billLevelDiscountPercent: 'billLevelDiscountPercent',
   priceValid: 'priceValid',
   validContactUntil: 'validContactUntil',
   rentalStockReleased: 'rentalStockReleased',
@@ -2079,6 +2081,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
  * Reference to a field of type 'SocialMedia'
  */
 export type EnumSocialMediaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialMedia'>
@@ -2173,20 +2189,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**

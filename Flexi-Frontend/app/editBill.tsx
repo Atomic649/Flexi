@@ -105,7 +105,8 @@ export default function EditBill() {
 
   // Project state
   const [projectId, setProjectId] = useState<number | undefined>(undefined);
-  const [projectSuggestions, setProjectSuggestions] = useState<{ id: number; name: string }[]>([]);
+  const [projectDescription, setProjectDescription] = useState("");
+  const [projectSuggestions, setProjectSuggestions] = useState<{ id: number; name: string; description?: string }[]>([]);
 
   // Payment information
   const [payment, setPayment] = useState("");
@@ -118,8 +119,25 @@ export default function EditBill() {
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
   const { vat } = useBusiness();
+  const [billLevelDiscountValue, setBillLevelDiscountValue] = useState("");
+  const [billLevelDiscountIsPercent, setBillLevelDiscountIsPercent] = useState(false);
   const [withholdingTax, setWithholdingTax] = useState(false);
   const [withholdingPercent, setWithholdingPercent] = useState("");
+
+  // Computed bill-level discount amount (handles both % and fixed modes)
+  const billLevelDiscountAmount = useMemo(() => {
+    const val = Number(billLevelDiscountValue) || 0;
+    if (!billLevelDiscountIsPercent) return val;
+    const subtotal = productItems.reduce(
+      (sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+      0,
+    );
+    const unitDisc = productItems.reduce(
+      (sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.unitDiscount) || 0),
+      0,
+    );
+    return Number(((subtotal - unitDisc) * (val / 100)).toFixed(2));
+  }, [billLevelDiscountValue, billLevelDiscountIsPercent, productItems]);
 
   const withholdingTaxAmount = useMemo(() => {
     if (!withholdingTax) return 0;
@@ -137,9 +155,9 @@ export default function EditBill() {
       const unitDisc = Number(item.unitDiscount) || 0;
       return sum + qty * unitDisc;
     }, 0);
-    let taxableBase = subtotal - unitDisc;
+    let taxableBase = subtotal - unitDisc - billLevelDiscountAmount;
     if (vat) {
-      taxableBase = subTotalWitoutVat - unitDisc;
+      taxableBase = subTotalWitoutVat - unitDisc - billLevelDiscountAmount;
     }
 
     const pct = Number(withholdingPercent) || 0;
@@ -147,7 +165,7 @@ export default function EditBill() {
     // keep two decimal places
     const amt = Number(raw.toFixed(2));
     return amt;
-  }, [withholdingTax, withholdingPercent, productItems]);
+  }, [withholdingTax, withholdingPercent, productItems, billLevelDiscountAmount]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
@@ -844,6 +862,16 @@ export default function EditBill() {
           !billData.isSplitChild,
         );
 
+        // Set bill-level discount from bill data
+        if (billData.billLevelDiscount) {
+          const isPercent = billData.billLevelDiscountIsPercent ?? false;
+          setBillLevelDiscountIsPercent(isPercent);
+          setBillLevelDiscountValue(
+            isPercent
+              ? String(billData.billLevelDiscountPercent ?? 0)
+              : String(billData.billLevelDiscount),
+          );
+        }
         // Set note from bill data
         if (billData.note) {
           setNote(billData.note);
@@ -859,6 +887,7 @@ export default function EditBill() {
         // Set project from bill data
         if (billData.projectId) {
           setProjectId(billData.projectId);
+          setProjectDescription(billData.project?.description ?? "");
         }
         // Set document type from API data, but only if it's available in business
         let isReceiptDocument = false;
@@ -1256,6 +1285,9 @@ export default function EditBill() {
           quantity: Number(item.quantity),
           unitDiscount: Number(item.unitDiscount) || 0,
         })),
+        billLevelDiscount: billLevelDiscountAmount,
+        billLevelDiscountIsPercent: billLevelDiscountIsPercent,
+        billLevelDiscountPercent: billLevelDiscountIsPercent ? (Number(billLevelDiscountValue) || 0) : 0,
         withholdingTax: withholdingTax,
         withholdingPercent: withholdingTax
           ? Number(withholdingPercent)
@@ -1269,6 +1301,11 @@ export default function EditBill() {
         ...(projectId != null && { projectId }),
       });
       if (data.error) throw new Error(data.error);
+
+      if (projectId != null) {
+        await CallAPIExpense.updateProjectAPI(projectId, projectDescription || undefined);
+      }
+
       setAlertConfig({
         visible: true,
         title: t("bill.alerts.success"),
@@ -2303,6 +2340,65 @@ export default function EditBill() {
               onBlur={() => setIsRemarkFocused(false)}
             />
 
+            {/* Bill-Level Discount Section */}
+            <View className="mt-2 mb-2" style={{ backgroundColor: "transparent" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <CustomText style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>
+                  {t("bill.billLevelDiscount")}
+                </CustomText>
+                <View style={{ flexDirection: "row", borderRadius: 6, borderWidth: 1, borderColor: theme === "dark" ? "#606060" : "#b1b1b1", overflow: "hidden" }}>
+                  <TouchableOpacity
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
+                    onPress={() => setBillLevelDiscountIsPercent(true)}
+                    activeOpacity={0.8}
+                    disabled={!isEditMode}
+                  >
+                    <CustomText style={{ color: billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>%</CustomText>
+                  </TouchableOpacity>
+                  <View style={{ width: 1, backgroundColor: theme === "dark" ? "#606060" : "#b1b1b1" }} />
+                  <TouchableOpacity
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: !billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
+                    onPress={() => setBillLevelDiscountIsPercent(false)}
+                    activeOpacity={0.8}
+                    disabled={!isEditMode}
+                  >
+                    <CustomText style={{ color: !billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>฿</CustomText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View className="flex flex-row justify-between">
+                <View className="w-1/2">
+                  <FormFieldClear
+                    title={billLevelDiscountIsPercent ? t("bill.billLevelDiscountPercent") : t("bill.billLevelDiscount")}
+                    value={billLevelDiscountValue}
+                    handleChangeText={(value: string) => {
+                      const numeric = value.replace(/[^0-9.]/g, "");
+                      setBillLevelDiscountValue(numeric);
+                    }}
+                    placeholder="0"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles={fieldStyles}
+                    keyboardType="numeric"
+                    maxLength={12}
+                    editable={isEditMode}
+                  />
+                </View>
+                <View
+                  className="w-1/2 items-start justify-start"
+                  style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 6 }}
+                >
+                  <CustomText className="text-sm pt-1" style={{ color: theme === "dark" ? "#bbb" : "#666" }}>
+                    {t("bill.billLevelDiscountAmount")}:
+                  </CustomText>
+                  <CustomText className="text-sm ml-2" weight="bold" style={{ color: theme === "dark" ? "#fff" : "#222" }}>
+                    {billLevelDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </CustomText>
+                </View>
+              </View>
+            </View>
+
             {/* Withholding Tax Section */}
             <View
               className="mt-2 mb-2"
@@ -2313,9 +2409,13 @@ export default function EditBill() {
                   flexDirection: "row",
                   alignItems: "center",
                   marginRight: 20,
+                  opacity: isEditMode ? 1 : 0.6,
                 }}
-                onPress={() => setWithholdingTax((prev) => !prev)}
-                activeOpacity={0.8}
+                onPress={() => {
+                  if (isEditMode) setWithholdingTax((prev) => !prev);
+                }}
+                activeOpacity={isEditMode ? 0.8 : 1}
+                disabled={!isEditMode}
               >
                 <Ionicons
                   name={withholdingTax ? "checkbox" : "square-outline"}
@@ -2396,23 +2496,44 @@ export default function EditBill() {
                 })),
               ]}
               selectedValue={projectId != null ? String(projectId) : ""}
-              onValueChange={(val: string) =>
-                setProjectId(val ? Number(val) : undefined)
-              }
+              onValueChange={(val: string) => {
+                if (!isEditMode) return;
+                const id = val ? Number(val) : undefined;
+                setProjectId(id);
+                const matched = projectSuggestions.find((p) => p.id === id);
+                setProjectDescription(matched?.description ?? "");
+              }}
               onAddNew={async (name: string) => {
+                if (!isEditMode) return;
                 try {
                   const mId = await getMemberId();
                   if (!mId) return;
-                  const newProject = await CallAPIExpense.createProjectAPI(mId, name);
+                  const newProject = await CallAPIExpense.createProjectAPI(mId, name, projectDescription || undefined);
                   setProjectSuggestions((prev) => [...prev, newProject]);
                   setProjectId(newProject.id);
+                  setProjectDescription(newProject.description ?? "");
                 } catch (e) {
                   console.error("Failed to create project", e);
                 }
               }}
               disabled={!isEditMode}
-              
-                  otherStyles="mt-1 mb-2"
+              otherStyles="mt-1 mb-2"
+            />
+            <FormFieldClear
+              title={t("common.projectDescription")}
+              value={projectDescription}
+              handleChangeText={setProjectDescription}
+              placeholder={t("common.enterProjectDescription")}
+              borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+              textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+              otherStyles={fieldStyles}
+              maxLength={500}
+              multiline={true}
+              numberOfLines={2}
+              textAlignVertical="top"
+              disabled={!isEditMode}
+              editable={isEditMode}
             />
 
             {/* Note Section */}

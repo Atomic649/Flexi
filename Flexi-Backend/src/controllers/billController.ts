@@ -212,6 +212,9 @@ interface billInput {
   DocumentType: ("Invoice" | "Receipt" | "Quotation")[];
   note?: string; // Optional note
   discount?: number; // Optional discount field
+  billLevelDiscount?: number; // Optional bill-level discount (computed amount)
+  billLevelDiscountIsPercent?: boolean; // Whether billLevelDiscount was entered as %
+  billLevelDiscountPercent?: number; // The % value if billLevelDiscountIsPercent is true
   priceValid?: Date; // Optional price valid
   validContactUntil?: Date; // Optional valid contact date
   beforeDiscount?: number; // Optional field for total before discount
@@ -275,6 +278,9 @@ const schema = Joi.object({
     .required(),
   note: Joi.string().allow("").optional(), // Optional note field
   discount: Joi.number().min(0).optional(), // Optional discount field
+  billLevelDiscount: Joi.number().min(0).optional(), // Optional bill-level discount (computed amount)
+  billLevelDiscountIsPercent: Joi.boolean().optional(),
+  billLevelDiscountPercent: Joi.number().min(0).max(100).optional(),
   priceValid: Joi.date().optional(), // Optional price valid date
   validContactUntil: Joi.date().optional(),
   withholdingTax: Joi.boolean().optional(),
@@ -409,15 +415,13 @@ const createBill = async (req: Request, res: Response) => {
         console.log("🚀 Calculated discount:", discount);
 
         // Get bill-level discount from input
-        //const billLevelDiscount = billInput.discount || 0;
-        //console.log("🚀 Calculated billLevelDiscount:", billLevelDiscount);
+        const billLevelDiscount = Number(billInput.billLevelDiscount ?? 0);
 
         // Calculate total from all product items (subtract unit discounts and bill-level discount)
         const normaltotal = billInput.productItems.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
           0,
         );
-        //  - billLevelDiscount;
         console.log("🚀 Calculated normaltotal:", normaltotal);
         // check businessAcc is vat registered
         const vatRegistered = prisma.businessAcc.findUnique({
@@ -427,8 +431,8 @@ const createBill = async (req: Request, res: Response) => {
 
         const totalBeforeTax =
           vatRegistered && (await vatRegistered).vat
-            ? (normaltotal / 1.07 - discount).toFixed(2)
-            : (normaltotal - discount).toFixed(2);
+            ? (normaltotal / 1.07 - discount - billLevelDiscount).toFixed(2)
+            : (normaltotal - discount - billLevelDiscount).toFixed(2);
         const vatAmount =
           vatRegistered && (await vatRegistered).vat
             ? (Number(totalBeforeTax) * 0.07).toFixed(2)
@@ -524,8 +528,10 @@ const createBill = async (req: Request, res: Response) => {
                 platformId: billInput.platformId,
                 platform: billInput.platform,
                 image: req.file?.filename ?? "",
-                discount: discount, // Unit discounts only
-                //billLevelDiscount: billLevelDiscount, // Bill-level discount
+                discount: discount,
+                billLevelDiscount: billLevelDiscount,
+                billLevelDiscountIsPercent: billInput.billLevelDiscountIsPercent ?? false,
+                billLevelDiscountPercent: billInput.billLevelDiscountPercent ?? 0,
                 priceValid: billInput.priceValid, // Include priceValid if provided
                 total: finalTotal,
                 totalQuotation: total, // Include totalQuotation field
@@ -616,8 +622,10 @@ const createBill = async (req: Request, res: Response) => {
             businessAcc: billInput.businessAcc,
             platformId: billInput.platformId,
             image: req.file?.filename ?? "",
-            discount: discount, // Unit discounts only
-            //billLevelDiscount: billLevelDiscount, // Bill-level discount
+            discount: discount,
+            billLevelDiscount: billLevelDiscount,
+            billLevelDiscountIsPercent: billInput.billLevelDiscountIsPercent ?? false,
+            billLevelDiscountPercent: billInput.billLevelDiscountPercent ?? 0,
             priceValid: billInput.priceValid, // Include priceValid if provided
             total: finalTotal,
             totalQuotation: total, // Include totalQuotation field
@@ -792,6 +800,12 @@ const getBillById = async (req: Request, res: Response) => {
             },
           },
         },
+        project: {
+          select: {
+            name: true,
+            description: true,
+          },
+        },
       },
     }) as any;
 
@@ -964,15 +978,13 @@ const updateBill = async (req: Request, res: Response) => {
     console.log("🚀 Calculated discount:", discount);
 
     // Get bill-level discount from input
-    //const billLevelDiscount = billInput.discount || 0;
-    //console.log("🚀 Calculated billLevelDiscount:", billLevelDiscount);
+    const billLevelDiscount = Number(billInput.billLevelDiscount ?? 0);
 
     // Calculate total from all product items (subtract unit discounts and bill-level discount)
     const normaltotal = billInput.productItems.reduce(
       (sum, item) => sum + item.quantity * item.unitPrice,
       0,
     );
-    //  - billLevelDiscount;
     console.log("🚀 Calculated normaltotal:", normaltotal);
     // check businessAcc is vat registered
     const vatRegistered = prisma.businessAcc.findUnique({
@@ -982,8 +994,8 @@ const updateBill = async (req: Request, res: Response) => {
 
     const totalBeforeTax =
       vatRegistered && (await vatRegistered).vat
-        ? (normaltotal / 1.07 - discount).toFixed(2)
-        : (normaltotal - discount).toFixed(2);
+        ? (normaltotal / 1.07 - discount - billLevelDiscount).toFixed(2)
+        : (normaltotal - discount - billLevelDiscount).toFixed(2);
     const vatAmount =
       vatRegistered && (await vatRegistered).vat
         ? (Number(totalBeforeTax) * 0.07).toFixed(2)
@@ -1120,8 +1132,10 @@ const updateBill = async (req: Request, res: Response) => {
           vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
           totalTax: Number(vatAmount),
           note: billInput.note || "", // Optional note field
-          discount: discount, // Unit discounts only
-          //billLevelDiscount: billLevelDiscount, // Bill-level discount
+          discount: discount,
+          billLevelDiscount: billLevelDiscount,
+          billLevelDiscountIsPercent: billInput.billLevelDiscountIsPercent ?? false,
+          billLevelDiscountPercent: billInput.billLevelDiscountPercent ?? 0,
           beforeDiscount: beforeDiscount,
           priceValid: billInput.priceValid, // Include priceValid if provided
           DocumentType: docType, // Take first element from array

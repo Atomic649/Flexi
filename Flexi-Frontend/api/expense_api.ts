@@ -386,11 +386,23 @@ class CallAPIExpense {
     }
   }
 
-  // Create a new project for a business
-  async createProjectAPI(memberId: string, name: string): Promise<{ id: number; name: string }> {
+  // Update an existing project's description
+  async updateProjectAPI(projectId: number, description?: string): Promise<{ id: number; name: string; description?: string }> {
     try {
       const axiosInstance = await getAxiosWithAuth();
-      const response = await axiosInstance.post(`/expense/projects`, { memberId, name });
+      const response = await axiosInstance.put(`/expense/projects/${projectId}`, { description });
+      return response.data;
+    } catch (error) {
+      console.error("🚨 Update Project API Error:", error);
+      throw error;
+    }
+  }
+
+  // Create a new project for a business
+  async createProjectAPI(memberId: string, name: string, description?: string): Promise<{ id: number; name: string; description?: string }> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.post(`/expense/projects`, { memberId, name, description });
       return response.data;
     } catch (error) {
       console.error("🚨 Create Project API Error:", error);
@@ -399,7 +411,7 @@ class CallAPIExpense {
   }
 
   // Get project suggestions sorted by most-used for a business
-  async getProjectSuggestionsAPI(memberId: string): Promise<{ id: number; name: string }[]> {
+  async getProjectSuggestionsAPI(memberId: string): Promise<{ id: number; name: string; description?: string }[]> {
     try {
       const axiosInstance = await getAxiosWithAuth();
       const response = await axiosInstance.get(`/expense/project-suggestions/${memberId}`);

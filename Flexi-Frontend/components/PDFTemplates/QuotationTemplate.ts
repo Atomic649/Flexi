@@ -555,6 +555,10 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               <div>
                 <p><strong>${t("print.contact")}:</strong> ${quotation.cPhone || t("print.notSpecified")}</p>
               </div>
+              ${quotation.project?.name ? `
+              <div class="full-width">
+                <p><strong>${t("common.project")}:</strong> ${quotation.project.name}${quotation.project.description ? ` — ${quotation.project.description}` : ""}</p>
+              </div>` : ""}
             </div>
           </div>
 
@@ -643,18 +647,27 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 ${
                   isVatRegistered
                     ? `${
-                        totalDiscount > 0
+                        lineDiscountSum > 0
                           ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatNumber(
-                    totalDiscount,
+                    lineDiscountSum,
                   )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
+                ${
+                  quotation.billLevelDiscount
+                    ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("bill.billLevelDiscount")}${quotation.billLevelDiscountIsPercent && quotation.billLevelDiscountPercent ? ` (${quotation.billLevelDiscountPercent}%)` : ""}:</span>
+                  <span class="summary-amount">-${formatNumber(quotation.billLevelDiscount)} ${t("common.THB")}</span>
+                </div>`
+                    : ""
+                }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
                   <span class="summary-amount">${formatNumber(
@@ -668,18 +681,27 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                   )} ${t("common.THB")}</span>
                 </div>`
                     : `${
-                        totalDiscount > 0
+                        lineDiscountSum > 0
                           ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatNumber(
-                    totalDiscount,
+                    lineDiscountSum,
                   )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
+                ${
+                  quotation.billLevelDiscount
+                    ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("bill.billLevelDiscount")}${quotation.billLevelDiscountIsPercent && quotation.billLevelDiscountPercent ? ` (${quotation.billLevelDiscountPercent}%)` : ""}:</span>
+                  <span class="summary-amount">-${formatNumber(quotation.billLevelDiscount)} ${t("common.THB")}</span>
+                </div>`
+                    : ""
+                }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
                   <span class="summary-amount">${formatNumber(

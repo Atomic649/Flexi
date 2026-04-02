@@ -47,7 +47,9 @@
     "all": "All",
     "none": "— None —",
     "project": "Project",
-    "enterProject": "Enter project"
+    "enterProject": "Enter project",
+    "projectDescription": "Project Description",
+    "enterProjectDescription": "Enter project description"
 
   },
   "months": {
@@ -1443,6 +1445,10 @@
     },
     "confirm": "Confirm",
     "paid": "Paid",
+    "billLevelDiscount": "Bill Discount",
+    "billLevelDiscountPercent": "Discount %",
+    "billLevelDiscountAmount": "Discount Amount",
+    "enterBillLevelDiscount": "Enter bill-level discount amount",
     "withHoldingTax": "Withholding Tax",
     "enterWithHoldingTax": "Enter Withholding Tax (%)",
     "withHoldingTaxPercent": "WHT %",
