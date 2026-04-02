@@ -517,7 +517,9 @@ const createBill = async (req: Request, res: Response) => {
                 payment: billInput.payment || "NotSpecified",
                 cashStatus: finalCashStatus,
                 memberId: billInput.memberId,
-                purchaseAt: billDate,
+                purchaseAt: docType === "Receipt" ? billDate : undefined,
+                quotationAt: docType === "Quotation" ? billDate : undefined,
+                invoiceAt: docType === "Invoice" ? billDate : undefined,
                 businessAcc: billInput.businessAcc,
                 platformId: billInput.platformId,
                 platform: billInput.platform,
@@ -608,7 +610,9 @@ const createBill = async (req: Request, res: Response) => {
             platform: billInput.platform,
             cashStatus: finalCashStatus,
             memberId: billInput.memberId,
-            purchaseAt: billInput.purchaseAt,
+            purchaseAt: docType === "Receipt" ? billInput.purchaseAt : undefined,
+            quotationAt: docType === "Quotation" ? (billInput.quotationAt ?? billInput.purchaseAt) : undefined,
+            invoiceAt: docType === "Invoice" ? (billInput.invoiceAt ?? billInput.purchaseAt) : undefined,
             businessAcc: billInput.businessAcc,
             platformId: billInput.platformId,
             image: req.file?.filename ?? "",
@@ -1613,43 +1617,44 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       };
 
       // Generate ID if missing for the new DocumentType
-      // Parent bills (those with split children) should never receive an invoiceId
+      // Parent bills (those with split children) only ever hold a quotationId — never invoiceId or billId
       const isParentBill = (currentBill as any).flexiId
         ? (await tx.bill.count({ where: { splitGroupId: (currentBill as any).flexiId, isSplitChild: true } })) > 0
         : false;
 
-      if (DocumentType === "Receipt") {
-        if (!currentBill.billId) {
-          updateData.billId = await generateDocumentId(
-            tx,
-            currentBill.businessAcc,
-            "Receipt",
-          );
-        }
-        // If skipping from Quotation to Receipt, also generate Invoice ID if missing
-        if (
-          currentBill.DocumentType === "Quotation" &&
-          !currentBill.invoiceId &&
-          !isParentBill
-        ) {
+      if (DocumentType === "Quotation" && !currentBill.quotationId) {
+        updateData.quotationId = await generateDocumentId(
+          tx,
+          currentBill.businessAcc,
+          "Quotation",
+        );
+      }
+
+      if (!isParentBill) {
+        // Non-parent bills generate invoiceId / billId normally
+        if (DocumentType === "Receipt") {
+          if (!currentBill.billId) {
+            updateData.billId = await generateDocumentId(
+              tx,
+              currentBill.businessAcc,
+              "Receipt",
+            );
+          }
+          // If skipping from Quotation straight to Receipt, also generate invoiceId if missing
+          if (currentBill.DocumentType === "Quotation" && !currentBill.invoiceId) {
+            updateData.invoiceId = await generateDocumentId(
+              tx,
+              currentBill.businessAcc,
+              "Invoice",
+            );
+          }
+        } else if (DocumentType === "Invoice" && !currentBill.invoiceId) {
           updateData.invoiceId = await generateDocumentId(
             tx,
             currentBill.businessAcc,
             "Invoice",
           );
         }
-      } else if (DocumentType === "Invoice" && !currentBill.invoiceId && !isParentBill) {
-        updateData.invoiceId = await generateDocumentId(
-          tx,
-          currentBill.businessAcc,
-          "Invoice",
-        );
-      } else if (DocumentType === "Quotation" && !currentBill.quotationId && !(currentBill as any).isSplitChild) {
-        updateData.quotationId = await generateDocumentId(
-          tx,
-          currentBill.businessAcc,
-          "Quotation",
-        );
       }
 
       // Determine full base total from totalQuotation or calculate from products
@@ -1666,6 +1671,15 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       const isSplitChild = (currentBill as any).isSplitChild;
       const splitPct = isSplitChild ? (Number((currentBill as any).splitPercent) || 0) : 100;
       const splitAmount = baseTotal * (splitPct / 100);
+
+      // Set date fields based on DocumentType
+      if (DocumentType === "Receipt") {
+        updateData.purchaseAt = (currentBill as any).purchaseAt ?? new Date();
+      } else if (DocumentType === "Quotation") {
+        updateData.quotationAt = (currentBill as any).quotationAt ?? new Date();
+      } else if (DocumentType === "Invoice") {
+        updateData.invoiceAt = (currentBill as any).invoiceAt ?? new Date();
+      }
 
       // Set cashStatus and total based on DocumentType
       if (DocumentType === "Receipt") {
@@ -2254,7 +2268,7 @@ const createSplitChildren = async (req: Request, res: Response) => {
             platformId: parent.platformId,
             payment: parent.payment,
             taxType: parent.taxType,
-            purchaseAt: parent.purchaseAt,
+            invoiceAt: (parent as any).invoiceAt ?? new Date(),
             customerId: parent.customerId,
             note: (parent as any).note ?? "",
             paymentTermCondition: (parent as any).paymentTermCondition ?? "",

@@ -43,6 +43,7 @@ export type MemberMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deleted: boolean | null
+  signature: string | null
   userId: number | null
   businessId: number | null
 }
@@ -54,6 +55,7 @@ export type MemberMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deleted: boolean | null
+  signature: string | null
   userId: number | null
   businessId: number | null
 }
@@ -65,6 +67,7 @@ export type MemberCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   deleted: number
+  signature: number
   userId: number
   businessId: number
   _all: number
@@ -88,6 +91,7 @@ export type MemberMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deleted?: true
+  signature?: true
   userId?: true
   businessId?: true
 }
@@ -99,6 +103,7 @@ export type MemberMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deleted?: true
+  signature?: true
   userId?: true
   businessId?: true
 }
@@ -110,6 +115,7 @@ export type MemberCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deleted?: true
+  signature?: true
   userId?: true
   businessId?: true
   _all?: true
@@ -208,6 +214,7 @@ export type MemberGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   deleted: boolean | null
+  signature: string | null
   userId: number
   businessId: number | null
   _count: MemberCountAggregateOutputType | null
@@ -242,6 +249,7 @@ export type MemberWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   deleted?: Prisma.BoolNullableFilter<"Member"> | boolean | null
+  signature?: Prisma.StringNullableFilter<"Member"> | string | null
   userId?: Prisma.IntFilter<"Member"> | number
   businessId?: Prisma.IntNullableFilter<"Member"> | number | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -263,6 +271,7 @@ export type MemberOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
+  signature?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   businessId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -287,6 +296,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   deleted?: Prisma.BoolNullableFilter<"Member"> | boolean | null
+  signature?: Prisma.StringNullableFilter<"Member"> | string | null
   userId?: Prisma.IntFilter<"Member"> | number
   businessId?: Prisma.IntNullableFilter<"Member"> | number | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -308,6 +318,7 @@ export type MemberOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
+  signature?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   businessId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MemberCountOrderByAggregateInput
@@ -327,6 +338,7 @@ export type MemberScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Member"> | Date | string
   deleted?: Prisma.BoolNullableWithAggregatesFilter<"Member"> | boolean | null
+  signature?: Prisma.StringNullableWithAggregatesFilter<"Member"> | string | null
   userId?: Prisma.IntWithAggregatesFilter<"Member"> | number
   businessId?: Prisma.IntNullableWithAggregatesFilter<"Member"> | number | null
 }
@@ -338,6 +350,7 @@ export type MemberCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -357,6 +370,7 @@ export type MemberUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -376,6 +390,7 @@ export type MemberUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -395,6 +410,7 @@ export type MemberUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -414,6 +430,7 @@ export type MemberCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
 }
@@ -425,6 +442,7 @@ export type MemberUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MemberUncheckedUpdateManyInput = {
@@ -434,6 +452,7 @@ export type MemberUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
@@ -455,6 +474,7 @@ export type MemberCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
+  signature?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
 }
@@ -471,6 +491,7 @@ export type MemberMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
+  signature?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
 }
@@ -482,6 +503,7 @@ export type MemberMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
+  signature?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
 }
@@ -715,6 +737,7 @@ export type MemberCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
@@ -733,6 +756,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -780,6 +804,7 @@ export type MemberScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   deleted?: Prisma.BoolNullableFilter<"Member"> | boolean | null
+  signature?: Prisma.StringNullableFilter<"Member"> | string | null
   userId?: Prisma.IntFilter<"Member"> | number
   businessId?: Prisma.IntNullableFilter<"Member"> | number | null
 }
@@ -791,6 +816,7 @@ export type MemberCreateWithoutBusinessInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
@@ -809,6 +835,7 @@ export type MemberUncheckedCreateWithoutBusinessInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -853,6 +880,7 @@ export type MemberCreateWithoutBillInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   adsCost?: Prisma.AdsCostCreateNestedManyWithoutMemberInput
@@ -871,6 +899,7 @@ export type MemberUncheckedCreateWithoutBillInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   adsCost?: Prisma.AdsCostUncheckedCreateNestedManyWithoutMemberInput
@@ -905,6 +934,7 @@ export type MemberUpdateWithoutBillInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
@@ -923,6 +953,7 @@ export type MemberUncheckedUpdateWithoutBillInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -941,6 +972,7 @@ export type MemberCreateWithoutAdsCostInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -959,6 +991,7 @@ export type MemberUncheckedCreateWithoutAdsCostInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -993,6 +1026,7 @@ export type MemberUpdateWithoutAdsCostInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1011,6 +1045,7 @@ export type MemberUncheckedUpdateWithoutAdsCostInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1029,6 +1064,7 @@ export type MemberCreateWithoutExpenseInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1047,6 +1083,7 @@ export type MemberUncheckedCreateWithoutExpenseInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1081,6 +1118,7 @@ export type MemberUpdateWithoutExpenseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1099,6 +1137,7 @@ export type MemberUncheckedUpdateWithoutExpenseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1117,6 +1156,7 @@ export type MemberCreateWithoutPlatformInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1135,6 +1175,7 @@ export type MemberUncheckedCreateWithoutPlatformInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1169,6 +1210,7 @@ export type MemberUpdateWithoutPlatformInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1187,6 +1229,7 @@ export type MemberUncheckedUpdateWithoutPlatformInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1205,6 +1248,7 @@ export type MemberCreateWithoutProductInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1223,6 +1267,7 @@ export type MemberUncheckedCreateWithoutProductInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1257,6 +1302,7 @@ export type MemberUpdateWithoutProductInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1275,6 +1321,7 @@ export type MemberUncheckedUpdateWithoutProductInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1293,6 +1340,7 @@ export type MemberCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1311,6 +1359,7 @@ export type MemberUncheckedCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1345,6 +1394,7 @@ export type MemberUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1363,6 +1413,7 @@ export type MemberUncheckedUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1381,6 +1432,7 @@ export type MemberCreateWithoutChatInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1399,6 +1451,7 @@ export type MemberUncheckedCreateWithoutChatInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1433,6 +1486,7 @@ export type MemberUpdateWithoutChatInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1451,6 +1505,7 @@ export type MemberUncheckedUpdateWithoutChatInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1469,6 +1524,7 @@ export type MemberCreateWithoutPlatformTokenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   user: Prisma.UserCreateNestedOneWithoutMemberInput
   business?: Prisma.BusinessAccCreateNestedOneWithoutAllMemberInput
   bill?: Prisma.BillCreateNestedManyWithoutMemberInput
@@ -1487,6 +1543,7 @@ export type MemberUncheckedCreateWithoutPlatformTokenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
   businessId?: number | null
   bill?: Prisma.BillUncheckedCreateNestedManyWithoutMemberInput
@@ -1521,6 +1578,7 @@ export type MemberUpdateWithoutPlatformTokenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
@@ -1539,6 +1597,7 @@ export type MemberUncheckedUpdateWithoutPlatformTokenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
@@ -1557,6 +1616,7 @@ export type MemberCreateManyUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   businessId?: number | null
 }
 
@@ -1567,6 +1627,7 @@ export type MemberUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business?: Prisma.BusinessAccUpdateOneWithoutAllMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
@@ -1585,6 +1646,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -1603,6 +1665,7 @@ export type MemberUncheckedUpdateManyWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -1613,6 +1676,7 @@ export type MemberCreateManyBusinessInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deleted?: boolean | null
+  signature?: string | null
   userId: number
 }
 
@@ -1623,6 +1687,7 @@ export type MemberUpdateWithoutBusinessInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMemberNestedInput
   bill?: Prisma.BillUpdateManyWithoutMemberNestedInput
   adsCost?: Prisma.AdsCostUpdateManyWithoutMemberNestedInput
@@ -1641,6 +1706,7 @@ export type MemberUncheckedUpdateWithoutBusinessInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   bill?: Prisma.BillUncheckedUpdateManyWithoutMemberNestedInput
   adsCost?: Prisma.AdsCostUncheckedUpdateManyWithoutMemberNestedInput
@@ -1659,6 +1725,7 @@ export type MemberUncheckedUpdateManyWithoutBusinessInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  signature?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -1763,6 +1830,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdAt?: boolean
   updatedAt?: boolean
   deleted?: boolean
+  signature?: boolean
   userId?: boolean
   businessId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1785,6 +1853,7 @@ export type MemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   deleted?: boolean
+  signature?: boolean
   userId?: boolean
   businessId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1798,6 +1867,7 @@ export type MemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   deleted?: boolean
+  signature?: boolean
   userId?: boolean
   businessId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1811,11 +1881,12 @@ export type MemberSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   deleted?: boolean
+  signature?: boolean
   userId?: boolean
   businessId?: boolean
 }
 
-export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"uniqueId" | "role" | "permission" | "createdAt" | "updatedAt" | "deleted" | "userId" | "businessId", ExtArgs["result"]["member"]>
+export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"uniqueId" | "role" | "permission" | "createdAt" | "updatedAt" | "deleted" | "signature" | "userId" | "businessId", ExtArgs["result"]["member"]>
 export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   business?: boolean | Prisma.Member$businessArgs<ExtArgs>
@@ -1859,6 +1930,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     createdAt: Date
     updatedAt: Date
     deleted: boolean | null
+    signature: string | null
     userId: number
     businessId: number | null
   }, ExtArgs["result"]["member"]>
@@ -2300,6 +2372,7 @@ export interface MemberFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Member", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Member", 'DateTime'>
   readonly deleted: Prisma.FieldRef<"Member", 'Boolean'>
+  readonly signature: Prisma.FieldRef<"Member", 'String'>
   readonly userId: Prisma.FieldRef<"Member", 'Int'>
   readonly businessId: Prisma.FieldRef<"Member", 'Int'>
 }

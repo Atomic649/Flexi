@@ -23,7 +23,7 @@ enum Unit {
   Set
   Dozen
   NotSpecified
-
+       
   @@schema("flexidb")
 }
 
@@ -225,6 +225,7 @@ model Member {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deleted       Boolean?        @default(false)
+  signature     String?        
   // Relation
   userId        Int
   user          User            @relation(fields: [userId], references: [id])
@@ -257,6 +258,7 @@ model BusinessAcc {
   businessType     BusinessType      @default(OnlineSale)
   taxType          taxType           @default(Individual)
   userId           Int
+  stamp            String?           
   logo             String?
   businessColor    String? // Optional field for business color theme
   memberId         String[]          @default([]) // Track all member uniqueIds associated with this business
@@ -368,6 +370,7 @@ model Bill {
   remark               String?
   platform             SocialMedia
   isExport             Boolean?       @default(false)
+  
 
   // Relation
   memberId     String

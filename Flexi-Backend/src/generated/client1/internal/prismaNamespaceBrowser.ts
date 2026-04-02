@@ -113,6 +113,7 @@ export const MemberScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deleted: 'deleted',
+  signature: 'signature',
   userId: 'userId',
   businessId: 'businessId'
 } as const
@@ -135,6 +136,7 @@ export const BusinessAccScalarFieldEnum = {
   businessType: 'businessType',
   taxType: 'taxType',
   userId: 'userId',
+  stamp: 'stamp',
   logo: 'logo',
   businessColor: 'businessColor',
   memberId: 'memberId',
