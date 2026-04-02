@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   FlatList,
   View,
-  Text,
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProductCard from "@/components/ProductCard";
@@ -22,18 +22,11 @@ import CustomAlert from "@/components/CustomAlert";
 type Product = {
   id: number;
   name: string;
-  description: string;
-  barcode: string;
-  image: string | null;
-  stock: number;
   price: number;
-  categoryId: number;
-  statusId: number;
-  memberId: string;
-  createAt: string;
-  updateAt: string;
+  stock: number;
   unit: string;
-  productType: string; // Assuming productType is a string, adjust if it's an enum
+  image: string | null;
+  productType: string;
 };
 
 export default function Home() {
@@ -41,41 +34,18 @@ export default function Home() {
   const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Add alert config state
-  const [alertConfig, setAlertConfig] = useState<{
-    visible: boolean;
-    title: string;
-    message: string;
-    buttons: Array<{
-      text: string;
-      onPress: () => void;
-      style?: "default" | "cancel" | "destructive";
-    }>;
-  }>({
+  const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: "",
     message: "",
-    buttons: [],
+    buttons: [] as any[],
   });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const memberId = await getMemberId();
-        if (memberId) {
-          const response = await CallAPIProduct.getProductsAPI(memberId);
-          setProducts(response);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
+  const isDark = theme === "dark";
 
-    fetchProducts();
-  }, []);
-
-  const onRefresh = async () => {
+  const fetchProducts = async () => {
     try {
       const memberId = await getMemberId();
       if (memberId) {
@@ -83,126 +53,148 @@ export default function Home() {
         setProducts(response);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Fetch error:", error);
     }
+  };
+
+  useEffect(() => { fetchProducts(); }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchProducts();
     setRefreshing(false);
   };
 
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteProduct = (id: number) => {
     setAlertConfig({
       visible: true,
-      title: t("product.deleteAlert.title") || "Delete",
-      message: t("product.deleteAlert.message") || "Are you sure you want to delete this product?",
+      title: t("product.deleteAlert.title") || "Delete Item",
+      message: t("product.deleteAlert.message") || "Are you sure you want to delete this?",
       buttons: [
-        {
-          text: t("common.cancel") || "Cancel",
-          style: "cancel",
-          onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-        },
-        {
-          text: t("common.delete") || "Delete",
-          style: "destructive",
+        { text: t("common.cancel"), style: "cancel", onPress: () => setAlertConfig(p => ({ ...p, visible: false })) },
+        { 
+          text: t("common.delete"), 
+          style: "destructive", 
           onPress: async () => {
-            try {
-              await CallAPIProduct.deleteProductAPI(id);
-              setProducts(products.filter((product) => product.id !== id));
-              setAlertConfig((prev) => ({ ...prev, visible: false }));
-            } catch (error) {
-              console.error("Error deleting product:", error);
-              setAlertConfig({
-                visible: true,
-                title: t("product.deleteAlert.error") || "Error",
-                message: String(error),
-                buttons: [
-                  {
-                    text: t("common.ok") || "OK",
-                    onPress: () => setAlertConfig((prev) => ({ ...prev, visible: false })),
-                  },
-                ],
-              });
-            }
-          },
+            await CallAPIProduct.deleteProductAPI(id);
+            setProducts(products.filter(p => p.id !== id));
+            setAlertConfig(p => ({ ...p, visible: false }));
+          } 
         },
       ],
     });
   };
 
+  const renderListItem = (item: Product, index: number) => (
+    <View style={[styles.listRow, { borderBottomColor: isDark ? "#222" : "#f0f0f0" }]}>
+      {/* Running Number */}
+      <View style={styles.indexContainer}>
+        <CustomText style={styles.indexText}>
+          {(index + 1).toString().padStart(2, '0')}
+        </CustomText>
+      </View>
+
+      <View style={{ flex: 1 }}>
+        <CustomText style={styles.listName}>{item.name}</CustomText>
+        <CustomText style={styles.listSubtext}>{item.stock} {item.unit}</CustomText>
+      </View>
+
+      <View style={{ alignItems: "flex-end", marginRight: 15 }}>
+        <CustomText style={styles.listPrice}>฿{item.price.toLocaleString()}</CustomText>
+      </View>
+
+      <TouchableOpacity onPress={() => handleDeleteProduct(item.id)} hitSlop={15}>
+        <Ionicons name="trash-outline" size={18} color={isDark ? "#444" : "#ccc"} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
-    <SafeAreaView
-      className={`h-full ${useBackgroundColorClass()}`}
-      style={{
-        flex: 1,
-        paddingHorizontal: 16,
-        alignItems: "center", // Center horizontally
-      }}
-      >
-        <View
-          style={{
-            width: "100%",
-            maxWidth: Dimensions.get("window").width > 768 ? "50%" : "100%",
-            alignSelf: "center", // Ensure centering
-          }}
-        >
-          <FlatList
-            data={products}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <ProductCard
-                productname={item.name}
-                productprice={item.price}
-                productstock={item.stock}
-                unit={item.unit}
-                producttype={item.productType}
-                id={item.id}
-                productimage={item.image}
-                onDelete={() => handleDeleteProduct(item.id)}
-              />
-            )}
-           
-            ListEmptyComponent={() => (
-              <CustomText className="pt-10 text-center text-white">
-                {t("common.notfound")}
-              </CustomText>
-            )}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
+    <SafeAreaView edges={['left', 'right', 'bottom']} className={`flex-1 ${useBackgroundColorClass()}`}>
+      <View style={styles.container}>
+        
+        {/* Minimal Header Switcher */}
+        <View style={styles.header}>
+          <View style={[styles.switcher, { backgroundColor: isDark ? "#1a1a1a" : "#f5f5f5" }]}>
+            <TouchableOpacity 
+              onPress={() => setViewMode("grid")}
+              style={[styles.switchBtn, viewMode === "grid" && styles.switchActive]}
+            >
+              <Ionicons name="grid" size={14} color={viewMode === "grid" ? "#000" : "#888"} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setViewMode("list")}
+              style={[styles.switchBtn, viewMode === "list" && styles.switchActive]}
+            >
+              <Ionicons name="list" size={14} color={viewMode === "list" ? "#000" : "#888"} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Footer */}
-        {/* Setting Limit Product "3" */}
-        {products.length < 20 && (
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              bottom: 65,
-              right: 30,
-              backgroundColor: "#04eccd",
-              borderRadius: 50,
-              padding: 15,
-              elevation: 5,
-            }}
-            onPress={() => {
-              router.push("/createproduct");
-            }}
-          >
-            <Ionicons
-              name="add"
-              size={24}
-              color={theme === "dark" ? "#444541" : "#444541"}
-            />
-          </TouchableOpacity>
-        )}
-
-        {/* Add CustomAlert component */}
-        <CustomAlert
-          visible={alertConfig.visible}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          buttons={alertConfig.buttons}
-          onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+        <FlatList
+          data={products}
+          numColumns={viewMode === "grid" ? 2 : 1}
+          key={viewMode} // Key prop forces re-render when switching layouts
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          columnWrapperStyle={viewMode === "grid" ? { justifyContent: 'space-between' } : null}
+          renderItem={({ item, index }) => (
+            viewMode === "grid" ? (
+              <ProductCard 
+                id={item.id}
+                productname={item.name} 
+                productprice={item.price} 
+                productstock={item.stock} 
+                productimage={item.image} 
+                unit={item.unit}
+                onDelete={() => handleDeleteProduct(item.id)}
+              />
+            ) : renderListItem(item, index)
+          )}
+          ListEmptyComponent={<CustomText style={styles.emptyText}>{t("common.notfound")}</CustomText>}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#04eccd" />}
         />
-      </SafeAreaView>
+      </View>
+
+      <TouchableOpacity activeOpacity={0.8} style={styles.fab} onPress={() => router.push("/createproduct")}>
+        <Ionicons name="add" size={32} color="#000" />
+      </TouchableOpacity>
+
+      <CustomAlert {...alertConfig} onClose={() => setAlertConfig(p => ({ ...p, visible: false }))} />
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, paddingHorizontal: 16, alignSelf: "center", width: "100%", maxWidth: 600 },
+  header: { flexDirection: "row", justifyContent: "flex-end", paddingTop: 12, marginBottom: 8 },
+  switcher: { flexDirection: "row", borderRadius: 20, padding: 2 },
+  switchBtn: { paddingVertical: 5, paddingHorizontal: 15, borderRadius: 18 },
+  switchActive: { backgroundColor: "#04eccd" },
+  
+  // List Styles
+  listRow: { flexDirection: "row", alignItems: "center", paddingVertical: 14, borderBottomWidth: 1 },
+  indexContainer: { width: 30, marginRight: 8 },
+  indexText: { fontSize: 11, fontWeight: "700", opacity: 0.3 },
+  listName: { fontSize: 15, fontWeight: "500", letterSpacing: -0.3 },
+  listSubtext: { fontSize: 12, opacity: 0.4 },
+  listPrice: { fontSize: 15, fontWeight: "600", color: "#04eccd" },
+  
+  emptyText: { textAlign: "center", marginTop: 60, opacity: 0.3 },
+  fab: { 
+    position: "absolute", 
+    bottom: 30, 
+    right: 25, 
+    backgroundColor: "#04eccd", 
+    width: 56, 
+    height: 56, 
+    borderRadius: 28, 
+    justifyContent: "center", 
+    alignItems: "center", 
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10
+  },
+});

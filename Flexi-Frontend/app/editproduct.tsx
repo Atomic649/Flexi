@@ -386,34 +386,29 @@ export default function EditProduct() {
             otherStyles="mt-0 mb-2"
           />
 
-          <View className="flex flex-row justify-between">
-            <View className="w-1/2 pr-2">
-              <FormField2
-                title={t("product.productName")}
-                value={name}
-                handleChangeText={setproductname}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-              />
-            </View>
-            <View className="w-1/2 pl-2">
-              {/* Unit dropdown moved beside product name */}
-              <Dropdown2
-                title={t("product.unitTitle")}
-                options={units}
-                selectedValue={
-                  unit ? units.find((u) => u.value === unit)?.label : ""
-                }
-                onValueChange={(value: string) => setUnit(value)}
-                placeholder={t("product.selectUnit")}
-                bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
-                bgChoiceColor={theme === "dark" ? "#3D3D3D" : "#f1f1f1"}
-                textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                otherStyles={fieldStyles}
-              />
-            </View>
-          </View>
+          <FormField2
+            title={t("product.productName")}
+            value={name}
+            handleChangeText={setproductname}
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+          />
+
+          {/* Unit dropdown moved beside product name */}
+          <Dropdown2
+            title={t("product.unitTitle")}
+            options={units}
+            selectedValue={
+              unit ? units.find((u) => u.value === unit)?.label : ""
+            }
+            onValueChange={(value: string) => setUnit(value)}
+            placeholder={t("product.selectUnit")}
+            bgColor={theme === "dark" ? "#2D2D2D" : "#e1e1e1"}
+            bgChoiceColor={theme === "dark" ? "#3D3D3D" : "#f1f1f1"}
+            textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+            otherStyles={fieldStyles}
+          />
 
           {/* Barcode field is conditionally rendered based on product type */}
           {productType !== "Service" && productType !== "Rental" && (

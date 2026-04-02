@@ -577,7 +577,7 @@ export type BillGroupByOutputType = {
   updatedAt: Date
   quotationAt: Date | null
   invoiceAt: Date | null
-  purchaseAt: Date
+  purchaseAt: Date | null
   cName: string
   cLastName: string | null
   cPhone: string | null
@@ -660,7 +660,7 @@ export type BillWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  purchaseAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -727,7 +727,7 @@ export type BillOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   quotationAt?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   cPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -797,7 +797,7 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  purchaseAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -864,7 +864,7 @@ export type BillOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   quotationAt?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  purchaseAt?: Prisma.SortOrder
+  purchaseAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cName?: Prisma.SortOrder
   cLastName?: Prisma.SortOrderInput | Prisma.SortOrder
   cPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -932,7 +932,7 @@ export type BillScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   quotationAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   invoiceAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
-  purchaseAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
+  purchaseAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   cName?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
@@ -991,7 +991,7 @@ export type BillCreateInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1053,7 +1053,7 @@ export type BillUncheckedCreateInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1114,7 +1114,7 @@ export type BillUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1176,7 +1176,7 @@ export type BillUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1238,7 +1238,7 @@ export type BillCreateManyInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1297,7 +1297,7 @@ export type BillUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1352,7 +1352,7 @@ export type BillUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1922,7 +1922,7 @@ export type BillCreateWithoutMemberInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -1983,7 +1983,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2073,7 +2073,7 @@ export type BillScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   quotationAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   invoiceAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
-  purchaseAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
+  purchaseAt?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   cName?: Prisma.StringFilter<"Bill"> | string
   cLastName?: Prisma.StringNullableFilter<"Bill"> | string | null
   cPhone?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -2132,7 +2132,7 @@ export type BillCreateWithoutBusinessIdInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2193,7 +2193,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2279,7 +2279,7 @@ export type BillCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2340,7 +2340,7 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2426,7 +2426,7 @@ export type BillCreateWithoutProductInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2487,7 +2487,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2563,7 +2563,7 @@ export type BillUpdateWithoutProductInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2624,7 +2624,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2684,7 +2684,7 @@ export type BillCreateWithoutExpenseInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2745,7 +2745,7 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -2821,7 +2821,7 @@ export type BillUpdateWithoutExpenseInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2882,7 +2882,7 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2942,7 +2942,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3003,7 +3003,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3089,7 +3089,7 @@ export type BillCreateWithoutProjectInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3150,7 +3150,7 @@ export type BillUncheckedCreateWithoutProjectInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3237,7 +3237,7 @@ export type BillCreateManyMemberInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3295,7 +3295,7 @@ export type BillUpdateWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3356,7 +3356,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3417,7 +3417,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3476,7 +3476,7 @@ export type BillCreateManyBusinessIdInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3534,7 +3534,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3595,7 +3595,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3656,7 +3656,7 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3715,7 +3715,7 @@ export type BillCreateManyCustomerInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -3773,7 +3773,7 @@ export type BillUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3834,7 +3834,7 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3895,7 +3895,7 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3954,7 +3954,7 @@ export type BillCreateManyPlatformInfoInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -4012,7 +4012,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4073,7 +4073,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4134,7 +4134,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4193,7 +4193,7 @@ export type BillCreateManyProjectInput = {
   updatedAt?: Date | string
   quotationAt?: Date | string | null
   invoiceAt?: Date | string | null
-  purchaseAt?: Date | string
+  purchaseAt?: Date | string | null
   cName: string
   cLastName?: string | null
   cPhone?: string | null
@@ -4251,7 +4251,7 @@ export type BillUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4312,7 +4312,7 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4373,7 +4373,7 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  purchaseAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cName?: Prisma.StringFieldUpdateOperationsInput | string
   cLastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4758,7 +4758,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedAt: Date
     quotationAt: Date | null
     invoiceAt: Date | null
-    purchaseAt: Date
+    purchaseAt: Date | null
     cName: string
     cLastName: string | null
     cPhone: string | null

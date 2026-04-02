@@ -322,9 +322,9 @@ model Bill {
   invoiceId            String?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
-  quotationAt          DateTime?     @default(now())
-  invoiceAt            DateTime?     @default(now())
-  purchaseAt           DateTime     @default(now())
+  quotationAt          DateTime?     
+  invoiceAt            DateTime?     
+  purchaseAt           DateTime?      
   cName                String
   cLastName            String?
   cPhone               String?

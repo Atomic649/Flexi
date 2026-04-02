@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "flexidb"."Bill" ALTER COLUMN "purchaseAt" DROP NOT NULL,
+ALTER COLUMN "purchaseAt" DROP DEFAULT,
+ALTER COLUMN "invoiceAt" DROP DEFAULT,
+ALTER COLUMN "quotationAt" DROP DEFAULT;

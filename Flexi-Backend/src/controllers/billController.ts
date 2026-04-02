@@ -929,22 +929,22 @@ const updateBill = async (req: Request, res: Response) => {
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the ORIGINAL purchaseAt
     // Use the existing bill's purchaseAt date for cutoff calculation, not the new one
-    const originalPurchaseDate = new Date(existingBill.purchaseAt);
-    const nextMonth = new Date(
-      originalPurchaseDate.getFullYear(),
-      originalPurchaseDate.getMonth() + 1,
-      15,
-    );
-    const currentDate = new Date();
+    // const originalPurchaseDate = new Date(existingBill.purchaseAt);
+    // const nextMonth = new Date(
+    //   originalPurchaseDate.getFullYear(),
+    //   originalPurchaseDate.getMonth() + 1,
+    //   15,
+    // );
+    // const currentDate = new Date();
 
-    if (currentDate > nextMonth) {
-      return res.status(403).json({
-        message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
-        cutoffDate: nextMonth.toISOString(),
-        originalPurchaseDate: originalPurchaseDate.toISOString(),
-        currentDate: currentDate.toISOString(),
-      });
-    }
+    // if (currentDate > nextMonth) {
+    //   return res.status(403).json({
+    //     message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+    //     cutoffDate: nextMonth.toISOString(),
+    //     originalPurchaseDate: originalPurchaseDate.toISOString(),
+    //     currentDate: currentDate.toISOString(),
+    //   });
+    // }
 
     // Calculate beforeDiscount (total before any discounts)
     const beforeDiscount = billInput.productItems.reduce(
@@ -1511,22 +1511,22 @@ const updateCashStatusById = async (req: Request, res: Response) => {
 
     // Check if bill can be updated based on purchaseAt date
     // Bills cannot be updated after the 15th of the next month from the original purchaseAt
-    const originalPurchaseDate = new Date(existingBill.purchaseAt);
-    const nextMonth = new Date(
-      originalPurchaseDate.getFullYear(),
-      originalPurchaseDate.getMonth() + 1,
-      15,
-    );
-    const currentDate = new Date();
+    // const originalPurchaseDate = new Date(existingBill.purchaseAt);
+    // const nextMonth = new Date(
+    //   originalPurchaseDate.getFullYear(),
+    //   originalPurchaseDate.getMonth() + 1,
+    //   15,
+    // );
+    // const currentDate = new Date();
 
-    if (currentDate > nextMonth) {
-      return res.status(403).json({
-        message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
-        cutoffDate: nextMonth.toISOString(),
-        originalPurchaseDate: originalPurchaseDate.toISOString(),
-        currentDate: currentDate.toISOString(),
-      });
-    }
+    // if (currentDate > nextMonth) {
+    //   return res.status(403).json({
+    //     message: `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+    //     cutoffDate: nextMonth.toISOString(),
+    //     originalPurchaseDate: originalPurchaseDate.toISOString(),
+    //     currentDate: currentDate.toISOString(),
+    //   });
+    // }
 
     const bill = await prisma.bill.update({
       where: {
@@ -1580,28 +1580,28 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
         throw new Error("Bill not found");
       }
 
-      // Check if bill can be updated based on purchaseAt date
-      // Bills cannot be updated after the 15th of the next month from the original purchaseAt
-      const originalPurchaseDate = new Date(currentBill.purchaseAt);
-      const nextMonth = new Date(
-        originalPurchaseDate.getFullYear(),
-        originalPurchaseDate.getMonth() + 1,
-        15,
-      );
-      const currentDate = new Date();
+      // // Check if bill can be updated based on purchaseAt date
+      // // Bills cannot be updated after the 15th of the next month from the original purchaseAt
+      // const originalPurchaseDate = new Date(currentBill.purchaseAt);
+      // const nextMonth = new Date(
+      //   originalPurchaseDate.getFullYear(),
+      //   originalPurchaseDate.getMonth() + 1,
+      //   15,
+      // );
+      // const currentDate = new Date();
 
-      if (currentDate > nextMonth) {
-        const error: any = new Error(
-          `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
-        );
-        error.statusCode = 403;
-        error.details = {
-          cutoffDate: nextMonth.toISOString(),
-          originalPurchaseDate: originalPurchaseDate.toISOString(),
-          currentDate: currentDate.toISOString(),
-        };
-        throw error;
-      }
+      // if (currentDate > nextMonth) {
+      //   const error: any = new Error(
+      //     `Cannot update bill after ${nextMonth.toDateString()}. Bills can only be updated until the 15th of the month following the original purchase date.`,
+      //   );
+      //   error.statusCode = 403;
+      //   error.details = {
+      //     cutoffDate: nextMonth.toISOString(),
+      //     originalPurchaseDate: originalPurchaseDate.toISOString(),
+      //     currentDate: currentDate.toISOString(),
+      //   };
+      //   throw error;
+      // }
 
       // Prepare update data
       const updateData: any = {
