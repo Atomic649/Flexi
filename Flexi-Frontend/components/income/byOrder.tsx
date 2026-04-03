@@ -62,6 +62,7 @@ type Bill = {
     quantity: number;
     unit?: string;
   }>;
+  project?: { id: number; name: string; description?: string };
 };
 
 type ByOrderProps = {
@@ -641,6 +642,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                     id={bill.id}
                     platform={bill.platform}
                     product={bill.product}
+                    project={bill.project}
                     amount={bill.amount}
                     cName={bill.cName}
                     cLastName={bill.cLastName}

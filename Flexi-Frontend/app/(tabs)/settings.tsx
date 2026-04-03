@@ -558,6 +558,13 @@ export default function Setting() {
                 onPress={() => router.push("/business_info")}
               />
               <Divider />
+               <SectionItem
+                icon="tags"
+                text={t("settings.documentSettings")}
+                onPress={() => router.push("/documentSettings")}
+              />
+              
+              <Divider />
               <SectionItem
                 icon="users"
                 text={t("settings.businessSetting.team")}

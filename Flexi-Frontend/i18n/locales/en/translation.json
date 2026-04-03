@@ -519,6 +519,7 @@
       "product": "Product",
       "team": "Team"
     },
+    "documentSettings": "Document Settings",
     "logout": {
       "logout": "Logout",
       "confirmTitle": "Confirm Logout",
@@ -1411,6 +1412,16 @@
     },
     "footer": {
       "subtitle": "Transforming how small businesses manage their finances, track performance, and grow profitably in the digital economy."
+    }
+  },
+  "documentSettings": {
+    "billCard": {
+      "title": "Bill Card Display",
+      "description": "Choose what information to show in each bill card.",
+      "modeProducts": "Products",
+      "modeProductsDesc": "Show product name, quantity and unit",
+      "modeProject": "Project",
+      "modeProjectDesc": "Show project name and description"
     }
   },
   "bill": {

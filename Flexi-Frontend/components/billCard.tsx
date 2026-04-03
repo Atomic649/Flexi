@@ -12,6 +12,7 @@ import SwipeableRow, { SwipeAction } from "./swipe/SwipeableRow";
 import CustomAlert from "./CustomAlert";
 import { format } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
+import { useBillSettings } from "@/providers/BillSettingsProvider";
 
 const formatDate = (dateString: string) => {
   const parsedDate = new Date(dateString);
@@ -44,8 +45,10 @@ export default function BillCard({
   onSplit,          // Callback to open split screen (Invoice parent, no children yet)
   onResetSplit,     // Callback to reset split back to Quotation
   onToggleSplitChildren, // Callback to toggle showing/hiding split children
+  project, // Optional project { name, description }
 }: any) {
   const { t, i18n } = useTranslation();
+  const { billCardMode } = useBillSettings();
 
   const formatNumber = (value: number) =>
     new Intl.NumberFormat("en-US", {
@@ -254,9 +257,39 @@ export default function BillCard({
                 {cLastName}
               </CustomText>
             </View>
-            {/* Render all products */}
+            {/* Render products or project based on billCardMode */}
             <View className="flex-col ">
-              {Array.isArray(product) && product.length > 0 ? (
+              {billCardMode === "project" ? (
+                project?.name ? (
+                  <View className="flex-col gap-y-0.5">
+                    <CustomText
+                      className="font-bold text-sm pt-1"
+                      weight="regular"
+                      numberOfLines={1}
+                      style={{ color: "#7e7d7a" }}
+                    >
+                      {project.name}
+                    </CustomText>
+                    {project.description ? (
+                      <CustomText
+                        className="text-xs"
+                        weight="regular"
+                        numberOfLines={2}
+                        style={{ color: "#9e9b98" }}
+                      >
+                        {project.description}
+                      </CustomText>
+                    ) : null}
+                  </View>
+                ) : (
+                  <CustomText
+                    className="font-bold text-sm text-zinc-400"
+                    style={{ color: "#7e7d7a" }}
+                  >
+                    -
+                  </CustomText>
+                )
+              ) : Array.isArray(product) && product.length > 0 ? (
                 product.map((item: any, idx: number) => (
                   <View key={idx} className="flex-row gap-x-2 items-center">
                     <CustomText

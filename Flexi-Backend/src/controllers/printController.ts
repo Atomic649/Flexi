@@ -115,6 +115,9 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
         product: {
           include: { productList: { select: { name: true } } },
         },
+        project: {
+          select: { name: true, description: true },
+        },
       },
     });
 
@@ -133,11 +136,17 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
       },
     });
 
-    // Build a lookup: parent flexiId → parent quotationId
-    const parentQuotationIdMap = new Map<string, string | null>();
+    // Build a lookup: parent flexiId → parent data (for split children inheritance)
+    const parentDataMap = new Map<string, any>();
     allBills.forEach((b: any) => {
       if (!b.isSplitChild && b.flexiId) {
-        parentQuotationIdMap.set(b.flexiId, b.quotationId ?? null);
+        parentDataMap.set(b.flexiId, {
+          quotationId: b.quotationId ?? null,
+          project: b.project ?? null,
+          billLevelDiscount: b.billLevelDiscount ?? 0,
+          billLevelDiscountIsPercent: b.billLevelDiscountIsPercent ?? false,
+          billLevelDiscountPercent: b.billLevelDiscountPercent ?? 0,
+        });
       }
     });
 
@@ -169,18 +178,25 @@ export const getBillsByDateRange = async (req: Request, res: Response) => {
     }
 
     // Keep only child bills (isSplitChild === true) and regular bills (no splitGroupId)
-    // Attach parentQuotationId + splitSiblings to child bills
+    // Attach parentQuotationId + splitSiblings + inherited parent data to child bills
     const bills = allBills
       .filter((b: any) => b.isSplitChild === true || b.splitGroupId === null)
-      .map((b: any) => ({
-        ...b,
-        parentQuotationId: b.isSplitChild && b.splitGroupId
-          ? parentQuotationIdMap.get(b.splitGroupId) ?? null
-          : null,
-        splitSiblings: b.isSplitChild && b.splitGroupId
-          ? siblingsMap.get(b.splitGroupId) ?? []
-          : [],
-      }));
+      .map((b: any) => {
+        const parentData = (b.isSplitChild && b.splitGroupId)
+          ? parentDataMap.get(b.splitGroupId) ?? null
+          : null;
+        return {
+          ...b,
+          parentQuotationId: parentData?.quotationId ?? null,
+          project: b.project ?? parentData?.project ?? null,
+          billLevelDiscount: b.billLevelDiscount || parentData?.billLevelDiscount || 0,
+          billLevelDiscountIsPercent: b.billLevelDiscountIsPercent || parentData?.billLevelDiscountIsPercent || false,
+          billLevelDiscountPercent: b.billLevelDiscountPercent || parentData?.billLevelDiscountPercent || 0,
+          splitSiblings: (b.isSplitChild && b.splitGroupId)
+            ? siblingsMap.get(b.splitGroupId) ?? []
+            : [],
+        };
+      });
 
     // totalSale from ALL bills (parent + child)
     const totalSale = parentBill.reduce((sum, b) => sum + Number(b.total || 0), 0);
@@ -306,7 +322,7 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc : businessId?.businessId ?? 0,
-       
+
 
         OR: [
           {
@@ -333,6 +349,9 @@ export const searchBillsByCustomer = async (req: Request, res: Response) => {
               select: { name: true },
             },
           },
+        },
+        project: {
+          select: { name: true, description: true },
         },
       },
     });
@@ -369,7 +388,7 @@ export const searchBillsByPhone = async (req: Request, res: Response) => {
     // Search by customer name or last name with case-insensitive search
     const bills = await prisma.bill.findMany({
       where: {
-        businessAcc : businessId?.businessId ?? 0,     
+        businessAcc : businessId?.businessId ?? 0,
 
         cPhone: {
           contains: customerPhone as string,
@@ -386,6 +405,9 @@ export const searchBillsByPhone = async (req: Request, res: Response) => {
               select: { name: true },
             },
           },
+        },
+        project: {
+          select: { name: true, description: true },
         },
       },
       take : 20, // Limit results
@@ -464,6 +486,9 @@ export const searchBillById = async (req: Request, res: Response) => {
               select: { name: true },
             },
           },
+        },
+        project: {
+          select: { name: true, description: true },
         },
       },
     });

@@ -770,6 +770,13 @@ const getBills = async (req: Request, res: Response) => {
         flexiId: true,
         invoiceId: true,
         totalInvoice: true,
+        projectId: true,
+        project: {
+          select: {
+            name: true,
+            description: true,
+          },
+        },
       } as any,
       take: 100, // Limit to 100 records
     });
@@ -820,39 +827,56 @@ const getBillById = async (req: Request, res: Response) => {
       });
     }
 
-    // If this is a split child with missing fields, fill from parent as fallback
+    // If this is a split child, fill from parent as fallback
     if (bill.isSplitChild && bill.splitGroupId) {
       const needsFallback =
         !bill.withHoldingTax &&
         (!bill.note || bill.note === "") &&
         (!bill.totalBeforeTax || bill.totalBeforeTax === 0);
 
-      if (needsFallback) {
-        const parent = await prisma.bill.findFirst({
-          where: { flexiId: bill.splitGroupId, isSplitChild: false } as any,
-          select: {
-            withHoldingTax: true,
-            WHTpercent: true,
-            WHTAmount: true,
-            note: true,
-            paymentTermCondition: true,
-            remark: true,
-            payment: true,
-            priceValid: true,
-            repeat: true,
-            repeatMonths: true,
-            totalBeforeTax: true,
-            totalAfterTax: true,
-            totalTax: true,
-            vatPercent: true,
-            beforeDiscount: true,
-            discount: true,
-            totalQuotation: true,
-            image: true,
-          } as any,
-        }) as any;
+      const parent = await prisma.bill.findFirst({
+        where: { flexiId: bill.splitGroupId, isSplitChild: false } as any,
+        select: {
+          withHoldingTax: true,
+          WHTpercent: true,
+          WHTAmount: true,
+          note: true,
+          paymentTermCondition: true,
+          remark: true,
+          payment: true,
+          priceValid: true,
+          repeat: true,
+          repeatMonths: true,
+          totalBeforeTax: true,
+          totalAfterTax: true,
+          totalTax: true,
+          vatPercent: true,
+          beforeDiscount: true,
+          discount: true,
+          totalQuotation: true,
+          image: true,
+          billLevelDiscount: true,
+          billLevelDiscountIsPercent: true,
+          billLevelDiscountPercent: true,
+          project: { select: { name: true, description: true } },
+        } as any,
+      }) as any;
 
-        if (parent) {
+      // Always attach splitSiblings so templates can determine installment number
+      bill.splitSiblings = await prisma.bill.findMany({
+        where: { splitGroupId: bill.splitGroupId, isSplitChild: true } as any,
+        select: { id: true, splitPercent: true, totalInvoice: true, DocumentType: true, splitGroupId: true, cashStatus: true } as any,
+        orderBy: { id: "asc" } as any,
+      });
+
+      if (parent) {
+        // Always sync project and bill-level discount from parent
+        bill.billLevelDiscount = parent.billLevelDiscount ?? bill.billLevelDiscount;
+        bill.billLevelDiscountIsPercent = parent.billLevelDiscountIsPercent ?? bill.billLevelDiscountIsPercent;
+        bill.billLevelDiscountPercent = parent.billLevelDiscountPercent ?? bill.billLevelDiscountPercent;
+        bill.project = parent.project ?? bill.project;
+
+        if (needsFallback) {
           bill.withHoldingTax = parent.withHoldingTax ?? bill.withHoldingTax;
           bill.WHTpercent = parent.WHTpercent ?? bill.WHTpercent;
           bill.WHTAmount = parent.WHTAmount ?? bill.WHTAmount;
@@ -1474,6 +1498,10 @@ const updateBill = async (req: Request, res: Response) => {
                 remark: billInput.remark || "",
                 totalInvoice: childTotalInvoice,
                 totalQuotation: total,
+                billLevelDiscount: billLevelDiscount,
+                billLevelDiscountIsPercent: billInput.billLevelDiscountIsPercent ?? false,
+                billLevelDiscountPercent: billInput.billLevelDiscountPercent ?? 0,
+                ...(billInput.projectId != null ? { projectId: billInput.projectId } : { projectId: null }),
               } as any,
             });
           }
@@ -2176,10 +2204,20 @@ const getBillByFlexiId = async (req: Request, res: Response) => {
             productList: { select: { name: true } },
           },
         },
+        project: {
+          select: { name: true, description: true },
+        },
       },
     });
     if (!bill || bill.deleted) {
       return res.status(404).json({ message: "Bill not found" });
+    }
+    if ((bill as any).isSplitChild && (bill as any).splitGroupId) {
+      (bill as any).splitSiblings = await prisma.bill.findMany({
+        where: { splitGroupId: (bill as any).splitGroupId, isSplitChild: true } as any,
+        select: { id: true, splitPercent: true, totalInvoice: true, DocumentType: true, splitGroupId: true, cashStatus: true } as any,
+        orderBy: { id: "asc" } as any,
+      });
     }
     return res.json(bill);
   } catch (e) {
@@ -2267,7 +2305,10 @@ const createSplitChildren = async (req: Request, res: Response) => {
             vatPercent: (parent as any).vatPercent ?? 0,
             beforeDiscount: (parent as any).beforeDiscount ?? 0,
             discount: (parent as any).discount ?? 0,
-            billLevelDiscount: 0,
+            billLevelDiscount: (parent as any).billLevelDiscount ?? 0,
+            billLevelDiscountIsPercent: (parent as any).billLevelDiscountIsPercent ?? false,
+            billLevelDiscountPercent: (parent as any).billLevelDiscountPercent ?? 0,
+            ...((parent as any).projectId != null && { projectId: (parent as any).projectId }),
             cName: parent.cName,
             cLastName: parent.cLastName,
             cPhone: parent.cPhone,
@@ -2363,7 +2404,7 @@ const resetParentSplit = async (req: Request, res: Response) => {
           splitGroupId: (parent as any).flexiId,
           isSplitChild: true,
         },
-        select: { id: true },
+        select: { id: true, invoiceId: true, billId: true, DocumentType: true },
       });
 
       for (const child of children) {
@@ -2372,12 +2413,30 @@ const resetParentSplit = async (req: Request, res: Response) => {
       }
 
       if (children.length > 0) {
+        // Decrement Invoice counter for all children (each was created with an invoiceId)
+        const invoiceCount = children.filter((c: any) => c.invoiceId).length;
+        if (invoiceCount > 0) {
+          await tx.documentCounter.updateMany({
+            where: { businessId: parent.businessAcc, documentType: "Invoice" },
+            data: { count: { decrement: invoiceCount } },
+          });
+        }
+
+        // Decrement Receipt counter for children that were converted to Receipt (have a billId)
+        const receiptCount = children.filter((c: any) => c.billId).length;
+        if (receiptCount > 0) {
+          await tx.documentCounter.updateMany({
+            where: { businessId: parent.businessAcc, documentType: "Receipt" },
+            data: { count: { decrement: receiptCount } },
+          });
+        }
+      }
+
+      // Clear parent's invoiceId if it has one, and decrement its Invoice counter
+      if ((parent as any).invoiceId) {
         await tx.documentCounter.updateMany({
-          where: {
-            businessId: parent.businessAcc,
-            documentType: "Invoice",
-          },
-          data: { count: { decrement: children.length } },
+          where: { businessId: parent.businessAcc, documentType: "Invoice" },
+          data: { count: { decrement: 1 } },
         });
       }
 
@@ -2388,6 +2447,8 @@ const resetParentSplit = async (req: Request, res: Response) => {
           splitGroupId: null,
           cashStatus: false,
           total: 0,
+          invoiceId: null,
+          billId: null,
         } as any,
       });
     });

@@ -13,12 +13,14 @@ import { useTranslation } from "react-i18next";
 import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import { MarketingProvider } from "@/providers/MarketingProvider";
+import { BillSettingsProvider } from "@/providers/BillSettingsProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getResponsiveStyles } from "@/utils/responsive";
+import DocumentSettings from './documentSettings';
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
@@ -393,6 +395,15 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        {/* DocumentSettings */}
+        <Stack.Screen
+          name="documentSettings"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("settings.documentSettings"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* team */}
         <Stack.Screen
           name="team"
@@ -452,7 +463,9 @@ export default function RootLayout() {
         <ThemeProvider>
           <BusinessProvider>
             <MarketingProvider>
-              <RootLayoutNav />
+              <BillSettingsProvider>
+                <RootLayoutNav />
+              </BillSettingsProvider>
             </MarketingProvider>
           </BusinessProvider>
         </ThemeProvider>

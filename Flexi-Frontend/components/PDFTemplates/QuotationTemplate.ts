@@ -605,7 +605,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                  <!-- Totals row: sum only discount and total columns -->
                 <tr>
                   <td colspan="5" class="text-right font-bold">${t("print.total")}</td>
-                  <td class="text-right font-bold">-${formatNumber(lineDiscountSum)}</td>
+                  <td class="text-right font-bold">${lineDiscountSum > 0 ? `-${formatNumber(lineDiscountSum)}` : "-"}</td>
                   <td class="text-right font-bold">${formatNumber(lineTotalSum)}</td>
                 </tr>
               

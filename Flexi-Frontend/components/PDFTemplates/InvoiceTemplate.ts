@@ -619,6 +619,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   invoice.cPhone || t("print.notSpecified")
                 }</p>
               </div>
+              ${invoice.project?.name ? `
+              <div class="full-width">
+                <p><strong>${t("common.project")}:</strong> ${invoice.project.name}${invoice.project.description ? ` — ${invoice.project.description}` : ""}</p>
+              </div>` : ""}
             </div>
           </div>
 
@@ -672,7 +676,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 <!-- Totals row: sum only discount and total columns -->
                 <tr>
                   <td colspan="5" class="text-right font-bold">${t("print.total")}</td>
-                  <td class="text-right font-bold">-${formatNumber(lineDiscountSum)}</td>
+                  <td class="text-right font-bold">${lineDiscountSum > 0 ? `-${formatNumber(lineDiscountSum)}` : "-"}</td>
                   <td class="text-right font-bold">${formatNumber(lineTotalSum)}</td>
                 </tr>
               </tbody>
@@ -713,18 +717,27 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                 ${
                   isVatRegistered
                     ? `${
-                        totalDiscount > 0
+                        lineDiscountSum > 0
                           ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatNumber(
-                    totalDiscount,
+                    lineDiscountSum,
                   )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
+                ${
+                  invoice.billLevelDiscount
+                    ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("bill.billLevelDiscount")}${invoice.billLevelDiscountIsPercent && invoice.billLevelDiscountPercent ? ` (${invoice.billLevelDiscountPercent}%)` : ""}:</span>
+                  <span class="summary-amount">-${formatNumber(invoice.billLevelDiscount)} ${t("common.THB")}</span>
+                </div>`
+                    : ""
+                }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotalWithoutTax")}</span>
                   <span class="summary-amount">${formatNumber(
@@ -738,18 +751,27 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   )} ${t("common.THB")}</span>
                 </div>`
                     : `${
-                        totalDiscount > 0
+                        lineDiscountSum > 0
                           ? `
                 <div class="summary-row discount">
                   <span class="summary-label">${
                     t("print.totalDiscount") || "Total Discount"
                   }:</span>
                   <span class="summary-amount">-${formatNumber(
-                    totalDiscount,
+                    lineDiscountSum,
                   )} ${t("common.THB")}</span>
                 </div>`
                           : ""
                       }
+                ${
+                  invoice.billLevelDiscount
+                    ? `
+                <div class="summary-row discount">
+                  <span class="summary-label">${t("bill.billLevelDiscount")}${invoice.billLevelDiscountIsPercent && invoice.billLevelDiscountPercent ? ` (${invoice.billLevelDiscountPercent}%)` : ""}:</span>
+                  <span class="summary-amount">-${formatNumber(invoice.billLevelDiscount)} ${t("common.THB")}</span>
+                </div>`
+                    : ""
+                }
                 <div class="summary-row subtotal">
                   <span class="summary-label">${t("print.subtotal")}</span>
                   <span class="summary-amount">${formatNumber(
@@ -776,14 +798,18 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     grandTotal,
                   )} ${t("common.THB")}</span>
                 </div>
-                ${
-                  invoice.isSplitChild && invoice.splitPercent != null
-                    ? `<div class="summary-row" style="margin-top:6px; padding-top:6px; border-top:1px dashed #ccc;">
-                        <span class="summary-label" style="font-style:italic; color:#555;">${t("print.splitPayment")} (${invoice.splitPercent}%)</span>
-                        <span class="summary-amount" style="font-style:italic; color:#555;">${formatNumber(grandTotal * (invoice.splitPercent / 100))} ${t("common.THB")}</span>
-                      </div>`
-                    : ""
-                }
+                ${(() => {
+                  if (!invoice.isSplitChild || invoice.splitPercent == null) return "";
+                  const siblings = Array.isArray(invoice.splitSiblings) && invoice.splitSiblings.length > 0
+                    ? [...invoice.splitSiblings].sort((a: any, b: any) => a.id - b.id)
+                    : [];
+                  const idx = siblings.findIndex((s: any) => s.id === invoice.id);
+                  const no = idx >= 0 ? idx + 1 : 1;
+                  return `<div class="summary-row total" style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--brand-color);">
+                        <span class="summary-label">${t("print.splitPayment")} ${t("print.installmentNo")} ${no} (${invoice.splitPercent}%)</span>
+                        <span class="summary-amount">${formatNumber(grandTotal * (invoice.splitPercent / 100))} ${t("common.THB")}</span>
+                      </div>`;
+                })()}
               </div>
             </div>
           </div>
