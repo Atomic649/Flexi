@@ -104,7 +104,8 @@ export default function CreateBill() {
       normalizeText(customer?.address) === normalizeText(cAddress) &&
       normalizeText(customer?.province) === normalizeText(cProvince) &&
       normalizeDigits(customer?.postId) === normalizeDigits(cPostId) &&
-      normalizeDigits(customer?.taxId) === normalizeDigits(cTaxId)
+      normalizeDigits(customer?.taxId) === normalizeDigits(cTaxId) &&
+      normalizeText(customer?.branch) === normalizeText(branch)
     );
   };
 
@@ -144,6 +145,8 @@ export default function CreateBill() {
                     setCProvince(res.customer.province || "");
                     setCPostId(res.customer.postId || "");
                     setTaxId(res.customer.taxId || "");
+                    if (res.customer.taxType) setTaxType(res.customer.taxType);
+                    setBranch(res.customer.branch === "Head Office" ? "" : (res.customer.branch || ""));
                     setUpdateCustomer(false);
                     setAlertConfig((prev) => ({ ...prev, visible: false }));
                   },
@@ -231,6 +234,7 @@ export default function CreateBill() {
   const [cCountry, setCCountry] = useState("");
   const [countryOptions, setCountryOptions] = useState<string[]>([]);
   const [cTaxId, setTaxId] = useState("");
+  const [branch, setBranch] = useState("");
   const [note, setNote] = useState("");
   const [projectId, setProjectId] = useState<number | undefined>(undefined);
   const [projectDescription, setProjectDescription] = useState("");
@@ -1059,6 +1063,7 @@ export default function CreateBill() {
         repeatMonths: isRepeat ? repeatMonths : 1,
         DocumentType: [getDocumentTypeForAPI(selectedDocumentType)],
         taxType: taxType,
+        branch: taxType === "Juristic" ? (branch || "Head Office") : undefined,
         isExport,
       });
 
@@ -1131,6 +1136,7 @@ export default function CreateBill() {
     setCLastName("");
     setCPhone("");
     setTaxId("");
+    setBranch("");
     setCGender("");
     setCAddress("");
     setCProvince("");
@@ -1526,7 +1532,7 @@ export default function CreateBill() {
                 </CustomText>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ flexDirection: "row", alignItems: "center" }}
+                style={{ flexDirection: "row", alignItems: "center", marginRight: 20 }}
                 onPress={() => {
                   setTaxType("Juristic");
                   setCGender("NotSpecified"); // Always set gender to NotSpecified
@@ -1545,6 +1551,20 @@ export default function CreateBill() {
                   {t("auth.businessRegister.taxTypeOption.Juristic")}
                 </CustomText>
               </TouchableOpacity>
+              {taxType === "Juristic" && (
+                <View style={{ flex: 1 }}>
+                  <FormFieldClear
+                    title={t("bill.branch")}
+                    value={branch}
+                    handleChangeText={setBranch}
+                    placeholder={t("bill.headOffice")}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mb-0"
+                  />
+                </View>
+              )}
             </View>
 
             <View className="flex flex-row justify-between">
@@ -2508,10 +2528,11 @@ export default function CreateBill() {
               {t("bill.documentDates", "Document Dates")}
             </CustomText>
 
-            {([
-                "PU",
-                selectedDocumentType === "QA" ? "QA" : selectedDocumentType === "IV" ? "IV" : "RE",
-              ] as ("QA" | "PU" | "IV" | "RE")[]).map((field, index, arr) => {
+            {((): ("QA" | "PU" | "IV" | "RE")[] => {
+                if (selectedDocumentType === "QA") return ["PU", "QA"];
+                if (selectedDocumentType === "IV") return ["PU", "QA", "IV"];
+                return ["PU", "QA", "IV", "RE"];
+              })().map((field, index, arr) => {
               const labelMap = { QA: t("bill.quotation", "Quotation"), PU: t("bill.purchase", "Purchase"), IV: t("bill.invoice", "Invoice"), RE: t("bill.receipt", "Receipt") };
               const dateMap: Record<string, Date> = { QA: quotationAt, PU: purchaseAt, IV: invoiceAt, RE: receiptAt };
               return (
@@ -2670,6 +2691,8 @@ export default function CreateBill() {
                     setCProvince(existingCustomer.province || "");
                     setCPostId(existingCustomer.postId || "");
                     setTaxId(existingCustomer.taxId || "");
+                    if (existingCustomer.taxType) setTaxType(existingCustomer.taxType);
+                    setBranch(existingCustomer.branch === "Head Office" ? "" : (existingCustomer.branch || ""));
                     setUpdateCustomer(false);
                   }
                   setConflictModalVisible(false);

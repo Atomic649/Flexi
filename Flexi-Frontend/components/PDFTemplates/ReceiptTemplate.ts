@@ -629,10 +629,12 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
               <div>
                 <p><strong>${t("print.customerName")}:</strong> ${
     invoice.cName || ""
-  } ${invoice.cLastName || ""}${
-    invoice.cBranch ? ` (${invoice.cBranch})` : ""
-  }</p>
+  } ${invoice.cLastName || ""}</p>
               </div>
+              ${invoice.taxType === "Juristic" ? `
+              <div>
+                <p><strong>${t("print.branch")}:</strong> ${(!invoice.branch || invoice.branch === "Head Office") ? t("bill.headOffice") : invoice.branch}</p>
+              </div>` : ""}
               <div>
                 <p><strong>${t("print.taxId")}:</strong> ${
     invoice.cTaxId || t("print.notSpecified")

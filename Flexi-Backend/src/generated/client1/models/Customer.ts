@@ -49,6 +49,8 @@ export type CustomerMinAggregateOutputType = {
   province: string | null
   postId: string | null
   taxId: string | null
+  taxType: $Enums.taxType | null
+  branch: string | null
   deleted: boolean | null
   businessAcc: number | null
 }
@@ -66,6 +68,8 @@ export type CustomerMaxAggregateOutputType = {
   province: string | null
   postId: string | null
   taxId: string | null
+  taxType: $Enums.taxType | null
+  branch: string | null
   deleted: boolean | null
   businessAcc: number | null
 }
@@ -83,6 +87,8 @@ export type CustomerCountAggregateOutputType = {
   province: number
   postId: number
   taxId: number
+  taxType: number
+  branch: number
   deleted: number
   businessAcc: number
   _all: number
@@ -112,6 +118,8 @@ export type CustomerMinAggregateInputType = {
   province?: true
   postId?: true
   taxId?: true
+  taxType?: true
+  branch?: true
   deleted?: true
   businessAcc?: true
 }
@@ -129,6 +137,8 @@ export type CustomerMaxAggregateInputType = {
   province?: true
   postId?: true
   taxId?: true
+  taxType?: true
+  branch?: true
   deleted?: true
   businessAcc?: true
 }
@@ -146,6 +156,8 @@ export type CustomerCountAggregateInputType = {
   province?: true
   postId?: true
   taxId?: true
+  taxType?: true
+  branch?: true
   deleted?: true
   businessAcc?: true
   _all?: true
@@ -250,6 +262,8 @@ export type CustomerGroupByOutputType = {
   province: string | null
   postId: string | null
   taxId: string | null
+  taxType: $Enums.taxType | null
+  branch: string | null
   deleted: boolean | null
   businessAcc: number
   _count: CustomerCountAggregateOutputType | null
@@ -290,6 +304,8 @@ export type CustomerWhereInput = {
   province?: Prisma.StringNullableFilter<"Customer"> | string | null
   postId?: Prisma.StringNullableFilter<"Customer"> | string | null
   taxId?: Prisma.StringNullableFilter<"Customer"> | string | null
+  taxType?: Prisma.EnumtaxTypeNullableFilter<"Customer"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Customer"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Customer"> | boolean | null
   businessAcc?: Prisma.IntFilter<"Customer"> | number
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
@@ -309,6 +325,8 @@ export type CustomerOrderByWithRelationInput = {
   province?: Prisma.SortOrderInput | Prisma.SortOrder
   postId?: Prisma.SortOrderInput | Prisma.SortOrder
   taxId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxType?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   businessId?: Prisma.BusinessAccOrderByWithRelationInput
@@ -332,6 +350,8 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   province?: Prisma.StringNullableFilter<"Customer"> | string | null
   postId?: Prisma.StringNullableFilter<"Customer"> | string | null
   taxId?: Prisma.StringNullableFilter<"Customer"> | string | null
+  taxType?: Prisma.EnumtaxTypeNullableFilter<"Customer"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Customer"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Customer"> | boolean | null
   businessAcc?: Prisma.IntFilter<"Customer"> | number
   businessId?: Prisma.XOR<Prisma.BusinessAccScalarRelationFilter, Prisma.BusinessAccWhereInput>
@@ -351,6 +371,8 @@ export type CustomerOrderByWithAggregationInput = {
   province?: Prisma.SortOrderInput | Prisma.SortOrder
   postId?: Prisma.SortOrderInput | Prisma.SortOrder
   taxId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxType?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrderInput | Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
@@ -376,6 +398,8 @@ export type CustomerScalarWhereWithAggregatesInput = {
   province?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   postId?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   taxId?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  taxType?: Prisma.EnumtaxTypeNullableWithAggregatesFilter<"Customer"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   deleted?: Prisma.BoolNullableWithAggregatesFilter<"Customer"> | boolean | null
   businessAcc?: Prisma.IntWithAggregatesFilter<"Customer"> | number
 }
@@ -392,6 +416,8 @@ export type CustomerCreateInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   businessId: Prisma.BusinessAccCreateNestedOneWithoutCustomersInput
   bills?: Prisma.BillCreateNestedManyWithoutCustomerInput
@@ -410,6 +436,8 @@ export type CustomerUncheckedCreateInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   businessAcc: number
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutCustomerInput
@@ -427,6 +455,8 @@ export type CustomerUpdateInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutCustomersNestedInput
   bills?: Prisma.BillUpdateManyWithoutCustomerNestedInput
@@ -445,6 +475,8 @@ export type CustomerUncheckedUpdateInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
   bills?: Prisma.BillUncheckedUpdateManyWithoutCustomerNestedInput
@@ -463,6 +495,8 @@ export type CustomerCreateManyInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   businessAcc: number
 }
@@ -479,6 +513,8 @@ export type CustomerUpdateManyMutationInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
@@ -495,6 +531,8 @@ export type CustomerUncheckedUpdateManyInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -527,6 +565,8 @@ export type CustomerCountOrderByAggregateInput = {
   province?: Prisma.SortOrder
   postId?: Prisma.SortOrder
   taxId?: Prisma.SortOrder
+  taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
 }
@@ -549,6 +589,8 @@ export type CustomerMaxOrderByAggregateInput = {
   province?: Prisma.SortOrder
   postId?: Prisma.SortOrder
   taxId?: Prisma.SortOrder
+  taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
 }
@@ -566,6 +608,8 @@ export type CustomerMinOrderByAggregateInput = {
   province?: Prisma.SortOrder
   postId?: Prisma.SortOrder
   taxId?: Prisma.SortOrder
+  taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   businessAcc?: Prisma.SortOrder
 }
@@ -626,6 +670,10 @@ export type NullableEnumGenderFieldUpdateOperationsInput = {
   set?: $Enums.Gender | null
 }
 
+export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
+  set?: $Enums.taxType | null
+}
+
 export type CustomerCreateNestedOneWithoutBillsInput = {
   create?: Prisma.XOR<Prisma.CustomerCreateWithoutBillsInput, Prisma.CustomerUncheckedCreateWithoutBillsInput>
   connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutBillsInput
@@ -654,6 +702,8 @@ export type CustomerCreateWithoutBusinessIdInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   bills?: Prisma.BillCreateNestedManyWithoutCustomerInput
 }
@@ -671,6 +721,8 @@ export type CustomerUncheckedCreateWithoutBusinessIdInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   bills?: Prisma.BillUncheckedCreateNestedManyWithoutCustomerInput
 }
@@ -717,6 +769,8 @@ export type CustomerScalarWhereInput = {
   province?: Prisma.StringNullableFilter<"Customer"> | string | null
   postId?: Prisma.StringNullableFilter<"Customer"> | string | null
   taxId?: Prisma.StringNullableFilter<"Customer"> | string | null
+  taxType?: Prisma.EnumtaxTypeNullableFilter<"Customer"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Customer"> | string | null
   deleted?: Prisma.BoolNullableFilter<"Customer"> | boolean | null
   businessAcc?: Prisma.IntFilter<"Customer"> | number
 }
@@ -733,6 +787,8 @@ export type CustomerCreateWithoutBillsInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   businessId: Prisma.BusinessAccCreateNestedOneWithoutCustomersInput
 }
@@ -750,6 +806,8 @@ export type CustomerUncheckedCreateWithoutBillsInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
   businessAcc: number
 }
@@ -782,6 +840,8 @@ export type CustomerUpdateWithoutBillsInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessId?: Prisma.BusinessAccUpdateOneRequiredWithoutCustomersNestedInput
 }
@@ -799,6 +859,8 @@ export type CustomerUncheckedUpdateWithoutBillsInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   businessAcc?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -816,6 +878,8 @@ export type CustomerCreateManyBusinessIdInput = {
   province?: string | null
   postId?: string | null
   taxId?: string | null
+  taxType?: $Enums.taxType | null
+  branch?: string | null
   deleted?: boolean | null
 }
 
@@ -831,6 +895,8 @@ export type CustomerUpdateWithoutBusinessIdInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bills?: Prisma.BillUpdateManyWithoutCustomerNestedInput
 }
@@ -848,6 +914,8 @@ export type CustomerUncheckedUpdateWithoutBusinessIdInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   bills?: Prisma.BillUncheckedUpdateManyWithoutCustomerNestedInput
 }
@@ -865,6 +933,8 @@ export type CustomerUncheckedUpdateManyWithoutBusinessIdInput = {
   province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
@@ -912,6 +982,8 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   province?: boolean
   postId?: boolean
   taxId?: boolean
+  taxType?: boolean
+  branch?: boolean
   deleted?: boolean
   businessAcc?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -932,6 +1004,8 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   province?: boolean
   postId?: boolean
   taxId?: boolean
+  taxType?: boolean
+  branch?: boolean
   deleted?: boolean
   businessAcc?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -950,6 +1024,8 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   province?: boolean
   postId?: boolean
   taxId?: boolean
+  taxType?: boolean
+  branch?: boolean
   deleted?: boolean
   businessAcc?: boolean
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
@@ -968,11 +1044,13 @@ export type CustomerSelectScalar = {
   province?: boolean
   postId?: boolean
   taxId?: boolean
+  taxType?: boolean
+  branch?: boolean
   deleted?: boolean
   businessAcc?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "phone" | "firstName" | "lastName" | "gender" | "email" | "address" | "province" | "postId" | "taxId" | "deleted" | "businessAcc", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "phone" | "firstName" | "lastName" | "gender" | "email" | "address" | "province" | "postId" | "taxId" | "taxType" | "branch" | "deleted" | "businessAcc", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   businessId?: boolean | Prisma.BusinessAccDefaultArgs<ExtArgs>
   bills?: boolean | Prisma.Customer$billsArgs<ExtArgs>
@@ -1004,6 +1082,8 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     province: string | null
     postId: string | null
     taxId: string | null
+    taxType: $Enums.taxType | null
+    branch: string | null
     deleted: boolean | null
     businessAcc: number
   }, ExtArgs["result"]["customer"]>
@@ -1443,6 +1523,8 @@ export interface CustomerFieldRefs {
   readonly province: Prisma.FieldRef<"Customer", 'String'>
   readonly postId: Prisma.FieldRef<"Customer", 'String'>
   readonly taxId: Prisma.FieldRef<"Customer", 'String'>
+  readonly taxType: Prisma.FieldRef<"Customer", 'taxType'>
+  readonly branch: Prisma.FieldRef<"Customer", 'String'>
   readonly deleted: Prisma.FieldRef<"Customer", 'Boolean'>
   readonly businessAcc: Prisma.FieldRef<"Customer", 'Int'>
 }

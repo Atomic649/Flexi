@@ -1642,6 +1642,8 @@ export const CustomerScalarFieldEnum = {
   province: 'province',
   postId: 'postId',
   taxId: 'taxId',
+  taxType: 'taxType',
+  branch: 'branch',
   deleted: 'deleted',
   businessAcc: 'businessAcc'
 } as const
@@ -1696,6 +1698,7 @@ export const BillScalarFieldEnum = {
   repeatMonths: 'repeatMonths',
   note: 'note',
   taxType: 'taxType',
+  branch: 'branch',
   DocumentType: 'DocumentType',
   discount: 'discount',
   billLevelDiscount: 'billLevelDiscount',

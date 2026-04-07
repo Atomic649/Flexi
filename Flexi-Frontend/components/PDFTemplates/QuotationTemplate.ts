@@ -540,8 +540,12 @@ export const generateQuotationHTML = (data: QuotationData): string => {
             <h3>${t("print.customerInformation")}</h3>
             <div class="business-details">
               <div>
-                <p><strong>${t("print.customerName")}:</strong> ${quotation.cName || ""} ${quotation.cLastName || ""}${quotation.cBranch ? ` (${quotation.cBranch})` : ""}</p>
+                <p><strong>${t("print.customerName")}:</strong> ${quotation.cName || ""} ${quotation.cLastName || ""}</p>
               </div>
+              ${quotation.taxType === "Juristic" ? `
+              <div>
+                <p><strong>${t("print.branch")}:</strong> ${(!quotation.branch || quotation.branch === "Head Office") ? t("bill.headOffice") : quotation.branch}</p>
+              </div>` : ""}
               <div>
                 <p><strong>${t("print.taxId")}:</strong> ${quotation.cTaxId || t("print.notSpecified")}</p>
               </div>

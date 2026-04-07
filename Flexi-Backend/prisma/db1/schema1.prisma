@@ -292,6 +292,8 @@ model Customer {
   province  String?
   postId    String?
   taxId     String?
+  taxType   taxType?  @default(Individual)
+  branch    String?   @default("Head Office")
 
   deleted Boolean? @default(false)
 
@@ -354,6 +356,7 @@ model Bill {
   repeatMonths         Int?          @default(0)
   note                 String?
   taxType              taxType?      @default(Individual)
+  branch               String?       @default("Head Office")
   DocumentType         DocumentType? @default(Receipt)
   discount                   Int?     @default(0)
   billLevelDiscount          Int?     @default(0)

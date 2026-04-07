@@ -1471,6 +1471,8 @@
     "invoice": "ใบแจ้งหนี้",
     "receipt": "ใบเสร็จ/ใบกำกับภาษี",
     "quotation": "ใบเสนอราคา",
+    "purchase": "เริ่มต้นสั่งซื้อ",
+    "documentDates": "วันที่เอกสาร",
     "clearFields": "CLEAR",
     "repeatBill": "ระยะเวลาสัญญาเช่า",
     "validContractUntil": "สิ้นสุดสัญญาเมื่อ",
@@ -1514,6 +1516,8 @@
       "waitingPayment": "รอการชำระเงิน",
       "waitingResponse": "รอการตอบรับ"
     },
+    "headOffice": "สำนักงานใหญ่",
+    "branch": "สาขา",
     "confirm": "ลูกค้ารับดิล",
     "paid": "ลูกค้าจ่ายเงิน",
     "selectStatus": "เลือกสถานะ",
@@ -1781,7 +1785,6 @@
       "NotSpecified": "-"
     },
     "branch": "สาขา",
-    "supplier": "ผู้จำหน่าย/ผู้ให้บริการ",
     "taxInvoiceNo": "เลขที่ใบกำกับภาษี",
     "whtPercent": "เปอร์เซ็นต์ที่หักไว้",
     "whtAmount": "จำนวนภาษีที่หักไว้",

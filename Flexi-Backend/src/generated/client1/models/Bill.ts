@@ -111,6 +111,7 @@ export type BillMinAggregateOutputType = {
   repeatMonths: number | null
   note: string | null
   taxType: $Enums.taxType | null
+  branch: string | null
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
@@ -174,6 +175,7 @@ export type BillMaxAggregateOutputType = {
   repeatMonths: number | null
   note: string | null
   taxType: $Enums.taxType | null
+  branch: string | null
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
@@ -237,6 +239,7 @@ export type BillCountAggregateOutputType = {
   repeatMonths: number
   note: number
   taxType: number
+  branch: number
   DocumentType: number
   discount: number
   billLevelDiscount: number
@@ -350,6 +353,7 @@ export type BillMinAggregateInputType = {
   repeatMonths?: true
   note?: true
   taxType?: true
+  branch?: true
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
@@ -413,6 +417,7 @@ export type BillMaxAggregateInputType = {
   repeatMonths?: true
   note?: true
   taxType?: true
+  branch?: true
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
@@ -476,6 +481,7 @@ export type BillCountAggregateInputType = {
   repeatMonths?: true
   note?: true
   taxType?: true
+  branch?: true
   DocumentType?: true
   discount?: true
   billLevelDiscount?: true
@@ -626,6 +632,7 @@ export type BillGroupByOutputType = {
   repeatMonths: number | null
   note: string | null
   taxType: $Enums.taxType | null
+  branch: string | null
   DocumentType: $Enums.DocumentType | null
   discount: number | null
   billLevelDiscount: number | null
@@ -712,6 +719,7 @@ export type BillWhereInput = {
   repeatMonths?: Prisma.IntNullableFilter<"Bill"> | number | null
   note?: Prisma.StringNullableFilter<"Bill"> | string | null
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Bill"> | string | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -782,6 +790,7 @@ export type BillOrderByWithRelationInput = {
   repeatMonths?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   taxType?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -855,6 +864,7 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   repeatMonths?: Prisma.IntNullableFilter<"Bill"> | number | null
   note?: Prisma.StringNullableFilter<"Bill"> | string | null
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Bill"> | string | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -925,6 +935,7 @@ export type BillOrderByWithAggregationInput = {
   repeatMonths?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   taxType?: Prisma.SortOrderInput | Prisma.SortOrder
+  branch?: Prisma.SortOrderInput | Prisma.SortOrder
   DocumentType?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -996,6 +1007,7 @@ export type BillScalarWhereWithAggregatesInput = {
   repeatMonths?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
   note?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   taxType?: Prisma.EnumtaxTypeNullableWithAggregatesFilter<"Bill"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   DocumentType?: Prisma.EnumDocumentTypeNullableWithAggregatesFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
@@ -1058,6 +1070,7 @@ export type BillCreateInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -1123,6 +1136,7 @@ export type BillUncheckedCreateInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -1187,6 +1201,7 @@ export type BillUpdateInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1252,6 +1267,7 @@ export type BillUncheckedUpdateInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1317,6 +1333,7 @@ export type BillCreateManyInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -1379,6 +1396,7 @@ export type BillUpdateManyMutationInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1437,6 +1455,7 @@ export type BillUncheckedUpdateManyInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1510,6 +1529,7 @@ export type BillCountOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   note?: Prisma.SortOrder
   taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
@@ -1597,6 +1617,7 @@ export type BillMaxOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   note?: Prisma.SortOrder
   taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
@@ -1660,6 +1681,7 @@ export type BillMinOrderByAggregateInput = {
   repeatMonths?: Prisma.SortOrder
   note?: Prisma.SortOrder
   taxType?: Prisma.SortOrder
+  branch?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   billLevelDiscount?: Prisma.SortOrder
@@ -1853,10 +1875,6 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type NullableEnumtaxTypeFieldUpdateOperationsInput = {
-  set?: $Enums.taxType | null
-}
-
 export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
   set?: $Enums.DocumentType | null
 }
@@ -2029,6 +2047,7 @@ export type BillCreateWithoutMemberInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2093,6 +2112,7 @@ export type BillUncheckedCreateWithoutMemberInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2186,6 +2206,7 @@ export type BillScalarWhereInput = {
   repeatMonths?: Prisma.IntNullableFilter<"Bill"> | number | null
   note?: Prisma.StringNullableFilter<"Bill"> | string | null
   taxType?: Prisma.EnumtaxTypeNullableFilter<"Bill"> | $Enums.taxType | null
+  branch?: Prisma.StringNullableFilter<"Bill"> | string | null
   DocumentType?: Prisma.EnumDocumentTypeNullableFilter<"Bill"> | $Enums.DocumentType | null
   discount?: Prisma.IntNullableFilter<"Bill"> | number | null
   billLevelDiscount?: Prisma.IntNullableFilter<"Bill"> | number | null
@@ -2248,6 +2269,7 @@ export type BillCreateWithoutBusinessIdInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2312,6 +2334,7 @@ export type BillUncheckedCreateWithoutBusinessIdInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2401,6 +2424,7 @@ export type BillCreateWithoutCustomerInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2465,6 +2489,7 @@ export type BillUncheckedCreateWithoutCustomerInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2554,6 +2579,7 @@ export type BillCreateWithoutProductInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2618,6 +2644,7 @@ export type BillUncheckedCreateWithoutProductInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2697,6 +2724,7 @@ export type BillUpdateWithoutProductInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2761,6 +2789,7 @@ export type BillUncheckedUpdateWithoutProductInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2824,6 +2853,7 @@ export type BillCreateWithoutExpenseInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2888,6 +2918,7 @@ export type BillUncheckedCreateWithoutExpenseInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -2967,6 +2998,7 @@ export type BillUpdateWithoutExpenseInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3031,6 +3063,7 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3094,6 +3127,7 @@ export type BillCreateWithoutPlatformInfoInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3158,6 +3192,7 @@ export type BillUncheckedCreateWithoutPlatformInfoInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3247,6 +3282,7 @@ export type BillCreateWithoutProjectInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3311,6 +3347,7 @@ export type BillUncheckedCreateWithoutProjectInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3401,6 +3438,7 @@ export type BillCreateManyMemberInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3462,6 +3500,7 @@ export type BillUpdateWithoutMemberInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3526,6 +3565,7 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3590,6 +3630,7 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3652,6 +3693,7 @@ export type BillCreateManyBusinessIdInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3713,6 +3755,7 @@ export type BillUpdateWithoutBusinessIdInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3777,6 +3820,7 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3841,6 +3885,7 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3903,6 +3948,7 @@ export type BillCreateManyCustomerInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -3964,6 +4010,7 @@ export type BillUpdateWithoutCustomerInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4028,6 +4075,7 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4092,6 +4140,7 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4154,6 +4203,7 @@ export type BillCreateManyPlatformInfoInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -4215,6 +4265,7 @@ export type BillUpdateWithoutPlatformInfoInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4279,6 +4330,7 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4343,6 +4395,7 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4405,6 +4458,7 @@ export type BillCreateManyProjectInput = {
   repeatMonths?: number | null
   note?: string | null
   taxType?: $Enums.taxType | null
+  branch?: string | null
   DocumentType?: $Enums.DocumentType | null
   discount?: number | null
   billLevelDiscount?: number | null
@@ -4466,6 +4520,7 @@ export type BillUpdateWithoutProjectInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4530,6 +4585,7 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4594,6 +4650,7 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   repeatMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxType?: Prisma.NullableEnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType | null
+  branch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   DocumentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
   discount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billLevelDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4687,6 +4744,7 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   repeatMonths?: boolean
   note?: boolean
   taxType?: boolean
+  branch?: boolean
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
@@ -4758,6 +4816,7 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   repeatMonths?: boolean
   note?: boolean
   taxType?: boolean
+  branch?: boolean
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
@@ -4826,6 +4885,7 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   repeatMonths?: boolean
   note?: boolean
   taxType?: boolean
+  branch?: boolean
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
@@ -4894,6 +4954,7 @@ export type BillSelectScalar = {
   repeatMonths?: boolean
   note?: boolean
   taxType?: boolean
+  branch?: boolean
   DocumentType?: boolean
   discount?: boolean
   billLevelDiscount?: boolean
@@ -4920,7 +4981,7 @@ export type BillSelectScalar = {
   projectId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "receiptAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cCountry" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "DocumentType" | "discount" | "billLevelDiscount" | "billLevelDiscountIsPercent" | "billLevelDiscountPercent" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "flexiId" | "billId" | "quotationId" | "invoiceId" | "createdAt" | "updatedAt" | "quotationAt" | "invoiceAt" | "purchaseAt" | "receiptAt" | "cName" | "cLastName" | "cPhone" | "cGender" | "cAddress" | "cProvince" | "cCountry" | "cPostId" | "cTaxId" | "payment" | "total" | "totalQuotation" | "totalInvoice" | "totalBeforeTax" | "totalAfterTax" | "totalTax" | "vatPercent" | "beforeDiscount" | "cashStatus" | "image" | "deleted" | "repeat" | "repeatMonths" | "note" | "taxType" | "branch" | "DocumentType" | "discount" | "billLevelDiscount" | "billLevelDiscountIsPercent" | "billLevelDiscountPercent" | "priceValid" | "validContactUntil" | "rentalStockReleased" | "withHoldingTax" | "WHTpercent" | "WHTAmount" | "splitPercent" | "splitPercentMax" | "isSplitChild" | "splitGroupId" | "paymentTermCondition" | "remark" | "platform" | "isExport" | "memberId" | "businessAcc" | "platformId" | "customerId" | "projectId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.Bill$productArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -4994,6 +5055,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     repeatMonths: number | null
     note: string | null
     taxType: $Enums.taxType | null
+    branch: string | null
     DocumentType: $Enums.DocumentType | null
     discount: number | null
     billLevelDiscount: number | null
@@ -5484,6 +5546,7 @@ export interface BillFieldRefs {
   readonly repeatMonths: Prisma.FieldRef<"Bill", 'Int'>
   readonly note: Prisma.FieldRef<"Bill", 'String'>
   readonly taxType: Prisma.FieldRef<"Bill", 'taxType'>
+  readonly branch: Prisma.FieldRef<"Bill", 'String'>
   readonly DocumentType: Prisma.FieldRef<"Bill", 'DocumentType'>
   readonly discount: Prisma.FieldRef<"Bill", 'Int'>
   readonly billLevelDiscount: Prisma.FieldRef<"Bill", 'Int'>

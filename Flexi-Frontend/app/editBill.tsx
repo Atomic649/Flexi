@@ -93,6 +93,7 @@ export default function EditBill() {
   const [isExport, setIsExport] = useState(false);
   const isExportManualOverride = useRef(false);
   const [cTaxId, setCTaxId] = useState("");
+  const [branch, setBranch] = useState("");
   const [priceValid, setPriceValid] = useState<Date | null>(null);
   const [priceValidDays, setPriceValidDays] = useState<7 | 15 | 30 | 45 | null>(
     null,
@@ -848,6 +849,7 @@ export default function EditBill() {
         setSelectedPlatform(billData.platform ?? "");
         setImage(billData.image);
         setCTaxId(billData.cTaxId);
+        setBranch(billData.branch === "Head Office" ? "" : (billData.branch || ""));
         setValidContactUntil(billData.validContactUntil || "");
         setFlexiId(billData.flexiId || null);
         setIsSplitChild(billData.isSplitChild === true);
@@ -1304,6 +1306,7 @@ export default function EditBill() {
         repeat: false, // Set to false for single bill update
         repeatMonths: 1, // Set to 1 for single bill update
         taxType: taxType,
+        branch: taxType === "Juristic" ? (branch || "Head Office") : undefined,
         isExport,
         ...(projectId != null && { projectId }),
       });
@@ -1922,7 +1925,7 @@ export default function EditBill() {
                 </CustomText>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ flexDirection: "row", alignItems: "center" }}
+                style={{ flexDirection: "row", alignItems: "center", marginRight: 20 }}
                 onPress={() => {
                   setTaxType("Juristic");
                   setCGender("NotSpecified"); // Always set gender to NotSpecified
@@ -1941,6 +1944,20 @@ export default function EditBill() {
                   {t("auth.businessRegister.taxTypeOption.Juristic")}
                 </CustomText>
               </TouchableOpacity>
+              {taxType === "Juristic" && (
+                <View style={{ flex: 1 }}>
+                  <FormFieldClear
+                    title={t("bill.branch")}
+                    value={branch}
+                    handleChangeText={setBranch}
+                    placeholder={t("bill.headOffice")}
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles="mb-0"
+                  />
+                </View>
+              )}
             </View>
 
             <View className="flex flex-row justify-between">
@@ -2878,10 +2895,11 @@ export default function EditBill() {
               {t("bill.documentDates", "Document Dates")}
             </CustomText>
 
-            {([
-                "PU",
-                selectedDocumentType === "QA" ? "QA" : selectedDocumentType === "IV" ? "IV" : "RE",
-              ] as ("QA" | "PU" | "IV" | "RE")[]).map((field, index, arr) => {
+            {((): ("QA" | "PU" | "IV" | "RE")[] => {
+                if (selectedDocumentType === "QA") return ["PU", "QA"];
+                if (selectedDocumentType === "IV") return ["PU", "QA", "IV"];
+                return ["PU", "QA", "IV", "RE"];
+              })().map((field, index, arr) => {
               const labelMap = { QA: t("bill.quotation", "Quotation"), PU: t("bill.purchase", "Purchase"), IV: t("bill.invoice", "Invoice"), RE: t("bill.receipt", "Receipt") };
               const dateMap: Record<string, Date> = { QA: quotationAt, PU: purchaseAt, IV: invoiceAt, RE: receiptAt };
               return (

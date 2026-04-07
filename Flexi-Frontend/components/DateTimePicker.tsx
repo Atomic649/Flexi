@@ -26,6 +26,11 @@ type Props = {
   maxDate?: Date;
 };
 
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
 const clampInt = (value: number, min: number, max: number) => {
@@ -55,6 +60,16 @@ export default function DateTimePicker({
   );
   const [hour, setHour] = useState(() => effectiveValue.getHours());
   const [minute, setMinute] = useState(() => effectiveValue.getMinutes());
+  const [pickerMode, setPickerMode] = useState<"day" | "month" | "year">("day");
+  const [yearCursor, setYearCursor] = useState(() => effectiveValue.getFullYear());
+  const [decadeCursor, setDecadeCursor] = useState(() =>
+    Math.floor(effectiveValue.getFullYear() / 12) * 12
+  );
+
+  const yearGrid = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => decadeCursor + i),
+    [decadeCursor]
+  );
 
   useEffect(() => {
     if (!visible) return;
@@ -62,6 +77,8 @@ export default function DateTimePicker({
     setSelectedDate(new Date(effectiveValue));
     setHour(effectiveValue.getHours());
     setMinute(effectiveValue.getMinutes());
+    setPickerMode("day");
+    setYearCursor(effectiveValue.getFullYear());
   }, [visible, effectiveValue]);
 
   const colors = useMemo(() => {
@@ -129,76 +146,195 @@ export default function DateTimePicker({
           {/* Header */}
           <View style={styles.headerRow}>
             <TouchableOpacity
-              onPress={() => setCursorMonth((d) => subMonths(d, 1))}
+              onPress={() => {
+                if (pickerMode === "day") setCursorMonth((d) => subMonths(d, 1));
+                else if (pickerMode === "month") setYearCursor((y) => y - 1);
+                else setDecadeCursor((d) => d - 12);
+              }}
               style={[styles.navBtn, { borderColor: colors.border }]}
             >
               <CustomText style={{ color: colors.text }}>{"<"}</CustomText>
             </TouchableOpacity>
-            <CustomText weight="bold" style={{ color: colors.text }}>
-              {format(cursorMonth, "MMMM yyyy")}
-            </CustomText>
+            <View style={styles.headerLabel}>
+              {/* Month label — tappable in day mode */}
+              {pickerMode === "day" && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setYearCursor(cursorMonth.getFullYear());
+                    setPickerMode("month");
+                  }}
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                >
+                  <CustomText weight="bold" style={{ color: colors.accent }}>
+                    {format(cursorMonth, "MMMM yyyy")}
+                  </CustomText>
+                  <CustomText style={{ color: colors.mutedText, fontSize: 11, marginLeft: 4 }}>
+                    {"▼"}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
+              {/* Year label — tappable in month mode to open year grid */}
+              {pickerMode === "month" && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setDecadeCursor(Math.floor(yearCursor / 12) * 12);
+                    setPickerMode("year");
+                  }}
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                >
+                  <CustomText weight="bold" style={{ color: colors.accent }}>
+                    {String(yearCursor)}
+                  </CustomText>
+                  <CustomText style={{ color: colors.mutedText, fontSize: 11, marginLeft: 4 }}>
+                    {"▼"}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
+              {/* Decade range label in year mode */}
+              {pickerMode === "year" && (
+                <TouchableOpacity
+                  onPress={() => setPickerMode("month")}
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                >
+                  <CustomText weight="bold" style={{ color: colors.accent }}>
+                    {`${decadeCursor} – ${decadeCursor + 11}`}
+                  </CustomText>
+                  <CustomText style={{ color: colors.mutedText, fontSize: 11, marginLeft: 4 }}>
+                    {"▲"}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
+            </View>
             <TouchableOpacity
-              onPress={() => setCursorMonth((d) => addMonths(d, 1))}
+              onPress={() => {
+                if (pickerMode === "day") setCursorMonth((d) => addMonths(d, 1));
+                else if (pickerMode === "month") setYearCursor((y) => y + 1);
+                else setDecadeCursor((d) => d + 12);
+              }}
               style={[styles.navBtn, { borderColor: colors.border }]}
             >
               <CustomText style={{ color: colors.text }}>{">"}</CustomText>
             </TouchableOpacity>
           </View>
 
-          {/* Weekdays */}
-          <View style={styles.weekRow}>
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
-              <CustomText
-                key={`${d}-${idx}`}
-                style={[styles.weekday, { color: colors.mutedText }]}
-              >
-                {d}
-              </CustomText>
-            ))}
-          </View>
-
-          {/* Calendar grid */}
-          <View style={styles.grid}>
-            {gridDays.map((day) => {
-              const outside = !isSameMonth(day, cursorMonth);
-              const selected = isSameDay(day, selectedDate);
-              const disabled = isDisabled(day);
-
-              return (
-                <TouchableOpacity
-                  key={day.toISOString()}
-                  disabled={disabled}
-                  onPress={() => {
-                    if (disabled) return;
-                    const next = new Date(selectedDate);
-                    next.setFullYear(
-                      day.getFullYear(),
-                      day.getMonth(),
-                      day.getDate()
-                    );
-                    setSelectedDate(next);
-                  }}
-                  style={[
-                    styles.dayCell,
-                    {
-                      backgroundColor: selected ? colors.accent : colors.cellBg,
-                      opacity: outside ? 0.45 : 1,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                >
-                  <CustomText
-                    style={{
-                      color: selected ? "#0b0b0b" : colors.text,
-                      opacity: disabled ? 0.4 : 1,
+          {pickerMode === "year" ? (
+            /* Year grid */
+            <View style={styles.monthGrid}>
+              {yearGrid.map((yr) => {
+                const isActive = cursorMonth.getFullYear() === yr;
+                return (
+                  <TouchableOpacity
+                    key={yr}
+                    onPress={() => {
+                      setYearCursor(yr);
+                      setPickerMode("month");
                     }}
+                    style={[
+                      styles.monthCell,
+                      {
+                        backgroundColor: isActive ? colors.accent : colors.cellBg,
+                        borderColor: colors.border,
+                      },
+                    ]}
                   >
-                    {format(day, "d")}
+                    <CustomText
+                      style={{ color: isActive ? "#0b0b0b" : colors.text, fontSize: 13 }}
+                    >
+                      {String(yr)}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : pickerMode === "month" ? (
+            /* Month grid */
+            <View style={styles.monthGrid}>
+              {MONTHS.map((name, idx) => {
+                const isActive =
+                  cursorMonth.getFullYear() === yearCursor &&
+                  cursorMonth.getMonth() === idx;
+                return (
+                  <TouchableOpacity
+                    key={name}
+                    onPress={() => {
+                      setCursorMonth(new Date(yearCursor, idx, 1));
+                      setPickerMode("day");
+                    }}
+                    style={[
+                      styles.monthCell,
+                      {
+                        backgroundColor: isActive ? colors.accent : colors.cellBg,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
+                    <CustomText
+                      style={{ color: isActive ? "#0b0b0b" : colors.text, fontSize: 13 }}
+                    >
+                      {name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <>
+              {/* Weekdays */}
+              <View style={styles.weekRow}>
+                {["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
+                  <CustomText
+                    key={`${d}-${idx}`}
+                    style={[styles.weekday, { color: colors.mutedText }]}
+                  >
+                    {d}
                   </CustomText>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+                ))}
+              </View>
+
+              {/* Calendar grid */}
+              <View style={styles.grid}>
+                {gridDays.map((day) => {
+                  const outside = !isSameMonth(day, cursorMonth);
+                  const selected = isSameDay(day, selectedDate);
+                  const disabled = isDisabled(day);
+
+                  return (
+                    <TouchableOpacity
+                      key={day.toISOString()}
+                      disabled={disabled}
+                      onPress={() => {
+                        if (disabled) return;
+                        const next = new Date(selectedDate);
+                        next.setFullYear(
+                          day.getFullYear(),
+                          day.getMonth(),
+                          day.getDate()
+                        );
+                        setSelectedDate(next);
+                      }}
+                      style={[
+                        styles.dayCell,
+                        {
+                          backgroundColor: selected ? colors.accent : colors.cellBg,
+                          opacity: outside ? 0.45 : 1,
+                          borderColor: colors.border,
+                        },
+                      ]}
+                    >
+                      <CustomText
+                        style={{
+                          color: selected ? "#0b0b0b" : colors.text,
+                          opacity: disabled ? 0.4 : 1,
+                        }}
+                      >
+                        {format(day, "d")}
+                      </CustomText>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </>
+          )}
 
           {/* Time inputs */}
           <View style={styles.timeRow}>
@@ -376,5 +512,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minWidth: 92,
     alignItems: "center",
+  },
+  headerLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  monthGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 8,
+  },
+  monthCell: {
+    width: "33.333%",
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
   },
 });

@@ -1474,6 +1474,8 @@
     "invoice": "Invoice",
     "receipt": "Receipt/Tax Invoice",
     "quotation": "Quotation",
+    "purchase": "Purchase Order",
+    "documentDates": "Document Dates",
     "clearFields": "CLEAR",
     "repeatBill": "Rental Contract Duration",
     "repeatMonths": "Repeat every",
@@ -1516,6 +1518,8 @@
       "waitingPayment": "Waiting for Payment",
       "waitingResponse": "Waiting for Response"
     },
+    "headOffice": "Head Office",
+    "branch": "Branch",
     "selectStatus": "Select status",
     "store": "Store",
     "selectStore": "Select store",

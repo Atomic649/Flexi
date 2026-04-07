@@ -222,6 +222,7 @@ interface billInput {
   paymentTermCondition?: string; // Optional payment term condition
   remark?: string; // Optional remark
   taxType?: "Juristic" | "Individual"; // Optional tax type
+  branch?: string; // Optional branch (Juristic only)
   withholdingTax?: boolean;
   withholdingPercent?: number;
   WHTAmount?: number;
@@ -292,6 +293,7 @@ const schema = Joi.object({
   paymentTermCondition: Joi.string().allow("").optional(), // Optional payment term condition
   remark: Joi.string().allow("").optional(), // Optional remark
   taxType: Joi.string().valid("Juristic", "Individual").optional(), // Optional tax type
+  branch: Joi.string().allow("").optional(), // Optional branch (Juristic only)
   projectId: Joi.number().optional(), // Optional project link
   isExport: Joi.boolean().optional(), // Optional export flag
   cCountry: Joi.string().allow("").optional(), // Optional country (for export bills)
@@ -363,6 +365,9 @@ const createBill = async (req: Request, res: Response) => {
         let customerIdFromDb: number | null = null;
         if (billInput.cPhone && billInput.cPhone.trim() !== "") {
           const phone = billInput.cPhone.trim();
+          const effectiveBranch = billInput.taxType === "Juristic"
+            ? (billInput.branch?.trim() || "Head Office")
+            : undefined;
           const customerData = {
             businessAcc: billInput.businessAcc,
             phone: phone,
@@ -373,6 +378,8 @@ const createBill = async (req: Request, res: Response) => {
             province: billInput.cProvince,
             postId: billInput.cPostId,
             taxId: billInput.cTaxId,
+            taxType: billInput.taxType ?? "Individual",
+            branch: effectiveBranch,
           };
 
           if (billInput.updateCustomer) {
@@ -393,6 +400,8 @@ const createBill = async (req: Request, res: Response) => {
                 province: billInput.cProvince,
                 postId: billInput.cPostId,
                 taxId: billInput.cTaxId,
+                taxType: billInput.taxType ?? "Individual",
+                branch: effectiveBranch,
               },
             });
             customerIdFromDb = customer.id;
@@ -561,6 +570,7 @@ const createBill = async (req: Request, res: Response) => {
                 repeat: billInput.repeat,
                 repeatMonths: billInput.repeatMonths ?? 0,
                 taxType: billInput.taxType || "Individual",
+                branch: billInput.taxType === "Juristic" ? (billInput.branch?.trim() || "Head Office") : undefined,
                 isExport: billInput.isExport ?? false,
                 ...(billInput.projectId != null && { projectId: billInput.projectId }),
               };
@@ -656,6 +666,7 @@ const createBill = async (req: Request, res: Response) => {
             repeat: billInput.repeat,
             repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
             taxType: billInput.taxType || "Individual",
+            branch: billInput.taxType === "Juristic" ? (billInput.branch?.trim() || "Head Office") : undefined,
             ...(billInput.projectId != null && { projectId: billInput.projectId }),
           };
 
@@ -1054,6 +1065,9 @@ const updateBill = async (req: Request, res: Response) => {
         let customerIdFromDb: number | null = null;
         if (billInput.cPhone && billInput.cPhone.trim() !== "") {
           const phone = billInput.cPhone.trim();
+          const effectiveBranch2 = billInput.taxType === "Juristic"
+            ? (billInput.branch?.trim() || "Head Office")
+            : undefined;
           const customerData = {
             businessAcc: billInput.businessAcc,
             phone: phone,
@@ -1064,6 +1078,8 @@ const updateBill = async (req: Request, res: Response) => {
             province: billInput.cProvince,
             postId: billInput.cPostId,
             taxId: billInput.cTaxId,
+            taxType: billInput.taxType ?? "Individual",
+            branch: effectiveBranch2,
           };
 
           if (billInput.updateCustomer) {
@@ -1083,6 +1099,8 @@ const updateBill = async (req: Request, res: Response) => {
                 province: billInput.cProvince,
                 postId: billInput.cPostId,
                 taxId: billInput.cTaxId,
+                taxType: billInput.taxType ?? "Individual",
+                branch: effectiveBranch2,
               },
             });
             customerIdFromDb = customer.id;
@@ -1181,6 +1199,7 @@ const updateBill = async (req: Request, res: Response) => {
           repeat: billInput.repeat,
           repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
           taxType: billInput.taxType || "Individual",
+          branch: billInput.taxType === "Juristic" ? (billInput.branch?.trim() || "Head Office") : undefined,
           withHoldingTax: billInput.withholdingTax ?? false,
           WHTpercent: billInput.withholdingPercent ?? 0,
           WHTAmount: billInput.WHTAmount ?? 0,

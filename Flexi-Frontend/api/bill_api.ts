@@ -79,6 +79,7 @@ class CallAPIBill {
         paymentTermCondition?: string; // Optional payment term condition
         remark?: string; // Optional remark
         taxType?: "Juristic" | "Individual"; // Optional tax type
+        branch?: string; // Optional branch (Juristic only)
         withholdingTax?: boolean; // Optional withholding tax
         withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount
@@ -141,6 +142,7 @@ class CallAPIBill {
         paymentTermCondition?: string; // Optional payment term condition
         remark?: string; // Optional remark
         taxType?: "Juristic" | "Individual"; // Optional tax type
+        branch?: string; // Optional branch (Juristic only)
         withholdingTax?: boolean; // Optional withholding tax
         withholdingPercent?: number; // Optional withholding
         WHTAmount?: number; // Optional WHT amount

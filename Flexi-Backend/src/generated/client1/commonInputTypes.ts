@@ -260,6 +260,13 @@ export type EnumGenderNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
 }
 
+export type EnumtaxTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
+}
+
 export type EnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Gender | Prisma.EnumGenderFieldRefInput<$PrismaModel> | null
   in?: $Enums.Gender[] | Prisma.ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -268,6 +275,16 @@ export type EnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel>
+}
+
+export type EnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
 }
 
 export type EnumDocumentTypeFilter<$PrismaModel = never> = {
@@ -303,13 +320,6 @@ export type DecimalNullableFilter<$PrismaModel = never> = {
   gt?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   gte?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDecimalNullableFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-}
-
-export type EnumtaxTypeNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
 }
 
 export type EnumDocumentTypeNullableFilter<$PrismaModel = never> = {
@@ -366,16 +376,6 @@ export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
-}
-
-export type EnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
 }
 
 export type EnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -844,6 +844,13 @@ export type NestedEnumGenderNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
 }
 
+export type NestedEnumtaxTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
+}
+
 export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Gender | Prisma.EnumGenderFieldRefInput<$PrismaModel> | null
   in?: $Enums.Gender[] | Prisma.ListEnumGenderFieldRefInput<$PrismaModel> | null
@@ -852,6 +859,16 @@ export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumGenderNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumDocumentTypeFilter<$PrismaModel = never> = {
@@ -887,13 +904,6 @@ export type NestedDecimalNullableFilter<$PrismaModel = never> = {
   gt?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   gte?: runtime.Decimal | runtime.DecimalJsLike | number | string | Prisma.DecimalFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDecimalNullableFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-}
-
-export type NestedEnumtaxTypeNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel> | $Enums.taxType | null
 }
 
 export type NestedEnumDocumentTypeNullableFilter<$PrismaModel = never> = {
@@ -939,16 +949,6 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
-}
-
-export type NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.taxType | Prisma.EnumtaxTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.taxType[] | Prisma.ListEnumtaxTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumtaxTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.taxType | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumtaxTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumDocumentTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
