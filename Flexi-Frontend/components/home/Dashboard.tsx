@@ -319,9 +319,9 @@ export default function Dashboard() {
       setSalesChartData(chartData || []);
       setTopProducts(productsData || []);
       setTopPlatforms(platformsData || []);
-      setExpenseByCustomGroup(customGroupData || { data: [], total: 0 });
-      setExpenseByNote(noteGroupData || { data: [], total: 0 });
-      setExpenseByGroup(expenseGroupData || { data: [], total: 0 });
+      setExpenseByCustomGroup(Array.isArray(customGroupData?.data) ? customGroupData : { data: [], total: 0 });
+      setExpenseByNote(Array.isArray(noteGroupData?.data) ? noteGroupData : { data: [], total: 0 });
+      setExpenseByGroup(Array.isArray(expenseGroupData?.data) ? expenseGroupData : { data: [], total: 0 });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
@@ -1100,7 +1100,7 @@ export default function Dashboard() {
               </View>
 
               {/* Expense Pie Charts — swipeable */}
-              {(expenseByCustomGroup.data.length > 0 || expenseByNote.data.length > 0 || expenseByGroup.data.length > 0) && (
+              {((expenseByCustomGroup.data?.length ?? 0) > 0 || (expenseByNote.data?.length ?? 0) > 0 || (expenseByGroup.data?.length ?? 0) > 0) && (
                 <View
                   style={{
                     backgroundColor: theme === "dark" ? "#1c1c1e" : "#ffffff",
@@ -1139,13 +1139,13 @@ export default function Dashboard() {
                         }}
                       >
                         <View style={{ width: pieContainerWidth }}>
-                          <PieChart data={expenseByCustomGroup.data} total={expenseByCustomGroup.total} />
+                          <PieChart data={expenseByCustomGroup.data ?? []} total={expenseByCustomGroup.total} />
                         </View>
                         <View style={{ width: pieContainerWidth }}>
-                          <PieChart data={expenseByNote.data} total={expenseByNote.total} />
+                          <PieChart data={expenseByNote.data ?? []} total={expenseByNote.total} />
                         </View>
                         <View style={{ width: pieContainerWidth }}>
-                          <PieChart data={expenseByGroup.data} total={expenseByGroup.total} />
+                          <PieChart data={expenseByGroup.data ?? []} total={expenseByGroup.total} />
                         </View>
                       </ScrollView>
                     )}

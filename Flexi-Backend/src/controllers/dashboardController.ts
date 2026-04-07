@@ -555,6 +555,7 @@ export const getTopProducts = async (req: Request, res: Response) => {
         ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
+        billLevelDiscount: true,
         product: {
           select: {
             product: true,
@@ -568,15 +569,25 @@ export const getTopProducts = async (req: Request, res: Response) => {
       }
     });
 
-    // Flatten all product items with discount consideration
-    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
-      productName: item.productList?.name ?? String(item.product),
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      unitDiscount: Number(item.unitDiscount || 0),
-      unit: item.unit || "Unit"
-    })));
-    // Aggregate by product name (account for unit discounts)
+    // Flatten all product items with discount consideration (including proportional bill-level discount)
+    const allProductItems = bills.flatMap(bill => {
+      const billLevelDiscount = Number(bill.billLevelDiscount || 0);
+      const billGrossRevenue = bill.product.reduce((sum, item) =>
+        sum + Number(item.unitPrice) * Number(item.quantity), 0);
+      return bill.product.map(item => {
+        const grossRevenue = Number(item.unitPrice) * Number(item.quantity);
+        const proportion = billGrossRevenue > 0 ? grossRevenue / billGrossRevenue : 0;
+        return {
+          productName: item.productList?.name ?? String(item.product),
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          unitDiscount: Number(item.unitDiscount || 0),
+          unit: item.unit || "Unit",
+          proportionalBillDiscount: proportion * billLevelDiscount
+        };
+      });
+    });
+    // Aggregate by product name (account for unit discounts and bill-level discount)
     const productMetrics: Record<string, { name: string; revenue: number; sales: number; orders: number; totalDiscount: number; unit: string }> = {};
     allProductItems.forEach(item => {
       if (!productMetrics[item.productName]) {
@@ -589,15 +600,15 @@ export const getTopProducts = async (req: Request, res: Response) => {
           unit: item.unit
         };
       }
-      // Calculate revenue after unit discount
+      // Calculate revenue after unit discount and proportional bill-level discount
       const grossRevenue = item.unitPrice * item.quantity;
       const discountAmount = item.unitDiscount * item.quantity;
-      const netRevenue = grossRevenue - discountAmount;
+      const netRevenue = grossRevenue - discountAmount - item.proportionalBillDiscount;
 
       productMetrics[item.productName].revenue += netRevenue;
       productMetrics[item.productName].sales += item.quantity;
       productMetrics[item.productName].orders += 1;
-      productMetrics[item.productName].totalDiscount += discountAmount;
+      productMetrics[item.productName].totalDiscount += discountAmount + item.proportionalBillDiscount;
       if (!productMetrics[item.productName].unit && item.unit) {
         productMetrics[item.productName].unit = item.unit;
       }
@@ -719,11 +730,12 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         deleted: false,
         //DocumentType: "Receipt",
         purchaseAt: dateFilter,
-        isSplitChild: false, // Exclude split child bills to avoid duplicates
+         isSplitChild: false, // Exclude split child bills to avoid duplicates
         ...(projectId ? { projectId: parseInt(projectId as string) } : {}),
       },
       select: {
         platform: true,
+        billLevelDiscount: true,
         product: {
           select: {
             product: true,
@@ -736,17 +748,27 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
       }
     });
 
-    // Flatten all product items with platform and discount info
-    const allProductItems = platformBills.flatMap(bill => bill.product.map(item => ({
-      platform: bill.platform,
-      productName: item.productList?.name ?? String(item.product),
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      unitDiscount: Number(item.unitDiscount || 0)
-    })));    // Optionally filter by productName
+    // Flatten all product items with platform and discount info (including proportional bill-level discount)
+    const allProductItems = platformBills.flatMap(bill => {
+      const billLevelDiscount = Number(bill.billLevelDiscount || 0);
+      const billGrossRevenue = bill.product.reduce((sum, item) =>
+        sum + Number(item.unitPrice) * Number(item.quantity), 0);
+      return bill.product.map(item => {
+        const grossRevenue = Number(item.unitPrice) * Number(item.quantity);
+        const proportion = billGrossRevenue > 0 ? grossRevenue / billGrossRevenue : 0;
+        return {
+          platform: bill.platform,
+          productName: item.productList?.name ?? String(item.product),
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          unitDiscount: Number(item.unitDiscount || 0),
+          proportionalBillDiscount: proportion * billLevelDiscount
+        };
+      });
+    });    // Optionally filter by productName
     const filteredItems = productName ? allProductItems.filter(item => item.productName === productName) : allProductItems;
 
-    // Aggregate by platform (account for unit discounts)
+    // Aggregate by platform (account for unit discounts and bill-level discount)
     const platformMetrics: Record<string, { platform: string; revenue: number; sales: number; orders: number; totalDiscount: number }> = {};
     filteredItems.forEach(item => {
       if (!platformMetrics[item.platform]) {
@@ -758,15 +780,15 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
           totalDiscount: 0
         };
       }
-      // Calculate revenue after unit discount
+      // Calculate revenue after unit discount and proportional bill-level discount
       const grossRevenue = item.unitPrice * item.quantity;
       const discountAmount = item.unitDiscount * item.quantity;
-      const netRevenue = grossRevenue - discountAmount;
-      
+      const netRevenue = grossRevenue - discountAmount - item.proportionalBillDiscount;
+
       platformMetrics[item.platform].revenue += netRevenue;
       platformMetrics[item.platform].sales += item.quantity;
       platformMetrics[item.platform].orders += 1;
-      platformMetrics[item.platform].totalDiscount += discountAmount;
+      platformMetrics[item.platform].totalDiscount += discountAmount + item.proportionalBillDiscount;
     });
 
     // Convert to array and sort by revenue
@@ -1607,6 +1629,7 @@ export const getTopStores = async (req: Request, res: Response) => {
       select: {
         platform: true,
         platformId: true,
+        billLevelDiscount: true,
         product: {
           select: {
             product: true,
@@ -1644,16 +1667,26 @@ export const getTopStores = async (req: Request, res: Response) => {
       return acc;
     }, {} as Record<number, { name: string; platform: string }>);
 
-    // Flatten all product items with platform identifiers and discount info
-    const allProductItems = bills.flatMap(bill => bill.product.map(item => ({
-      platformId: bill.platformId ?? null,
-      platformLabel: bill.platform ?? null,
-      productName: item.productList?.name ?? String(item.product),
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      unitDiscount: Number(item.unitDiscount || 0),
-      unit: item.unit || 'Unit'
-    })));
+    // Flatten all product items with platform identifiers and discount info (including proportional bill-level discount)
+    const allProductItems = bills.flatMap(bill => {
+      const billLevelDiscount = Number(bill.billLevelDiscount || 0);
+      const billGrossRevenue = bill.product.reduce((sum, item) =>
+        sum + Number(item.unitPrice) * Number(item.quantity), 0);
+      return bill.product.map(item => {
+        const grossRevenue = Number(item.unitPrice) * Number(item.quantity);
+        const proportion = billGrossRevenue > 0 ? grossRevenue / billGrossRevenue : 0;
+        return {
+          platformId: bill.platformId ?? null,
+          platformLabel: bill.platform ?? null,
+          productName: item.productList?.name ?? String(item.product),
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          unitDiscount: Number(item.unitDiscount || 0),
+          unit: item.unit || 'Unit',
+          proportionalBillDiscount: proportion * billLevelDiscount
+        };
+      });
+    });
 
     const filteredItems = productName
       ? allProductItems.filter(item => item.productName === productName)
@@ -1685,15 +1718,15 @@ export const getTopStores = async (req: Request, res: Response) => {
         };
       }
 
-      // Calculate revenue after unit discount
+      // Calculate revenue after unit discount and proportional bill-level discount
       const grossRevenue = item.unitPrice * item.quantity;
       const discountAmount = item.unitDiscount * item.quantity;
-      const netRevenue = grossRevenue - discountAmount;
+      const netRevenue = grossRevenue - discountAmount - item.proportionalBillDiscount;
 
       platformMetrics[key].revenue += netRevenue;
       platformMetrics[key].sales += item.quantity;
       platformMetrics[key].orders += 1;
-      platformMetrics[key].totalDiscount += discountAmount;
+      platformMetrics[key].totalDiscount += discountAmount + item.proportionalBillDiscount;
       if (!platformMetrics[key].unit && item.unit) {
         platformMetrics[key].unit = item.unit;
       }

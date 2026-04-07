@@ -399,7 +399,7 @@ function RootLayoutNav() {
         />
         {/* DocumentSettings */}
         <Stack.Screen
-          name="AppearanceSettings"
+          name="appearanceSettings"
           options={{
             ...showTopBarAndBackIcon(theme),
             title: t("settings.appearanceSettings"),
