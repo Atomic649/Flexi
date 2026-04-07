@@ -83,6 +83,9 @@ export default function CreateBill() {
   const [error, setError] = useState("");
   const [isCreatingBill, setIsCreatingBill] = useState(false);
   const [purchaseAt, setPurchaseAt] = useState(new Date());
+  const [quotationAt, setQuotationAt] = useState(new Date());
+  const [invoiceAt, setInvoiceAt] = useState(new Date());
+  const [receiptAt, setReceiptAt] = useState(new Date());
   const { vat } = useBusiness();
 
   const normalizeText = (value?: string | null) =>
@@ -291,6 +294,8 @@ export default function CreateBill() {
   const [productChoice, setProductChoice] = useState<any[]>([]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
+  const [allDatesVisible, setAllDatesVisible] = useState(false);
+  const [editingDateField, setEditingDateField] = useState<"QA" | "PU" | "IV" | "RE" | null>(null);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
@@ -613,6 +618,9 @@ export default function CreateBill() {
         ? new Date(billData.purchaseAt)
         : new Date();
       setPurchaseAt(purchaseDate);
+      setQuotationAt(billData.quotationAt ? new Date(billData.quotationAt) : purchaseDate);
+      setInvoiceAt(billData.invoiceAt ? new Date(billData.invoiceAt) : purchaseDate);
+      setReceiptAt(billData.receiptAt ? new Date(billData.receiptAt) : purchaseDate);
       setSelectedDates([purchaseDate.toISOString()]);
       setDate([purchaseDate.toISOString()]);
 
@@ -1087,8 +1095,26 @@ export default function CreateBill() {
   };
 
   const handleDateTimeChange = (next: Date) => {
-    setPurchaseAt(next);
-    setSelectedDates([format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")]);
+    const formatted = format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    if (editingDateField === "QA") {
+      setQuotationAt(next);
+    } else if (editingDateField === "PU") {
+      setPurchaseAt(next);
+      setSelectedDates([formatted]);
+      setDate([formatted]);
+    } else if (editingDateField === "IV") {
+      setInvoiceAt(next);
+    } else if (editingDateField === "RE") {
+      setReceiptAt(next);
+    } else {
+      if (selectedDocumentType === "QA") setQuotationAt(next);
+      else if (selectedDocumentType === "IV") setInvoiceAt(next);
+      else setReceiptAt(next);
+      setPurchaseAt(next);
+      setSelectedDates([formatted]);
+      setDate([formatted]);
+    }
+    setEditingDateField(null);
   };
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30 | 45) => {
@@ -1160,7 +1186,15 @@ export default function CreateBill() {
     >
       <DateTimePicker
         visible={calendarVisible}
-        value={purchaseAt}
+        value={
+          editingDateField === "QA" ? quotationAt
+          : editingDateField === "PU" ? purchaseAt
+          : editingDateField === "IV" ? invoiceAt
+          : editingDateField === "RE" ? receiptAt
+          : selectedDocumentType === "QA" ? quotationAt
+          : selectedDocumentType === "IV" ? invoiceAt
+          : receiptAt
+        }
         onChange={handleDateTimeChange}
         onClose={() => setCalendarVisible(false)}
         maxDate={new Date()}
@@ -1352,27 +1386,54 @@ export default function CreateBill() {
               }}
             >
               {/* Date */}
-              <TouchableOpacity
-                onPress={() => setCalendarVisible(true)}
-                activeOpacity={0.7}
-                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-              >
-                <Ionicons
-                  name="calendar-outline"
-                  size={16}
-                  color={theme === "dark" ? "#c9c9c9" : "#48453e"}
-                />
-                <CustomText
-                  style={{
-                    fontSize: 13,
-                    color: theme === "dark" ? "#c9c9c9" : "#48453e",
-                  }}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <TouchableOpacity
+                  onPress={() => setAllDatesVisible(true)}
+                  activeOpacity={0.7}
                 >
-                  {SelectedDates.length > 0
-                    ? formatDate(SelectedDates[0])
-                    : t("dashboard.selectDate")}
-                </CustomText>
-              </TouchableOpacity>
+                  <Ionicons
+                    name="calendar-outline"
+                    size={16}
+                    color={theme === "dark" ? "#c9c9c9" : "#48453e"}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setEditingDateField(null);
+                    setCalendarVisible(true);
+                  }}
+                  activeOpacity={0.7}
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+                >
+                  <CustomText
+                    style={{
+                      fontSize: 11,
+                      fontWeight: "bold",
+                      color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                    }}
+                  >
+                    {selectedDocumentType === "QA"
+                      ? "QA"
+                      : selectedDocumentType === "IV"
+                        ? "IV"
+                        : "RE"}
+                  </CustomText>
+                  <CustomText
+                    style={{
+                      fontSize: 13,
+                      color: theme === "dark" ? "#c9c9c9" : "#48453e",
+                    }}
+                  >
+                    {formatDate(
+                      selectedDocumentType === "QA"
+                        ? quotationAt.toISOString()
+                        : selectedDocumentType === "IV"
+                          ? invoiceAt.toISOString()
+                          : receiptAt.toISOString()
+                    )}
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
 
               {/* AutoFill + Clear */}
               <View
@@ -2426,6 +2487,75 @@ export default function CreateBill() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* All Dates Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={allDatesVisible}
+        onRequestClose={() => setAllDatesVisible(false)}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <View
+            style={{
+              padding: 24,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+            }}
+          >
+            <CustomText style={{ fontSize: 16, fontWeight: "bold", marginBottom: 16 }}>
+              {t("bill.documentDates", "Document Dates")}
+            </CustomText>
+
+            {([
+                "PU",
+                selectedDocumentType === "QA" ? "QA" : selectedDocumentType === "IV" ? "IV" : "RE",
+              ] as ("QA" | "PU" | "IV" | "RE")[]).map((field, index, arr) => {
+              const labelMap = { QA: t("bill.quotation", "Quotation"), PU: t("bill.purchase", "Purchase"), IV: t("bill.invoice", "Invoice"), RE: t("bill.receipt", "Receipt") };
+              const dateMap: Record<string, Date> = { QA: quotationAt, PU: purchaseAt, IV: invoiceAt, RE: receiptAt };
+              return (
+                <TouchableOpacity
+                  key={field}
+                  onPress={() => {
+                    setEditingDateField(field);
+                    setAllDatesVisible(false);
+                    setCalendarVisible(true);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingVertical: 14,
+                    borderBottomWidth: index < arr.length - 1 ? 1 : 0,
+                    borderBottomColor: theme === "dark" ? "#333" : "#eeeeee",
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                    <CustomText style={{ fontWeight: "bold", fontSize: 12, color: "#888888", width: 24 }}>{field}</CustomText>
+                    <CustomText style={{ fontSize: 14 }}>{labelMap[field]}</CustomText>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                      {formatDate(dateMap[field].toISOString())}
+                    </CustomText>
+                    <Ionicons name="chevron-forward" size={14} color={theme === "dark" ? "#666" : "#aaa"} />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            <TouchableOpacity
+              onPress={() => setAllDatesVisible(false)}
+              activeOpacity={0.7}
+              style={{ marginTop: 16, paddingVertical: 12, alignItems: "center" }}
+            >
+              <CustomText style={{ color: "#888888" }}>{t("common.cancel", "Cancel")}</CustomText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Customer Conflict Modal */}
       <Modal
