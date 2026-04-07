@@ -2406,7 +2406,7 @@ export default function EditBill() {
                 </CustomText>
                 <View style={{ flexDirection: "row", borderRadius: 6, borderWidth: 1, borderColor: theme === "dark" ? "#606060" : "#b1b1b1", overflow: "hidden" }}>
                   <TouchableOpacity
-                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: billLevelDiscountIsPercent ? "#04ecc1" : "transparent" }}
                     onPress={() => setBillLevelDiscountIsPercent(true)}
                     activeOpacity={0.8}
                     disabled={!isEditMode}
@@ -2415,7 +2415,7 @@ export default function EditBill() {
                   </TouchableOpacity>
                   <View style={{ width: 1, backgroundColor: theme === "dark" ? "#606060" : "#b1b1b1" }} />
                   <TouchableOpacity
-                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: !billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: !billLevelDiscountIsPercent ? "#04ecc1" : "transparent" }}
                     onPress={() => setBillLevelDiscountIsPercent(false)}
                     activeOpacity={0.8}
                     disabled={!isEditMode}

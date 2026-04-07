@@ -1908,61 +1908,7 @@ export default function CreateBill() {
               </TouchableOpacity>
             </View>
 
-            {/* Bill-Level Discount Section */}
-            <View className="mt-2 mb-2" style={{ backgroundColor: "transparent" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <CustomText style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>
-                  {t("bill.billLevelDiscount")}
-                </CustomText>
-                <View style={{ flexDirection: "row", borderRadius: 6, borderWidth: 1, borderColor: theme === "dark" ? "#606060" : "#b1b1b1", overflow: "hidden" }}>
-                  <TouchableOpacity
-                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
-                    onPress={() => setBillLevelDiscountIsPercent(true)}
-                    activeOpacity={0.8}
-                  >
-                    <CustomText style={{ color: billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>%</CustomText>
-                  </TouchableOpacity>
-                  <View style={{ width: 1, backgroundColor: theme === "dark" ? "#606060" : "#b1b1b1" }} />
-                  <TouchableOpacity
-                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: !billLevelDiscountIsPercent ? "#3b82f6" : "transparent" }}
-                    onPress={() => setBillLevelDiscountIsPercent(false)}
-                    activeOpacity={0.8}
-                  >
-                    <CustomText style={{ color: !billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>฿</CustomText>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View className="flex flex-row justify-between">
-                <View className="w-1/2">
-                  <FormFieldClear
-                    title={billLevelDiscountIsPercent ? t("bill.billLevelDiscountPercent") : t("bill.billLevelDiscount")}
-                    value={billLevelDiscountValue}
-                    handleChangeText={(value: string) => {
-                      const numeric = value.replace(/[^0-9.]/g, "");
-                      setBillLevelDiscountValue(numeric);
-                    }}
-                    placeholder="0"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles={fieldStyles}
-                    keyboardType="numeric"
-                    maxLength={12}
-                  />
-                </View>
-                <View
-                  className="w-1/2 items-start justify-start"
-                  style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 6 }}
-                >
-                  <CustomText className="text-sm pt-1" style={{ color: theme === "dark" ? "#bbb" : "#666" }}>
-                    {t("bill.billLevelDiscountAmount")}:
-                  </CustomText>
-                  <CustomText className="text-sm ml-2" weight="bold" style={{ color: theme === "dark" ? "#fff" : "#222" }}>
-                    {billLevelDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </CustomText>
-                </View>
-              </View>
-            </View>
+           
 
             {/* Payment and Cash Status - Only show for Receipt */}
             {selectedDocumentType === "RE" && (
@@ -2079,6 +2025,62 @@ export default function CreateBill() {
               }}
               onBlur={() => setIsRemarkFocused(false)}
             />
+
+             {/* Bill-Level Discount Section */}
+            <View className="mt-2 mb-2" style={{ backgroundColor: "transparent" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <CustomText style={{ color: theme === "dark" ? "#b1b1b1" : "#606060" }}>
+                  {t("bill.billLevelDiscount")}
+                </CustomText>
+                <View style={{ flexDirection: "row", borderRadius: 6, borderWidth: 1, borderColor: theme === "dark" ? "#606060" : "#b1b1b1", overflow: "hidden" }}>
+                  <TouchableOpacity                  
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: billLevelDiscountIsPercent ? "#04ecc1" : "transparent" }}
+                    onPress={() => setBillLevelDiscountIsPercent(true)}
+                    activeOpacity={0.8}
+                  >
+                    <CustomText style={{ color: billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>%</CustomText>
+                  </TouchableOpacity>
+                  <View style={{ width: 1, backgroundColor: theme === "dark" ? "#606060" : "#b1b1b1" }} />
+                  <TouchableOpacity
+                    style={{ paddingHorizontal: 12, paddingVertical: 4, backgroundColor: !billLevelDiscountIsPercent ? "#04ecc1" : "transparent" }}
+                    onPress={() => setBillLevelDiscountIsPercent(false)}
+                    activeOpacity={0.8}
+                  >
+                    <CustomText style={{ color: !billLevelDiscountIsPercent ? "#fff" : (theme === "dark" ? "#b1b1b1" : "#606060"), fontSize: 13 }}>฿</CustomText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View className="flex flex-row justify-between">
+                <View className="w-1/2">
+                  <FormFieldClear
+                    title={billLevelDiscountIsPercent ? t("bill.billLevelDiscountPercent") : t("bill.billLevelDiscount")}
+                    value={billLevelDiscountValue}
+                    handleChangeText={(value: string) => {
+                      const numeric = value.replace(/[^0-9.]/g, "");
+                      setBillLevelDiscountValue(numeric);
+                    }}
+                    placeholder="0"
+                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                    otherStyles={fieldStyles}
+                    keyboardType="numeric"
+                    maxLength={12}
+                  />
+                </View>
+                <View
+                  className="w-1/2 items-start justify-start"
+                  style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 6 }}
+                >
+                  <CustomText className="text-sm pt-1" style={{ color: theme === "dark" ? "#bbb" : "#666" }}>
+                    {t("bill.billLevelDiscountAmount")}:
+                  </CustomText>
+                  <CustomText className="text-sm ml-2" weight="bold" style={{ color: theme === "dark" ? "#fff" : "#222" }}>
+                    {billLevelDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </CustomText>
+                </View>
+              </View>
+            </View>
 
           
 

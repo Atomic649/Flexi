@@ -563,6 +563,12 @@ export default function Setting() {
                 text={t("settings.businessSetting.team")}
                 onPress={() => {router.push("/team")}}
               />
+              <Divider />
+              <SectionItem
+                icon="file-text"
+                text={t("settings.documentSettings")}
+                onPress={() => router.push("/documentSettings")}
+              />
             </View>
           </Section>
 

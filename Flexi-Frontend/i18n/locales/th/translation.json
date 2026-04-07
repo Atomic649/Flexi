@@ -1422,6 +1422,23 @@
       "modeProductsDesc": "แสดงชื่อสินค้า จำนวน และหน่วย",
       "modeProject": "โปรเจกต์",
       "modeProjectDesc": "แสดงชื่อโปรเจกต์และรายละเอียด"
+    },
+    "billForm": {
+      "title": "ฟิลด์ในฟอร์มเอกสาร",
+      "description": "เลือกฟิลด์เสริมที่จะแสดงเมื่อสร้างเอกสาร",
+      "showNote": "หมายเหตุ",
+      "showPaymentTerms": "เงื่อนไขการชำระเงิน",
+      "showRemark": "หมายเหตุท้ายเอกสาร",
+      "showWithholdingTax": "ภาษีหัก ณ ที่จ่าย",
+      "showBillLevelDiscount": "ส่วนลดรวมเอกสาร",
+      "showProject": "โปรเจกต์"
+    },
+    "pdf": {
+      "title": "การแสดงผล PDF",
+      "description": "เลือกข้อมูลที่จะแสดงใน PDF ที่สร้างขึ้น",
+      "showProject": "แสดงโปรเจกต์",
+      "showWithholdingTax": "แสดงภาษีหัก ณ ที่จ่าย",
+      "showBranch": "แสดงสาขา"
     }
   },
   "bill": {

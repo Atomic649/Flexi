@@ -1424,6 +1424,23 @@
       "modeProductsDesc": "Show product name, quantity and unit",
       "modeProject": "Project",
       "modeProjectDesc": "Show project name and description"
+    },
+    "billForm": {
+      "title": "Bill Form Fields",
+      "description": "Choose which optional fields to show when creating a bill.",
+      "showNote": "Note",
+      "showPaymentTerms": "Payment Terms & Conditions",
+      "showRemark": "Remark",
+      "showWithholdingTax": "Withholding Tax",
+      "showBillLevelDiscount": "Bill Level Discount",
+      "showProject": "Project"
+    },
+    "pdf": {
+      "title": "PDF Display",
+      "description": "Choose what information to include in generated PDFs.",
+      "showProject": "Show Project",
+      "showWithholdingTax": "Show Withholding Tax",
+      "showBranch": "Show Branch"
     }
   },
   "bill": {

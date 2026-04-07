@@ -14,6 +14,7 @@ import CallAPIUser from "@/api/auth_api";
 import { BusinessProvider, useBusiness } from "@/providers/BusinessProvider";
 import { MarketingProvider } from "@/providers/MarketingProvider";
 import { BillSettingsProvider } from "@/providers/BillSettingsProvider";
+import { DocumentSettingsProvider } from "@/providers/DocumentSettingsProvider";
 import i18n from "@/i18n";
 import MainTopBar from "@/components/MainTopBar";
 import { initReactI18next } from "react-i18next";
@@ -405,6 +406,14 @@ function RootLayoutNav() {
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />
+        <Stack.Screen
+          name="documentSettings"
+          options={{
+            ...showTopBarAndBackIcon(theme),
+            title: t("settings.documentSettings"),
+            headerTitleStyle: getHeaderTitleStyle(),
+          }}
+        />
         {/* team */}
         <Stack.Screen
           name="team"
@@ -465,7 +474,9 @@ export default function RootLayout() {
           <BusinessProvider>
             <MarketingProvider>
               <BillSettingsProvider>
-                <RootLayoutNav />
+                <DocumentSettingsProvider>
+                  <RootLayoutNav />
+                </DocumentSettingsProvider>
               </BillSettingsProvider>
             </MarketingProvider>
           </BusinessProvider>

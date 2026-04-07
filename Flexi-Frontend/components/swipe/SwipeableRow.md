@@ -121,7 +121,7 @@ const rightActions: SwipeAction[] = [
     id: "share",
     icon: "share",
     text: "Share",
-    backgroundColor: "#3B82F6",
+    backgroundColor: "#3bf6e",
     onPress: () => handleShare(),
   },
   {
@@ -216,7 +216,7 @@ const colors = {
   edit: "#F59E0B",    // Orange
   delete: "#EF4444",  // Red
   archive: "#6B7280", // Gray
-  share: "#3B82F6",   // Blue
+  share: "#3bf6e",   // Blue
   like: "#EC4899",    // Pink
   star: "#8B5CF6",    // Purple
   copy: "#10B981",    // Green

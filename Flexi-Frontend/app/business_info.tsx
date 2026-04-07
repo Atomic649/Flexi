@@ -66,7 +66,7 @@ const COLOR_FAMILIES = [
     main: "#2563eb",
     shades: [
       "#60a5fa",
-      "#3b82f6",
+      "#3bf6e",
       "#2563eb",
       "#1d4ed8",
       "#1e40af",
