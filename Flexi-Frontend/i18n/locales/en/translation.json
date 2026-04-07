@@ -1441,6 +1441,17 @@
       "showProject": "Show Project",
       "showWithholdingTax": "Show Withholding Tax",
       "showBranch": "Show Branch"
+    },
+    "defaults": {
+      "title": "Default Document Text",
+      "description": "Set default text that pre-fills when creating a new document.",
+      "paymentTerm": "Default Payment Terms & Conditions",
+      "paymentTermPlaceholder": "Enter default payment terms & conditions",
+      "remark": "Default Remark",
+      "remarkPlaceholder": "Enter default remark",
+      "save": "Save",
+      "saved": "Saved successfully",
+      "saveError": "Error saving defaults"
     }
   },
   "bill": {

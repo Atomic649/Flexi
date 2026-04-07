@@ -61,7 +61,10 @@ Table BusinessAcc {
   taxType taxType [not null, default: 'Individual']
   userId Int [not null]
   stamp String
+  qrPayment String
   logo String
+  paymentTerm String
+  remark String
   businessColor String
   memberId String[] [not null]
   DocumentType DocumentType[] [not null]

@@ -10,6 +10,8 @@ interface BusinessContextProps {
   vat: boolean | null;
   businessLogo: string | null;
   businessColor: string | null;
+  paymentTerm: string | null;
+  remark: string | null;
   fetchBusinessData: () => void;
   triggerFetch: () => void;
 }
@@ -22,6 +24,8 @@ const BusinessContext = createContext<BusinessContextProps>({
   vat: null,
   businessLogo: null,
   businessColor: null,
+  paymentTerm: null,
+  remark: null,
   fetchBusinessData: () => {},
   triggerFetch: () => {},
 });
@@ -34,6 +38,8 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [vat, setVat] = useState<boolean | null>(null);
   const [businessLogo, setBusinessLogo] = useState<string | null>(null);
   const [businessColor, setBusinessColor] = useState<string | null>(null);
+  const [paymentTerm, setPaymentTerm] = useState<string | null>(null);
+  const [remark, setRemark] = useState<string | null>(null);
   const [fetchTrigger, setFetchTrigger] = useState<boolean>(false);
 
   const fetchBusinessData = async () => {
@@ -48,6 +54,8 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setVat(response.vat ?? null);
         setBusinessLogo(response.logo ?? null);
         setBusinessColor(response.businessColor ?? null);
+        setPaymentTerm(response.paymentTerm ?? null);
+        setRemark(response.remark ?? null);
       }
     } catch (error) {
       console.error("Error fetching business data:", error);
@@ -63,7 +71,7 @@ export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   return (
-    <BusinessContext.Provider value={{ businessAvatar, businessName, businessType, DocumentType, vat, businessLogo, businessColor, fetchBusinessData, triggerFetch }}>
+    <BusinessContext.Provider value={{ businessAvatar, businessName, businessType, DocumentType, vat, businessLogo, businessColor, paymentTerm, remark, fetchBusinessData, triggerFetch }}>
       {children}
     </BusinessContext.Provider>
   );

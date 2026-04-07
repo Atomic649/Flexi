@@ -203,6 +203,28 @@ class CallAPIBusiness {
     }
   }
 
+  // Update default paymentTerm and remark for documents
+  async UpdateBusinessDefaultsAPI(
+    memberId: string,
+    data: { paymentTerm?: string; remark?: string }
+  ): Promise<any> {
+    try {
+      const axiosInstance = await getAxiosWithAuth();
+      const response = await axiosInstance.put(
+        `/businessacc/document-defaults/${memberId}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("🚨Update Business Defaults API Error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw error.response.data;
+      } else {
+        throw new Error(t("common.networkError"));
+      }
+    }
+  }
+
   // Connect Partner to Business Account
   async ConnectPartnerAPI(businessId: string, memberId: string, role: string): Promise<any> {
     if (!(await checkNetwork())) {

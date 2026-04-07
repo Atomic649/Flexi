@@ -12,6 +12,7 @@ import {
   getBusinessAvatar,
   updateBusinessLogo,
   addPartnerMember,
+  updateBusinessDefaults,
 } from "../controllers/businessAccController";
 import authenticateToken from "../middleware/authMiddleware";
 
@@ -33,6 +34,9 @@ router.put("/avatar/:id", authenticateToken, updateBusinessAvatar);
 
 // Update Business Logo by memberId
 router.put("/logo/:memberId", authenticateToken, updateBusinessLogo);
+
+// Update default paymentTerm and remark
+router.put("/document-defaults/:memberId", authenticateToken, updateBusinessDefaults);
 
 // Get routes
 router.get("/", authenticateToken, getBusinessAcc);

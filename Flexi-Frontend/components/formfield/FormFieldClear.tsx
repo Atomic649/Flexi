@@ -75,7 +75,7 @@ const FormField = ({
         }}
       >
         <CustomTextInput
-          className={`flex-1 font-psemibold text-lg item-center h-full ${boxheight ? 'mt-4' : ''}`}
+          className={`flex-1 font-psemibold text-lg item-center h-full ${boxheight ? 'pt-3' : ''}`}
           style={{ color: theme === "dark" ? "#b4b3b3" : "#2a2a2a" }}
           value={value}
           placeholder={placeholder}

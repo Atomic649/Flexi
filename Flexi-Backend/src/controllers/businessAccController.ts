@@ -706,7 +706,7 @@ const updateBusinessAcc = async (req: Request, res: Response) => {
     }
 
     const updated = await prisma.businessAcc.update({
-      where: { id: existing.businessId },
+      where: { id: existing.businessId! },
       data: {
         businessName,
         businessUserName,
@@ -879,6 +879,8 @@ const getBusinessAvatar = async (req: Request, res: Response) => {
         vat: true,
         logo: true,
         businessColor: true,
+        paymentTerm: true,
+        remark: true,
       },
     });
     res.json({
@@ -1061,6 +1063,45 @@ const addPartnerMember = async (req: Request, res: Response) => {
   }
 };
 
+// Update default paymentTerm and remark for document generation - Put
+const updateBusinessDefaults = async (req: Request, res: Response) => {
+  const { memberId } = req.params;
+  const { paymentTerm, remark } = req.body;
+
+  try {
+    const existing = await prisma.member.findFirst({
+      where: { uniqueId: memberId },
+      select: { businessId: true, permission: true },
+    });
+
+    if (!existing || !existing.businessId) {
+      return res.status(404).json({ message: "Business account not found" });
+    }
+
+    if (existing.permission !== "admin") {
+      return res.status(403).json({ message: "You do not have permission to update business defaults" });
+    }
+
+    const updated = await prisma.businessAcc.update({
+      where: { id: existing.businessId! },
+      data: {
+        ...(paymentTerm !== undefined && { paymentTerm }),
+        ...(remark !== undefined && { remark }),
+      },
+    });
+
+    return res.json({
+      status: "ok",
+      message: "Business defaults updated successfully",
+      paymentTerm: updated.paymentTerm,
+      remark: updated.remark,
+    });
+  } catch (e) {
+    console.error("Failed to update business defaults:", e);
+    return res.status(500).json({ message: "Failed to update business defaults" });
+  }
+};
+
 // Export the functions
 export {
   createBusinessAcc,
@@ -1075,4 +1116,5 @@ export {
   getBusinessAvatar,
   updateBusinessLogo,
   addPartnerMember,
+  updateBusinessDefaults,
 };

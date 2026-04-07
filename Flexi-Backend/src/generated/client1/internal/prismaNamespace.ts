@@ -1620,7 +1620,10 @@ export const BusinessAccScalarFieldEnum = {
   taxType: 'taxType',
   userId: 'userId',
   stamp: 'stamp',
+  qrPayment: 'qrPayment',
   logo: 'logo',
+  paymentTerm: 'paymentTerm',
+  remark: 'remark',
   businessColor: 'businessColor',
   memberId: 'memberId',
   DocumentType: 'DocumentType'

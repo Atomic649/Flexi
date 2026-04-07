@@ -1,11 +1,15 @@
-import React from "react";
-import { ScrollView, Switch, Platform, Dimensions } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, Switch, Platform, Dimensions, TextInput, TouchableOpacity } from "react-native";
 import { View } from "@/components/Themed";
 import { CustomText } from "@/components/CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useTranslation } from "react-i18next";
 import { useDocumentSettings, DocumentSettingsState } from "@/providers/DocumentSettingsProvider";
 import { useBackgroundColorClass, useTextColorClass } from "@/utils/themeUtils";
+import { useBusiness } from "@/providers/BusinessProvider";
+import CallAPIBusiness from "@/api/business_api";
+import { getMemberId } from "@/utils/utility";
+import CustomAlert from "@/components/CustomAlert";
 
 const getSwitchPlatformColors = (theme: string, value: boolean) => ({
   trackColor: {
@@ -57,17 +61,68 @@ export default function DocumentSettings() {
   const { settings, setSetting } = useDocumentSettings();
   const bgClass = useBackgroundColorClass();
   const textColorClass = useTextColorClass();
+  const { paymentTerm: defaultPaymentTerm, remark: defaultRemark, fetchBusinessData } = useBusiness();
+
+  const [paymentTermInput, setPaymentTermInput] = useState(defaultPaymentTerm ?? "");
+  const [remarkInput, setRemarkInput] = useState(defaultRemark ?? "");
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({ visible: false, title: "", message: "" });
+
+  // Sync inputs when BusinessProvider loads defaults
+  React.useEffect(() => {
+    setPaymentTermInput(defaultPaymentTerm ?? "");
+  }, [defaultPaymentTerm]);
+
+  React.useEffect(() => {
+    setRemarkInput(defaultRemark ?? "");
+  }, [defaultRemark]);
 
   const toggle = (key: keyof DocumentSettingsState) => {
     setSetting(key, !settings[key]);
+  };
+
+  const handleSaveDefaults = async () => {
+    try {
+      const memberId = await getMemberId();
+      if (!memberId) return;
+      await CallAPIBusiness.UpdateBusinessDefaultsAPI(memberId, {
+        paymentTerm: paymentTermInput,
+        remark: remarkInput,
+      });
+      fetchBusinessData();
+      setAlertConfig({ visible: true, title: t("common.success") ?? "Success", message: t("documentSettings.defaults.saved") });
+    } catch {
+      setAlertConfig({ visible: true, title: t("common.error") ?? "Error", message: t("documentSettings.defaults.saveError") });
+    }
   };
 
   const sectionStyle = `rounded-xl overflow-hidden border ${
     theme === "dark" ? "border-zinc-700" : "border-zinc-200"
   }`;
 
+  const inputStyle = {
+    borderWidth: 0.5,
+    borderColor: theme === "dark" ? "#3f3f46" : "#e4e4e7",
+    borderRadius: 10,
+    padding: 10,
+    color: theme === "dark" ? "#d4d4d8" : "#27272a",
+    backgroundColor: theme === "dark" ? "#27272a" : "#f4f4f5",
+    fontSize: 14,
+    minHeight: 80,
+    textAlignVertical: "top" as const,
+  };
+
   return (
     <View className={`h-full ${bgClass}`} style={Platform.OS === "web" ? { paddingTop: 60 } : {}}>
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }]}
+      />
       <ScrollView>
         <View
           className="px-4 pt-3 pb-8"
@@ -88,6 +143,59 @@ export default function DocumentSettings() {
               <ToggleRow label={t("documentSettings.billForm.showWithholdingTax")} value={settings.showWithholdingTax} onToggle={() => toggle("showWithholdingTax")} theme={theme} textColorClass={textColorClass} />
               <ToggleRow label={t("documentSettings.billForm.showBillLevelDiscount")} value={settings.showBillLevelDiscount} onToggle={() => toggle("showBillLevelDiscount")} theme={theme} textColorClass={textColorClass} />
               <ToggleRow label={t("documentSettings.billForm.showProject")} value={settings.showProject} onToggle={() => toggle("showProject")} theme={theme} textColorClass={textColorClass} isLast />
+            </View>
+          </View>
+
+          {/* Default Document Text */}
+          <View className="my-4">
+            <CustomText weight="medium" className={`text-lg mb-1 ${textColorClass}`}>
+              {t("documentSettings.defaults.title")}
+            </CustomText>
+            <CustomText className="text-sm mb-3" style={{ color: theme === "dark" ? "#71717a" : "#9ca3af" }}>
+              {t("documentSettings.defaults.description")}
+            </CustomText>
+            <View style={{ gap: 12 }}>
+              <View>
+                <CustomText className="text-sm mb-1" style={{ color: theme === "dark" ? "#a1a1aa" : "#52525b" }}>
+                  {t("documentSettings.defaults.paymentTerm")}
+                </CustomText>
+                <TextInput
+                  value={paymentTermInput}
+                  onChangeText={setPaymentTermInput}
+                  placeholder={t("documentSettings.defaults.paymentTermPlaceholder")}
+                  placeholderTextColor={theme === "dark" ? "#52525b" : "#a1a1aa"}
+                  multiline
+                  maxLength={300}
+                  style={inputStyle}
+                />
+              </View>
+              <View>
+                <CustomText className="text-sm mb-1" style={{ color: theme === "dark" ? "#a1a1aa" : "#52525b" }}>
+                  {t("documentSettings.defaults.remark")}
+                </CustomText>
+                <TextInput
+                  value={remarkInput}
+                  onChangeText={setRemarkInput}
+                  placeholder={t("documentSettings.defaults.remarkPlaceholder")}
+                  placeholderTextColor={theme === "dark" ? "#52525b" : "#a1a1aa"}
+                  multiline
+                  maxLength={300}
+                  style={inputStyle}
+                />
+              </View>
+              <TouchableOpacity
+                onPress={handleSaveDefaults}
+                style={{
+                  backgroundColor: "#04ecc1",
+                  borderRadius: 10,
+                  paddingVertical: 12,
+                  alignItems: "center",
+                }}
+              >
+                <CustomText weight="medium" style={{ color: "#18181b", fontSize: 15 }}>
+                  {t("documentSettings.defaults.save")}
+                </CustomText>
+              </TouchableOpacity>
             </View>
           </View>
 

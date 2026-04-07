@@ -19,6 +19,7 @@ import DateTimePicker from "@/components/DateTimePicker";
 import CallAPIProduct from "@/api/product_api";
 import CallAPIBill from "@/api/bill_api";
 import CallAPIBusiness from "@/api/business_api";
+
 import CallAPIPlatform from "@/api/platform_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIExpense from "@/api/expense_api";
@@ -120,7 +121,7 @@ export default function EditBill() {
   const [productItems, setProductItems] = useState([
     { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
   ]);
-  const { vat } = useBusiness();
+  const { vat, fetchBusinessData } = useBusiness();
   const [billLevelDiscountValue, setBillLevelDiscountValue] = useState("");
   const [billLevelDiscountIsPercent, setBillLevelDiscountIsPercent] = useState(false);
   const [withholdingTax, setWithholdingTax] = useState(false);
@@ -195,6 +196,52 @@ export default function EditBill() {
   });
 
   const fieldStyles = "mt-2 mb-2";
+
+  // Save payment terms as business default
+  const handleSavePaymentTerms = async () => {
+    try {
+      if (memberId) {
+        await CallAPIBusiness.UpdateBusinessDefaultsAPI(memberId, { paymentTerm: paymentTermCondition });
+        fetchBusinessData();
+        setAlertConfig({
+          visible: true,
+          title: t("bill.alerts.success"),
+          message: t("bill.paymentTermSaved"),
+          buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+        });
+      }
+    } catch {
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: t("bill.paymentTermSaveError"),
+        buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+      });
+    }
+  };
+
+  // Save remark as business default
+  const handleSaveRemark = async () => {
+    try {
+      if (memberId) {
+        await CallAPIBusiness.UpdateBusinessDefaultsAPI(memberId, { remark });
+        fetchBusinessData();
+        setAlertConfig({
+          visible: true,
+          title: t("bill.alerts.success"),
+          message: t("bill.remarkSaved"),
+          buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+        });
+      }
+    } catch {
+      setAlertConfig({
+        visible: true,
+        title: t("common.error"),
+        message: t("bill.remarkSaveError"),
+        buttons: [{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }],
+      });
+    }
+  };
 
   // Focus state for multiline fields
   const [isNoteFocused, setIsNoteFocused] = useState(false);
@@ -2336,7 +2383,9 @@ export default function EditBill() {
               <FormFieldClear
                 title={t("bill.paymentTermCondition")}
                 value={paymentTermCondition}
+                icons={"save"}
                 handleChangeText={setPaymentTermCondition}
+                handlePress={handleSavePaymentTerms}
                 placeholder={t("bill.enterPaymentTermCondition")}
                 borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -2371,7 +2420,9 @@ export default function EditBill() {
             <FormFieldClear
               title={t("bill.remark")}
               value={remark}
+              icons={"save"}
               handleChangeText={setRemark}
+              handlePress={handleSaveRemark}
               placeholder={t("bill.enterRemark")}
               borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}

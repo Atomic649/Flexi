@@ -458,7 +458,7 @@ export default function Dashboard() {
               width: isMobile() ? "90%" : "40%",
               minWidth: 300,
               maxWidth: 500,
-              backgroundColor: theme === "dark" ? "#18181b" : "#f0fbfa",
+              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
               borderRadius: 16,
               padding: 20,
             }}

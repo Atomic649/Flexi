@@ -52,7 +52,10 @@ export type BusinessAccMinAggregateOutputType = {
   taxType: $Enums.taxType | null
   userId: number | null
   stamp: string | null
+  qrPayment: string | null
   logo: string | null
+  paymentTerm: string | null
+  remark: string | null
   businessColor: string | null
 }
 
@@ -72,7 +75,10 @@ export type BusinessAccMaxAggregateOutputType = {
   taxType: $Enums.taxType | null
   userId: number | null
   stamp: string | null
+  qrPayment: string | null
   logo: string | null
+  paymentTerm: string | null
+  remark: string | null
   businessColor: string | null
 }
 
@@ -92,7 +98,10 @@ export type BusinessAccCountAggregateOutputType = {
   taxType: number
   userId: number
   stamp: number
+  qrPayment: number
   logo: number
+  paymentTerm: number
+  remark: number
   businessColor: number
   memberId: number
   DocumentType: number
@@ -126,7 +135,10 @@ export type BusinessAccMinAggregateInputType = {
   taxType?: true
   userId?: true
   stamp?: true
+  qrPayment?: true
   logo?: true
+  paymentTerm?: true
+  remark?: true
   businessColor?: true
 }
 
@@ -146,7 +158,10 @@ export type BusinessAccMaxAggregateInputType = {
   taxType?: true
   userId?: true
   stamp?: true
+  qrPayment?: true
   logo?: true
+  paymentTerm?: true
+  remark?: true
   businessColor?: true
 }
 
@@ -166,7 +181,10 @@ export type BusinessAccCountAggregateInputType = {
   taxType?: true
   userId?: true
   stamp?: true
+  qrPayment?: true
   logo?: true
+  paymentTerm?: true
+  remark?: true
   businessColor?: true
   memberId?: true
   DocumentType?: true
@@ -275,7 +293,10 @@ export type BusinessAccGroupByOutputType = {
   taxType: $Enums.taxType
   userId: number
   stamp: string | null
+  qrPayment: string | null
   logo: string | null
+  paymentTerm: string | null
+  remark: string | null
   businessColor: string | null
   memberId: string[]
   DocumentType: $Enums.DocumentType[]
@@ -320,7 +341,10 @@ export type BusinessAccWhereInput = {
   taxType?: Prisma.EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
   userId?: Prisma.IntFilter<"BusinessAcc"> | number
   stamp?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  qrPayment?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   logo?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  paymentTerm?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  remark?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   businessColor?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   memberId?: Prisma.StringNullableListFilter<"BusinessAcc">
   DocumentType?: Prisma.EnumDocumentTypeNullableListFilter<"BusinessAcc">
@@ -352,7 +376,10 @@ export type BusinessAccOrderByWithRelationInput = {
   taxType?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   stamp?: Prisma.SortOrderInput | Prisma.SortOrder
+  qrPayment?: Prisma.SortOrderInput | Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrderInput | Prisma.SortOrder
+  remark?: Prisma.SortOrderInput | Prisma.SortOrder
   businessColor?: Prisma.SortOrderInput | Prisma.SortOrder
   memberId?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
@@ -387,7 +414,10 @@ export type BusinessAccWhereUniqueInput = Prisma.AtLeast<{
   taxType?: Prisma.EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
   userId?: Prisma.IntFilter<"BusinessAcc"> | number
   stamp?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  qrPayment?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   logo?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  paymentTerm?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  remark?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   businessColor?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   memberId?: Prisma.StringNullableListFilter<"BusinessAcc">
   DocumentType?: Prisma.EnumDocumentTypeNullableListFilter<"BusinessAcc">
@@ -419,7 +449,10 @@ export type BusinessAccOrderByWithAggregationInput = {
   taxType?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   stamp?: Prisma.SortOrderInput | Prisma.SortOrder
+  qrPayment?: Prisma.SortOrderInput | Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrderInput | Prisma.SortOrder
+  remark?: Prisma.SortOrderInput | Prisma.SortOrder
   businessColor?: Prisma.SortOrderInput | Prisma.SortOrder
   memberId?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
@@ -449,7 +482,10 @@ export type BusinessAccScalarWhereWithAggregatesInput = {
   taxType?: Prisma.EnumtaxTypeWithAggregatesFilter<"BusinessAcc"> | $Enums.taxType
   userId?: Prisma.IntWithAggregatesFilter<"BusinessAcc"> | number
   stamp?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+  qrPayment?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
   logo?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+  paymentTerm?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
+  remark?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
   businessColor?: Prisma.StringNullableWithAggregatesFilter<"BusinessAcc"> | string | null
   memberId?: Prisma.StringNullableListFilter<"BusinessAcc">
   DocumentType?: Prisma.EnumDocumentTypeNullableListFilter<"BusinessAcc">
@@ -469,7 +505,10 @@ export type BusinessAccCreateInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -501,7 +540,10 @@ export type BusinessAccUncheckedCreateInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -530,7 +572,10 @@ export type BusinessAccUpdateInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -562,7 +607,10 @@ export type BusinessAccUncheckedUpdateInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -593,7 +641,10 @@ export type BusinessAccCreateManyInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -613,7 +664,10 @@ export type BusinessAccUpdateManyMutationInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -635,7 +689,10 @@ export type BusinessAccUncheckedUpdateManyInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -688,7 +745,10 @@ export type BusinessAccCountOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   stamp?: Prisma.SortOrder
+  qrPayment?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
+  remark?: Prisma.SortOrder
   businessColor?: Prisma.SortOrder
   memberId?: Prisma.SortOrder
   DocumentType?: Prisma.SortOrder
@@ -715,7 +775,10 @@ export type BusinessAccMaxOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   stamp?: Prisma.SortOrder
+  qrPayment?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
+  remark?: Prisma.SortOrder
   businessColor?: Prisma.SortOrder
 }
 
@@ -735,7 +798,10 @@ export type BusinessAccMinOrderByAggregateInput = {
   taxType?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   stamp?: Prisma.SortOrder
+  qrPayment?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
+  remark?: Prisma.SortOrder
   businessColor?: Prisma.SortOrder
 }
 
@@ -959,7 +1025,10 @@ export type BusinessAccCreateWithoutUserInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -989,7 +1058,10 @@ export type BusinessAccUncheckedCreateWithoutUserInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1049,7 +1121,10 @@ export type BusinessAccScalarWhereInput = {
   taxType?: Prisma.EnumtaxTypeFilter<"BusinessAcc"> | $Enums.taxType
   userId?: Prisma.IntFilter<"BusinessAcc"> | number
   stamp?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  qrPayment?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   logo?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  paymentTerm?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
+  remark?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   businessColor?: Prisma.StringNullableFilter<"BusinessAcc"> | string | null
   memberId?: Prisma.StringNullableListFilter<"BusinessAcc">
   DocumentType?: Prisma.EnumDocumentTypeNullableListFilter<"BusinessAcc">
@@ -1069,7 +1144,10 @@ export type BusinessAccCreateWithoutAllMemberInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1100,7 +1178,10 @@ export type BusinessAccUncheckedCreateWithoutAllMemberInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1144,7 +1225,10 @@ export type BusinessAccUpdateWithoutAllMemberInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1175,7 +1259,10 @@ export type BusinessAccUncheckedUpdateWithoutAllMemberInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1203,7 +1290,10 @@ export type BusinessAccCreateWithoutCustomersInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1234,7 +1324,10 @@ export type BusinessAccUncheckedCreateWithoutCustomersInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1278,7 +1371,10 @@ export type BusinessAccUpdateWithoutCustomersInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1309,7 +1405,10 @@ export type BusinessAccUncheckedUpdateWithoutCustomersInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1337,7 +1436,10 @@ export type BusinessAccCreateWithoutDocumentCountersInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1368,7 +1470,10 @@ export type BusinessAccUncheckedCreateWithoutDocumentCountersInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1412,7 +1517,10 @@ export type BusinessAccUpdateWithoutDocumentCountersInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1443,7 +1551,10 @@ export type BusinessAccUncheckedUpdateWithoutDocumentCountersInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1471,7 +1582,10 @@ export type BusinessAccCreateWithoutBillRecordInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1502,7 +1616,10 @@ export type BusinessAccUncheckedCreateWithoutBillRecordInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1546,7 +1663,10 @@ export type BusinessAccUpdateWithoutBillRecordInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1577,7 +1697,10 @@ export type BusinessAccUncheckedUpdateWithoutBillRecordInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1605,7 +1728,10 @@ export type BusinessAccCreateWithoutAdsCostRecordInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1636,7 +1762,10 @@ export type BusinessAccUncheckedCreateWithoutAdsCostRecordInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1680,7 +1809,10 @@ export type BusinessAccUpdateWithoutAdsCostRecordInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1711,7 +1843,10 @@ export type BusinessAccUncheckedUpdateWithoutAdsCostRecordInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1739,7 +1874,10 @@ export type BusinessAccCreateWithoutExpenseRecordInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1770,7 +1908,10 @@ export type BusinessAccUncheckedCreateWithoutExpenseRecordInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1814,7 +1955,10 @@ export type BusinessAccUpdateWithoutExpenseRecordInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1845,7 +1989,10 @@ export type BusinessAccUncheckedUpdateWithoutExpenseRecordInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1873,7 +2020,10 @@ export type BusinessAccCreateWithoutPlatformInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1904,7 +2054,10 @@ export type BusinessAccUncheckedCreateWithoutPlatformInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -1948,7 +2101,10 @@ export type BusinessAccUpdateWithoutPlatformInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -1979,7 +2135,10 @@ export type BusinessAccUncheckedUpdateWithoutPlatformInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2007,7 +2166,10 @@ export type BusinessAccCreateWithoutProductInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -2038,7 +2200,10 @@ export type BusinessAccUncheckedCreateWithoutProductInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -2082,7 +2247,10 @@ export type BusinessAccUpdateWithoutProductInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2113,7 +2281,10 @@ export type BusinessAccUncheckedUpdateWithoutProductInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2141,7 +2312,10 @@ export type BusinessAccCreateWithoutProjectsInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -2172,7 +2346,10 @@ export type BusinessAccUncheckedCreateWithoutProjectsInput = {
   taxType?: $Enums.taxType
   userId: number
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -2216,7 +2393,10 @@ export type BusinessAccUpdateWithoutProjectsInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2247,7 +2427,10 @@ export type BusinessAccUncheckedUpdateWithoutProjectsInput = {
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2276,7 +2459,10 @@ export type BusinessAccCreateManyUserInput = {
   businessType?: $Enums.BusinessType
   taxType?: $Enums.taxType
   stamp?: string | null
+  qrPayment?: string | null
   logo?: string | null
+  paymentTerm?: string | null
+  remark?: string | null
   businessColor?: string | null
   memberId?: Prisma.BusinessAccCreatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccCreateDocumentTypeInput | $Enums.DocumentType[]
@@ -2296,7 +2482,10 @@ export type BusinessAccUpdateWithoutUserInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2326,7 +2515,10 @@ export type BusinessAccUncheckedUpdateWithoutUserInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2356,7 +2548,10 @@ export type BusinessAccUncheckedUpdateManyWithoutUserInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   taxType?: Prisma.EnumtaxTypeFieldUpdateOperationsInput | $Enums.taxType
   stamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrPayment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentTerm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   businessColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   memberId?: Prisma.BusinessAccUpdatememberIdInput | string[]
   DocumentType?: Prisma.BusinessAccUpdateDocumentTypeInput | $Enums.DocumentType[]
@@ -2481,7 +2676,10 @@ export type BusinessAccSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   taxType?: boolean
   userId?: boolean
   stamp?: boolean
+  qrPayment?: boolean
   logo?: boolean
+  paymentTerm?: boolean
+  remark?: boolean
   businessColor?: boolean
   memberId?: boolean
   DocumentType?: boolean
@@ -2514,7 +2712,10 @@ export type BusinessAccSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   taxType?: boolean
   userId?: boolean
   stamp?: boolean
+  qrPayment?: boolean
   logo?: boolean
+  paymentTerm?: boolean
+  remark?: boolean
   businessColor?: boolean
   memberId?: boolean
   DocumentType?: boolean
@@ -2537,7 +2738,10 @@ export type BusinessAccSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   taxType?: boolean
   userId?: boolean
   stamp?: boolean
+  qrPayment?: boolean
   logo?: boolean
+  paymentTerm?: boolean
+  remark?: boolean
   businessColor?: boolean
   memberId?: boolean
   DocumentType?: boolean
@@ -2560,13 +2764,16 @@ export type BusinessAccSelectScalar = {
   taxType?: boolean
   userId?: boolean
   stamp?: boolean
+  qrPayment?: boolean
   logo?: boolean
+  paymentTerm?: boolean
+  remark?: boolean
   businessColor?: boolean
   memberId?: boolean
   DocumentType?: boolean
 }
 
-export type BusinessAccOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "taxId" | "businessType" | "taxType" | "userId" | "stamp" | "logo" | "businessColor" | "memberId" | "DocumentType", ExtArgs["result"]["businessAcc"]>
+export type BusinessAccOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "businessName" | "businessUserName" | "businessAvatar" | "businessAddress" | "businessWebsite" | "businessPhone" | "vat" | "taxId" | "businessType" | "taxType" | "userId" | "stamp" | "qrPayment" | "logo" | "paymentTerm" | "remark" | "businessColor" | "memberId" | "DocumentType", ExtArgs["result"]["businessAcc"]>
 export type BusinessAccInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   AllMember?: boolean | Prisma.BusinessAcc$AllMemberArgs<ExtArgs>
@@ -2617,7 +2824,10 @@ export type $BusinessAccPayload<ExtArgs extends runtime.Types.Extensions.Interna
     taxType: $Enums.taxType
     userId: number
     stamp: string | null
+    qrPayment: string | null
     logo: string | null
+    paymentTerm: string | null
+    remark: string | null
     businessColor: string | null
     memberId: string[]
     DocumentType: $Enums.DocumentType[]
@@ -3069,7 +3279,10 @@ export interface BusinessAccFieldRefs {
   readonly taxType: Prisma.FieldRef<"BusinessAcc", 'taxType'>
   readonly userId: Prisma.FieldRef<"BusinessAcc", 'Int'>
   readonly stamp: Prisma.FieldRef<"BusinessAcc", 'String'>
+  readonly qrPayment: Prisma.FieldRef<"BusinessAcc", 'String'>
   readonly logo: Prisma.FieldRef<"BusinessAcc", 'String'>
+  readonly paymentTerm: Prisma.FieldRef<"BusinessAcc", 'String'>
+  readonly remark: Prisma.FieldRef<"BusinessAcc", 'String'>
   readonly businessColor: Prisma.FieldRef<"BusinessAcc", 'String'>
   readonly memberId: Prisma.FieldRef<"BusinessAcc", 'String[]'>
   readonly DocumentType: Prisma.FieldRef<"BusinessAcc", 'DocumentType[]'>

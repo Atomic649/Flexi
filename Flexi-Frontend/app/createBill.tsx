@@ -9,11 +9,7 @@ import {
 import { View } from "@/components/Themed";
 import { CustomButton, GrayButton } from "@/components/CustomButton";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { saveRemark, getRemark } from "@/utils/utility";
-import {
-  savePaymentTermCondition,
-  getPaymentTermCondition,
-} from "@/utils/utility";
+import CallAPIBusiness from "@/api/business_api";
 import { useTranslation } from "react-i18next";
 import CustomAlert from "@/components/CustomAlert";
 import { CustomText } from "@/components/CustomText";
@@ -86,7 +82,7 @@ export default function CreateBill() {
   const [quotationAt, setQuotationAt] = useState(new Date());
   const [invoiceAt, setInvoiceAt] = useState(new Date());
   const [receiptAt, setReceiptAt] = useState(new Date());
-  const { vat } = useBusiness();
+  const { vat, paymentTerm: defaultPaymentTerm, remark: defaultRemark, fetchBusinessData } = useBusiness();
 
   const normalizeText = (value?: string | null) =>
     (value || "").toString().trim().replace(/\s+/g, " ").toLowerCase();
@@ -187,7 +183,8 @@ export default function CreateBill() {
   const handleSaveRemark = async () => {
     try {
       if (memberId) {
-        await saveRemark(remark, memberId);
+        await CallAPIBusiness.UpdateBusinessDefaultsAPI(memberId, { remark });
+        fetchBusinessData();
         setAlertConfig({
           visible: true,
           title: t("bill.alerts.success"),
@@ -243,11 +240,12 @@ export default function CreateBill() {
   >([]);
   const [paymentTermCondition, setPaymentTermCondition] = useState("");
 
-  // Handler to save payment terms to AsyncStorage
+  // Handler to save payment terms as business default via API
   const handleSavePaymentTerms = async () => {
     try {
       if (memberId) {
-        await savePaymentTermCondition(paymentTermCondition, memberId);
+        await CallAPIBusiness.UpdateBusinessDefaultsAPI(memberId, { paymentTerm: paymentTermCondition });
+        fetchBusinessData();
         setAlertConfig({
           visible: true,
           title: t("bill.alerts.success"),
@@ -459,6 +457,15 @@ export default function CreateBill() {
     }
   }, [cAddress, cProvince]);
 
+  // Load defaults from BusinessProvider (populated from DB via /businessacc/avatar)
+  useEffect(() => {
+    if (defaultPaymentTerm !== null) setPaymentTermCondition(defaultPaymentTerm);
+  }, [defaultPaymentTerm]);
+
+  useEffect(() => {
+    if (defaultRemark !== null) setRemark(defaultRemark);
+  }, [defaultRemark]);
+
   useEffect(() => {
     const fetchMemberId = async () => {
       const uniqueId = await getMemberId();
@@ -467,19 +474,6 @@ export default function CreateBill() {
       setMemberId(uniqueId);
       if (businessId) {
         setBusinessAcc(businessId);
-      }
-      // Load defaults tied to memberId
-      if (uniqueId) {
-        const [defaultRemark, defaultTerm] = await Promise.all([
-          getRemark(uniqueId),
-          getPaymentTermCondition(uniqueId),
-        ]);
-        if (defaultRemark !== null && defaultRemark !== undefined) {
-          setRemark(defaultRemark);
-        }
-        if (defaultTerm !== null && defaultTerm !== undefined) {
-          setPaymentTermCondition(defaultTerm);
-        }
       }
       // Fetch platforms and projects for this member
       if (uniqueId) {
@@ -1142,8 +1136,8 @@ export default function CreateBill() {
     setCProvince("");
     setCPostId("");
     setNote("");
-    setPaymentTermCondition("");
-    setRemark("");
+    setPaymentTermCondition(defaultPaymentTerm ?? "");
+    setRemark(defaultRemark ?? "");
     setPayment("");
     setCashStatus(false);
     setTaxType("Individual");
