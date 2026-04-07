@@ -68,6 +68,24 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
         dateFilter = { gte: lmStart, lte: lmEnd };
         break;
       }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
@@ -254,6 +272,24 @@ export const getSalesChartData = async (req: Request, res: Response) => {
         const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
         dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
         break;
       }
       case 'custom':
@@ -459,6 +495,24 @@ export const getTopProducts = async (req: Request, res: Response) => {
         dateFilter = { gte: lmStart, lte: lmEnd };
         break;
       }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
@@ -623,6 +677,24 @@ export const getRevenueByPlatform = async (req: Request, res: Response) => {
         dateFilter = { gte: lmStart, lte: lmEnd };
         break;
       }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
@@ -770,6 +842,24 @@ export const getExpenseBreakdown = async (req: Request, res: Response) => {
         dateFilter = { gte: lmStart, lte: lmEnd };
         break;
       }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
+        break;
+      }
       case 'custom':
         if (startDate && endDate) {
           const start = new Date(startDate as string);
@@ -908,6 +998,24 @@ export const getExpenseByCustomGroup = async (req: Request, res: Response) => {
         const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
         dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
         break;
       }
       case 'custom': {
@@ -1154,6 +1262,27 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
         dateFilter = {
           gte: new Date(now.getFullYear(), now.getMonth() - 1, 1),
           lte: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999),
+        };
+        break;
+      }
+      case 'thisYear': {
+        dateFilter = {
+          gte: new Date(now.getFullYear(), 0, 1),
+          lte: new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999),
+        };
+        break;
+      }
+      case 'lastYear': {
+        dateFilter = {
+          gte: new Date(now.getFullYear() - 1, 0, 1),
+          lte: new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999),
+        };
+        break;
+      }
+      case 'yearBeforeLast': {
+        dateFilter = {
+          gte: new Date(now.getFullYear() - 2, 0, 1),
+          lte: new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999),
         };
         break;
       }
@@ -1422,6 +1551,24 @@ export const getTopStores = async (req: Request, res: Response) => {
         const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
         dateFilter = { gte: lmStart, lte: lmEnd };
+        break;
+      }
+      case 'thisYear': {
+        const tyStart = new Date(now.getFullYear(), 0, 1);
+        const tyEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: tyStart, lte: tyEnd };
+        break;
+      }
+      case 'lastYear': {
+        const lyStart = new Date(now.getFullYear() - 1, 0, 1);
+        const lyEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: lyStart, lte: lyEnd };
+        break;
+      }
+      case 'yearBeforeLast': {
+        const yblStart = new Date(now.getFullYear() - 2, 0, 1);
+        const yblEnd = new Date(now.getFullYear() - 2, 11, 31, 23, 59, 59, 999);
+        dateFilter = { gte: yblStart, lte: yblEnd };
         break;
       }
       case 'custom':

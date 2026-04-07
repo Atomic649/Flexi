@@ -719,6 +719,9 @@
     "thisWeek": "สัปดาห์นี้",
     "lastWeek": "สัปดาห์ที่แล้ว",
     "lastMonth": "เดือนที่แล้ว",
+    "thisYear": "ปีนี้",
+    "lastYear": "ปีที่แล้ว",
+    "yearBeforeLast": "ปีก่อน",
     "salesChart": {
       "title": "กราฟยอดขาย",
       "noData": "ไม่มีข้อมูลยอดขายสำหรับช่วงเวลานี้"

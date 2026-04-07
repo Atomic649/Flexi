@@ -168,7 +168,7 @@ export default function Dashboard() {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<
-    "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth" | "custom"
+    "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth" | "thisYear" | "lastYear" | "yearBeforeLast" | "custom"
   >("thisMonth");
 
   // Dashboard data state
@@ -381,7 +381,7 @@ export default function Dashboard() {
     }
   };
 
-  const handlePeriodChange = (period: "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth") => {
+  const handlePeriodChange = (period: "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "thisMonth" | "thisYear" | "lastYear" | "yearBeforeLast") => {
     setSelectedPeriod(period);
     setSelectedDates([]); // Clear custom dates when selecting predefined period
   };
@@ -763,6 +763,9 @@ export default function Dashboard() {
                     <Chip chipKey="thisWeek" label={t("dashboard.thisWeek")} isActive={selectedPeriod === "thisWeek"} onPress={() => handlePeriodChange("thisWeek")} />
                     <Chip chipKey="lastWeek" label={t("dashboard.lastWeek")} isActive={selectedPeriod === "lastWeek"} onPress={() => handlePeriodChange("lastWeek")} />
                     <Chip chipKey="lastMonth" label={t("dashboard.lastMonth")} isActive={selectedPeriod === "lastMonth"} onPress={() => handlePeriodChange("lastMonth")} />
+                    <Chip chipKey="thisYear" label={t("dashboard.thisYear")} isActive={selectedPeriod === "thisYear"} onPress={() => handlePeriodChange("thisYear")} />
+                    <Chip chipKey="lastYear" label={t("dashboard.lastYear")} isActive={selectedPeriod === "lastYear"} onPress={() => handlePeriodChange("lastYear")} />
+                    <Chip chipKey="yearBeforeLast" label={t("dashboard.yearBeforeLast")} isActive={selectedPeriod === "yearBeforeLast"} onPress={() => handlePeriodChange("yearBeforeLast")} />
                   </ScrollView>
                 </View>
 

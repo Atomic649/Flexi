@@ -718,6 +718,9 @@
     "thisWeek": "This Week",
     "lastWeek": "Last Week",
     "lastMonth": "Last Month",
+    "thisYear": "This Year",
+    "lastYear": "Last Year",
+    "yearBeforeLast": "Year Before Last",
     "salesChart": {
       "title": "Sales Chart",
       "noData": "No sales data available for this period"
