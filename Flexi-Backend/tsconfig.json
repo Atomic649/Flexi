@@ -26,7 +26,8 @@
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
-    "moduleResolution": "node",                         /* Specify how TypeScript looks up a file from a given module specifier. */
+    "moduleResolution": "node10",                        /* Specify how TypeScript looks up a file from a given module specifier. */
+    "ignoreDeprecations": "6.0",                         /* Silence deprecation errors introduced in the specified TypeScript version. */
     "baseUrl": ".",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
       "*": ["node_modules/*", "src/types/*"]

@@ -193,7 +193,7 @@ export type DocumentCounterGroupByOutputType = {
   _max: DocumentCounterMaxAggregateOutputType | null
 }
 
-type GetDocumentCounterGroupByPayload<T extends DocumentCounterGroupByArgs> = Prisma.PrismaPromise<
+export type GetDocumentCounterGroupByPayload<T extends DocumentCounterGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<DocumentCounterGroupByOutputType, T['by']> &
       {
@@ -1148,6 +1148,11 @@ export type DocumentCounterFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` DocumentCounters.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of DocumentCounters.
+   */
   distinct?: Prisma.DocumentCounterScalarFieldEnum | Prisma.DocumentCounterScalarFieldEnum[]
 }
 

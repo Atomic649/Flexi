@@ -242,7 +242,7 @@ export type PlatformGroupByOutputType = {
   _max: PlatformMaxAggregateOutputType | null
 }
 
-type GetPlatformGroupByPayload<T extends PlatformGroupByArgs> = Prisma.PrismaPromise<
+export type GetPlatformGroupByPayload<T extends PlatformGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PlatformGroupByOutputType, T['by']> &
       {
@@ -1965,6 +1965,11 @@ export type PlatformFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Platforms.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Platforms.
+   */
   distinct?: Prisma.PlatformScalarFieldEnum | Prisma.PlatformScalarFieldEnum[]
 }
 

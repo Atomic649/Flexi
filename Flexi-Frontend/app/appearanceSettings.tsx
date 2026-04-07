@@ -20,7 +20,7 @@ const getSwitchPlatformColors = (theme: string, value: boolean) => ({
 
 const toggleScaleStyle = { transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] };
 
-export default function DocumentSettings() {
+export default function AppearanceSettings() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { billCardMode, setBillCardMode } = useBillSettings();

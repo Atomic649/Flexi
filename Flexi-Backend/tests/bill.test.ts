@@ -18,6 +18,10 @@ jest.mock("../src/middleware/multer_config", () => ({
       config: {},
       keyUpload: "image",
     },
+    multerConfigImageMemory: {
+      config: {},
+      keyUpload: "image",
+    },
   },
 }));
 
@@ -46,9 +50,14 @@ prismaMock.bill = {
   update: jest.fn(),
   delete: jest.fn(),
   aggregate: jest.fn(),
+  count: jest.fn(),
 };
 prismaMock.member = { findUnique: jest.fn() };
-prismaMock.productItem = { deleteMany: jest.fn(), findMany: jest.fn() };
+prismaMock.productItem = {
+  deleteMany: jest.fn(),
+  findMany: jest.fn(),
+  create: jest.fn(),
+};
 prismaMock.customer = { upsert: jest.fn(), findUnique: jest.fn(), update: jest.fn() };
 prismaMock.businessAcc = { findUnique: jest.fn() };
 prismaMock.product = {
@@ -65,6 +74,7 @@ prismaMock.$transaction = jest.fn(async (cb: any) =>
     documentCounter: prismaMock.documentCounter,
     productItem: prismaMock.productItem,
     customer: prismaMock.customer,
+    businessAcc: prismaMock.businessAcc,
   })
 );
 
@@ -130,7 +140,6 @@ const validBillPayload = () => ({
   paymentTermCondition: "",
   remark: "",
   WHTAmount: 0,
-  
 });
 
 describe("billController", () => {
@@ -142,16 +151,17 @@ describe("billController", () => {
     prismaMock.platform.findUnique.mockResolvedValue({ id: 10, name: "Shop" });
     prismaMock.customer.upsert.mockResolvedValue({ id: 100 });
     prismaMock.businessAcc.findUnique.mockResolvedValue({ vat: false });
+    prismaMock.bill.count.mockResolvedValue(0);
+    prismaMock.bill.findFirst.mockResolvedValue(null);
+    prismaMock.bill.findMany.mockResolvedValue([]);
+    prismaMock.productItem.create.mockResolvedValue({});
+    prismaMock.productItem.findMany.mockResolvedValue([]);
+    prismaMock.productItem.deleteMany.mockResolvedValue({ count: 0 });
+    prismaMock.product.update.mockResolvedValue({ id: 1, stock: 10 });
   });
 
   describe("createBill", () => {
     test("creates a bill successfully (single)", async () => {
-      prismaMock.platform.findUnique.mockResolvedValue({
-        id: 10,
-        name: "Shop",
-      });
-      prismaMock.documentCounter.upsert.mockResolvedValue({ count: 1 });
-      prismaMock.bill.findFirst.mockResolvedValue(null);
       prismaMock.bill.create.mockResolvedValue({ id: 1, billId: "INV2025/1" });
 
       const res = await request(app).post("/bill").send(validBillPayload());
@@ -303,44 +313,12 @@ describe("billController", () => {
       purchaseAt: new Date().toISOString(),
     });
 
-    test("returns 403 when cutoff has passed", async () => {
-      // Freeze time to a stable value
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
-      // Original purchaseAt way before cutoff (Jan 1, 2025 -> cutoff Feb 15, 2025)
-      prismaMock.bill.findUnique.mockResolvedValue({
-        id: 5,
-        purchaseAt: new Date("2025-01-01T00:00:00Z"),
-      });
-      // platform must exist before cutoff logic finishes
-      prismaMock.platform.findUnique.mockResolvedValue({
-        id: 10,
-        name: "Shop",
-      });
-      prismaMock.productItem.findMany.mockResolvedValue([]);
-
-      const res = await request(app).put("/bill/5").send(baseUpdate());
-      expect(res.status).toBe(403);
-      expect(res.body.message).toMatch(/Cannot update bill after/i);
-      expect(res.body.cutoffDate).toBeDefined();
-    });
-
-    test("updates bill successfully within cutoff", async () => {
-      // current date Nov 20, 2025; original purchaseAt is Nov 10, 2025 -> cutoff Dec 15, 2025
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
+    test("updates bill successfully", async () => {
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 6,
         purchaseAt: new Date("2025-11-10T00:00:00Z"),
         customerId: 200,
       });
-      prismaMock.platform.findUnique.mockResolvedValue({
-        id: 10,
-        name: "Shop",
-      });
-      prismaMock.productItem.findMany.mockResolvedValue([
-        { product: 1, quantity: 1 },
-      ]);
-      prismaMock.productItem.deleteMany.mockResolvedValue({ count: 2 });
-      prismaMock.product.update.mockResolvedValue({ id: 1, stock: 10 });
       prismaMock.bill.update.mockResolvedValue({
         id: 6,
         updatedAt: new Date().toISOString(),
@@ -368,20 +346,7 @@ describe("billController", () => {
       expect(res.status).toBe(400);
     });
 
-    test("returns 403 when cutoff has passed", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
-      prismaMock.bill.findUnique.mockResolvedValue({
-        id: 9,
-        purchaseAt: new Date("2025-01-01T00:00:00Z"),
-      });
-      const res = await request(app)
-        .put("/bill/9/cash")
-        .send({ cashStatus: true });
-      expect(res.status).toBe(403);
-    });
-
-    test("updates cash status within cutoff", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
+    test("updates cash status successfully", async () => {
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 10,
         purchaseAt: new Date("2025-11-01T00:00:00Z"),
@@ -393,6 +358,14 @@ describe("billController", () => {
       expect(res.status).toBe(200);
       expect(res.body.cashStatus).toBe(true);
     });
+
+    test("returns 404 when bill not found", async () => {
+      prismaMock.bill.findUnique.mockResolvedValue(null);
+      const res = await request(app)
+        .put("/bill/999/cash")
+        .send({ cashStatus: true });
+      expect(res.status).toBe(404);
+    });
   });
 
   describe("updateDocumentTypeById", () => {
@@ -401,32 +374,27 @@ describe("billController", () => {
       expect(res.status).toBe(400);
     });
 
-    test("403 when cutoff passed", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
-      prismaMock.bill.findUnique.mockResolvedValue({
-        id: 11,
-        purchaseAt: new Date("2025-01-01T00:00:00Z"),
-        product: [],
-      });
-      const res = await request(app)
-        .put("/bill/11/document-type")
-        .send({ DocumentType: "Invoice" });
-      expect(res.status).toBe(403);
-    });
-
     test("switch to Receipt uses totalQuotation if present", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 12,
         purchaseAt: new Date("2025-11-01T00:00:00Z"),
         totalQuotation: 123.45,
         billLevelDiscount: 0,
         product: [],
+        flexiId: null,
+        quotationId: "QUO2025/1",
+        invoiceId: null,
+        billId: null,
+        DocumentType: "Quotation",
+        businessAcc: 1,
       });
       prismaMock.bill.update.mockResolvedValue({
         id: 12,
         DocumentType: "Receipt",
         cashStatus: true,
+        billId: "REC2025/1",
+        invoiceId: "INV2025/1",
+        quotationId: "QUO2025/1",
       });
       const res = await request(app)
         .put("/bill/12/document-type")
@@ -437,7 +405,6 @@ describe("billController", () => {
     });
 
     test("switch to Receipt calculates total if totalQuotation missing", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 13,
         purchaseAt: new Date("2025-11-01T00:00:00Z"),
@@ -447,11 +414,20 @@ describe("billController", () => {
           { quantity: 2, unitPrice: 100, unitDiscount: 5 },
           { quantity: 1, unitPrice: 50, unitDiscount: 0 },
         ],
+        flexiId: null,
+        quotationId: null,
+        invoiceId: null,
+        billId: null,
+        DocumentType: "Quotation",
+        businessAcc: 1,
       });
       prismaMock.bill.update.mockResolvedValue({
         id: 13,
         DocumentType: "Receipt",
         cashStatus: true,
+        billId: "REC2025/2",
+        invoiceId: null,
+        quotationId: null,
       });
       const res = await request(app)
         .put("/bill/13/document-type")
@@ -463,17 +439,25 @@ describe("billController", () => {
     });
 
     test("switch to Invoice sets total 0 and cashStatus false", async () => {
-      jest.useFakeTimers().setSystemTime(new Date("2025-11-20T12:00:00Z"));
       prismaMock.bill.findUnique.mockResolvedValue({
         id: 14,
         purchaseAt: new Date("2025-11-01T00:00:00Z"),
         totalQuotation: 200,
         product: [],
+        flexiId: null,
+        quotationId: "QUO2025/1",
+        invoiceId: null,
+        billId: null,
+        DocumentType: "Quotation",
+        businessAcc: 1,
       });
       prismaMock.bill.update.mockResolvedValue({
         id: 14,
         DocumentType: "Invoice",
         cashStatus: false,
+        billId: null,
+        invoiceId: "INV2025/3",
+        quotationId: "QUO2025/1",
       });
       const res = await request(app)
         .put("/bill/14/document-type")
@@ -483,13 +467,18 @@ describe("billController", () => {
     });
 
     test("switch to Invoice sets zero total and preserves totalQuotation (assert update payload)", async () => {
-      const current = {
+      prismaMock.bill.findUnique.mockResolvedValue({
         id: 5,
         purchaseAt: new Date().toISOString(),
         totalQuotation: 999,
         product: [],
-      };
-      prismaMock.bill.findUnique.mockResolvedValue(current);
+        flexiId: null,
+        quotationId: "QUO2025/1",
+        invoiceId: null,
+        billId: null,
+        DocumentType: "Quotation",
+        businessAcc: 1,
+      });
       prismaMock.bill.update.mockImplementation(async ({ data }: any) => ({
         id: 5,
         ...data,
@@ -503,15 +492,37 @@ describe("billController", () => {
       expect(call.data.total).toBe(0);
       expect(call.data.totalQuotation).toBe(999);
     });
+
+    test("returns 404 when bill not found", async () => {
+      prismaMock.bill.findUnique.mockResolvedValue(null);
+      const res = await request(app)
+        .put("/bill/999/document-type")
+        .send({ DocumentType: "Invoice" });
+      expect(res.status).toBe(404);
+    });
   });
 
   describe("deleteBill", () => {
     test("deletes bill", async () => {
+      prismaMock.bill.findUnique.mockResolvedValue({
+        id: 99,
+        cName: "A",
+        cLastName: "B",
+        DocumentType: "Quotation",
+        flexiId: "FX123",
+        billId: null,
+        invoiceId: null,
+        quotationId: "QUO2025/1",
+        businessAcc: 1,
+      });
+      prismaMock.bill.findMany.mockResolvedValue([]);
+      prismaMock.productItem.findMany.mockResolvedValue([]);
       prismaMock.bill.delete.mockResolvedValue({
         id: 99,
         cName: "A",
         cLastName: "B",
       });
+      prismaMock.bill.findFirst.mockResolvedValue(null);
       const res = await request(app).delete("/bill/99");
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("ok");
@@ -557,20 +568,3 @@ describe("billController", () => {
     });
   });
 });
- 
-
-test("returns 403 when cutoff has passed for document type change", async () => {
-  const current = {
-    id: 6,
-    purchaseAt: new Date("2020-01-01").toISOString(),
-    totalQuotation: 0,
-    product: [],
-  };
-  prismaMock.bill.findUnique.mockResolvedValue(current);
-  const res = await request(app)
-    .put("/bill/6/document-type")
-    .send({ DocumentType: "Invoice" });
-  expect(res.status).toBe(403);
-});
-
- 

@@ -286,7 +286,7 @@ export default function InvoiceDetailsModal({
                               (item.unitPrice / ((100 + vatRate) / 100)) *
                               item.quantity
                             ).toFixed(1)
-                          : (item.unitPrice * item.quantityz).toFixed(1)}
+                          : (item.unitPrice * item.quantity).toFixed(1)}
                       </CustomText>
                     </View>
                   ))}

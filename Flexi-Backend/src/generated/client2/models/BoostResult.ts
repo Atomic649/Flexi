@@ -237,7 +237,7 @@ export type BoostResultGroupByOutputType = {
   _max: BoostResultMaxAggregateOutputType | null
 }
 
-type GetBoostResultGroupByPayload<T extends BoostResultGroupByArgs> = Prisma.PrismaPromise<
+export type GetBoostResultGroupByPayload<T extends BoostResultGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BoostResultGroupByOutputType, T['by']> &
       {
@@ -1302,6 +1302,11 @@ export type BoostResultFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` BoostResults.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BoostResults.
+   */
   distinct?: Prisma.BoostResultScalarFieldEnum | Prisma.BoostResultScalarFieldEnum[]
 }
 

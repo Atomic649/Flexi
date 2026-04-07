@@ -503,6 +503,8 @@
       "team": "ทีม"
     },
     "documentSettings": "ตั้งค่าเอกสาร",
+    "pdfTemplates": "ตั้งค่าการแสดงผล",
+    "appearanceSettings": "ตั้งค่าการแสดงผล",
     "socialMedia": {
       "title": "โซเชียลมีเดีย",
       "seeAll": "ดูทั้งหมด",

@@ -236,7 +236,7 @@ export type AdsCostGroupByOutputType = {
   _max: AdsCostMaxAggregateOutputType | null
 }
 
-type GetAdsCostGroupByPayload<T extends AdsCostGroupByArgs> = Prisma.PrismaPromise<
+export type GetAdsCostGroupByPayload<T extends AdsCostGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AdsCostGroupByOutputType, T['by']> &
       {
@@ -1759,6 +1759,11 @@ export type AdsCostFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` AdsCosts.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AdsCosts.
+   */
   distinct?: Prisma.AdsCostScalarFieldEnum | Prisma.AdsCostScalarFieldEnum[]
 }
 

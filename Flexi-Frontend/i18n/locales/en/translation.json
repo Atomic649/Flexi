@@ -520,6 +520,8 @@
       "team": "Team"
     },
     "documentSettings": "Document Settings",
+    "pdfTemplates": "Display Settings",
+    "appearanceSettings": "Appearance Settings",
     "logout": {
       "logout": "Logout",
       "confirmTitle": "Confirm Logout",

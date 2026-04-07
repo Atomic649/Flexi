@@ -20,7 +20,8 @@ import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getResponsiveStyles } from "@/utils/responsive";
-import DocumentSettings from './documentSettings';
+import DocumentSettings from './appearanceSettings';
+import AppearanceSettings from './appearanceSettings';
 
 // i18n  initialized for web
 if (!i18n.isInitialized) {
@@ -397,10 +398,10 @@ function RootLayoutNav() {
         />
         {/* DocumentSettings */}
         <Stack.Screen
-          name="documentSettings"
+          name="AppearanceSettings"
           options={{
             ...showTopBarAndBackIcon(theme),
-            title: t("settings.documentSettings"),
+            title: t("settings.appearanceSettings"),
             headerTitleStyle: getHeaderTitleStyle(),
           }}
         />

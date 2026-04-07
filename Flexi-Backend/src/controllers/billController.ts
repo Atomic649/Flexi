@@ -199,6 +199,7 @@ interface billInput {
   purchaseAt: Date;
   quotationAt?: Date;
   invoiceAt?: Date;
+  receiptAt?: Date;
   businessAcc: number;
   cTaxId: string;
   image: string;
@@ -238,6 +239,7 @@ const schema = Joi.object({
   purchaseAt: Joi.date(),
   quotationAt: Joi.date().optional(),
   invoiceAt: Joi.date().optional(),
+  receiptAt: Joi.date().optional(),
   cName: Joi.string().required(),
   cLastName: Joi.string().allow(""),
   cPhone: Joi.string().min(10).max(10).required(),
@@ -326,8 +328,17 @@ const createBill = async (req: Request, res: Response) => {
       String(billInput.cashStatus).toLowerCase(),
     );
     billInput.purchaseAt = new Date(billInput.purchaseAt);
+    if (billInput.quotationAt) {
+      billInput.quotationAt = new Date(billInput.quotationAt);
+    }
+    if (billInput.invoiceAt) {
+      billInput.invoiceAt = new Date(billInput.invoiceAt);
+    }
+    if (billInput.receiptAt) {
+      billInput.receiptAt = new Date(billInput.receiptAt);
+    }
     if (billInput.validContactUntil) {
-      billInput.validContactUntil = new Date(billInput.validContactUntil);
+      billInput.validContactUntil = new Date(billInput.validContactUntil);``
     }
     if (billInput.priceValid) {
       billInput.priceValid = new Date(billInput.priceValid);
@@ -424,25 +435,23 @@ const createBill = async (req: Request, res: Response) => {
         );
         console.log("🚀 Calculated normaltotal:", normaltotal);
         // check businessAcc is vat registered
-        const vatRegistered = prisma.businessAcc.findUnique({
+        const vatRegistered = await prisma.businessAcc.findUnique({
           where: { id: billInput.businessAcc },
           select: { vat: true },
         });
+        const isVatRegistered = vatRegistered?.vat ?? false;
 
-        const totalBeforeTax =
-          vatRegistered && (await vatRegistered).vat
+        const totalBeforeTax = isVatRegistered
             ? (normaltotal / 1.07 - discount - billLevelDiscount).toFixed(2)
             : (normaltotal - discount - billLevelDiscount).toFixed(2);
-        const vatAmount =
-          vatRegistered && (await vatRegistered).vat
+        const vatAmount = isVatRegistered
             ? (Number(totalBeforeTax) * 0.07).toFixed(2)
             : 0;
         console.log("🚀 Calculated totalBeforeTax:", totalBeforeTax);
         console.log("🚀 Calculated vatAmount:", vatAmount);
         const WHTAmount = billInput.WHTAmount ?? 0;
         console.log("🚀 Calculated WHTAmount:", WHTAmount);
-        const totalVat =
-          vatRegistered && (await vatRegistered).vat
+        const totalVat = isVatRegistered
             ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2)
             : totalBeforeTax;
         console.log("🚀 Calculated final total:", totalVat);
@@ -521,9 +530,10 @@ const createBill = async (req: Request, res: Response) => {
                 payment: billInput.payment || "NotSpecified",
                 cashStatus: finalCashStatus,
                 memberId: billInput.memberId,
-                purchaseAt: docType === "Receipt" ? billDate : undefined,
+                purchaseAt: billDate,
                 quotationAt: docType === "Quotation" ? billDate : undefined,
                 invoiceAt: docType === "Invoice" ? billDate : undefined,
+                receiptAt: docType === "Receipt" ? billDate : undefined,
                 businessAcc: billInput.businessAcc,
                 platformId: billInput.platformId,
                 platform: billInput.platform,
@@ -538,7 +548,7 @@ const createBill = async (req: Request, res: Response) => {
                 totalInvoice: docType === "Invoice" ? total : 0,
                 totalBeforeTax: Number(totalBeforeTax),
                 totalAfterTax: Number(totalAfterTax),
-                vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+                vatPercent: isVatRegistered ? 7 : 0,
                 totalTax: Number(vatAmount),
                 beforeDiscount,
                 DocumentType: docType,
@@ -616,9 +626,10 @@ const createBill = async (req: Request, res: Response) => {
             platform: billInput.platform,
             cashStatus: finalCashStatus,
             memberId: billInput.memberId,
-            purchaseAt: docType === "Receipt" ? billInput.purchaseAt : undefined,
+            purchaseAt: billInput.purchaseAt,
             quotationAt: docType === "Quotation" ? (billInput.quotationAt ?? billInput.purchaseAt) : undefined,
             invoiceAt: docType === "Invoice" ? (billInput.invoiceAt ?? billInput.purchaseAt) : undefined,
+            receiptAt: docType === "Receipt" ? (billInput.receiptAt ?? billInput.purchaseAt) : undefined,
             businessAcc: billInput.businessAcc,
             platformId: billInput.platformId,
             image: req.file?.filename ?? "",
@@ -633,7 +644,7 @@ const createBill = async (req: Request, res: Response) => {
             totalBeforeTax: totalBeforeTax,
             totalAfterTax: totalAfterTax,
             totalTax: vatAmount,
-            vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+            vatPercent: isVatRegistered ? 7 : 0,
             beforeDiscount,
             DocumentType: docType,
             note: billInput.note || "", // Optional note field
@@ -681,7 +692,7 @@ const createBill = async (req: Request, res: Response) => {
         }
       });
 
-      if (result.type === "multiple") {
+      if (result.type === "multiple" && result.bills) {
         res.json({
           status: "ok",
           message: `Created ${result.bills.length} bills successfully for ${billInput.repeatMonths} months`,
@@ -938,6 +949,9 @@ const updateBill = async (req: Request, res: Response) => {
     if (billInput.invoiceAt) {
       billInput.invoiceAt = new Date(billInput.invoiceAt);
     }
+    if (billInput.receiptAt) {
+      billInput.receiptAt = new Date(billInput.receiptAt);
+    }
     if (billInput.validContactUntil) {
       billInput.validContactUntil = new Date(billInput.validContactUntil);
     }
@@ -1011,25 +1025,23 @@ const updateBill = async (req: Request, res: Response) => {
     );
     console.log("🚀 Calculated normaltotal:", normaltotal);
     // check businessAcc is vat registered
-    const vatRegistered = prisma.businessAcc.findUnique({
+    const vatRegistered = await prisma.businessAcc.findUnique({
       where: { id: billInput.businessAcc },
       select: { vat: true },
     });
+    const isVatRegistered = vatRegistered?.vat ?? false;
 
-    const totalBeforeTax =
-      vatRegistered && (await vatRegistered).vat
+    const totalBeforeTax = isVatRegistered
         ? (normaltotal / 1.07 - discount - billLevelDiscount).toFixed(2)
         : (normaltotal - discount - billLevelDiscount).toFixed(2);
-    const vatAmount =
-      vatRegistered && (await vatRegistered).vat
+    const vatAmount = isVatRegistered
         ? (Number(totalBeforeTax) * 0.07).toFixed(2)
         : 0;
     console.log("🚀 Calculated totalBeforeTax:", totalBeforeTax);
     console.log("🚀 Calculated vatAmount:", vatAmount);
     const WHTAmount = billInput.WHTAmount ?? 0;
     console.log("🚀 Calculated WHTAmount:", WHTAmount);
-    const totalVat =
-      vatRegistered && (await vatRegistered).vat
+    const totalVat = isVatRegistered
         ? (Number(totalBeforeTax) + Number(vatAmount)).toFixed(2)
         : totalBeforeTax;
     console.log("🚀 Calculated final total:", totalVat);
@@ -1143,9 +1155,10 @@ const updateBill = async (req: Request, res: Response) => {
           platformId: billInput.platformId,
           cashStatus: finalCashStatus,
           memberId: billInput.memberId,
-          purchaseAt: docType === "Receipt" ? billInput.purchaseAt : existingBill.purchaseAt,
+          purchaseAt: billInput.purchaseAt,
           quotationAt: docType === "Quotation" ? (billInput.quotationAt ?? billInput.purchaseAt) : existingBill.quotationAt,
           invoiceAt: docType === "Invoice" ? (billInput.invoiceAt ?? billInput.purchaseAt) : existingBill.invoiceAt,
+          receiptAt: docType === "Receipt" ? (billInput.receiptAt ?? billInput.purchaseAt) : (existingBill as any).receiptAt,
           businessAcc: billInput.businessAcc,
           image: req.file?.filename ?? "",
           total: finalTotal,
@@ -1153,7 +1166,7 @@ const updateBill = async (req: Request, res: Response) => {
           totalInvoice: docType === "Invoice" ? total : 0,
           totalBeforeTax: Number(totalBeforeTax),
           totalAfterTax: Number(totalAfterTax),
-          vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+          vatPercent: isVatRegistered ? 7 : 0,
           totalTax: Number(vatAmount),
           note: billInput.note || "", // Optional note field
           discount: discount,
@@ -1355,6 +1368,7 @@ const updateBill = async (req: Request, res: Response) => {
             payment: billInput.payment,
             taxType: billInput.taxType || "Individual",
             memberId: billInput.memberId,
+            purchaseAt: billInput.purchaseAt,
             note: billInput.note || "",
             paymentTermCondition: billInput.paymentTermCondition || "",
             remark: billInput.remark || "",
@@ -1369,7 +1383,7 @@ const updateBill = async (req: Request, res: Response) => {
             repeatMonths: billInput.repeat ? (billInput.repeatMonths ?? 0) : 0,
             totalBeforeTax: Number(totalBeforeTax),
             totalAfterTax: Number(totalAfterTax),
-            vatPercent: vatRegistered && (await vatRegistered).vat ? 7 : 0,
+            vatPercent: isVatRegistered ? 7 : 0,
             totalTax: Number(vatAmount),
             totalQuotation: total,
           };
@@ -1493,6 +1507,7 @@ const updateBill = async (req: Request, res: Response) => {
                 platformId: billInput.platformId,
                 taxType: billInput.taxType || "Individual",
                 memberId: billInput.memberId,
+                purchaseAt: billInput.purchaseAt,
                 note: billInput.note || "",
                 paymentTermCondition: billInput.paymentTermCondition || "",
                 remark: billInput.remark || "",
@@ -1714,9 +1729,9 @@ const updateDocumentTypeById = async (req: Request, res: Response) => {
       const splitPct = isSplitChild ? (Number((currentBill as any).splitPercent) || 0) : 100;
       const splitAmount = baseTotal * (splitPct / 100);
 
-      // Set date fields based on DocumentType
+      // Set date fields based on DocumentType transition (record when each type was assigned)
       if (DocumentType === "Receipt") {
-        updateData.purchaseAt = (currentBill as any).purchaseAt ?? new Date();
+        updateData.receiptAt = new Date();
       } else if (DocumentType === "Quotation") {
         updateData.quotationAt = (currentBill as any).quotationAt ?? new Date();
       } else if (DocumentType === "Invoice") {
@@ -2332,6 +2347,7 @@ const createSplitChildren = async (req: Request, res: Response) => {
             WHTpercent: (parent as any).WHTpercent ?? 0,
             WHTAmount: (parent as any).WHTAmount ?? 0,
             priceValid: (parent as any).priceValid ?? null,
+            purchaseAt: (parent as any).purchaseAt ?? null,
             repeat: (parent as any).repeat ?? false,
             repeatMonths: (parent as any).repeatMonths ?? 0,
             image: (parent as any).image ?? "",
@@ -2355,7 +2371,14 @@ const createSplitChildren = async (req: Request, res: Response) => {
         createdChildren.push(childBill);
       }
 
-      // Mark parent as a split parent and set DocumentType to Invoice
+      // Mark parent as a split parent and set DocumentType to Invoice.
+      // Parent bills must never hold an invoiceId — only children do.
+      if ((parent as any).invoiceId) {
+        await tx.documentCounter.updateMany({
+          where: { businessId: parent.businessAcc, documentType: "Invoice" },
+          data: { count: { decrement: 1 } },
+        });
+      }
       await tx.bill.update({
         where: { id: parent.id },
         data: {
@@ -2364,6 +2387,7 @@ const createSplitChildren = async (req: Request, res: Response) => {
           cashStatus: false,
           total: 0,
           totalInvoice: parentTotal,
+          invoiceId: null,
         } as any,
       });
 

@@ -86,7 +86,11 @@ export default function Home() {
   };
 
   const renderListItem = (item: Product, index: number) => (
-    <View style={[styles.listRow, { borderBottomColor: isDark ? "#222" : "#f0f0f0" }]}>
+    <TouchableOpacity
+      style={[styles.listRow, { borderBottomColor: isDark ? "#222" : "#f0f0f0" }]}
+      activeOpacity={0.7}
+      onPress={() => router.push(`/editproduct?id=${item.id}`)}
+    >
       {/* Running Number */}
       <View style={styles.indexContainer}>
         <CustomText style={styles.indexText}>
@@ -96,7 +100,7 @@ export default function Home() {
 
       <View style={{ flex: 1 }}>
         <CustomText style={styles.listName}>{item.name}</CustomText>
-        <CustomText style={styles.listSubtext}>{item.stock} {item.unit}</CustomText>
+        <CustomText style={styles.listSubtext}>{item.stock} {t(`product.unit.${item.unit}`)}</CustomText>
       </View>
 
       <View style={{ alignItems: "flex-end", marginRight: 15 }}>
@@ -106,7 +110,7 @@ export default function Home() {
       <TouchableOpacity onPress={() => handleDeleteProduct(item.id)} hitSlop={15}>
         <Ionicons name="trash-outline" size={18} color={isDark ? "#444" : "#ccc"} />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

@@ -558,13 +558,6 @@ export default function Setting() {
                 onPress={() => router.push("/business_info")}
               />
               <Divider />
-               <SectionItem
-                icon="tags"
-                text={t("settings.documentSettings")}
-                onPress={() => router.push("/documentSettings")}
-              />
-              
-              <Divider />
               <SectionItem
                 icon="users"
                 text={t("settings.businessSetting.team")}
@@ -659,6 +652,28 @@ export default function Setting() {
                   onValueChange={toggleTheme}
                   {...getSwitchPlatformColors(theme, theme === "dark")}
                   style={toggleScaleStyle}
+                />
+              </Pressable>
+              <Divider />
+              <Pressable
+                className={`flex-row items-center justify-between p-4`}
+                onPress={() => router.push("/appearanceSettings")}
+              >
+                <View className="flex-row items-center !bg-transparent">
+                  <FontAwesome
+                    name="sliders"
+                    size={24}
+                    color={theme === "dark" ? "#d9d2d2" : "#75726a"}
+                    style={{ marginRight: 16 }}
+                  />
+                  <CustomText className="text-base" weight="regular">
+                    {t("settings.appearanceSettings")}
+                  </CustomText>
+                </View>
+                <FontAwesome
+                  name="chevron-right"
+                  size={12}
+                  color={theme === "dark" ? "#75726a" : "#918b8b"}
                 />
               </Pressable>
             </View>

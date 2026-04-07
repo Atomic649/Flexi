@@ -207,7 +207,7 @@ export type AdEventGroupByOutputType = {
   _max: AdEventMaxAggregateOutputType | null
 }
 
-type GetAdEventGroupByPayload<T extends AdEventGroupByArgs> = Prisma.PrismaPromise<
+export type GetAdEventGroupByPayload<T extends AdEventGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AdEventGroupByOutputType, T['by']> &
       {
@@ -1336,6 +1336,11 @@ export type AdEventFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` AdEvents.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AdEvents.
+   */
   distinct?: Prisma.AdEventScalarFieldEnum | Prisma.AdEventScalarFieldEnum[]
 }
 

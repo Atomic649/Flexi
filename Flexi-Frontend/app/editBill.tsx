@@ -75,6 +75,7 @@ export default function EditBill() {
   const [purchaseAt, setPurchaseAt] = useState(new Date());
   const [quotationAt, setQuotationAt] = useState(new Date());
   const [invoiceAt, setInvoiceAt] = useState(new Date());
+  const [receiptAt, setReceiptAt] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingBill, setIsUpdatingBill] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -1000,14 +1001,17 @@ export default function EditBill() {
         const loadedPurchaseAt = billData.purchaseAt ? new Date(billData.purchaseAt) : new Date();
         const loadedQuotationAt = billData.quotationAt ? new Date(billData.quotationAt) : loadedPurchaseAt;
         const loadedInvoiceAt = billData.invoiceAt ? new Date(billData.invoiceAt) : loadedPurchaseAt;
+        const loadedReceiptAt = billData.receiptAt ? new Date(billData.receiptAt) : loadedPurchaseAt;
         setPurchaseAt(loadedPurchaseAt);
         setQuotationAt(loadedQuotationAt);
         setInvoiceAt(loadedInvoiceAt);
+        setReceiptAt(loadedReceiptAt);
         // Show date for the current DocumentType
         const docTypeLoaded = billData.DocumentType;
         const activeDate =
           docTypeLoaded === "Invoice" ? loadedInvoiceAt
           : docTypeLoaded === "Quotation" ? loadedQuotationAt
+          : docTypeLoaded === "Receipt" ? loadedReceiptAt
           : loadedPurchaseAt;
         setSelectedDates([activeDate.toISOString()]);
         setDate([activeDate.toISOString()]);
@@ -1253,8 +1257,9 @@ export default function EditBill() {
       const data = await CallAPIBill.updateBillAPI({
         id: Number(id),
         purchaseAt,
-        quotationAt: selectedDocumentType === "QA" ? purchaseAt : undefined,
-        invoiceAt: selectedDocumentType === "IV" ? purchaseAt : undefined,
+        quotationAt,
+        invoiceAt,
+        receiptAt,
         cName,
         cLastName,
         cPhone,
@@ -1331,7 +1336,7 @@ export default function EditBill() {
     const formatted = format(next, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
     if (selectedDocumentType === "QA") setQuotationAt(next);
     else if (selectedDocumentType === "IV") setInvoiceAt(next);
-    else setPurchaseAt(next);
+    else setReceiptAt(next);
     setSelectedDates([formatted]);
     setDate([formatted]);
   };
@@ -1359,7 +1364,7 @@ export default function EditBill() {
         value={
           selectedDocumentType === "QA" ? quotationAt
           : selectedDocumentType === "IV" ? invoiceAt
-          : purchaseAt
+          : receiptAt
         }
         onChange={handleDateTimeChange}
         onClose={() => setCalendarVisible(false)}

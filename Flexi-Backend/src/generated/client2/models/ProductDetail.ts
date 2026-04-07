@@ -189,7 +189,7 @@ export type ProductDetailGroupByOutputType = {
   _max: ProductDetailMaxAggregateOutputType | null
 }
 
-type GetProductDetailGroupByPayload<T extends ProductDetailGroupByArgs> = Prisma.PrismaPromise<
+export type GetProductDetailGroupByPayload<T extends ProductDetailGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductDetailGroupByOutputType, T['by']> &
       {
@@ -1132,6 +1132,11 @@ export type ProductDetailFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` ProductDetails.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ProductDetails.
+   */
   distinct?: Prisma.ProductDetailScalarFieldEnum | Prisma.ProductDetailScalarFieldEnum[]
 }
 

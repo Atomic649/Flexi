@@ -1125,10 +1125,35 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
         dateFilter = { gte: s, lte: e };
         break;
       }
+      case 'yesterday': {
+        const s = new Date(now); s.setDate(s.getDate() - 1); s.setHours(0, 0, 0, 0);
+        const e = new Date(s); e.setHours(23, 59, 59, 999);
+        dateFilter = { gte: s, lte: e };
+        break;
+      }
+      case 'thisWeek': {
+        const s = new Date(now); s.setDate(s.getDate() - s.getDay()); s.setHours(0, 0, 0, 0);
+        const e = new Date(now); e.setHours(23, 59, 59, 999);
+        dateFilter = { gte: s, lte: e };
+        break;
+      }
+      case 'lastWeek': {
+        const s = new Date(now); s.setDate(s.getDate() - s.getDay() - 7); s.setHours(0, 0, 0, 0);
+        const e = new Date(s); e.setDate(e.getDate() + 6); e.setHours(23, 59, 59, 999);
+        dateFilter = { gte: s, lte: e };
+        break;
+      }
       case 'thisMonth': {
         dateFilter = {
           gte: new Date(now.getFullYear(), now.getMonth(), 1),
           lte: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999),
+        };
+        break;
+      }
+      case 'lastMonth': {
+        dateFilter = {
+          gte: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+          lte: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999),
         };
         break;
       }
@@ -1149,12 +1174,11 @@ export const getIncomeExpenseDetail = async (req: Request, res: Response) => {
 
     const biz = businessId?.businessId ?? 0;
 
-    // Income: Receipt bills
+    // Income: all bills (matching main metrics — no DocumentType filter)
     const bills = await prisma.bill.findMany({
       where: {
         businessAcc: biz,
         deleted: false,
-        DocumentType: "Receipt",
         purchaseAt: Object.keys(dateFilter).length ? dateFilter : undefined,
         ...(platform ? { platform: platform as any } : {}),
         ...(productName ? { product: { some: { productList: { name: productName as string } } } } : {}),

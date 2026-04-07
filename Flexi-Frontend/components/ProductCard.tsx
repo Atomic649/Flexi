@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CustomText } from "./CustomText";
 import { useTheme } from "@/providers/ThemeProvider";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 interface ProductCardProps {
   id: string | number;
@@ -25,6 +26,7 @@ export default function ProductCard({
   onDelete,
 }: ProductCardProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const isDark = theme === "dark";
 
   return (
@@ -46,7 +48,7 @@ export default function ProductCard({
         <CustomText numberOfLines={1} style={styles.name}>{productname}</CustomText>
         <View style={styles.footer}>
           <CustomText style={styles.price}>฿{productprice}</CustomText>
-          <CustomText style={styles.stock}>{productstock} {unit}</CustomText>
+          <CustomText style={styles.stock}>{productstock} {t(`product.unit.${unit}`)}</CustomText>
         </View>
       </View>
     </TouchableOpacity>

@@ -213,7 +213,7 @@ export type PlatformTokenGroupByOutputType = {
   _max: PlatformTokenMaxAggregateOutputType | null
 }
 
-type GetPlatformTokenGroupByPayload<T extends PlatformTokenGroupByArgs> = Prisma.PrismaPromise<
+export type GetPlatformTokenGroupByPayload<T extends PlatformTokenGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PlatformTokenGroupByOutputType, T['by']> &
       {
@@ -1266,6 +1266,11 @@ export type PlatformTokenFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` PlatformTokens.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PlatformTokens.
+   */
   distinct?: Prisma.PlatformTokenScalarFieldEnum | Prisma.PlatformTokenScalarFieldEnum[]
 }
 

@@ -326,7 +326,8 @@ model Bill {
   updatedAt            DateTime      @updatedAt
   quotationAt          DateTime?     
   invoiceAt            DateTime?     
-  purchaseAt           DateTime?      
+  purchaseAt           DateTime
+  receiptAt            DateTime?      
   cName                String
   cLastName            String?
   cPhone               String?

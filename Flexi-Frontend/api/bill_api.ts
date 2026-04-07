@@ -107,6 +107,7 @@ class CallAPIBill {
         purchaseAt: Date;
         quotationAt?: Date;
         invoiceAt?: Date;
+        receiptAt?: Date;
         cName: string;
         cLastName: string;
         cPhone: string;

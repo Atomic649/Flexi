@@ -41,7 +41,9 @@ type Bill = {
   cashStatus: boolean;
   total: number;
   memberId: string;
-  purchaseAt: Date;
+  purchaseAt?: Date;
+  invoiceAt?: Date;
+  quotationAt?: Date;
   businessAcc: number;
   image: string;
   platform:string;
@@ -69,13 +71,37 @@ type ByOrderProps = {
   refreshSignal?: number;
 };
 
+// Pick the relevant date based on DocumentType, with fallback to other available dates
+const getRelevantDate = (item: Bill): Date | null => {
+  let raw: Date | null | undefined;
+  if (item.DocumentType === "Receipt") raw = item.purchaseAt;
+  else if (item.DocumentType === "Invoice") raw = item.invoiceAt;
+  else if (item.DocumentType === "Quotation") raw = item.quotationAt;
+
+  // Fallback chain: try other date fields if primary is null/undefined
+  const candidates = [raw, item.invoiceAt, item.quotationAt, item.purchaseAt, item.createdAt];
+  for (const candidate of candidates) {
+    if (candidate == null) continue;
+    const d = new Date(candidate);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+};
+
 // Group bills by date with future date handling
 const groupByDate = (items: Bill[]): { [key: string]: Bill[] } => {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  return items.reduce((groups, item) => {
-    const purchaseDate = new Date(item.purchaseAt);
+  const result = items.reduce((groups, item) => {
+    const relevantDate = getRelevantDate(item);
+
+    // Skip items with invalid/missing dates
+    if (!relevantDate) {
+      return groups;
+    }
+
+    const purchaseDate = new Date(relevantDate);
     purchaseDate.setHours(0, 0, 0, 0);
 
     let groupKey: string;
@@ -97,6 +123,12 @@ const groupByDate = (items: Bill[]): { [key: string]: Bill[] } => {
     groups[groupKey].push(item);
     return groups;
   }, {} as { [key: string]: Bill[] });
+
+  Object.keys(result).forEach((key) => {
+    result[key].sort((a, b) => (getRelevantDate(b)?.getTime() ?? 0) - (getRelevantDate(a)?.getTime() ?? 0));
+  });
+
+  return result;
 };
 
 // Format date for display purposes
@@ -270,7 +302,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
         const name = `${b.cName ?? ""} ${b.cLastName ?? ""}`.toLowerCase();
         const phone = (b.cPhone ?? "").toLowerCase();
         const flexiId = (b.flexiId ?? "").toLowerCase();
-        const d = new Date(b.purchaseAt);
+        const d = getRelevantDate(b) ?? new Date(b.createdAt);
         const date = `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d.getFullYear()}`;
         if (!name.includes(q) && !phone.includes(q) && !flexiId.includes(q) && !date.startsWith(q)) return false;
       }
@@ -477,7 +509,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                         })
                       }
                       style={{
-                        opacity: isDateInFuture(bill.purchaseAt) ? 0.5 : 1,
+                        opacity: isDateInFuture(getRelevantDate(bill) ?? new Date(bill.createdAt)) ? 0.5 : 1,
                       }}
                     >
                       <View
@@ -491,7 +523,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                             flex: 1.5,
                           }}
                         >
-                          {formatDate(bill.purchaseAt.toString())}
+                          {formatDate((getRelevantDate(bill) ?? new Date()).toISOString())}
                         </CustomText>
                         <CustomText
                           style={{
@@ -649,7 +681,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                     total={bill.total}
                     totalQuotation={bill.totalQuotation}
                     totalInvoice={bill.totalInvoice}
-                    purchaseAt={bill.purchaseAt}
+                    purchaseAt={getRelevantDate(bill) ?? new Date(bill.createdAt)}
                     CardColor={theme === "dark" ? "#232425" : "#f6f6f6ff"}
                     onDelete={handleDelete}
                     PriceColor={theme === "dark" ? "#04ecd5" : "#01e0c6"}

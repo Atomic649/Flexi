@@ -122,7 +122,8 @@ Table Bill {
   updatedAt DateTime [not null]
   quotationAt DateTime
   invoiceAt DateTime
-  purchaseAt DateTime
+  purchaseAt DateTime [not null]
+  receiptAt DateTime
   cName String [not null]
   cLastName String
   cPhone String

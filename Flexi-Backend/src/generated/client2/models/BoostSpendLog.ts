@@ -193,7 +193,7 @@ export type BoostSpendLogGroupByOutputType = {
   _max: BoostSpendLogMaxAggregateOutputType | null
 }
 
-type GetBoostSpendLogGroupByPayload<T extends BoostSpendLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetBoostSpendLogGroupByPayload<T extends BoostSpendLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BoostSpendLogGroupByOutputType, T['by']> &
       {
@@ -1138,6 +1138,11 @@ export type BoostSpendLogFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` BoostSpendLogs.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BoostSpendLogs.
+   */
   distinct?: Prisma.BoostSpendLogScalarFieldEnum | Prisma.BoostSpendLogScalarFieldEnum[]
 }
 
