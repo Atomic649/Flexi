@@ -246,12 +246,12 @@ describe("businessAccController", () => {
       prismaMock.platform.create.mockResolvedValue({ id: 303 });
     });
 
-    test("rejects WithholdingTax in DocumentType for AddMore (current validation list)", async () => {
+    test("rejects invalid DocumentType for AddMore", async () => {
       const res = await request(app)
         .post("/businessacc/AddMoreAcc")
-        .send(baseCreatePayload({ DocumentType: ["WithholdingTax"] }));
+        .send(baseCreatePayload({ DocumentType: ["Foo"] }));
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/Invalid DocumentType/i);
+      expect(res.body.message).toMatch(/must be one of/i);
     });
 
     test("creates additional business when payload is valid", async () => {

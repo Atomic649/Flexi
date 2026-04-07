@@ -1136,8 +1136,8 @@ export default function CreateBill() {
     setCProvince("");
     setCPostId("");
     setNote("");
-    setPaymentTermCondition(defaultPaymentTerm ?? "");
-    setRemark(defaultRemark ?? "");
+    setPaymentTermCondition("");
+    setRemark("");
     setPayment("");
     setCashStatus(false);
     setTaxType("Individual");

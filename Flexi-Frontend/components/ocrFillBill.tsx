@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -40,8 +42,24 @@ const OCRFillBill: React.FC<OCRFillBillProps> = ({ onApply, containerStyle }) =>
   const handlePickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      setError(t("bill.ocr.permissionDenied", { defaultValue: "ไม่ได้รับสิทธิ์เข้าถึงรูปภาพ" }));
-      setModalVisible(true);
+      if (!permissionResult.canAskAgain) {
+        Alert.alert(
+          t("bill.ocr.permissionTitle", { defaultValue: "ไม่ได้รับสิทธิ์เข้าถึงรูปภาพ" }),
+          t("bill.ocr.permissionSettingsMsg", {
+            defaultValue: "กรุณาเปิดสิทธิ์เข้าถึงรูปภาพในการตั้งค่า: Settings > Privacy > Photos > Flexi",
+          }),
+          [
+            { text: t("common.cancel", { defaultValue: "ยกเลิก" }), style: "cancel" },
+            {
+              text: t("bill.ocr.openSettings", { defaultValue: "เปิดการตั้งค่า" }),
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      } else {
+        setError(t("bill.ocr.permissionDenied", { defaultValue: "ไม่ได้รับสิทธิ์เข้าถึงรูปภาพ" }));
+        setModalVisible(true);
+      }
       return;
     }
 
