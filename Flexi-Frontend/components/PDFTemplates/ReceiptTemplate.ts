@@ -685,7 +685,10 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                       return `
                   <tr>
                     <td class="text-center font-medium">${idx + 1}</td>
-                    <td class="font-medium">${item.productList?.name ?? item.product ?? "-"}</td>
+                    <td class="font-medium">
+                      ${item.productList?.name ?? item.product ?? "-"}
+                      ${item.description ? `<div style="font-size:10px;color:#6b7280;margin-top:2px;">${item.description}</div>` : ""}
+                    </td>
                     <td class="text-center">${item.quantity}</td>
                     <td class="text-center">
                       ${item.unit ? t(`product.unit.${item.unit}`) : "-"}
@@ -824,7 +827,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   const idx = siblings.findIndex((s: any) => s.id === invoice.id);
                   const no = idx >= 0 ? idx + 1 : 1;
                   return `<div class="summary-row total" style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--brand-color);">
-                        <span class="summary-label">${t("print.paid")} ${t("print.installmentNo")} ${no} (${invoice.splitPercent}%)</span>
+                        <span class="summary-label">${t("print.paid")} ${t("print.installmentNo")} ${no} (${parseFloat(Number(invoice.splitPercent).toFixed(2))}%)</span>
                         <span class="summary-amount">${formatNumber(grandTotal * (invoice.splitPercent / 100))} ${t("common.THB")}</span>
                       </div>`;
                 })()}

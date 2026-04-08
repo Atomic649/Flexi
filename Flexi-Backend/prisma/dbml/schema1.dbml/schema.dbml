@@ -196,6 +196,7 @@ Table ProductItem {
   unitDiscount Int [default: 0]
   billId Int
   unit Unit
+  description String
   bill Bill
   productList Product [not null]
 }

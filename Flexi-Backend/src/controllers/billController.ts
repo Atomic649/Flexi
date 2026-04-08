@@ -177,6 +177,7 @@ interface ProductItemInput {
   unitPrice: number;
   unitDiscount?: number;
   unit: Unit;
+  description?: string;
 }
 
 // Updated interface for request body from client
@@ -271,6 +272,7 @@ const schema = Joi.object({
         unitPrice: Joi.number().min(0).required(),
         unitDiscount: Joi.number().min(0).optional(),
         unit: Joi.string().optional(), // Optional field for unit
+        description: Joi.string().optional().allow(""), // Optional product description
       }),
     )
     .min(1)
@@ -534,6 +536,7 @@ const createBill = async (req: Request, res: Response) => {
                     unitPrice: item.unitPrice,
                     unitDiscount: item.unitDiscount || 0,
                     unit: item.unit,
+                    description: item.description || null,
                   })),
                 },
                 payment: billInput.payment || "NotSpecified",
@@ -630,6 +633,7 @@ const createBill = async (req: Request, res: Response) => {
                 unitPrice: item.unitPrice,
                 unitDiscount: item.unitDiscount || 0,
                 unit: item.unit,
+                description: item.description || null,
               })),
             },
             payment: billInput.payment || "NotSpecified",
@@ -906,7 +910,7 @@ const getBillById = async (req: Request, res: Response) => {
           bill.paymentTermCondition = parent.paymentTermCondition ?? bill.paymentTermCondition;
           bill.remark = parent.remark ?? bill.remark;
           bill.payment = parent.payment ?? bill.payment;
-          bill.priceValid = parent.priceValid ?? bill.priceValid;
+          // priceValid is intentionally NOT synced from parent — each child has its own
           bill.repeat = parent.repeat ?? bill.repeat;
           bill.repeatMonths = parent.repeatMonths ?? bill.repeatMonths;
           bill.totalBeforeTax = parent.totalBeforeTax ?? bill.totalBeforeTax;
@@ -1166,6 +1170,7 @@ const updateBill = async (req: Request, res: Response) => {
               unitPrice: item.unitPrice,
               unitDiscount: item.unitDiscount || 0,
               unit: item.unit,
+              description: item.description || null,
             })),
           },
           payment: billInput.payment,
@@ -1394,7 +1399,7 @@ const updateBill = async (req: Request, res: Response) => {
             image: req.file?.filename ?? existingBill?.image ?? "",
             discount: discount,
             beforeDiscount: beforeDiscount,
-            priceValid: billInput.priceValid,
+            // priceValid intentionally excluded — each bill keeps its own
             withHoldingTax: billInput.withholdingTax ?? false,
             WHTpercent: billInput.withholdingPercent ?? 0,
             WHTAmount: billInput.WHTAmount ?? 0,
@@ -1418,6 +1423,7 @@ const updateBill = async (req: Request, res: Response) => {
                   unitPrice: item.unitPrice,
                   unitDiscount: item.unitDiscount || 0,
                   unit: item.unit,
+                  description: item.description || null,
                   billId: parent.id,
                 } as any,
               });
@@ -1461,6 +1467,7 @@ const updateBill = async (req: Request, res: Response) => {
                   unitPrice: item.unitPrice,
                   unitDiscount: item.unitDiscount || 0,
                   unit: item.unit,
+                  description: item.description || null,
                   billId: sibling.id,
                 } as any,
               });
@@ -1503,6 +1510,7 @@ const updateBill = async (req: Request, res: Response) => {
                   unitPrice: item.unitPrice,
                   unitDiscount: item.unitDiscount || 0,
                   unit: item.unit,
+                  description: item.description || null,
                   billId: child.id,
                 } as any,
               });
@@ -2382,6 +2390,7 @@ const createSplitChildren = async (req: Request, res: Response) => {
               unitPrice: item.unitPrice,
               unitDiscount: item.unitDiscount ?? 0,
               unit: item.unit,
+              description: (item as any).description || null,
               billId: childBill.id,
             } as any,
           });

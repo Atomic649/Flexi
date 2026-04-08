@@ -52,6 +52,7 @@ export type ProductItemMinAggregateOutputType = {
   unitDiscount: number | null
   billId: number | null
   unit: $Enums.Unit | null
+  description: string | null
 }
 
 export type ProductItemMaxAggregateOutputType = {
@@ -62,6 +63,7 @@ export type ProductItemMaxAggregateOutputType = {
   unitDiscount: number | null
   billId: number | null
   unit: $Enums.Unit | null
+  description: string | null
 }
 
 export type ProductItemCountAggregateOutputType = {
@@ -72,6 +74,7 @@ export type ProductItemCountAggregateOutputType = {
   unitDiscount: number
   billId: number
   unit: number
+  description: number
   _all: number
 }
 
@@ -102,6 +105,7 @@ export type ProductItemMinAggregateInputType = {
   unitDiscount?: true
   billId?: true
   unit?: true
+  description?: true
 }
 
 export type ProductItemMaxAggregateInputType = {
@@ -112,6 +116,7 @@ export type ProductItemMaxAggregateInputType = {
   unitDiscount?: true
   billId?: true
   unit?: true
+  description?: true
 }
 
 export type ProductItemCountAggregateInputType = {
@@ -122,6 +127,7 @@ export type ProductItemCountAggregateInputType = {
   unitDiscount?: true
   billId?: true
   unit?: true
+  description?: true
   _all?: true
 }
 
@@ -219,6 +225,7 @@ export type ProductItemGroupByOutputType = {
   unitDiscount: number | null
   billId: number | null
   unit: $Enums.Unit | null
+  description: string | null
   _count: ProductItemCountAggregateOutputType | null
   _avg: ProductItemAvgAggregateOutputType | null
   _sum: ProductItemSumAggregateOutputType | null
@@ -252,6 +259,7 @@ export type ProductItemWhereInput = {
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   billId?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   unit?: Prisma.EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
+  description?: Prisma.StringNullableFilter<"ProductItem"> | string | null
   bill?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
   productList?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }
@@ -264,6 +272,7 @@ export type ProductItemOrderByWithRelationInput = {
   unitDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   billId?: Prisma.SortOrderInput | Prisma.SortOrder
   unit?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   bill?: Prisma.BillOrderByWithRelationInput
   productList?: Prisma.ProductOrderByWithRelationInput
 }
@@ -279,6 +288,7 @@ export type ProductItemWhereUniqueInput = Prisma.AtLeast<{
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   billId?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   unit?: Prisma.EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
+  description?: Prisma.StringNullableFilter<"ProductItem"> | string | null
   bill?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
   productList?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }, "id">
@@ -291,6 +301,7 @@ export type ProductItemOrderByWithAggregationInput = {
   unitDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   billId?: Prisma.SortOrderInput | Prisma.SortOrder
   unit?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProductItemCountOrderByAggregateInput
   _avg?: Prisma.ProductItemAvgOrderByAggregateInput
   _max?: Prisma.ProductItemMaxOrderByAggregateInput
@@ -309,6 +320,7 @@ export type ProductItemScalarWhereWithAggregatesInput = {
   unitDiscount?: Prisma.IntNullableWithAggregatesFilter<"ProductItem"> | number | null
   billId?: Prisma.IntNullableWithAggregatesFilter<"ProductItem"> | number | null
   unit?: Prisma.EnumUnitNullableWithAggregatesFilter<"ProductItem"> | $Enums.Unit | null
+  description?: Prisma.StringNullableWithAggregatesFilter<"ProductItem"> | string | null
 }
 
 export type ProductItemCreateInput = {
@@ -316,6 +328,7 @@ export type ProductItemCreateInput = {
   unitPrice: number
   unitDiscount?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
   bill?: Prisma.BillCreateNestedOneWithoutProductInput
   productList: Prisma.ProductCreateNestedOneWithoutBillRecordInput
 }
@@ -328,6 +341,7 @@ export type ProductItemUncheckedCreateInput = {
   unitDiscount?: number | null
   billId?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemUpdateInput = {
@@ -335,6 +349,7 @@ export type ProductItemUpdateInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bill?: Prisma.BillUpdateOneWithoutProductNestedInput
   productList?: Prisma.ProductUpdateOneRequiredWithoutBillRecordNestedInput
 }
@@ -347,6 +362,7 @@ export type ProductItemUncheckedUpdateInput = {
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemCreateManyInput = {
@@ -357,6 +373,7 @@ export type ProductItemCreateManyInput = {
   unitDiscount?: number | null
   billId?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemUpdateManyMutationInput = {
@@ -364,6 +381,7 @@ export type ProductItemUpdateManyMutationInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemUncheckedUpdateManyInput = {
@@ -374,6 +392,7 @@ export type ProductItemUncheckedUpdateManyInput = {
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemListRelationFilter = {
@@ -394,6 +413,7 @@ export type ProductItemCountOrderByAggregateInput = {
   unitDiscount?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type ProductItemAvgOrderByAggregateInput = {
@@ -413,6 +433,7 @@ export type ProductItemMaxOrderByAggregateInput = {
   unitDiscount?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type ProductItemMinOrderByAggregateInput = {
@@ -423,6 +444,7 @@ export type ProductItemMinOrderByAggregateInput = {
   unitDiscount?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type ProductItemSumOrderByAggregateInput = {
@@ -527,6 +549,7 @@ export type ProductItemCreateWithoutBillInput = {
   unitPrice: number
   unitDiscount?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
   productList: Prisma.ProductCreateNestedOneWithoutBillRecordInput
 }
 
@@ -537,6 +560,7 @@ export type ProductItemUncheckedCreateWithoutBillInput = {
   unitPrice: number
   unitDiscount?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemCreateOrConnectWithoutBillInput = {
@@ -576,6 +600,7 @@ export type ProductItemScalarWhereInput = {
   unitDiscount?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   billId?: Prisma.IntNullableFilter<"ProductItem"> | number | null
   unit?: Prisma.EnumUnitNullableFilter<"ProductItem"> | $Enums.Unit | null
+  description?: Prisma.StringNullableFilter<"ProductItem"> | string | null
 }
 
 export type ProductItemCreateWithoutProductListInput = {
@@ -583,6 +608,7 @@ export type ProductItemCreateWithoutProductListInput = {
   unitPrice: number
   unitDiscount?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
   bill?: Prisma.BillCreateNestedOneWithoutProductInput
 }
 
@@ -593,6 +619,7 @@ export type ProductItemUncheckedCreateWithoutProductListInput = {
   unitDiscount?: number | null
   billId?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemCreateOrConnectWithoutProductListInput = {
@@ -628,6 +655,7 @@ export type ProductItemCreateManyBillInput = {
   unitPrice: number
   unitDiscount?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemUpdateWithoutBillInput = {
@@ -635,6 +663,7 @@ export type ProductItemUpdateWithoutBillInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productList?: Prisma.ProductUpdateOneRequiredWithoutBillRecordNestedInput
 }
 
@@ -645,6 +674,7 @@ export type ProductItemUncheckedUpdateWithoutBillInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemUncheckedUpdateManyWithoutBillInput = {
@@ -654,6 +684,7 @@ export type ProductItemUncheckedUpdateManyWithoutBillInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemCreateManyProductListInput = {
@@ -663,6 +694,7 @@ export type ProductItemCreateManyProductListInput = {
   unitDiscount?: number | null
   billId?: number | null
   unit?: $Enums.Unit | null
+  description?: string | null
 }
 
 export type ProductItemUpdateWithoutProductListInput = {
@@ -670,6 +702,7 @@ export type ProductItemUpdateWithoutProductListInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bill?: Prisma.BillUpdateOneWithoutProductNestedInput
 }
 
@@ -680,6 +713,7 @@ export type ProductItemUncheckedUpdateWithoutProductListInput = {
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductItemUncheckedUpdateManyWithoutProductListInput = {
@@ -689,6 +723,7 @@ export type ProductItemUncheckedUpdateManyWithoutProductListInput = {
   unitDiscount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   billId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unit?: Prisma.NullableEnumUnitFieldUpdateOperationsInput | $Enums.Unit | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -701,6 +736,7 @@ export type ProductItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   unitDiscount?: boolean
   billId?: boolean
   unit?: boolean
+  description?: boolean
   bill?: boolean | Prisma.ProductItem$billArgs<ExtArgs>
   productList?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productItem"]>
@@ -713,6 +749,7 @@ export type ProductItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   unitDiscount?: boolean
   billId?: boolean
   unit?: boolean
+  description?: boolean
   bill?: boolean | Prisma.ProductItem$billArgs<ExtArgs>
   productList?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productItem"]>
@@ -725,6 +762,7 @@ export type ProductItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   unitDiscount?: boolean
   billId?: boolean
   unit?: boolean
+  description?: boolean
   bill?: boolean | Prisma.ProductItem$billArgs<ExtArgs>
   productList?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productItem"]>
@@ -737,9 +775,10 @@ export type ProductItemSelectScalar = {
   unitDiscount?: boolean
   billId?: boolean
   unit?: boolean
+  description?: boolean
 }
 
-export type ProductItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "product" | "quantity" | "unitPrice" | "unitDiscount" | "billId" | "unit", ExtArgs["result"]["productItem"]>
+export type ProductItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "product" | "quantity" | "unitPrice" | "unitDiscount" | "billId" | "unit" | "description", ExtArgs["result"]["productItem"]>
 export type ProductItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.ProductItem$billArgs<ExtArgs>
   productList?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -767,6 +806,7 @@ export type $ProductItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     unitDiscount: number | null
     billId: number | null
     unit: $Enums.Unit | null
+    description: string | null
   }, ExtArgs["result"]["productItem"]>
   composites: {}
 }
@@ -1199,6 +1239,7 @@ export interface ProductItemFieldRefs {
   readonly unitDiscount: Prisma.FieldRef<"ProductItem", 'Int'>
   readonly billId: Prisma.FieldRef<"ProductItem", 'Int'>
   readonly unit: Prisma.FieldRef<"ProductItem", 'Unit'>
+  readonly description: Prisma.FieldRef<"ProductItem", 'String'>
 }
     
 

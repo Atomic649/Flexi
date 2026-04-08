@@ -398,13 +398,14 @@ model Bill {
 }
 
 model ProductItem {
-  id           Int   @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   product      Int
   quantity     Int
   unitPrice    Int
-  unitDiscount Int?  @default(0)
+  unitDiscount Int?    @default(0)
   billId       Int?
   unit         Unit?
+  description  String?
 
   // Relation
   bill        Bill?   @relation(fields: [billId], references: [id])

@@ -259,36 +259,27 @@ export default function BillCard({
             </View>
             {/* Render products or project based on billCardMode */}
             <View className="flex-col ">
-              {billCardMode === "project" ? (
-                project?.name ? (
-                  <View className="flex-col gap-y-0.5">
-                    <CustomText
-                      className="font-bold text-sm pt-1"
-                      weight="regular"
-                      numberOfLines={1}
-                      style={{ color: "#7e7d7a" }}
-                    >
-                      {project.name}
-                    </CustomText>
-                    {project.description ? (
-                      <CustomText
-                        className="text-xs"
-                        weight="regular"
-                        numberOfLines={2}
-                        style={{ color: "#9e9b98" }}
-                      >
-                        {project.description}
-                      </CustomText>
-                    ) : null}
-                  </View>
-                ) : (
+              {billCardMode === "project" && project?.name ? (
+                <View className="flex-col gap-y-0.5">
                   <CustomText
-                    className="font-bold text-sm text-zinc-400"
+                    className="font-bold text-sm pt-1"
+                    weight="regular"
+                    numberOfLines={1}
                     style={{ color: "#7e7d7a" }}
                   >
-                    -
+                    {project.name}
                   </CustomText>
-                )
+                  {project.description ? (
+                    <CustomText
+                      className="text-xs"
+                      weight="regular"
+                      numberOfLines={2}
+                      style={{ color: "#9e9b98" }}
+                    >
+                      {project.description}
+                    </CustomText>
+                  ) : null}
+                </View>
               ) : Array.isArray(product) && product.length > 0 ? (
                 product.map((item: any, idx: number) => (
                   <View key={idx} className="flex-row gap-x-2 items-center">

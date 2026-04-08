@@ -65,6 +65,7 @@ class CallAPIBill {
             unitPrice: number;
             quantity: number;
             unitDiscount?: number;
+            description?: string;
         }>;
         repeat: boolean;
         repeatMonths: number;
@@ -128,6 +129,7 @@ class CallAPIBill {
             unitPrice: number;
             quantity: number;
             unitDiscount?: number;
+            description?: string;
         }>;
         repeat: boolean;
         repeatMonths: number;

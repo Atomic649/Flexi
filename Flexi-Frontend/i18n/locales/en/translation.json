@@ -1436,7 +1436,8 @@
       "showRemark": "Remark",
       "showWithholdingTax": "Withholding Tax",
       "showBillLevelDiscount": "Bill Level Discount",
-      "showProject": "Project"
+      "showProject": "Project",
+      "showProductDescription": "Product Description"
     },
     "pdf": {
       "title": "PDF Display",
@@ -1474,6 +1475,7 @@
     "customerGender": "Gender",
     "note": "Note",
     "enterNote": "Enter note",
+    "enterProductDescription": "Enter product description",
     "paymentTermCondition": "Payment Terms & Conditions",
     "enterPaymentTermCondition": "Enter payment terms & conditions",
     "remark": "Remark",

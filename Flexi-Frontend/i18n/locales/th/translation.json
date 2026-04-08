@@ -1434,7 +1434,8 @@
       "showRemark": "หมายเหตุท้ายเอกสาร",
       "showWithholdingTax": "ภาษีหัก ณ ที่จ่าย",
       "showBillLevelDiscount": "ส่วนลดรวมเอกสาร",
-      "showProject": "โปรเจกต์"
+      "showProject": "โปรเจกต์",
+      "showProductDescription": "คำอธิบายสินค้า"
     },
     "pdf": {
       "title": "การแสดงผล PDF",
@@ -1472,6 +1473,7 @@
     "customerGender": "เพศ",
     "note": "โน้ต",
     "enterNote": "กรอกโน้ต (ไม่โชว์ลูกค้า)",
+    "enterProductDescription": "กรอกคำอธิบายสินค้า",
     "paymentTermCondition": "เงื่อนไขและข้อตกลงการชำระเงิน",
     "enterPaymentTermCondition": "กรอกเงื่อนไขและข้อตกลงการชำระเงิน",
     "remark": "หมายเหตุ",

@@ -24,6 +24,8 @@ import CallAPIPlatform from "@/api/platform_api";
 import DropdownClear from "@/components/dropdown/DropdownClear";
 import CallAPIExpense from "@/api/expense_api";
 import { useTheme } from "@/providers/ThemeProvider";
+import { useDocumentSettings } from "@/providers/DocumentSettingsProvider";
+import { CustomTextInput } from "@/components/CustomTextInput";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
@@ -68,6 +70,7 @@ const formatCurrencyForPDF = (amount: number) => {
 export default function EditBill() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { settings: docSettings } = useDocumentSettings();
   const { id } = useLocalSearchParams();
   const [memberId, setMemberId] = useState<string | null>(null);
   const [platformOptions, setPlatformOptions] = useState<any[]>([]);
@@ -119,7 +122,7 @@ export default function EditBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
+    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "", description: "" },
   ]);
   const { vat, fetchBusinessData } = useBusiness();
   const [billLevelDiscountValue, setBillLevelDiscountValue] = useState("");
@@ -172,7 +175,7 @@ export default function EditBill() {
 
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [allDatesVisible, setAllDatesVisible] = useState(false);
-  const [editingDateField, setEditingDateField] = useState<"QA" | "PU" | "IV" | "RE" | null>(null);
+  const [editingDateField, setEditingDateField] = useState<"QA" | "PU" | "IV" | "RE" | "PV" | null>(null);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [selectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
@@ -277,24 +280,49 @@ export default function EditBill() {
   const [mySplitIndex, setMySplitIndex] = useState<number | null>(null);
   const [showSplitSection, setShowSplitSection] = useState(false);
   // splitRows = user-editable rows; last row is always auto = remainder
-  const [splitRows, setSplitRows] = useState<{ splitPercent: string }[]>([]);
+  // Each row has its own mode: "percent" or "amount"
+  const [splitRows, setSplitRows] = useState<{ value: string; mode: "percent" | "amount" }[]>([]);
   const [splitSubmitting, setSplitSubmitting] = useState(false);
-  // Base total used to calculate each split row's amount
+  // Base total used to calculate each split row's amount (after WHT, used for backend logic)
   const [splitBaseTotal, setSplitBaseTotal] = useState(0);
+  // Display total = pre-WHT total, used only for hint labels in the UI
+  const splitDisplayTotal = splitBaseTotal + withholdingTaxAmount;
 
-  const splitUserTotal = splitRows.reduce((s, r) => s + (parseFloat(r.splitPercent) || 0), 0);
-  const splitRemainder = Math.max(0, 100 - splitUserTotal);
-  // All rows for display: user rows + auto remainder row
-  const splitAllRows = [...splitRows, { splitPercent: String(splitRemainder), auto: true }] as { splitPercent: string; auto?: boolean }[];
-  const splitIsValid = splitRows.length > 0 && splitRows.every((r) => parseFloat(r.splitPercent) > 0) && splitUserTotal < 100;
+  // All display amounts are in pre-WHT terms (splitDisplayTotal as base).
+  // Percent rows: pre-WHT amount = pct * splitDisplayTotal / 100
+  // Amount rows: value is already in pre-WHT terms
+  const rowToDisplayAmount = (value: string, mode: "percent" | "amount") =>
+    mode === "percent"
+      ? splitDisplayTotal > 0 ? (parseFloat(value) || 0) * splitDisplayTotal / 100 : 0
+      : (parseFloat(value) || 0);
+
+  const splitUserAmountTotal = splitRows.reduce((s, r) => s + rowToDisplayAmount(r.value, r.mode), 0);
+  const splitRemainderAmount = Math.max(0, splitDisplayTotal - splitUserAmountTotal);
+  // All rows for display: user rows + auto remainder row (always shown as amount)
+  const splitAllRows: { value: string; mode: "percent" | "amount"; auto?: boolean }[] = [
+    ...splitRows,
+    { value: String(splitRemainderAmount.toFixed(2)), mode: "amount" as const, auto: true },
+  ];
+  const splitIsValid =
+    splitRows.length > 0 &&
+    splitRows.every((r) => parseFloat(r.value) > 0) &&
+    splitDisplayTotal > 0 &&
+    splitUserAmountTotal < splitDisplayTotal;
 
   const handleSplitSubmit = async () => {
     if (!splitIsValid || !id) return;
     setSplitSubmitting(true);
     try {
-      const allRows = splitAllRows.map((r, i) => ({
-        splitPercent: parseFloat(r.splitPercent),
-        splitPercentMax: 100 - splitAllRows.slice(0, i).reduce((s, row) => s + (parseFloat(row.splitPercent) || 0), 0),
+      // Convert each row to percent before sending to API.
+      // Amount rows are in pre-WHT terms, so divide by splitDisplayTotal (not splitBaseTotal).
+      const toPercent = (value: string, mode: "percent" | "amount") =>
+        mode === "percent"
+          ? parseFloat(value) || 0
+          : splitDisplayTotal > 0 ? ((parseFloat(value) || 0) / splitDisplayTotal) * 100 : 0;
+      const percents = splitAllRows.map((r) => toPercent(r.value, r.mode));
+      const allRows = percents.map((pct, i) => ({
+        splitPercent: pct,
+        splitPercentMax: 100 - percents.slice(0, i).reduce((s, p) => s + p, 0),
       }));
       await CallAPIBill.createSplitChildrenAPI(Number(id), allRows);
       setIsSplitParent(true);
@@ -329,7 +357,7 @@ export default function EditBill() {
               setSelectedDocumentType(refreshedDocType);
               savedDocumentTypeRef.current = refreshedDocType;
               setIsSplitParent(false);
-              setSplitRows([{ splitPercent: "" }]);
+              setSplitRows([{ value: "", mode: "percent" }]);
             } catch (e: any) {
               setAlertConfig({
                 visible: true,
@@ -1014,6 +1042,7 @@ export default function EditBill() {
               unitDiscount: item.unitDiscount
                 ? item.unitDiscount.toString()
                 : "",
+              description: item.description ?? "",
             })),
           );
         } else {
@@ -1024,6 +1053,7 @@ export default function EditBill() {
               quantity: "1",
               unit: "",
               unitDiscount: "",
+              description: "",
             },
           ]);
         }
@@ -1042,7 +1072,7 @@ export default function EditBill() {
           setPriceValid(priceValidDate);
 
           // Calculate days difference to set priceValidDays
-          const now = new Date(billData.purchaseAt || Date.now());
+          const now = new Date(billData.invoiceAt || billData.purchaseAt || Date.now());
           const diffTime = priceValidDate.getTime() - now.getTime();
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -1194,6 +1224,7 @@ export default function EditBill() {
           selectedProduct && selectedProduct.unit
             ? selectedProduct.unit.toString()
             : "";
+        updated[index].description = selectedProduct?.description ?? "";
         // Auto-fill customer fields if product is Tiktok Affiliate
         if (selectedProduct?.name === "Tiktok Affiliate") {
           setCName("ติ๊กต๊อก (ไทยแลนด์) จำกัด");
@@ -1219,7 +1250,7 @@ export default function EditBill() {
   const handleAddProductItem = () => {
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
+      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "", description: "" },
     ]);
   };
 
@@ -1229,9 +1260,9 @@ export default function EditBill() {
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30 | 45) => {
     setPriceValidDays(days);
-    const validDate = new Date(purchaseAt);
-    validDate.setDate(validDate.getDate() + days);
-    setPriceValid(validDate);
+    const baseDate = selectedDocumentType === "QA" ? new Date(quotationAt) : new Date(invoiceAt);
+    baseDate.setDate(baseDate.getDate() + days);
+    setPriceValid(baseDate);
   };
 
   const handleUpdateBill = async () => {
@@ -1348,6 +1379,7 @@ export default function EditBill() {
           unitPrice: Number(item.price),
           quantity: Number(item.quantity),
           unitDiscount: Number(item.unitDiscount) || 0,
+          description: item.description || undefined,
         })),
         billLevelDiscount: billLevelDiscountAmount,
         billLevelDiscountIsPercent: billLevelDiscountIsPercent,
@@ -1404,6 +1436,9 @@ export default function EditBill() {
       setInvoiceAt(next);
     } else if (editingDateField === "RE") {
       setReceiptAt(next);
+    } else if (editingDateField === "PV") {
+      setPriceValid(next);
+      setPriceValidDays(null);
     } else {
       if (selectedDocumentType === "QA") setQuotationAt(next);
       else if (selectedDocumentType === "IV") setInvoiceAt(next);
@@ -1439,13 +1474,14 @@ export default function EditBill() {
           : editingDateField === "PU" ? purchaseAt
           : editingDateField === "IV" ? invoiceAt
           : editingDateField === "RE" ? receiptAt
+          : editingDateField === "PV" ? (priceValid ?? new Date())
           : selectedDocumentType === "QA" ? quotationAt
           : selectedDocumentType === "IV" ? invoiceAt
           : receiptAt
         }
         onChange={handleDateTimeChange}
         onClose={() => setCalendarVisible(false)}
-        maxDate={new Date()}
+        maxDate={editingDateField === "PV" ? undefined : new Date()}
       />
 
       <KeyboardAvoidingView
@@ -1807,8 +1843,17 @@ export default function EditBill() {
                   <View style={{ paddingHorizontal: 14, paddingBottom: 14 }}>
                     {splitAllRows.map((row, index) => {
                       const isAuto = !!row.auto;
-                      const pct = parseFloat(row.splitPercent) || 0;
-                      const rowAmount = splitBaseTotal > 0 ? (splitBaseTotal * pct) / 100 : null;
+                      const val = parseFloat(row.value) || 0;
+                      const rowMode = row.mode;
+                      // Secondary hint uses pre-WHT display total (display only, backend unaffected)
+                      const secondaryLabel =
+                        rowMode === "percent"
+                          ? splitDisplayTotal > 0 && val > 0
+                            ? (splitDisplayTotal * val / 100).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                            : null
+                          : splitDisplayTotal > 0 && val > 0
+                          ? (val / splitDisplayTotal * 100).toFixed(2) + "%"
+                          : null;
                       return (
                         <View
                           key={index}
@@ -1817,6 +1862,31 @@ export default function EditBill() {
                           <CustomText style={{ color: theme === "dark" ? "#666" : "#999", fontSize: 12, width: 22 }}>
                             {index + 1}.
                           </CustomText>
+                          {/* Per-row mode toggle */}
+                          {!isAuto && (
+                            <View style={{ flexDirection: "row", backgroundColor: theme === "dark" ? "#1a1a1b" : "#f0f0f0", borderRadius: 6, padding: 2 }}>
+                              {(["percent", "amount"] as const).map((m) => (
+                                <TouchableOpacity
+                                  key={m}
+                                  onPress={() =>
+                                    setSplitRows((prev) =>
+                                      prev.map((r, i) => i === index ? { ...r, mode: m, value: "" } : r)
+                                    )
+                                  }
+                                  style={{
+                                    paddingHorizontal: 7,
+                                    paddingVertical: 4,
+                                    borderRadius: 4,
+                                    backgroundColor: rowMode === m ? "#04ecc1" : "transparent",
+                                  }}
+                                >
+                                  <CustomText weight="semibold" style={{ fontSize: 11, color: rowMode === m ? "#18181b" : theme === "dark" ? "#666" : "#999" }}>
+                                    {m === "percent" ? "%" : "฿"}
+                                  </CustomText>
+                                </TouchableOpacity>
+                              ))}
+                            </View>
+                          )}
                           <View
                             style={{
                               flex: 1,
@@ -1835,32 +1905,37 @@ export default function EditBill() {
                           >
                             <TextInput
                               style={{
-                                width: 48,
+                                flex: 1,
                                 color: isAuto
                                   ? "#04ecc1"
                                   : theme === "dark" ? "#b1b1b1" : "#606060",
                                 fontSize: 15,
                                 paddingVertical: 8,
                               }}
-                              value={row.splitPercent}
+                              value={row.value}
                               editable={!isAuto}
                               onChangeText={(v) =>
                                 setSplitRows((prev) =>
-                                  prev.map((r, i) => i === index ? { ...r, splitPercent: v } : r),
+                                  prev.map((r, i) => i === index ? { ...r, value: v } : r),
                                 )
                               }
                               keyboardType="decimal-pad"
                               placeholder="0"
                               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                             />
-                            <CustomText style={{ color: isAuto ? "#04ecc1" : theme === "dark" ? "#606060" : "#b1b1b1", fontSize: 12, marginRight: 8 }}>
-                              {isAuto ? "% (auto)" : "%"}
-                            </CustomText>
-                            {rowAmount !== null && pct > 0 && (
+                            {isAuto && (
+                              <CustomText style={{ color: "#04ecc1", fontSize: 12, marginRight: 4 }}>
+                                {"(auto)"}
+                              </CustomText>
+                            )}
+                            {!isAuto && rowMode === "percent" && (
+                              <CustomText style={{ color: theme === "dark" ? "#606060" : "#b1b1b1", fontSize: 12, marginRight: 4 }}>%</CustomText>
+                            )}
+                            {secondaryLabel !== null && val > 0 && (
                               <>
-                                <CustomText style={{ color: theme === "dark" ? "#444" : "#ccc", fontSize: 12, marginRight: 8 }}>|</CustomText>
-                                <CustomText style={{ flex: 1, color: isAuto ? "#04ecc1" : theme === "dark" ? "#b1b1b1" : "#606060", fontSize: 13 }} numberOfLines={1}>
-                                  {rowAmount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                <CustomText style={{ color: theme === "dark" ? "#444" : "#ccc", fontSize: 12, marginRight: 6 }}>|</CustomText>
+                                <CustomText style={{ color: isAuto ? "#04ecc1" : theme === "dark" ? "#b1b1b1" : "#606060", fontSize: 13, marginRight: 4 }} numberOfLines={1}>
+                                  {secondaryLabel}
                                 </CustomText>
                               </>
                             )}
@@ -1879,22 +1954,22 @@ export default function EditBill() {
                     {/* Add row + confirm */}
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 }}>
                       <TouchableOpacity
-                        onPress={() => setSplitRows((prev) => [...prev, { splitPercent: "" }])}
-                        disabled={splitRemainder <= 0}
+                        onPress={() => setSplitRows((prev) => [...prev, { value: "", mode: "percent" }])}
+                        disabled={splitRemainderAmount <= 0}
                         style={{
                           flex: 1,
                           flexDirection: "row",
                           alignItems: "center",
                           justifyContent: "center",
                           borderWidth: 1,
-                          borderColor: splitRemainder > 0
+                          borderColor: splitRemainderAmount > 0
                             ? "#04ecc160"
                             : theme === "dark" ? "#3a3a3a" : "#e0e0e0",
                           borderRadius: 8,
                           borderStyle: "dashed",
                           paddingVertical: 8,
                           gap: 4,
-                          opacity: splitRemainder > 0 ? 1 : 0.4,
+                          opacity: splitRemainderAmount > 0 ? 1 : 0.4,
                         }}
                       >
                         <Ionicons name="add" size={14} color="#04ecc1" />
@@ -2258,7 +2333,7 @@ export default function EditBill() {
                     style={{backgroundColor: 'transparent'}}>
                     <CustomText style={{ color: '#04ecc180', fontSize: 10 }} weight="regular">สัดส่วน</CustomText>
                     <CustomText style={{ color: '#04ecc1', fontSize: 22 }} weight="bold">
-                      {mySplitPercent}%
+                      {parseFloat(Number(mySplitPercent).toFixed(2))}%
                     </CustomText>
                   </View>
                   <View style={{ width: 1, height: 36, backgroundColor: '#04ecc140' }} />
@@ -2276,112 +2351,158 @@ export default function EditBill() {
 
             {/* --- Product Items UI --- */}
             {productItems.map((item, idx) => (
-              <View
-                key={idx}
-                className="flex flex-row items-center mb-1 relative"
-              >
-                <View className="w-2/5 pr-2" style={{ position: "relative" }}>
-                  {idx !== 0 && isEditMode && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveProductItem(idx)}
-                      style={{
-                        position: "absolute",
-                        top: 2,
-                        left: 2,
-                        zIndex: 10,
+              <View key={idx} className="mb-1">
+                <View className="flex flex-row items-center relative">
+                  <View className="w-2/5 pr-2" style={{ position: "relative" }}>
+                    {idx !== 0 && isEditMode && (
+                      <TouchableOpacity
+                        onPress={() => handleRemoveProductItem(idx)}
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          left: 2,
+                          zIndex: 10,
+                        }}
+                        activeOpacity={1}
+                      >
+                        <Ionicons name="close-circle" size={20} color="#e74c3c" />
+                      </TouchableOpacity>
+                    )}
+                    <DropdownClear
+                      title={t(`bill.productName`) + ` ${idx + 1}`}
+                      options={productChoice.map((product) => ({
+                        label: product.name,
+                        value: product.id?.toString() ?? "",
+                      }))}
+                      placeholder={t("bill.selectProduct")}
+                      selectedValue={item.product}
+                      onValueChange={(value: string) =>
+                        handleProductItemChange(idx, "product", value)
+                      }
+                      otherStyles="mt-1 mb-1"
+                      disabled={!isEditMode}
+                    />
+                  </View>
+                  <View className="w-1/4 pr-2">
+                    <FormFieldClear
+                      title={t("bill.price")}
+                      value={
+                        item.price ? Number(item.price).toLocaleString() : ""
+                      }
+                      handleChangeText={(value: string) => {
+                        // Remove commas and non-numeric characters except digits
+                        const numericValue = value.replace(/[^0-9]/g, "");
+                        handleProductItemChange(idx, "price", numericValue);
                       }}
-                      activeOpacity={1}
+                      placeholder="1,000"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                      editable={isEditMode}
+                    />
+                  </View>
+                  <View className="w-1/5 pr-2">
+                    <FormFieldClear
+                      title={t("bill.discount")}
+                      value={
+                        item.unitDiscount
+                          ? Number(item.unitDiscount).toLocaleString()
+                          : ""
+                      }
+                      handleChangeText={(value: string) => {
+                        // Remove commas and non-numeric characters except digits
+                        const numericValue = value.replace(/[^0-9]/g, "");
+                        handleProductItemChange(
+                          idx,
+                          "unitDiscount",
+                          numericValue,
+                        );
+                      }}
+                      placeholder="0"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                      editable={isEditMode}
+                    />
+                  </View>
+                  <View className="w-1/6 pr-2">
+                    <FormFieldClear
+                      title={
+                        item.unit
+                          ? t(`product.unit.${item.unit}`)
+                          : t("bill.amount")
+                      }
+                      value={item.quantity}
+                      handleChangeText={(value: string) =>
+                        handleProductItemChange(idx, "quantity", value)
+                      }
+                      placeholder="1"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                      editable={isEditMode}
+                    />
+                  </View>
+                </View>
+                {docSettings.showProductDescription && (
+                  <View style={{ position: "relative", marginTop: 16, marginBottom: 4, opacity: isEditMode ? 0.9 : 0.7 }}>
+                    {item.description ? (
+                      <CustomText
+                        style={{
+                          position: "absolute",
+                          top: -10,
+                          left: 24,
+                          backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+                          paddingHorizontal: 4,
+                          zIndex: 2,
+                          fontSize: 14,
+                          color: theme === "dark" ? "#606060" : "#b1b1b1",
+                        }}
+                      >
+                        {t("bill.enterProductDescription")}
+                      </CustomText>
+                    ) : null}
+                    <View
+                      style={{
+                        borderWidth: 0.5,
+                        borderColor: theme === "dark" ? "#606060" : "#b1b1b1",
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        paddingVertical: 10,
+                        backgroundColor: "transparent",
+                      }}
                     >
-                      <Ionicons name="close-circle" size={20} color="#e74c3c" />
-                    </TouchableOpacity>
-                  )}
-                  <DropdownClear
-                    title={t(`bill.productName`) + ` ${idx + 1}`}
-                    options={productChoice.map((product) => ({
-                      label: product.name,
-                      value: product.id?.toString() ?? "",
-                    }))}
-                    placeholder={t("bill.selectProduct")}
-                    selectedValue={item.product}
-                    onValueChange={(value: string) =>
-                      handleProductItemChange(idx, "product", value)
-                    }
-                    otherStyles="mt-1 mb-1"
-                    disabled={!isEditMode}
-                  />
-                </View>
-                <View className="w-1/4 pr-2">
-                  <FormFieldClear
-                    title={t("bill.price")}
-                    value={
-                      item.price ? Number(item.price).toLocaleString() : ""
-                    }
-                    handleChangeText={(value: string) => {
-                      // Remove commas and non-numeric characters except digits
-                      const numericValue = value.replace(/[^0-9]/g, "");
-                      handleProductItemChange(idx, "price", numericValue);
-                    }}
-                    placeholder="1,000"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                    editable={isEditMode}
-                  />
-                </View>
-                <View className="w-1/5 pr-2">
-                  <FormFieldClear
-                    title={t("bill.discount")}
-                    value={
-                      item.unitDiscount
-                        ? Number(item.unitDiscount).toLocaleString()
-                        : ""
-                    }
-                    handleChangeText={(value: string) => {
-                      // Remove commas and non-numeric characters except digits
-                      const numericValue = value.replace(/[^0-9]/g, "");
-                      handleProductItemChange(
-                        idx,
-                        "unitDiscount",
-                        numericValue,
-                      );
-                    }}
-                    placeholder="0"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                    editable={isEditMode}
-                  />
-                </View>
-                <View className="w-1/6 pr-2">
-                  <FormFieldClear
-                    title={
-                      item.unit
-                        ? t(`product.unit.${item.unit}`)
-                        : t("bill.amount")
-                    }
-                    value={item.quantity}
-                    handleChangeText={(value: string) =>
-                      handleProductItemChange(idx, "quantity", value)
-                    }
-                    placeholder="1"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                    editable={isEditMode}
-                  />
-                </View>
+                      <CustomTextInput
+                        className="font-psemibold text-lg"
+                        value={item.description}
+                        onChangeText={(value) =>
+                          handleProductItemChange(idx, "description", value)
+                        }
+                        placeholder={t("bill.enterProductDescription")}
+                        placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                        multiline
+                        editable={isEditMode}
+                        style={{
+                          color: theme === "dark" ? "#b4b3b3" : "#2a2a2a",
+                          minHeight: 44,
+                          textAlignVertical: "top",
+                        }}
+                      />
+                    </View>
+                  </View>
+                )}
               </View>
             ))}
             {isEditMode && (
@@ -2458,7 +2579,7 @@ export default function EditBill() {
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
-                maxLength={300}
+                maxLength={500}
                 multiline={true}
                 numberOfLines={2}
                 textAlignVertical="top"
@@ -2495,7 +2616,7 @@ export default function EditBill() {
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
               otherStyles={fieldStyles}
-              maxLength={300}
+              maxLength={1000}
               multiline={true}
               numberOfLines={2}
               textAlignVertical="top"
@@ -3053,6 +3174,39 @@ export default function EditBill() {
                 </TouchableOpacity>
               );
             })}
+
+            {/* Price Valid row */}
+            {businessType !== "Rental" && selectedDocumentType !== "RE" && (
+              <TouchableOpacity
+                onPress={() => {
+                  if (!isEditMode) return;
+                  setEditingDateField("PV");
+                  setAllDatesVisible(false);
+                  setCalendarVisible(true);
+                }}
+                activeOpacity={isEditMode ? 0.7 : 1}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: 14,
+                  borderTopWidth: 1,
+                  borderTopColor: theme === "dark" ? "#333" : "#eeeeee",
+                  opacity: isEditMode ? 1 : 0.5,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <CustomText style={{ fontWeight: "bold", fontSize: 12, color: "#888888", width: 24 }}>PV</CustomText>
+                  <CustomText style={{ fontSize: 14 }}>{t("bill.priceValid")}</CustomText>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                    {priceValid ? formatDate(priceValid.toISOString()) : t("common.notSet", "Not set")}
+                  </CustomText>
+                  {isEditMode && <Ionicons name="chevron-forward" size={14} color={theme === "dark" ? "#666" : "#aaa"} />}
+                </View>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               onPress={() => setAllDatesVisible(false)}

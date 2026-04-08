@@ -121,6 +121,7 @@ export default function DocumentSettings() {
         visible={alertConfig.visible}
         title={alertConfig.title}
         message={alertConfig.message}
+        onClose={() => setAlertConfig((p) => ({ ...p, visible: false }))}
         buttons={[{ text: t("common.ok"), onPress: () => setAlertConfig((p) => ({ ...p, visible: false })) }]}
       />
       <ScrollView>
@@ -142,7 +143,8 @@ export default function DocumentSettings() {
               <ToggleRow label={t("documentSettings.billForm.showRemark")} value={settings.showRemark} onToggle={() => toggle("showRemark")} theme={theme} textColorClass={textColorClass} />
               <ToggleRow label={t("documentSettings.billForm.showWithholdingTax")} value={settings.showWithholdingTax} onToggle={() => toggle("showWithholdingTax")} theme={theme} textColorClass={textColorClass} />
               <ToggleRow label={t("documentSettings.billForm.showBillLevelDiscount")} value={settings.showBillLevelDiscount} onToggle={() => toggle("showBillLevelDiscount")} theme={theme} textColorClass={textColorClass} />
-              <ToggleRow label={t("documentSettings.billForm.showProject")} value={settings.showProject} onToggle={() => toggle("showProject")} theme={theme} textColorClass={textColorClass} isLast />
+              <ToggleRow label={t("documentSettings.billForm.showProject")} value={settings.showProject} onToggle={() => toggle("showProject")} theme={theme} textColorClass={textColorClass} />
+              <ToggleRow label={t("documentSettings.billForm.showProductDescription")} value={settings.showProductDescription} onToggle={() => toggle("showProductDescription")} theme={theme} textColorClass={textColorClass} isLast />
             </View>
           </View>
 
@@ -215,6 +217,7 @@ export default function DocumentSettings() {
           </View>
         </View>
       </ScrollView>
+      
     </View>
   );
 }

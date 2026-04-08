@@ -1603,7 +1603,7 @@ export default function Print() {
                   {invoice.parentQuotationId ?? invoice.invoiceId}
                 </CustomText>
                 <CustomText style={{ fontSize: 10, color: theme === "dark" ? "#9ca3af" : "#6b7280" }}>
-                  {invoice.splitPercent}%
+                  {parseFloat(Number(invoice.splitPercent).toFixed(2))}%
                 </CustomText>
               </View>
             )}

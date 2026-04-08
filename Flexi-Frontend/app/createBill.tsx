@@ -23,6 +23,9 @@ import CallAPIPlatform from "@/api/platform_api";
 import CallAPIExpense from "@/api/expense_api";
 import { useBusiness } from "@/providers/BusinessProvider";
 import { useTheme } from "@/providers/ThemeProvider";
+import { useDocumentSettings } from "@/providers/DocumentSettingsProvider";
+import { TextInput } from "react-native";
+import { CustomTextInput } from "@/components/CustomTextInput";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getBusinessId, getMemberId } from "@/utils/utility";
@@ -63,6 +66,7 @@ export default function CreateBill() {
     }));
   }, [t, isExport]);
   const { theme } = useTheme();
+  const { settings: docSettings } = useDocumentSettings();
   const searchParams = useLocalSearchParams<{
     duplicateId?: string | string[];
   }>();
@@ -101,21 +105,24 @@ export default function CreateBill() {
       normalizeText(customer?.province) === normalizeText(cProvince) &&
       normalizeDigits(customer?.postId) === normalizeDigits(cPostId) &&
       normalizeDigits(customer?.taxId) === normalizeDigits(cTaxId) &&
-      normalizeText(customer?.branch) === normalizeText(branch)
+      normalizeText(customer?.branch === "Head Office" ? "" : (customer?.branch || "")) === normalizeText(branch)
     );
   };
 
   const checkCustomerConflict = async (): Promise<boolean> => {
     if (!cPhone || cPhone.length < 3) return false; // Basic check
+    const myGeneration = ++checkGenerationRef.current;
 
     setIsCheckingCustomer(true);
     try {
       const businessAccId = await getBusinessId();
+      if (myGeneration !== checkGenerationRef.current) return false; // superseded by a newer call
       if (businessAccId) {
         const res = await CallAPICustomer.checkCustomer(
           Number(businessAccId),
           cPhone,
         );
+        if (myGeneration !== checkGenerationRef.current) return false; // superseded by a newer call
         if (res.exists && res.customer) {
           setExistingCustomer(res.customer);
           if (!cName) {
@@ -297,7 +304,7 @@ export default function CreateBill() {
 
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [allDatesVisible, setAllDatesVisible] = useState(false);
-  const [editingDateField, setEditingDateField] = useState<"QA" | "PU" | "IV" | "RE" | null>(null);
+  const [editingDateField, setEditingDateField] = useState<"QA" | "PU" | "IV" | "RE" | "PV" | null>(null);
   const [date, setDate] = useState<string[]>([new Date().toISOString()]);
   const [SelectedDates, setSelectedDates] = useState<string[]>([
     new Date().toISOString(),
@@ -305,7 +312,7 @@ export default function CreateBill() {
 
   // --- Product Items State ---
   const [productItems, setProductItems] = useState([
-    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
+    { product: "", price: "", quantity: "1", unit: "", unitDiscount: "", description: "" },
   ]);
 
   // Computed bill-level discount amount (handles both % and fixed modes)
@@ -355,6 +362,7 @@ export default function CreateBill() {
   const duplicatePrefillCacheRef = useRef<{ id: number; data: any } | null>(
     null,
   );
+  const checkGenerationRef = useRef(0);
 
   const fieldStyles = "mt-2 mb-2";
 
@@ -672,6 +680,7 @@ export default function CreateBill() {
               item.unitDiscount !== undefined && item.unitDiscount !== null
                 ? item.unitDiscount.toString()
                 : "",
+            description: item.description ?? "",
           })),
         );
       } else {
@@ -682,6 +691,7 @@ export default function CreateBill() {
             quantity: "1",
             unit: "",
             unitDiscount: "",
+            description: "",
           },
         ]);
       }
@@ -828,6 +838,7 @@ export default function CreateBill() {
           selectedProduct && selectedProduct.unit
             ? selectedProduct.unit.toString()
             : "";
+        updated[index].description = selectedProduct?.description ?? "";
 
         // Auto-fill customer fields if product is Tiktok Affiliate
         if (selectedProduct?.name === "Tiktok Affiliate") {
@@ -880,7 +891,7 @@ export default function CreateBill() {
 
     setProductItems((prev) => [
       ...prev,
-      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "" },
+      { product: "", price: "", quantity: "1", unit: "", unitDiscount: "", description: "" },
     ]);
   };
 
@@ -1039,6 +1050,7 @@ export default function CreateBill() {
           unitPrice: Number(item.price),
           unitDiscount: Number(item.unitDiscount) || 0,
           quantity: Number(item.quantity),
+          description: item.description || undefined,
         })),
         note,
         ...(projectId != null && { projectId }),
@@ -1105,6 +1117,9 @@ export default function CreateBill() {
       setInvoiceAt(next);
     } else if (editingDateField === "RE") {
       setReceiptAt(next);
+    } else if (editingDateField === "PV") {
+      setPriceValid(next);
+      setPriceValidDays(null);
     } else {
       if (selectedDocumentType === "QA") setQuotationAt(next);
       else if (selectedDocumentType === "IV") setInvoiceAt(next);
@@ -1118,11 +1133,10 @@ export default function CreateBill() {
 
   const handlePriceValidDaysChange = (days: 7 | 15 | 30 | 45) => {
     setPriceValidDays(days);
-    // Calculate the date from current date
-    const validDate = new Date();
-    validDate.setDate(validDate.getDate() + days);
-    setPriceValid(validDate);
-  }; // force to chose only one date
+    const baseDate = selectedDocumentType === "QA" ? new Date(quotationAt) : new Date(invoiceAt);
+    baseDate.setDate(baseDate.getDate() + days);
+    setPriceValid(baseDate);
+  };
 
   // Clear all customer and bill fields
   const handleClearFields = () => {
@@ -1191,13 +1205,14 @@ export default function CreateBill() {
           : editingDateField === "PU" ? purchaseAt
           : editingDateField === "IV" ? invoiceAt
           : editingDateField === "RE" ? receiptAt
+          : editingDateField === "PV" ? (priceValid ?? new Date())
           : selectedDocumentType === "QA" ? quotationAt
           : selectedDocumentType === "IV" ? invoiceAt
           : receiptAt
         }
         onChange={handleDateTimeChange}
         onClose={() => setCalendarVisible(false)}
-        maxDate={new Date()}
+        maxDate={editingDateField === "PV" ? undefined : new Date()}
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -1617,7 +1632,6 @@ export default function CreateBill() {
                   title={t("bill.customerPhone")}
                   value={cPhone}
                   handleChangeText={setCPhone}
-                  onEndEditing={handleCheckCustomer}
                   onBlur={handleCheckCustomer}
                   placeholder="0812345678"
                   borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
@@ -1789,108 +1803,153 @@ export default function CreateBill() {
 
             {/* Product Items Section */}
             {productItems.map((item, idx) => (
-              <View
-                key={idx}
-                className="flex flex-row items-center mb-1 relative"
-              >
-                <View className="w-2/5 pr-2" style={{ position: "relative" }}>
-                  {idx !== 0 && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveProductItem(idx)}
-                      style={{
-                        position: "absolute",
-                        top: 2,
-                        left: 2,
-                        zIndex: 10,
+              <View key={idx} className="mb-1">
+                <View className="flex flex-row items-center relative">
+                  <View className="w-2/5 pr-2" style={{ position: "relative" }}>
+                    {idx !== 0 && (
+                      <TouchableOpacity
+                        onPress={() => handleRemoveProductItem(idx)}
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          left: 2,
+                          zIndex: 10,
+                        }}
+                        activeOpacity={1}
+                      >
+                        <Ionicons name="close-circle" size={20} color="#e74c3c" />
+                      </TouchableOpacity>
+                    )}
+                    <DropdownClear
+                      title={t(`bill.productName`) + ` ${idx + 1}`}
+                      options={productChoice.map((product) => ({
+                        label: product.name,
+                        value: product.id?.toString() ?? "",
+                      }))}
+                      placeholder={t("bill.selectProduct")}
+                      selectedValue={item.product}
+                      onValueChange={(value: string) =>
+                        handleProductItemChange(idx, "product", value)
+                      }
+                      otherStyles="mt-1 mb-1"
+                    />
+                  </View>
+                  <View className="w-1/4 pr-2">
+                    <FormFieldClear
+                      title={t("bill.price")}
+                      value={
+                        item.price ? Number(item.price).toLocaleString() : ""
+                      }
+                      handleChangeText={(value: string) => {
+                        // Remove commas and non-numeric characters except digits
+                        const numericValue = value.replace(/[^0-9]/g, "");
+                        handleProductItemChange(idx, "price", numericValue);
                       }}
-                      activeOpacity={1}
+                      placeholder="1,000"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View className="w-1/5 pr-2">
+                    <FormFieldClear
+                      title={t("bill.discount")}
+                      value={
+                        item.unitDiscount
+                          ? Number(item.unitDiscount).toLocaleString()
+                          : ""
+                      }
+                      handleChangeText={(value: string) => {
+                        // Remove commas and non-numeric characters except digits
+                        const numericValue = value.replace(/[^0-9]/g, "");
+                        handleProductItemChange(
+                          idx,
+                          "unitDiscount",
+                          numericValue,
+                        );
+                      }}
+                      placeholder="0"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View className="w-1/6 pr-2">
+                    <FormFieldClear
+                      title={
+                        item.unit
+                          ? t(`product.unit.${item.unit}`)
+                          : t("bill.amount")
+                      }
+                      value={item.quantity}
+                      handleChangeText={(value: string) =>
+                        handleProductItemChange(idx, "quantity", value)
+                      }
+                      placeholder="1"
+                      borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                      placeholderTextColor={
+                        theme === "dark" ? "#606060" : "#b1b1b1"
+                      }
+                      textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
+                      otherStyles="mt-1 mb-1"
+                      keyboardType="numeric"
+                    />
+                  </View>
+                </View>
+                {docSettings.showProductDescription && (
+                  <View style={{ position: "relative", marginTop: 16, marginBottom: 4 }}>
+                    {item.description ? (
+                      <CustomText
+                        style={{
+                          position: "absolute",
+                          top: -10,
+                          left: 24,
+                          backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
+                          paddingHorizontal: 4,
+                          zIndex: 2,
+                          fontSize: 14,
+                          color: theme === "dark" ? "#606060" : "#b1b1b1",
+                        }}
+                      >
+                        {t("bill.enterProductDescription")}
+                      </CustomText>
+                    ) : null}
+                    <View
+                      style={{
+                        borderWidth: 0.5,
+                        borderColor: theme === "dark" ? "#606060" : "#b1b1b1",
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        paddingVertical: 10,
+                        backgroundColor: "transparent",
+                      }}
                     >
-                      <Ionicons name="close-circle" size={20} color="#e74c3c" />
-                    </TouchableOpacity>
-                  )}
-                  <DropdownClear
-                    title={t(`bill.productName`) + ` ${idx + 1}`}
-                    options={productChoice.map((product) => ({
-                      label: product.name,
-                      value: product.id?.toString() ?? "",
-                    }))}
-                    placeholder={t("bill.selectProduct")}
-                    selectedValue={item.product}
-                    onValueChange={(value: string) =>
-                      handleProductItemChange(idx, "product", value)
-                    }
-                    otherStyles="mt-1 mb-1"
-                  />
-                </View>
-                <View className="w-1/4 pr-2">
-                  <FormFieldClear
-                    title={t("bill.price")}
-                    value={
-                      item.price ? Number(item.price).toLocaleString() : ""
-                    }
-                    handleChangeText={(value: string) => {
-                      // Remove commas and non-numeric characters except digits
-                      const numericValue = value.replace(/[^0-9]/g, "");
-                      handleProductItemChange(idx, "price", numericValue);
-                    }}
-                    placeholder="1,000"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View className="w-1/5 pr-2">
-                  <FormFieldClear
-                    title={t("bill.discount")}
-                    value={
-                      item.unitDiscount
-                        ? Number(item.unitDiscount).toLocaleString()
-                        : ""
-                    }
-                    handleChangeText={(value: string) => {
-                      // Remove commas and non-numeric characters except digits
-                      const numericValue = value.replace(/[^0-9]/g, "");
-                      handleProductItemChange(
-                        idx,
-                        "unitDiscount",
-                        numericValue,
-                      );
-                    }}
-                    placeholder="0"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View className="w-1/6 pr-2">
-                  <FormFieldClear
-                    title={
-                      item.unit
-                        ? t(`product.unit.${item.unit}`)
-                        : t("bill.amount")
-                    }
-                    value={item.quantity}
-                    handleChangeText={(value: string) =>
-                      handleProductItemChange(idx, "quantity", value)
-                    }
-                    placeholder="1"
-                    borderColor={theme === "dark" ? "#606060" : "#b1b1b1"}
-                    placeholderTextColor={
-                      theme === "dark" ? "#606060" : "#b1b1b1"
-                    }
-                    textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
-                    otherStyles="mt-1 mb-1"
-                    keyboardType="numeric"
-                  />
-                </View>
+                      <CustomTextInput
+                        className="font-psemibold text-lg"
+                        value={item.description}
+                        onChangeText={(value) =>
+                          handleProductItemChange(idx, "description", value)
+                        }
+                        placeholder={t("bill.enterProductDescription")}
+                        placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
+                        multiline
+                        style={{
+                          color: theme === "dark" ? "#b4b3b3" : "#2a2a2a",
+                          minHeight: 44,
+                          textAlignVertical: "top",
+                        }}
+                      />
+                    </View>
+                  </View>
+                )}
               </View>
             ))}
             <View className="flex flex-row justify-end mb-2">
@@ -1964,7 +2023,7 @@ export default function CreateBill() {
                 placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
                 textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
                 otherStyles={fieldStyles}
-                maxLength={300}
+                maxLength={500}
                 multiline={true}
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -2000,7 +2059,7 @@ export default function CreateBill() {
               placeholderTextColor={theme === "dark" ? "#606060" : "#b1b1b1"}
               textcolor={theme === "dark" ? "#b1b1b1" : "#606060"}
               otherStyles={fieldStyles}
-              maxLength={300}
+              maxLength={1000}
               multiline={true}
               numberOfLines={4}
               textAlignVertical="top"
@@ -2562,6 +2621,37 @@ export default function CreateBill() {
                 </TouchableOpacity>
               );
             })}
+
+            {/* Price Valid row */}
+            {businessType !== "Rental" && selectedDocumentType !== "RE" && (
+              <TouchableOpacity
+                onPress={() => {
+                  setEditingDateField("PV");
+                  setAllDatesVisible(false);
+                  setCalendarVisible(true);
+                }}
+                activeOpacity={0.7}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: 14,
+                  borderTopWidth: 1,
+                  borderTopColor: theme === "dark" ? "#333" : "#eeeeee",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <CustomText style={{ fontWeight: "bold", fontSize: 12, color: "#888888", width: 24 }}>PV</CustomText>
+                  <CustomText style={{ fontSize: 14 }}>{t("bill.priceValid")}</CustomText>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <CustomText style={{ fontSize: 13, color: theme === "dark" ? "#c9c9c9" : "#48453e" }}>
+                    {priceValid ? formatDate(priceValid.toISOString()) : t("common.notSet", "Not set")}
+                  </CustomText>
+                  <Ionicons name="chevron-forward" size={14} color={theme === "dark" ? "#666" : "#aaa"} />
+                </View>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               onPress={() => setAllDatesVisible(false)}

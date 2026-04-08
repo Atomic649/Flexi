@@ -595,7 +595,10 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                    return `
                      <tr>
                       <td class="text-center">${index + 1}</td>
-                      <td class="font-medium">${item.productList?.name ?? item.product ?? "-"}</td>
+                      <td class="font-medium">
+                        ${item.productList?.name ?? item.product ?? "-"}
+                        ${item.description ? `<div style="font-size:10px;color:#6b7280;margin-top:2px;">${item.description}</div>` : ""}
+                      </td>
                       <td class="text-center">${item.quantity}</td>
                       <td class="text-center">${item.unit !== "NotSpecified" ? t(`product.unit.${item.unit}`) : "-"}</td>
                       <td class="text-right">${formatNumber(unitPriceDisplayed)}</td>
@@ -746,7 +749,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 <div style="width:50%; padding:10px 14px; border:1px dashed #ccc; border-radius:6px; background:#f9f9f9;">
                   ${splitItems.map((child: any, i: number) => `
                     <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0;">
-                      <span style="font-style:italic; color:#555;">${t("print.splitPayment")} ${t("print.installmentNo")} ${i + 1} (${child.splitPercent}%)</span>
+                      <span style="font-style:italic; color:#555;">${t("print.splitPayment")} ${t("print.installmentNo")} ${i + 1} (${parseFloat(Number(child.splitPercent).toFixed(2))}%)</span>
                       <span style="font-style:italic; color:#555; font-weight:600;">${formatNumber(grandTotal * (child.splitPercent / 100))} ${t("common.THB")}</span>
                     </div>`).join("")}
                 </div>

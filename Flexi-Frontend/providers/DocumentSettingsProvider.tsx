@@ -11,6 +11,7 @@ export interface DocumentSettingsState {
   showWithholdingTax: boolean;
   showBillLevelDiscount: boolean;
   showProject: boolean;
+  showProductDescription: boolean;
   // PDF display
   pdfShowProject: boolean;
   pdfShowWithholdingTax: boolean;
@@ -24,6 +25,7 @@ const defaults: DocumentSettingsState = {
   showWithholdingTax: true,
   showBillLevelDiscount: true,
   showProject: true,
+  showProductDescription: false,
   pdfShowProject: true,
   pdfShowWithholdingTax: true,
   pdfShowBranch: true,
