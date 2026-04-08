@@ -273,6 +273,8 @@ export default function EditBill() {
   // Split bill state
   const [isSplitChild, setIsSplitChild] = useState(false);
   const [isSplitParent, setIsSplitParent] = useState(false);
+  const [mySplitPercent, setMySplitPercent] = useState<number | null>(null);
+  const [mySplitIndex, setMySplitIndex] = useState<number | null>(null);
   const [showSplitSection, setShowSplitSection] = useState(false);
   // splitRows = user-editable rows; last row is always auto = remainder
   const [splitRows, setSplitRows] = useState<{ splitPercent: string }[]>([]);
@@ -900,6 +902,12 @@ export default function EditBill() {
         setValidContactUntil(billData.validContactUntil || "");
         setFlexiId(billData.flexiId || null);
         setIsSplitChild(billData.isSplitChild === true);
+        setMySplitPercent(billData.splitPercent ?? null);
+        if (billData.isSplitChild && Array.isArray(billData.splitSiblings)) {
+          const siblings = [...billData.splitSiblings].sort((a: any, b: any) => a.id - b.id);
+          const idx = siblings.findIndex((s: any) => s.id === (billData.id ?? Number(id)));
+          setMySplitIndex(idx >= 0 ? idx + 1 : null);
+        }
         // Determine base total for split calculation
         setSplitBaseTotal(
           Number(billData.totalInvoice) > 0
@@ -2205,6 +2213,65 @@ export default function EditBill() {
                 disabled={!isEditMode}
                 onAddNew={isEditMode ? (val: string) => setCCountry(val) : undefined}
               />
+            )}
+
+            {/* --- Split child banner --- */}
+            {isSplitChild && mySplitPercent != null && (
+              <View
+                style={{
+                  backgroundColor: '#04ecc115',
+                  borderWidth: 1,
+                  borderColor: '#04ecc140',
+                  borderRadius: 14,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  marginBottom: 14,
+                }}
+              >
+                {/* top row: icon + label + installment pill */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12,backgroundColor: 'transparent' }}>
+                  <View style={{
+                    backgroundColor: '#04ecc120',
+                    borderRadius: 8,
+                    padding: 5,
+                  }}>
+                    <Ionicons name="git-branch-outline" size={14} color="#04ecc1" />
+                  </View>
+                  <CustomText style={{ color: '#04ecc1', fontSize: 13, letterSpacing: 0.3 }} weight="bold">
+                    แบ่งชำระ
+                  </CustomText>
+                  <View style={{
+                    backgroundColor: '#04ecc1',
+                    borderRadius: 999,
+                    paddingHorizontal: 10,
+                    paddingVertical: 2,
+                  }}>
+                    <CustomText style={{ color: '#fff', fontSize: 11 }} weight="bold">
+                      งวดที่ {mySplitIndex ?? '—'}
+                    </CustomText>
+                  </View>
+                </View>
+
+                {/* bottom row: percent | divider | amount */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14,backgroundColor: 'transparent' }}>
+                  <View
+                    style={{backgroundColor: 'transparent'}}>
+                    <CustomText style={{ color: '#04ecc180', fontSize: 10 }} weight="regular">สัดส่วน</CustomText>
+                    <CustomText style={{ color: '#04ecc1', fontSize: 22 }} weight="bold">
+                      {mySplitPercent}%
+                    </CustomText>
+                  </View>
+                  <View style={{ width: 1, height: 36, backgroundColor: '#04ecc140' }} />
+                  <View
+                    style={{backgroundColor: 'transparent'}}>                  
+                    <CustomText style={{ color: '#04ecc180', fontSize: 10 }} weight="regular">ยอดชำระ</CustomText>
+                    <CustomText style={{ color: '#04ecc1', fontSize: 22 }} weight="bold">
+                      {new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(splitBaseTotal)}
+                    </CustomText>
+                  </View>
+                  <Ionicons name="receipt-outline" size={36} color="#04ecc120" style={{ marginLeft: 'auto' }} />
+                </View>
+              </View>
             )}
 
             {/* --- Product Items UI --- */}

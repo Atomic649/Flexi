@@ -833,7 +833,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                                       marginRight: 10,
                                     }}>
                                       <CustomText style={{ color: '#04ecc1', fontSize: 11 }} weight="semibold">
-                                        {child.splitPercent}%
+                                        {Number(child.splitPercent).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}%
                                       </CustomText>
                                     </View>
                                     {/* Amount */}

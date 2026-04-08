@@ -731,8 +731,8 @@ export type BillWhereInput = {
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
-  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.FloatNullableFilter<"Bill"> | number | null
   isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
   splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -876,8 +876,8 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
-  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.FloatNullableFilter<"Bill"> | number | null
   isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
   splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -1019,8 +1019,8 @@ export type BillScalarWhereWithAggregatesInput = {
   withHoldingTax?: Prisma.BoolNullableWithAggregatesFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
-  splitPercentMax?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
+  splitPercent?: Prisma.FloatNullableWithAggregatesFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.FloatNullableWithAggregatesFilter<"Bill"> | number | null
   isSplitChild?: Prisma.BoolWithAggregatesFilter<"Bill"> | boolean
   splitGroupId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
@@ -1213,8 +1213,8 @@ export type BillUpdateInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1279,8 +1279,8 @@ export type BillUncheckedUpdateInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1408,8 +1408,8 @@ export type BillUpdateManyMutationInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1467,8 +1467,8 @@ export type BillUncheckedUpdateManyInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2218,8 +2218,8 @@ export type BillScalarWhereInput = {
   withHoldingTax?: Prisma.BoolNullableFilter<"Bill"> | boolean | null
   WHTpercent?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.DecimalNullableFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.IntNullableFilter<"Bill"> | number | null
-  splitPercentMax?: Prisma.IntNullableFilter<"Bill"> | number | null
+  splitPercent?: Prisma.FloatNullableFilter<"Bill"> | number | null
+  splitPercentMax?: Prisma.FloatNullableFilter<"Bill"> | number | null
   isSplitChild?: Prisma.BoolFilter<"Bill"> | boolean
   splitGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paymentTermCondition?: Prisma.StringNullableFilter<"Bill"> | string | null
@@ -2736,8 +2736,8 @@ export type BillUpdateWithoutProductInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2801,8 +2801,8 @@ export type BillUncheckedUpdateWithoutProductInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3010,8 +3010,8 @@ export type BillUpdateWithoutExpenseInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3075,8 +3075,8 @@ export type BillUncheckedUpdateWithoutExpenseInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3512,8 +3512,8 @@ export type BillUpdateWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3577,8 +3577,8 @@ export type BillUncheckedUpdateWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3642,8 +3642,8 @@ export type BillUncheckedUpdateManyWithoutMemberInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3767,8 +3767,8 @@ export type BillUpdateWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3832,8 +3832,8 @@ export type BillUncheckedUpdateWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3897,8 +3897,8 @@ export type BillUncheckedUpdateManyWithoutBusinessIdInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4022,8 +4022,8 @@ export type BillUpdateWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4087,8 +4087,8 @@ export type BillUncheckedUpdateWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4152,8 +4152,8 @@ export type BillUncheckedUpdateManyWithoutCustomerInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4277,8 +4277,8 @@ export type BillUpdateWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4342,8 +4342,8 @@ export type BillUncheckedUpdateWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4407,8 +4407,8 @@ export type BillUncheckedUpdateManyWithoutPlatformInfoInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4532,8 +4532,8 @@ export type BillUpdateWithoutProjectInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4597,8 +4597,8 @@ export type BillUncheckedUpdateWithoutProjectInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4662,8 +4662,8 @@ export type BillUncheckedUpdateManyWithoutProjectInput = {
   withHoldingTax?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   WHTpercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   WHTAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  splitPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  splitPercentMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  splitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  splitPercentMax?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isSplitChild?: Prisma.BoolFieldUpdateOperationsInput | boolean
   splitGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentTermCondition?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5558,8 +5558,8 @@ export interface BillFieldRefs {
   readonly withHoldingTax: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly WHTpercent: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly WHTAmount: Prisma.FieldRef<"Bill", 'Decimal'>
-  readonly splitPercent: Prisma.FieldRef<"Bill", 'Int'>
-  readonly splitPercentMax: Prisma.FieldRef<"Bill", 'Int'>
+  readonly splitPercent: Prisma.FieldRef<"Bill", 'Float'>
+  readonly splitPercentMax: Prisma.FieldRef<"Bill", 'Float'>
   readonly isSplitChild: Prisma.FieldRef<"Bill", 'Boolean'>
   readonly splitGroupId: Prisma.FieldRef<"Bill", 'String'>
   readonly paymentTermCondition: Prisma.FieldRef<"Bill", 'String'>

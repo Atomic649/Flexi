@@ -371,8 +371,8 @@ model Bill {
   withHoldingTax       Boolean?      @default(false)
   WHTpercent           Decimal?      @default(0)
   WHTAmount            Decimal?      @default(0)
-  splitPercent         Int?          @default(100)
-  splitPercentMax      Int?          @default(100)
+  splitPercent         Float?        @default(100)
+  splitPercentMax      Float?        @default(100)
   isSplitChild         Boolean       @default(false)
   splitGroupId         String?
   paymentTermCondition String? // Optional field for payment

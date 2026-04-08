@@ -376,7 +376,7 @@ export default function BillCard({
                 }}
               >
                 <CustomText style={{ color: '#04ecc1', fontSize: 10 }} weight="semibold">
-                  {splitPercent}%
+                  {Number(splitPercent).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}%
                 </CustomText>
               </View>
             )}
