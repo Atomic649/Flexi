@@ -28,6 +28,17 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     }).format(amount);
   };
 
+  const formatTerms = (text: string) => {
+    if (!text) return "";
+    return text
+      .replace(/(?<!\n)[ \t]*(\d+\.[ \t])/g, '\n$1')
+      .replace(/(?<!\n)[ \t]*([-•·*][ \t])/g, '\n$1')
+      .split('\n')
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0)
+      .join('<br>');
+  };
+
   // Use correct field from backend: invoice.product (array of ProductItem)
   const productItems = invoice.product || [];
   const isVatRegistered = businessDetails?.vat === true;
@@ -167,8 +178,8 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           }
           .business-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            grid-template-columns: 1fr;
+            gap: 4px;
           }
           .full-width {
             grid-column: 1 / -1;
@@ -574,11 +585,14 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                   const yyyy = d.getFullYear();
                   return `${dd}/${mm}/${yyyy}`;
                 })()}</p>
+              ${invoice.project?.name ? `<div style="margin-top:2px; display:inline-block; font-size:11px; font-weight:700; color:var(--brand-color); white-space:nowrap;"><span style="opacity:0.75; margin-right:5px;">${t("common.project")}:</span>${invoice.project.name}${invoice.project.description ? ` — ${invoice.project.description}` : ""}</div>` : ""}
             </div>
           </div>
 
+          <!-- Business & Customer Information Row -->
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
           <!-- Business Information -->
-          <div class="business-info-section">
+          <div class="business-info-section" style="flex:1; margin-bottom:0;">
             <h3>${
               businessDetails?.taxType === "Juristic"
                 ? t("print.companyInformation")
@@ -623,7 +637,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           </div>
 
           <!-- Customer Information (Billing) - duplicated style -->
-          <div class="business-info-section">
+          <div class="business-info-section" style="flex:1; margin-bottom:0;">
             <h3>${t("print.customerInformation")}</h3>
             <div class="business-details">
               <div>
@@ -652,12 +666,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     invoice.cPhone || t("print.notSpecified")
   }</p>
               </div>
-              ${invoice.project?.name ? `
-              <div class="full-width">
-                <p><strong>${t("common.project")}:</strong> ${invoice.project.name}${invoice.project.description ? ` — ${invoice.project.description}` : ""}</p>
-              </div>` : ""}
             </div>
           </div>
+          </div><!-- end info row -->
 
           <!-- Billing Information -->
             <!-- Billing Information removed: content consolidated into customer/business sections -->
@@ -725,11 +736,9 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           <div class="terms-summary-container" style="display: flex; gap: 20px; margin-bottom: 20px;">
             <!-- Payment Terms and Conditions -->
             <div class="terms-section" style="flex: 1; width: 50%;">
-              <div class="note-section">
-                <h3>${t("print.termsAndConditions")}</h3>
-                <p>
-                  ${invoice.remark ? `• ${invoice.remark}` : ""}
-                </p>
+              <div style="padding:10px 14px; border:1px dashed #ccc; border-radius:6px; background:#f9f9f9;">
+                <div style="padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0; color:#555; font-weight:600;">${t("print.termsAndConditions")}</div>
+                ${invoice.remark ? `<div style="padding:4px 0; font-size:12px; font-style:italic; color:#555;">${formatTerms(invoice.remark)}</div>` : ""}
               </div>
             </div>
             <!-- Summary -->

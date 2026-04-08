@@ -274,6 +274,11 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
   // Track which split groups have children collapsed
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
+  // Global toggle: hide all split children by default
+  const [hideAllChildren, setHideAllChildren] = useState(true);
+
+  const hasSplitChildren = useMemo(() => Object.keys(splitChildrenMap).length > 0, [splitChildrenMap]);
+
   // Auto-collapse groups where all children are Receipt (only for groups not yet manually toggled)
   useEffect(() => {
     setCollapsedGroups(prev => {
@@ -289,7 +294,21 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
   }, [splitChildrenMap]);
 
   const handleToggleSplitChildren = useCallback((flexiId: string) => {
-    setCollapsedGroups(prev => ({ ...prev, [flexiId]: !prev[flexiId] }));
+    setHideAllChildren(prev => {
+      if (prev) {
+        // Global hide is on — collapse all groups, expand only this one
+        setCollapsedGroups(g => {
+          const next: Record<string, boolean> = {};
+          Object.keys(g).forEach(k => { next[k] = true; });
+          next[flexiId] = false;
+          return next;
+        });
+        return false;
+      }
+      // Global hide is off — toggle just this group
+      setCollapsedGroups(g => ({ ...g, [flexiId]: !g[flexiId] }));
+      return false;
+    });
   }, []);
 
   // Apply all filters
@@ -669,7 +688,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
               const lineColor = theme === 'dark' ? '#04ecc1' : '#04ecc1';
               const dotColor = theme === 'dark' ? '#04ecc1' : '#04ecc1';
               return (
-                <View key={bill.id} style={{ marginBottom: isParentWithSplit ? 10 : 2 }}>
+                <View key={bill.id} style={{ marginBottom: isParentWithSplit ? 10 : 2, maxWidth: 500, width: '100%', alignSelf: 'center' }}>
                   <BillCard
                     id={bill.id}
                     platform={bill.platform}
@@ -702,7 +721,7 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
                   />
 
                   {/* Children with tree connector */}
-                  {isParentWithSplit && !collapsedGroups[bill.flexiId ?? ''] && (
+                  {isParentWithSplit && !hideAllChildren && !collapsedGroups[bill.flexiId ?? ''] && (
                     <View style={{ flexDirection: 'row', paddingLeft: 8 }}>
                       <View style={{ width: 16 }} />
 
@@ -1009,6 +1028,24 @@ const ByOrder = ({ refreshSignal = 0 }: ByOrderProps) => {
               : (theme === "dark" ? "#aaaaaa" : "#666")}
           />
         </TouchableOpacity>
+        {hasSplitChildren && (
+          <TouchableOpacity
+            onPress={() => setHideAllChildren((v) => !v)}
+            style={{
+              width: 38, height: 38, borderRadius: 10,
+              backgroundColor: !hideAllChildren ? accent : chipBg,
+              borderWidth: 1,
+              borderColor: !hideAllChildren ? accent : chipBorder,
+              alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <Ionicons
+              name="git-branch-outline"
+              size={17}
+              color={!hideAllChildren ? (theme === "dark" ? "#1c1d1e" : "#fff") : (theme === "dark" ? "#aaaaaa" : "#666")}
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => router.push("/createBill")}
           style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: accent, alignItems: "center", justifyContent: "center" }}

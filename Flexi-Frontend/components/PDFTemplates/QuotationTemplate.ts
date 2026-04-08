@@ -22,6 +22,17 @@ export const generateQuotationHTML = (data: QuotationData): string => {
     }).format(amount);
   };
 
+  const formatTerms = (text: string) => {
+    if (!text) return "";
+    return text
+      .replace(/(?<!\n)[ \t]*(\d+\.[ \t])/g, '\n$1')
+      .replace(/(?<!\n)[ \t]*([-•·*][ \t])/g, '\n$1')
+      .split('\n')
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0)
+      .join('<br>');
+  };
+
   // Use correct field from backend: quotation.product (array of ProductItem)
   const productItems = quotation.product || [];
   const isVatRegistered = businessDetails?.vat === true;
@@ -163,8 +174,8 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           }
           .business-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            grid-template-columns: 1fr;
+            gap: 4px;
           }
           .full-width { grid-column: 1 / -1; }
           .business-details p {
@@ -483,11 +494,14 @@ export const generateQuotationHTML = (data: QuotationData): string => {
                 const yyyy = d.getFullYear();
                 return `${dd}/${mm}/${yyyy}`;
               })()}</p>
+              ${quotation.project?.name ? `<div style="margin-top:2px; display:inline-block; font-size:11px; font-weight:700; color:var(--brand-color); white-space:nowrap;"><span style="opacity:0.75; margin-right:5px;">${t("common.project")}:</span>${quotation.project.name}${quotation.project.description ? ` — ${quotation.project.description}` : ""}</div>` : ""}
             </div>
           </div>
 
+          <!-- Business & Customer Information Row -->
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
           <!-- Business Information -->
-          <div class="business-info-section">
+          <div class="business-info-section" style="flex:1; margin-bottom:0;">
             <h3>${
               businessDetails?.taxType === "Juristic"
                 ? t("print.companyInformation")
@@ -536,7 +550,7 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           </div>
 
           <!-- Customer Information (Billing) - duplicated style -->
-          <div class="business-info-section">
+          <div class="business-info-section" style="flex:1; margin-bottom:0;">
             <h3>${t("print.customerInformation")}</h3>
             <div class="business-details">
               <div>
@@ -559,12 +573,9 @@ export const generateQuotationHTML = (data: QuotationData): string => {
               <div>
                 <p><strong>${t("print.contact")}:</strong> ${quotation.cPhone || t("print.notSpecified")}</p>
               </div>
-              ${quotation.project?.name ? `
-              <div class="full-width">
-                <p><strong>${t("common.project")}:</strong> ${quotation.project.name}${quotation.project.description ? ` — ${quotation.project.description}` : ""}</p>
-              </div>` : ""}
             </div>
           </div>
+          </div><!-- end info row -->
 
           <!-- Billing Information -->
             <!-- Billing Information removed: content consolidated into customer/business sections -->
@@ -624,28 +635,18 @@ export const generateQuotationHTML = (data: QuotationData): string => {
           <div class="terms-summary-container">
             <!-- Quotation Terms and Conditions -->
             <div class="terms-section">
-              <div class="note-section">
-                <h3>${t("print.termsAndConditions")}</h3>
-                <p>
-                  ${quotation.paymentTermCondition ? `• ${quotation.paymentTermCondition}` : ""}
-                </p>
-                <p>
-                  ${quotation.remark ? `• ${quotation.remark}` : ""}
-                </p>                
-                <p>
-                  ${
-                    quotation.priceValid
-                      ? `\n${(() => {
-                          const d = new Date(quotation.priceValid);
-                          if (isNaN(d.getTime())) return "";
-                          const dd = String(d.getDate()).padStart(2, "0");
-                          const mm = String(d.getMonth() + 1).padStart(2, "0");
-                          const yyyy = d.getFullYear();
-                          return `• ${t("print.validUntill")}: ${dd}/${mm}/${yyyy}`;
-                        })()}`
-                      : ""
-                  }
-                </p>
+              <div style="padding:10px 14px; border:1px dashed #ccc; border-radius:6px; background:#f9f9f9;">
+                <div style="padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0; color:#555; font-weight:600;">${t("print.termsAndConditions")}</div>
+                ${quotation.paymentTermCondition ? `<div style="padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0; font-style:italic; color:#555;">${formatTerms(quotation.paymentTermCondition)}</div>` : ""}
+                ${quotation.remark ? `<div style="padding:4px 0; font-size:12px; border-bottom:1px solid #f0f0f0; font-style:italic; color:#555;">${formatTerms(quotation.remark)}</div>` : ""}
+                ${quotation.priceValid ? `${(() => {
+                  const d = new Date(quotation.priceValid);
+                  if (isNaN(d.getTime())) return "";
+                  const dd = String(d.getDate()).padStart(2, "0");
+                  const mm = String(d.getMonth() + 1).padStart(2, "0");
+                  const yyyy = d.getFullYear();
+                  return `<div style="padding:4px 0; font-size:12px; font-style:italic; color:#555;">${t("print.validUntill")}: ${dd}/${mm}/${yyyy}</div>`;
+                })()}` : ""}
               </div>
             </div>
            <!-- Summary -->
